@@ -48,9 +48,7 @@ function buildSimplifiedTables(schema: any): any[] {
         })
         .filter((t: any) => t.columns.length > 0);
 
-    console.log(`[AI Dashboard] Tablas enviadas al AI: ${simplified.length}`);
-    simplified.forEach((t: any) =>
-        console.log(`  - ${t.table_name} (${t.columns.length} cols, joins: [${t.relations.map((r: any) => `${r.target_table}(${r.on})`).join(', ')}])`));
+    console.log(`[AI Dashboard] Tablas enviadas al AI: ${simplified.length} — ${simplified.map((t: any) => t.table_name).join(', ')}`);
 
     return simplified;
 }
@@ -89,13 +87,11 @@ async function collectSampleData(
         }
     }
 
-    console.log(`[AI Dashboard] Muestreando tablas: ${names.join(', ')}`);
-
     const result: Record<string, Record<string, any>[]> = {};
     await Promise.all(names.map(async name => {
         result[name] = await fetchTableSample(datasource_id, name);
-        console.log(`  - "${name}": ${result[name].length} filas`);
     }));
+    console.log(`[AI Dashboard] Muestra recogida — ${names.map(n => `${n}(${result[n].length})`).join(', ')}`);
     return result;
 }
 
@@ -279,7 +275,7 @@ function buildPanel(
                     fields,
                     filters,
                     queryMode: 'EDA',
-                    rootTable: aiPanel.fields?.[0]?.table || '',
+                    rootTable: aiPanel.fields?.find((f: any) => !f.agg || f.agg === 'none')?.table || aiPanel.fields?.[0]?.table || '',
                     joinType: 'inner',
                     queryLimit: aiPanel.queryLimit || 1000,
                     groupByEnabled: true,
@@ -294,6 +290,12 @@ function buildPanel(
 
 // ── Layout ────────────────────────────────────────────────────────────────────
 
+function rowDims(index: number, total: number): { x: number; w: number } {
+    const base = Math.floor(GRID_W / total);
+    const x = base * index;
+    return { x, w: index === total - 1 ? GRID_W - x : base };
+}
+
 function layoutPanels(aiPanels: any[], simplifiedTables: any[], datasource_id: string, dashboardFilters: any[] = []): any[] {
     const bp = (p: any, w: number, h: number, x: number, y: number, i: number) =>
         buildPanel(p, w, h, x, y, i, simplifiedTables, datasource_id, dashboardFilters);
@@ -302,28 +304,28 @@ function layoutPanels(aiPanels: any[], simplifiedTables: any[], datasource_id: s
     const chartPanels = aiPanels.filter((p: any) => ['bar', 'line', 'doughnut'].includes(p.edaChart || p.chart_type));
     const tablePanels = aiPanels.filter((p: any) => (p.edaChart || p.chart_type) === 'table');
 
-    // Enforce minimum 3 KPIs (target 4): duplicate existing ones if needed
-    if (kpiPanels.length > 0 && kpiPanels.length < 3) {
-        console.warn(`[AI Dashboard] Solo ${kpiPanels.length} KPI(s) generados — duplicando hasta llegar a 3`);
-        const originalKpis = [...kpiPanels];
-        let idx = 0;
-        while (kpiPanels.length < 3) {
-            kpiPanels.push({ ...originalKpis[idx % originalKpis.length] });
-            idx++;
-        }
+    // If AI returned exactly 2 KPIs, add a 3rd to avoid asymmetric layout
+    if (kpiPanels.length === 2) {
+        kpiPanels.push({ ...kpiPanels[0] });
     }
 
     console.log(`[AI Dashboard] Layout — KPIs: ${kpiPanels.length} | Gráficos: ${chartPanels.length} | Tablas: ${tablePanels.length}`);
 
-    const kpiW    = kpiPanels.length   > 0 ? Math.floor(GRID_W / kpiPanels.length)   : GRID_W;
-    const chartW  = chartPanels.length > 0 ? Math.floor(GRID_W / chartPanels.length) : GRID_W;
     const kpiRowH   = kpiPanels.length   > 0 ? KPI_H   : 0;
     const chartRowH = chartPanels.length > 0 ? CHART_H : 0;
 
     return [
-        ...kpiPanels.map((p, i)   => bp(p, kpiW,   KPI_H,   i * kpiW,   0,                    i)),
-        ...chartPanels.map((p, i) => bp(p, chartW,  CHART_H, i * chartW, kpiRowH,               kpiPanels.length + i)),
-        ...tablePanels.map((p, i) => bp(p, GRID_W,  TABLE_H, 0,          kpiRowH + chartRowH,   kpiPanels.length + chartPanels.length + i)),
+        ...kpiPanels.map((p, i) => {
+            const { x, w } = rowDims(i, kpiPanels.length);
+            return bp(p, w, KPI_H, x, 0, i);
+        }),
+        ...chartPanels.map((p, i) => {
+            const { x, w } = rowDims(i, chartPanels.length);
+            return bp(p, w, CHART_H, x, kpiRowH, kpiPanels.length + i);
+        }),
+        ...tablePanels.map((p, i) =>
+            bp(p, GRID_W, TABLE_H, 0, kpiRowH + chartRowH, kpiPanels.length + chartPanels.length + i)
+        ),
     ];
 }
 
@@ -382,7 +384,7 @@ export async function generateDashboard(req: Request, res: Response, next: NextF
     const userPrompt = buildUserPrompt(schema.model_name, schemaText, sampleData, description);
 
     const panelsText = await callAI(config, DASHBOARD_SYSTEM_PROMPT, userPrompt);
-    console.log(`[AI Dashboard] Respuesta IA raw:\n${panelsText}`);
+    console.log(`[AI Dashboard] Respuesta IA (${panelsText.length} chars)`);
 
     let aiPanels: any[];
     let dashboardFilters: any[] = [];
