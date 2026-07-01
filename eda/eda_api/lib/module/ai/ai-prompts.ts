@@ -38,7 +38,9 @@ FILTROS — dos niveles:
 "dashboard_filters" (array raíz): filtros que aplican a TODOS los paneles. Úsalos cuando el usuario menciona un periodo, año, ciudad, categoría o condición que afecta al dashboard entero (lo más común).
 "panel.filters" (dentro de cada panel): filtros específicos de ese panel solamente. Úsalos cuando un panel concreto muestra un subconjunto distinto al resto (ej. "solo pedidos cancelados").
 
-Operadores: "=" (igual), "!=" (diferente), ">" ">=" "<" "<=" (numérico/fecha), "between" (rango, value:[inicio,fin]), "in" (lista, value:[a,b,...]), "year_eq" (año exacto en columna date, value: número entero)
+ANTI-DUPLICADO: Si un filtro ya está en dashboard_filters, NO lo repitas en panel.filters de ningún panel. Cada condición debe aparecer exactamente una vez.
+
+Operadores: "=" (igual, un único valor), "!=" (diferente), ">" ">=" "<" "<=" (numérico/fecha), "between" (rango, value:[inicio,fin]), "in" (lista de ≥2 valores, value:[a,b,...] — NUNCA uses "in" para un solo valor, usa "=" en su lugar), "year_eq" (año exacto en columna date, value: número entero)
 NUNCA expreses un filtro solo en el título. Si el título dice "2023" o "España", debe existir el filtro correspondiente en dashboard_filters o panel.filters.
 
 Ejemplos de dashboard_filters:

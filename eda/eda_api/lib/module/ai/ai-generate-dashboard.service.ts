@@ -259,8 +259,10 @@ function buildPanel(
 ): any {
     const chartType: string = aiPanel.edaChart || aiPanel.chart_type || 'table';
     const fields = buildFields(aiPanel, simplifiedTables);
-    const panelFilters = buildPanelFilters(aiPanel.filters, simplifiedTables, aiPanel.title, false);
     const globalFilters = buildPanelFilters(dashboardFilters, simplifiedTables, 'dashboard', true);
+    const globalKeys = new Set(dashboardFilters.map((f: any) => `${f.table}.${f.column}`));
+    const dedupedPanelFilters = (aiPanel.filters || []).filter((f: any) => !globalKeys.has(`${f.table}.${f.column}`));
+    const panelFilters = buildPanelFilters(dedupedPanelFilters, simplifiedTables, aiPanel.title, false);
     const filters = [...globalFilters, ...panelFilters];
     return {
         id: uuidv4(),
@@ -400,6 +402,16 @@ export async function generateDashboard(req: Request, res: Response, next: NextF
             dashboardFilters = parsed.dashboard_filters || [];
         }
         if (!Array.isArray(aiPanels) || aiPanels.length === 0) throw new Error('El array de paneles está vacío');
+
+        // Dedup dashboard_filters: keep first filter per table+column combination
+        const seen = new Set<string>();
+        dashboardFilters = dashboardFilters.filter((f: any) => {
+            const key = `${f.table}.${f.column}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+
         console.log(`[AI Dashboard] Paneles: ${aiPanels.length} | Filtros dashboard: ${dashboardFilters.length}`);
         if (dashboardFilters.length) console.log(`  Filtros globales: ${dashboardFilters.map((f: any) => `${f.table}.${f.column}(${f.op}:${f.value})`).join(', ')}`);
         aiPanels.forEach((p, i) =>
