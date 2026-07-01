@@ -9,6 +9,7 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 
 const cache_config = require('../../../config/cache.config');
+const ga4Config = require('../../../config/google-analytics.config');
 
 // In-memory store for pending OAuth states (state → refresh_token).
 // Entries are cleaned up after retrieval or after 10 minutes.
@@ -92,7 +93,10 @@ export class GoogleAnalyticsController {
                 return next(new HttpException(503, 'GA4_CLIENT_ID y GA4_CLIENT_SECRET no están configurados en el servidor'));
             }
 
-            const state = crypto.randomBytes(16).toString('hex');
+            const token = crypto.randomBytes(16).toString('hex');
+            const instanceCallback = ga4Config.REDIRECT_URI;
+            const state = `${token}|${instanceCallback}`;
+
             const oauth2Client = GA4ApiService.buildOAuth2Client();
 
             const authUrl = oauth2Client.generateAuthUrl({
@@ -102,7 +106,8 @@ export class GoogleAnalyticsController {
                 state
             });
 
-            return res.json({ ok: true, authUrl, state });
+            // Frontend polls using only the token (proxy strips |instanceName)
+            return res.json({ ok: true, authUrl, state: token });
         } catch (err: any) {
             return next(new HttpException(500, err.message));
         }
