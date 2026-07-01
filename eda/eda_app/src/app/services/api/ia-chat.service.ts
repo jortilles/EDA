@@ -20,6 +20,7 @@ export interface ChatOption {
   // generate_confirm fields
   proposed_title?: string;
   description?: string;
+  visibility?: string;
 }
 
 export interface BarChartDataset {
@@ -116,7 +117,7 @@ export class IaChatService extends ApiService {
     });
   }
 
-  generateDashboard(body: { datasource_id: string; description: string; title: string; visible: string }): Observable<any> {
+  generateDashboard(body: { datasource_id: string; description: string; title: string; visible: string; group?: string[] }): Observable<any> {
     return this.post('/assistant/generate-dashboard', body) as Observable<any>;
   }
 

@@ -61,6 +61,12 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   readonly chatFallbackYes: string = $localize`:@@chatFallbackYes:Sí`;
   readonly chatFallbackSearchIn: string = $localize`:@@chatFallbackSearchIn:Buscar en...`;
   readonly chatFallbackSearchInPrefix: string = $localize`:@@chatFallbackSearchInPrefix:Buscar en: `;
+  readonly visibilityOptions = [
+    { value: 'open',    label: $localize`:@@publicPanel:Público` },
+    { value: 'common',  label: $localize`:@@commonPanel:Común` },
+    { value: 'group',   label: $localize`:@@group:Grupo` },
+    { value: 'private', label: $localize`:@@privatePanel:Privado` },
+  ];
 
   ngOnInit(): void {
     this.iaChatService.getConfig().subscribe({
@@ -256,33 +262,41 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   async confirmGenerate(option: ChatOption, msgIndex: number): Promise<void> {
     if (this.generateConfirmLoading()) return;
     const title = option.proposed_title?.trim() || option.label;
+    const visibility = option.visibility || 'private';
+
     this.generateConfirmLoading.set(true);
-    if (this.chatHistory[msgIndex]) this.chatHistory[msgIndex].options = [];
-    this.chatHistory.push({ role: 'user', content: title, displayContent: `Generando "${title}"...` });
-    this.chatHistory.push({ role: 'assistant', content: '' });
-    const botIndex = this.chatHistory.length - 1;
-    this.chatLoading.set(true);
     this.shouldScrollChat = true;
     this.cdr.detectChanges();
+
     try {
       const result: any = await this.iaChatService.generateDashboard({
         datasource_id: option.datasource_id!,
         description: option.description || title,
         title,
-        visible: 'public',
+        visible: visibility,
       }).toPromise();
+
       const dashboardId: string = result?.dashboard?._id?.toString() ?? '';
       const panelCount: number  = result?.dashboard?.config?.panel?.length ?? 0;
-      const dashboardUrl = dashboardId ? `${window.location.origin}/dashboard/${dashboardId}` : '';
-      this.chatHistory[botIndex].content = panelCount > 0
-        ? `Dashboard **${title}** creado con ${panelCount} paneles. [Abrir dashboard](${dashboardUrl})`
-        : `Dashboard **${title}** creado. [Abrir dashboard](${dashboardUrl})`;
+      const baseHref = window.location.href.split('#')[0].replace(/\/$/, '') + '/';
+      const dashboardUrl = dashboardId ? `${baseHref}#/dashboard/${dashboardId}` : '';
+
+      if (this.chatHistory[msgIndex]) this.chatHistory[msgIndex].options = [];
+      const panelText = panelCount > 0 ? ` con ${panelCount} paneles` : '';
+      this.chatHistory.push({
+        role: 'assistant',
+        content: dashboardUrl
+          ? `Dashboard **${title}** creado${panelText}. [Abrir dashboard](${dashboardUrl})`
+          : `Dashboard **${title}** creado${panelText}.`,
+      });
+      if (dashboardUrl) window.open(dashboardUrl, '_blank');
+
     } catch (err: any) {
-      const msg = err?.error?.response ?? err?.message ?? 'Error desconocido';
-      this.chatHistory[botIndex].content = `No se pudo generar el dashboard: ${msg}`;
+      const msg = err?.error?.response ?? err?.error?.message ?? err?.message ?? 'Error desconocido';
+      if (this.chatHistory[msgIndex]) this.chatHistory[msgIndex].options = [];
+      this.chatHistory.push({ role: 'assistant', content: `No se pudo generar el dashboard: ${msg}` });
     } finally {
       this.generateConfirmLoading.set(false);
-      this.chatLoading.set(false);
       this.shouldScrollChat = true;
       this.cdr.detectChanges();
       setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
