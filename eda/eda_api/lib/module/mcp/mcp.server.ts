@@ -229,7 +229,7 @@ export function createMcpServer(requestUser?: any) {
                 const lines = visibleDs.map((ds: any) => {
                     const link = baseUrl ? ` — ${baseUrl}/data-source/${encodeURIComponent(ds._id)}` : '';
                     const desc = ds.model_description ? ` — ${ds.model_description}` : '';
-                    return `  - ${ds.model_name ?? '(sin nombre)'}${desc}${link}`;
+                    return `  - ${ds.model_name ?? '(sin nombre)'} [datasource_id: ${ds._id}]${desc}${link}`;
                 });
                 if (hiddenDsCount > 0) {
                     lines.push(`\n_(Nota: existen ${hiddenDsCount} modelo(s) de datos adicionales en el sistema a los que no tengo acceso.)_`);

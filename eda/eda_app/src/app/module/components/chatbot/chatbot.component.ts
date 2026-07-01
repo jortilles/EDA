@@ -330,7 +330,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
       if (dashboardUrl) window.open(dashboardUrl, '_blank');
 
     } catch (err: any) {
-      const msg = err?.error?.response ?? err?.error?.message ?? err?.message ?? 'Error desconocido';
+      const msg = err?.error?.response ?? err?.error?.message ?? err?.message ?? err?.text ?? 'Error desconocido';
       if (this.chatHistory[msgIndex]) this.chatHistory[msgIndex].options = [];
       this.chatHistory.push({ role: 'assistant', content: `No se pudo generar el dashboard: ${msg}` });
     } finally {
