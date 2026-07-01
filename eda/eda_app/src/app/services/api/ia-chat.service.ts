@@ -21,6 +21,7 @@ export interface ChatOption {
   proposed_title?: string;
   description?: string;
   visibility?: string;
+  selectedGroupIds?: string[];
 }
 
 export interface BarChartDataset {

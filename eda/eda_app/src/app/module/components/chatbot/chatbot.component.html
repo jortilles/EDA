@@ -136,13 +136,38 @@
                           [class.text-corporate-primary]="(opt.visibility || 'private') === vis.value"
                           [class.border-gray-200]="(opt.visibility || 'private') !== vis.value"
                           [class.text-gray-500]="(opt.visibility || 'private') !== vis.value"
-                          (click)="opt.visibility = vis.value"
+                          (click)="selectVisibility(opt, vis.value)"
                           [disabled]="generateConfirmLoading()">
                           {{ vis.label }}
                         </button>
                       }
                     </div>
                   </div>
+                  @if ((opt.visibility || 'private') === 'group') {
+                    <div class="flex flex-col gap-1">
+                      <span class="text-xs text-gray-400" i18n="@@generateConfirmGroup">Grupo</span>
+                      @if (chatbotGroupsLoading()) {
+                        <span class="text-xs text-gray-400">Cargando grupos...</span>
+                      } @else if (chatbotGroups().length === 0) {
+                        <span class="text-xs text-gray-400">No hay grupos disponibles.</span>
+                      } @else {
+                        <div class="flex flex-wrap gap-1.5">
+                          @for (grp of chatbotGroups(); track grp._id) {
+                            <button type="button"
+                              class="px-2.5 py-1 rounded-full text-xs border transition-colors"
+                              [class.border-corporate-primary]="isGroupSelected(opt, grp._id)"
+                              [class.text-corporate-primary]="isGroupSelected(opt, grp._id)"
+                              [class.border-gray-200]="!isGroupSelected(opt, grp._id)"
+                              [class.text-gray-500]="!isGroupSelected(opt, grp._id)"
+                              (click)="toggleGroup(opt, grp._id)"
+                              [disabled]="generateConfirmLoading()">
+                              {{ grp.name }}
+                            </button>
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
                   <div class="flex gap-2 justify-end">
                     <button
                       class="px-3 py-1.5 rounded-lg text-xs text-gray-500 hover:bg-gray-100 transition-colors"

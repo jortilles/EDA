@@ -6,6 +6,8 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { Subscription } from 'rxjs';
 import { IaChatService, ChatMessage, ChatOption, BarChart } from '@eda/services/api/ia-chat.service';
 import type { ChatEvent } from '@eda/services/api/ia-chat.service';
+import { DashboardService } from '@eda/services/api/dashboard.service';
+import { GroupService } from '@eda/services/api/group.service';
 import { CORPORATE_COLORS } from '@eda/configs/index';
 
 @Component({
@@ -17,6 +19,8 @@ import { CORPORATE_COLORS } from '@eda/configs/index';
 })
 export class ChatbotComponent implements OnInit, AfterViewChecked {
   private iaChatService = inject(IaChatService);
+  private dashboardService = inject(DashboardService);
+  private groupService = inject(GroupService);
   private sanitizer = inject(DomSanitizer);
   private zone = inject(NgZone);
   private cdr = inject(ChangeDetectorRef);
@@ -34,6 +38,8 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   isAtBottom = signal(true);
   copiedIndex = signal(-1);
   generateConfirmLoading = signal(false);
+  chatbotGroups = signal<{ _id: string; name: string }[]>([]);
+  chatbotGroupsLoading = signal(false);
 
   private tokenQueue: string[] = [];
   private typewriterInterval: any = null;
@@ -252,6 +258,33 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     this.chatSubscription = this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
   }
 
+  async selectVisibility(opt: ChatOption, value: string): Promise<void> {
+    opt.visibility = value;
+    if (value === 'group' && this.chatbotGroups().length === 0 && !this.chatbotGroupsLoading()) {
+      this.chatbotGroupsLoading.set(true);
+      try {
+        const groups = await this.groupService.getGroupsByUser().toPromise();
+        this.chatbotGroups.set(groups || []);
+      } catch {
+        this.chatbotGroups.set([]);
+      } finally {
+        this.chatbotGroupsLoading.set(false);
+        this.cdr.detectChanges();
+      }
+    }
+  }
+
+  toggleGroup(opt: ChatOption, groupId: string): void {
+    if (!opt.selectedGroupIds) opt.selectedGroupIds = [];
+    const idx = opt.selectedGroupIds.indexOf(groupId);
+    if (idx >= 0) opt.selectedGroupIds.splice(idx, 1);
+    else opt.selectedGroupIds.push(groupId);
+  }
+
+  isGroupSelected(opt: ChatOption, groupId: string): boolean {
+    return opt.selectedGroupIds?.includes(groupId) ?? false;
+  }
+
   cancelGenerate(msgIndex: number): void {
     if (this.chatHistory[msgIndex]) {
       this.chatHistory[msgIndex].options = [];
@@ -269,11 +302,15 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     this.cdr.detectChanges();
 
     try {
+      const group = visibility === 'group' && option.selectedGroupIds?.length
+        ? option.selectedGroupIds
+        : undefined;
       const result: any = await this.iaChatService.generateDashboard({
         datasource_id: option.datasource_id!,
         description: option.description || title,
         title,
         visible: visibility,
+        group,
       }).toPromise();
 
       const dashboardId: string = result?.dashboard?._id?.toString() ?? '';
@@ -289,6 +326,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
           ? `Dashboard **${title}** creado${panelText}. [Abrir dashboard](${dashboardUrl})`
           : `Dashboard **${title}** creado${panelText}.`,
       });
+      this.dashboardService.dashboardCreated$.next();
       if (dashboardUrl) window.open(dashboardUrl, '_blank');
 
     } catch (err: any) {
