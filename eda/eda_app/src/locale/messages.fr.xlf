@@ -3779,7 +3779,12 @@
   <trans-unit id="ChangeDefaultsColors">
     <source>Color del los gráficos</source>
     <target>Couleur des graphismes</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="selectPalette">
+    <source>Seleccionar paleta</source>
+    <target>Sélectionner la palette</target>
+  </trans-unit>
 
   <trans-unit id="properties">
     <source>Propiedades</source>

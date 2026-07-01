@@ -39,6 +39,8 @@
               [(ngModel)]="selectedPalette"
               [options]="allPalettes"
               optionLabel="name"
+              placeholder="Seleccionar paleta" i18n-placeholder="@@selectPalette"
+              [showClear]="true"
               appendTo="body"
               [style]="{'width':'180px'}">
             </p-dropdown>

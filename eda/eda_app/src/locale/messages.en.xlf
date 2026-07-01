@@ -3542,6 +3542,11 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Chart color</target>
 </trans-unit>
 
+<trans-unit id="selectPalette">
+<source>Seleccionar paleta</source>
+<target>Select palette</target>
+</trans-unit>
+
 <trans-unit id="properties">
 <source>Propiedades</source>
 <target>Propierties</target>
