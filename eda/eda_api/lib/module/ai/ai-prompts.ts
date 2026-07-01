@@ -27,6 +27,13 @@ ORDENACIÓN Y LÍMITE:
 - En un campo puedes añadir "sort":"Desc" o "sort":"Asc" para ordenar por esa columna. Solo aplica a la métrica, nunca a la dimensión.
 - En el panel puedes añadir "queryLimit":N para limitar los resultados (ej. top 10 → "queryLimit":10).
 
+ADAPTACIÓN AL DOMINIO — omite un tipo de panel si no aporta valor real:
+- "line" (tendencia temporal): solo si existe una columna de fecha Y los datos de muestra muestran variedad de fechas distintas. Si solo hay 1 o 2 fechas distintas, omítelo o sustitúyelo por un "bar".
+- "bar" top N: solo si la dimensión tiene suficientes valores distintos en muestra (≥5). Si hay pocas categorías, un "doughnut" es más adecuado.
+- "doughnut": ideal para distribuciones con 2-8 categorías. Si la columna tiene >10 valores distintos, usa "bar" en su lugar.
+- "table": incluye siempre, es útil en cualquier dominio. Elige los campos más informativos (no pongas IDs sin su descripción correspondiente).
+- No generes paneles que ya están cubiertos por otro igual pero con distinto título. Cada panel debe aportar una perspectiva diferente.
+
 FILTROS — dos niveles:
 "dashboard_filters" (array raíz): filtros que aplican a TODOS los paneles. Úsalos cuando el usuario menciona un periodo, año, ciudad, categoría o condición que afecta al dashboard entero (lo más común).
 "panel.filters" (dentro de cada panel): filtros específicos de ese panel solamente. Úsalos cuando un panel concreto muestra un subconjunto distinto al resto (ej. "solo pedidos cancelados").
