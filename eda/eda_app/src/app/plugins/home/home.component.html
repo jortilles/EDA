@@ -33,7 +33,7 @@
             (click)="toggleFilterDropdown('tags', $event)">
             <i class="fa fa-filter text-muted-foreground"></i>
             <span i18n="@@tags">Etiquetas</span>
-            @if (selectedTags.length > 0) { <span class="filter-count-badge">{{ selectedTags.length }}</span> }
+            <span class="filter-count-badge" [class.invisible]="selectedTags.length === 0">{{ selectedTags.length }}</span>
           </button>
           @if (openFilter === 'tags') {
             <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">
@@ -65,7 +65,7 @@
             (click)="toggleFilterDropdown('groups', $event)">
             <i class="fa fa-filter text-muted-foreground"></i>
             <span i18n="@@groups">Grupos</span>
-            @if (selectedGroups.length > 0) { <span class="filter-count-badge">{{ selectedGroups.length }}</span> }
+            <span class="filter-count-badge" [class.invisible]="selectedGroups.length === 0">{{ selectedGroups.length }}</span>
           </button>
           @if (openFilter === 'groups') {
             <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">
@@ -96,7 +96,7 @@
               (click)="toggleFilterDropdown('status', $event)">
               <i class="fa fa-filter text-muted-foreground"></i>
               <span i18n="@@status">Estado</span>
-              @if (selectedStatuses.length === 1) { <span class="filter-count-badge">1</span> }
+              <span class="filter-count-badge" [class.invisible]="selectedStatuses.length !== 1">1</span>
             </button>
             @if (openFilter === 'status') {
               <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-48 rounded-lg border bg-white shadow-lg py-1" (click)="$event.stopPropagation()">
@@ -120,7 +120,7 @@
             (click)="toggleFilterDropdown('type', $event)">
             <i class="fa fa-filter text-muted-foreground"></i>
             <span i18n="@@type">Tipo</span>
-            @if (selectedTypes.length > 0) { <span class="filter-count-badge">{{ selectedTypes.length }}</span> }
+            <span class="filter-count-badge" [class.invisible]="selectedTypes.length === 0">{{ selectedTypes.length }}</span>
           </button>
           @if (openFilter === 'type') {
             <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">

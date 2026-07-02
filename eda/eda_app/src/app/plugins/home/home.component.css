@@ -21,6 +21,15 @@
   font-weight: 600;
 }
 
+/* ---- Result count indicator ---- */
+#count-indicator {
+  display: inline-block;
+  width: 9ch;
+  white-space: nowrap;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---- Report table ---- */
 #report-table th { position: relative; cursor: pointer; }
 #report-table th:hover { background-color: hsl(var(--muted)); }
