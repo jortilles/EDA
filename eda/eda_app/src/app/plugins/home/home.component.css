@@ -26,7 +26,7 @@
   display: inline-block;
   width: 9ch;
   white-space: nowrap;
-  text-align: right;
+  text-align: center;
   font-variant-numeric: tabular-nums;
 }
 

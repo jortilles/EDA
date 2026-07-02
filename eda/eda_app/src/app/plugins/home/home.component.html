@@ -153,15 +153,20 @@
         </div>
   
         <!-- Clear all filters -->
-        <button type="button" class="rounded-md p-2 hover:bg-muted"
-          [class.text-corporate-primary]="hasActiveFilters()" [class.text-muted-foreground]="!hasActiveFilters()"
+        <button type="button" class="rounded-md p-2 border border-transparent text-sm flex items-center justify-center"
+          [class.bg-muted]="!hasActiveFilters()" [class.text-muted-foreground]="!hasActiveFilters()"
+          [class.btn-corporate-gradient]="hasActiveFilters()" [class.text-white]="hasActiveFilters()"
           [disabled]="!hasActiveFilters()" (click)="clearAllFilters()" i18n-title="@@clearAllFilters" title="Eliminar todos los filtros">
           <i class="mdi mdi-filter-remove"></i>
         </button>
-  
+
         <!-- Count indicator -->
-        <span class="ml-auto text-sm text-muted-foreground" id="count-indicator">
-          {{ visibleDashboards.length }} / {{ allDashboards.length }}
+        <span class="ml-auto rounded-md px-3 py-1.5"
+          [class.bg-muted]="!hasActiveFilters()" [class.btn-corporate-gradient]="hasActiveFilters()">
+          <span id="count-indicator" class="text-sm" [class.text-muted-foreground]="!hasActiveFilters()"
+            [class.text-white]="hasActiveFilters()">
+            {{ visibleDashboards.length }} / {{ allDashboards.length }}
+          </span>
         </span>
       </div>
     </div>
