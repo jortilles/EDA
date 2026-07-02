@@ -1510,8 +1510,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       console.log(
         '\x1b[32m%s\x1b[0m',
         `QUERY for user ${req.user.name}, with ID: ${req.user._id
-        },  at: ${formatDate(new Date())}  for Dashboard:${req.body.dashboard.dashboard_id
-        } and Panel:${req.body.dashboard.panel_id}  `
+        },  at: ${formatDate(new Date())}  for Dashboard:${req.body.dashboard?.dashboard_id
+        } and Panel:${req.body.dashboard?.panel_id}  `
       )
       console.log(query)
       console.log('\n-------------------------------------------------------------------------------\n');
@@ -1593,8 +1593,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
   console.log(
     '\x1b[32m%s\x1b[0m',
-    `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-    } Panel:${req.body.dashboard.panel_id} DONE\n`
+    `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard?.dashboard_id
+    } Panel:${req.body.dashboard?.panel_id} DONE\n`
   );
 
   return res.status(200).json(output);
@@ -1996,8 +1996,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
         console.log(
           '\x1b[32m%s\x1b[0m',
-          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-          } Panel:${req.body.dashboard.panel_id} DONE\n`
+          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard?.dashboard_id
+          } Panel:${req.body.dashboard?.panel_id} DONE\n`
         )
         //console.log('Query output');
         //console.log(output);
@@ -2006,8 +2006,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
         console.log(
           '\x1b[32m%s\x1b[0m',
-          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-          } Panel:${req.body.dashboard.panel_id} DONE\n`
+          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard?.dashboard_id
+          } Panel:${req.body.dashboard?.panel_id} DONE\n`
         )
         return res.status(200).json(cachedQuery.cachedQuery.response)
       }

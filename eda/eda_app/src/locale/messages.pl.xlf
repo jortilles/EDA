@@ -3444,7 +3444,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="ChangeDefaultsColors">
     <source>Color del los gráficos</source>
     <target>Kolor wykresy</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="selectPalette">
+    <source>Seleccionar paleta</source>
+    <target>Wybierz paletę</target>
+  </trans-unit>
 
   <trans-unit id="properties">
     <source>Propiedades</source>
@@ -6683,6 +6688,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="noFilters">
         <source>Sin filtros</source>
         <target>Bez filtrów</target>
+      </trans-unit>
+      <trans-unit id="aiDashboardDescription">
+        <source>(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.</source>
+        <target>(Opcjonalnie) Opisz panele, które chcesz wygenerować za pomocą AI. Przykład: sprzedaż miesięczna na wykresie słupkowym, top klientów według kwoty, KPI łącznej faktury.</target>
+      </trans-unit>
+      <trans-unit id="aiGeneratingDashboard">
+        <source>Generando dashboard con IA...</source>
+        <target>Generowanie dashboardu za pomocą AI...</target>
       </trans-unit>
 </body>
 </file>

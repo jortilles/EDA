@@ -197,7 +197,7 @@ export const ChartsConfigUtils = {
 
   recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | KnobConfig | FunnelConfig | BubblechartConfig | SunburstConfig | KpiTrendConfig) => {
 
-    return new ChartConfig(config);
+    return new ChartConfig(config ?? undefined);
 
   }
 

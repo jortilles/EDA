@@ -3779,7 +3779,12 @@
   <trans-unit id="ChangeDefaultsColors">
     <source>Color del los gráficos</source>
     <target>Couleur des graphismes</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="selectPalette">
+    <source>Seleccionar paleta</source>
+    <target>Sélectionner la palette</target>
+  </trans-unit>
 
   <trans-unit id="properties">
     <source>Propiedades</source>
@@ -7018,6 +7023,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="noFilters">
         <source>Sin filtros</source>
         <target>Sans filtres</target>
+      </trans-unit>
+      <trans-unit id="aiDashboardDescription">
+        <source>(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.</source>
+        <target>(Optionnel) Décrivez les panneaux que vous souhaitez générer avec l'IA. Exemple : ventes par mois en barres, top clients par montant, KPI de facturation totale.</target>
+      </trans-unit>
+      <trans-unit id="aiGeneratingDashboard">
+        <source>Generando dashboard con IA...</source>
+        <target>Génération du tableau de bord avec l'IA...</target>
       </trans-unit>
     </body>
   </file>

@@ -68,6 +68,10 @@ export class DashboardService extends ApiService {
         return this.post(`${this.route}${id}/clone`, {});
     }
 
+    generateDashboardWithAI(body: any): Observable<any> {
+        return this.post('/assistant/generate-dashboard', body);
+    }
+
     updateDashboardSpecific(id: string, body: any): Observable<any> {
         return this.put(`${this.route}${id}/updateSpecific`, body);
     }
