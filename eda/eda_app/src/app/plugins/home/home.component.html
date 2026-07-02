@@ -5,10 +5,6 @@
 
     <!-- Title + actions -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <div class="flex items-center gap-2">
-        <eda-icon name="home" class="text-corporate-primary"></eda-icon>
-        <h1 class="text-2xl font-semibold" i18n="@@sidebarMyDashboards">Mis informes</h1>
-      </div>
       <div class="flex items-center gap-3">
         @if (!isObserver) {
           <button type="button" class="btn-corporate-gradient text-white font-bold px-4 py-2 rounded flex items-center gap-2" (click)="onCreateDashboard()">
@@ -27,148 +23,151 @@
           </button>
         </div>
       </div>
-    </div>
-
-    <!-- Filters bar -->
-    <div class="flex flex-wrap items-center gap-2">
-
-      <!-- Name filter -->
-      <div class="relative flex-1 min-w-[220px] max-w-sm" id="name-filter">
-        <eda-icon name="magnifying-glass" size="sm" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></eda-icon>
-        <input type="text" id="buscador" name="buscador" [(ngModel)]="searchTerm" (keyup)="filterTitle($event)"
-          class="w-full rounded-md border border-input bg-background py-2 !pl-9 !pr-3 text-sm"
-          i18n-placeholder="@@nameFilter" placeholder="Filtrar por nombre del informe">
-      </div>
-
-      <!-- Tags filter -->
-      <div class="relative" id="tag-filter">
-        <button type="button"
-          class="filter-dropdown-toggle flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted"
-          (click)="toggleFilterDropdown('tags', $event)">
-          <i class="fa fa-filter text-muted-foreground"></i>
-          <span i18n="@@tags">Etiquetas</span>
-          @if (selectedTags.length > 0) { <span class="filter-count-badge">{{ selectedTags.length }}</span> }
-        </button>
-        @if (openFilter === 'tags') {
-          <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">
-            <div class="p-3 pb-2">
-              <input type="text" class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
-                [(ngModel)]="tagSearchTerm" (input)="filterTags()" i18n-placeholder="@@tagSearch" placeholder="Buscar etiqueta">
-            </div>
-            @if (selectedTags.length > 0) {
-              <button type="button" class="filter-clear-btn px-3 pb-2 block" (click)="clearTagFilter()" i18n="@@removeFilter">Quitar filtro</button>
-            }
-            <div class="max-h-64 overflow-y-auto border-t py-1">
-              @for (tag of filteredTags; track tag.value) {
-                @if (tag.label != null) {
-                  <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
-                    <input type="checkbox" [checked]="isTagSelected(tag)" (change)="toggleTagSelection(tag)">
-                    <span>{{ tag.label }}</span>
-                  </label>
-                }
-              }
-            </div>
-          </div>
-        }
-      </div>
-
-      <!-- Groups filter -->
-      <div class="relative" id="group-filter">
-        <button type="button"
-          class="filter-dropdown-toggle flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted"
-          (click)="toggleFilterDropdown('groups', $event)">
-          <i class="fa fa-filter text-muted-foreground"></i>
-          <span i18n="@@groups">Grupos</span>
-          @if (selectedGroups.length > 0) { <span class="filter-count-badge">{{ selectedGroups.length }}</span> }
-        </button>
-        @if (openFilter === 'groups') {
-          <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">
-            <div class="p-3 pb-2">
-              <input type="text" class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
-                [(ngModel)]="groupSearchTerm" (input)="filterGroups()" i18n-placeholder="@@groupSearch" placeholder="Buscar grupo">
-            </div>
-            @if (selectedGroups.length > 0) {
-              <button type="button" class="filter-clear-btn px-3 pb-2 block" (click)="clearGroupFilter()" i18n="@@removeFilter">Quitar filtro</button>
-            }
-            <div class="max-h-64 overflow-y-auto border-t py-1">
-              @for (group of filteredGroups; track group.value) {
-                <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
-                  <input type="checkbox" [checked]="isGroupSelected(group)" (change)="toggleGroupSelection(group)">
-                  <span>{{ group.label }}</span>
-                </label>
-              }
-            </div>
-          </div>
-        }
-      </div>
-
-      <!-- Status filter (admin only) -->
-      @if (isAdmin) {
-        <div class="relative" id="active-filter">
+      <!-- <div class="flex items-center gap-2">
+        <eda-icon name="home" class="text-corporate-primary"></eda-icon>
+        <h1 class="text-2xl font-semibold" i18n="@@sidebarMyDashboards">Mis informes</h1>
+      </div> -->
+      <!-- Filters bar -->
+      <div class="flex flex-wrap items-center gap-2">
+  
+        <!-- Tags filter -->
+        <div class="relative" id="tag-filter">
           <button type="button"
             class="filter-dropdown-toggle flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted"
-            (click)="toggleFilterDropdown('status', $event)">
+            (click)="toggleFilterDropdown('tags', $event)">
             <i class="fa fa-filter text-muted-foreground"></i>
-            <span i18n="@@status">Estado</span>
-            @if (selectedStatuses.length === 1) { <span class="filter-count-badge">1</span> }
+            <span i18n="@@tags">Etiquetas</span>
+            @if (selectedTags.length > 0) { <span class="filter-count-badge">{{ selectedTags.length }}</span> }
           </button>
-          @if (openFilter === 'status') {
-            <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-48 rounded-lg border bg-white shadow-lg py-1" (click)="$event.stopPropagation()">
-              <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
-                <input type="checkbox" [checked]="isStatusSelected('active')" (change)="toggleStatusSelection('active')">
-                <span i18n="@@active">Activos</span>
-              </label>
-              <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
-                <input type="checkbox" [checked]="isStatusSelected('inactive')" (change)="toggleStatusSelection('inactive')">
-                <span i18n="@@inactive">Inactivos</span>
-              </label>
+          @if (openFilter === 'tags') {
+            <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">
+              <div class="p-3 pb-2">
+                <input type="text" class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+                  [(ngModel)]="tagSearchTerm" (input)="filterTags()" i18n-placeholder="@@tagSearch" placeholder="Buscar etiqueta">
+              </div>
+              @if (selectedTags.length > 0) {
+                <button type="button" class="filter-clear-btn px-3 pb-2 block" (click)="clearTagFilter()" i18n="@@removeFilter">Quitar filtro</button>
+              }
+              <div class="max-h-64 overflow-y-auto border-t py-1">
+                @for (tag of filteredTags; track tag.value) {
+                  @if (tag.label != null) {
+                    <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
+                      <input type="checkbox" [checked]="isTagSelected(tag)" (change)="toggleTagSelection(tag)">
+                      <span>{{ tag.label }}</span>
+                    </label>
+                  }
+                }
+              </div>
             </div>
           }
         </div>
-      }
-
-      <!-- Type filter -->
-      <div class="relative" id="type-filter">
-        <button type="button"
-          class="filter-dropdown-toggle flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted"
-          (click)="toggleFilterDropdown('type', $event)">
-          <i class="fa fa-filter text-muted-foreground"></i>
-          <span i18n="@@type">Tipo</span>
-          @if (selectedTypes.length > 0) { <span class="filter-count-badge">{{ selectedTypes.length }}</span> }
-        </button>
-        @if (openFilter === 'type') {
-          <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">
-            <div class="p-3 pb-2">
-              <input type="text" class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
-                [(ngModel)]="typeSearchTerm" (ngModelChange)="filterTypes()" i18n-placeholder="@@typeSearch" placeholder="Buscar tipo">
-            </div>
-            @if (selectedTypes.length > 0) {
-              <button type="button" class="filter-clear-btn px-3 pb-2 block" (click)="clearTypeFilter()" i18n="@@removeFilter">Quitar filtro</button>
-            }
-            <div class="max-h-64 overflow-y-auto border-t py-1">
-              @for (type of filteredTypes; track type.type) {
-                <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
-                  <input type="checkbox" [checked]="isTypeSelected(type)" (change)="toggleTypeSelection(type)">
-                  <i class="fa" [ngClass]="type.icon" [style.color]="type.color"></i>
-                  <span>{{ type.label }}</span>
-                </label>
+  
+        <!-- Groups filter -->
+        <div class="relative" id="group-filter">
+          <button type="button"
+            class="filter-dropdown-toggle flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted"
+            (click)="toggleFilterDropdown('groups', $event)">
+            <i class="fa fa-filter text-muted-foreground"></i>
+            <span i18n="@@groups">Grupos</span>
+            @if (selectedGroups.length > 0) { <span class="filter-count-badge">{{ selectedGroups.length }}</span> }
+          </button>
+          @if (openFilter === 'groups') {
+            <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">
+              <div class="p-3 pb-2">
+                <input type="text" class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+                  [(ngModel)]="groupSearchTerm" (input)="filterGroups()" i18n-placeholder="@@groupSearch" placeholder="Buscar grupo">
+              </div>
+              @if (selectedGroups.length > 0) {
+                <button type="button" class="filter-clear-btn px-3 pb-2 block" (click)="clearGroupFilter()" i18n="@@removeFilter">Quitar filtro</button>
               }
+              <div class="max-h-64 overflow-y-auto border-t py-1">
+                @for (group of filteredGroups; track group.value) {
+                  <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
+                    <input type="checkbox" [checked]="isGroupSelected(group)" (change)="toggleGroupSelection(group)">
+                    <span>{{ group.label }}</span>
+                  </label>
+                }
+              </div>
             </div>
+          }
+        </div>
+  
+        <!-- Status filter (admin only) -->
+        @if (isAdmin) {
+          <div class="relative" id="active-filter">
+            <button type="button"
+              class="filter-dropdown-toggle flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted"
+              (click)="toggleFilterDropdown('status', $event)">
+              <i class="fa fa-filter text-muted-foreground"></i>
+              <span i18n="@@status">Estado</span>
+              @if (selectedStatuses.length === 1) { <span class="filter-count-badge">1</span> }
+            </button>
+            @if (openFilter === 'status') {
+              <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-48 rounded-lg border bg-white shadow-lg py-1" (click)="$event.stopPropagation()">
+                <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
+                  <input type="checkbox" [checked]="isStatusSelected('active')" (change)="toggleStatusSelection('active')">
+                  <span i18n="@@active">Activos</span>
+                </label>
+                <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
+                  <input type="checkbox" [checked]="isStatusSelected('inactive')" (change)="toggleStatusSelection('inactive')">
+                  <span i18n="@@inactive">Inactivos</span>
+                </label>
+              </div>
+            }
           </div>
         }
+  
+        <!-- Type filter -->
+        <div class="relative" id="type-filter">
+          <button type="button"
+            class="filter-dropdown-toggle flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted"
+            (click)="toggleFilterDropdown('type', $event)">
+            <i class="fa fa-filter text-muted-foreground"></i>
+            <span i18n="@@type">Tipo</span>
+            @if (selectedTypes.length > 0) { <span class="filter-count-badge">{{ selectedTypes.length }}</span> }
+          </button>
+          @if (openFilter === 'type') {
+            <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">
+              <div class="p-3 pb-2">
+                <input type="text" class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+                  [(ngModel)]="typeSearchTerm" (ngModelChange)="filterTypes()" i18n-placeholder="@@typeSearch" placeholder="Buscar tipo">
+              </div>
+              @if (selectedTypes.length > 0) {
+                <button type="button" class="filter-clear-btn px-3 pb-2 block" (click)="clearTypeFilter()" i18n="@@removeFilter">Quitar filtro</button>
+              }
+              <div class="max-h-64 overflow-y-auto border-t py-1">
+                @for (type of filteredTypes; track type.type) {
+                  <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
+                    <input type="checkbox" [checked]="isTypeSelected(type)" (change)="toggleTypeSelection(type)">
+                    <i class="fa" [ngClass]="type.icon" [style.color]="type.color"></i>
+                    <span>{{ type.label }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Name filter -->
+        <div class="relative flex-1 min-w-[220px] max-w-sm" id="name-filter">
+          <eda-icon name="magnifying-glass" size="sm" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></eda-icon>
+          <input type="text" id="buscador" name="buscador" [(ngModel)]="searchTerm" (keyup)="filterTitle($event)"
+            class="w-full rounded-md border border-input bg-background py-2 !pl-9 !pr-3 text-sm"
+            i18n-placeholder="@@nameFilter" placeholder="Filtrar por nombre del informe">
+        </div>
+  
+        <!-- Clear all filters -->
+        <button type="button" class="rounded-md p-2 hover:bg-muted"
+          [class.text-corporate-primary]="hasActiveFilters()" [class.text-muted-foreground]="!hasActiveFilters()"
+          [disabled]="!hasActiveFilters()" (click)="clearAllFilters()" i18n-title="@@clearAllFilters" title="Eliminar todos los filtros">
+          <i class="mdi mdi-filter-remove"></i>
+        </button>
+  
+        <!-- Count indicator -->
+        <span class="ml-auto text-sm text-muted-foreground" id="count-indicator">
+          {{ visibleDashboards.length }} / {{ allDashboards.length }}
+        </span>
       </div>
-
-      <!-- Clear all filters -->
-      <button type="button" class="rounded-md p-2 hover:bg-muted"
-        [class.text-corporate-primary]="hasActiveFilters()" [class.text-muted-foreground]="!hasActiveFilters()"
-        [disabled]="!hasActiveFilters()" (click)="clearAllFilters()" i18n-title="@@clearAllFilters" title="Eliminar todos los filtros">
-        <i class="mdi mdi-filter-remove"></i>
-      </button>
-
-      <!-- Count indicator -->
-      <span class="ml-auto text-sm text-muted-foreground" id="count-indicator">
-        {{ visibleDashboards.length }} / {{ allDashboards.length }}
-      </span>
     </div>
 
   </div><!-- end header+filters -->
