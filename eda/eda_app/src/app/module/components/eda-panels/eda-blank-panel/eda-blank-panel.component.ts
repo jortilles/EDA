@@ -1368,6 +1368,10 @@ public tableNodeExpand(event: any): void {
             this.globalFilters.push(globalFilter);
         } else {
             this.globalFilters.push(globalFilter);
+            // New filter: if advanced (AND/OR) filters are configured, register it there too,
+            // otherwise the backend builds the WHERE clause from sortedFilters alone and this
+            // filter would never reach the query even though it shows up as a global filter.
+            this.addingGlobalFilterEbp(globalFilter);
         }
     }
 
@@ -1391,7 +1395,7 @@ public tableNodeExpand(event: any): void {
 
     public addingGlobalFilterEbp(_filter: any) {
 
-        if(this.sortedFilters.length !==0){
+        if(this.sortedFilters.length !==0 && !this.sortedFilters.some((sf: any) => sf.filter_id === _filter.filter_id)){
             const lastElement = this.sortedFilters[this.sortedFilters.length-1];
 
             const newSortedFilter = {
