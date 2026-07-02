@@ -13,11 +13,13 @@
           </button>
         }
         <div class="flex rounded-md border border-input overflow-hidden" id="view-mode">
-          <button type="button" class="px-3 py-1.5 text-sm" [class.bg-muted]="viewMode === 'table'"
+          <button type="button" class="px-3 py-1.5 text-sm focus:outline-none focus:ring-0" [class.btn-corporate-gradient]="viewMode === 'table'"
+            [class.text-white]="viewMode === 'table'" [class.hover:bg-muted]="viewMode !== 'table'"
             (click)="setViewMode('table')" i18n-title="@@tableView" title="Vista de tabla">
             <i class="fa fa-table"></i>
           </button>
-          <button type="button" class="px-3 py-1.5 text-sm border-l border-input" [class.bg-muted]="viewMode === 'card'"
+          <button type="button" class="px-3 py-1.5 text-sm border-l border-input focus:outline-none focus:ring-0" [class.btn-corporate-gradient]="viewMode === 'card'"
+            [class.text-white]="viewMode === 'card'" [class.hover:bg-muted]="viewMode !== 'card'"
             (click)="setViewMode('card')" i18n-title="@@cardView" title="Vista de fichas">
             <i class="fa fa-th-large"></i>
           </button>
