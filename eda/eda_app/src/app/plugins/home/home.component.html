@@ -23,10 +23,6 @@
           </button>
         </div>
       </div>
-      <!-- <div class="flex items-center gap-2">
-        <eda-icon name="home" class="text-corporate-primary"></eda-icon>
-        <h1 class="text-2xl font-semibold" i18n="@@sidebarMyDashboards">Mis informes</h1>
-      </div> -->
       <!-- Filters bar -->
       <div class="flex flex-wrap items-center gap-2">
   
@@ -202,7 +198,7 @@
                   [ngClass]="{'sort-asc': sortColumn === 'config.modifiedAt' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.modifiedAt' && sortDirection === 'desc'}"
                   i18n="@@modifiedAt">Fecha modificación</th>
                 <th (click)="sortTable('config.onlyIcanEdit')" class="text-center cursor-pointer p-3"
-                  [ngClass]="{'sort-asc': sortColumn === 'config.onlyICanEdit' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.onlyICanEdit' && sortDirection === 'desc'}"
+                  [ngClass]="{'sort-asc': sortColumn === 'config.onlyIcanEdit' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.onlyIcanEdit' && sortDirection === 'desc'}"
                   i18n="@@privateEdition">Edición privada</th>
                 <th (click)="sortTable('config.ds.name')" class="text-left cursor-pointer p-3"
                   [ngClass]="{'sort-asc': sortColumn === 'config.ds.name' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.ds.name' && sortDirection === 'desc'}"
