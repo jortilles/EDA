@@ -3,8 +3,6 @@
 .btn-corporate-gradient {
   background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient));
 }
-.filter-clear-btn { color: var(--corporate-primary); font-size: 0.75rem; font-weight: 500; }
-.filter-clear-btn:hover { opacity: 0.75; }
 
 /* ---- Filter dropdown counter badge ---- */
 .filter-count-badge {

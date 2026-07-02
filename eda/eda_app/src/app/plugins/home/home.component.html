@@ -37,13 +37,15 @@
           </button>
           @if (openFilter === 'tags') {
             <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">
-              <div class="p-3 pb-2">
-                <input type="text" class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+              <div class="flex items-center gap-2 p-3 pb-2">
+                <input type="text" class="flex-1 min-w-0 rounded-md border border-input bg-background px-3 py-1.5 text-sm"
                   [(ngModel)]="tagSearchTerm" (input)="filterTags()" i18n-placeholder="@@tagSearch" placeholder="Buscar etiqueta">
+                <button type="button" class="shrink-0 rounded-md p-1.5 hover:bg-muted"
+                  [class.text-corporate-primary]="selectedTags.length > 0" [class.text-muted-foreground]="selectedTags.length === 0"
+                  [disabled]="selectedTags.length === 0" (click)="clearTagFilter()" i18n-title="@@removeFilter" title="Quitar filtro">
+                  <i class="mdi mdi-filter-remove"></i>
+                </button>
               </div>
-              @if (selectedTags.length > 0) {
-                <button type="button" class="filter-clear-btn px-3 pb-2 block" (click)="clearTagFilter()" i18n="@@removeFilter">Quitar filtro</button>
-              }
               <div class="max-h-64 overflow-y-auto border-t py-1">
                 @for (tag of filteredTags; track tag.value) {
                   @if (tag.label != null) {
@@ -69,13 +71,15 @@
           </button>
           @if (openFilter === 'groups') {
             <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">
-              <div class="p-3 pb-2">
-                <input type="text" class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+              <div class="flex items-center gap-2 p-3 pb-2">
+                <input type="text" class="flex-1 min-w-0 rounded-md border border-input bg-background px-3 py-1.5 text-sm"
                   [(ngModel)]="groupSearchTerm" (input)="filterGroups()" i18n-placeholder="@@groupSearch" placeholder="Buscar grupo">
+                <button type="button" class="shrink-0 rounded-md p-1.5 hover:bg-muted"
+                  [class.text-corporate-primary]="selectedGroups.length > 0" [class.text-muted-foreground]="selectedGroups.length === 0"
+                  [disabled]="selectedGroups.length === 0" (click)="clearGroupFilter()" i18n-title="@@removeFilter" title="Quitar filtro">
+                  <i class="mdi mdi-filter-remove"></i>
+                </button>
               </div>
-              @if (selectedGroups.length > 0) {
-                <button type="button" class="filter-clear-btn px-3 pb-2 block" (click)="clearGroupFilter()" i18n="@@removeFilter">Quitar filtro</button>
-              }
               <div class="max-h-64 overflow-y-auto border-t py-1">
                 @for (group of filteredGroups; track group.value) {
                   <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
@@ -124,13 +128,15 @@
           </button>
           @if (openFilter === 'type') {
             <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">
-              <div class="p-3 pb-2">
-                <input type="text" class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+              <div class="flex items-center gap-2 p-3 pb-2">
+                <input type="text" class="flex-1 min-w-0 rounded-md border border-input bg-background px-3 py-1.5 text-sm"
                   [(ngModel)]="typeSearchTerm" (ngModelChange)="filterTypes()" i18n-placeholder="@@typeSearch" placeholder="Buscar tipo">
+                <button type="button" class="shrink-0 rounded-md p-1.5 hover:bg-muted"
+                  [class.text-corporate-primary]="selectedTypes.length > 0" [class.text-muted-foreground]="selectedTypes.length === 0"
+                  [disabled]="selectedTypes.length === 0" (click)="clearTypeFilter()" i18n-title="@@removeFilter" title="Quitar filtro">
+                  <i class="mdi mdi-filter-remove"></i>
+                </button>
               </div>
-              @if (selectedTypes.length > 0) {
-                <button type="button" class="filter-clear-btn px-3 pb-2 block" (click)="clearTypeFilter()" i18n="@@removeFilter">Quitar filtro</button>
-              }
               <div class="max-h-64 overflow-y-auto border-t py-1">
                 @for (type of filteredTypes; track type.type) {
                   <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
