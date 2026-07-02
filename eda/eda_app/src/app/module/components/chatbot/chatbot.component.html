@@ -66,9 +66,16 @@
             <div class="chat-bubble chat-bubble--user whitespace-pre-wrap">{{ msg.displayContent ?? msg.content }}</div>
           } @else {
             <div class="chat-assistant-col">
+              @if (msgIdx === generatingMsgIndex()) {
+                <div class="chat-bubble chat-bubble--assistant chat-loading-bubble">
+                  <span class="chat-status-indicator"></span>
+                  <span class="chat-status-text" i18n="@@chatGeneratingDashboard">Generando dashboard...</span>
+                </div>
+              } @else {
               <div class="chat-bubble chat-bubble--assistant chat-message-content"
                    [class.chat-bubble--streaming]="msgIdx === streamingIndex()"
                    [innerHTML]="renderMarkdown(msg.content)"></div>
+              }
               @if (msg.chart) {
                 <div class="chat-chart-wrapper">
                   <p class="chat-chart-title">{{ msg.chart.title }}</p>
@@ -79,7 +86,7 @@
                   </canvas>
                 </div>
               }
-              @if (msgIdx !== streamingIndex()) {
+              @if (msgIdx !== streamingIndex() && msgIdx !== generatingMsgIndex()) {
                 <button class="chat-copy-btn opacity-0 group-hover:opacity-100"
                         [class.chat-copy-btn--copied]="copiedIndex() === msgIdx"
                         (click)="copyMessage(msgIdx, msg.content)"
@@ -109,86 +116,6 @@
                 <button class="chat-suggestion" (click)="selectOption(opt)">
                   {{ chatFallbackYes }}
                 </button>
-              } @else if (opt.type === 'generate_confirm') {
-                <div class="mt-2 rounded-xl border border-gray-200 bg-white shadow-sm p-4 flex flex-col gap-3 text-sm">
-                  <p class="font-semibold text-gray-700 text-xs uppercase tracking-wide" i18n="@@generateConfirmTitle">Resumen de generación</p>
-                  <div class="flex flex-col gap-1">
-                    <span class="text-xs text-gray-400" i18n="@@generateConfirmDatasource">Datasource</span>
-                    <span class="text-gray-700 font-medium">{{ opt.datasource_name }}</span>
-                  </div>
-                  <div class="flex flex-col gap-1">
-                    <label class="text-xs text-gray-400" i18n="@@generateConfirmTitleLabel">Título del dashboard</label>
-                    <input
-                      type="text"
-                      class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-800 focus:outline-none bg-gray-50"
-                      [value]="opt.proposed_title ?? ''"
-                      (input)="opt.proposed_title = $any($event.target).value"
-                      [disabled]="generateConfirmLoading()"
-                    />
-                  </div>
-                  <div class="flex flex-col gap-1">
-                    <span class="text-xs text-gray-400" i18n="@@generateConfirmVisibility">Visibilidad</span>
-                    <div class="flex flex-wrap gap-1.5">
-                      @for (vis of visibilityOptions; track vis.value) {
-                        <button type="button"
-                          class="px-2.5 py-1 rounded-full text-xs border transition-colors"
-                          [class.border-corporate-primary]="(opt.visibility || 'private') === vis.value"
-                          [class.text-corporate-primary]="(opt.visibility || 'private') === vis.value"
-                          [class.border-gray-200]="(opt.visibility || 'private') !== vis.value"
-                          [class.text-gray-500]="(opt.visibility || 'private') !== vis.value"
-                          (click)="selectVisibility(opt, vis.value)"
-                          [disabled]="generateConfirmLoading()">
-                          {{ vis.label }}
-                        </button>
-                      }
-                    </div>
-                  </div>
-                  @if ((opt.visibility || 'private') === 'group') {
-                    <div class="flex flex-col gap-1">
-                      <span class="text-xs text-gray-400" i18n="@@generateConfirmGroup">Grupo</span>
-                      @if (chatbotGroupsLoading()) {
-                        <span class="text-xs text-gray-400">Cargando grupos...</span>
-                      } @else if (chatbotGroups().length === 0) {
-                        <span class="text-xs text-gray-400">No hay grupos disponibles.</span>
-                      } @else {
-                        <div class="flex flex-wrap gap-1.5">
-                          @for (grp of chatbotGroups(); track grp._id) {
-                            <button type="button"
-                              class="px-2.5 py-1 rounded-full text-xs border transition-colors"
-                              [class.border-corporate-primary]="isGroupSelected(opt, grp._id)"
-                              [class.text-corporate-primary]="isGroupSelected(opt, grp._id)"
-                              [class.border-gray-200]="!isGroupSelected(opt, grp._id)"
-                              [class.text-gray-500]="!isGroupSelected(opt, grp._id)"
-                              (click)="toggleGroup(opt, grp._id)"
-                              [disabled]="generateConfirmLoading()">
-                              {{ grp.name }}
-                            </button>
-                          }
-                        </div>
-                      }
-                    </div>
-                  }
-                  <div class="flex gap-2 justify-end">
-                    <button
-                      class="px-3 py-1.5 rounded-lg text-xs text-gray-500 hover:bg-gray-100 transition-colors"
-                      (click)="cancelGenerate(msgIdx)"
-                      [disabled]="generateConfirmLoading()"
-                      i18n="@@generateConfirmCancel">
-                      Cancelar
-                    </button>
-                    <button
-                      class="px-4 py-1.5 rounded-lg text-xs font-medium bg-corporate-primary text-white hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-1.5"
-                      (click)="confirmGenerate(opt, msgIdx)"
-                      [disabled]="generateConfirmLoading() || !opt.proposed_title?.trim()">
-                      @if (generateConfirmLoading()) {
-                        <span class="inline-block w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                        <span i18n="@@generateConfirmBtnLoading">Generando...</span>
-                      } @else {
-                        <span i18n="@@generateConfirmBtn">Generar dashboard</span>
-                      }
-                    </button>
-                  </div>
-                </div>
               } @else {
                 <button class="chat-suggestion" (click)="selectOption(opt)">
                   {{ opt.num }}. {{ opt.panel_titulo || opt.label }}
