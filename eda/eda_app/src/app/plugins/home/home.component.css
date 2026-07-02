@@ -24,13 +24,14 @@
 /* ---- Report table ---- */
 #report-table th { position: relative; cursor: pointer; }
 #report-table th:hover { background-color: hsl(var(--muted)); }
-#report-table th::after {
+#report-table th.cursor-pointer::after {
+  content: "▲";
   font-weight: 900;
   margin-left: 4px;
   opacity: 0.3;
   color: var(--corporate-primary);
 }
-#report-table th.sort-asc::after { content: "▲"; opacity: 1; }
+#report-table th.sort-asc::after { opacity: 1; }
 #report-table th.sort-desc::after { content: "▼"; opacity: 1; }
 #report-table td:first-child:hover { text-decoration: underline; font-weight: 600; }
 
