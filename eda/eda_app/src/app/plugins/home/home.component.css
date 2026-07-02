@@ -41,6 +41,7 @@
 #report-table th.sort-asc::after { opacity: 1; }
 #report-table th.sort-desc::after { content: "▼"; opacity: 1; }
 #report-table td:first-child:hover { text-decoration: underline; font-weight: 600; }
+#report-table td { color: hsl(var(--foreground)); font-size: 0.95rem; font-weight: 500; }
 
 /* ---- Report type indicator dot ---- */
 .type-indicator {
