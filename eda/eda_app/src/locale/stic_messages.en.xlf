@@ -919,6 +919,54 @@
     <source>Paneles no afectados por este filtro</source>
     <target>Panels not affected by this filter</target>
   </trans-unit>
+  <trans-unit id="opcionTitulo">
+    <source>NUEVO TEXTO</source>
+    <target>NEW TEXT PANEL</target>
+  </trans-unit>
+  <trans-unit id="titlePanelOptions">
+    <source>Opciones del panel</source>
+    <target>Panel options</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAppearance">
+    <source>Apariencia</source>
+    <target>Appearance</target>
+  </trans-unit>
+  <trans-unit id="titlePanelShowBg">
+    <source>Mostrar fondo del panel</source>
+    <target>Show panel background</target>
+  </trans-unit>
+  <trans-unit id="titlePanelBgColor">
+    <source>Color de fondo</source>
+    <target>Background color</target>
+  </trans-unit>
+  <trans-unit id="titlePanelShowBorder">
+    <source>Mostrar borde</source>
+    <target>Show border</target>
+  </trans-unit>
+  <trans-unit id="titlePanelBorderColor">
+    <source>Color del borde</source>
+    <target>Border color</target>
+  </trans-unit>
+  <trans-unit id="titlePanelVerticalAlign">
+    <source>Alineación vertical</source>
+    <target>Vertical alignment</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignTop">
+    <source>Arriba</source>
+    <target>Top</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignCenter">
+    <source>Centro</source>
+    <target>Middle</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignBottom">
+    <source>Abajo</source>
+    <target>Bottom</target>
+  </trans-unit>
+  <trans-unit id="duplicatePanel">
+    <source>Duplicar panel</source>
+    <target>Duplicate panel</target>
+  </trans-unit>
   <trans-unit id="sqlModeFilterPathText">
     <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
     <target>In SQL mode, path modification must be done in the query.</target>

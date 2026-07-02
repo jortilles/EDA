@@ -1,7 +1,10 @@
-<div class="panel-heading d-flex justify-content-between">
+<!-- SDA CUSTOM - Apply border styles to panel - minimal class when no borders or background -->
+<div class="panel-heading d-flex justify-content-between h-100" 
+     [ngClass]="{'title-panel-minimal': isMinimalStyle()}"
+     [ngStyle]="getPanelStyle()">
 
-    <div class="panel-heading justify-content-between  h-75" style="margin-top: 0.2rem;">
-        <div class="mb-0 pointer w-90 eda-title-panel" [innerHTML]="panel.title | sanitizeHtml"></div>
+    <div class="panel-heading justify-content-between h-100 w-100 d-flex align-items-center" style="margin-top: 0.2rem;">
+<!-- SDA CUSTOM -->        <div #titleContainer class="mb-0 pointer w-100 eda-title-panel" style="padding-left: 8px; overflow: hidden; max-height: 100%;" [ngStyle]="getTitleStyle()" [innerHTML]="getScaledTitle() | sanitizeHtml" (dblclick)="display.editMode && openEditDialog()"></div>
     </div>
 
 <!-- SDA CUSTOM -->    <div *ngIf="display.editMode" class="d-flex align-items-center">

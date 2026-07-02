@@ -1371,7 +1371,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             resizable: true,
             dragAndDrop: true,
             fontsize: '22px',
-            color: '#000000'
+            color: '#000000',
+            backgroundColor: '#ffffff'
         });
         this.setPanelSizes(panel);
         this.display_v.rightSidebar = false;
@@ -1400,7 +1401,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         /*SDA CUSTOM*/             }
         /*SDA CUSTOM*/         });
         /*SDA CUSTOM*/ }
-                        this.panels.push(panel);
+        /*SDA CUSTOM*/        this.panels.push(panel);
                         this.dashboardService._notSaved.next(true);
         /*SDA CUSTOM*/ const _dupSub = this.edaPanels.changes.subscribe(() => {
         /*SDA CUSTOM*/     _dupSub.unsubscribe();

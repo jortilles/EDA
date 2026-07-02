@@ -1,87 +1,214 @@
 <eda-dialog [inject]="dialog">
-	<div body class="grid">
-		<div class="col-12">
+	<!-- SDA CUSTOM - Reorganized layout with side options panel similar to kpi-options-shell -->
+	<div body class="grid h-100 p-4">
+		<!-- Main column: Editor -->
+		<div class="col-8">
+			<div class="h-100">
+				<p-editor #Editor [(ngModel)]="title" [style]="{'height':'calc(100% - 42px)'}">
+					<p-header>
+						<span class="ql-formats">
+							<!-- <select class="ql-font"></select> -->
+							<!-- SDA CUSTOM - Custom font sizes in px -->
+							<select class="ql-size">
+								<option value="10px">10px</option>
+								<option value="12px">12px</option>
+								<option value="14px">14px</option>
+								<option value="16px" selected>16px</option>
+								<option value="18px">18px</option>
+								<option value="20px">20px</option>
+								<option value="24px">24px</option>
+								<option value="28px">28px</option>
+								<option value="32px">32px</option>
+								<option value="36px">36px</option>
+								<option value="42px">42px</option>
+								<option value="48px">48px</option>
+							</select>
+							<!-- END SDA CUSTOM -->
+						</span>
+						<span class="ql-formats">
+							<button class="ql-bold"></button>
+							<button class="ql-italic"></button>
+							<button class="ql-underline"></button>
+							<button class="ql-strike"></button>
+						</span>
+						<span class="ql-formats">
+<!-- SDA CUSTOM -->							<button type="button" class="ql-custom-color-btn" (click)="openColorOverlay($event, textColorOL)">
+<!-- SDA CUSTOM -->								<svg viewBox="0 0 18 18"><line class="ql-color-label ql-stroke ql-transparent" x1="3" x2="15" y1="15" y2="15"></line><polyline class="ql-stroke" points="5.5 11 9 3 12.5 11"></polyline><line class="ql-stroke" x1="11.63" x2="6.38" y1="9" y2="9"></line></svg>
+<!-- SDA CUSTOM -->							</button>
+<!-- SDA CUSTOM -->							<button type="button" class="ql-custom-color-btn" (click)="openColorOverlay($event, textBgColorOL)">
+<!-- SDA CUSTOM -->								<svg viewBox="0 0 18 18"><g class="ql-fill ql-color-label"><polygon points="6 6.868 6 6 5 6 5 7 5.942 7 6 6.868"></polygon><rect height="1" width="1" x="4" y="4"></rect><polygon points="6.817 5 6 5 6 6 6.38 6 6.817 5"></polygon></g><polyline class="ql-stroke" points="5.5 13 9 5 12.5 13"></polyline><line class="ql-stroke" x1="11.63" x2="6.38" y1="11" y2="11"></line></svg>
+<!-- SDA CUSTOM -->							</button>
+						</span>
+						<span class="ql-formats">
+							<button class="ql-script" value="sub"></button>
+							<button class="ql-script" value="super"></button>
+						</span>
+						<span class="ql-formats">
+							<button class="ql-header" value="1"></button>
+							<button class="ql-header" value="2"></button>
+							<button class="ql-blockquote"></button>
+							<!-- <button class="ql-code-block"></button> -->
+						</span>
+						<span class="ql-formats">
+							<button class="ql-list" value="ordered"></button>
+							<button class="ql-list" value="bullet"></button>
+							<!-- <button class="ql-indent" value="-1"></button>
+							<button class="ql-indent" value="+1"></button> -->
+						</span>
+						<span class="ql-formats">
+							<button type="button" class="ql-align" value="" inputId="i1">
+								<svg viewBox="0 0 18 18">
+									<line class="ql-stroke" x1="3" x2="15" y1="9" y2="9"></line>
+									<line class="ql-stroke" x1="3" x2="13" y1="14" y2="14"></line>
+									<line class="ql-stroke" x1="3" x2="9" y1="4" y2="4"></line>
+								</svg>
+							</button>
+							<button type="button" class="ql-align" value="center" inputId="i2">
+								<svg viewBox="0 0 18 18">
+									<line class="ql-stroke" x1="15" x2="3" y1="9" y2="9"></line>
+									<line class="ql-stroke" x1="14" x2="4" y1="14" y2="14"></line>
+									<line class="ql-stroke" x1="12" x2="6" y1="4" y2="4"></line>
+								</svg>
+							</button>
+							<button type="button" class="ql-align" value="right" inputId="i3">
+								<svg viewBox="0 0 18 18">
+									<line class="ql-stroke" x1="15" x2="3" y1="9" y2="9"></line>
+									<line class="ql-stroke" x1="15" x2="5" y1="14" y2="14"></line>
+									<line class="ql-stroke" x1="15" x2="9" y1="4" y2="4"></line>
+								</svg>
+							</button>
+						</span>
+						<span class="ql-formats">
+							<button class="ql-link"></button>
+							<button class="ql-image"></button>
+							<button class="ql-video"></button>
+							<button id="qlUrlImage">Url</button>
+							<!-- < class="ql-video"></> -->
+							<!-- <button class="ql-formula"></button> -->
+						</span>
+						<span class="ql-formats">
+							<button class="ql-clean"></button>
+						</span>
+					</p-header>
+				</p-editor>
+			</div>
+		</div>
 
-			<p-editor #Editor [(ngModel)]="title" [style]="{'height':'100%'}">
-				<p-header>
-					<span class="ql-formats">
-						<!-- <select class="ql-font"></select> -->
-						<select class="ql-size"></select>
-					</span>
-					<span class="ql-formats">
-						<button class="ql-bold"></button>
-						<button class="ql-italic"></button>
-						<button class="ql-underline"></button>
-						<button class="ql-strike"></button>
-					</span>
-					<span class="ql-formats">
-						<select class="ql-color"></select>
-						<select class="ql-background"></select>
-					</span>
-					<span class="ql-formats">
-						<button class="ql-script" value="sub"></button>
-						<button class="ql-script" value="super"></button>
-					</span>
-					<span class="ql-formats">
-						<button class="ql-header" value="1"></button>
-						<button class="ql-header" value="2"></button>
-						<button class="ql-blockquote"></button>
-						<!-- <button class="ql-code-block"></button> -->
-					</span>
-					<span class="ql-formats">
-						<button class="ql-list" value="ordered"></button>
-						<button class="ql-list" value="bullet"></button>
-						<!-- <button class="ql-indent" value="-1"></button>
-        <button class="ql-indent" value="+1"></button> -->
-					</span>
-					<span class="ql-formats">
-						<button type="button" class="ql-align" value="" inputId="i1">
-							<svg viewBox="0 0 18 18">
-								<line class="ql-stroke" x1="3" x2="15" y1="9" y2="9"></line>
-								<line class="ql-stroke" x1="3" x2="13" y1="14" y2="14"></line>
-								<line class="ql-stroke" x1="3" x2="9" y1="4" y2="4"></line>
-							</svg>
-						</button>
-						<button type="button" class="ql-align" value="center" inputId="i2">
-							<svg viewBox="0 0 18 18">
-								<line class="ql-stroke" x1="15" x2="3" y1="9" y2="9"></line>
-								<line class="ql-stroke" x1="14" x2="4" y1="14" y2="14"></line>
-								<line class="ql-stroke" x1="12" x2="6" y1="4" y2="4"></line>
-							</svg>
-						</button>
-						<button type="button" class="ql-align" value="right" inputId="i3">
-							<svg viewBox="0 0 18 18">
-								<line class="ql-stroke" x1="15" x2="3" y1="9" y2="9"></line>
-								<line class="ql-stroke" x1="15" x2="5" y1="14" y2="14"></line>
-								<line class="ql-stroke" x1="15" x2="9" y1="4" y2="4"></line>
-							</svg>
-						</button>
+		<!-- Side column: Configuration options - kpi-options-shell style -->
+		<div class="col-4">
+			<div class="title-options-shell">
+				<div class="title-options-shell__header">
+<!-- SDA CUSTOM -->					<h5 class="title-options-title" i18n="@@titlePanelOptions">Opciones del panel</h5>
+				</div>
+				<div class="title-config-panel">
+					<!-- Section: Appearance -->
+					<div class="title-config-section" [class.is-expanded]="isAppearanceExpanded">
+						<div class="title-section-head" role="button" tabindex="0"
+							(click)="toggleSection('appearance')"
+							(keydown.enter)="toggleSection('appearance')"
+							(keydown.space)="toggleSection('appearance')">
+<!-- SDA CUSTOM -->							<h6 i18n="@@titlePanelAppearance">Apariencia</h6>
+							<div class="title-section-actions">
+								<i class="pi" [ngClass]="isAppearanceExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+							</div>
+						</div>
+						<div class="title-section-content" *ngIf="isAppearanceExpanded">
+							<!-- SDA CUSTOM - Transparent background toggle with i18n -->
+<!-- SDA CUSTOM -->							<div class="config-row chart-color-row chart-color-row--spaced">
+<!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelShowBg">Mostrar fondo del panel</span>
+								<span class="chart-color-controls">
+									<p-inputSwitch [(ngModel)]="showPanelBackground" inputId="showPanelBackground"></p-inputSwitch>
+								</span>
+							</div>
 
-					</span>
-					<span class="ql-formats">
-						<button class="ql-link"></button>
-						<button class="ql-image"></button>
-						<button class="ql-video"></button>
-						<button id="qlUrlImage">Url</button>
-						<!-- < class="ql-video"></> -->
-						<!-- <button class="ql-formula"></button> -->
-					</span>
-					<span class="ql-formats">
-						<button class="ql-clean"></button>
-					</span>
-				</p-header>
-			</p-editor>
+							<!-- SDA CUSTOM - Panel background color (only if showPanelBackground is true) -->
+<!-- SDA CUSTOM -->							<div class="config-row chart-color-row chart-color-row--spaced" *ngIf="showPanelBackground">
+<!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelBgColor">Color de fondo</span>
+								<span class="chart-color-controls">
+									<input type="text" [(ngModel)]="backgroundColor" pInputText class="chart-color-input" />
+									<span class="chart-color-picker">
+										<p-colorPicker [(ngModel)]="backgroundColor" appendTo="body" format="hex"></p-colorPicker>
+									</span>
+								</span>
+							</div>
+
+							<!-- SDA CUSTOM - Show panel border -->
+<!-- SDA CUSTOM -->							<div class="config-row chart-color-row chart-color-row--spaced">
+<!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelShowBorder">Mostrar borde</span>
+								<span class="chart-color-controls">
+									<p-inputSwitch [(ngModel)]="showBorder" inputId="showBorder"></p-inputSwitch>
+								</span>
+							</div>
+
+							<!-- SDA CUSTOM - Border color (only if showBorder is true) -->
+<!-- SDA CUSTOM -->							<div class="config-row chart-color-row chart-color-row--spaced" *ngIf="showBorder">
+<!-- SDA CUSTOM -->								<span class="chart-color-label" i18n="@@titlePanelBorderColor">Color del borde</span>
+								<span class="chart-color-controls">
+									<input type="text" [(ngModel)]="borderColor" pInputText class="chart-color-input" />
+									<span class="chart-color-picker">
+										<p-colorPicker [(ngModel)]="borderColor" appendTo="body" format="hex"></p-colorPicker>
+									</span>
+								</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Section: Alignment -->
+					<div class="title-config-section" [class.is-expanded]="isAlignmentExpanded">
+						<div class="title-section-head" role="button" tabindex="0"
+							(click)="toggleSection('alignment')"
+							(keydown.enter)="toggleSection('alignment')"
+							(keydown.space)="toggleSection('alignment')">
+<!-- SDA CUSTOM -->							<h6 i18n="@@titlePanelVerticalAlign">Alineación vertical</h6>
+							<div class="title-section-actions">
+								<i class="pi" [ngClass]="isAlignmentExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+							</div>
+						</div>
+						<div class="title-section-content" *ngIf="isAlignmentExpanded">
+							<div class="config-row">
+								<p-radioButton name="verticalAlign" value="top" [(ngModel)]="verticalAlign" inputId="alignTop"></p-radioButton>
+<!-- SDA CUSTOM -->								<label for="alignTop" i18n="@@titlePanelAlignTop">Arriba</label>
+							</div>
+							<div class="config-row">
+								<p-radioButton name="verticalAlign" value="center" [(ngModel)]="verticalAlign" inputId="alignCenter"></p-radioButton>
+<!-- SDA CUSTOM -->								<label for="alignCenter" i18n="@@titlePanelAlignCenter">Centro</label>
+							</div>
+							<div class="config-row">
+								<p-radioButton name="verticalAlign" value="bottom" [(ngModel)]="verticalAlign" inputId="alignBottom"></p-radioButton>
+<!-- SDA CUSTOM -->								<label for="alignBottom" i18n="@@titlePanelAlignBottom">Abajo</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
+	<!-- END SDA CUSTOM -->
+
+	<!-- SDA CUSTOM - Overlay with inline picker + hex input, recreated on each open -->
+<!-- SDA CUSTOM -->	<p-overlayPanel #textColorOL (onShow)="onOverlayShow('textColor')" (onHide)="showTextColorPicker = false">
+<!-- SDA CUSTOM -->		<div *ngIf="showTextColorPicker" class="ql-overlay-picker">
+<!-- SDA CUSTOM -->			<p-colorPicker [(ngModel)]="customTextColor" (ngModelChange)="onTextColorLive($event)" inline="true" format="hex"></p-colorPicker>
+<!-- SDA CUSTOM -->			<input type="text" [(ngModel)]="customTextColor" (keydown.enter)="onTextColorLive(customTextColor)" class="ql-hex-input-popup" placeholder="#000000" maxlength="7" />
+<!-- SDA CUSTOM -->			<button type="button" pButton (click)="removeTextFormat('color'); textColorOL.hide()" label="Clear" class="p-button-sm p-button-outlined p-button-secondary" style="width:100%; margin-top:4px;"></button>
+<!-- SDA CUSTOM -->		</div>
+<!-- SDA CUSTOM -->	</p-overlayPanel>
+<!-- SDA CUSTOM -->	<p-overlayPanel #textBgColorOL (onShow)="onOverlayShow('textBgColor')" (onHide)="showTextBgColorPicker = false">
+<!-- SDA CUSTOM -->		<div *ngIf="showTextBgColorPicker" class="ql-overlay-picker">
+<!-- SDA CUSTOM -->			<p-colorPicker [(ngModel)]="customTextBgColor" (ngModelChange)="onTextBgColorLive($event)" inline="true" format="hex"></p-colorPicker>
+<!-- SDA CUSTOM -->			<input type="text" [(ngModel)]="customTextBgColor" (keydown.enter)="onTextBgColorLive(customTextBgColor)" class="ql-hex-input-popup" placeholder="#ffffff" maxlength="7" />
+<!-- SDA CUSTOM -->			<button type="button" pButton (click)="removeTextFormat('background'); textBgColorOL.hide()" label="Clear" class="p-button-sm p-button-outlined p-button-secondary" style="width:100%; margin-top:4px;"></button>
+<!-- SDA CUSTOM -->		</div>
+<!-- SDA CUSTOM -->	</p-overlayPanel>
 
 	<div footer>
 		<div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
 			<button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
-				class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
+				class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirm"
 				id="eda_chart_dialog_confirmar">
 			</button>
 			<button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
-				class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancelar">
+				class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancel">
 			</button>
 		</div>
 	</div>

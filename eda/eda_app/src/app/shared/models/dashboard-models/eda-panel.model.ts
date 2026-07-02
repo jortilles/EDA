@@ -16,6 +16,7 @@ export class EdaPanel {
     public x: number;
     public y: number;
     /* SDA CUSTOM */ public locked: boolean = false;
+    /* SDA CUSTOM */ public backgroundTransparent?: boolean;
     public content: any[any];
     public inject: any = {};
     public tamanyMobil: IMobileSizes = {x: 0, y: 0, w: 0, h: 0};

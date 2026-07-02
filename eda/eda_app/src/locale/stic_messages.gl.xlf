@@ -919,6 +919,54 @@
     <source>Paneles no afectados por este filtro</source>
     <target>Paneis non afectados por este filtro</target>
   </trans-unit>
+  <trans-unit id="opcionTitulo">
+    <source>NUEVO TEXTO</source>
+    <target>NUEVO PANEL DE TEXTO</target>
+  </trans-unit>
+  <trans-unit id="titlePanelOptions">
+    <source>Opciones del panel</source>
+    <target>Opcións do panel</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAppearance">
+    <source>Apariencia</source>
+    <target>Aparencia</target>
+  </trans-unit>
+  <trans-unit id="titlePanelShowBg">
+    <source>Mostrar fondo del panel</source>
+    <target>Mostrar fondo do panel</target>
+  </trans-unit>
+  <trans-unit id="titlePanelBgColor">
+    <source>Color de fondo</source>
+    <target>Cor do fondo</target>
+  </trans-unit>
+  <trans-unit id="titlePanelShowBorder">
+    <source>Mostrar borde</source>
+    <target>Mostrar bordo</target>
+  </trans-unit>
+  <trans-unit id="titlePanelBorderColor">
+    <source>Color del borde</source>
+    <target>Cor do bordo</target>
+  </trans-unit>
+  <trans-unit id="titlePanelVerticalAlign">
+    <source>Alineación vertical</source>
+    <target>Aliñación vertical</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignTop">
+    <source>Arriba</source>
+    <target>Arriba</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignCenter">
+    <source>Centro</source>
+    <target>Centro</target>
+  </trans-unit>
+  <trans-unit id="titlePanelAlignBottom">
+    <source>Abajo</source>
+    <target>Abaixo</target>
+  </trans-unit>
+  <trans-unit id="duplicatePanel">
+    <source>Duplicar panel</source>
+    <target>Duplicar panel</target>
+  </trans-unit>
   <trans-unit id="DatePickerCustomDate">
     <source>Seleccionar fecha</source>
     <target>Seleccionar data</target>
