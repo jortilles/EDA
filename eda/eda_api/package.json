@@ -7,7 +7,7 @@
         "start": "nodemon",
         "start:forever": "npm run build && forever start -c node ./dist/server.js",
         "start:cluster": "npm run build && node ./dist/server.js --log-date-format 'YYYY-MM-DD HH:mm:ss'  ",
-        "start:pm2": "npm run build && pm2 start ./dist/server.js --log-date-format 'YYYY-MM-DD HH:mm:ss'  -i max  --name eda3   ",
+        "start:pm2": "npm run build && pm2 start ./dist/server.js --log-date-format 'YYYY-MM-DD HH:mm:ss'  --name eda3   ",
         "edalitics": "npm run build && pm2 start ./dist/server.js --log-date-format 'YYYY-MM-DD HH:mm:ss'  --name eda3   ",
         "edapi": "forever start -c node ./dist/server.js",
         "build": "tsc && npm run movejpgs",
