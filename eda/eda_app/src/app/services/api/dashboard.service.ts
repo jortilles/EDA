@@ -1,5 +1,5 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { ApiService } from './api.service';
 
 @Injectable({
@@ -12,6 +12,8 @@ export class DashboardService extends ApiService {
 
     private _notSaved = new BehaviorSubject<boolean>(false); // [{ display_name: { default: '' }, eda-columns: [] }] --> just in case
     public notSaved = this._notSaved.asObservable();
+
+    public dashboardCreated$ = new Subject<void>();
 
     setNotSaved(value: boolean): void {
         this._notSaved.next(value);

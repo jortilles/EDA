@@ -1421,14 +1421,30 @@ public tableNodeExpand(event: any): void {
 
     public rebootGlobalFilter(_filter: any){
 
-        if(this.sortedFilters.length !==0) {
+        const targetIndex = this.sortedFilters.findIndex((sortedFilter: any) => _filter.id === sortedFilter.filter_id);
+        if (targetIndex === -1) return; // This filter isn't part of the advanced (AND/OR) config, nothing to do
+
+        const target = this.sortedFilters[targetIndex];
+        const nextItem = this.sortedFilters.find((sortedFilter: any) => sortedFilter.y === target.y + 1);
+        const hasChildren = !!nextItem && nextItem.x > target.x;
+
+        // Removing an AND at root level with no nested children below it doesn't change the
+        // logical result of the remaining tree, so we can drop just that entry. Anything else
+        // (OR, nested item, or an item with children) would break the AND/OR tree structure,
+        // so we fall back to a full reset.
+        const canRemoveInPlace = target.x === 0 && target.value === 'and' && !hasChildren;
+
+        if (canRemoveInPlace) {
+            this.sortedFilters = this.sortedFilters
+                .filter((sortedFilter: any) => sortedFilter.filter_id !== _filter.id)
+                .sort((a: any, b: any) => a.y - b.y)
+                .map((sortedFilter: any, i: number) => ({ ...sortedFilter, y: i }));
+        } else {
             this.alertService.addWarning($localize`:@@globalFilterSettingsReboot:La configuración de filtros del panel involucrado se ha reiniciado`);
+            this.sortedFilters = [];
         }
 
-        if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
-            this.sortedFilters = [];
-            this.savePanel(); // Panel setting saved
-        }
+        this.savePanel(); // Panel setting saved
 
     }
     

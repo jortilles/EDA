@@ -56,6 +56,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   showAdvancedFilter = signal(false);
   private outsideClickSub?: Subscription;
+  private dashboardCreatedSub?: Subscription;
   searchQuery = '';
   advancedFilters = { author: '', datasource: '' };
   advancedTags: string[] = [];
@@ -95,10 +96,12 @@ export class HomePage implements OnInit, OnDestroy {
     this.initTagSelection();
     this.loadReports();
     this.ifAnonymousGetOut();
+    this.dashboardCreatedSub = this.dashboardService.dashboardCreated$.subscribe(() => this.loadReports());
   }
 
   ngOnDestroy(): void {
     this.outsideClickSub?.unsubscribe();
+    this.dashboardCreatedSub?.unsubscribe();
   }
 
   private setIsObserver = async () => {
