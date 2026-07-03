@@ -484,7 +484,9 @@
 .chat-textarea { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* ---- Utility ---- */
-.text-corporate-primary { color: var(--corporate-primary); }
+.text-corporate-primary  { color: var(--corporate-primary); }
+.bg-corporate-primary    { background: var(--corporate-primary); }
+.border-corporate-primary { border-color: var(--corporate-primary); }
 
 /* ---- Mobile backdrop ---- */
 .chat-mobile-backdrop {
