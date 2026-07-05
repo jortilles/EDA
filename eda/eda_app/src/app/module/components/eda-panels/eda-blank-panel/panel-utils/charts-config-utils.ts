@@ -148,7 +148,9 @@ export const ChartsConfigUtils = {
         coloredBarsConfig: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['coloredBarsConfig'] : null,
         showUniqueColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showUniqueColors'] : null,
         uniqueBarColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['uniqueBarColors'] : null,
-        showGridLines: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showGridLines'] ?? true : true
+        showGridLines: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showGridLines'] ?? true : true,
+        innerRadiusPercent: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['innerRadiusPercent'] : null,
+        useGradient: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['useGradient'] ?? true : true
       };
     }
 

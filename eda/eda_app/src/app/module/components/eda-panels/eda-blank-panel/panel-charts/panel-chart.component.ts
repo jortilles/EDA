@@ -51,6 +51,8 @@ import { EdaKpiTrendComponent } from '@eda/components/eda-kpi-trend/eda-kpi-tren
 import { KpiTrendConfig } from './chart-configuration-models/kpi-trend-config';
 import { EdaKpiDeviationComponent } from '@eda/components/eda-kpi-deviation/eda-kpi-deviation.component';
 import { KpiDeviationConfig } from './chart-configuration-models/kpi-deviation-config';
+import { EdaDoughnut } from '@eda/components/eda-doughnut-d3/eda-doughnut.component';
+import { EdaDoughnutD3 } from '@eda/components/eda-doughnut-d3/eda-doughnut';
 
 @Component({
     standalone: true,
@@ -173,8 +175,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.renderEdaTable(type);
         }
 
-        if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline',  'histogram' ,'pyramid', 'radar'].includes(type)) {
+        if (['polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline',  'histogram' ,'pyramid', 'radar'].includes(type)) {
             this.renderEdaChart(type);
+        }
+
+        if (type === 'doughnut') {
+            this.renderDoughnut();
         }
 
         if (['kpibar', 'kpiline', 'kpiarea'].includes(type)) {
@@ -419,7 +425,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
         this.createEdaChartComponent(chartConfig);
     }
-
 
     /**
      * Obtiene los labels apropiados según el tipo de chart
@@ -1300,6 +1305,89 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
 
+    /**
+     * Renders the D3-based doughnut chart
+     */
+    private renderDoughnut() {
+        const values = _.cloneDeep(this.props.data.values);
+        const dataTypes = this.props.query.map(col => col.column_type);
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const cfg: any = this.props.config.getConfig();
+
+        const chartData = this.chartUtils.transformDataQuery('doughnut', 'doughnut', values, dataTypes, dataDescription, false, cfg.numberOfColumns);
+        if (chartData.length == 0) {
+            chartData.push([], []);
+        }
+
+        const inject: any = new EdaDoughnutD3();
+        inject.id = this.randomID();
+        inject.chartType = 'doughnut';
+        inject.edaChart = 'doughnut';
+        inject.chartLabels = chartData[0];
+        inject.chartDataset = chartData[1];
+
+        // Read assignedColors from config (if any)
+        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+
+        const currentLabels = this.getLabelsForChartType(inject);
+
+        if (assignedColors.length === 0) {
+            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            this.props.config.getConfig()['assignedColors'] = assignedColors;
+        } else {
+            const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
+            assignedColors = currentLabels.map((label, index) => {
+                const assignedColor = colorMap.get(label);
+                if (assignedColor) {
+                    return { value: label, color: assignedColor.color };
+                } else {
+                    return { value: label, color: this.paletaActual[index % this.paletaActual.length] };
+                }
+            });
+        }
+
+        inject.assignedColors = assignedColors;
+        inject.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, 'doughnut');
+
+        // Assigned colors per series (doughnut only ever has one dataset/series)
+        chartData[1].forEach((dataset, i) => {
+            try {
+                const solidColor = inject.chartColors[i]?.borderColor;
+                dataset.backgroundColor = solidColor;
+                dataset.borderColor = solidColor;
+            } catch (err) {
+                dataset.backgroundColor = this.paletaActual;
+                dataset.borderColor = this.paletaActual;
+            }
+        });
+
+        inject.chartLegend = cfg.chartLegend ?? true;
+        inject.showLabels = cfg.showLabels ?? false;
+        inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
+        // UI range is 0-99 (0 = full pie, 99 = today's classic 50% cutout look) - see draw()
+        // in eda-doughnut.component.ts for how this maps to the actual inner/outer radius ratio.
+        inject.innerRadiusPercent = cfg.innerRadiusPercent ?? 99;
+        inject.useGradient = cfg.useGradient ?? true;
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        this.createDoughnutComponent(inject);
+    }
+
+    /**
+     * Creates the D3-based doughnut chart component
+     * @param inject chart configuration
+     */
+    private createDoughnutComponent(inject: any) {
+        this.currentConfig = inject;
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaDoughnut);
+        this.componentRef.instance.inject = inject;
+        this.chartClickSubscription = this.componentRef.instance.onClick.subscribe(
+            (event) => this.onChartClick.emit({...event, query: this.props.query})
+        );
+        this.configUpdated.emit(this.currentConfig);
+    }
+
     private renderParallelSets() {
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
 
@@ -1471,8 +1559,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public updateComponent() {
         if (this.componentRef && !['table', 'crosstable'].includes(this.props.chartType)) {
             try {
+                // Doughnut (D3)
+                if (this.props.chartType === 'doughnut') {
+                    this.updateDoughnutColors();
+                }
                 // Charts ChartJS
-                if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar'].includes(this.props.chartType)) {
+                else if (['polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar'].includes(this.props.chartType)) {
                     this.updateChartJSColors();
                 }
                 // KPI
@@ -1577,6 +1669,28 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
         // Re-render the map
         this.renderMap(this.props.chartType);
+    }
+
+    public updateDoughnutColors() {
+        const config = this.props.config.getConfig();
+        const assignedColors = config['assignedColors'];
+
+        if (!assignedColors?.length) {
+            return;
+        }
+
+        if (this.chartClickSubscription) {
+            this.chartClickSubscription.unsubscribe();
+            this.chartClickSubscription = null;
+        }
+
+        setTimeout(() => {
+            if (this.componentRef) {
+                this.componentRef.destroy();
+                this.componentRef = null;
+            }
+            this.renderDoughnut();
+        });
     }
 
     public updateD3ChartColors(chartType: string) {

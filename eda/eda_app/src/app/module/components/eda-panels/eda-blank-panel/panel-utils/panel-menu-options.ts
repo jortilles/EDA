@@ -39,16 +39,27 @@ export const PanelOptions = {
 
         if (Object.entries(panelComponent.graficos).length !== 0 && panelComponent.chartData.length !== 0) {
           
-          if (['line', 'area', 'doughnut', 'polarArea', 'bar', 'horizontalBar', 'barline', 'histogram', 'pyramid', 'radar'].includes(panelComponent.graficos.chartType)) {
+          if (['line', 'area', 'polarArea', 'bar', 'horizontalBar', 'barline', 'histogram', 'pyramid', 'radar'].includes(panelComponent.graficos.chartType)) {
 
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.chartController = new EdaDialogController({
               params: {
-                panelId: _.get(panelComponent.panel, 'id'), 
+                panelId: _.get(panelComponent.panel, 'id'),
                 chart: panelComponent.graficos,
                 config: panelComponent.panelChartConfig
             },
               close: (event, response) => panelComponent.onCloseChartProperties(event, response)
+            });
+
+          } else if (panelComponent.graficos.chartType === 'doughnut') {
+            panelComponent.contextMenu.hideContextMenu();
+            panelComponent.doughnutController = new EdaDialogController({
+              params: {
+                panelID: _.get(panelComponent.panel, 'id'),
+                chart: panelComponent.graficos,
+                panelChart: panelComponent.panelChartConfig
+              },
+              close: (event, response) => panelComponent.onCloseDoughnutProperties(event, response)
             });
 
           } else if (['table', 'crosstable'].includes(panelComponent.graficos.chartType)) {

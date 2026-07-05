@@ -87,6 +87,7 @@ import { dynamicTextDialogComponent } from '@eda/components/component.index';
 import { TableDialogComponent } from '@eda/components/component.index';
 import { TableGradientDialogComponent } from '@eda/components/component.index';
 import { KpiEditDialogComponent } from '@eda/components/component.index';
+import { DoughnutDialog } from '@eda/components/component.index';
 export interface IPanelAction {
     code: string;
     data: any;
@@ -103,7 +104,7 @@ const DIALOGS_COMPONENTS = [
     ChartDialogComponent,BubblechartDialog, MapCoordDialogComponent, MapEditDialogComponent,
     TreeTableDialogComponent, SunburstDialogComponent, TreeMapDialog, ScatterPlotDialog,
     FunnelDialog, KnobDialogComponent, SankeyDialog, dynamicTextDialogComponent, TableDialogComponent,
-    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent
+    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent, DoughnutDialog
 ];
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule, OverlayPanelModule];
@@ -159,6 +160,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public sankeyController: EdaDialogController;
     public treeMapController: EdaDialogController;
     public funnelController:EdaDialogController;
+    public doughnutController: EdaDialogController;
     public bubblechartController:EdaDialogController;
     public linkDashboardController: EdaDialogController;
     public scatterPlotController: EdaDialogController;
@@ -874,8 +876,8 @@ public tableNodeExpand(event: any): void {
     */
     public onChartClick(event: any): void {
         const config = this.panelChart.getCurrentConfig();
-        if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(config?.chartType) ||   //NG2 CHARTS
-            ['treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
+        if (['polarArea', 'bar', 'line', 'radar'].includes(config?.chartType) ||   //NG2 CHARTS
+            ['doughnut', 'treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
             'geoJsonMap'.includes(this.panelChart.props.chartType) || //Leaflet 
             ['table', 'crosstable', 'treetable'].includes(this.panelChart.props.chartType)) // tables
         {
@@ -968,6 +970,9 @@ public tableNodeExpand(event: any): void {
             const savedColoredBarsConfig = config && config.getConfig() ? config.getConfig()['coloredBarsConfig'] : null;
             const savedShowUniqueColors = config && config.getConfig() ? config.getConfig()['showUniqueColors'] : null;
             const savedUniqueBarColors = config && config.getConfig() ? config.getConfig()['uniqueBarColors'] : null;
+            // Doughnut-only settings: `setVoidChartConfig()` builds a fresh ChartJsConfig that has
+            const savedInnerRadiusPercent = config && config.getConfig() ? config.getConfig()['innerRadiusPercent'] : null;
+            const savedUseGradient = config && config.getConfig() ? config.getConfig()['useGradient'] : null;
 
             _.merge(_config, config||{});
 
@@ -983,6 +988,14 @@ public tableNodeExpand(event: any): void {
             if (savedShowUniqueColors != null) {
                 _config.getConfig()['showUniqueColors'] = savedShowUniqueColors;
                 _config.getConfig()['uniqueBarColors'] = savedUniqueBarColors ?? [];
+            }
+            // Restore innerRadiusPercent (doughnut) after merging.
+            if (savedInnerRadiusPercent != null) {
+                _config.getConfig()['innerRadiusPercent'] = savedInnerRadiusPercent;
+            }
+            // Restore useGradient (doughnut) after merging.
+            if (savedUseGradient != null) {
+                _config.getConfig()['useGradient'] = savedUseGradient;
             }
 
             // Ensure that showPredictionLines is propagated to _config (keep the prediction line when switching between chart types).
@@ -1685,6 +1698,25 @@ public tableNodeExpand(event: any): void {
             this.dashboardService.setNotSaved(true);
         }
         this.funnelController = undefined;
+    }
+
+    public onCloseDoughnutProperties(event, response): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                assignedColors: response.assignedColors,
+                showLabels: response.showLabels,
+                showLabelsPercent: response.showLabelsPercent,
+                chartLegend: response.chartLegend,
+                innerRadiusPercent: response.innerRadiusPercent,
+                useGradient: response.useGradient
+            };
+
+            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService.setNotSaved(true);
+        }
+        this.doughnutController = undefined;
     }
 
     public onCloseBubblechartProperties(event, response): void {

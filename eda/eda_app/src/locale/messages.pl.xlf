@@ -4311,6 +4311,16 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Pokaż legendę</target>
 </trans-unit>
 
+<trans-unit id="internRadius">
+  <source>Radio Interno</source>
+  <target>Radio wewnętrzne</target>
+</trans-unit>
+
+<trans-unit id="useGradient">
+  <source>Usar Gradiente</source>
+  <target>Zastosuj gradient</target>
+</trans-unit>
+
 <trans-unit id="chartLegendOptionDescription">
   <source>Muestra la leyenda del gráfico</source>
   <target>Pokaż legendę wykresu</target>

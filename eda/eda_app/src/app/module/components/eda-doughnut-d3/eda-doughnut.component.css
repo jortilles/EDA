@@ -1,0 +1,91 @@
+.eda-doughnut-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.eda-doughnut-wrapper .svg-container {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.eda-doughnut-legend {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 4px 8px;
+}
+
+.eda-doughnut-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.eda-doughnut-legend-item.hidden {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.eda-doughnut-legend-swatch {
+  display: inline-block;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.eda-doughnut-legend-label {
+  font-weight: 500;
+  color: #000000;
+}
+
+/* Tooltip appended by D3 to <body> (outside this component's template, so it needs ::ng-deep
+   to escape view encapsulation). Defined locally rather than relying on the shared global
+   `.d3tooltip` class in prime-styles/custom.css, since that stylesheet is never actually
+   loaded by the app (style.css's `@import url(./custom.css)` resolves to a same-named but
+   different, smaller file next to it) - so no D3 chart's tooltip in this app currently gets
+   styled. Fixing that shared import is a separate, wider-reaching change; this keeps the
+   doughnut's tooltip working on its own regardless of that. */
+::ng-deep .eda-doughnut-tooltip {
+  position: absolute;
+  text-align: left;
+  cursor: pointer;
+  padding: 8px 10px;
+  font: 12px;
+  color: #ffffff;
+  background: #010913ea;
+  border: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+::ng-deep .eda-doughnut-tooltip > h6 {
+  color: white;
+  font-weight: bold;
+}
+
+::ng-deep .eda-doughnut-tooltip-title {
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+::ng-deep .eda-doughnut-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+::ng-deep .eda-doughnut-tooltip-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}

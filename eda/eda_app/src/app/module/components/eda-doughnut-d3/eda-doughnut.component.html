@@ -1,0 +1,15 @@
+<div class="eda-doughnut-wrapper">
+  <div #edad3container class="svg-container">
+    <svg #svgContainer class="svg-content" [id]="id" width="100%" height="100%"></svg>
+  </div>
+  @if (chartLegend && legendItems.length) {
+    <div class="eda-doughnut-legend">
+      @for (item of legendItems; track item.label; let i = $index) {
+        <div class="eda-doughnut-legend-item" [class.hidden]="item.hidden" (click)="toggleLegend(i)">
+          <span class="eda-doughnut-legend-swatch" [style.background-color]="item.color" [style.width]="legendBoxSize" [style.height]="legendBoxSize"></span>
+          <span class="eda-doughnut-legend-label" [style.font-size]="legendFontSize">{{ item.label }}</span>
+        </div>
+      }
+    </div>
+  }
+</div>

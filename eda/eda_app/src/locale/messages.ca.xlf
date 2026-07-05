@@ -4865,6 +4865,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Mostra la llegenda</target>
 </trans-unit>
 
+<trans-unit id="internRadius">
+  <source>Radio Interno</source>
+  <target>Radi Intern</target>
+</trans-unit>
+
+<trans-unit id="useGradient">
+  <source>Usar Gradiente</source>
+  <target>Utilitza gradient</target>
+</trans-unit>
+
 <trans-unit id="chartLegendOptionDescription">
   <source>Muestra la leyenda del gráfico</source>
   <target>Mostra la llegenda del gràfic</target>

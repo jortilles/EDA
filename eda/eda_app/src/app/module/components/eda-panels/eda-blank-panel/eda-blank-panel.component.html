@@ -1294,6 +1294,10 @@
   <app-funnel-dialog [controller]="funnelController"></app-funnel-dialog>
 }
 
+@if(doughnutController){
+  <app-doughnut-dialog [controller]="doughnutController"></app-doughnut-dialog>
+}
+
 @if(scatterPlotController){
   <app-scatter-plot-dialog [controller]="scatterPlotController"></app-scatter-plot-dialog>
 }

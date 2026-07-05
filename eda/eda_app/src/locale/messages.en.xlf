@@ -4444,6 +4444,16 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Show Legend</target>
 </trans-unit>
 
+<trans-unit id="internRadius">
+  <source>Radio Interno</source>
+  <target>Intern Radius</target>
+</trans-unit>
+
+<trans-unit id="useGradient">
+  <source>Usar Gradiente</source>
+  <target>Use Gradient</target>
+</trans-unit>
+
 <trans-unit id="chartLegendOptionDescription">
 <source>Muestra la leyenda del gráfico</source>
 <target>Show chart legend</target>

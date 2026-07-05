@@ -4810,6 +4810,16 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Afficher la légende</target>
 </trans-unit>
 
+<trans-unit id="internRadius">
+  <source>Radio Interno</source>
+  <target>Radio interne</target>
+</trans-unit>
+
+<trans-unit id="useGradient">
+  <source>Usar Gradiente</source>
+  <target>Utiliser un dégradé</target>
+</trans-unit>
+
 <trans-unit id="chartLegendOptionDescription">
   <source>Muestra la leyenda del gráfico</source>
   <target>Afficher la légende du graphique</target>
