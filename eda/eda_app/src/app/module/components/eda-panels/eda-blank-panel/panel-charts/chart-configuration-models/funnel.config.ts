@@ -1,6 +1,6 @@
 export class FunnelConfig {
   assignedColors: any[];
-  constructor(assignedColors: Array<string>) {
+  constructor(assignedColors: any[]) {
     this.assignedColors = assignedColors;
   }
 }
