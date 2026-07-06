@@ -8,12 +8,13 @@ const PLUGINS_ROOT = path.join(__dirname, '../src/app/plugins');
 const TYPES_DIR     = path.join(__dirname, 'plugin-types');
 
 /**
- * Cada carpeta `<x>-plugins` bajo src/app/plugins necesita un módulo homónimo
- * en scripts/plugin-types/<x>-plugins.js que exporte `requiredFields` y
- * `buildOutput(plugins)` (y opcionalmente `describe(plugin)`).
+ * Each `<x>-plugins` folder under `src/app/plugins` requires a corresponding
+ * module in `scripts/plugin-types/<x>-plugins.js` that exports
+ * `requiredFields` and `buildOutput(plugins)` (and optionally
+ * `describe(plugin)`).
  *
- * El registry generado se llama por convención `<x>-plugin-registry.ts`
- * dentro de esa misma carpeta.
+ * By convention, the generated registry is named
+ * `<x>-plugin-registry.ts` and is placed in the same folder.
  */
 const pluginTypeDirs = fs
     .readdirSync(PLUGINS_ROOT, { withFileTypes: true })
