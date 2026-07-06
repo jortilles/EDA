@@ -64,4 +64,6 @@ export { EdaTreeTable} from './eda-treetable/eda-treetable.component';
 export { TreeTableDialogComponent } from './eda-panels/eda-blank-panel/tree-table-dialog/tree-table-dialog.component';
 export { EdaDoughnut } from './eda-doughnut-d3/eda-doughnut.component';
 export { DoughnutDialog } from './eda-panels/eda-blank-panel/doughnut-dialog/doughnut-dialog.component';
+export { EdaPolarAreaComponent } from './eda-polar-area-d3/eda-polar-area.component';
+export { PolarAreaDialog } from './eda-panels/eda-blank-panel/polar-area-dialog/polar-area-dialog.component';
 

@@ -154,7 +154,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.renderEdaTable(type);
         }
 
-        if (['polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline',  'histogram' ,'pyramid', 'radar'].includes(type)) {
+        if (['bar', 'horizontalBar', 'line', 'area', 'barline',  'histogram' ,'pyramid', 'radar'].includes(type)) {
             this.renderEdaChart(type);
         }
 
@@ -1284,7 +1284,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     this.updateFactoryChartColors(this.d3ChartFactory.get(this.props.chartType));
                 }
                 // Charts ChartJS
-                else if (['polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar'].includes(this.props.chartType)) {
+                else if (['bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar'].includes(this.props.chartType)) {
                     this.updateChartJSColors();
                 }
                 // KPI

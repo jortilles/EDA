@@ -88,6 +88,7 @@ import { TableDialogComponent } from '@eda/components/component.index';
 import { TableGradientDialogComponent } from '@eda/components/component.index';
 import { KpiEditDialogComponent } from '@eda/components/component.index';
 import { DoughnutDialog } from '@eda/components/component.index';
+import { PolarAreaDialog } from '@eda/components/component.index';
 export interface IPanelAction {
     code: string;
     data: any;
@@ -104,7 +105,7 @@ const DIALOGS_COMPONENTS = [
     ChartDialogComponent,BubblechartDialog, MapCoordDialogComponent, MapEditDialogComponent,
     TreeTableDialogComponent, SunburstDialogComponent, TreeMapDialog, ScatterPlotDialog,
     FunnelDialog, KnobDialogComponent, SankeyDialog, dynamicTextDialogComponent, TableDialogComponent,
-    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent, DoughnutDialog
+    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent, DoughnutDialog, PolarAreaDialog
 ];
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule, OverlayPanelModule];
@@ -161,6 +162,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public treeMapController: EdaDialogController;
     public funnelController:EdaDialogController;
     public doughnutController: EdaDialogController;
+    public polarAreaController: EdaDialogController;
     public bubblechartController:EdaDialogController;
     public linkDashboardController: EdaDialogController;
     public scatterPlotController: EdaDialogController;
@@ -1717,6 +1719,25 @@ public tableNodeExpand(event: any): void {
             this.dashboardService.setNotSaved(true);
         }
         this.doughnutController = undefined;
+    }
+
+    public onClosePolarAreaProperties(event, response): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                assignedColors: response.assignedColors,
+                showLabels: response.showLabels,
+                showLabelsPercent: response.showLabelsPercent,
+                chartLegend: response.chartLegend,
+                showGridLines: response.showGridLines,
+                useGradient: response.useGradient
+            };
+
+            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService.setNotSaved(true);
+        }
+        this.polarAreaController = undefined;
     }
 
     public onCloseBubblechartProperties(event, response): void {

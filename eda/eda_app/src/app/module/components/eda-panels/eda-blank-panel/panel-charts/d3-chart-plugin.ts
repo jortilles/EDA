@@ -17,6 +17,8 @@ import { EdaKnob } from '@eda/components/eda-knob/edaKnob';
 import { EdaKnobComponent } from '@eda/components/eda-knob/eda-knob.component';
 import { EdaDoughnut } from '@eda/components/eda-doughnut-d3/eda-doughnut.component';
 import { EdaDoughnutD3 } from '@eda/components/eda-doughnut-d3/eda-doughnut';
+import { EdaPolarAreaComponent } from '@eda/components/eda-polar-area-d3/eda-polar-area.component';
+import { EdaPolarArea } from '@eda/components/eda-polar-area-d3/eda-polar-area';
 import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';
 import { SankeyConfig } from './chart-configuration-models/sankey-config';
 import { TreeMapConfig } from './chart-configuration-models/treeMap-config';
@@ -203,6 +205,75 @@ export const DoughnutChartPlugin: ID3ChartPlugin<EdaDoughnutD3> = {
     }
 };
 
+/**
+ * Same data shape and category-color logic as doughnut (transformDataQuery/
+ * generateChartColorsFromAssignedColors share a 'doughnut'/'polarArea' branch in
+ * ChartUtilsService) - but rendered as a rose/Nightingale chart: equal angle per
+ * slice, radius driven by value, instead of doughnut's equal radius/variable angle.
+ * No innerRadiusPercent - polar area has no cutout concept.
+ */
+export const PolarAreaChartPlugin: ID3ChartPlugin<EdaPolarArea> = {
+    type: 'polarArea',
+    component: EdaPolarAreaComponent,
+    buildInject: (props, paletaActual, randomID, chartUtils) => {
+        const values = _.cloneDeep(props.data.values);
+        const dataTypes = props.query.map(col => col.column_type);
+        const dataDescription = chartUtils.describeData(props.query, props.data.labels);
+        const cfg: any = props.config.getConfig();
+
+        const chartData = chartUtils.transformDataQuery('polarArea', 'polarArea', values, dataTypes, dataDescription, false, cfg.numberOfColumns);
+        if (chartData.length == 0) {
+            chartData.push([], []);
+        }
+
+        const inject: EdaPolarArea = new EdaPolarArea();
+        inject.id = randomID();
+        inject.chartType = 'polarArea';
+        inject.edaChart = 'polarArea';
+        inject.chartLabels = chartData[0];
+        inject.chartDataset = chartData[1];
+
+        let assignedColors = props.config.getConfig()['assignedColors'] || [];
+        const currentLabels: string[] = inject.chartLabels || [];
+
+        if (assignedColors.length === 0) {
+            assignedColors = chartUtils.resolveAssignedColors(currentLabels, [], paletaActual);
+            props.config.getConfig()['assignedColors'] = assignedColors;
+        } else {
+            const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
+            assignedColors = currentLabels.map((label, index) => {
+                const assignedColor = colorMap.get(label);
+                return assignedColor
+                    ? { value: label, color: assignedColor.color }
+                    : { value: label, color: paletaActual[index % paletaActual.length] };
+            });
+        }
+
+        inject.assignedColors = assignedColors;
+        inject.chartColors = chartUtils.generateChartColorsFromAssignedColors(assignedColors, 'polarArea');
+
+        chartData[1].forEach((dataset, i) => {
+            try {
+                const solidColor = inject.chartColors[i]?.borderColor;
+                dataset.backgroundColor = solidColor;
+                dataset.borderColor = solidColor;
+            } catch (err) {
+                dataset.backgroundColor = paletaActual;
+                dataset.borderColor = paletaActual;
+            }
+        });
+
+        inject.chartLegend = cfg.chartLegend ?? true;
+        inject.showLabels = cfg.showLabels ?? false;
+        inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
+        inject.showGridLines = cfg.showGridLines ?? true;
+        inject.useGradient = cfg.useGradient ?? true;
+        inject.linkedDashboard = props.linkedDashboardProps;
+
+        return inject;
+    }
+};
+
 export const BubblechartChartPlugin: ID3ChartPlugin<EdaD3> = {
     type: 'bubblechart',
     component: EdaBubblechartComponent,
@@ -292,6 +363,7 @@ export const KnobChartPlugin: ID3ChartPlugin<EdaKnob> = {
  */
 export const D3_CHART_PLUGINS: ID3ChartPlugin[] = [
     DoughnutChartPlugin,
+    PolarAreaChartPlugin,
     BubblechartChartPlugin,
     ParallelSetsChartPlugin,
     TreeMapChartPlugin,

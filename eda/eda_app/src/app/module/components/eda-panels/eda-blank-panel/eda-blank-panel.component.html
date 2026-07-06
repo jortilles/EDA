@@ -1298,6 +1298,10 @@
   <app-doughnut-dialog [controller]="doughnutController"></app-doughnut-dialog>
 }
 
+@if(polarAreaController){
+  <app-polar-area-dialog [controller]="polarAreaController"></app-polar-area-dialog>
+}
+
 @if(scatterPlotController){
   <app-scatter-plot-dialog [controller]="scatterPlotController"></app-scatter-plot-dialog>
 }
