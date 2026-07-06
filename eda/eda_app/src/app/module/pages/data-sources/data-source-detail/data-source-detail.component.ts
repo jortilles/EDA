@@ -28,6 +28,7 @@ import { SecurityDialogComponent } from './security-dialog/security-dialog.compo
 import { AddCsvComponent } from '../data-source-list/addCSV/add-csv.component';
 import { TablePermissionDialogComponent } from './table-permissions-dialog/table-permission-dialog.component';
 import { ViewDialogEditionComponent } from './view-dialog-edition/view-dialog-edition.component';
+import { DATASOURCE_PLUGINS } from '../../../../plugins/datasource-plugins/datasource-plugin-registry';
 import { ViewDialogComponent } from './view-dialog/view-dialog.component';
 import { AddTagComponent } from '../data-source-list/add-tag/add-tag.component';
 import { CalculatedColumnEditDialogComponent } from './calculated-column-edit-dialog/calculated-column-edit-dialog.component';
@@ -210,9 +211,9 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'Excel', value: 'excel'},
         { label: 'Csv', value: 'csv'},
         { label: 'DuckDB (CSV)', value: 'duckdb'},
-        { label: 'Odoo', value: 'odoo'},
-        { label: 'Google Analytics 4', value: 'googleanalytics'},
-        { label: 'Holded', value: 'holded'}
+        // Los tipos de plugin (Odoo, Google Analytics 4, Holded, ...) se agregan solos
+        // desde el plugin.meta.ts de cada carpeta en datasource-plugins.
+        ...DATASOURCE_PLUGINS.map((p) => ({ label: p.label, value: p.type })),
     ];
 
     public SID_Types: SelectItem[] = [
