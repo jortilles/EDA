@@ -18,6 +18,6 @@ export const meta = {
     label: 'Home',
     menuIcon: 'home',
     menuSection: 'main',
-    componentFile: '../../home/home.component',
+    componentFile: './home/home.component',
     componentExport: 'HomeSdaComponent',
 };

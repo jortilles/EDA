@@ -1,4 +1,4 @@
-// AUTO-GENERADO por scripts/generate-datasource-plugins.js — no editar a mano.
+// AUTO-GENERADO por scripts/generate-plugins.js — no editar a mano.
 // Para agregar un plugin nuevo, crea una carpeta en datasource-plugins con su
 // componente y un plugin.meta.ts, y vuelve a correr `npm start` / `npm run build:prod`.
 import { IDatasourcePlugin } from './datasource-plugin.interface';

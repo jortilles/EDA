@@ -4,25 +4,33 @@ import { DataSourceListComponent } from './data-sources/data-source-list/data-so
 import { VerifyTokenGuard } from '@eda/services/service.index';
 import { RoleGuard } from '@eda/services/guards/role-guard.guard';
 /**
- * PLUGIN_ROUTES se genera automáticamente en el build.
- * Cada page plugin registra su propia ruta; si comparte path con una ruta
- * del core, el plugin gana porque se inserta ANTES que CORE_CHILDREN.
- *
- * Para sobrescribir /home, un fork solo necesita crear:
- *   src/app/plugins/page-plugins/<nombre>/plugin.meta.ts
- *   con path: 'home' y su propio componente.
- */
+* PLUGIN_ROUTES is automatically generated during build.
+
+* Each page plugin registers its own route; if it shares a path with a core route,
+* the plugin takes precedence because it is inserted BEFORE CORE_CHILDREN.
+
+* To write /home, a fork only needs to create:
+* src/app/plugins/page-plugins/<name>/plugin.meta.ts
+* with the path: 'home' and its own component.
+*/
 import { PLUGIN_ROUTES } from '../../plugins/page-plugins/page-plugin-registry';
 
 /**
- * Rutas fijas del core. Se usan como fallback cuando ningún page plugin
- * registra una ruta con el mismo path.
- */
+*Fixed kernel paths. Used as a fallback when no page plugin is present.
+* Registers a path with the same path.
+*/
 const CORE_CHILDREN: Routes = [
   {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
+  },
+  {
+    // Default core home path. If a page plugin registers its own
+    // path: 'home' (see PLUGIN_ROUTES above), that one takes precedence because it is inserted
+    // earlier into the child array; this path only acts as a fallback.
+    path: 'home',
+    loadComponent: () => import('./home/home.page').then(c => c.HomePage)
   },
   {
     path: 'about',
