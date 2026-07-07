@@ -48,6 +48,9 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   // panel resize, existing (non-entering) slices would keep hovering at their pre-resize size.
   private currentArcGen: any;
   private currentHoverArcGen: any;
+  // The <g> holding the value-label groups, so mouseover/mouseout can find and scale the label
+  // matching the hovered slice (kept live/up-to-date the same way as the arc generators above).
+  private currentLabelsContainer: any;
 
   constructor(private styleProviderService: StyleProviderService) { }
 
@@ -228,6 +231,13 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
           .interrupt('grow').transition('grow').duration(150)
           .attr('d', this.currentHoverArcGen(d));
 
+        if (this.currentLabelsContainer) {
+          this.currentLabelsContainer.selectAll('g.polar-area-label')
+            .filter((ld: any) => ld.data.label === d.data.label)
+            .interrupt('labelScale').transition('labelScale').duration(150)
+            .attr('transform', `translate(${this.currentHoverArcGen.centroid(d)}) scale(1.25)`);
+        }
+
         const percentage = total > 0 ? (d.data.value / total) * 100 : 0;
         const swatch = `<span class="eda-polar-area-tooltip-swatch" style="background-color:${d.data.color};"></span>`;
         let text = seriesLabel ? `<div class="eda-polar-area-tooltip-title">${seriesLabel}</div>` : '';
@@ -265,6 +275,13 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
         d3.select(target)
           .interrupt('grow').transition('grow').duration(150)
           .attr('d', this.currentArcGen(d));
+
+        if (this.currentLabelsContainer) {
+          this.currentLabelsContainer.selectAll('g.polar-area-label')
+            .filter((ld: any) => ld.data.label === d.data.label)
+            .interrupt('labelScale').transition('labelScale').duration(150)
+            .attr('transform', `translate(${this.currentArcGen.centroid(d)}) scale(1)`);
+        }
         this.removeTooltip();
       });
   }
@@ -319,6 +336,7 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       g = this.svg.append('g').attr('class', 'polar-area-arcs');
     }
     g.attr('transform', `translate(${width / 2},${height / 2})`);
+    this.currentLabelsContainer = g;
 
     // Ring value labels get their own overlay, appended (once) AFTER the arcs group so they
     // always paint on top of it - otherwise a slice reaching past a ring visually covered its
