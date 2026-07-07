@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaPolarArea } from './eda-polar-area';
-import { StyleProviderService } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface PolarAreaSlice {
@@ -32,7 +32,6 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   id: string;
   svg: any;
   resizeObserver!: ResizeObserver;
-  div: any = null;
 
   chartLegend: boolean;
   legendItems: { label: string; color: string; hidden: boolean }[] = [];
@@ -52,7 +51,7 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   // matching the hovered slice (kept live/up-to-date the same way as the arc generators above).
   private currentLabelsContainer: any;
 
-  constructor(private styleProviderService: StyleProviderService) { }
+  constructor(private styleProviderService: StyleProviderService, private tooltipService: D3TooltipService) { }
 
   ngOnInit(): void {
     this.id = `polarArea_${this.inject.id}`;
@@ -63,7 +62,7 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.div) this.div.remove();
+    this.tooltipService.hide();
     if (this.resizeObserver) this.resizeObserver.disconnect();
   }
 
@@ -191,13 +190,6 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     return `url(#${id})`;
   }
 
-  private removeTooltip(): void {
-    if (this.div) {
-      this.div.remove();
-      this.div = null;
-    }
-  }
-
   // Builds the path for one arc at a specific (startAngle, endAngle, radius) - used by the
   // enter/update/exit tweens below, which interpolate all three at once (a plain d3.arc()
   // can't do this directly here since its outerRadius is a per-datum function, not a constant).
@@ -249,24 +241,9 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
           const t = $localize`:@@linkedTo:Vinculado con`;
           text += `<br/><h6>${t} ${linkedDashboard.dashboardName}</h6>`;
         }
-        // A stray mouseover before the previous slice's mouseout fired would otherwise leak an
-        // orphaned tooltip div every time, piling several up on screen at once.
-        this.removeTooltip();
-        this.div = d3.select('body').append('div')
-          .attr('class', 'eda-polar-area-tooltip')
-          .style('opacity', 0)
-          .style('z-index', 9999);
-        this.div.transition().duration(200).style('opacity', 0.9);
-        this.div.html(text)
-          .style('left', (event.pageX - 81) + 'px')
-          .style('top', (event.pageY - 25) + 'px');
+        this.tooltipService.show(event, text, 'eda-polar-area-tooltip');
       })
-      .on('mousemove', (event: any) => {
-        if (this.div) {
-          this.div.style('top', (event.pageY - 60) + 'px')
-            .style('left', (event.pageX - 0) + 'px');
-        }
-      })
+      .on('mousemove', (event: any) => this.tooltipService.move(event))
       .on('mouseout', (event: any, d: any) => {
         const target = event.currentTarget;
         d3.select(target)
@@ -285,7 +262,7 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
             .interrupt('labelScale').transition('labelScale').duration(150)
             .attr('transform', `translate(${this.currentArcGen.centroid(d)}) scale(1)`);
         }
-        this.removeTooltip();
+        this.tooltipService.hide();
       });
   }
 

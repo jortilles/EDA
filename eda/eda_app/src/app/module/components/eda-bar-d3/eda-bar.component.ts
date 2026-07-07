@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaBarD3 } from './eda-bar';
-import { StyleProviderService } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface BarSeries {
@@ -31,7 +31,6 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   id: string;
   svg: any;
   resizeObserver!: ResizeObserver;
-  div: any = null;
 
   chartLegend: boolean;
   legendItems: { label: string; color: string; hidden: boolean }[] = [];
@@ -41,7 +40,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   private hiddenSeriesIndexes: Set<number> = new Set();
   private fontFamily = 'inherit';
 
-  constructor(private styleProviderService: StyleProviderService) { }
+  constructor(private styleProviderService: StyleProviderService, private tooltipService: D3TooltipService) { }
 
   ngOnInit(): void {
     this.id = `bar_${this.inject.id}`;
@@ -51,7 +50,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.div) this.div.remove();
+    this.tooltipService.hide();
     if (this.resizeObserver) this.resizeObserver.disconnect();
   }
 
@@ -163,10 +162,6 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     return `url(#${id})`;
   }
 
-  private removeTooltip(): void {
-    if (this.div) { this.div.remove(); this.div = null; }
-  }
-
   private formatValue(value: number): string {
     return value.toLocaleString('de-DE', { maximumFractionDigits: 6 });
   }
@@ -196,31 +191,6 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     }
     return `<div class="eda-bar-tooltip-title">${category}</div>` +
       `<div class="eda-bar-tooltip-row"><strong>${seriesLabel}</strong> : ${this.formatValue(value)} (${percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })}%)</div>`;
-  }
-
-  private showTooltip(event: any, html: string): void {
-    // A stray mouseover before the previous bar's mouseout fired (easy to trigger on bars packed
-    // tightly together, more so once hover makes one grow into its neighbor's space) would
-    // otherwise leak an orphaned tooltip div every time, piling several up on screen at once.
-    this.removeTooltip();
-    this.div = d3.select('body').append('div')
-      .attr('class', 'eda-bar-tooltip')
-      .style('opacity', 0)
-      .style('z-index', 9999);
-    this.div.transition().duration(200).style('opacity', 0.9);
-    this.div.html(html)
-      .style('left', (event.pageX - 81) + 'px')
-      .style('top', (event.pageY - 25) + 'px');
-  }
-
-  private moveTooltip(event: any): void {
-    if (this.div) {
-      // Same offset as showTooltip() - it used to differ (-60 here vs -25 there), which both
-      // left the tooltip floating too far above the cursor and caused a visible jump on the
-      // very first mousemove after it appeared.
-      this.div.style('top', (event.pageY - 50) + 'px')
-        .style('left', (event.pageX) + 'px');
-    }
   }
 
   private measureCanvas: HTMLCanvasElement;
@@ -483,9 +453,9 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             const catIdx = this.categories.indexOf(d.data.cat);
             const value = stacked100 ? (series.rawValues?.[catIdx] ?? 0) : series.data[catIdx];
             const percentage = stacked100 ? (series.data[catIdx] || 0) : this.percentOfSeries(series, catIdx);
-            this.showTooltip(event, this.tooltipHtml(series.label, d.data.cat, value, percentage, isPyramid));
+            this.tooltipService.show(event, this.tooltipHtml(series.label, d.data.cat, value, percentage, isPyramid), 'eda-bar-tooltip');
           })
-          .on('mousemove', (event: any) => this.moveTooltip(event))
+          .on('mousemove', (event: any) => this.tooltipService.move(event))
           .on('mouseout', (event: any, d: any) => {
             const target = event.currentTarget;
             const hex = this.barColor(series, this.categories.indexOf(d.data.cat));
@@ -500,7 +470,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
                 .interrupt('labelGrow').transition('labelGrow').duration(150)
                 .style('font-size', '11px');
             }
-            this.removeTooltip();
+            this.tooltipService.hide();
           });
       });
     } else {
@@ -567,9 +537,9 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             }
 
             const percentage = this.percentOfSeries(series, d.catIdx);
-            this.showTooltip(event, this.tooltipHtml(series.label, d.cat, d.value, percentage, false));
+            this.tooltipService.show(event, this.tooltipHtml(series.label, d.cat, d.value, percentage, false), 'eda-bar-tooltip');
           })
-          .on('mousemove', (event: any) => this.moveTooltip(event))
+          .on('mousemove', (event: any) => this.tooltipService.move(event))
           .on('mouseout', (event: any, d: any) => {
             const target = event.currentTarget;
             const hex = this.barColor(series, d.catIdx);
@@ -584,7 +554,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
                 .interrupt('labelGrow').transition('labelGrow').duration(150)
                 .style('font-size', '11px');
             }
-            this.removeTooltip();
+            this.tooltipService.hide();
           });
       });
     }

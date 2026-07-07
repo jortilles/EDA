@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaDoughnutD3 } from './eda-doughnut';
-import { StyleProviderService } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface DoughnutSlice {
@@ -32,7 +32,6 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
   id: string;
   svg: any;
   resizeObserver!: ResizeObserver;
-  div: any = null;
 
   chartLegend: boolean;
   legendItems: { label: string; color: string; hidden: boolean }[] = [];
@@ -52,7 +51,7 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
   // matching the hovered slice (kept live/up-to-date the same way as the arc generators above).
   private currentLabelsContainer: any;
 
-  constructor(private styleProviderService: StyleProviderService) { }
+  constructor(private styleProviderService: StyleProviderService, private tooltipService: D3TooltipService) { }
 
   ngOnInit(): void {
     this.id = `doughnut_${this.inject.id}`;
@@ -63,7 +62,7 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.div) this.div.remove();
+    this.tooltipService.hide();
     if (this.resizeObserver) this.resizeObserver.disconnect();
   }
 
@@ -184,13 +183,6 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
     return `url(#${id})`;
   }
 
-  private removeTooltip(): void {
-    if (this.div) {
-      this.div.remove();
-      this.div = null;
-    }
-  }
-
   private attachInteractionHandlers(selection: any, seriesLabel: string, linkedDashboard: any, total: number): void {
     // Base fill is always the radial gradient (set on enter / see draw()). Hover only ever swaps
     // in a flat, darker version of the slice's ORIGINAL color computed from `d.data.color`
@@ -248,24 +240,9 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
           const t = $localize`:@@linkedTo:Vinculado con`;
           text += `<br/><h6>${t} ${linkedDashboard.dashboardName}</h6>`;
         }
-        // A stray mouseover before the previous slice's mouseout fired would otherwise leak an
-        // orphaned tooltip div every time, piling several up on screen at once.
-        this.removeTooltip();
-        this.div = d3.select('body').append('div')
-          .attr('class', 'eda-doughnut-tooltip')
-          .style('opacity', 0)
-          .style('z-index', 9999);
-        this.div.transition().duration(200).style('opacity', 0.9);
-        this.div.html(text)
-          .style('left', (event.pageX - 81) + 'px')
-          .style('top', (event.pageY - 25) + 'px');
+        this.tooltipService.show(event, text, 'eda-doughnut-tooltip');
       })
-      .on('mousemove', (event: any) => {
-        if (this.div) {
-          this.div.style('top', (event.pageY - 60) + 'px')
-            .style('left', (event.pageX - 0) + 'px');
-        }
-      })
+      .on('mousemove', (event: any) => this.tooltipService.move(event))
       .on('mouseout', (event: any, d: any) => {
         const target = event.currentTarget;
         // Same reasoning as mouseover, in reverse: transition flat darker -> flat base color
@@ -287,7 +264,7 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
             .interrupt('labelScale').transition('labelScale').duration(150)
             .attr('transform', `translate(${this.currentArcGen.centroid(d)}) scale(1)`);
         }
-        this.removeTooltip();
+        this.tooltipService.hide();
       });
   }
 
