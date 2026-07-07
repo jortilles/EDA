@@ -1,3 +1,12 @@
+import { EdaKnob } from './../../../eda-knob/edaKnob';
+import { EdaKnobComponent } from './../../../eda-knob/eda-knob.component';
+import { EdaScatter } from './../../../eda-scatter/eda-scatter.component';
+import { EdaTreeMap } from './../../../eda-treemap/eda-treemap.component';
+
+import { EdaTreeTable } from './../../../eda-treetable/eda-treetable.component';
+
+import { TreeMap } from './../../../eda-treemap/eda-treeMap';
+import { EdaD3Component } from './../../../eda-d3/eda-d3.component';
 import { TableConfig } from './chart-configuration-models/table-config';
 import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
     OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID } from '@angular/core';
@@ -20,8 +29,21 @@ import { EdaGeoJsonMapComponent } from '@eda/components/eda-map/eda-geoJsonMap.c
 
 import * as _ from 'lodash';
 import { EdaMap } from '@eda/components/eda-map/eda-map';
+import { EdaD3 } from '@eda/components/eda-d3/eda-d3';
+import { EdaFunnelComponent } from '@eda/components/eda-funnel/eda-funnel.component';
+import { EdaBubblechartComponent } from '@eda/components/eda-d3-bubblechart/eda-bubblechart.component';
+import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.component';
+import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
+import { ScatterPlot } from '@eda/components/eda-scatter/eda-scatter';
+import { TreeMapConfig } from './chart-configuration-models/treeMap-config';
+import { SunburstConfig } from './chart-configuration-models/sunburst-config';
+import { SankeyConfig } from './chart-configuration-models/sankey-config';
+import { ScatterConfig } from './chart-configuration-models/scatter-config';
+import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, getLocaleMonthNames, FormStyle, TranslationWidth } from '@angular/common';
+import { FunnelConfig } from './chart-configuration-models/funnel.config';
+import { KnobConfig } from './chart-configuration-models/knob-config';
 import { MapConfig } from './chart-configuration-models/map-config';
 import { ChartJsConfig } from './chart-configuration-models/chart-js-config';
 import { Subscription } from 'rxjs';
@@ -29,8 +51,12 @@ import { EdaKpiTrendComponent } from '@eda/components/eda-kpi-trend/eda-kpi-tren
 import { KpiTrendConfig } from './chart-configuration-models/kpi-trend-config';
 import { EdaKpiDeviationComponent } from '@eda/components/eda-kpi-deviation/eda-kpi-deviation.component';
 import { KpiDeviationConfig } from './chart-configuration-models/kpi-deviation-config';
-import { D3ChartFactoryService } from './d3-chart-factory.service';
-import { ID3ChartPlugin } from './d3-chart-plugin';
+import { EdaDoughnut } from '@eda/components/eda-doughnut-d3/eda-doughnut.component';
+import { EdaDoughnutD3 } from '@eda/components/eda-doughnut-d3/eda-doughnut';
+import { EdaPolarAreaComponent } from '@eda/components/eda-polar-area-d3/eda-polar-area.component';
+import { EdaPolarArea } from '@eda/components/eda-polar-area-d3/eda-polar-area';
+import { EdaBarD3Component } from '@eda/components/eda-bar-d3/eda-bar.component';
+import { EdaBarD3 } from '@eda/components/eda-bar-d3/eda-bar';
 
 @Component({
     standalone: true,
@@ -74,7 +100,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         private chartUtils: ChartUtilsService,
         @Self() private ownRef: ElementRef,
         public styleProviderService: StyleProviderService,
-        private d3ChartFactory: D3ChartFactoryService,
         @Inject(LOCALE_ID) private locale: string) {
         
         this.fontColor = this.styleProviderService.panelFontColor.source['value'];
@@ -154,12 +179,20 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.renderEdaTable(type);
         }
 
-        if (['bar', 'horizontalBar', 'line', 'area', 'barline',  'histogram' ,'pyramid', 'radar'].includes(type)) {
+        if (['line', 'area', 'radar'].includes(type) || (type === 'bar' && this.props.edaChart === 'barline')) {
             this.renderEdaChart(type);
         }
 
-        if (this.d3ChartFactory.has(type)) {
-            this.mountD3Chart(this.d3ChartFactory.get(type));
+        if (type === 'bar' && this.props.edaChart !== 'barline') {
+            this.renderBar();
+        }
+
+        if (type === 'doughnut') {
+            this.renderDoughnut();
+        }
+
+        if (type === 'polarArea') {
+            this.renderPolarArea();
         }
 
         if (['kpibar', 'kpiline', 'kpiarea'].includes(type)) {
@@ -175,6 +208,30 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
         if (['geoJsonMap', 'coordinatesMap'].includes(type)) {
             this.renderMap(type);
+        }
+        if (type === 'parallelSets') {
+            this.renderParallelSets();
+        }
+        if (type === 'treeMap') {
+            this.renderTreeMap();
+        }
+        if (type === 'scatterPlot') {
+            this.renderScatter();
+        }
+        if (type === 'knob') {
+            this.renderKnob()
+        }
+        if (type === 'funnel') {
+            this.renderFunnel();
+        }
+        if (type === 'bubblechart') {
+            this.renderBubblechart();
+        }
+        if (type === 'sunburst') {
+            this.renderSunburst();
+        }
+        if (type === 'treetable') {
+            this.renderTreetable();
         }
         if (type === 'kpitrend') {
             this.renderEdaKpiTrend();
@@ -382,26 +439,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Builds and mounts a chart registered in D3ChartFactoryService.
-     */
-    private mountD3Chart(def: ID3ChartPlugin) {
-        const inject = def.buildInject(this.props, this.paletaActual, () => this.randomID(), this.chartUtils);
-        if (inject == null) {
-            return;
-        }
-        this.currentConfig = inject;
-        this.entry.clear();
-        this.componentRef = this.entry.createComponent(def.component);
-        this.componentRef.instance.inject = inject;
-        if (this.componentRef.instance.onClick) {
-            this.chartClickSubscription = this.componentRef.instance.onClick.subscribe(
-                (event) => this.onChartClick.emit({...event, query: this.props.query})
-            );
-        }
-        this.configUpdated.emit(this.currentConfig);
-    }
-
-    /**
      * Obtiene los labels apropiados según el tipo de chart
      * Para crear assignedColors correctamente
      */
@@ -520,6 +557,25 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.colorEnabled = config.colorEnabled !== false;
         this.componentRef.instance.applyBandingColors(config.headerColor, config.bandingColor, config.colorEnabled !== false);
         this.configUpdated.emit(this.currentConfig);;
+    }
+
+    /** Render knob */
+    private renderKnob() {
+        let chartConfig: EdaKnob = new EdaKnob();
+        const dataTypes = this.props.query.map(column => column.column_type);
+        chartConfig.data = this.chartUtils.transformData4Knob(this.props.data, dataTypes);
+        
+        chartConfig.dataDescription = this.chartUtils.describeData4Knob(this.props.query, this.chartUtils.transformData4Knob(this.props.data, dataTypes));
+        chartConfig.assignedColors = this.props.config['config']['assignedColors'] ? this.props.config['config']['assignedColors'] : null;
+        chartConfig.limits = this.props.config['config']['limits'] ? this.props.config['config']['limits'] : null;
+        chartConfig.semaphoreColor = !!this.props.config['config']['semaphoreColor'];
+        this.createEdaKnobComponent(chartConfig)
+    }
+
+    private createEdaKnobComponent(inject) {
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaKnobComponent);
+        this.componentRef.instance.inject = inject;
     }
 
     /**
@@ -1261,6 +1317,460 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
 
+    /**
+     * Renders the D3-based doughnut chart
+     */
+    private renderDoughnut() {
+        const values = _.cloneDeep(this.props.data.values);
+        const dataTypes = this.props.query.map(col => col.column_type);
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const cfg: any = this.props.config.getConfig();
+
+        const chartData = this.chartUtils.transformDataQuery('doughnut', 'doughnut', values, dataTypes, dataDescription, false, cfg.numberOfColumns);
+        if (chartData.length == 0) {
+            chartData.push([], []);
+        }
+
+        const inject: any = new EdaDoughnutD3();
+        inject.id = this.randomID();
+        inject.chartType = 'doughnut';
+        inject.edaChart = 'doughnut';
+        inject.chartLabels = chartData[0];
+        inject.chartDataset = chartData[1];
+
+        // Read assignedColors from config (if any)
+        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+
+        const currentLabels = this.getLabelsForChartType(inject);
+
+        if (assignedColors.length === 0) {
+            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            this.props.config.getConfig()['assignedColors'] = assignedColors;
+        } else {
+            const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
+            assignedColors = currentLabels.map((label, index) => {
+                const assignedColor = colorMap.get(label);
+                if (assignedColor) {
+                    return { value: label, color: assignedColor.color };
+                } else {
+                    return { value: label, color: this.paletaActual[index % this.paletaActual.length] };
+                }
+            });
+        }
+
+        inject.assignedColors = assignedColors;
+        inject.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, 'doughnut');
+
+        // Assigned colors per series (doughnut only ever has one dataset/series)
+        chartData[1].forEach((dataset, i) => {
+            try {
+                const solidColor = inject.chartColors[i]?.borderColor;
+                dataset.backgroundColor = solidColor;
+                dataset.borderColor = solidColor;
+            } catch (err) {
+                dataset.backgroundColor = this.paletaActual;
+                dataset.borderColor = this.paletaActual;
+            }
+        });
+
+        inject.chartLegend = cfg.chartLegend ?? true;
+        inject.showLabels = cfg.showLabels ?? false;
+        inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
+        // UI range is 0-95 (0 = full pie, 95 = ring collapsed to a thin line) - see draw()
+        // in eda-doughnut.component.ts for how this maps to the actual inner/outer radius ratio.
+        inject.innerRadiusPercent = cfg.innerRadiusPercent ?? 95;
+        inject.useGradient = cfg.useGradient ?? true;
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        this.createDoughnutComponent(inject);
+    }
+
+    /**
+     * Creates the D3-based doughnut chart component
+     * @param inject chart configuration
+     */
+    private createDoughnutComponent(inject: any) {
+        this.currentConfig = inject;
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaDoughnut);
+        this.componentRef.instance.inject = inject;
+        this.chartClickSubscription = this.componentRef.instance.onClick.subscribe(
+            (event) => this.onChartClick.emit({...event, query: this.props.query})
+        );
+        this.configUpdated.emit(this.currentConfig);
+    }
+
+    /**
+     * Renders the D3-based polarArea (rose/Nightingale) chart. Same data shape and
+     * category-color logic as doughnut (transformDataQuery/generateChartColorsFromAssignedColors
+     * share a 'doughnut'/'polarArea' branch in ChartUtilsService) - rendered as equal-angle,
+     * value-driven-radius slices instead of doughnut's equal-radius/variable-angle ones.
+     * No innerRadiusPercent - polar area has no cutout concept.
+     */
+    private renderPolarArea() {
+        const values = _.cloneDeep(this.props.data.values);
+        const dataTypes = this.props.query.map(col => col.column_type);
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const cfg: any = this.props.config.getConfig();
+
+        const chartData = this.chartUtils.transformDataQuery('polarArea', 'polarArea', values, dataTypes, dataDescription, false, cfg.numberOfColumns);
+        if (chartData.length == 0) {
+            chartData.push([], []);
+        }
+
+        const inject: any = new EdaPolarArea();
+        inject.id = this.randomID();
+        inject.chartType = 'polarArea';
+        inject.edaChart = 'polarArea';
+        inject.chartLabels = chartData[0];
+        inject.chartDataset = chartData[1];
+
+        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+
+        const currentLabels = this.getLabelsForChartType(inject);
+
+        if (assignedColors.length === 0) {
+            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            this.props.config.getConfig()['assignedColors'] = assignedColors;
+        } else {
+            const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
+            assignedColors = currentLabels.map((label, index) => {
+                const assignedColor = colorMap.get(label);
+                if (assignedColor) {
+                    return { value: label, color: assignedColor.color };
+                } else {
+                    return { value: label, color: this.paletaActual[index % this.paletaActual.length] };
+                }
+            });
+        }
+
+        inject.assignedColors = assignedColors;
+        inject.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, 'polarArea');
+
+        chartData[1].forEach((dataset, i) => {
+            try {
+                const solidColor = inject.chartColors[i]?.borderColor;
+                dataset.backgroundColor = solidColor;
+                dataset.borderColor = solidColor;
+            } catch (err) {
+                dataset.backgroundColor = this.paletaActual;
+                dataset.borderColor = this.paletaActual;
+            }
+        });
+
+        inject.chartLegend = cfg.chartLegend ?? true;
+        inject.showLabels = cfg.showLabels ?? false;
+        inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
+        inject.showGridLines = cfg.showGridLines ?? true;
+        inject.useGradient = cfg.useGradient ?? true;
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        this.createPolarAreaComponent(inject);
+    }
+
+    private createPolarAreaComponent(inject: any) {
+        this.currentConfig = inject;
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaPolarAreaComponent);
+        this.componentRef.instance.inject = inject;
+        this.chartClickSubscription = this.componentRef.instance.onClick.subscribe(
+            (event) => this.onChartClick.emit({...event, query: this.props.query})
+        );
+        this.configUpdated.emit(this.currentConfig);
+    }
+
+    /**
+     * Renders the D3-based bar family: bar, horizontalBar, stackedbar, stackedbar100,
+     * pyramid, histogram (everything with chartType 'bar' except 'barline', which stays
+     * on Chart.js via renderEdaChart()). Reuses transformDataQuery/resolveAssignedColors/
+     * generateChartColorsFromAssignedColors and the 3 color modes unchanged - only the
+     * Chart.js-specific initChartOptions() call and the line-only TRENDS block are skipped.
+     */
+    private renderBar() {
+        let values = _.cloneDeep(this.props.data.values);
+        const dataTypes = this.props.query.map(col => col.column_type);
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+
+        if (this.props.edaChart === 'histogram') {
+            dataDescription.numericColumns[0].name = this.histoGramDescTxt + " " + dataDescription.numericColumns[0].name + " " + this.histoGramDescTxt2;
+        }
+
+        let cfg: any = this.props.config.getConfig();
+        // COMPARISONS
+        if (!!cfg.addComparative
+            && this.props.query.length === 2
+            && this.props.query.filter(field => field.column_type === 'date').length > 0
+            && ['month', 'week', 'day'].includes(this.props.query.filter(field => field.column_type === 'date')[0].format)) {
+
+            values = this.chartUtils.comparePeriods(this.props.data, this.props.query);
+            let types = this.props.query.map(field => field.column_type);
+            let dateIndex = types.indexOf('date');
+            dataTypes.splice(dateIndex, 0, 'date');
+            let dateCol = dataDescription.otherColumns.filter(c => c.index === dateIndex)[0];
+            let newCol = { name: dateCol.name + '_newDate', index: dateCol.index + 1 };
+            dataDescription.otherColumns.push(newCol);
+            dataDescription.totalColumns++;
+        }
+        if (cfg.showPredictionLines === true) {
+            const _predQueryLen = (this.props.query?.length || 0);
+            const _hasPredCols = values?.length > 0 && (values[0]?.length || 0) > _predQueryLen;
+            values = this._preparePredictionValues(values, dataDescription, dataTypes, cfg, _predQueryLen, _hasPredCols);
+        }
+
+        const chartData = this.chartUtils.transformDataQuery('bar', this.props.edaChart, values, dataTypes, dataDescription, false, cfg.numberOfColumns);
+        if (chartData.length == 0) {
+            chartData.push([], []);
+        }
+
+        if (cfg.showPredictionLines === true && chartData[1]?.length > 0) {
+            this._hideConnectingDot(chartData);
+        }
+
+        const inject: any = new EdaBarD3();
+        inject.id = this.randomID();
+        inject.chartType = 'bar';
+        inject.edaChart = this.props.edaChart;
+        inject.chartLabels = chartData[0];
+        inject.chartDataset = chartData[1];
+
+        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        const currentLabels = this.getLabelsForChartType(inject);
+
+        if (assignedColors.length === 0) {
+            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            this.props.config.getConfig()['assignedColors'] = assignedColors;
+        } else {
+            const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
+            assignedColors = currentLabels.map((label, index) => {
+                const assignedColor = colorMap.get(label);
+                if (assignedColor) {
+                    const entry: any = { value: label, color: assignedColor.color };
+                    if (assignedColor.opacity !== undefined) entry.opacity = assignedColor.opacity;
+                    return entry;
+                } else {
+                    return { value: label, color: this.paletaActual[index % this.paletaActual.length] };
+                }
+            });
+        }
+
+        inject.assignedColors = assignedColors;
+        inject.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, 'bar');
+
+        // --- Determine color mode and apply (same 3 modes as renderEdaChart, isBar is always true here) ---
+        const coloredBarsConfig = cfg['coloredBarsConfig'];
+        const hasThresholds = coloredBarsConfig?.thresholdHigh != null || coloredBarsConfig?.thresholdLow != null;
+        if (coloredBarsConfig?.active && hasThresholds) {
+            // Mode 1: Interval-based colors
+            const { thresholdHigh, thresholdLow, colorAbove, colorBetween, colorBelow } = coloredBarsConfig;
+            const bothThresholds = thresholdHigh != null && thresholdLow != null;
+            const baseColor = inject.chartColors[0]?.backgroundColor as string || '#cccccc';
+            const colors = (chartData[1][0].data as number[]).map((value: number) => {
+                if (thresholdHigh != null && value > thresholdHigh) return colorAbove;
+                if (thresholdLow != null && value < thresholdLow) return colorBelow;
+                return bothThresholds ? colorBetween : baseColor;
+            });
+            chartData[1][0].backgroundColor = colors;
+            chartData[1][0].borderColor = colors;
+            inject.chartColors = [{ backgroundColor: colors, borderColor: colors }];
+
+        } else if (cfg['showUniqueColors']) {
+            // Mode 2: Unique colors per bar (one color per label/category)
+            const uniqueBarColors: { value: string; color: string }[] = cfg['uniqueBarColors'] || [];
+            const colors = (chartData[1][0].data as number[]).map((_, idx) =>
+                uniqueBarColors[idx]?.color || this.paletaActual[idx % this.paletaActual.length]
+            );
+            chartData[1][0].backgroundColor = colors;
+            chartData[1][0].borderColor = colors;
+            inject.chartColors = [{ backgroundColor: colors, borderColor: colors }];
+
+        } else {
+            // Mode 3: Assigned colors per series (default behavior)
+            chartData[1].forEach((dataset, i) => {
+                try {
+                    const solidColor = inject.chartColors[i]?.borderColor as string;
+                    dataset.backgroundColor = solidColor;
+                    dataset.borderColor = solidColor;
+                } catch (err) {
+                    const fallbackColor = this.paletaActual[i % this.paletaActual.length];
+                    dataset.backgroundColor = fallbackColor;
+                    dataset.borderColor = fallbackColor;
+                }
+            });
+        }
+
+        inject.chartLegend = cfg.chartLegend ?? true;
+        inject.showLabels = cfg.showLabels ?? false;
+        inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
+        inject.showGridLines = cfg.showGridLines ?? true;
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        this.createBarComponent(inject);
+    }
+
+    private createBarComponent(inject: any) {
+        this.currentConfig = inject;
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaBarD3Component);
+        this.componentRef.instance.inject = inject;
+        this.chartClickSubscription = this.componentRef.instance.onClick.subscribe(
+            (event) => this.onChartClick.emit({...event, query: this.props.query})
+        );
+        this.configUpdated.emit(this.currentConfig);
+    }
+
+    private renderParallelSets() {
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+
+        let inject: EdaD3 = new EdaD3;
+        inject.id = this.randomID();
+        inject.size = this.props.size;
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+        const categoryIndex = dataDescription.otherColumns[0].index;
+        const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
+        inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
+        this.createParallelSetsComponent(inject);
+    }
+
+    private createParallelSetsComponent(inject: any) {
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaD3Component);
+        this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onClick.subscribe((event) => {
+            this.onChartClick.emit({ ...event, query: this.props.query });
+        })
+
+    }
+
+    private renderFunnel() {
+        if (!this.props?.data?.values?.length) {
+            return;
+        }
+
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const inject: EdaD3 = new EdaD3();
+        inject.id = this.randomID();
+        inject.size = this.props.size;
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+        inject.assignedColors = this.resolveAndPersistGradientColors(this.props, this.paletaActual);
+        this.createFunnelComponent(inject);
+    }
+
+    private createFunnelComponent(inject: any) {
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaFunnelComponent);
+        this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onClick.subscribe((event) => 
+            this.onChartClick.emit({...event, query: this.props.query})
+        );
+    }
+
+    private renderBubblechart() {
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        let inject: EdaD3 = new EdaD3;
+        inject.id = this.randomID();
+        inject.size = this.props.size;
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+        const categoryIndex = dataDescription.otherColumns[0].index;
+        const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
+        inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
+        this.createBubblechartComponent(inject);
+    }
+    
+    private createBubblechartComponent(inject: any) {
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaBubblechartComponent);
+        this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+
+    }
+
+    private renderTreeMap() {
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const inject: TreeMap = new TreeMap();
+        inject.id = this.randomID();
+        inject.size = this.props.size;
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+        
+        const categoryIndex = dataDescription.otherColumns[0].index;
+        const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
+        inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
+        
+        this.createTreeMap(inject);
+    }
+
+
+    private createTreeMap(inject: any) {
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaTreeMap);
+        this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+    }
+
+    private renderScatter() {
+
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        let inject: ScatterPlot = new ScatterPlot;
+        inject.id = this.randomID();
+        inject.size = this.props.size;
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;        
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+        const categoryIndex = dataDescription.otherColumns[0].index;
+        const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
+        inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
+        this.createScatter(inject);
+    }
+
+    private createScatter(inject: any) {
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaScatter);
+        this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+
+    }
+
+
+    private renderSunburst() {
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        let inject: SunBurst = new SunBurst;
+        inject.id = this.randomID();
+        inject.size = this.props.size;
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+        const categoryIndex = dataDescription.otherColumns[0].index;
+        const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
+        inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
+        this.createSunburst(inject);
+    }
+
+    private createSunburst(inject: any) {
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaSunburstComponent);
+        this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+    }
+
+    private renderTreetable() {
+        const inject = this.props;
+        this.createTreetable(inject);
+    }
+
+    private createTreetable(inject: any) {
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaTreeTable);
+        this.componentRef.instance.inject = inject; // inject as input to the Treetable component
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+    }
+
     private randomID() {
         return Math.floor((1 + Math.random()) * 0x10000)
             .toString(16)
@@ -1279,12 +1789,20 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public updateComponent() {
         if (this.componentRef && !['table', 'crosstable'].includes(this.props.chartType)) {
             try {
-                // Charts registered in the D3 chart factory (doughnut, bubblechart, ...)
-                if (this.d3ChartFactory.has(this.props.chartType)) {
-                    this.updateFactoryChartColors(this.d3ChartFactory.get(this.props.chartType));
+                // Doughnut (D3)
+                if (this.props.chartType === 'doughnut') {
+                    this.updateDoughnutColors();
+                }
+                // PolarArea (D3)
+                else if (this.props.chartType === 'polarArea') {
+                    this.updatePolarAreaColors();
+                }
+                // Bar family (D3), except barline which stays on Chart.js
+                else if (this.props.chartType === 'bar' && this.props.edaChart !== 'barline') {
+                    this.updateBarColors();
                 }
                 // Charts ChartJS
-                else if (['bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar'].includes(this.props.chartType)) {
+                else if (['line', 'area', 'radar'].includes(this.props.chartType) || (this.props.chartType === 'bar' && this.props.edaChart === 'barline')) {
                     this.updateChartJSColors();
                 }
                 // KPI
@@ -1294,6 +1812,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 else if (this.props.chartType === 'kpitrend') {
                     this.updateKpiTrendColors();
                 }
+                // Charts D3
+                else if (['treeMap', 'knob', 'sunburst', 'funnel', 'parallelSets', 'bubblechart', 'scatterPlot'].includes(this.props.chartType)) {
+                    this.updateD3ChartColors(this.props.chartType);
+                }
                 // Maps
                 else if (['geoJsonMap', 'coordinatesMap'].includes(this.props.chartType)) {
                     this.updateMapColors();
@@ -1302,33 +1824,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 console.error('Error en updateComponent:', err);
             }
         }
-    }
-
-    /**
-     * Color-only re-render for chart types registered in D3ChartFactoryService.
-     */
-    public updateFactoryChartColors(def: ID3ChartPlugin) {
-        const config = this.props.config.getConfig();
-        const assignedColors = config['assignedColors'];
-
-        if (!assignedColors?.length) {
-            return;
-        }
-
-        def.onColorsUpdated?.(this.props, assignedColors);
-
-        if (this.chartClickSubscription) {
-            this.chartClickSubscription.unsubscribe();
-            this.chartClickSubscription = null;
-        }
-
-        setTimeout(() => {
-            if (this.componentRef) {
-                this.componentRef.destroy();
-                this.componentRef = null;
-            }
-            this.mountD3Chart(def);
-        });
     }
 
     public updateChartJSColors() {
@@ -1412,6 +1907,118 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
         // Re-render the map
         this.renderMap(this.props.chartType);
+    }
+
+    public updateDoughnutColors() {
+        const config = this.props.config.getConfig();
+        const assignedColors = config['assignedColors'];
+
+        if (!assignedColors?.length) {
+            return;
+        }
+
+        if (this.chartClickSubscription) {
+            this.chartClickSubscription.unsubscribe();
+            this.chartClickSubscription = null;
+        }
+
+        setTimeout(() => {
+            if (this.componentRef) {
+                this.componentRef.destroy();
+                this.componentRef = null;
+            }
+            this.renderDoughnut();
+        });
+    }
+
+    public updatePolarAreaColors() {
+        const config = this.props.config.getConfig();
+        const assignedColors = config['assignedColors'];
+
+        if (!assignedColors?.length) {
+            return;
+        }
+
+        if (this.chartClickSubscription) {
+            this.chartClickSubscription.unsubscribe();
+            this.chartClickSubscription = null;
+        }
+
+        setTimeout(() => {
+            if (this.componentRef) {
+                this.componentRef.destroy();
+                this.componentRef = null;
+            }
+            this.renderPolarArea();
+        });
+    }
+
+    public updateBarColors() {
+        const config = this.props.config.getConfig();
+        const assignedColors = config['assignedColors'];
+
+        if (!assignedColors?.length) {
+            return;
+        }
+
+        if (this.chartClickSubscription) {
+            this.chartClickSubscription.unsubscribe();
+            this.chartClickSubscription = null;
+        }
+
+        setTimeout(() => {
+            if (this.componentRef) {
+                this.componentRef.destroy();
+                this.componentRef = null;
+            }
+            this.renderBar();
+        });
+    }
+
+    public updateD3ChartColors(chartType: string) {
+        const config = this.props.config.getConfig();
+        const assignedColors = config['assignedColors'];
+
+        if (!assignedColors || !Array.isArray(assignedColors) || assignedColors.length === 0) {
+            return;
+        }
+
+        // Extract only the colors from the assignedColors array
+        const colors = assignedColors.map(item => item.color);
+
+        switch (chartType) {
+            case 'treeMap':
+                this.props.config.setConfig(new TreeMapConfig(colors));
+                this.renderTreeMap();
+                break;
+            case 'sunburst':
+                this.props.config.setConfig(new SunburstConfig(colors));
+                this.renderSunburst();
+                break;
+            case 'parallelSets':
+                this.props.config.setConfig(new SankeyConfig(colors));
+                this.renderParallelSets();
+                break;
+            case 'scatterPlot':
+                this.props.config.setConfig(new ScatterConfig(colors));
+                this.renderScatter();
+                break;
+            case 'funnel':
+                this.props.config.setConfig(new FunnelConfig(assignedColors));
+                this.renderFunnel();
+                break;
+            // case 'knob': // Knob disabled for now because it does not work
+            //     this.props.config.setConfig(new KnobConfig(
+            //         assignedColors[0]?.color,config['limits']));
+            //     this.renderKnob();
+            //     break;
+            case 'bubblechart':
+                this.props.config.setConfig(new BubblechartConfig(colors));
+                this.renderBubblechart();
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -1578,6 +2185,105 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const defaultR = typeof predSeries.pointRadius === 'number' ? predSeries.pointRadius : 5;
         predSeries.pointRadius = predSeries.data.map((_: any, i: number) => i === connIdx ? 0 : defaultR);
         predSeries.pointHoverRadius = predSeries.data.map((_: any, i: number) => i === connIdx ? 0 : defaultR + 1);
+    }
+
+    private resolveAndPersistColors(categories: string[], props: any, paletaActual: string[]): { value: string; color: string }[] {
+    
+    // Validate inputs
+    if (!categories || categories.length === 0) {
+        categories = ['default'];
+    }
+    
+    if (!paletaActual || paletaActual.length === 0) {
+        paletaActual = ['#10B4BD', '#1CEDB1', '#023E8A'];
+    }
+    
+    const savedAssignedColors = 
+        props.config.getConfig()['assignedColors'] || 
+        props.assignedColors || 
+        [];
+    
+    let assignedColors: { value: string; color: string }[];
+    
+    // If there are already saved colors AND categories match, 
+    // do not regenerate (avoids regeneration loop)
+    if (savedAssignedColors.length > 0) {
+        // Check if categories are the same
+        const savedValues = savedAssignedColors.map(ac => ac.value).sort();
+        const currentValues = categories.slice().sort();
+        const sameCategoriesCount = savedValues.length === currentValues.length;
+        
+        // If they have the same number of categories, assume they are the same data
+        // and simply map existing colors
+        if (sameCategoriesCount) {
+            assignedColors = categories.map((category, index) => {
+                const found = savedAssignedColors.find(ac => ac.value === category);
+                return found || {
+                    value: category,
+                    color: paletaActual[index % paletaActual.length]
+                };
+            });
+        } else {
+            // Categories changed (filter applied), map what you can
+            assignedColors = categories.map((category, index) => {
+                const found = savedAssignedColors.find(ac => ac.value === category);
+                return found || {
+                    value: category,
+                    color: paletaActual[index % paletaActual.length]
+                };
+            });
+        }
+    } 
+    
+    // Final validation
+    if (!assignedColors || assignedColors.length === 0) {
+        assignedColors = categories.map((cat, idx) => ({
+            value: cat,
+            color: paletaActual[idx % paletaActual.length]
+        }));
+    }
+    
+    
+    // ONLY persist if something actually changed
+    // Compare with saved data to avoid unnecessary writes --> this comes from double render
+    const needsUpdate = JSON.stringify(savedAssignedColors) !== JSON.stringify(assignedColors);
+    
+    if (needsUpdate) {
+        props.assignedColors = assignedColors;
+        const currentConfig = props.config.getConfig();
+        currentConfig['assignedColors'] = assignedColors;
+        props.config.setConfig(currentConfig);
+    }
+    
+    return assignedColors;
+}
+
+    private resolveAndPersistGradientColors(props: any, paletaActual: string[]): { value: string; color: string }[] {
+        // Read from multiple sources
+        const savedAssignedColors = props.config.getConfig()['assignedColors'] || props.assignedColors || [];
+        let assignedColors: { value: string; color: string }[];
+        
+        if (savedAssignedColors.length >= 2) {
+            const startColor = savedAssignedColors.find(ac => ac.value === 'start');
+            const endColor = savedAssignedColors.find(ac => ac.value === 'end');
+            
+            assignedColors = [
+                startColor || { value: 'start', color: savedAssignedColors[0]?.color || paletaActual[0] },
+                endColor || { value: 'end', color: savedAssignedColors[1]?.color || paletaActual[paletaActual.length - 1] }
+            ];
+        } else {
+            assignedColors = [
+                { value: 'start', color: paletaActual[0] },
+                { value: 'end', color: paletaActual[paletaActual.length - 1] }
+            ];
+        }
+        
+        // Persist in both places
+        props.assignedColors = assignedColors;
+        const currentConfig = props.config.getConfig();
+        currentConfig['assignedColors'] = assignedColors;
+        props.config.setConfig(currentConfig);
+        return assignedColors;
     }
 
     /**
