@@ -145,6 +145,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
    */
   private barFill(defs: any, series: BarSeries, categoryIdx: number, horizontal: boolean): string {
     const hex = this.barColor(series, categoryIdx);
+    if (!(this.inject.useGradient ?? true)) return hex;
     const id = this.gradientId(hex);
     let grad = defs.select(`#${id}`);
     if (grad.empty()) {
