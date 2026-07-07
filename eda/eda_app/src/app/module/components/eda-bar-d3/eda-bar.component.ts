@@ -206,6 +206,20 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     return labels.reduce((max, label) => Math.max(max, this.measureTextWidth(label, fontSizePx)), 0);
   }
 
+  private readonly maxCategoryChars = 8;
+
+  private truncateLabel(label: string, maxChars: number = this.maxCategoryChars): string {
+    return label.length > maxChars ? label.slice(0, maxChars - 1) + '…' : label;
+  }
+
+  /** Abbreviates large axis values (3.000.000 -> 3M) so they take up less space on the axis. */
+  private formatAxisValue(v: number): string {
+    const abs = Math.abs(v);
+    if (abs >= 1_000_000) return (v / 1_000_000).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + 'M';
+    if (abs >= 1_000) return (v / 1_000).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + 'k';
+    return v.toLocaleString('de-DE', { maximumFractionDigits: 0 });
+  }
+
   draw(): void {
     const container = this.svgContainer.nativeElement as HTMLElement;
     const width = container.clientWidth;
@@ -275,11 +289,13 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
           lastShownY = i * step;
         }
       });
-      const visibleLabels = this.categories.filter((_, i) => horizontalVisibleCatIndexes.has(i));
+      const visibleLabels = this.categories
+        .filter((_, i) => horizontalVisibleCatIndexes.has(i))
+        .map(c => this.truncateLabel(c));
       leftMargin = Math.min(Math.max(this.measureMaxLabelWidth(visibleLabels, 11) + 24, 60), width * 0.4);
     } else {
       const probeScale = d3.scaleLinear().domain([valueMin, valueMax]).nice();
-      const tickLabels = probeScale.ticks().map(probeScale.tickFormat());
+      const tickLabels = probeScale.ticks().map(v => this.formatAxisValue(v));
       leftMargin = Math.min(Math.max(this.measureMaxLabelWidth(tickLabels, 11) + 16, 40), width * 0.3);
     }
     const margin = { top: 16, right: 20, bottom: horizontal ? 30 : 50, left: leftMargin };
@@ -306,9 +322,13 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
         .call(gridAxis);
     }
 
-    // Axes
-    const categoryAxis: any = horizontal ? d3.axisLeft(categoryScale) : d3.axisBottom(categoryScale);
-    const valueAxis: any = horizontal ? d3.axisBottom(valueScale) : d3.axisLeft(valueScale);
+    // Axes. Category labels are truncated to a fixed character count and value numbers
+    // abbreviated (500k, 1M...) purely for display - the underlying scale/data keeps the full
+    // values, so click handling, tooltips and datalabels are unaffected.
+    const categoryAxis: any = (horizontal ? d3.axisLeft(categoryScale) : d3.axisBottom(categoryScale))
+      .tickFormat((d: string) => this.truncateLabel(d));
+    const valueAxis: any = (horizontal ? d3.axisBottom(valueScale) : d3.axisLeft(valueScale))
+      .tickFormat((v: any) => this.formatAxisValue(v));
 
     const catAxisG = g.append('g')
       .attr('class', 'eda-bar-axis')
@@ -330,7 +350,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       // names still get to show up between long ones instead of being skipped needlessly.
       const angle = Math.PI / 6; // matches the -30deg rotation above
       const footprints = this.categories.map(c => {
-        const w = this.measureTextWidth(c, 11);
+        const w = this.measureTextWidth(this.truncateLabel(c), 11);
         return w * Math.cos(angle) + 11 * Math.sin(angle);
       });
       const step = categoryScale.step();
