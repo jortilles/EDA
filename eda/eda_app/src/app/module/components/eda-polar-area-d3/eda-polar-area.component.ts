@@ -314,6 +314,16 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       defs = this.svg.append('defs');
     }
 
+    const shadowFilterId = `polar-area-shadow-${this.id}`;
+    if (defs.select(`#${shadowFilterId}`).empty()) {
+      defs.append('filter')
+        .attr('id', shadowFilterId)
+        .attr('x', '-50%').attr('y', '-50%').attr('width', '200%').attr('height', '200%')
+        .append('feDropShadow')
+        .attr('dx', 0).attr('dy', 2).attr('stdDeviation', 2.5)
+        .attr('flood-color', '#000000').attr('flood-opacity', 0.25);
+    }
+
     // Radial guide lines (created before the arcs group so they always paint underneath it).
     let gridGroup = this.svg.select('g.polar-area-grid');
     if (gridGroup.empty()) {
@@ -329,7 +339,10 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       .append('circle')
       .attr('class', 'polar-area-grid-ring')
       .merge(rings)
-      .attr('r', (v: number) => radiusScale(v));
+      .attr('r', (v: number) => radiusScale(v))
+      // Radial fade: rings closer to the center (where the wedges are densest) are more
+      // recessive, while the outermost ring reads as the chart's actual boundary.
+      .attr('stroke-opacity', (v: number) => 0.2 + 0.7 * (radiusScale(v) / maxRadius));
 
     let g = this.svg.select('g.polar-area-arcs');
     if (g.empty()) {
@@ -404,6 +417,7 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       // the center - a stroke around the whole outline (including the two straight radial edges)
       // would always overwrite the fill near that point with the border color, since the wedge's
       // local width shrinks below the stroke width right where they should all meet cleanly.
+      .attr('filter', `url(#${shadowFilterId})`)
       .style('cursor', 'pointer');
     enter.each((d: any) => {
       d.data._current = { startAngle: d.startAngle, endAngle: d.endAngle, radius: 0 };
