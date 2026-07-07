@@ -339,10 +339,11 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     this.currentLabelsContainer = g;
 
     // Ring value labels get their own overlay, appended (once) AFTER the arcs group so they
-    // always paint on top of it - otherwise a slice reaching past a ring visually covered its
-    // label. Each label also gets a backdrop pill matching the panel background, so legibility
-    // doesn't depend on which slice color happens to sit behind it (mirrors Chart.js's
-    // ticks.backdropColor for the same 'r' scale).
+    // always paint on top of it - otherwise a slice (or a guide line) crossing behind a label
+    // made the number unreadable. Instead of a boxy backdrop, each label gets a text "halo": a
+    // thick stroke in the panel's own background color drawn BEHIND the fill (paint-order:
+    // stroke), the same technique cartography uses for labels over a variable background -
+    // legible without a visible rectangle competing with the chart's circular guides.
     let gridLabelsGroup = this.svg.select('g.polar-area-grid-labels');
     if (gridLabelsGroup.empty()) {
       gridLabelsGroup = this.svg.append('g').attr('class', 'polar-area-grid-labels');
@@ -351,24 +352,17 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     gridLabelsGroup.style('display', (this.inject.showGridLines ?? true) ? null : 'none');
     gridLabelsGroup.selectAll('*').remove();
     ringValues.forEach((v: number) => {
-      const labelGroup = gridLabelsGroup.append('g')
-        .attr('class', 'polar-area-grid-label-group')
-        .attr('transform', `translate(0,${-radiusScale(v)})`);
-      const textEl = labelGroup.append('text')
+      gridLabelsGroup.append('text')
         .attr('class', 'polar-area-grid-label')
+        .attr('transform', `translate(0,${-radiusScale(v)})`)
         .attr('text-anchor', 'middle')
         .attr('dy', '-3')
         .style('font-family', this.fontFamily)
+        .style('paint-order', 'stroke')
+        .attr('stroke', this.panelBackgroundColor)
+        .attr('stroke-width', 3)
+        .attr('stroke-linejoin', 'round')
         .text(this.formatAxisValue(v));
-      const bbox = (textEl.node() as SVGTextElement).getBBox();
-      const paddingX = 4, paddingY = 2;
-      labelGroup.insert('rect', 'text')
-        .attr('x', bbox.x - paddingX)
-        .attr('y', bbox.y - paddingY)
-        .attr('width', bbox.width + paddingX * 2)
-        .attr('height', bbox.height + paddingY * 2)
-        .attr('rx', 3)
-        .attr('fill', this.panelBackgroundColor);
     });
 
     const total = this.slices.reduce((sum, s) => sum + s.value, 0);
