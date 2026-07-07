@@ -204,7 +204,7 @@
       </div>
       <div class="text-sm text-muted-foreground text-center">
         @if (report.config?.modifiedAt) {
-        <span>{{report.config.modifiedAt}}</span>
+        <span>{{report.config.modifiedAt | date:'yyyy-MM-dd'}}</span>
         }
       </div>
       <div class="flex items-center justify-end">
