@@ -9,6 +9,13 @@
   min-height: 0;
 }
 
+/* SVG's initial UA style is overflow:hidden on the root element - without this, a label pill
+   whose padded box pokes slightly past the outer radius (near the very edge of the donut) gets
+   silently clipped away instead of just drawn past the nominal chart bounds. */
+.eda-doughnut-wrapper .svg-container svg {
+  overflow: visible;
+}
+
 /* Tooltip appended by D3 to <body> (outside this component's template, so it needs ::ng-deep
    to escape view encapsulation). Defined locally rather than relying on the shared global
    `.d3tooltip` class in prime-styles/custom.css, since that stylesheet is never actually

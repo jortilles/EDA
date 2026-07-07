@@ -85,6 +85,14 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /** Abbreviates large axis values (3.000.000 -> 3M) so the grid ring labels stay readable in a small chart. */
+  private formatAxisValue(v: number): string {
+    const abs = Math.abs(v);
+    if (abs >= 1_000_000) return (v / 1_000_000).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + 'M';
+    if (abs >= 1_000) return (v / 1_000).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + 'k';
+    return v.toLocaleString('de-DE', { maximumFractionDigits: 2 });
+  }
+
   private buildSlices(): void {
     const labels: string[] = this.inject.chartLabels || [];
     const dataset = this.inject.chartDataset?.[0] || { data: [] };
@@ -269,13 +277,14 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const margin = 10;
     const maxRadius = Math.max(Math.min(width, height) / 2 - margin, 1);
+    const visibleSlices = this.slices.filter((_, i) => !this.hiddenIndexes.has(i));
     // Radius (not angle) encodes value here - every slice gets an equal angular slot
-    // (d3.pie().value(() => 1) below), and its length along that slot is scaled from
-    // 0 up to maxRadius by the largest value across ALL slices (not just visible ones,
-    // so hiding one via the legend doesn't rescale the rest). Uses sqrt, not linear, so
-    // the perceived AREA of a slice is proportional to its value (area grows with r²) -
-    // the standard convention for rose/Nightingale charts.
-    const maxValue = d3.max(this.slices, (s: PolarAreaSlice) => s.value) || 1;
+    // (d3.pie().value(() => 1) below), and its length along that slot is scaled from 0 up to
+    // maxRadius by the largest value among the VISIBLE slices - so hiding a dominant series
+    // lets the rest rescale and fill the available radius instead of staying tiny relative to
+    // a hidden outlier. Uses sqrt, not linear, so the perceived AREA of a slice is proportional
+    // to its value (area grows with r²) - the standard convention for rose/Nightingale charts.
+    const maxValue = d3.max(visibleSlices, (s: PolarAreaSlice) => s.value) || 1;
     const radiusScale = d3.scaleSqrt().domain([0, maxValue]).range([0, maxRadius]);
 
     const arcGen: any = d3.arc().innerRadius(0).outerRadius((d: any) => radiusScale(d.data.value));
@@ -305,25 +314,46 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       .merge(rings)
       .attr('r', (v: number) => radiusScale(v));
 
-    const ringLabels = gridGroup.selectAll('text.polar-area-grid-label').data(ringValues);
-    ringLabels.exit().remove();
-    ringLabels.enter()
-      .append('text')
-      .attr('class', 'polar-area-grid-label')
-      .merge(ringLabels)
-      .attr('y', (v: number) => -radiusScale(v))
-      .attr('dy', '-3')
-      .style('font-family', this.fontFamily)
-      .text((v: number) => v.toLocaleString('de-DE', { maximumFractionDigits: 2 }));
-
     let g = this.svg.select('g.polar-area-arcs');
     if (g.empty()) {
       g = this.svg.append('g').attr('class', 'polar-area-arcs');
     }
     g.attr('transform', `translate(${width / 2},${height / 2})`);
 
+    // Ring value labels get their own overlay, appended (once) AFTER the arcs group so they
+    // always paint on top of it - otherwise a slice reaching past a ring visually covered its
+    // label. Each label also gets a backdrop pill matching the panel background, so legibility
+    // doesn't depend on which slice color happens to sit behind it (mirrors Chart.js's
+    // ticks.backdropColor for the same 'r' scale).
+    let gridLabelsGroup = this.svg.select('g.polar-area-grid-labels');
+    if (gridLabelsGroup.empty()) {
+      gridLabelsGroup = this.svg.append('g').attr('class', 'polar-area-grid-labels');
+    }
+    gridLabelsGroup.attr('transform', `translate(${width / 2},${height / 2})`);
+    gridLabelsGroup.style('display', (this.inject.showGridLines ?? true) ? null : 'none');
+    gridLabelsGroup.selectAll('*').remove();
+    ringValues.forEach((v: number) => {
+      const labelGroup = gridLabelsGroup.append('g')
+        .attr('class', 'polar-area-grid-label-group')
+        .attr('transform', `translate(0,${-radiusScale(v)})`);
+      const textEl = labelGroup.append('text')
+        .attr('class', 'polar-area-grid-label')
+        .attr('text-anchor', 'middle')
+        .attr('dy', '-3')
+        .style('font-family', this.fontFamily)
+        .text(this.formatAxisValue(v));
+      const bbox = (textEl.node() as SVGTextElement).getBBox();
+      const paddingX = 4, paddingY = 2;
+      labelGroup.insert('rect', 'text')
+        .attr('x', bbox.x - paddingX)
+        .attr('y', bbox.y - paddingY)
+        .attr('width', bbox.width + paddingX * 2)
+        .attr('height', bbox.height + paddingY * 2)
+        .attr('rx', 3)
+        .attr('fill', this.panelBackgroundColor);
+    });
+
     const total = this.slices.reduce((sum, s) => sum + s.value, 0);
-    const visibleSlices = this.slices.filter((_, i) => !this.hiddenIndexes.has(i));
     this.slices.forEach(slice => this.ensureGradient(defs, slice, radiusScale(slice.value)));
 
     const pie: any = d3.pie().value(() => 1).sort(null);
@@ -358,8 +388,10 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       .append('path')
       .attr('class', 'polar-area-arc')
       .attr('fill', (d: any) => this.baseFill(d.data.label, d.data.color))
-      .attr('stroke', this.panelBackgroundColor)
-      .attr('stroke-width', 2)
+      // Unlike the doughnut (a fixed-width ring), every wedge here narrows to a single point at
+      // the center - a stroke around the whole outline (including the two straight radial edges)
+      // would always overwrite the fill near that point with the border color, since the wedge's
+      // local width shrinks below the stroke width right where they should all meet cleanly.
       .style('cursor', 'pointer');
     enter.each((d: any) => {
       d.data._current = { startAngle: d.startAngle, endAngle: d.endAngle, radius: 0 };
@@ -384,24 +416,49 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .on('end', () => { this.hasRendered = true; });
 
-    g.selectAll('text.polar-area-label').remove();
+    g.selectAll('g.polar-area-label').remove();
     if (showLabelsOn) {
-      g.selectAll('text.polar-area-label')
-        .data(arcs)
-        .join('text')
+      // Mirrors the Chart.js datalabels config for doughnut/polarArea: a pill-shaped badge
+      // (backgroundColor = the slice's own color, white border, borderRadius bigger than half
+      // the box height so it always renders as a full capsule) rather than plain floating text.
+      // SVG has no auto-sizing background, so text is measured via getBBox() first, then a
+      // <rect> is inserted behind it sized to the measured box + padding.
+      const visibleLabelArcs = arcs.filter((d: any) => {
+        const percentage = total > 0 ? (d.data.value / total) * 100 : 0;
+        return percentage > labelThreshold;
+      });
+
+      const labelGroups = g.selectAll('g.polar-area-label')
+        .data(visibleLabelArcs, (d: any) => String(d.data.label))
+        .join('g')
         .attr('class', 'polar-area-label')
         .attr('transform', (d: any) => `translate(${arcGen.centroid(d)})`)
-        .attr('text-anchor', 'middle')
-        .style('font-size', '12px')
-        .style('font-weight', 'bold')
-        .style('font-family', this.fontFamily)
-        .style('fill', 'white')
-        .style('pointer-events', 'none')
-        .text((d: any) => {
-          const percentage = total > 0 ? (d.data.value / total) * 100 : 0;
-          if (percentage <= labelThreshold) return '';
-          return this.formatLabel(d.data.value, percentage);
-        });
+        .style('pointer-events', 'none');
+
+      labelGroups.each((d: any, i: number, nodes: any) => {
+        const group = d3.select(nodes[i] as SVGGElement);
+        group.selectAll('*').remove();
+        const percentage = total > 0 ? (d.data.value / total) * 100 : 0;
+        const textEl = group.append('text')
+          .attr('text-anchor', 'middle')
+          .attr('dy', '0.35em')
+          .style('font-size', '12px')
+          .style('font-weight', 'bold')
+          .style('font-family', this.fontFamily)
+          .style('fill', 'white')
+          .text(this.formatLabel(d.data.value, percentage));
+        const bbox = (textEl.node() as SVGTextElement).getBBox();
+        const paddingX = 8, paddingY = 4;
+        group.insert('rect', 'text')
+          .attr('x', bbox.x - paddingX)
+          .attr('y', bbox.y - paddingY)
+          .attr('width', bbox.width + paddingX * 2)
+          .attr('height', bbox.height + paddingY * 2)
+          .attr('rx', (bbox.height + paddingY * 2) / 2)
+          .attr('fill', d.data.color)
+          .attr('stroke', 'white')
+          .attr('stroke-width', 2);
+      });
     }
   }
 }

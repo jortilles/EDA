@@ -385,24 +385,49 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    g.selectAll('text.doughnut-label').remove();
+    g.selectAll('g.doughnut-label').remove();
     if (showLabelsOn) {
-      g.selectAll('text.doughnut-label')
-        .data(arcs)
-        .join('text')
+      // Mirrors the Chart.js datalabels config for doughnut/polarArea: a pill-shaped badge
+      // (backgroundColor = the slice's own color, white border, borderRadius bigger than half
+      // the box height so it always renders as a full capsule) rather than plain floating text.
+      // SVG has no auto-sizing background, so text is measured via getBBox() first, then a
+      // <rect> is inserted behind it sized to the measured box + padding.
+      const visibleLabelArcs = arcs.filter((d: any) => {
+        const percentage = total > 0 ? (d.data.value / total) * 100 : 0;
+        return percentage > labelThreshold;
+      });
+
+      const labelGroups = g.selectAll('g.doughnut-label')
+        .data(visibleLabelArcs, (d: any) => String(d.data.label))
+        .join('g')
         .attr('class', 'doughnut-label')
         .attr('transform', (d: any) => `translate(${arcGen.centroid(d)})`)
-        .attr('text-anchor', 'middle')
-        .style('font-size', '12px')
-        .style('font-weight', 'bold')
-        .style('font-family', this.fontFamily)
-        .style('fill', 'white')
-        .style('pointer-events', 'none')
-        .text((d: any) => {
-          const percentage = total > 0 ? (d.data.value / total) * 100 : 0;
-          if (percentage <= labelThreshold) return '';
-          return this.formatLabel(d.data.value, percentage);
-        });
+        .style('pointer-events', 'none');
+
+      labelGroups.each((d: any, i: number, nodes: any) => {
+        const group = d3.select(nodes[i] as SVGGElement);
+        group.selectAll('*').remove();
+        const percentage = total > 0 ? (d.data.value / total) * 100 : 0;
+        const textEl = group.append('text')
+          .attr('text-anchor', 'middle')
+          .attr('dy', '0.35em')
+          .style('font-size', '12px')
+          .style('font-weight', 'bold')
+          .style('font-family', this.fontFamily)
+          .style('fill', 'white')
+          .text(this.formatLabel(d.data.value, percentage));
+        const bbox = (textEl.node() as SVGTextElement).getBBox();
+        const paddingX = 8, paddingY = 4;
+        group.insert('rect', 'text')
+          .attr('x', bbox.x - paddingX)
+          .attr('y', bbox.y - paddingY)
+          .attr('width', bbox.width + paddingX * 2)
+          .attr('height', bbox.height + paddingY * 2)
+          .attr('rx', (bbox.height + paddingY * 2) / 2)
+          .attr('fill', d.data.color)
+          .attr('stroke', 'white')
+          .attr('stroke-width', 2);
+      });
     }
   }
 }
