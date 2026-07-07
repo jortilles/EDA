@@ -75,7 +75,7 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
   }> = [
     {
       type: "public",
-      label: $localize`:@@Common:Común`,
+      label: $localize`:@@Public:Público`,
       icon: "fa-circle",
       color: "#add8e7"
     },
@@ -101,13 +101,13 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
   }> = [
     {
       type: "shared",
-      label: $localize`:@@Public:Público`,
+      label: $localize`:@@Common:Común`,
       icon: "fa-circle",
       color: "#b4bc32"
     },
     {
       type: "public",
-      label: $localize`:@@Common:Común`,
+      label: $localize`:@@Public:Público`,
       icon: "fa-circle",
       color: "#add8e7"
     },
@@ -132,8 +132,8 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
 
   // Dashboard Type Translations
   public dashboardTypeTranslations = {
-    public: $localize`:@@Common:Común`,
-    shared: $localize`:@@Public:Público`,
+    public: $localize`:@@Public:Público`,
+    shared: $localize`:@@Common:Común`,
     group: $localize`:@@Group:Grupo`,
     private: $localize`:@@Private:Privado`
   };
