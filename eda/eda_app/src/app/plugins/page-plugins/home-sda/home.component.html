@@ -43,7 +43,7 @@
                 <input type="text" class="flex-1 min-w-0 rounded-md border border-input bg-background px-3 py-1.5 text-sm"
                   [(ngModel)]="tagSearchTerm" (input)="filterTags()" i18n-placeholder="@@tagSearch" placeholder="Buscar etiqueta">
                 <button type="button" class="shrink-0 rounded-md p-1.5 hover:bg-muted"
-                  [class.text-corporate-primary]="selectedTags.length > 0" [class.text-muted-foreground]="selectedTags.length === 0"
+                  [class.text-corporate-warning]="selectedTags.length > 0" [class.text-muted-foreground]="selectedTags.length === 0"
                   [disabled]="selectedTags.length === 0" (click)="clearTagFilter()" i18n-title="@@removeFilter" title="Quitar filtro">
                   <i class="mdi mdi-filter-remove"></i>
                 </button>
@@ -77,7 +77,7 @@
                 <input type="text" class="flex-1 min-w-0 rounded-md border border-input bg-background px-3 py-1.5 text-sm"
                   [(ngModel)]="groupSearchTerm" (input)="filterGroups()" i18n-placeholder="@@groupSearch" placeholder="Buscar grupo">
                 <button type="button" class="shrink-0 rounded-md p-1.5 hover:bg-muted"
-                  [class.text-corporate-primary]="selectedGroups.length > 0" [class.text-muted-foreground]="selectedGroups.length === 0"
+                  [class.text-corporate-warning]="selectedGroups.length > 0" [class.text-muted-foreground]="selectedGroups.length === 0"
                   [disabled]="selectedGroups.length === 0" (click)="clearGroupFilter()" i18n-title="@@removeFilter" title="Quitar filtro">
                   <i class="mdi mdi-filter-remove"></i>
                 </button>
@@ -134,7 +134,7 @@
                 <input type="text" class="flex-1 min-w-0 rounded-md border border-input bg-background px-3 py-1.5 text-sm"
                   [(ngModel)]="typeSearchTerm" (ngModelChange)="filterTypes()" i18n-placeholder="@@typeSearch" placeholder="Buscar tipo">
                 <button type="button" class="shrink-0 rounded-md p-1.5 hover:bg-muted"
-                  [class.text-corporate-primary]="selectedTypes.length > 0" [class.text-muted-foreground]="selectedTypes.length === 0"
+                  [class.text-corporate-warning]="selectedTypes.length > 0" [class.text-muted-foreground]="selectedTypes.length === 0"
                   [disabled]="selectedTypes.length === 0" (click)="clearTypeFilter()" i18n-title="@@removeFilter" title="Quitar filtro">
                   <i class="mdi mdi-filter-remove"></i>
                 </button>
@@ -163,16 +163,16 @@
         <!-- Clear all filters -->
         <button type="button" class="rounded-md p-2 border border-transparent text-sm flex items-center justify-center"
           [class.bg-muted]="!hasActiveFilters()" [class.text-muted-foreground]="!hasActiveFilters()"
-          [class.btn-corporate-gradient]="hasActiveFilters()" [class.text-white]="hasActiveFilters()"
+          [class.btn-corporate-warning]="hasActiveFilters()" [class.text-black]="hasActiveFilters()"
           [disabled]="!hasActiveFilters()" (click)="clearAllFilters()" i18n-title="@@clearAllFilters" title="Eliminar todos los filtros">
           <i class="mdi mdi-filter-remove"></i>
         </button>
 
         <!-- Count indicator -->
         <span class="ml-auto rounded-md px-3 py-1.5"
-          [class.bg-muted]="!hasActiveFilters()" [class.btn-corporate-gradient]="hasActiveFilters()">
-          <span id="count-indicator" class="text-sm" [class.text-muted-foreground]="!hasActiveFilters()"
-            [class.text-white]="hasActiveFilters()">
+          [class.bg-muted]="!hasActiveFilters()" [class.btn-corporate-warning]="hasActiveFilters()">
+          <span id="count-indicator" class="text-sm font-semibold" [class.text-muted-foreground]="!hasActiveFilters()"
+            [class.text-black]="hasActiveFilters()">
             {{ visibleDashboards.length }} / {{ allDashboards.length }}
           </span>
         </span>

@@ -4,6 +4,20 @@
   background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient));
 }
 
+/* ---- Active-filter warning style (distinct from the corporate/primary action color) ---- */
+.text-corporate-warning {
+  color: #FFC107;
+  transition: color 0.2s ease;
+}
+.text-corporate-warning:hover { color: #E0A800; }
+.btn-corporate-warning {
+  background: #FFC107;
+  transition: background-color 0.2s ease;
+}
+.btn-corporate-warning:hover {
+  background: #E0A800;
+}
+
 /* ---- Filter dropdown counter badge ---- */
 .filter-count-badge {
   display: inline-flex;
@@ -13,8 +27,8 @@
   height: 1.1rem;
   padding: 0 0.3rem;
   border-radius: 9999px;
-  background-color: var(--corporate-primary);
-  color: #fff;
+  background-color: #FFC107;
+  color: #000;
   font-size: 0.65rem;
   font-weight: 600;
 }
