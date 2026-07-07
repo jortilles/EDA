@@ -128,6 +128,10 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
   }
 
+  private darkenHex(hex: string, amount: number): string {
+    return this.lightenHex(hex, -amount);
+  }
+
   private sanitizeId(value: string): string {
     return String(value).replace(/[^a-zA-Z0-9_-]/g, '_');
   }
@@ -161,18 +165,6 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   private removeTooltip(): void {
     if (this.div) { this.div.remove(); this.div = null; }
-  }
-
-  private readonly barGrowPx = 6;
-
-  // Both a simple bar (anchored at the zero baseline) and one stacked segment (anchored at the
-  // segment below it) reduce to the same shape: a "near" edge that never moves and a "far" edge
-  // that grows outward on hover - horizontal bars use the result as x/width, vertical ones as
-  // y/height. `far`/`near` are already-scaled screen positions, not data values.
-  private growBox(near: number, far: number, grow: boolean): { pos: number; size: number } {
-    const amount = grow ? this.barGrowPx : 0;
-    const adjustedFar = far >= near ? far + amount : far - amount;
-    return { pos: Math.min(near, adjustedFar), size: Math.abs(adjustedFar - near) };
   }
 
   private formatValue(value: number): string {
@@ -475,13 +467,13 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
           })
           .on('mouseover', (event: any, d: any) => {
             const target = event.currentTarget;
-            d3.select(target).raise();
-            const near = valueScale(d[0]), far = valueScale(d[1]);
-            const grown = this.growBox(near, far, true);
-            d3.select(target)
-              .interrupt('grow').transition('grow').duration(150)
-              .attr(horizontal ? 'x' : 'y', grown.pos)
-              .attr(horizontal ? 'width' : 'height', grown.size);
+            const hex = this.barColor(series, this.categories.indexOf(d.data.cat));
+            // Same reasoning as the doughnut: fill can't be smoothly transitioned straight from
+            // a url(#gradient) reference to a flat color (renders blank for the duration), so
+            // swap in the flat base color first, instantly, then transition flat -> flat.
+            d3.select(target).attr('fill', hex)
+              .interrupt('color').transition('color').duration(150)
+              .attr('fill', this.darkenHex(hex, 40));
             if (labelSel) {
               labelSel.filter((ld: any) => ld === d)
                 .interrupt('labelGrow').transition('labelGrow').duration(150)
@@ -496,12 +488,13 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
           .on('mousemove', (event: any) => this.moveTooltip(event))
           .on('mouseout', (event: any, d: any) => {
             const target = event.currentTarget;
-            const near = valueScale(d[0]), far = valueScale(d[1]);
-            const original = this.growBox(near, far, false);
+            const hex = this.barColor(series, this.categories.indexOf(d.data.cat));
             d3.select(target)
-              .interrupt('grow').transition('grow').duration(150)
-              .attr(horizontal ? 'x' : 'y', original.pos)
-              .attr(horizontal ? 'width' : 'height', original.size);
+              .interrupt('color').transition('color').duration(150)
+              .attr('fill', hex)
+              .on('end', () => {
+                d3.select(target).attr('fill', this.barFill(defs, series, this.categories.indexOf(d.data.cat), horizontal));
+              });
             if (labelSel) {
               labelSel.filter((ld: any) => ld === d)
                 .interrupt('labelGrow').transition('labelGrow').duration(150)
@@ -560,12 +553,13 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
           .on('click', (event: any, d: any) => emitClick(d.catIdx, series.label, d.value))
           .on('mouseover', (event: any, d: any) => {
             const target = event.currentTarget;
-            d3.select(target).raise();
-            const grown = this.growBox(zeroPos, valueScale(d.value), true);
-            d3.select(target)
-              .interrupt('grow').transition('grow').duration(150)
-              .attr(horizontal ? 'x' : 'y', grown.pos)
-              .attr(horizontal ? 'width' : 'height', grown.size);
+            const hex = this.barColor(series, d.catIdx);
+            // Same reasoning as the doughnut: fill can't be smoothly transitioned straight from
+            // a url(#gradient) reference to a flat color (renders blank for the duration), so
+            // swap in the flat base color first, instantly, then transition flat -> flat.
+            d3.select(target).attr('fill', hex)
+              .interrupt('color').transition('color').duration(150)
+              .attr('fill', this.darkenHex(hex, 40));
             if (labelSel) {
               labelSel.filter((ld: any) => ld === d)
                 .interrupt('labelGrow').transition('labelGrow').duration(150)
@@ -578,11 +572,13 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
           .on('mousemove', (event: any) => this.moveTooltip(event))
           .on('mouseout', (event: any, d: any) => {
             const target = event.currentTarget;
-            const original = this.growBox(zeroPos, valueScale(d.value), false);
+            const hex = this.barColor(series, d.catIdx);
             d3.select(target)
-              .interrupt('grow').transition('grow').duration(150)
-              .attr(horizontal ? 'x' : 'y', original.pos)
-              .attr(horizontal ? 'width' : 'height', original.size);
+              .interrupt('color').transition('color').duration(150)
+              .attr('fill', hex)
+              .on('end', () => {
+                d3.select(target).attr('fill', this.barFill(defs, series, d.catIdx, horizontal));
+              });
             if (labelSel) {
               labelSel.filter((ld: any) => ld === d)
                 .interrupt('labelGrow').transition('labelGrow').duration(150)
