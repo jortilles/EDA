@@ -30,7 +30,5 @@ eda/eda_app/src/app/config/config.ts
 eda/eda_mcp/dist
 eda/eda_mcp/node_modules
 #APP plugin-Registry
-eda/eda_app/src/app/plugins/datasource-plugins/datasource-plugin-registry.ts
-eda/eda_app/src/app/plugins/page-plugins/page-plugin-registry.ts
 eda/eda_api/config/sinergiacrm.config.js
 eda/eda_app/proxy.conf.json
