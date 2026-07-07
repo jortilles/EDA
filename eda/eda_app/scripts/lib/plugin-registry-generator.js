@@ -7,20 +7,86 @@ const ts = require('typescript');
 const META_FILENAME = 'plugin.meta.ts';
 
 /**
- * plugin.meta.ts files have no imports, so they can be transpiled and
- * evaluated in isolation without pulling in Angular/RxJS.
+ * Reads the literal value of a TypeScript AST expression node (string, number,
+ * boolean, null, array or nested object literals). Never executes any code -
+ * unsupported expressions (calls, identifiers, spreads, etc.) throw instead of
+ * being evaluated, since plugin.meta.ts files must only ever describe data.
+ */
+function literalFromNode(node, metaPath) {
+    switch (node.kind) {
+        case ts.SyntaxKind.StringLiteral:
+        case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
+            return node.text;
+        case ts.SyntaxKind.NumericLiteral:
+            return Number(node.text);
+        case ts.SyntaxKind.TrueKeyword:
+            return true;
+        case ts.SyntaxKind.FalseKeyword:
+            return false;
+        case ts.SyntaxKind.NullKeyword:
+            return null;
+        case ts.SyntaxKind.PrefixUnaryExpression:
+            if (node.operator === ts.SyntaxKind.MinusToken) {
+                return -literalFromNode(node.operand, metaPath);
+            }
+            break;
+        case ts.SyntaxKind.ArrayLiteralExpression:
+            return node.elements.map((el) => literalFromNode(el, metaPath));
+        case ts.SyntaxKind.ObjectLiteralExpression:
+            return objectLiteralFromNode(node, metaPath);
+        default:
+            break;
+    }
+
+    throw new Error(
+        `[plugin-registry] ${metaPath}: expresión no soportada en "meta" (${ts.SyntaxKind[node.kind]}). ` +
+        `Solo se permiten literales: string, number, boolean, null, arrays y objetos.`
+    );
+}
+
+function objectLiteralFromNode(objectLiteral, metaPath) {
+    const result = {};
+    for (const prop of objectLiteral.properties) {
+        if (!ts.isPropertyAssignment(prop)) {
+            throw new Error(
+                `[plugin-registry] ${metaPath}: solo se permiten propiedades "clave: valor" en "meta" ` +
+                `(nada de spreads, shorthand ni métodos).`
+            );
+        }
+        const key = ts.isIdentifier(prop.name) || ts.isStringLiteral(prop.name) || ts.isNumericLiteral(prop.name)
+            ? prop.name.text
+            : prop.name.getText();
+        result[key] = literalFromNode(prop.initializer, metaPath);
+    }
+    return result;
+}
+
+/**
+ * Parses plugin.meta.ts as an AST and reads the `export const meta = {...}`
+ * object literal directly, without transpiling or executing the file. This
+ * intentionally avoids `new Function()`/eval-equivalent code execution over
+ * repo-authored files.
  */
 function loadMeta(metaPath) {
     const source = fs.readFileSync(metaPath, 'utf8');
-    const { outputText } = ts.transpileModule(source, {
-        compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2019 },
-    });
+    const sourceFile = ts.createSourceFile(metaPath, source, ts.ScriptTarget.ES2019, true);
 
-    const sandboxModule = { exports: {} };
-    const run = new Function('module', 'exports', outputText);
-    run(sandboxModule, sandboxModule.exports);
+    for (const statement of sourceFile.statements) {
+        if (!ts.isVariableStatement(statement)) continue;
+        if (!ts.getModifiers(statement)?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)) continue;
 
-    return sandboxModule.exports.meta;
+        for (const decl of statement.declarationList.declarations) {
+            if (!ts.isIdentifier(decl.name) || decl.name.text !== 'meta' || !decl.initializer) continue;
+
+            if (!ts.isObjectLiteralExpression(decl.initializer)) {
+                throw new Error(`[plugin-registry] ${metaPath}: "export const meta" debe ser un objeto literal.`);
+            }
+
+            return objectLiteralFromNode(decl.initializer, metaPath);
+        }
+    }
+
+    throw new Error(`[plugin-registry] ${metaPath}: no se encontró "export const meta = {...}".`);
 }
 
 /**
