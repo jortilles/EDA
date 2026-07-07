@@ -297,11 +297,14 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
 
     const margin = 10;
     const outerRadius = Math.max(Math.min(width, height) / 2 - margin, 1);
-    // The dialog's slider goes 0-99 (0 = full pie, 99 = today's classic look), which we scale
-    // down to an actual 0%-50% inner/outer radius ratio - so 99 never exceeds the original cutout.
-    const innerRadiusUiValue = Math.min(Math.max(this.inject.innerRadiusPercent ?? 99, 0), 99);
-    const innerRadiusRatio = (innerRadiusUiValue / 99) * 0.5;
+    // The dialog's slider goes 0-95: 0 = full pie (inner radius hooks to the center, no hole),
+    // 95 = the ring collapsed down to a thin line (inner radius 95% of the outer one). Capped at
+    // 95 rather than 99 - past that, the ring gets thinner than its own border stroke, so it
+    // visually reduces to just the panel-colored border line instead of disappearing outright.
+    const innerRadiusUiValue = Math.min(Math.max(this.inject.innerRadiusPercent ?? 95, 0), 95);
+    const innerRadiusRatio = innerRadiusUiValue / 100;
     const innerRadius = outerRadius * innerRadiusRatio;
+    const strokeWidth = 2;
     const arcGen: any = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius);
     const hoverArcGen: any = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius + 8);
     this.currentArcGen = arcGen;
@@ -356,7 +359,6 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
       .attr('class', 'doughnut-arc')
       .attr('fill', (d: any) => this.baseFill(d.data.label, d.data.color))
       .attr('stroke', this.panelBackgroundColor)
-      .attr('stroke-width', 2)
       .style('cursor', 'pointer');
     enter.each((d: any) => {
       d.data._current = { startAngle: d.startAngle, endAngle: d.startAngle };
@@ -364,6 +366,9 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
     this.attachInteractionHandlers(enter, seriesLabel, linkedDashboard, total);
 
     const merged = enter.merge(path);
+    // Applied every draw (not just on enter) since the same <path> elements are reused across
+    // slider drags - only the innerRadius/strokeWidth pairing changes, not the slice keys.
+    merged.attr('stroke-width', strokeWidth);
 
     if (!this.hasRendered) {
       // First render: radial sweep, like a clock hand painting the doughnut clockwise from the top

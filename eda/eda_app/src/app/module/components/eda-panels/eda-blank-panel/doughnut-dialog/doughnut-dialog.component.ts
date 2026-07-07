@@ -47,7 +47,7 @@ export class DoughnutDialog implements OnInit {
     this.showLabels = config['showLabels'] || false;
     this.showLabelsPercent = config['showLabelsPercent'] || false;
     this.chartLegend = config['chartLegend'] ?? true;
-    this.innerRadiusPercent = config['innerRadiusPercent'] ?? 99;
+    this.innerRadiusPercent = config['innerRadiusPercent'] ?? 95;
     this.useGradient = config['useGradient'] ?? true;
 
     this.originalValues = {
