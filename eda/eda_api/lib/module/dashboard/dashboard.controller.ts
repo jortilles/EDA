@@ -331,7 +331,7 @@ export class DashboardController {
     private static async findAllDashboardsWithMeta(filter: Record<string, any> = {}) {
     return Dashboard.find(
       filter,
-      'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user group'
+      'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group'
     ).populate('user', 'name').exec();
   }
 
@@ -412,8 +412,8 @@ export class DashboardController {
     try {
       //si no lleva filtro, pasamos directamente a recuperarlos todos
       const dashboards = JSON.stringify(filter) !== '{}' ?
-        await Dashboard.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user group config.external').exec() :
-        await Dashboard.find({}, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user group config.external').exec();
+        await Dashboard.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external').exec() :
+        await Dashboard.find({}, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external').exec();
       const publics = [];
       const privates = [];
       const groups = [];
