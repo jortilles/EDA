@@ -2,14 +2,7 @@
   <div #edad3container class="svg-container">
     <svg #svgContainer class="svg-content" [id]="id" width="100%" height="100%"></svg>
   </div>
-  @if (chartLegend && legendItems.length) {
-    <div class="eda-polar-area-legend">
-      @for (item of legendItems; track item.label; let i = $index) {
-        <div class="eda-polar-area-legend-item" [class.hidden]="item.hidden" (click)="toggleLegend(i)">
-          <span class="eda-polar-area-legend-swatch" [style.background-color]="item.color" [style.width]="legendBoxSize" [style.height]="legendBoxSize"></span>
-          <span class="eda-polar-area-legend-label" [style.font-size]="legendFontSize">{{ item.label }}</span>
-        </div>
-      }
-    </div>
+  @if (chartLegend) {
+    <eda-chart-legend [items]="legendItems" (toggle)="toggleLegend($event)"></eda-chart-legend>
   }
 </div>

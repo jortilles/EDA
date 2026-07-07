@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaPolarArea } from './eda-polar-area';
 import { StyleProviderService } from '@eda/services/service.index';
+import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface PolarAreaSlice {
   label: string;
@@ -21,7 +22,7 @@ const GRADIENT_LIGHTEN_AMOUNT = 30;
   templateUrl: './eda-polar-area.component.html',
   styleUrls: ['./eda-polar-area.component.css'],
   encapsulation: ViewEncapsulation.Emulated,
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
 })
 export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() inject: EdaPolarArea;
@@ -35,8 +36,6 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
 
   chartLegend: boolean;
   legendItems: { label: string; color: string; hidden: boolean }[] = [];
-  legendFontSize: string;
-  legendBoxSize: string;
 
   private slices: PolarAreaSlice[] = [];
   private hiddenIndexes: Set<number> = new Set();
@@ -58,7 +57,6 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     this.styleProviderService.panelFontFamily.subscribe(v => this.fontFamily = v).unsubscribe();
     this.styleProviderService.panelColor.subscribe(v => this.panelBackgroundColor = v || '#ffffff').unsubscribe();
     this.buildSlices();
-    this.updateLegendSizing();
   }
 
   ngOnDestroy(): void {
@@ -85,20 +83,6 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       this.svg.attr('width', w).attr('height', h);
       this.draw();
     }
-  }
-
-  @HostListener('window:resize')
-  onWindowResize(): void {
-    this.updateLegendSizing();
-  }
-
-  private updateLegendSizing(): void {
-    let variador = 0;
-    if (window.innerWidth < 1500) variador = -2;
-    if (window.innerWidth < 1100) variador = -4;
-    const manySeries = this.slices.length > 10;
-    this.legendFontSize = '14px';
-    this.legendBoxSize = `${(manySeries ? 8 : 10) + variador}px`;
   }
 
   private buildSlices(): void {
