@@ -163,6 +163,18 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     if (this.div) { this.div.remove(); this.div = null; }
   }
 
+  private readonly barGrowPx = 6;
+
+  // Both a simple bar (anchored at the zero baseline) and one stacked segment (anchored at the
+  // segment below it) reduce to the same shape: a "near" edge that never moves and a "far" edge
+  // that grows outward on hover - horizontal bars use the result as x/width, vertical ones as
+  // y/height. `far`/`near` are already-scaled screen positions, not data values.
+  private growBox(near: number, far: number, grow: boolean): { pos: number; size: number } {
+    const amount = grow ? this.barGrowPx : 0;
+    const adjustedFar = far >= near ? far + amount : far - amount;
+    return { pos: Math.min(near, adjustedFar), size: Math.abs(adjustedFar - near) };
+  }
+
   private formatValue(value: number): string {
     return value.toLocaleString('de-DE', { maximumFractionDigits: 6 });
   }
@@ -195,6 +207,10 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private showTooltip(event: any, html: string): void {
+    // A stray mouseover before the previous bar's mouseout fired (easy to trigger on bars packed
+    // tightly together, more so once hover makes one grow into its neighbor's space) would
+    // otherwise leak an orphaned tooltip div every time, piling several up on screen at once.
+    this.removeTooltip();
     this.div = d3.select('body').append('div')
       .attr('class', 'eda-bar-tooltip')
       .style('opacity', 0)
@@ -207,18 +223,25 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   private moveTooltip(event: any): void {
     if (this.div) {
-      this.div.style('top', (event.pageY - 60) + 'px')
-        .style('left', event.pageX + 'px');
+      // Same offset as showTooltip() - it used to differ (-60 here vs -25 there), which both
+      // left the tooltip floating too far above the cursor and caused a visible jump on the
+      // very first mousemove after it appeared.
+      this.div.style('top', (event.pageY - 50) + 'px')
+        .style('left', (event.pageX) + 'px');
     }
   }
 
   private measureCanvas: HTMLCanvasElement;
 
-  private measureMaxLabelWidth(labels: string[], fontSizePx: number): number {
+  private measureTextWidth(label: string, fontSizePx: number): number {
     if (!this.measureCanvas) this.measureCanvas = document.createElement('canvas');
     const ctx = this.measureCanvas.getContext('2d');
     ctx.font = `${fontSizePx}px ${this.fontFamily === 'inherit' ? 'sans-serif' : this.fontFamily}`;
-    return labels.reduce((max, label) => Math.max(max, ctx.measureText(label).width), 0);
+    return ctx.measureText(label).width;
+  }
+
+  private measureMaxLabelWidth(labels: string[], fontSizePx: number): number {
+    return labels.reduce((max, label) => Math.max(max, this.measureTextWidth(label, fontSizePx)), 0);
   }
 
   draw(): void {
@@ -239,19 +262,6 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     const visibleIdx = this.series.map((_, i) => i).filter(i => !this.hiddenSeriesIndexes.has(i));
     const visibleSeries = visibleIdx.map(i => this.series[i]);
     if (visibleSeries.length === 0 || this.categories.length === 0) return;
-
-    // Chart.js auto-sizes the category axis space to fit its widest label; a fixed left margin
-    // clips long names (e.g. region names) instead. Measure the actual widest label and size to
-    // it, capped so one outlier label can't eat the whole chart.
-    const leftMargin = horizontal
-      ? Math.min(Math.max(this.measureMaxLabelWidth(this.categories, 11) + 24, 60), width * 0.4)
-      : 56;
-    const margin = { top: 16, right: 20, bottom: horizontal ? 30 : 50, left: leftMargin };
-    const innerWidth = Math.max(width - margin.left - margin.right, 10);
-    const innerHeight = Math.max(height - margin.top - margin.bottom, 10);
-
-    const defs = this.svg.append('defs');
-    const g = this.svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
     // Build the stacked layout (stackedbar / stackedbar100 / pyramid) once, shared by all three.
     let stackedSeriesData: any[] = null;
@@ -278,6 +288,44 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       visibleSeries.forEach(s => s.data.forEach(v => { valueMin = Math.min(valueMin, v); valueMax = Math.max(valueMax, v); }));
     }
     if (valueMax === valueMin) valueMax = valueMin + 1;
+
+    // Chart.js auto-sizes each axis's own space to fit its widest label; a fixed margin clips
+    // long region names (horizontal category axis) or large formatted numbers (vertical value
+    // axis) instead. Measure the actual widest label - using a throwaway scale/ticks for the
+    // vertical case, since the real valueScale's range depends on this same margin - capped so
+    // one outlier label can't eat the whole chart.
+    let leftMargin: number;
+    // Which category labels survive auto-skip (populated below for the horizontal case, where
+    // - unlike the vertical one - the label footprint is vertical, not affected by left margin,
+    // so it can be decided before sizing that margin, and the margin only needs to fit whichever
+    // labels actually remain visible instead of the full list.
+    let horizontalVisibleCatIndexes: Set<number> = null;
+    if (horizontal) {
+      const innerHeightForSkip = Math.max(height - 16 - 30, 10);
+      const skipProbeScale = d3.scaleBand().domain(this.categories).range([0, innerHeightForSkip]).padding(0.25);
+      const step = skipProbeScale.step();
+      const lineHeight = 14; // ~11px font + a little breathing room between rows
+      horizontalVisibleCatIndexes = new Set();
+      let lastShownY = -Infinity;
+      this.categories.forEach((_, i) => {
+        if (lastShownY === -Infinity || i * step - lastShownY >= lineHeight) {
+          horizontalVisibleCatIndexes.add(i);
+          lastShownY = i * step;
+        }
+      });
+      const visibleLabels = this.categories.filter((_, i) => horizontalVisibleCatIndexes.has(i));
+      leftMargin = Math.min(Math.max(this.measureMaxLabelWidth(visibleLabels, 11) + 24, 60), width * 0.4);
+    } else {
+      const probeScale = d3.scaleLinear().domain([valueMin, valueMax]).nice();
+      const tickLabels = probeScale.ticks().map(probeScale.tickFormat());
+      leftMargin = Math.min(Math.max(this.measureMaxLabelWidth(tickLabels, 11) + 16, 40), width * 0.3);
+    }
+    const margin = { top: 16, right: 20, bottom: horizontal ? 30 : 50, left: leftMargin };
+    const innerWidth = Math.max(width - margin.left - margin.right, 10);
+    const innerHeight = Math.max(height - margin.top - margin.bottom, 10);
+
+    const defs = this.svg.append('defs');
+    const g = this.svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
     const categoryScale: any = d3.scaleBand().domain(this.categories).range(horizontal ? [0, innerHeight] : [0, innerWidth]).padding(0.25);
     const valueScale: any = d3.scaleLinear().domain([valueMin, valueMax]).nice().range(horizontal ? [0, innerWidth] : [innerHeight, 0]);
@@ -311,6 +359,32 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
         .attr('dx', '-0.5em')
         .attr('dy', '0.4em')
         .attr('transform', 'rotate(-30)');
+
+      // Chart.js's category axis auto-skips ticks so rotated labels never overlap; a plain d3
+      // axis renders every one regardless of how little room each category gets, so with many
+      // categories crammed into a narrow panel they collide into an unreadable mess. Walk left
+      // to right and only hide a label if it would actually overlap the last one left visible -
+      // using each label's OWN measured width (not a worst-case max for all of them), so short
+      // names still get to show up between long ones instead of being skipped needlessly.
+      const angle = Math.PI / 6; // matches the -30deg rotation above
+      const footprints = this.categories.map(c => {
+        const w = this.measureTextWidth(c, 11);
+        return w * Math.cos(angle) + 11 * Math.sin(angle);
+      });
+      const step = categoryScale.step();
+      let lastShown = -Infinity;
+      catAxisG.selectAll('.tick').style('display', (_: any, i: number) => {
+        if (lastShown === -Infinity || (i - lastShown) * step >= (footprints[lastShown] + footprints[i]) / 2 + 4) {
+          lastShown = i;
+          return null;
+        }
+        return 'none';
+      });
+    } else {
+      // Same auto-skip idea, vertical direction: hides whichever row labels didn't make the
+      // cut computed above (before the margin was sized), so the left margin - and the visual
+      // density of the chart - only ever account for the labels actually shown.
+      catAxisG.selectAll('.tick').style('display', (_: any, i: number) => horizontalVisibleCatIndexes.has(i) ? null : 'none');
     }
 
     g.append('g')
@@ -318,7 +392,13 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       .attr('transform', horizontal ? `translate(0,${innerHeight})` : 'translate(0,0)')
       .call(valueAxis);
 
-    g.selectAll('.eda-bar-axis text').style('font-family', this.fontFamily).style('font-size', '11px');
+    // Matches the shared legend's typography (eda-chart-legend.component.css) so axis labels
+    // and legend entries read as the same typographic system.
+    g.selectAll('.eda-bar-axis text')
+      .style('font-family', this.fontFamily)
+      .style('font-size', '11px')
+      .style('font-weight', 500)
+      .style('fill', '#000000');
 
     const showLabelsOn = this.inject.showLabels || this.inject.showLabelsPercent;
     const barsGroup = g.append('g').attr('class', 'eda-bar-bars');
@@ -362,23 +442,8 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             .attr('height', (d: any) => Math.abs(valueScale(d[1]) - valueScale(d[0])));
         }
 
-        bars
-          .on('click', (event: any, d: any) => {
-            const catIdx = this.categories.indexOf(d.data.cat);
-            const rawValue = stacked100 ? (series.rawValues?.[catIdx] ?? series.data[catIdx]) : series.data[catIdx];
-            emitClick(catIdx, series.label, rawValue);
-          })
-          .on('mouseover', (event: any, d: any) => {
-            const catIdx = this.categories.indexOf(d.data.cat);
-            const value = stacked100 ? (series.rawValues?.[catIdx] ?? 0) : series.data[catIdx];
-            const percentage = stacked100 ? (series.data[catIdx] || 0) : this.percentOfSeries(series, catIdx);
-            this.showTooltip(event, this.tooltipHtml(series.label, d.data.cat, value, percentage, isPyramid));
-          })
-          .on('mousemove', (event: any) => this.moveTooltip(event))
-          .on('mouseout', () => this.removeTooltip());
-
-        if (showLabelsOn) {
-          labelsGroup.selectAll(`.eda-bar-label-${sIdx}`)
+        const labelSel = showLabelsOn
+          ? labelsGroup.selectAll(`.eda-bar-label-${sIdx}`)
             .data(layer)
             .join('text')
             .attr('class', `eda-bar-label-${sIdx}`)
@@ -399,8 +464,51 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
               const value = stacked100 ? (series.rawValues?.[catIdx] ?? 0) : series.data[catIdx];
               const percentage = stacked100 ? (series.data[catIdx] || 0) : this.percentOfSeries(series, catIdx);
               return this.formatLabel(value, percentage);
-            });
-        }
+            })
+          : null;
+
+        bars
+          .on('click', (event: any, d: any) => {
+            const catIdx = this.categories.indexOf(d.data.cat);
+            const rawValue = stacked100 ? (series.rawValues?.[catIdx] ?? series.data[catIdx]) : series.data[catIdx];
+            emitClick(catIdx, series.label, rawValue);
+          })
+          .on('mouseover', (event: any, d: any) => {
+            const target = event.currentTarget;
+            d3.select(target).raise();
+            const near = valueScale(d[0]), far = valueScale(d[1]);
+            const grown = this.growBox(near, far, true);
+            d3.select(target)
+              .interrupt('grow').transition('grow').duration(150)
+              .attr(horizontal ? 'x' : 'y', grown.pos)
+              .attr(horizontal ? 'width' : 'height', grown.size);
+            if (labelSel) {
+              labelSel.filter((ld: any) => ld === d)
+                .interrupt('labelGrow').transition('labelGrow').duration(150)
+                .style('font-size', '14px');
+            }
+
+            const catIdx = this.categories.indexOf(d.data.cat);
+            const value = stacked100 ? (series.rawValues?.[catIdx] ?? 0) : series.data[catIdx];
+            const percentage = stacked100 ? (series.data[catIdx] || 0) : this.percentOfSeries(series, catIdx);
+            this.showTooltip(event, this.tooltipHtml(series.label, d.data.cat, value, percentage, isPyramid));
+          })
+          .on('mousemove', (event: any) => this.moveTooltip(event))
+          .on('mouseout', (event: any, d: any) => {
+            const target = event.currentTarget;
+            const near = valueScale(d[0]), far = valueScale(d[1]);
+            const original = this.growBox(near, far, false);
+            d3.select(target)
+              .interrupt('grow').transition('grow').duration(150)
+              .attr(horizontal ? 'x' : 'y', original.pos)
+              .attr(horizontal ? 'width' : 'height', original.size);
+            if (labelSel) {
+              labelSel.filter((ld: any) => ld === d)
+                .interrupt('labelGrow').transition('labelGrow').duration(150)
+                .style('font-size', '11px');
+            }
+            this.removeTooltip();
+          });
       });
     } else {
       const singleSeries = visibleSeries.length === 1;
@@ -428,17 +536,8 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             .attr('height', (d: any) => Math.abs(zeroPos - valueScale(d.value)));
         }
 
-        bars
-          .on('click', (event: any, d: any) => emitClick(d.catIdx, series.label, d.value))
-          .on('mouseover', (event: any, d: any) => {
-            const percentage = this.percentOfSeries(series, d.catIdx);
-            this.showTooltip(event, this.tooltipHtml(series.label, d.cat, d.value, percentage, false));
-          })
-          .on('mousemove', (event: any) => this.moveTooltip(event))
-          .on('mouseout', () => this.removeTooltip());
-
-        if (showLabelsOn) {
-          labelsGroup.selectAll(`.eda-bar-label-${sIdx}`)
+        const labelSel = showLabelsOn
+          ? labelsGroup.selectAll(`.eda-bar-label-${sIdx}`)
             .data(rows)
             .join('text')
             .style('font-size', '11px')
@@ -454,8 +553,43 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             .attr('y', (d: any) => horizontal
               ? (categoryScale(d.cat) || 0) + (singleSeries ? 0 : seriesScale(String(sIdx))) + (singleSeries ? categoryScale.bandwidth() : seriesScale.bandwidth()) / 2
               : valueScale(d.value) - 6)
-            .text((d: any) => this.formatLabel(d.value, this.percentOfSeries(series, d.catIdx)));
-        }
+            .text((d: any) => this.formatLabel(d.value, this.percentOfSeries(series, d.catIdx)))
+          : null;
+
+        bars
+          .on('click', (event: any, d: any) => emitClick(d.catIdx, series.label, d.value))
+          .on('mouseover', (event: any, d: any) => {
+            const target = event.currentTarget;
+            d3.select(target).raise();
+            const grown = this.growBox(zeroPos, valueScale(d.value), true);
+            d3.select(target)
+              .interrupt('grow').transition('grow').duration(150)
+              .attr(horizontal ? 'x' : 'y', grown.pos)
+              .attr(horizontal ? 'width' : 'height', grown.size);
+            if (labelSel) {
+              labelSel.filter((ld: any) => ld === d)
+                .interrupt('labelGrow').transition('labelGrow').duration(150)
+                .style('font-size', '14px');
+            }
+
+            const percentage = this.percentOfSeries(series, d.catIdx);
+            this.showTooltip(event, this.tooltipHtml(series.label, d.cat, d.value, percentage, false));
+          })
+          .on('mousemove', (event: any) => this.moveTooltip(event))
+          .on('mouseout', (event: any, d: any) => {
+            const target = event.currentTarget;
+            const original = this.growBox(zeroPos, valueScale(d.value), false);
+            d3.select(target)
+              .interrupt('grow').transition('grow').duration(150)
+              .attr(horizontal ? 'x' : 'y', original.pos)
+              .attr(horizontal ? 'width' : 'height', original.size);
+            if (labelSel) {
+              labelSel.filter((ld: any) => ld === d)
+                .interrupt('labelGrow').transition('labelGrow').duration(150)
+                .style('font-size', '11px');
+            }
+            this.removeTooltip();
+          });
       });
     }
   }

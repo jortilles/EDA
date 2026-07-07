@@ -249,6 +249,9 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
           const t = $localize`:@@linkedTo:Vinculado con`;
           text += `<br/><h6>${t} ${linkedDashboard.dashboardName}</h6>`;
         }
+        // A stray mouseover before the previous slice's mouseout fired would otherwise leak an
+        // orphaned tooltip div every time, piling several up on screen at once.
+        this.removeTooltip();
         this.div = d3.select('body').append('div')
           .attr('class', 'eda-polar-area-tooltip')
           .style('opacity', 0)
