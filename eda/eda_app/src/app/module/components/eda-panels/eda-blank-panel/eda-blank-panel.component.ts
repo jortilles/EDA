@@ -62,7 +62,7 @@ import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-
 import { TableUtils } from './panel-utils/tables-utils';
 import { QueryUtils } from './panel-utils/query-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
-import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
+import { ChartsConfigUtils, CUSTOM_CHART_CONFIG_FIELDS } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
 import { NavigationUtils } from './panel-utils/navigation-utils';
 
@@ -967,38 +967,23 @@ public tableNodeExpand(event: any): void {
         if (!_.isEqual(this.display_v.chart, 'no_data') && allow && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
-            // Preserve assignedColors, coloredBarsConfig, showUniqueColors, and uniqueBarColors before merging.
-            const savedAssignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
-            const savedColoredBarsConfig = config && config.getConfig() ? config.getConfig()['coloredBarsConfig'] : null;
-            const savedShowUniqueColors = config && config.getConfig() ? config.getConfig()['showUniqueColors'] : null;
-            const savedUniqueBarColors = config && config.getConfig() ? config.getConfig()['uniqueBarColors'] : null;
-            // Doughnut-only settings: `setVoidChartConfig()` builds a fresh ChartJsConfig that has
-            const savedInnerRadiusPercent = config && config.getConfig() ? config.getConfig()['innerRadiusPercent'] : null;
-            const savedUseGradient = config && config.getConfig() ? config.getConfig()['useGradient'] : null;
+            // Preserve every custom field (same list setConfig() uses to save them) before
+            // merging - setVoidChartConfig() builds a fresh ChartJsConfig without them, and
+            // _.merge() isn't trusted to carry them over correctly either.
+            const savedCustomFields: Record<string, any> = {};
+            CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+                savedCustomFields[field.name] = config && config.getConfig() ? config.getConfig()[field.name] : null;
+            });
 
             _.merge(_config, config||{});
 
-            // Restore assignedColors after merging.
-            if (savedAssignedColors) {
-                _config.getConfig()['assignedColors'] = savedAssignedColors;
-            }
-            // Restore coloredBarsConfig after merging.
-            if (savedColoredBarsConfig) {
-                _config.getConfig()['coloredBarsConfig'] = savedColoredBarsConfig;
-            }
-            // Restore showUniqueColors and uniqueBarColors after merging.
-            if (savedShowUniqueColors != null) {
-                _config.getConfig()['showUniqueColors'] = savedShowUniqueColors;
-                _config.getConfig()['uniqueBarColors'] = savedUniqueBarColors ?? [];
-            }
-            // Restore innerRadiusPercent (doughnut) after merging.
-            if (savedInnerRadiusPercent != null) {
-                _config.getConfig()['innerRadiusPercent'] = savedInnerRadiusPercent;
-            }
-            // Restore useGradient (doughnut) after merging.
-            if (savedUseGradient != null) {
-                _config.getConfig()['useGradient'] = savedUseGradient;
-            }
+            // Restore every custom field after merging.
+            CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+                const saved = savedCustomFields[field.name];
+                if (saved != null) {
+                    _config.getConfig()[field.name] = saved;
+                }
+            });
 
             // Ensure that showPredictionLines is propagated to _config (keep the prediction line when switching between chart types).
             if (['line', 'area'].includes(type) && this.graficos.showPredictionLines) {
