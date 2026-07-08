@@ -6660,6 +6660,38 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Sin filtros</source>
         <target>Bez filtrów</target>
       </trans-unit>
+      <trans-unit id="reportName">
+        <source>Nombre del Informe</source>
+        <target>Nazwa raportu</target>
+      </trans-unit>
+      <trans-unit id="reportType">
+        <source>Tipo</source>
+        <target>Typ</target>
+      </trans-unit>
+      <trans-unit id="reportTags">
+        <source>Etiquetas</source>
+        <target>Etykiety</target>
+      </trans-unit>
+      <trans-unit id="reportAutor">
+        <source>Autor</source>
+        <target>Autor</target>
+      </trans-unit>
+      <trans-unit id="reportCreatedAt">
+        <source>Fecha creación</source>
+        <target>Data utworzenia</target>
+      </trans-unit>
+      <trans-unit id="reportModifiedAt">
+        <source>Fecha modificación</source>
+        <target>Data modyfikacji</target>
+      </trans-unit>
+      <trans-unit id="reportPrivateEdition">
+        <source>Edición privada</source>
+        <target>Edycja prywatna</target>
+      </trans-unit>
+      <trans-unit id="reportDataSourceName">
+        <source>Fuente de datos</source>
+        <target>Źródło danych</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

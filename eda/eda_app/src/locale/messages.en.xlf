@@ -6720,6 +6720,38 @@ OR<ph id="5"/>
   <source>Sin filtros</source>
   <target>Without filters</target>
 </trans-unit>
+<trans-unit id="reportName">
+  <source>Nombre del Informe</source>
+  <target>Report Name</target>
+</trans-unit>
+<trans-unit id="reportType">
+  <source>Tipo</source>
+  <target>Type</target>
+</trans-unit>
+<trans-unit id="reportTags">
+  <source>Etiquetas</source>
+  <target>Tags</target>
+</trans-unit>
+<trans-unit id="reportAutor">
+  <source>Autor</source>
+  <target>Author</target>
+</trans-unit>
+<trans-unit id="reportCreatedAt">
+  <source>Fecha creación</source>
+  <target>Creation date</target>
+</trans-unit>
+<trans-unit id="reportModifiedAt">
+  <source>Fecha modificación</source>
+  <target>Modification date</target>
+</trans-unit>
+<trans-unit id="reportPrivateEdition">
+  <source>Edición privada</source>
+  <target>Private edition</target>
+</trans-unit>
+<trans-unit id="reportDataSourceName">
+  <source>Fuente de datos</source>
+  <target>Data source</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

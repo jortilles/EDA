@@ -6995,6 +6995,38 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Sin filtros</source>
         <target>Sans filtres</target>
       </trans-unit>
+      <trans-unit id="reportName">
+        <source>Nombre del Informe</source>
+        <target>Nom du rapport</target>
+      </trans-unit>
+      <trans-unit id="reportType">
+        <source>Tipo</source>
+        <target>Type</target>
+      </trans-unit>
+      <trans-unit id="reportTags">
+        <source>Etiquetas</source>
+        <target>Étiquettes</target>
+      </trans-unit>
+      <trans-unit id="reportAutor">
+        <source>Autor</source>
+        <target>Auteur</target>
+      </trans-unit>
+      <trans-unit id="reportCreatedAt">
+        <source>Fecha creación</source>
+        <target>Date de création</target>
+      </trans-unit>
+      <trans-unit id="reportModifiedAt">
+        <source>Fecha modificación</source>
+        <target>Date de modification</target>
+      </trans-unit>
+      <trans-unit id="reportPrivateEdition">
+        <source>Edición privada</source>
+        <target>Édition privée</target>
+      </trans-unit>
+      <trans-unit id="reportDataSourceName">
+        <source>Fuente de datos</source>
+        <target>Source de données</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

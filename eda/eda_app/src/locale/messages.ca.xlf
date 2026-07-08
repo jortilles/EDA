@@ -7027,6 +7027,38 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Sin filtros</source>
         <target>Sense filtres</target>
       </trans-unit>
+      <trans-unit id="reportName">
+        <source>Nombre del Informe</source>
+        <target>Nom de l'informe</target>
+      </trans-unit>
+      <trans-unit id="reportType">
+        <source>Tipo</source>
+        <target>Tipus</target>
+      </trans-unit>
+      <trans-unit id="reportTags">
+        <source>Etiquetas</source>
+        <target>Etiquetes</target>
+      </trans-unit>
+      <trans-unit id="reportAutor">
+        <source>Autor</source>
+        <target>Autor</target>
+      </trans-unit>
+      <trans-unit id="reportCreatedAt">
+        <source>Fecha creación</source>
+        <target>Data de creació</target>
+      </trans-unit>
+      <trans-unit id="reportModifiedAt">
+        <source>Fecha modificación</source>
+        <target>Data de modificació</target>
+      </trans-unit>
+      <trans-unit id="reportPrivateEdition">
+        <source>Edición privada</source>
+        <target>Edició privada</target>
+      </trans-unit>
+      <trans-unit id="reportDataSourceName">
+        <source>Fuente de datos</source>
+        <target>Font de dades</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -196,26 +196,26 @@
                   i18n="@@reportName" style="min-width: 250px">Nombre del Informe</th>
                 <th (click)="sortTable('type')" class="text-center cursor-pointer p-3"
                   [ngClass]="{'sort-asc': sortColumn === 'type' && sortDirection === 'asc', 'sort-desc': sortColumn === 'type' && sortDirection === 'desc'}"
-                  i18n="@@type">Tipo</th>
+                  i18n="@@reportType">Tipo</th>
                 <th class="text-left p-3" i18n="@@groups">Grupos</th>
                 <th (click)="sortTable('config.tag')" class="text-left cursor-pointer p-3"
                   [ngClass]="{'sort-asc': sortColumn === 'config.tag' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.tag' && sortDirection === 'desc'}"
-                  i18n="@@tags">Etiquetas</th>
+                  i18n="@@reportTags">Etiquetas</th>
                 <th (click)="sortTable('user.name')" class="text-center cursor-pointer p-3"
                   [ngClass]="{'sort-asc': sortColumn === 'user.name' && sortDirection === 'asc', 'sort-desc': sortColumn === 'user.name' && sortDirection === 'desc'}"
-                  i18n="@@autor">Autor</th>
+                  i18n="@@reportAutor">Autor</th>
                 <th (click)="sortTable('config.createdAt')" class="text-center cursor-pointer p-3"
                   [ngClass]="{'sort-asc': sortColumn === 'config.createdAt' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.createdAt' && sortDirection === 'desc'}"
-                  i18n="@@createdAt">Fecha creación</th>
+                  i18n="@@reportCreatedAt">Fecha creación</th>
                 <th (click)="sortTable('config.modifiedAt')" class="text-center cursor-pointer p-3"
                   [ngClass]="{'sort-asc': sortColumn === 'config.modifiedAt' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.modifiedAt' && sortDirection === 'desc'}"
-                  i18n="@@modifiedAt">Fecha modificación</th>
+                  i18n="@@reportModifiedAt">Fecha modificación</th>
                 <th (click)="sortTable('config.onlyIcanEdit')" class="text-center cursor-pointer p-3"
                   [ngClass]="{'sort-asc': sortColumn === 'config.onlyIcanEdit' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.onlyIcanEdit' && sortDirection === 'desc'}"
-                  i18n="@@privateEdition">Edición privada</th>
+                  i18n="@@reportPrivateEdition">Edición privada</th>
                 <th (click)="sortTable('config.ds.name')" class="text-left cursor-pointer p-3"
                   [ngClass]="{'sort-asc': sortColumn === 'config.ds.name' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.ds.name' && sortDirection === 'desc'}"
-                  i18n="@@dataSourceName">Fuente de datos</th>
+                  i18n="@@reportDataSourceName">Fuente de datos</th>
                 @if (isAdmin) { <th class="text-center p-3" i18n="@@status">Estado</th> }
                 <th class="text-left p-3" i18n="@@actions">Acciones</th>
               </tr>
@@ -293,7 +293,7 @@
                           <eda-icon name="bin" size="sm"></eda-icon>
                         </button>
                       }
-                      @if (dashboard.type === 'shared') {
+                      @if (dashboard.type === 'public') {
                         <button type="button" class="rounded-md p-2 hover:bg-muted" (click)="copyUrl(dashboard)" i18n-title="@@copyURL" title="Copiar url pública">
                           <eda-icon name="link" size="sm"></eda-icon>
                         </button>
@@ -383,7 +383,7 @@
                     <eda-icon name="document-duplicated" size="sm"></eda-icon>
                   </button>
                 }
-                @if (dashboard.type === 'shared') {
+                @if (dashboard.type === 'public') {
                   <button type="button" class="rounded-md p-2 hover:bg-muted" (click)="copyUrl(dashboard)" i18n-title="@@copyURL" title="Copiar url pública">
                     <eda-icon name="link" size="sm"></eda-icon>
                   </button>

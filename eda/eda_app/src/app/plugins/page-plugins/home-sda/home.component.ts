@@ -808,7 +808,7 @@ public filterGroups() {
    * @param dashboard The dashboard whose URL to copy
    */
   public copyUrl(dashboard: any): void {
-    if (dashboard.type === "shared") {
+    if (dashboard.type === "public") {
       const href = location.href;
       const baseURL = href.slice(0, href.indexOf('#'));
 
