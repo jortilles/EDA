@@ -13,6 +13,8 @@ export * from './utils/date-utils.service';
 export * from './utils/styles-service';
 export * from './utils/style-provider.service';
 export * from './utils/d3-tooltip.service';
+export * from './utils/d3-color-utils';
+export * from './utils/d3-format-utils';
 
 
 // Sidebar

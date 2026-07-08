@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaPolarArea } from './eda-polar-area';
-import { StyleProviderService, D3TooltipService } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface PolarAreaSlice {
@@ -87,14 +87,6 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /** Abbreviates large axis values (3.000.000 -> 3M) so the grid ring labels stay readable in a small chart. */
-  private formatAxisValue(v: number): string {
-    const abs = Math.abs(v);
-    if (abs >= 1_000_000) return (v / 1_000_000).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + 'M';
-    if (abs >= 1_000) return (v / 1_000).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + 'k';
-    return v.toLocaleString('de-DE', { maximumFractionDigits: 2 });
-  }
-
   private buildSlices(): void {
     const labels: string[] = this.inject.chartLabels || [];
     const dataset = this.inject.chartDataset?.[0] || { data: [] };
@@ -143,31 +135,8 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     return '';
   }
 
-  private shiftHex(hex: string, amount: number): string {
-    const match = /^#?([0-9a-fA-F]{6})$/.exec(hex || '');
-    if (!match) return hex;
-    const num = parseInt(match[1], 16);
-    const clamp = (c: number) => Math.min(255, Math.max(0, c));
-    const r = clamp(((num >> 16) & 0xff) + amount);
-    const g = clamp(((num >> 8) & 0xff) + amount);
-    const b = clamp((num & 0xff) + amount);
-    return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
-  }
-
-  private lightenHex(hex: string, amount: number): string {
-    return this.shiftHex(hex, amount);
-  }
-
-  private darkenHex(hex: string, amount: number): string {
-    return this.shiftHex(hex, -amount);
-  }
-
-  private sanitizeId(value: string): string {
-    return String(value).replace(/[^a-zA-Z0-9_-]/g, '_');
-  }
-
   private gradientId(label: string): string {
-    return `polarArea-grad-${this.id}-${this.sanitizeId(label)}`;
+    return `polarArea-grad-${this.id}-${sanitizeId(label)}`;
   }
 
   private baseFill(label: string, color: string): string {
@@ -186,7 +155,7 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     grad.attr('gradientUnits', 'userSpaceOnUse').attr('cx', 0).attr('cy', 0).attr('r', Math.max(radius, 1));
     grad.select('.grad-inner').attr('offset', '0%').attr('stop-color', slice.color);
-    grad.select('.grad-outer').attr('offset', '100%').attr('stop-color', this.lightenHex(slice.color, GRADIENT_LIGHTEN_AMOUNT));
+    grad.select('.grad-outer').attr('offset', '100%').attr('stop-color', lightenHex(slice.color, GRADIENT_LIGHTEN_AMOUNT));
     return `url(#${id})`;
   }
 
@@ -218,7 +187,7 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
         d3.select(target).attr('fill', d.data.color);
         d3.select(target)
           .interrupt('color').transition('color').duration(150)
-          .attr('fill', this.darkenHex(d.data.color, 60));
+          .attr('fill', darkenHex(d.data.color, 60));
         d3.select(target)
           .interrupt('grow').transition('grow').duration(150)
           .attr('d', this.currentHoverArcGen(d));
@@ -355,7 +324,7 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
         .attr('stroke', this.panelBackgroundColor)
         .attr('stroke-width', 3)
         .attr('stroke-linejoin', 'round')
-        .text(this.formatAxisValue(v));
+        .text(formatAxisValue(v, 2));
     });
 
     const total = this.slices.reduce((sum, s) => sum + s.value, 0);

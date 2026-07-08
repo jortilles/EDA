@@ -239,13 +239,13 @@ export class ChartDialogComponent {
     }
 
     loadChartTypeProperties() {
-        const type: any = this.chart.chartType;
+        // edaChart, not chartType - chartType is always literally 'bar' for every bar subtype,
+        // so switching on it here meant the 'horizontalBar' case below could never be reached.
+        const type: any = this.chart['edaChart'];
         switch (type) {
 
             case 'bar':
-                if (_.startsWith(this.chart.chartType, 'bar')) {
-                    this.direction = { label: 'Vertical', value: 'bar' };
-                }
+                this.direction = { label: 'Vertical', value: 'bar' };
                 break;
             case 'horizontalBar':
                 this.direction = { label: 'Horizontal', value: 'horizontalBar' };
@@ -664,7 +664,10 @@ export class ChartDialogComponent {
                 break;
                 
             default: {
-                const isBar = (this.chart.chartType as string) === 'bar' || (this.chart.chartType as string) === 'horizontalBar';
+                // `type` here is already `this.chart.edaChart` (the true bar-subtype discriminator -
+                // `chartType` is always literally 'bar' for every subtype, so checking it directly
+                // would incorrectly also match stackedbar/stackedbar100/pyramid/histogram).
+                const isBar = type === 'bar' || type === 'horizontalBar';
 
                 // Colors by interval
                 const hasThresholds = this.thresholdHigh !== null || this.thresholdLow !== null;
@@ -861,7 +864,8 @@ export class ChartDialogComponent {
 
     onTabChange(event: any): void {
 
-        if (!['bar', 'horizontalBar'].includes(this.chart.chartType as string)) return;
+        // edaChart, not chartType - chartType is always literally 'bar' for every bar subtype.
+        if (!['bar', 'horizontalBar'].includes(this.chart['edaChart'] as string)) return;
         this.coloredBarsActive = event.index === 1;
         this.handleInputColor();
     }

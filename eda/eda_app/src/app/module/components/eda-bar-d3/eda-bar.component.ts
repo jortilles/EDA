@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaBarD3 } from './eda-bar';
-import { StyleProviderService, D3TooltipService } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface BarSeries {
@@ -115,28 +115,8 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     return Array.isArray(series.color) ? (series.color[categoryIdx] || '#4472c4') : (series.color || '#4472c4');
   }
 
-  // Shifts each hex channel by `amount` (positive lightens), clamped to 0-255.
-  private lightenHex(hex: string, amount: number): string {
-    const match = /^#?([0-9a-fA-F]{6})$/.exec(hex || '');
-    if (!match) return hex;
-    const num = parseInt(match[1], 16);
-    const clamp = (c: number) => Math.min(255, Math.max(0, c));
-    const r = clamp(((num >> 16) & 0xff) + amount);
-    const g = clamp(((num >> 8) & 0xff) + amount);
-    const b = clamp((num & 0xff) + amount);
-    return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
-  }
-
-  private darkenHex(hex: string, amount: number): string {
-    return this.lightenHex(hex, -amount);
-  }
-
-  private sanitizeId(value: string): string {
-    return String(value).replace(/[^a-zA-Z0-9_-]/g, '_');
-  }
-
   private gradientId(colorHex: string): string {
-    return `bar-grad-${this.id}-${this.sanitizeId(colorHex)}`;
+    return `bar-grad-${this.id}-${sanitizeId(colorHex)}`;
   }
 
   /**
@@ -159,7 +139,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       grad.attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '0%');
     }
     grad.select('.grad-start').attr('offset', '0%').attr('stop-color', hex);
-    grad.select('.grad-end').attr('offset', '100%').attr('stop-color', this.lightenHex(hex, GRADIENT_LIGHTEN_AMOUNT));
+    grad.select('.grad-end').attr('offset', '100%').attr('stop-color', lightenHex(hex, GRADIENT_LIGHTEN_AMOUNT));
     return `url(#${id})`;
   }
 
@@ -211,14 +191,6 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   private truncateLabel(label: string, maxChars: number = this.maxCategoryChars): string {
     return label.length > maxChars ? label.slice(0, maxChars - 1) + '…' : label;
-  }
-
-  /** Abbreviates large axis values (3.000.000 -> 3M) so they take up less space on the axis. */
-  private formatAxisValue(v: number): string {
-    const abs = Math.abs(v);
-    if (abs >= 1_000_000) return (v / 1_000_000).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + 'M';
-    if (abs >= 1_000) return (v / 1_000).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + 'k';
-    return v.toLocaleString('de-DE', { maximumFractionDigits: 0 });
   }
 
   draw(): void {
@@ -296,7 +268,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       leftMargin = Math.min(Math.max(this.measureMaxLabelWidth(visibleLabels, 11) + 24, 60), width * 0.4);
     } else {
       const probeScale = d3.scaleLinear().domain([valueMin, valueMax]).nice();
-      const tickLabels = probeScale.ticks().map(v => this.formatAxisValue(v));
+      const tickLabels = probeScale.ticks().map(v => formatAxisValue(v));
       leftMargin = Math.min(Math.max(this.measureMaxLabelWidth(tickLabels, 11) + 16, 40), width * 0.3);
     }
     const margin = { top: 16, right: 20, bottom: horizontal ? 30 : 50, left: leftMargin };
@@ -329,7 +301,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     const categoryAxis: any = (horizontal ? d3.axisLeft(categoryScale) : d3.axisBottom(categoryScale))
       .tickFormat((d: string) => this.truncateLabel(d));
     const valueAxis: any = (horizontal ? d3.axisBottom(valueScale) : d3.axisLeft(valueScale))
-      .tickFormat((v: any) => this.formatAxisValue(v));
+      .tickFormat((v: any) => formatAxisValue(v));
 
     const catAxisG = g.append('g')
       .attr('class', 'eda-bar-axis')
@@ -464,7 +436,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             // swap in the flat base color first, instantly, then transition flat -> flat.
             d3.select(target).attr('fill', hex)
               .interrupt('color').transition('color').duration(150)
-              .attr('fill', this.darkenHex(hex, 40));
+              .attr('fill', darkenHex(hex, 40));
             if (labelSel) {
               labelSel.filter((ld: any) => ld === d)
                 .interrupt('labelGrow').transition('labelGrow').duration(150)
@@ -550,7 +522,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             // swap in the flat base color first, instantly, then transition flat -> flat.
             d3.select(target).attr('fill', hex)
               .interrupt('color').transition('color').duration(150)
-              .attr('fill', this.darkenHex(hex, 40));
+              .attr('fill', darkenHex(hex, 40));
             if (labelSel) {
               labelSel.filter((ld: any) => ld === d)
                 .interrupt('labelGrow').transition('labelGrow').duration(150)
