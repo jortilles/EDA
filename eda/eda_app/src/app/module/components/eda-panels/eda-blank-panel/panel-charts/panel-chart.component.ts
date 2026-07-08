@@ -9,7 +9,7 @@ import { TreeMap } from './../../../eda-treemap/eda-treeMap';
 import { EdaD3Component } from './../../../eda-d3/eda-d3.component';
 import { TableConfig } from './chart-configuration-models/table-config';
 import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
-    OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID } from '@angular/core';
+    OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID, Type } from '@angular/core';
 import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
 import { EdaTableComponent } from '../../../eda-table/eda-table.component';
 import { PanelChart } from './panel-chart';
@@ -1338,9 +1338,41 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartLabels = chartData[0];
         inject.chartDataset = chartData[1];
 
-        // Read assignedColors from config (if any)
-        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        this.applySingleSeriesColors(inject, chartData, 'doughnut');
 
+        inject.chartLegend = cfg.chartLegend ?? true;
+        inject.showLabels = cfg.showLabels ?? false;
+        inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
+        // UI range is 0-95 (0 = full pie, 95 = ring collapsed to a thin line) - see draw()
+        // in eda-doughnut.component.ts for how this maps to the actual inner/outer radius ratio.
+        inject.innerRadiusPercent = cfg.innerRadiusPercent ?? 95;
+        inject.useGradient = cfg.useGradient ?? true;
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        this.createD3Component(inject, EdaDoughnut);
+    }
+
+    // Shared by doughnut/polarArea/bar: mount the D3 component into the entry point and wire up
+    // its click output. Identical for all three except which Angular component class gets
+    // instantiated.
+    private createD3Component(inject: any, componentType: Type<any>) {
+        this.currentConfig = inject;
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(componentType);
+        this.componentRef.instance.inject = inject;
+        this.chartClickSubscription = this.componentRef.instance.onClick.subscribe(
+            (event) => this.onChartClick.emit({...event, query: this.props.query})
+        );
+        this.configUpdated.emit(this.currentConfig);
+    }
+
+    // Shared by renderDoughnut/renderPolarArea (both single-series, category-per-slice charts):
+    // resolves assignedColors against the current category labels, generates chartColors from
+    // them, and applies a flat color per dataset. Mutates `inject` and `chartData` in place.
+    // renderBar() isn't included - it layers 3 additional color modes (threshold/unique/assigned)
+    // on top that don't apply here.
+    private applySingleSeriesColors(inject: any, chartData: any[], colorGenType: 'doughnut' | 'polarArea'): void {
+        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
         const currentLabels = this.getLabelsForChartType(inject);
 
         if (assignedColors.length === 0) {
@@ -1359,9 +1391,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         inject.assignedColors = assignedColors;
-        inject.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, 'doughnut');
+        inject.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, colorGenType);
 
-        // Assigned colors per series (doughnut only ever has one dataset/series)
         chartData[1].forEach((dataset, i) => {
             try {
                 const solidColor = inject.chartColors[i]?.borderColor;
@@ -1372,32 +1403,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 dataset.borderColor = this.paletaActual;
             }
         });
-
-        inject.chartLegend = cfg.chartLegend ?? true;
-        inject.showLabels = cfg.showLabels ?? false;
-        inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
-        // UI range is 0-95 (0 = full pie, 95 = ring collapsed to a thin line) - see draw()
-        // in eda-doughnut.component.ts for how this maps to the actual inner/outer radius ratio.
-        inject.innerRadiusPercent = cfg.innerRadiusPercent ?? 95;
-        inject.useGradient = cfg.useGradient ?? true;
-        inject.linkedDashboard = this.props.linkedDashboardProps;
-
-        this.createDoughnutComponent(inject);
-    }
-
-    /**
-     * Creates the D3-based doughnut chart component
-     * @param inject chart configuration
-     */
-    private createDoughnutComponent(inject: any) {
-        this.currentConfig = inject;
-        this.entry.clear();
-        this.componentRef = this.entry.createComponent(EdaDoughnut);
-        this.componentRef.instance.inject = inject;
-        this.chartClickSubscription = this.componentRef.instance.onClick.subscribe(
-            (event) => this.onChartClick.emit({...event, query: this.props.query})
-        );
-        this.configUpdated.emit(this.currentConfig);
     }
 
     /**
@@ -1425,38 +1430,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartLabels = chartData[0];
         inject.chartDataset = chartData[1];
 
-        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-
-        const currentLabels = this.getLabelsForChartType(inject);
-
-        if (assignedColors.length === 0) {
-            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
-            this.props.config.getConfig()['assignedColors'] = assignedColors;
-        } else {
-            const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
-            assignedColors = currentLabels.map((label, index) => {
-                const assignedColor = colorMap.get(label);
-                if (assignedColor) {
-                    return { value: label, color: assignedColor.color };
-                } else {
-                    return { value: label, color: this.paletaActual[index % this.paletaActual.length] };
-                }
-            });
-        }
-
-        inject.assignedColors = assignedColors;
-        inject.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, 'polarArea');
-
-        chartData[1].forEach((dataset, i) => {
-            try {
-                const solidColor = inject.chartColors[i]?.borderColor;
-                dataset.backgroundColor = solidColor;
-                dataset.borderColor = solidColor;
-            } catch (err) {
-                dataset.backgroundColor = this.paletaActual;
-                dataset.borderColor = this.paletaActual;
-            }
-        });
+        this.applySingleSeriesColors(inject, chartData, 'polarArea');
 
         inject.chartLegend = cfg.chartLegend ?? true;
         inject.showLabels = cfg.showLabels ?? false;
@@ -1465,18 +1439,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.useGradient = cfg.useGradient ?? true;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
-        this.createPolarAreaComponent(inject);
-    }
-
-    private createPolarAreaComponent(inject: any) {
-        this.currentConfig = inject;
-        this.entry.clear();
-        this.componentRef = this.entry.createComponent(EdaPolarAreaComponent);
-        this.componentRef.instance.inject = inject;
-        this.chartClickSubscription = this.componentRef.instance.onClick.subscribe(
-            (event) => this.onChartClick.emit({...event, query: this.props.query})
-        );
-        this.configUpdated.emit(this.currentConfig);
+        this.createD3Component(inject, EdaPolarAreaComponent);
     }
 
     /**
@@ -1605,18 +1568,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.useGradient = cfg.useGradient ?? true;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
-        this.createBarComponent(inject);
-    }
-
-    private createBarComponent(inject: any) {
-        this.currentConfig = inject;
-        this.entry.clear();
-        this.componentRef = this.entry.createComponent(EdaBarD3Component);
-        this.componentRef.instance.inject = inject;
-        this.chartClickSubscription = this.componentRef.instance.onClick.subscribe(
-            (event) => this.onChartClick.emit({...event, query: this.props.query})
-        );
-        this.configUpdated.emit(this.currentConfig);
+        this.createD3Component(inject, EdaBarD3Component);
     }
 
     private renderParallelSets() {
@@ -1792,15 +1744,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             try {
                 // Doughnut (D3)
                 if (this.props.chartType === 'doughnut') {
-                    this.updateDoughnutColors();
+                    this.updateD3Colors(() => this.renderDoughnut());
                 }
                 // PolarArea (D3)
                 else if (this.props.chartType === 'polarArea') {
-                    this.updatePolarAreaColors();
+                    this.updateD3Colors(() => this.renderPolarArea());
                 }
                 // Bar family (D3), except barline which stays on Chart.js
                 else if (this.props.chartType === 'bar' && this.props.edaChart !== 'barline') {
-                    this.updateBarColors();
+                    this.updateD3Colors(() => this.renderBar());
                 }
                 // Charts ChartJS
                 else if (['line', 'area', 'radar'].includes(this.props.chartType) || (this.props.chartType === 'bar' && this.props.edaChart === 'barline')) {
@@ -1910,7 +1862,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.renderMap(this.props.chartType);
     }
 
-    public updateDoughnutColors() {
+    // Shared by doughnut/polarArea/bar: destroy the live D3 component and re-run its render()
+    // to pick up new colors. The three used to be copy-pasted, identical except which render
+    // method they called at the end.
+    private updateD3Colors(render: () => void): void {
         const config = this.props.config.getConfig();
         const assignedColors = config['assignedColors'];
 
@@ -1928,51 +1883,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 this.componentRef.destroy();
                 this.componentRef = null;
             }
-            this.renderDoughnut();
-        });
-    }
-
-    public updatePolarAreaColors() {
-        const config = this.props.config.getConfig();
-        const assignedColors = config['assignedColors'];
-
-        if (!assignedColors?.length) {
-            return;
-        }
-
-        if (this.chartClickSubscription) {
-            this.chartClickSubscription.unsubscribe();
-            this.chartClickSubscription = null;
-        }
-
-        setTimeout(() => {
-            if (this.componentRef) {
-                this.componentRef.destroy();
-                this.componentRef = null;
-            }
-            this.renderPolarArea();
-        });
-    }
-
-    public updateBarColors() {
-        const config = this.props.config.getConfig();
-        const assignedColors = config['assignedColors'];
-
-        if (!assignedColors?.length) {
-            return;
-        }
-
-        if (this.chartClickSubscription) {
-            this.chartClickSubscription.unsubscribe();
-            this.chartClickSubscription = null;
-        }
-
-        setTimeout(() => {
-            if (this.componentRef) {
-                this.componentRef.destroy();
-                this.componentRef = null;
-            }
-            this.renderBar();
+            render();
         });
     }
 
