@@ -6,4 +6,5 @@ export class EdaFunnel {
   dataDescription : any;
   linkedDashboard : LinkedDashboardProps;
   assignedColors: any[];
+  useGradient?: boolean;
 }

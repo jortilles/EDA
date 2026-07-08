@@ -26,6 +26,8 @@ export class ScatterPlotDialog implements OnInit, AfterViewChecked {
   /** Single source of truth */
   public assignedColors: { value: string; color: string }[] = [];
   private originalAssignedColors: { value: string; color: string }[] = [];
+  public useGradient: boolean = true;
+  private originalUseGradient: boolean = true;
 
   public labels: string[] = [];
   public display: boolean = false;
@@ -65,8 +67,17 @@ export class ScatterPlotDialog implements OnInit, AfterViewChecked {
         // snapshot for cancel
         this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
 
+        this.useGradient = this.myPanelChartComponent.props.config.getConfig()['useGradient'] ?? true;
+        this.originalUseGradient = this.useGradient;
+
       }, 0);
     }
+  }
+
+  /** Toggle the per-point gradient fill */
+  setUseGradient(): void {
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
+    this.myPanelChartComponent.changeChartType();
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
@@ -83,6 +94,7 @@ export class ScatterPlotDialog implements OnInit, AfterViewChecked {
 
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
       [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
 
     this.myPanelChartComponent.changeChartType();
 
@@ -92,6 +104,7 @@ export class ScatterPlotDialog implements OnInit, AfterViewChecked {
   /** CANCEL */
   closeChartConfig(): void {
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+    this.useGradient = this.originalUseGradient;
 
     const colorsForConfig = this.assignedColors.map(c => c.color);
 
@@ -101,6 +114,7 @@ export class ScatterPlotDialog implements OnInit, AfterViewChecked {
 
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
       [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
 
     this.myPanelChartComponent.changeChartType();
     this.onClose(EdaDialogCloseEvent.NONE);
@@ -116,6 +130,7 @@ export class ScatterPlotDialog implements OnInit, AfterViewChecked {
 
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
       [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
 
     this.myPanelChartComponent.changeChartType();
   }
@@ -145,6 +160,7 @@ export class ScatterPlotDialog implements OnInit, AfterViewChecked {
 
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
       [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
 
     this.myPanelChartComponent.changeChartType();
   }

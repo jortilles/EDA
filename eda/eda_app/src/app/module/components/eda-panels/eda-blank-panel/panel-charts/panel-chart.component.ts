@@ -1594,6 +1594,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
+        inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         this.createLegacyD3Component(inject, EdaD3Component);
     }
 
@@ -1610,6 +1611,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.linkedDashboard = this.props.linkedDashboardProps;
         inject.assignedColors = this.resolveAndPersistGradientColors(this.props, this.paletaActual);
+        inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         this.createLegacyD3Component(inject, EdaFunnelComponent);
     }
 
@@ -1624,6 +1626,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
+        inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         this.createLegacyD3Component(inject, EdaBubblechartComponent);
     }
 
@@ -1639,7 +1642,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
-        
+        inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
+
         this.createLegacyD3Component(inject, EdaTreeMap);
     }
 
@@ -1655,6 +1659,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
+        inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         this.createLegacyD3Component(inject, EdaScatter);
     }
 
@@ -1670,6 +1675,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
+        inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         this.createLegacyD3Component(inject, EdaSunburstComponent);
     }
 
@@ -1851,26 +1857,34 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         // Extract only the colors from the assignedColors array
         const colors = assignedColors.map(item => item.color);
+        // setConfig() below replaces the whole config object with a bare *Config instance (only
+        // holding `colors`) - useGradient would otherwise be silently reset to its default.
+        const useGradient = config['useGradient'] ?? true;
 
         switch (chartType) {
             case 'treeMap':
                 this.props.config.setConfig(new TreeMapConfig(colors));
+                this.props.config.getConfig()['useGradient'] = useGradient;
                 this.renderTreeMap();
                 break;
             case 'sunburst':
                 this.props.config.setConfig(new SunburstConfig(colors));
+                this.props.config.getConfig()['useGradient'] = useGradient;
                 this.renderSunburst();
                 break;
             case 'parallelSets':
                 this.props.config.setConfig(new SankeyConfig(colors));
+                this.props.config.getConfig()['useGradient'] = useGradient;
                 this.renderParallelSets();
                 break;
             case 'scatterPlot':
                 this.props.config.setConfig(new ScatterConfig(colors));
+                this.props.config.getConfig()['useGradient'] = useGradient;
                 this.renderScatter();
                 break;
             case 'funnel':
                 this.props.config.setConfig(new FunnelConfig(assignedColors));
+                this.props.config.getConfig()['useGradient'] = useGradient;
                 this.renderFunnel();
                 break;
             // case 'knob': // Knob disabled for now because it does not work
@@ -1880,6 +1894,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             //     break;
             case 'bubblechart':
                 this.props.config.setConfig(new BubblechartConfig(colors));
+                this.props.config.getConfig()['useGradient'] = useGradient;
                 this.renderBubblechart();
                 break;
             default:

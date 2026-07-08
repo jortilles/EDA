@@ -12,7 +12,7 @@ import * as d3 from 'd3'
 import { EdaBubblechart } from './eda-bubblechart'
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
-import { ChartUtilsService, StyleProviderService, D3TooltipService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, sanitizeId } from '@eda/services/service.index';
 
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
@@ -125,13 +125,32 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     return this.colorsBubble[this.valuesBubble.findIndex((item) => d.data.name.includes(item))] || this.colorScale(d.data.name);
   }
 
+  private gradientId(colorHex: string): string {
+    return `bubble-grad-${this.id}-${sanitizeId(colorHex)}`;
+  }
+
+  /** Radial gradient, base color at the center, lighter towards the edge - same convention as eda-doughnut-d3. */
+  private bubbleFill(defs: any, hex: string): string {
+    if (!(this.inject.useGradient ?? true)) return hex;
+    const id = this.gradientId(hex);
+    let grad = defs.select(`#${id}`);
+    if (grad.empty()) {
+      grad = defs.append('radialGradient').attr('id', id);
+      grad.append('stop').attr('class', 'grad-inner');
+      grad.append('stop').attr('class', 'grad-outer');
+    }
+    grad.select('.grad-inner').attr('offset', '0%').attr('stop-color', hex);
+    grad.select('.grad-outer').attr('offset', '100%').attr('stop-color', lightenHex(hex, 30));
+    return `url(#${id})`;
+  }
+
   draw() {
     // Initial removal of other charts
     this.svg.selectAll('*').remove();
 
     // set margins and color
     const width = this.svgContainer.nativeElement.clientWidth - 10, height = this.svgContainer.nativeElement.clientHeight - 10;
-    
+
     // Color ordering function for D3
     const valuesBubble = this.assignedColors.map((item) => item.value);
     const colorsBubble = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
@@ -139,6 +158,9 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     this.valuesBubble = valuesBubble;
     this.colorsBubble = colorsBubble;
     this.colorScale = color;
+
+    let defs = this.svg.select('defs');
+    if (defs.empty()) defs = this.svg.append('defs');
 
     // call the circle pack layout
     const treemap = data => d3.pack()
@@ -196,7 +218,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     // Create the circle inside the "g" block
     var node = elemEnter.append("circle")
       .attr("id", d => (d.leafUid = this.randomID())) // Create and assign a random id to each circle
-      .attr("fill", d => this.leafColor(d))
+      .attr("fill", d => this.bubbleFill(defs, this.leafColor(d)))
       .attr("class", "node")
       .attr("r", function (d) {
         return size(d.value)

@@ -167,9 +167,10 @@ export const ChartsConfigUtils = {
         assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || [],
         modifiedFontPoints: inst?.inject?.modifiedFontPoints || 0,
       };
-    } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
+    } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunburst"].includes(ebp.panelChart.props.chartType)) {
       config = {
         assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : [],
+        useGradient: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.useGradient ?? true : true,
       }
     } else if (ebp.panelChart.props.chartType === 'knob') {
 

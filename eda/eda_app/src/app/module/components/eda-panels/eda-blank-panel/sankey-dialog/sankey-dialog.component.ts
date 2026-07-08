@@ -26,6 +26,8 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
   /* single source of truth */
   public assignedColors: { value: string; color: string }[] = [];
   private originalAssignedColors: { value: string; color: string }[] = [];
+  public useGradient: boolean = true;
+  private originalUseGradient: boolean = true;
 
   public labels: string[] = [];
   public values: any[] = [];
@@ -68,8 +70,17 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
         // preview cancel
         this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
 
+        this.useGradient = this.myPanelChartComponent.props.config.getConfig()['useGradient'] ?? true;
+        this.originalUseGradient = this.useGradient;
+
       }, 0);
     }
+  }
+
+  /** Toggle the per-link gradient stroke */
+  setUseGradient(): void {
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
+    this.myPanelChartComponent.changeChartType();
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
@@ -85,6 +96,7 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
   /** CANCEL */
   closeChartConfig(): void {
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+    this.useGradient = this.originalUseGradient;
     this.syncChart();
     this.onClose(EdaDialogCloseEvent.NONE);
   }
@@ -124,6 +136,7 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
 
     this.myPanelChartComponent.props.config.setConfig(new SankeyConfig([...new Set(colorsForChart)]));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
     this.myPanelChartComponent.changeChartType();
   }
 }

@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { sankeyLinkHorizontal } from 'd3-sankey'
 import { sankey as Sankey } from 'd3-sankey';
 import { EdaD3 } from './eda-d3';
-import { ChartUtilsService, StyleProviderService, D3TooltipService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, sanitizeId } from '@eda/services/service.index';
 
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
@@ -89,6 +89,25 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       this.resizeObserver.disconnect();
   }
 
+  private gradientId(colorHex: string): string {
+    return `sankey-grad-${this.id}-${sanitizeId(colorHex)}`;
+  }
+
+  /** Linear gradient along the link's own flow direction (left -> right), base color -> lighter. */
+  private linkStroke(defs: any, hex: string): string {
+    if (!(this.inject.useGradient ?? true)) return hex;
+    const id = this.gradientId(hex);
+    let grad = defs.select(`#${id}`);
+    if (grad.empty()) {
+      grad = defs.append('linearGradient').attr('id', id);
+      grad.append('stop').attr('class', 'grad-start');
+      grad.append('stop').attr('class', 'grad-end');
+    }
+    grad.attr('x1', '0%').attr('y1', '0%').attr('x2', '100%').attr('y2', '0%');
+    grad.select('.grad-start').attr('offset', '0%').attr('stop-color', hex);
+    grad.select('.grad-end').attr('offset', '100%').attr('stop-color', lightenHex(hex, 30));
+    return `url(#${id})`;
+  }
 
   draw() {
     // Initial removal of other charts 
@@ -130,6 +149,9 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .extent([[0, 5], [width, height - 5]]);
 
     const svg = this.svg;
+
+    let defs = svg.select('defs');
+    if (defs.empty()) defs = svg.append('defs');
 
     const { nodes, links } = sankey({
       nodes: _nodes.map(d => Object.assign({}, d)),
@@ -181,7 +203,8 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .on('mouseout', this.hideLinks)
       .attr("stroke", d => {
         // Return ONLY THE COLOR from assignedColors that matches the data, otherwise use color scale
-        return colorsTree[valuesTree.findIndex((item) => d.names.includes(item))] || color(d.names[0]);
+        const hex = colorsTree[valuesTree.findIndex((item) => d.names.includes(item))] || color(d.names[0]);
+        return this.linkStroke(defs, hex);
       })
 
       .attr("stroke-width", d => d.width)

@@ -1,5 +1,5 @@
 
-import { ChartUtilsService, StyleProviderService, D3TooltipService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, sanitizeId } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import * as d3 from 'd3';
 import { TreeMap } from "./eda-treeMap";
@@ -141,6 +141,26 @@ export class EdaTreeMap implements AfterViewInit {
     return idx === -1 ? this.colorScale(d.data.name) : this.colorsTree[idx];
   }
 
+  private gradientId(colorHex: string): string {
+    return `treemap-grad-${this.id}-${sanitizeId(colorHex)}`;
+  }
+
+  /** Linear gradient (rects aren't round), base color at the bottom, lighter at the top - same convention as eda-bar-d3. */
+  private cellFill(defs: any, hex: string): string {
+    if (!(this.inject.useGradient ?? true)) return hex;
+    const id = this.gradientId(hex);
+    let grad = defs.select(`#${id}`);
+    if (grad.empty()) {
+      grad = defs.append('linearGradient').attr('id', id);
+      grad.append('stop').attr('class', 'grad-start');
+      grad.append('stop').attr('class', 'grad-end');
+    }
+    grad.attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '0%');
+    grad.select('.grad-start').attr('offset', '0%').attr('stop-color', hex);
+    grad.select('.grad-end').attr('offset', '100%').attr('stop-color', lightenHex(hex, 30));
+    return `url(#${id})`;
+  }
+
   draw() {
     // Initial deletion of other charts
     this.svg.selectAll('*').remove();
@@ -173,6 +193,9 @@ export class EdaTreeMap implements AfterViewInit {
 
     const svg = this.svg;
 
+    let defs = svg.select('defs');
+    if (defs.empty()) defs = svg.append('defs');
+
     const leaf = svg
       .selectAll("g")
       .data(root.leaves())
@@ -187,7 +210,7 @@ export class EdaTreeMap implements AfterViewInit {
     leaf
       .append("rect")
       .attr("id", (d) => (d.leafUid = this.randomID()))
-      .attr("fill", (d) => this.leafColor(d))
+      .attr("fill", (d) => this.cellFill(defs, this.leafColor(d)))
       .attr("fill-opacity", 0.6)
       .attr("width", (d) => d.x1 - d.x0)
       .attr("height", (d) => d.y1 - d.y0)

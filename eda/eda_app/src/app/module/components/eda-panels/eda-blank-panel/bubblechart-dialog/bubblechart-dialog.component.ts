@@ -26,6 +26,8 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
   /** Source of truth for colors by label */
   public assignedColors: { value: string | number; color: string }[] = [];
   private originalAssignedColors: { value: string | number; color: string }[] = [];
+  public useGradient: boolean = true;
+  private originalUseGradient: boolean = true;
 
   public labels: Array<string | number> = [];
   public selectedPalette: { name: string; paleta: string[] } | null = null;
@@ -58,8 +60,17 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
 
         // Save a copy for cancellation
         this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
+
+        this.useGradient = this.myPanelChartComponent.props.config.getConfig()['useGradient'] ?? true;
+        this.originalUseGradient = this.useGradient;
       }, 0);
     }
+  }
+
+  /** Toggle the per-bubble gradient fill */
+  setUseGradient(): void {
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
+    this.myPanelChartComponent.changeChartType();
   }
 
   /** Closes the dialog */
@@ -73,6 +84,7 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
 
     this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
     this.myPanelChartComponent.changeChartType();
 
     this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig });
@@ -81,10 +93,12 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
   /** Cancels changes and restores the initial state */
   closeChartConfig(): void {
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+    this.useGradient = this.originalUseGradient;
 
     const colorsForConfig = this.assignedColors.map(c => c.color);
     this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
     this.myPanelChartComponent.changeChartType();
 
     this.onClose(EdaDialogCloseEvent.NONE);
@@ -95,6 +109,7 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
     const colorsForConfig = this.assignedColors.map(c => c.color);
     this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
     this.myPanelChartComponent.changeChartType();
   }
 
@@ -119,6 +134,7 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
     const colorsForConfig = this.assignedColors.map(c => c.color);
     this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
 
     this.myPanelChartComponent.changeChartType();
   }

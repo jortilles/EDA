@@ -8,4 +8,5 @@ export class TreeMap {
   colors : Array<string>;
   linkedDashboard : LinkedDashboardProps;
   assignedColors: any[];
+  useGradient?: boolean;
 }

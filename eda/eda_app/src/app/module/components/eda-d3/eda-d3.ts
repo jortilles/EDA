@@ -7,4 +7,5 @@ export class EdaD3 {
   colors : Array<string>;
   linkedDashboard : LinkedDashboardProps;
   assignedColors: any[];
+  useGradient?: boolean;
 }

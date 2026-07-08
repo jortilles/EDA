@@ -1,4 +1,4 @@
-import { ChartUtilsService, StyleProviderService, D3TooltipService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, sanitizeId } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import * as d3 from 'd3';
 import { ScatterPlot } from "./eda-scatter";
@@ -171,6 +171,9 @@ export class EdaScatter implements AfterViewInit {
     svg.append("g")
       .call(grid);
 
+    let defs = svg.select('defs');
+    if (defs.empty()) defs = svg.append('defs');
+
     svg.append("g")
       .attr("stroke-width", 1.5)
       .attr("fill", "var(--panel-font-color)")
@@ -183,7 +186,7 @@ export class EdaScatter implements AfterViewInit {
       .attr("cx", d => x(d.x))
       .attr("cy", d => y(d.y))
       .attr("r", d => d.radius + 1)
-      .attr("fill", d => this.pointColor(d))
+      .attr("fill", d => this.pointFill(defs, this.pointColor(d)))
       .on('click', (e, data) => {
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
@@ -237,6 +240,25 @@ export class EdaScatter implements AfterViewInit {
   private pointColor(d: any): string {
     const idx = this.valuesScatter.findIndex((item) => d.label.includes(item));
     return idx !== -1 ? this.colorsScatter[idx] : this.colorScale(d.label);
+  }
+
+  private gradientId(colorHex: string): string {
+    return `scatter-grad-${this.id}-${sanitizeId(colorHex)}`;
+  }
+
+  /** Radial gradient, base color at the center, lighter towards the edge - same convention as eda-doughnut-d3. */
+  private pointFill(defs: any, hex: string): string {
+    if (!(this.inject.useGradient ?? true)) return hex;
+    const id = this.gradientId(hex);
+    let grad = defs.select(`#${id}`);
+    if (grad.empty()) {
+      grad = defs.append('radialGradient').attr('id', id);
+      grad.append('stop').attr('class', 'grad-inner');
+      grad.append('stop').attr('class', 'grad-outer');
+    }
+    grad.select('.grad-inner').attr('offset', '0%').attr('stop-color', hex);
+    grad.select('.grad-outer').attr('offset', '100%').attr('stop-color', lightenHex(hex, 30));
+    return `url(#${id})`;
   }
 
   formatData(data) {

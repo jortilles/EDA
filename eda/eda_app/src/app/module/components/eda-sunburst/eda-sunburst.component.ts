@@ -1,4 +1,4 @@
-import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, lightenHex, sanitizeId } from '@eda/services/service.index';
 import * as d3 from 'd3'
 import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter, OnDestroy} from '@angular/core'
 import { SunBurst } from './eda-sunbrust'
@@ -75,6 +75,34 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
       this.resizeObserver.disconnect();
   }
 
+  private gradientId(hex: string, opacity: number): string {
+    return `sunburst-grad-${this.id}-${sanitizeId(hex)}-${Math.round(opacity * 100)}`;
+  }
+
+  /**
+   * Radial gradient, base color at the center, lighter towards the edge - same convention as
+   * eda-doughnut-d3. The per-sibling opacity is baked into the stop colors (rgba) rather than
+   * applied as a separate fill-opacity attribute, since mouseleave resets fill-opacity to 1 for
+   * every arc - baking it into fill is what keeps the sibling shading visible at rest.
+   */
+  private arcFill(defs: any, hex: string, opacity: number): string {
+    const inner = d3.rgb(hex);
+    if (!(this.inject.useGradient ?? true)) {
+      return `rgba(${inner.r}, ${inner.g}, ${inner.b}, ${opacity})`;
+    }
+    const id = this.gradientId(hex, opacity);
+    let grad = defs.select(`#${id}`);
+    if (grad.empty()) {
+      grad = defs.append('radialGradient').attr('id', id);
+      grad.append('stop').attr('class', 'grad-inner');
+      grad.append('stop').attr('class', 'grad-outer');
+    }
+    const outer = d3.rgb(lightenHex(hex, 30));
+    grad.select('.grad-inner').attr('offset', '0%').attr('stop-color', `rgba(${inner.r}, ${inner.g}, ${inner.b}, ${opacity})`);
+    grad.select('.grad-outer').attr('offset', '100%').attr('stop-color', `rgba(${outer.r}, ${outer.g}, ${outer.b}, ${opacity})`);
+    return `url(#${id})`;
+  }
+
   draw() {
     // Clear SVG before redrawing (prevents accumulation)
     this.svg.selectAll('*').remove();
@@ -112,6 +140,9 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
       .endAngle((d: any) => d.x1)
       .innerRadius((d: any) => Math.sqrt(d.y0))
       .outerRadius(radius)
+
+    let defs = svg.select('defs');
+    if (defs.empty()) defs = svg.append('defs');
 
     /** main processing starts */
     let data = this.buildHierarchy(this.data);
@@ -159,25 +190,25 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
       .attr('fill', d => {
         let original = d;
         let opacity = 1;
-        
+
         // Go up to the first level to assign the base color
         while (d.depth > 1) d = d.parent;
-        const rgbColor = d3.rgb(colorsSunburst[valuesSunburst.findIndex(item => d.data.name.includes(item))] || color(d.data.name)); 
+        const hex = colorsSunburst[valuesSunburst.findIndex(item => d.data.name.includes(item))] || color(d.data.name);
         // Opacity calculation
         if (original.depth > 1) {
           const siblings = original.parent.children;
           const index = siblings.indexOf(original);
           const total = siblings?.length;
-      
+
           const minOpacity = 0.25;
           const maxOpacity = 1;
-      
+
           // Linearly distribute between min and max, most opaque first
           if (total > 1) { opacity = maxOpacity - (index * (maxOpacity - minOpacity) / (total - 1)); }
           else { opacity = maxOpacity; } // Single child
         }
-      
-        return `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, ${opacity})`;
+
+        return this.arcFill(defs, hex, opacity);
       })
       
       
