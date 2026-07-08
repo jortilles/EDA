@@ -1,7 +1,7 @@
 import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import * as d3 from 'd3';
 import { EdaFunnel } from './eda-funnel';
-import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService } from '@eda/services/service.index';
 
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
@@ -17,7 +17,7 @@ interface FunnelData {
   standalone: true,
   selector: 'eda-funnel',
   templateUrl: './eda-funnel.component.html',
-  styleUrls: [],
+  styleUrls: ['./eda-funnel.component.css'],
   imports: [FormsModule, CommonModule]
 })
 
@@ -40,10 +40,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
   resizeObserver!: ResizeObserver;
   paleta : any;
 
-  div = null;
-
-
-  constructor( private styleProviderService : StyleProviderService, private chartUtils : ChartUtilsService) {
+  constructor( private styleProviderService : StyleProviderService, private chartUtils : ChartUtilsService, private tooltipService: D3TooltipService) {
   }
 
 
@@ -85,9 +82,8 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.div)
-      this.div.remove();
-    if (this.resizeObserver) 
+    this.tooltipService.hide();
+    if (this.resizeObserver)
       this.resizeObserver.disconnect();
   }
 
@@ -241,6 +237,34 @@ draw() {
         const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
         this.onClick.emit({label, filterBy });
       }
+    })
+    .on('mouseover', (event, d) => {
+      d3.select(event.currentTarget)
+        .transition()
+        .duration(150)
+        .style('font-size', '16px');
+
+      const ratio = data.length > 1 ? d.step / (data.length - 1) : 0;
+      const stepColor = d3.interpolateRgb(gradient1, gradient2)(ratio);
+      const swatch = `<span class="eda-funnel-tooltip-swatch" style="background-color:${stepColor};"></span>`;
+
+      const valueRow = `${swatch}${d3.format(',')(d.value)}`;
+      const percentageRow = d.step === 0 ? '' : `<div class="eda-funnel-tooltip-row">${d3.format('.1%')(d.value / data[0].value)}</div>`;
+
+      const text = `<div class="eda-funnel-tooltip-title">${d.label}</div>` +
+        `<div class="eda-funnel-tooltip-row">${valueRow}</div>${percentageRow}`;
+
+      this.tooltipService.show(event, text, 'eda-funnel-tooltip');
+    })
+    .on('mouseout', (event) => {
+      d3.select(event.currentTarget)
+        .transition()
+        .duration(150)
+        .style('font-size', '14px');
+      this.tooltipService.hide();
+    })
+    .on('mousemove', (event) => {
+      this.tooltipService.move(event);
     });
 
   svg.selectAll('.percentages')

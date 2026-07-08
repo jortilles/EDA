@@ -2,7 +2,7 @@
    ::ng-deep to escape view encapsulation). Defined locally rather than relying on the shared
    global `.d3tooltip` class in prime-styles/custom.css, since that stylesheet is never actually
    loaded by the app - see eda-doughnut.component.css for the full explanation. */
-::ng-deep .eda-scatter-tooltip {
+::ng-deep .eda-funnel-tooltip {
   position: absolute;
   text-align: left;
   cursor: pointer;
@@ -16,25 +16,20 @@
   z-index: 9999;
 }
 
-::ng-deep .eda-scatter-tooltip > h6 {
-  color: white;
-  font-weight: bold;
-}
-
-::ng-deep .eda-scatter-tooltip-title {
+::ng-deep .eda-funnel-tooltip-title {
   font-weight: 900;
   color: #ffffff;
   margin-bottom: 4px;
 }
 
-::ng-deep .eda-scatter-tooltip-row {
+::ng-deep .eda-funnel-tooltip-row {
   display: flex;
   align-items: center;
   gap: 5px;
   white-space: nowrap;
 }
 
-::ng-deep .eda-scatter-tooltip-swatch {
+::ng-deep .eda-funnel-tooltip-swatch {
   display: inline-block;
   width: 10px;
   height: 10px;

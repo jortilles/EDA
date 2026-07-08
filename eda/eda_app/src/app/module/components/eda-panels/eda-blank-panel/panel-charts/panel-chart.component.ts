@@ -1571,6 +1571,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.createD3Component(inject, EdaBarD3Component);
     }
 
+    // Shared by the older D3 charts below (parallelSets/funnel/bubblechart/treeMap/scatter/
+    // sunburst/treetable): mount the component and wire up its click output. Unlike
+    // createD3Component() (doughnut/polarArea/bar), these don't track currentConfig or emit
+    // configUpdated - preserved exactly as they already behaved, not changed as part of this.
+    private createLegacyD3Component(inject: any, componentType: Type<any>) {
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(componentType);
+        this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({ ...event, query: this.props.query }));
+    }
+
     private renderParallelSets() {
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
 
@@ -1583,17 +1594,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
-        this.createParallelSetsComponent(inject);
-    }
-
-    private createParallelSetsComponent(inject: any) {
-        this.entry.clear();
-        this.componentRef = this.entry.createComponent(EdaD3Component);
-        this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => {
-            this.onChartClick.emit({ ...event, query: this.props.query });
-        })
-
+        this.createLegacyD3Component(inject, EdaD3Component);
     }
 
     private renderFunnel() {
@@ -1609,16 +1610,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.linkedDashboard = this.props.linkedDashboardProps;
         inject.assignedColors = this.resolveAndPersistGradientColors(this.props, this.paletaActual);
-        this.createFunnelComponent(inject);
-    }
-
-    private createFunnelComponent(inject: any) {
-        this.entry.clear();
-        this.componentRef = this.entry.createComponent(EdaFunnelComponent);
-        this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => 
-            this.onChartClick.emit({...event, query: this.props.query})
-        );
+        this.createLegacyD3Component(inject, EdaFunnelComponent);
     }
 
     private renderBubblechart() {
@@ -1632,15 +1624,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
-        this.createBubblechartComponent(inject);
-    }
-    
-    private createBubblechartComponent(inject: any) {
-        this.entry.clear();
-        this.componentRef = this.entry.createComponent(EdaBubblechartComponent);
-        this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
-
+        this.createLegacyD3Component(inject, EdaBubblechartComponent);
     }
 
     private renderTreeMap() {
@@ -1656,15 +1640,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         
-        this.createTreeMap(inject);
-    }
-
-
-    private createTreeMap(inject: any) {
-        this.entry.clear();
-        this.componentRef = this.entry.createComponent(EdaTreeMap);
-        this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+        this.createLegacyD3Component(inject, EdaTreeMap);
     }
 
     private renderScatter() {
@@ -1679,15 +1655,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
-        this.createScatter(inject);
-    }
-
-    private createScatter(inject: any) {
-        this.entry.clear();
-        this.componentRef = this.entry.createComponent(EdaScatter);
-        this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
-
+        this.createLegacyD3Component(inject, EdaScatter);
     }
 
 
@@ -1702,26 +1670,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
-        this.createSunburst(inject);
-    }
-
-    private createSunburst(inject: any) {
-        this.entry.clear();
-        this.componentRef = this.entry.createComponent(EdaSunburstComponent);
-        this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+        this.createLegacyD3Component(inject, EdaSunburstComponent);
     }
 
     private renderTreetable() {
         const inject = this.props;
-        this.createTreetable(inject);
-    }
-
-    private createTreetable(inject: any) {
-        this.entry.clear();
-        this.componentRef = this.entry.createComponent(EdaTreeTable);
-        this.componentRef.instance.inject = inject; // inject as input to the Treetable component
-        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+        this.createLegacyD3Component(inject, EdaTreeTable);
     }
 
     private randomID() {

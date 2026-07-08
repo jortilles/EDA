@@ -3,8 +3,7 @@ import * as d3 from 'd3';
 import { sankeyLinkHorizontal } from 'd3-sankey'
 import { sankey as Sankey } from 'd3-sankey';
 import { EdaD3 } from './eda-d3';
-import * as dataUtils from '../../../services/utils/transform-data-utils';
-import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService } from '@eda/services/service.index';
 
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
@@ -33,11 +32,10 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   metricIndex: number;
   width: number;
   heigth: number;
-  div = null;
   resizeObserver!: ResizeObserver;
 
 
-  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService) {
+  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService) {
   }
 
 
@@ -85,9 +83,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   }
 
   ngOnDestroy(): void {
-    // Remove container
-    if (this.div)
-      this.div.remove();
+    this.tooltipService.hide();
     // Disconnect resize observer
     if (this.resizeObserver)
       this.resizeObserver.disconnect();
@@ -194,48 +190,29 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .on('mouseover', (d, data) => {
 
         this.showLinks(d, data);
-        let metricLabel = this.inject.dataDescription.numericColumns[0].name;
+        const metricLabel = this.inject.dataDescription.numericColumns[0].name;
 
-        const firstRow = `${data.names.join(" → ")}`;
-        const secondRow = `${metricLabel} : ${data.value.toLocaleString('de-DE', { maximumFractionDigits: 6 })}`;
-        const thirdRow = this.inject.linkedDashboard ? `linked to ${this.inject.linkedDashboard.dashboardName}` : '';
+        const linkColor = colorsTree[valuesTree.findIndex((item) => data.names.includes(item))] || color(data.names[0]);
+        const swatch = `<span class="eda-d3-tooltip-swatch" style="background-color:${linkColor};"></span>`;
+        const valueRow = `${metricLabel} : ${data.value.toLocaleString('de-DE', { maximumFractionDigits: 6 })}`;
 
-        const link = this.inject.linkedDashboard ? `<br/> <h6>${thirdRow}</h6>` : '';
-        let text = `${firstRow} <br/> ${secondRow} ${link}`;
+        let text = `<div class="eda-d3-tooltip-title">${data.names.join(" → ")}</div>` +
+          `<div class="eda-d3-tooltip-row">${swatch}${valueRow}</div>`;
+        if (this.inject.linkedDashboard) {
+          text += `<h6>linked to ${this.inject.linkedDashboard.dashboardName}</h6>`;
+        }
 
-        const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length * (18 / 12)]);
-        const pixelWithRate = 8;
-        const width = maxLength * pixelWithRate + 10;
-
-        this.div = d3.select("body").append('div')
-          .attr('class', 'd3tooltip')
-          .style('opacity', 0);
-
-        this.div
-          .style('width', `${width}px`)
-          .style('height', 'auto');
-
-        this.div.transition()
-          .duration(200)
-          .style('opacity', .9);
-        this.div.html(text)
-          .style('left', (d.pageX - 50 - width) + 'px')
-          .style('top', (d.pageY - 80) + 'px')
-        // .style('width', width)
-        // .style('height', height);
-
+        this.tooltipService.show(d, text, 'eda-d3-tooltip');
       })
       .on('mouseout', (d) => {
 
         this.hideLinks();
 
-        this.div.remove();
+        this.tooltipService.hide();
 
-      }).on("mousemove", (d, data) => {
+      }).on("mousemove", (d) => {
 
-        this.div
-          .style("left", (d.pageX - 70) + "px")
-          .style("top", (d.pageY - 80) + "px");
+        this.tooltipService.move(d);
 
       })
 

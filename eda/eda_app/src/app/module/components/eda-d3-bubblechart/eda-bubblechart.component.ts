@@ -12,7 +12,7 @@ import * as d3 from 'd3'
 import { EdaBubblechart } from './eda-bubblechart'
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
-import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService } from '@eda/services/service.index';
 
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
@@ -29,8 +29,6 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
 
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef
 
-  div = null;
-
   id: string;
   svg: any;
   data: any;
@@ -45,9 +43,12 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   value: any;
   simulation: any;
   resizeObserver!: ResizeObserver;
+  private valuesBubble: any[];
+  private colorsBubble: any[];
+  private colorScale: any;
 
 
-  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService) { }
+  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService) { }
 
   ngOnInit(): void {
     this.id = `bubblechart_${this.inject.id}`
@@ -61,8 +62,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   }
 
   ngOnDestroy(): void {
-    if (this.div)
-      this.div.remove();
+    this.tooltipService.hide();
     if (this.resizeObserver)
       this.resizeObserver.disconnect();
   }
@@ -119,6 +119,12 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       .substring(1);
   }
 
+  private leafColor(node: any): string {
+    let d = node;
+    while (d.depth > 1) d = d.parent;
+    return this.colorsBubble[this.valuesBubble.findIndex((item) => d.data.name.includes(item))] || this.colorScale(d.data.name);
+  }
+
   draw() {
     // Initial removal of other charts
     this.svg.selectAll('*').remove();
@@ -130,6 +136,9 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     const valuesBubble = this.assignedColors.map((item) => item.value);
     const colorsBubble = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
     const color = d3.scaleOrdinal(this.firstColLabels,  colorsBubble);
+    this.valuesBubble = valuesBubble;
+    this.colorsBubble = colorsBubble;
+    this.colorScale = color;
 
     // call the circle pack layout
     const treemap = data => d3.pack()
@@ -187,11 +196,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     // Create the circle inside the "g" block
     var node = elemEnter.append("circle")
       .attr("id", d => (d.leafUid = this.randomID())) // Create and assign a random id to each circle
-      .attr("fill", d => {
-        while (d.depth > 1) d = d.parent;
-        // Return ONLY THE COLOR from assignedColors that matches the data; otherwise use the color scale
-        return  colorsBubble[valuesBubble.findIndex((item) => d.data.name.includes(item))] || color(d.data.name);
-      })
+      .attr("fill", d => this.leafColor(d))
       .attr("class", "node")
       .attr("r", function (d) {
         return size(d.value)
@@ -218,33 +223,23 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
           this.onClick.emit({label, filterBy });
         }
       })
-              .on('mouseover', (d, data) => { 
-                
+              .on('mouseover', (d, data) => {
+
 
                 // Increase the bubble border width
                 d3.select(d.currentTarget)
                     .transition()
                     .duration(200)
                     .style("stroke-width", 3);
-                
+
                 // Create a label that contains the data for each bubble
                 const tooltipData = this.getToolTipData(data);
-                let text = `${tooltipData.firstRow} <br/> ${tooltipData.secondRow}`;
-                text = this.inject.linkedDashboard ? text + `<br/> <h6>  ${tooltipData.thirdRow} </h6>` : text;
+                const swatch = `<span class="eda-bubblechart-tooltip-swatch" style="background-color:${this.leafColor(data)};"></span>`;
+                let text = `<div class="eda-bubblechart-tooltip-title">${tooltipData.firstRow}</div>` +
+                  `<div class="eda-bubblechart-tooltip-row">${swatch}${tooltipData.secondRow}</div>`;
+                text = this.inject.linkedDashboard ? text + `<h6>${tooltipData.thirdRow}</h6>` : text;
 
-                // Create the tooltip div
-                this.div = d3.select("app-root").append('div')
-                  .attr('class', 'd3tooltip')
-                  .style('opacity', 0);
-
-                this.div.transition()
-                  .duration(200)
-                  .style('opacity', .9);
-                this.div.html(text)
-                  .style('left', (d.pageX - 81) + 'px')
-                  .style('top', (d.pageY - 49) + 'px')
-                  .style('width', `${tooltipData.width}px`)
-                  .style('height', 'auto');
+                this.tooltipService.show(d, text, 'eda-bubblechart-tooltip');
               })
       .on('mouseout', (d) => {
 
@@ -255,16 +250,10 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
 
           .style("stroke-width", 1);
 
-        // Remove the tooltip div
-        this.div.remove()
+        this.tooltipService.hide();
       })
-      .on("mousemove", (d, data) => {
-        // Update tooltip position
-        const linked = this.inject.linkedDashboard ? 0 : 10;
-        const tooltipData = this.getToolTipData(data);
-
-        this.div.style("top", (d.pageY - 70 + linked) + "px")
-          .style("left", (d.pageX - tooltipData.width / 2) + "px");
+      .on("mousemove", (d) => {
+        this.tooltipService.move(d);
       }).call(d3.drag() // Calls a specific function when the node is dragged
         .on("start", dragstarted)
         .on("drag", dragged)

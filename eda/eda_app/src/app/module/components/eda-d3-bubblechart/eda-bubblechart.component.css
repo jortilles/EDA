@@ -2,10 +2,48 @@
   visibility: hidden;
 }
 
-.edaD3Tooltip{
-  font-weight: bolder !important;
-  background-color: brown !important;
-  color: greenyellow;
+/* Tooltip appended by D3TooltipService to <body> (outside this component's template, so it needs
+   ::ng-deep to escape view encapsulation). Defined locally rather than relying on the shared
+   global `.d3tooltip` class in prime-styles/custom.css, since that stylesheet is never actually
+   loaded by the app - see eda-doughnut.component.css for the full explanation. */
+::ng-deep .eda-bubblechart-tooltip {
+  position: absolute;
+  text-align: left;
+  cursor: pointer;
+  padding: 8px 10px;
+  font: 12px;
+  color: #ffffff;
+  background: #010913ea;
+  border: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+::ng-deep .eda-bubblechart-tooltip > h6 {
+  color: white;
+  font-weight: bold;
+}
+
+::ng-deep .eda-bubblechart-tooltip-title {
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+::ng-deep .eda-bubblechart-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+::ng-deep .eda-bubblechart-tooltip-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
 }
 
 
