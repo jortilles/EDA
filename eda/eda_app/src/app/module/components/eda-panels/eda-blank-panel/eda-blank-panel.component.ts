@@ -1526,18 +1526,19 @@ public tableNodeExpand(event: any): void {
                 properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
             }
         
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend, coloredBarsConfig: this.graficos.coloredBarsConfig, showUniqueColors: this.graficos.showUniqueColors, uniqueBarColors: this.graficos.uniqueBarColors, showGridLines: this.graficos.showGridLines, useGradient: this.graficos.useGradient ?? true };
+                const customFields: Record<string, any> = {};
+                CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+                    customFields[field.name] = this.graficos[field.name] ?? field.default;
+                });
+
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, ...customFields };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
                     this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend, this.graficos.showGridLines ?? true));
-                if (this.graficos.coloredBarsConfig) {
-                    (layout.getConfig() as any)['coloredBarsConfig'] = this.graficos.coloredBarsConfig;
-                }
-                (layout.getConfig() as any)['showUniqueColors'] = this.graficos.showUniqueColors ?? false;
-                (layout.getConfig() as any)['uniqueBarColors'] = this.graficos.uniqueBarColors ?? [];
-                (layout.getConfig() as any)['showGridLines'] = this.graficos.showGridLines ?? true;
-                (layout.getConfig() as any)['useGradient'] = this.graficos.useGradient ?? true;
+                CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+                    (layout.getConfig() as any)[field.name] = customFields[field.name];
+                });
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message
