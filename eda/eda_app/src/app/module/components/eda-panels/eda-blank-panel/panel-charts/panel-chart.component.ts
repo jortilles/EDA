@@ -1602,6 +1602,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showLabels = cfg.showLabels ?? false;
         inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
         inject.showGridLines = cfg.showGridLines ?? true;
+        inject.useGradient = cfg.useGradient ?? true;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createBarComponent(inject);

@@ -13,5 +13,6 @@ export class EdaBarD3 {
   showLabels: boolean;
   showLabelsPercent: boolean;
   showGridLines: boolean;
+  useGradient: boolean;
   linkedDashboard: LinkedDashboardProps;
 }

@@ -66,6 +66,7 @@ export class ChartDialogComponent {
     public colorAbove: string = '#ff4444';
     public colorBetween: string = '#ffcc00';
     public colorBelow: string = '#44bb44';
+    public useGradient: boolean = true;
 
     public comparativeTooltip = $localize`:@@comparativeTooltip:La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes o semana y un único campo numérico agregado`
     public trendTooltip = $localize`:@@trendTooltip:La función de añadir tendencia sólo se puede activar en los gràficos de lineas`
@@ -87,6 +88,7 @@ export class ChartDialogComponent {
         addComparative: boolean;
         chartLegend: boolean;
         showGridLines: boolean;
+        useGradient: boolean;
     };
 
     public drops = {
@@ -145,6 +147,7 @@ export class ChartDialogComponent {
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
         this.chartLegend = this.controller.params.config.config.getConfig()['chartLegend'] ?? true;
         this.showGridLines = this.controller.params.config.config.getConfig()['showGridLines'] ?? true;
+        this.useGradient = this.controller.params.config.config.getConfig()['useGradient'] ?? true;
 
         // NEW: Save original label values
         this.originalLabelValues = {
@@ -157,7 +160,8 @@ export class ChartDialogComponent {
             numberOfColumns: this.numberOfColumns,
             addComparative: this.addComparative,
             chartLegend: this.chartLegend,
-            showGridLines: this.showGridLines
+            showGridLines: this.showGridLines,
+            useGradient: this.useGradient
         };
 
         this.oldChart = _.cloneDeep(this.controller.params.chart);
@@ -849,6 +853,12 @@ export class ChartDialogComponent {
         this.handleInputColor();
     }
 
+    applyUseGradient(): void {
+        this.controller.params.config.config.getConfig()['useGradient'] = this.useGradient;
+        this.chart['useGradient'] = this.useGradient;
+        this.handleInputColor();
+    }
+
     onTabChange(event: any): void {
 
         if (!['bar', 'horizontalBar'].includes(this.chart.chartType as string)) return;
@@ -883,6 +893,7 @@ export class ChartDialogComponent {
         this.chart.numberOfColumns = this.numberOfColumns;
         this.chart.chartLegend = this.chartLegend;
         this.chart['showGridLines'] = this.showGridLines;
+        this.chart['useGradient'] = this.useGradient;
 
         // Save in config too (for persistence)
         this.controller.params.config.config.getConfig()['addTrend'] = this.addTrend;
@@ -896,6 +907,7 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['addComparative'] = this.addComparative;
         this.controller.params.config.config.getConfig()['chartLegend'] = this.chartLegend;
         this.controller.params.config.config.getConfig()['showGridLines'] = this.showGridLines;
+        this.controller.params.config.config.getConfig()['useGradient'] = this.useGradient;
 
         // Save colored bars config
         const coloredBarsConfig = {
@@ -924,6 +936,7 @@ export class ChartDialogComponent {
         this.addComparative = this.originalLabelValues.addComparative;
         this.chartLegend = this.originalLabelValues.chartLegend;
         this.showGridLines = this.originalLabelValues.showGridLines;
+        this.useGradient = this.originalLabelValues.useGradient;
 
         // Restore in config
         this.controller.params.config.config.getConfig()['addTrend'] = this.originalLabelValues.addTrend;
@@ -936,6 +949,7 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['addComparative'] = this.originalLabelValues.addComparative;
         this.controller.params.config.config.getConfig()['chartLegend'] = this.originalLabelValues.chartLegend;
         this.controller.params.config.config.getConfig()['showGridLines'] = this.originalLabelValues.showGridLines;
+        this.controller.params.config.config.getConfig()['useGradient'] = this.originalLabelValues.useGradient;
         this.controller.params.config.config.getConfig()['assignedColors'] = this.assignedColors = _.cloneDeep(this.originalAssignedColors);
         this.controller.params.config.config.getConfig()['uniqueBarColors'] = this.uniqueBarColors = _.cloneDeep(this.originalUniqueBarColors);
     }

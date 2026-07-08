@@ -269,6 +269,23 @@
               </div>
             }
 
+            <!-- Use gradient fill for bars -->
+            @if (['bar', 'horizontalBar', 'stackedbar', 'stackedbar100', 'pyramid', 'histogram'].includes(panelChartConfig.edaChart)) {
+              <div class="flex items-center justify-between">
+                <div class="space-y-0.5">
+                  <label i18n="@@useGradient" for="usarDegradadoBarras" class="font-medium">
+                    Usar degradado
+                  </label>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="usarDegradadoBarras" name="usarDegradadoBarras" [(ngModel)]="useGradient" class="sr-only peer" (ngModelChange)="applyUseGradient()">
+                  <div
+                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                  </div>
+                </label>
+              </div>
+            }
+
             <!-- Additional options for line charts -->
             @if (showTrend) {
             <div class="flex items-center justify-between">
@@ -502,22 +519,22 @@
                           [ngClass]="{'ng-invalid ng-dirty': !thresholdsValid}" />
                         </div>
                         <div class="flex items-center gap-2">
-                          <input class="text-md text-right text-slate-500 font-mono" [(ngModel)]="colorAbove" (input)="applyColoredBars()">
+                          <input class="text-sm text-right text-slate-500 font-mono border rounded px-2 py-1 w-24" [(ngModel)]="colorAbove" (input)="applyColoredBars()">
                           <p-colorPicker [(ngModel)]="colorAbove" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
                         </div>
                       </div>
                     </div>
-  
+
                     <div class="chart-color-selection mt-4" style="min-width: 300px;">
                       <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
                         <span class="font-medium">{{coloredBarsColumnHeader}} <span i18n="@@betweenThresholds">mayor que</span> {{thresholdLow}} <span i18n="@@betweenThresholds2">y menor que</span> {{thresholdHigh}}</span>
                         <div class="flex items-center gap-2">
-                          <input class="text-md text-right text-slate-500 font-mono" [(ngModel)]="colorBetween" (input)="applyColoredBars()">
+                          <input class="text-sm text-right text-slate-500 font-mono border rounded px-2 py-1 w-24" [(ngModel)]="colorBetween" (input)="applyColoredBars()">
                           <p-colorPicker [(ngModel)]="colorBetween" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
                         </div>
                       </div>
                     </div>
-  
+
                     <div class="chart-color-selection mt-4" style="min-width: 300px;">
                       <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
                         <div>
@@ -527,7 +544,7 @@
                           [ngClass]="{'ng-invalid ng-dirty': !thresholdsValid}" />
                         </div>
                         <div class="flex items-center gap-2">
-                          <input class="text-md text-right text-slate-500 font-mono" [(ngModel)]="colorBelow" (input)="applyColoredBars()">
+                          <input class="text-sm text-right text-slate-500 font-mono border rounded px-2 py-1 w-24" [(ngModel)]="colorBelow" (input)="applyColoredBars()">
                           <p-colorPicker [(ngModel)]="colorBelow" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
                         </div>
                       </div>
