@@ -103,13 +103,13 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
       type: "shared",
       label: $localize`:@@Common:Común`,
       icon: "fa-circle",
-      color: "#b4bc32"
+      color: "#add8e7"
     },
     {
       type: "public",
       label: $localize`:@@Public:Público`,
       icon: "fa-circle",
-      color: "#add8e7"
+      color: "#b4bc32"
     },
     {
       type: "group",

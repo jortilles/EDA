@@ -103,8 +103,8 @@
 .report-card { border-left-width: 6px; transition: box-shadow 0.2s, transform 0.15s; }
 .report-card:hover { box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
 .report-card:active { transform: scale(0.99); }
-.card-border-public  { border-left-color: #add8e7; }
-.card-border-shared  { border-left-color: #b4bc32; }
+.card-border-public  { border-left-color: #b4bc32; }
+.card-border-shared  { border-left-color: #add8e7; }
 .card-border-group   { border-left-color: #ffd971; }
 .card-border-private  { border-left-color: #ee4e36; }
 
