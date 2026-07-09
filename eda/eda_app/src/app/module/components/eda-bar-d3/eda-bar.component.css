@@ -13,7 +13,7 @@
    outside Angular's template compiler, so they never get the [_ngcontent] attribute -
    ::ng-deep is required to style them from this component's own stylesheet. */
 ::ng-deep .eda-bar-grid line {
-  stroke: #000000;
+  stroke: #94a3b8;
 }
 
 ::ng-deep .eda-bar-grid path {
