@@ -100,16 +100,16 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
     color: string;
   }> = [
     {
-      type: "shared",
-      label: $localize`:@@Common:Común`,
-      icon: "fa-circle",
-      color: "#add8e7"
-    },
-    {
       type: "public",
       label: $localize`:@@Public:Público`,
       icon: "fa-circle",
       color: "#b4bc32"
+    },
+    {
+      type: "shared",
+      label: $localize`:@@Common:Común`,
+      icon: "fa-circle",
+      color: "#add8e7"
     },
     {
       type: "group",
@@ -175,7 +175,7 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
 
   private initDashboardTypes(): void {
     this.dashboardTypes = this.defaultDashboardTypes.filter(type => {
-      if (type.type === 'shared') {
+      if (type.type === 'public') {
         return this.isAdmin;
       }
       return true;
@@ -954,8 +954,8 @@ public filterGroups() {
    */
   public toggleDashboardActive(dashboard: any): void {
     const newStatus = !dashboard.active;
-    /* Confirm deactivation of shared reports */
-    if (!newStatus && (dashboard.config.visible === "shared")) {
+    /* Confirm deactivation of public reports */
+    if (!newStatus && (dashboard.config.visible === "open")) {
       Swal.fire({
         title: $localize`:@@Sure:Are you sure?`,
         text: $localize`:@@deactivatePublicDashboardWarning:Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.`,

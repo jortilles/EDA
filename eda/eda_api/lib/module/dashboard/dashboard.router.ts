@@ -32,7 +32,10 @@ const router = express.Router();
  *     tags:
  *       - Dashboard Routes
  */
-router.get('', authGuard,  DashboardController.getDashboards);
+// Resolved at request time (not captured at import time) so plugins that patch
+// DashboardController's static methods (e.g. SinergiaDaAccessControlPlugin) take effect
+// regardless of module load order.
+router.get('', authGuard, (req, res, next) => DashboardController.getDashboards(req, res, next));
 
 router.post('/clean-refresh', authGuard, DashboardController.cleanDashboardCache);
 
@@ -80,7 +83,7 @@ router.get('/datasource/:id', authGuard, DashboardController.getDataSourceModel)
  *     tags:
  *       - Dashboard Routes
  */
-router.get('/:id', authGuard, DashboardController.getDashboard);
+router.get('/:id', authGuard, (req, res, next) => DashboardController.getDashboard(req, res, next));
 
 /**
  * @openapi
@@ -193,7 +196,7 @@ router.get('/:id', authGuard, DashboardController.getDashboard);
  *     tags:
  *       - Dashboard Routes
  */
-router.post('', authGuard, DashboardController.create);
+router.post('', authGuard, (req, res, next) => DashboardController.create(req, res, next));
 
 /**
 * @openapi
@@ -319,7 +322,7 @@ router.post('/view-query', authGuard, DashboardController.execView)
 *      tags:
 *        - Dashboard Routes
  */     
-router.put('/:id', authGuard, DashboardController.update);
+router.put('/:id', authGuard, (req, res, next) => DashboardController.update(req, res, next));
 
 /**
  * @openapi
@@ -336,11 +339,11 @@ router.put('/:id', authGuard, DashboardController.update);
  *     tags:
  *       - Dashboard Routes
  */
-router.delete('/:id', authGuard, DashboardController.delete);
+router.delete('/:id', authGuard, (req, res, next) => DashboardController.delete(req, res, next));
 
-router.put('/:id/updateSpecific', authGuard, DashboardController.updateSpecific);
+router.put('/:id/updateSpecific', authGuard, (req, res, next) => DashboardController.updateSpecific(req, res, next));
 
-router.post('/:id/clone', authGuard, DashboardController.clone);
+router.post('/:id/clone', authGuard, (req, res, next) => DashboardController.clone(req, res, next));
 
 router.get('/:id/visibility', DashboardController.getIsPublic);
 
