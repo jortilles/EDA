@@ -1,5 +1,5 @@
 
-import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, sanitizeId } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import * as d3 from 'd3';
 import { TreeMap } from "./eda-treeMap";
@@ -232,8 +232,17 @@ export class EdaTreeMap implements AfterViewInit {
         }
       })
       .on("mouseover", (d, data) => {
+        const hex = this.leafColor(data);
+        // Swap the gradient url for its own flat base color first, instantly (no transition) -
+        // a url(#gradient) reference can't be interpolated against a flat color - then transition
+        // flat -> flat, same approach as eda-doughnut-d3/eda-bar-d3.
+        const target = d3.select(d.currentTarget);
+        target.attr('fill', hex);
+        target.interrupt('color').transition('color').duration(150).attr('fill', darkenHex(hex, 30));
+        target.interrupt('opacity').transition('opacity').duration(150).attr('fill-opacity', 1);
+
         const tooltipData = this.getToolTipData(data);
-        const swatch = `<span class="eda-treemap-tooltip-swatch" style="background-color:${this.leafColor(data)};"></span>`;
+        const swatch = `<span class="eda-treemap-tooltip-swatch" style="background-color:${hex};"></span>`;
 
         let text = `<div class="eda-treemap-tooltip-title">${tooltipData.firstRow}</div>` +
           `<div class="eda-treemap-tooltip-row">${swatch}${tooltipData.secondRow}</div>`;
@@ -243,7 +252,13 @@ export class EdaTreeMap implements AfterViewInit {
 
         this.tooltipService.show(d, text, 'eda-treemap-tooltip');
       })
-      .on("mouseout", () => {
+      .on("mouseout", (d, data) => {
+        const hex = this.leafColor(data);
+        const target = d3.select(d.currentTarget);
+        target.interrupt('color').transition('color').duration(150)
+          .attr('fill', hex)
+          .on('end', () => target.attr('fill', this.cellFill(defs, hex)));
+        target.interrupt('opacity').transition('opacity').duration(150).attr('fill-opacity', 0.6);
         this.tooltipService.hide();
       })
       .on("mousemove", (d) => {

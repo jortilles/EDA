@@ -12,7 +12,7 @@ import * as d3 from 'd3'
 import { EdaBubblechart } from './eda-bubblechart'
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
-import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, sanitizeId } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId } from '@eda/services/service.index';
 
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
@@ -247,30 +247,44 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       })
               .on('mouseover', (d, data) => {
 
+                const hex = this.leafColor(data);
+                const target = d3.select(d.currentTarget);
 
                 // Increase the bubble border width
-                d3.select(d.currentTarget)
+                target
                     .transition()
                     .duration(200)
                     .style("stroke-width", 3);
 
+                // Swap the gradient url for its own flat base color first, instantly (no
+                // transition), then transition flat -> flat - same approach as eda-doughnut-d3.
+                target.attr('fill', hex);
+                target.interrupt('color').transition('color').duration(150).attr('fill', darkenHex(hex, 30));
+
                 // Create a label that contains the data for each bubble
                 const tooltipData = this.getToolTipData(data);
-                const swatch = `<span class="eda-bubblechart-tooltip-swatch" style="background-color:${this.leafColor(data)};"></span>`;
+                const swatch = `<span class="eda-bubblechart-tooltip-swatch" style="background-color:${hex};"></span>`;
                 let text = `<div class="eda-bubblechart-tooltip-title">${tooltipData.firstRow}</div>` +
                   `<div class="eda-bubblechart-tooltip-row">${swatch}${tooltipData.secondRow}</div>`;
                 text = this.inject.linkedDashboard ? text + `<h6>${tooltipData.thirdRow}</h6>` : text;
 
                 this.tooltipService.show(d, text, 'eda-bubblechart-tooltip');
               })
-      .on('mouseout', (d) => {
+      .on('mouseout', (d, data) => {
+
+        const hex = this.leafColor(data);
+        const target = d3.select(d.currentTarget);
 
         // Reduce the bubble border back to original size
-        node
+        target
           .transition()
           .duration(200)
 
           .style("stroke-width", 1);
+
+        target.interrupt('color').transition('color').duration(150)
+          .attr('fill', hex)
+          .on('end', () => target.attr('fill', this.bubbleFill(defs, hex)));
 
         this.tooltipService.hide();
       })

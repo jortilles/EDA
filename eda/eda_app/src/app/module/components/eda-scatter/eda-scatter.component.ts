@@ -1,4 +1,4 @@
-import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, sanitizeId } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import * as d3 from 'd3';
 import { ScatterPlot } from "./eda-scatter";
@@ -197,7 +197,16 @@ export class EdaScatter implements AfterViewInit {
       })
       .on('mouseover', (d, data) => {
 
-        const swatch = `<span class="eda-scatter-tooltip-swatch" style="background-color:${this.pointColor(data)};"></span>`;
+        const hex = this.pointColor(data);
+        const target = d3.select(d.currentTarget);
+
+        // Grow the point outward and swap the gradient url for its own flat base color first,
+        // instantly (no transition), then transition flat -> flat - same approach as eda-doughnut-d3.
+        target.interrupt('grow').transition('grow').duration(150).attr('r', data.radius + 4);
+        target.attr('fill', hex);
+        target.interrupt('color').transition('color').duration(150).attr('fill', darkenHex(hex, 30));
+
+        const swatch = `<span class="eda-scatter-tooltip-swatch" style="background-color:${hex};"></span>`;
 
         let categoryText = data.category ? `<div class="eda-scatter-tooltip-title">${this.inject.dataDescription.otherColumns[0].name} : ${data.category}</div>` : '';
         let serieText = data.category ? `${this.inject.dataDescription.otherColumns[1].name}  : ${data.label}`
@@ -213,7 +222,13 @@ export class EdaScatter implements AfterViewInit {
 
         this.tooltipService.show(d, text, 'eda-scatter-tooltip');
         })
-        .on('mouseout', (d) => {
+        .on('mouseout', (d, data) => {
+          const hex = this.pointColor(data);
+          const target = d3.select(d.currentTarget);
+          target.interrupt('grow').transition('grow').duration(150).attr('r', data.radius + 1);
+          target.interrupt('color').transition('color').duration(150)
+            .attr('fill', hex)
+            .on('end', () => target.attr('fill', this.pointFill(defs, hex)));
           this.tooltipService.hide();
       }).on("mousemove", (d) => {
         this.tooltipService.move(d);
