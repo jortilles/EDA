@@ -166,12 +166,13 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     return total !== 0 ? (value / total) * 100 : 0;
   }
 
-  private tooltipHtml(seriesLabel: string, category: string, value: number, percentage: number, isPyramid: boolean): string {
+  private tooltipHtml(seriesLabel: string, category: string, value: number, percentage: number, isPyramid: boolean, hex: string): string {
+    const swatch = `<span class="eda-bar-tooltip-swatch" style="background-color:${hex};"></span>`;
     if (isPyramid) {
-      return `<div class="eda-bar-tooltip-row"><strong>${seriesLabel}</strong>: ${this.formatValue(Math.abs(value))}</div>`;
+      return `<div class="eda-bar-tooltip-row">${swatch}<strong>${seriesLabel}</strong>: ${this.formatValue(Math.abs(value))}</div>`;
     }
     return `<div class="eda-bar-tooltip-title">${category}</div>` +
-      `<div class="eda-bar-tooltip-row"><strong>${seriesLabel}</strong> : ${this.formatValue(value)} (${percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })}%)</div>`;
+      `<div class="eda-bar-tooltip-row">${swatch}<strong>${seriesLabel}</strong> : ${this.formatValue(value)} (${percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })}%)</div>`;
   }
 
   private measureCanvas: HTMLCanvasElement;
@@ -446,7 +447,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             const catIdx = this.categories.indexOf(d.data.cat);
             const value = stacked100 ? (series.rawValues?.[catIdx] ?? 0) : series.data[catIdx];
             const percentage = stacked100 ? (series.data[catIdx] || 0) : this.percentOfSeries(series, catIdx);
-            this.tooltipService.show(event, this.tooltipHtml(series.label, d.data.cat, value, percentage, isPyramid), 'eda-bar-tooltip');
+            this.tooltipService.show(event, this.tooltipHtml(series.label, d.data.cat, value, percentage, isPyramid, hex), 'eda-bar-tooltip');
           })
           .on('mousemove', (event: any) => this.tooltipService.move(event))
           .on('mouseout', (event: any, d: any) => {
@@ -530,7 +531,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             }
 
             const percentage = this.percentOfSeries(series, d.catIdx);
-            this.tooltipService.show(event, this.tooltipHtml(series.label, d.cat, d.value, percentage, false), 'eda-bar-tooltip');
+            this.tooltipService.show(event, this.tooltipHtml(series.label, d.cat, d.value, percentage, false, hex), 'eda-bar-tooltip');
           })
           .on('mousemove', (event: any) => this.tooltipService.move(event))
           .on('mouseout', (event: any, d: any) => {

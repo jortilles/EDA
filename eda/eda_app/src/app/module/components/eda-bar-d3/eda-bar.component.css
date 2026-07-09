@@ -46,5 +46,16 @@
 }
 
 ::ng-deep .eda-bar-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   white-space: nowrap;
+}
+
+::ng-deep .eda-bar-tooltip-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
 }
