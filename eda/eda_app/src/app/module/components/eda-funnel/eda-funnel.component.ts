@@ -194,16 +194,24 @@ draw() {
   areaGroup.append('path')
     .datum(data2)
     .attr('fill', `url(#${this.id}_temperature-gradient)`)
+    .attr('stroke', colorPanel)
+    .attr('stroke-opacity', 0.15)
+    .attr('stroke-width', 1)
     .attr('d', area);
 
   areaGroup.append('path')
     .datum(data2)
     .attr('fill',  `url(#${this.id}_temperature-gradient)`)
+    .attr('stroke', colorPanel)
+    .attr('stroke-opacity', 0.15)
+    .attr('stroke-width', 1)
     .attr('d', areaMirror);
 
   // Highlight overlay for the hovered step - clipped to that step's column (see hoverAt() below),
   // and drawn with the exact same curve as the shape itself, so it only ever paints on top of the
-  // already-drawn funnel, never spilling into the surrounding empty space.
+  // already-drawn funnel, never spilling into the surrounding empty space. Black (not white) so it
+  // DARKENS the hovered zone - same "hover = darker" convention as every other D3 chart this session
+  // (doughnut/bar/bubble/scatter/treemap), rather than lightening it.
   const highlightClipId = `${this.id}_highlight_clip`;
   const highlightClipRect = svg.append('clipPath').attr('id', highlightClipId)
     .append('rect').attr('y', 0).attr('height', height);
@@ -211,51 +219,87 @@ draw() {
   const highlightGroup = svg.append('g')
     .attr('clip-path', `url(#${highlightClipId})`)
     .style('pointer-events', 'none');
-  const highlightTop = highlightGroup.append('path').datum(data2).attr('d', area).attr('fill', 'white').attr('fill-opacity', 0);
-  const highlightBottom = highlightGroup.append('path').datum(data2).attr('d', areaMirror).attr('fill', 'white').attr('fill-opacity', 0);
+  const highlightTop = highlightGroup.append('path').datum(data2).attr('d', area).attr('fill', 'black').attr('fill-opacity', 0);
+  const highlightBottom = highlightGroup.append('path').datum(data2).attr('d', areaMirror).attr('fill', 'black').attr('fill-opacity', 0);
 
-  // Responsive labels: with many categories, a fixed 14px label/18px percentage on every single
-  // step overlaps into an unreadable mess - shrink the font and thin out how many labels are
-  // actually drawn (every Nth) once there isn't enough room per step, while keeping hover/click
-  // working on every step regardless (see areaGroup handlers below).
+  // A step's "column" runs from its own guide line up to the NEXT step's guide line (matching
+  // where the black divider lines and the label/value/percentage text are already drawn - both
+  // anchor at x(step), not centered around it) - not a band centered on the step. Keeping the
+  // hover zone and the guide lines on the same convention is what keeps the highlighted section,
+  // the tooltip's data and the visible guide lines all pointing at the same category. Defined here
+  // (rather than further down, where it's also used for hit-testing) so the label truncation below
+  // can reuse it too.
+  const zoneBounds = (i: number): [number, number] => {
+    const x0 = i === 0 ? margin.left : x(data[i].step);
+    const x1 = i === data.length - 1 ? width - margin.right : x(data[i + 1].step);
+    return [x0, x1];
+  };
+
+  // Responsive text: with many categories, a fixed 14px label/18px percentage on every single
+  // step overlaps into an unreadable mess - shrink the font as columns get narrower. Truncation
+  // (below) takes care of the rest, so every step is always shown - none get hidden anymore.
   const availablePerStep = (width - margin.left - margin.right) / Math.max(data.length, 1);
-  const labelSkip = Math.max(1, Math.ceil(50 / availablePerStep));
   const labelFontSize = availablePerStep < 40 ? 10 : availablePerStep < 70 ? 12 : 14;
   const percentFontSize = availablePerStep < 40 ? 12 : availablePerStep < 70 ? 15 : 18;
 
+  // Truncates a string with an ellipsis if it doesn't fit in its own column - SVG <text> has no
+  // CSS text-overflow, so the available width has to be measured (via an offscreen canvas, same
+  // trick eda-bar-d3 uses) and the string trimmed by hand until it fits. Applied to the value and
+  // percentage too, not just the label - a number can overflow a narrow column just as easily.
+  const measureCanvas = document.createElement('canvas');
+  const measureTextWidth = (text: string, fontSizePx: number): number => {
+    const ctx = measureCanvas.getContext('2d');
+    ctx.font = `${fontSizePx}px ${fontPanel === 'inherit' ? 'sans-serif' : fontPanel}`;
+    return ctx.measureText(text).width;
+  };
+  const truncateText = (text: string, maxWidth: number, fontSizePx: number): string => {
+    if (measureTextWidth(text, fontSizePx) <= maxWidth) return text;
+    let truncated = text;
+    while (truncated.length > 1 && measureTextWidth(truncated + '…', fontSizePx) > maxWidth) {
+      truncated = truncated.slice(0, -1);
+    }
+    return truncated + '…';
+  };
+  const maxWidthFor = (step: number): number => {
+    const [, x1] = zoneBounds(step);
+    return x1 - (x(step) + 10) - 5;
+  };
+
   svg.selectAll('.values')
-    .data(data.filter((d, i) => i % labelSkip === 0))
+    .data(data)
     .enter()
     .append('text')
     .attr('class', 'values')
     .attr('x', ({ step }) => x(step) + 10)
     .attr('y', 30)
-    .text(({ value }) => d3.format(',')(value))
+    .text((d) => truncateText(d3.format(',')(d.value), maxWidthFor(d.step), labelFontSize))
     .style("font-family",fontPanel)
     .attr("fill", colorPanel)
+    .style('font-weight', 'bold')
     .style("font-size", `${labelFontSize}px`);
 
   svg.selectAll('.labels')
-    .data(data.filter((d, i) => i % labelSkip === 0))
+    .data(data)
     .enter()
     .append('text')
     .attr('class', 'labels')
     .attr('id', ({ step }) => `${this.id}_label_${step}`)
     .attr('x', ({ step }) => x(step) + 10)
     .attr('y', 50)
-    .text(({ label }) => label)
+    .text((d) => truncateText(d.label, maxWidthFor(d.step), labelFontSize))
     .style('font-family', fontPanel)
     .style('font-size', `${labelFontSize}px`)
+    .style('font-weight', 'normal')
     .attr("fill", colorPanel);
 
   svg.selectAll('.percentages')
-    .data(data.filter((d, i) => i % labelSkip === 0))
+    .data(data)
     .enter()
     .append('text')
     .attr('class', 'percentages')
     .attr('x', ({ step }) =>  x(step) + 10)
     .attr('y', 70)
-    .text((d) => d.step === 0 ? '' : d3.format('.1%')(d.value / data[0].value))
+    .text((d) => truncateText(d3.format('.1%')(d.value / data[0].value), maxWidthFor(d.step), percentFontSize))
     .style('font-size', `${percentFontSize}px`)
     .attr('fill', colorPanel);
 
@@ -271,17 +315,6 @@ draw() {
     .style('stroke', colorPanel)
     .style('fill', 'none');
 
-  // A step's "column" runs from its own guide line up to the NEXT step's guide line (matching
-  // where the black divider lines and the label/value/percentage text are already drawn - both
-  // anchor at x(step), not centered around it) - not a band centered on the step. Keeping the
-  // hover zone and the guide lines on the same convention is what keeps the highlighted section,
-  // the tooltip's data and the visible guide lines all pointing at the same category.
-  const zoneBounds = (i: number): [number, number] => {
-    const x0 = i === 0 ? margin.left : x(data[i].step);
-    const x1 = i === data.length - 1 ? width - margin.right : x(data[i + 1].step);
-    return [x0, x1];
-  };
-
   const stepIndexAt = (mouseX: number): number => {
     for (let i = data.length - 1; i >= 0; i--) {
       if (mouseX >= x(data[i].step)) return i;
@@ -293,7 +326,9 @@ draw() {
 
   const clearHover = () => {
     if (hoveredIndex === -1) return;
-    d3.select(`#${this.id}_label_${data[hoveredIndex].step}`).transition().duration(150).style('font-size', `${labelFontSize}px`);
+    d3.select(`#${this.id}_label_${data[hoveredIndex].step}`).transition().duration(150)
+      .style('font-size', `${labelFontSize}px`)
+      .style('font-weight', 'normal');
     highlightTop.transition().duration(150).attr('fill-opacity', 0);
     highlightBottom.transition().duration(150).attr('fill-opacity', 0);
     hoveredIndex = -1;
@@ -310,12 +345,16 @@ draw() {
       const i = stepIndexAt(mx);
       if (i !== hoveredIndex) {
         if (hoveredIndex !== -1) {
-          d3.select(`#${this.id}_label_${data[hoveredIndex].step}`).transition().duration(150).style('font-size', `${labelFontSize}px`);
+          d3.select(`#${this.id}_label_${data[hoveredIndex].step}`).transition().duration(150)
+            .style('font-size', `${labelFontSize}px`)
+            .style('font-weight', 'normal');
         }
         hoveredIndex = i;
         const [x0, x1] = zoneBounds(i);
         highlightClipRect.attr('x', x0).attr('width', x1 - x0);
-        d3.select(`#${this.id}_label_${data[i].step}`).transition().duration(150).style('font-size', `${labelFontSize + 2}px`);
+        d3.select(`#${this.id}_label_${data[i].step}`).transition().duration(150)
+          .style('font-size', `${labelFontSize + 2}px`)
+          .style('font-weight', 'bold');
         highlightTop.transition().duration(150).attr('fill-opacity', 0.25);
         highlightBottom.transition().duration(150).attr('fill-opacity', 0.25);
 
@@ -325,7 +364,7 @@ draw() {
         const swatch = `<span class="eda-funnel-tooltip-swatch" style="background-color:${stepColor};"></span>`;
 
         const valueRow = `${swatch}${d3.format(',')(d.value)}`;
-        const percentageRow = d.step === 0 ? '' : `<div class="eda-funnel-tooltip-row">${d3.format('.1%')(d.value / data[0].value)}</div>`;
+        const percentageRow = `<div class="eda-funnel-tooltip-row">${d3.format('.1%')(d.value / data[0].value)}</div>`;
 
         const text = `<div class="eda-funnel-tooltip-title">${d.label}</div>` +
           `<div class="eda-funnel-tooltip-row">${valueRow}</div>${percentageRow}`;
