@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaDoughnutD3 } from './eda-doughnut';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, formatValueLabel, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface DoughnutSlice {
@@ -62,29 +62,13 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.tooltipService.hide();
-    if (this.resizeObserver) this.resizeObserver.disconnect();
+    teardownD3Chart(this.tooltipService, this.resizeObserver);
   }
 
   ngAfterViewInit(): void {
     const container = this.svgContainer.nativeElement as HTMLElement;
     if (!this.svg) this.svg = d3.select(container).append('svg');
-
-    this.resizeObserver = new ResizeObserver(entries => {
-      const { width: w, height: h } = entries[0].contentRect;
-      if (w > 0 && h > 0) {
-        this.svg.attr('width', w).attr('height', h);
-        this.draw();
-      }
-    });
-    this.resizeObserver.observe(container);
-
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-    if (w > 0 && h > 0) {
-      this.svg.attr('width', w).attr('height', h);
-      this.draw();
-    }
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
   }
 
   private buildSlices(): void {
@@ -123,20 +107,6 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
     this.draw();
   }
 
-  private formatLabel(value: number, percentage: number): string {
-    const showLabels = this.inject.showLabels;
-    const showLabelsPercent = this.inject.showLabelsPercent;
-    if (showLabels && showLabelsPercent) {
-      const res = value.toLocaleString('de-DE', { maximumFractionDigits: 6 });
-      return `${res} - ${percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })} %`;
-    } else if (showLabels) {
-      return value.toLocaleString('de-DE', { maximumFractionDigits: 6 });
-    } else if (showLabelsPercent) {
-      return `${percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })} %`;
-    }
-    return '';
-  }
-
   private gradientId(label: string): string {
     return `doughnut-grad-${this.id}-${sanitizeId(label)}`;
   }
@@ -146,17 +116,10 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private ensureGradient(defs: any, slice: DoughnutSlice, outerRadius: number): string {
-    const id = this.gradientId(slice.label);
-    let grad = defs.select(`#${id}`);
-    if (grad.empty()) {
-      grad = defs.append('radialGradient').attr('id', id);
-      grad.append('stop').attr('class', 'grad-inner');
-      grad.append('stop').attr('class', 'grad-outer');
-    }
-    grad.attr('gradientUnits', 'userSpaceOnUse').attr('cx', 0).attr('cy', 0).attr('r', outerRadius);
-    grad.select('.grad-inner').attr('offset', '0%').attr('stop-color', slice.color);
-    grad.select('.grad-outer').attr('offset', '100%').attr('stop-color', lightenHex(slice.color, GRADIENT_LIGHTEN_AMOUNT));
-    return `url(#${id})`;
+    return ensureRadialGradient(defs, this.gradientId(slice.label), [
+      { offset: '0%', color: slice.color },
+      { offset: '100%', color: lightenHex(slice.color, GRADIENT_LIGHTEN_AMOUNT) }
+    ], { cx: 0, cy: 0, r: outerRadius });
   }
 
   private attachInteractionHandlers(selection: any, seriesLabel: string, linkedDashboard: any, total: number): void {
@@ -393,7 +356,7 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
           .style('font-weight', 'bold')
           .style('font-family', this.fontFamily)
           .style('fill', 'white')
-          .text(this.formatLabel(d.data.value, percentage));
+          .text(formatValueLabel(d.data.value, percentage, this.inject.showLabels, this.inject.showLabelsPercent));
         const bbox = (textEl.node() as SVGTextElement).getBBox();
         const paddingX = 8, paddingY = 4;
         group.insert('rect', 'text')

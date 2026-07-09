@@ -1689,6 +1689,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
+        inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
         this.createLegacyD3Component(inject, EdaD3Component);
     }
 
@@ -1706,6 +1707,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.linkedDashboard = this.props.linkedDashboardProps;
         inject.assignedColors = this.resolveAndPersistGradientColors(this.props, this.paletaActual);
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
+        inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
         this.createLegacyD3Component(inject, EdaFunnelComponent);
     }
 
@@ -1721,6 +1723,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
+        inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
         this.createLegacyD3Component(inject, EdaBubblechartComponent);
     }
 
@@ -1732,11 +1735,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.linkedDashboard = this.props.linkedDashboardProps;
-        
+
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
+        inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
 
         this.createLegacyD3Component(inject, EdaTreeMap);
     }
@@ -1748,12 +1752,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.id = this.randomID();
         inject.size = this.props.size;
         inject.data = this.props.data;
-        inject.dataDescription = dataDescription;        
+        inject.dataDescription = dataDescription;
         inject.linkedDashboard = this.props.linkedDashboardProps;
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
+        inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
         this.createLegacyD3Component(inject, EdaScatter);
     }
 
@@ -1770,6 +1775,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
+        inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
         this.createLegacyD3Component(inject, EdaSunburstComponent);
     }
 

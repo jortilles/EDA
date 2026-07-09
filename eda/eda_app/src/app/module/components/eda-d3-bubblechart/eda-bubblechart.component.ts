@@ -12,16 +12,17 @@ import * as d3 from 'd3'
 import { EdaBubblechart } from './eda-bubblechart'
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
-import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 @Component({
   standalone: true,
   selector: 'eda-bubblechart',
   templateUrl: './eda-bubblechart.component.html',
   styleUrls: ['./eda-bubblechart.component.css'],
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
 })
 export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   @Input() inject: EdaBubblechart
@@ -47,11 +48,15 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   private colorsBubble: any[];
   private colorScale: any;
 
+  chartLegend: boolean;
+  legendItems: { label: string; color: string; hidden: boolean }[] = [];
+  private hiddenIndexes: Set<number> = new Set();
 
   constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService) { }
 
   ngOnInit(): void {
     this.id = `bubblechart_${this.inject.id}`
+    this.chartLegend = this.inject.chartLegend ?? true;
 
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
@@ -59,38 +64,29 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     this.firstColLabels = [...new Set(this.firstColLabels)];
     this.data = this.formatData(this.inject.data);
     this.assignedColors = this.inject.assignedColors;
+
+    this.legendItems = this.firstColLabels.map((label, i) => ({
+      label: String(label),
+      color: this.assignedColors[i]?.color || '#cccccc',
+      hidden: this.hiddenIndexes.has(i)
+    }));
   }
 
   ngOnDestroy(): void {
-    this.tooltipService.hide();
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
+    teardownD3Chart(this.tooltipService, this.resizeObserver);
+  }
+
+  toggleLegend(index: number): void {
+    if (this.hiddenIndexes.has(index)) this.hiddenIndexes.delete(index);
+    else this.hiddenIndexes.add(index);
+    this.legendItems[index].hidden = this.hiddenIndexes.has(index);
+    this.draw();
   }
 
   ngAfterViewInit() {
-    // SVG container
     const container = this.svgContainer.nativeElement as HTMLElement;
-
-    // Create SVG
-    this.svg = d3.select(container).append('svg');
-      
-    // Create ResizeObserver to resize the chart
-    this.resizeObserver = new ResizeObserver(entries => {
-      let id = `#${this.id}`;
-      this.svg = d3.select(id);
-      if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
-        this.draw();
-      }
-    });
-    this.resizeObserver.observe(container);
-    
-    if (this.svg)
-      this.svg.remove();
-    let id = `#${this.id}`;
-    this.svg = d3.select(id);
-    if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
-      this.draw();
-    }
+    if (!this.svg) this.svg = d3.select(container).append('svg');
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
   }
 
   private getToolTipData = (data) => {
@@ -132,16 +128,10 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   /** Radial gradient, base color at the center, lighter towards the edge - same convention as eda-doughnut-d3. */
   private bubbleFill(defs: any, hex: string): string {
     if (!(this.inject.useGradient ?? true)) return hex;
-    const id = this.gradientId(hex);
-    let grad = defs.select(`#${id}`);
-    if (grad.empty()) {
-      grad = defs.append('radialGradient').attr('id', id);
-      grad.append('stop').attr('class', 'grad-inner');
-      grad.append('stop').attr('class', 'grad-outer');
-    }
-    grad.select('.grad-inner').attr('offset', '0%').attr('stop-color', hex);
-    grad.select('.grad-outer').attr('offset', '100%').attr('stop-color', lightenHex(hex, 30));
-    return `url(#${id})`;
+    return ensureRadialGradient(defs, this.gradientId(hex), [
+      { offset: '0%', color: hex },
+      { offset: '100%', color: lightenHex(hex, 30) }
+    ]);
   }
 
   draw() {
@@ -171,8 +161,17 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
         .sort((a, b) => b.value - a.value))
 
 
+    // Categories hidden from the legend are excluded before packing - matched by name (see
+    // eda-treemap.component.ts for why index alignment with firstColLabels isn't guaranteed).
+    // Size/textSize scales below stay derived from the full dataset (same "no rescale" choice as
+    // eda-scatter.component.ts) - only which bubbles get rendered changes.
+    const hiddenLabels = new Set(Array.from(this.hiddenIndexes).map(i => String(this.firstColLabels[i])));
+    const visibleData = hiddenLabels.size > 0
+      ? { ...this.data, children: (this.data.children || []).filter((c: any) => !hiddenLabels.has(String(c.name))) }
+      : this.data;
+
     // assign a value which is the pack layout result with the data
-    const root = treemap(this.data);
+    const root = treemap(visibleData);
     // get svg panel
     const svg = this.svg;
 

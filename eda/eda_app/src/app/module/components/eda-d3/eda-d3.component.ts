@@ -3,17 +3,18 @@ import * as d3 from 'd3';
 import { sankeyLinkHorizontal } from 'd3-sankey'
 import { sankey as Sankey } from 'd3-sankey';
 import { EdaD3 } from './eda-d3';
-import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, sanitizeId } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, sanitizeId, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 @Component({
   standalone: true,
   selector: 'eda-d3',
   templateUrl: './eda-d3.component.html',
   styleUrls: ['./eda-d3.component.css'],
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
 })
 
 export class EdaD3Component implements AfterViewInit, OnInit {
@@ -34,6 +35,9 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   heigth: number;
   resizeObserver!: ResizeObserver;
 
+  chartLegend: boolean;
+  legendItems: { label: string; color: string; hidden: boolean }[] = [];
+  private hiddenIndexes: Set<number> = new Set();
 
   constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService) {
   }
@@ -42,6 +46,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
   ngOnInit(): void {
     this.id = `sankey_${this.inject.id}`;
+    this.chartLegend = this.inject.chartLegend ?? true;
     this.data = this.inject.data;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
@@ -51,42 +56,21 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
   }
 
+  toggleLegend(index: number): void {
+    if (this.hiddenIndexes.has(index)) this.hiddenIndexes.delete(index);
+    else this.hiddenIndexes.add(index);
+    this.legendItems[index].hidden = this.hiddenIndexes.has(index);
+    this.draw();
+  }
+
   ngAfterViewInit() {
     const container = this.svgContainer.nativeElement as HTMLElement;
-
-    // Create SVG
-    if (!this.svg)
-      this.svg = d3.select(container).append('svg');
-
-    // ResizeObserver to resize the chart
-    this.resizeObserver = new ResizeObserver(entries => {
-      const { width: w, height: h } = entries[0].contentRect;
-      if (w > 0 && h > 0) {
-        this.svg
-          .attr('width', w)
-          .attr('height', h);
-        this.draw();
-      }
-    });
-    this.resizeObserver.observe(container);
-
-    // First draw
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-    if (w > 0 && h > 0) {
-      this.svg
-        .attr('width', w)
-        .attr('height', h);
-      this.draw();
-    }
-
+    if (!this.svg) this.svg = d3.select(container).append('svg');
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
   }
 
   ngOnDestroy(): void {
-    this.tooltipService.hide();
-    // Disconnect resize observer
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
+    teardownD3Chart(this.tooltipService, this.resizeObserver);
   }
 
   private gradientId(colorHex: string): string {
@@ -96,17 +80,10 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   /** Linear gradient along the link's own flow direction (left -> right), base color -> lighter. */
   private linkStroke(defs: any, hex: string): string {
     if (!(this.inject.useGradient ?? true)) return hex;
-    const id = this.gradientId(hex);
-    let grad = defs.select(`#${id}`);
-    if (grad.empty()) {
-      grad = defs.append('linearGradient').attr('id', id);
-      grad.append('stop').attr('class', 'grad-start');
-      grad.append('stop').attr('class', 'grad-end');
-    }
-    grad.attr('x1', '0%').attr('y1', '0%').attr('x2', '100%').attr('y2', '0%');
-    grad.select('.grad-start').attr('offset', '0%').attr('stop-color', hex);
-    grad.select('.grad-end').attr('offset', '100%').attr('stop-color', lightenHex(hex, 30));
-    return `url(#${id})`;
+    return ensureLinearGradient(defs, this.gradientId(hex), [
+      { offset: '0%', color: hex },
+      { offset: '100%', color: lightenHex(hex, 30) }
+    ], { x1: '0%', y1: '0%', x2: '100%', y2: '0%' });
   }
 
   draw() {
@@ -134,7 +111,23 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     // Color ordering function for D3
     const color = d3.scaleOrdinal(this.firstColLabels, colorsTree);
 
-    let { _nodes, _links } = this.graph(keys, data, metricKey);
+    this.legendItems = this.firstColLabels.map((label, i) => ({
+      label: String(label),
+      color: colorsTree[i] || '#cccccc',
+      hidden: this.hiddenIndexes.has(i)
+    }));
+
+    // Rows whose first-column category was hidden from the legend are excluded before rebuilding
+    // the graph - node indices are sequential/positional (see graph()'s `++index`), so this can't
+    // be done by filtering the already-built _nodes/_links, it has to filter the source rows and
+    // let graph() rebuild the whole node/link index from scratch, same as it already does on
+    // every normal draw().
+    const firstKey = keys[0];
+    const hiddenLabels = new Set(Array.from(this.hiddenIndexes).map(i => String(this.firstColLabels[i])));
+    const visibleData = hiddenLabels.size > 0 ? data.filter((d: any) => !hiddenLabels.has(String(d[firstKey]))) : data;
+    const sourceData = visibleData.length > 0 ? visibleData : data;
+
+    let { _nodes, _links } = this.graph(keys, sourceData, metricKey);
 
     //Sort links 
     for (let i = this.inject.dataDescription.otherColumns.length - 1; i >= 0; i--) {

@@ -8,4 +8,5 @@ export class EdaD3 {
   linkedDashboard : LinkedDashboardProps;
   assignedColors: any[];
   useGradient?: boolean;
+  chartLegend?: boolean;
 }

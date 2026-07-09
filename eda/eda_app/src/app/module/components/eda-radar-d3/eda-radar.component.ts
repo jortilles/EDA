@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaRadar } from './eda-radar';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureRadialGradient, formatValueLabel, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface RadarPoint {
@@ -66,29 +66,13 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.tooltipService.hide();
-    if (this.resizeObserver) this.resizeObserver.disconnect();
+    teardownD3Chart(this.tooltipService, this.resizeObserver);
   }
 
   ngAfterViewInit(): void {
     const container = this.svgContainer.nativeElement as HTMLElement;
     if (!this.svg) this.svg = d3.select(container).append('svg');
-
-    this.resizeObserver = new ResizeObserver(entries => {
-      const { width: w, height: h } = entries[0].contentRect;
-      if (w > 0 && h > 0) {
-        this.svg.attr('width', w).attr('height', h);
-        this.draw();
-      }
-    });
-    this.resizeObserver.observe(container);
-
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-    if (w > 0 && h > 0) {
-      this.svg.attr('width', w).attr('height', h);
-      this.draw();
-    }
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
   }
 
   // During a LIVE color-dialog edit (before the user hits Confirm/Save), chart-dialog.component.ts's
@@ -146,17 +130,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private formatLabel(value: number, percentage: number): string {
-    const showLabels = this.inject.showLabels;
-    const showLabelsPercent = this.inject.showLabelsPercent;
-    if (showLabels && showLabelsPercent) {
-      const res = value.toLocaleString('de-DE', { maximumFractionDigits: 6 });
-      return `${res} - ${percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })} %`;
-    } else if (showLabels) {
-      return value.toLocaleString('de-DE', { maximumFractionDigits: 6 });
-    } else if (showLabelsPercent) {
-      return `${percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })} %`;
-    }
-    return '';
+    return formatValueLabel(value, percentage, this.inject.showLabels, this.inject.showLabelsPercent);
   }
 
   // D3's angle convention (shared by d3.arc/d3.pie, already relied on by polarArea): 0 = 12
@@ -187,17 +161,10 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
   // stop-color) keeps the fill translucent even at the "solid" end, so overlapping series stay
   // legible regardless of gradient vs flat fill.
   private ensureGradient(defs: any, series: RadarSeries, maxRadius: number): string {
-    const id = this.gradientId(series.label);
-    let grad = defs.select(`#${id}`);
-    if (grad.empty()) {
-      grad = defs.append('radialGradient').attr('id', id);
-      grad.append('stop').attr('class', 'grad-inner');
-      grad.append('stop').attr('class', 'grad-outer');
-    }
-    grad.attr('gradientUnits', 'userSpaceOnUse').attr('cx', 0).attr('cy', 0).attr('r', Math.max(maxRadius, 1));
-    grad.select('.grad-inner').attr('offset', '0%').attr('stop-color', series.color).attr('stop-opacity', 0.5);
-    grad.select('.grad-outer').attr('offset', '100%').attr('stop-color', lightenHex(series.color, GRADIENT_LIGHTEN_AMOUNT)).attr('stop-opacity', 0.15);
-    return `url(#${id})`;
+    return ensureRadialGradient(defs, this.gradientId(series.label), [
+      { offset: '0%', color: series.color, opacity: 0.5 },
+      { offset: '100%', color: lightenHex(series.color, GRADIENT_LIGHTEN_AMOUNT), opacity: 0.15 }
+    ], { cx: 0, cy: 0, r: Math.max(maxRadius, 1) });
   }
 
   private baseFill(series: RadarSeries, maxRadius: number, defs: any): string {

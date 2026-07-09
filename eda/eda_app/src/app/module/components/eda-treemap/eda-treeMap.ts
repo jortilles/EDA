@@ -9,4 +9,5 @@ export class TreeMap {
   linkedDashboard : LinkedDashboardProps;
   assignedColors: any[];
   useGradient?: boolean;
+  chartLegend?: boolean;
 }

@@ -1,13 +1,14 @@
 
-import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import * as d3 from 'd3';
 import { TreeMap } from "./eda-treeMap";
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
 
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 @Component({
   standalone: true,
@@ -15,7 +16,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: "./eda-treemap.component.html",
   styleUrls: ["./eda-treemap.component.css"],
   encapsulation: ViewEncapsulation.Emulated,
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
 })
 export class EdaTreeMap implements AfterViewInit {
   @Input() inject: TreeMap;
@@ -37,12 +38,18 @@ export class EdaTreeMap implements AfterViewInit {
   private valuesTree: any[];
   private colorsTree: any[];
   private colorScale: any;
+
+  chartLegend: boolean;
+  legendItems: { label: string; color: string; hidden: boolean }[] = [];
+  private hiddenIndexes: Set<number> = new Set();
+
   constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService) {
     this.update = true;
   }
 
   ngOnInit(): void {
     this.id = `treeMap_${this.inject.id}`;
+    this.chartLegend = this.inject.chartLegend ?? true;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
@@ -51,45 +58,29 @@ export class EdaTreeMap implements AfterViewInit {
     this.assignedColors = this.inject.assignedColors;
     // Check this if necessary
     //this.assignedColors.forEach((element, index) => {if(element.value === undefined) element.value = this.firstColLabels[index]}); // Line for when the value is numeric.
+    this.legendItems = this.firstColLabels.map((label, i) => ({
+      label: String(label),
+      color: this.assignedColors[i]?.color || '#cccccc',
+      hidden: this.hiddenIndexes.has(i)
+    }));
   }
 
   ngOnDestroy(): void {
-    this.tooltipService.hide();
-    // Delete resize observer
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
+    teardownD3Chart(this.tooltipService, this.resizeObserver);
   }
 
-
-  ngAfterViewInit() {
-  const container = this.svgContainer.nativeElement as HTMLElement;
-
-  // Create SVG
-    if (!this.svg)
-     this.svg = d3.select(container).append('svg'); 
-
-  // ResizeObserver to resize the chart
-  this.resizeObserver = new ResizeObserver(entries => {
-    const { width: w, height: h } = entries[0].contentRect;
-    if (w > 0 && h > 0) {
-      this.svg
-        .attr('width', w)
-        .attr('height', h);
-      this.draw();
-    }
-  });
-  this.resizeObserver.observe(container);
-
-  // First draw
-  const w = container.clientWidth;
-  const h = container.clientHeight;
-  if (w > 0 && h > 0) {
-    this.svg
-      .attr('width', w)
-      .attr('height', h);
+  toggleLegend(index: number): void {
+    if (this.hiddenIndexes.has(index)) this.hiddenIndexes.delete(index);
+    else this.hiddenIndexes.add(index);
+    this.legendItems[index].hidden = this.hiddenIndexes.has(index);
     this.draw();
   }
-}
+
+  ngAfterViewInit() {
+    const container = this.svgContainer.nativeElement as HTMLElement;
+    if (!this.svg) this.svg = d3.select(container).append('svg');
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
+  }
 
 
   private getToolTipData = (data) => {
@@ -148,17 +139,10 @@ export class EdaTreeMap implements AfterViewInit {
   /** Linear gradient (rects aren't round), base color at the bottom, lighter at the top - same convention as eda-bar-d3. */
   private cellFill(defs: any, hex: string): string {
     if (!(this.inject.useGradient ?? true)) return hex;
-    const id = this.gradientId(hex);
-    let grad = defs.select(`#${id}`);
-    if (grad.empty()) {
-      grad = defs.append('linearGradient').attr('id', id);
-      grad.append('stop').attr('class', 'grad-start');
-      grad.append('stop').attr('class', 'grad-end');
-    }
-    grad.attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '0%');
-    grad.select('.grad-start').attr('offset', '0%').attr('stop-color', hex);
-    grad.select('.grad-end').attr('offset', '100%').attr('stop-color', lightenHex(hex, 30));
-    return `url(#${id})`;
+    return ensureLinearGradient(defs, this.gradientId(hex), [
+      { offset: '0%', color: hex },
+      { offset: '100%', color: lightenHex(hex, 30) }
+    ]);
   }
 
   draw() {
@@ -189,7 +173,14 @@ export class EdaTreeMap implements AfterViewInit {
           .sort((a, b) => b.value - a.value)
       );
 
-    const root = treemap(this.data);
+    // Categories hidden from the legend are excluded before building the hierarchy - matched by
+    // name rather than index, since this.data.children's order isn't guaranteed to line up 1:1
+    // with firstColLabels (formatData() drops rows containing any null before building the tree).
+    const hiddenLabels = new Set(Array.from(this.hiddenIndexes).map(i => String(this.firstColLabels[i])));
+    const visibleData = hiddenLabels.size > 0
+      ? { ...this.data, children: (this.data.children || []).filter((c: any) => !hiddenLabels.has(String(c.name))) }
+      : this.data;
+    const root = treemap(visibleData);
 
     const svg = this.svg;
 

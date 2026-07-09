@@ -1,4 +1,4 @@
-import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import * as d3 from 'd3';
 import { ScatterPlot } from "./eda-scatter";
@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 @Component({
   standalone: true,
@@ -13,7 +14,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './eda-scatter.component.html',
   styleUrls: ['./eda-scatter.component.css'],
   encapsulation: ViewEncapsulation.Emulated,
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
 })
 
 
@@ -37,51 +38,46 @@ export class EdaScatter implements AfterViewInit {
   private colorsScatter: any[];
   private colorScale: any;
 
+  chartLegend: boolean;
+  legendItems: { label: string; color: string; hidden: boolean }[] = [];
+  private hiddenIndexes: Set<number> = new Set();
+
   constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService){
 
   }
 
   ngOnInit(): void {
     this.id = `scatterPlot_${this.inject.id}`;
+    this.chartLegend = this.inject.chartLegend ?? true;
     this.data = this.formatData(this.inject.data);
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
-    
+
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
     this.assignedColors = this.inject.assignedColors;
 
+    this.legendItems = this.firstColLabels.map((label, i) => ({
+      label: String(label),
+      color: this.assignedColors[i]?.color || '#cccccc',
+      hidden: this.hiddenIndexes.has(i)
+    }));
   }
   ngOnDestroy(): void {
-    this.tooltipService.hide();
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
+    teardownD3Chart(this.tooltipService, this.resizeObserver);
+  }
+
+  toggleLegend(index: number): void {
+    if (this.hiddenIndexes.has(index)) this.hiddenIndexes.delete(index);
+    else this.hiddenIndexes.add(index);
+    this.legendItems[index].hidden = this.hiddenIndexes.has(index);
+    this.draw();
   }
 
   ngAfterViewInit() {
-    // SVG CONTAINER
     const container = this.svgContainer.nativeElement as HTMLElement;
-
-    // Create SVG
-    this.svg = d3.select(container).append('svg');
-
-    // Create ResizeObserver to resize the chart
-    this.resizeObserver = new ResizeObserver(entries => {
-      let id = `#${this.id}`;
-      this.svg = d3.select(id);
-      if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
-        this.draw();
-      }
-    });
-    this.resizeObserver.observe(container);
-
-    
-    if (this.svg) this.svg.remove();
-    let id = `#${this.id}`;
-    this.svg = d3.select(id);
-    if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
-      this.draw();
-    }
+    if (!this.svg) this.svg = d3.select(container).append('svg');
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
   }
 
 
@@ -174,6 +170,14 @@ export class EdaScatter implements AfterViewInit {
     let defs = svg.select('defs');
     if (defs.empty()) defs = svg.append('defs');
 
+    // Points whose category was hidden from the legend are excluded before binding - axis
+    // domains above stay fixed to the full dataset's extent (no rescale needed, only whichever
+    // categories are plotted changes).
+    const hiddenLabels = new Set(Array.from(this.hiddenIndexes).map(i => String(this.firstColLabels[i])));
+    const visiblePoints = hiddenLabels.size > 0
+      ? this.data.filter((d: any) => !hiddenLabels.has(String(d.category ?? d.label)))
+      : this.data;
+
     svg.append("g")
       .attr("stroke-width", 1.5)
       .attr("fill", "var(--panel-font-color)")
@@ -181,7 +185,7 @@ export class EdaScatter implements AfterViewInit {
       .attr("font-size", 10)
       .style("cursor", "pointer")
       .selectAll("circle")
-      .data(this.data)
+      .data(visiblePoints)
       .join("circle")
       .attr("cx", d => x(d.x))
       .attr("cy", d => y(d.y))
@@ -271,16 +275,10 @@ export class EdaScatter implements AfterViewInit {
   /** Radial gradient, base color at the center, lighter towards the edge - same convention as eda-doughnut-d3. */
   private pointFill(defs: any, hex: string): string {
     if (!(this.inject.useGradient ?? true)) return hex;
-    const id = this.gradientId(hex);
-    let grad = defs.select(`#${id}`);
-    if (grad.empty()) {
-      grad = defs.append('radialGradient').attr('id', id);
-      grad.append('stop').attr('class', 'grad-inner');
-      grad.append('stop').attr('class', 'grad-outer');
-    }
-    grad.select('.grad-inner').attr('offset', '0%').attr('stop-color', hex);
-    grad.select('.grad-outer').attr('offset', '100%').attr('stop-color', lightenHex(hex, 30));
-    return `url(#${id})`;
+    return ensureRadialGradient(defs, this.gradientId(hex), [
+      { offset: '0%', color: hex },
+      { offset: '100%', color: lightenHex(hex, 30) }
+    ]);
   }
 
   formatData(data) {

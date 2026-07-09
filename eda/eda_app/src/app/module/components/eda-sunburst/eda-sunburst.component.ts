@@ -1,17 +1,18 @@
-import { ChartUtilsService, StyleProviderService, lightenHex, sanitizeId } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, lightenHex, sanitizeId, ensureRadialGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 import * as d3 from 'd3'
 import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter, OnDestroy} from '@angular/core'
 import { SunBurst } from './eda-sunbrust'
 
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 @Component({
   standalone: true,
   selector: 'eda-sunburst' /* tag assigned to this component */,
   templateUrl: './eda-sunburst.component.html' /** sdf */,
   styleUrls: ['./eda-sunburst.component.css'],
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
 })
 export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   @Input() inject: SunBurst
@@ -29,12 +30,17 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   width: number
   heigth: number
   metricIndex: number
-  resizeObserver!: ResizeObserver; 
-  
+  resizeObserver!: ResizeObserver;
+
+  chartLegend: boolean;
+  legendItems: { label: string; color: string; hidden: boolean }[] = [];
+  private hiddenIndexes: Set<number> = new Set();
+
   constructor(private chartUtilService: ChartUtilsService, private styleProviderService: StyleProviderService) { }
 
   ngOnInit(): void {
     this.id = `sunburst_${this.inject.id}`;
+    this.chartLegend = this.inject.chartLegend ?? true;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     this.data = this.formatData(this.inject.data, this.inject.dataDescription);
     this.labels = this.generateDomain(this.data);
@@ -42,37 +48,31 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
     this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
     this.assignedColors = this.inject.assignedColors;
+
+    this.legendItems = this.firstColLabels.map((label, i) => ({
+      label: String(label),
+      color: this.assignedColors[i]?.color || '#cccccc',
+      hidden: this.hiddenIndexes.has(i)
+    }));
+  }
+
+  toggleLegend(index: number): void {
+    if (this.hiddenIndexes.has(index)) this.hiddenIndexes.delete(index);
+    else this.hiddenIndexes.add(index);
+    this.legendItems[index].hidden = this.hiddenIndexes.has(index);
+    this.draw();
   }
 
   ngAfterViewInit() {
     const container = this.svgContainer.nativeElement as HTMLElement;
-
-    // Create SVG
-    this.svg = d3.select(container).append('svg');
-
-    this.resizeObserver = new ResizeObserver(entries => {
-      let id = `#${this.id}`;
-      this.svg = d3.select(id);
-      if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
-        this.draw();
-      }
-    });
-    this.resizeObserver.observe(container);
-
-    // Initial draw
-    if (this.svg) this.svg.remove();
-    let id = `#${this.id}`;
-    this.svg = d3.select(id);
-    if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
-      this.draw();
-    }
+    if (!this.svg) this.svg = d3.select(container).append('svg');
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
   }
 
   ngOnDestroy(): void {
     if (this.div)
       this.div.remove();
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
+    teardownD3Chart(undefined, this.resizeObserver);
   }
 
   private gradientId(hex: string, opacity: number): string {
@@ -90,17 +90,11 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
     if (!(this.inject.useGradient ?? true)) {
       return `rgba(${inner.r}, ${inner.g}, ${inner.b}, ${opacity})`;
     }
-    const id = this.gradientId(hex, opacity);
-    let grad = defs.select(`#${id}`);
-    if (grad.empty()) {
-      grad = defs.append('radialGradient').attr('id', id);
-      grad.append('stop').attr('class', 'grad-inner');
-      grad.append('stop').attr('class', 'grad-outer');
-    }
     const outer = d3.rgb(lightenHex(hex, 30));
-    grad.select('.grad-inner').attr('offset', '0%').attr('stop-color', `rgba(${inner.r}, ${inner.g}, ${inner.b}, ${opacity})`);
-    grad.select('.grad-outer').attr('offset', '100%').attr('stop-color', `rgba(${outer.r}, ${outer.g}, ${outer.b}, ${opacity})`);
-    return `url(#${id})`;
+    return ensureRadialGradient(defs, this.gradientId(hex, opacity), [
+      { offset: '0%', color: `rgba(${inner.r}, ${inner.g}, ${inner.b}, ${opacity})` },
+      { offset: '100%', color: `rgba(${outer.r}, ${outer.g}, ${outer.b}, ${opacity})` }
+    ]);
   }
 
   draw() {
@@ -145,7 +139,14 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
     if (defs.empty()) defs = svg.append('defs');
 
     /** main processing starts */
-    let data = this.buildHierarchy(this.data);
+    // Rows whose top-level category was hidden from the legend are excluded before building the
+    // hierarchy - this.data here is the flat [pathString, value] array from formatData(), so
+    // matching is against the first '|+-+|'-delimited segment of each row's path.
+    const hiddenLabels = new Set(Array.from(this.hiddenIndexes).map(i => String(this.firstColLabels[i])));
+    const visibleFlatData = hiddenLabels.size > 0
+      ? this.data.filter((row: any) => !hiddenLabels.has(String(row[0].split('|+-+|')[0])))
+      : this.data;
+    let data = this.buildHierarchy(visibleFlatData);
     const root = partition(data)
     // Make this into a view, so that the currently hovered sequence is available to the breadcrumb
     const element = svg.node();

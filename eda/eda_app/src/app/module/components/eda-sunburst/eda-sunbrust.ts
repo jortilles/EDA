@@ -10,4 +10,5 @@ export class SunBurst {
   linkedDashboard : LinkedDashboardProps;
     assignedColors: any[];
   useGradient?: boolean;
+  chartLegend?: boolean;
 }

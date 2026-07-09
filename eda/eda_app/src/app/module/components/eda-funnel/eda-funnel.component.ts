@@ -1,10 +1,11 @@
 import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import * as d3 from 'd3';
 import { EdaFunnel } from './eda-funnel';
-import { ChartUtilsService, StyleProviderService, D3TooltipService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface FunnelData {
   step: number;
@@ -18,7 +19,7 @@ interface FunnelData {
   selector: 'eda-funnel',
   templateUrl: './eda-funnel.component.html',
   styleUrls: ['./eda-funnel.component.css'],
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
 })
 
 export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
@@ -40,12 +41,17 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
   resizeObserver!: ResizeObserver;
   paleta : any;
 
+  chartLegend: boolean;
+  legendItems: { label: string; color: string; hidden: boolean }[] = [];
+  private hiddenStepIndexes: Set<number> = new Set();
+
   constructor( private styleProviderService : StyleProviderService, private chartUtils : ChartUtilsService, private tooltipService: D3TooltipService) {
   }
 
 
   ngOnInit(): void {
     this.id = `funnel_${this.inject.id}`;
+    this.chartLegend = this.inject.chartLegend ?? true;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.labelIndex = firstNonNumericColIndex;
@@ -55,36 +61,21 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
     this.firstColLabels = [...new Set(this.firstColLabels)];
   }
 
+  toggleLegend(index: number): void {
+    if (this.hiddenStepIndexes.has(index)) this.hiddenStepIndexes.delete(index);
+    else this.hiddenStepIndexes.add(index);
+    this.legendItems[index].hidden = this.hiddenStepIndexes.has(index);
+    this.draw();
+  }
+
   ngAfterViewInit() {
-    // SVG creation aligned with scatter
     const container = this.svgContainer.nativeElement as HTMLElement;
-
-    // Create SVG
-    this.svg = d3.select(container).append('svg');
-
-    // ResizeObserver without unnecessary attributes
-    this.resizeObserver = new ResizeObserver(entries => {
-      let id = `#${this.id}`;
-      this.svg = d3.select(id);
-      if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
-        this.draw();
-      }
-    });
-    this.resizeObserver.observe(container);
-
-    // Initial draw
-    if (this.svg) this.svg.remove();
-    let id = `#${this.id}`;
-    this.svg = d3.select(id);
-    if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
-      this.draw();
-    }
+    if (!this.svg) this.svg = d3.select(container).append('svg');
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
   }
 
   ngOnDestroy() {
-    this.tooltipService.hide();
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
+    teardownD3Chart(this.tooltipService, this.resizeObserver);
   }
 
   // Improved draw() method for eda-funnel.component.ts
@@ -123,9 +114,26 @@ draw() {
 
   const margin = ({ top: 25, right: 25, bottom: 35, left: 70 });
   const ledge = 0.2;
-  const data: Array<FunnelData> = values.map((row, index) => {
+  const allRows: Array<FunnelData> = values.map((row, index) => {
     return { step: index, value: row[this.metricIndex], label: row[this.labelIndex] }
   });
+
+  // assignedColors here is just the 2-stop start/end gradient, not one color per stage - the
+  // legend instead gets a swatch per stage interpolated along that same gradient at the stage's
+  // position, matching the tooltip's own per-step stepColor below.
+  this.legendItems = allRows.map((d, i) => ({
+    label: d.label,
+    color: allRows.length > 1 ? d3.interpolateRgb(gradient1, gradient2)(i / (allRows.length - 1)) : gradient1,
+    hidden: this.hiddenStepIndexes.has(i)
+  }));
+
+  // Hidden stages are excluded and the rest re-indexed to contiguous steps (0..m-1) - this closes
+  // the gap visually instead of leaving a blank slot, and since every percentage/domain below
+  // already reads off `data[0]`/`data.length` (not the original row indices), recomputing "from
+  // the first visible stage" falls out of this filter+reindex for free, no separate logic needed.
+  const visibleRows = allRows.filter((_, i) => !this.hiddenStepIndexes.has(i));
+  const sourceRows = visibleRows.length > 0 ? visibleRows : allRows;
+  const data: Array<FunnelData> = sourceRows.map((d, i) => ({ step: i, value: d.value, label: d.label }));
 
   const data2: Array<FunnelData> = (() => {
     const result = [];

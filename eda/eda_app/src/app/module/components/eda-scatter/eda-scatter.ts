@@ -9,4 +9,5 @@ export class ScatterPlot {
   linkedDashboard : LinkedDashboardProps;
   assignedColors: any[];
   useGradient?: boolean;
+  chartLegend?: boolean;
 }

@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaPolarArea } from './eda-polar-area';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureRadialGradient, formatValueLabel, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface PolarAreaSlice {
@@ -62,29 +62,13 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.tooltipService.hide();
-    if (this.resizeObserver) this.resizeObserver.disconnect();
+    teardownD3Chart(this.tooltipService, this.resizeObserver);
   }
 
   ngAfterViewInit(): void {
     const container = this.svgContainer.nativeElement as HTMLElement;
     if (!this.svg) this.svg = d3.select(container).append('svg');
-
-    this.resizeObserver = new ResizeObserver(entries => {
-      const { width: w, height: h } = entries[0].contentRect;
-      if (w > 0 && h > 0) {
-        this.svg.attr('width', w).attr('height', h);
-        this.draw();
-      }
-    });
-    this.resizeObserver.observe(container);
-
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-    if (w > 0 && h > 0) {
-      this.svg.attr('width', w).attr('height', h);
-      this.draw();
-    }
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
   }
 
   private buildSlices(): void {
@@ -121,20 +105,6 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     this.draw();
   }
 
-  private formatLabel(value: number, percentage: number): string {
-    const showLabels = this.inject.showLabels;
-    const showLabelsPercent = this.inject.showLabelsPercent;
-    if (showLabels && showLabelsPercent) {
-      const res = value.toLocaleString('de-DE', { maximumFractionDigits: 6 });
-      return `${res} - ${percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })} %`;
-    } else if (showLabels) {
-      return value.toLocaleString('de-DE', { maximumFractionDigits: 6 });
-    } else if (showLabelsPercent) {
-      return `${percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })} %`;
-    }
-    return '';
-  }
-
   private gradientId(label: string): string {
     return `polarArea-grad-${this.id}-${sanitizeId(label)}`;
   }
@@ -146,17 +116,10 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   // Unlike the doughnut (a shared outer radius for every slice), each polar-area slice has
   // its own outer radius driven by its value, so the gradient's spread radius is per-slice too.
   private ensureGradient(defs: any, slice: PolarAreaSlice, radius: number): string {
-    const id = this.gradientId(slice.label);
-    let grad = defs.select(`#${id}`);
-    if (grad.empty()) {
-      grad = defs.append('radialGradient').attr('id', id);
-      grad.append('stop').attr('class', 'grad-inner');
-      grad.append('stop').attr('class', 'grad-outer');
-    }
-    grad.attr('gradientUnits', 'userSpaceOnUse').attr('cx', 0).attr('cy', 0).attr('r', Math.max(radius, 1));
-    grad.select('.grad-inner').attr('offset', '0%').attr('stop-color', slice.color);
-    grad.select('.grad-outer').attr('offset', '100%').attr('stop-color', lightenHex(slice.color, GRADIENT_LIGHTEN_AMOUNT));
-    return `url(#${id})`;
+    return ensureRadialGradient(defs, this.gradientId(slice.label), [
+      { offset: '0%', color: slice.color },
+      { offset: '100%', color: lightenHex(slice.color, GRADIENT_LIGHTEN_AMOUNT) }
+    ], { cx: 0, cy: 0, r: Math.max(radius, 1) });
   }
 
   // Builds the path for one arc at a specific (startAngle, endAngle, radius) - used by the
@@ -437,7 +400,7 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
           .style('font-weight', 'bold')
           .style('font-family', this.fontFamily)
           .style('fill', 'white')
-          .text(this.formatLabel(d.data.value, percentage));
+          .text(formatValueLabel(d.data.value, percentage, this.inject.showLabels, this.inject.showLabelsPercent));
         const bbox = (textEl.node() as SVGTextElement).getBBox();
         const paddingX = 8, paddingY = 4;
         group.insert('rect', 'text')

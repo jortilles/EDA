@@ -1,3 +1,14 @@
+.eda-treemap-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.eda-treemap-wrapper .svg-container {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 /* Tooltip appended by D3TooltipService to <body> (outside this component's template, so it needs
    ::ng-deep to escape view encapsulation). Defined locally rather than relying on the shared
    global `.d3tooltip` class in prime-styles/custom.css, since that stylesheet is never actually

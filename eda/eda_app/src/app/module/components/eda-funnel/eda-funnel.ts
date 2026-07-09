@@ -7,4 +7,5 @@ export class EdaFunnel {
   linkedDashboard : LinkedDashboardProps;
   assignedColors: any[];
   useGradient?: boolean;
+  chartLegend?: boolean;
 }

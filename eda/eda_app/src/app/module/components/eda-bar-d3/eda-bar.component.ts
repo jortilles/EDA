@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaBarD3 } from './eda-bar';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatValueLabel, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface BarSeries {
@@ -53,38 +53,16 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.tooltipService.hide();
-    if (this.resizeObserver) this.resizeObserver.disconnect();
+    teardownD3Chart(this.tooltipService, this.resizeObserver);
   }
 
   ngAfterViewInit(): void {
     const container = this.svgContainer.nativeElement as HTMLElement;
     if (!this.svg) this.svg = d3.select(container).append('svg');
-
-    // ResizeObserver.observe() always fires its callback once on its own, asynchronously, with
-    // the current size - right on top of the manual draw() a few lines below. Without skipping
-    // that redundant first callback, it lands a moment later and instantly redraws everything at
-    // full size, wiping out the grow-in animation before it's even visible.
-    let isFirstResizeCallback = true;
-    this.resizeObserver = new ResizeObserver(entries => {
-      if (isFirstResizeCallback) {
-        isFirstResizeCallback = false;
-        return;
-      }
-      const { width: w, height: h } = entries[0].contentRect;
-      if (w > 0 && h > 0) {
-        this.svg.attr('width', w).attr('height', h);
-        this.draw();
-      }
-    });
-    this.resizeObserver.observe(container);
-
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-    if (w > 0 && h > 0) {
-      this.svg.attr('width', w).attr('height', h);
-      this.draw();
-    }
+    // skipFirstCallback: ResizeObserver.observe() always fires its callback once on its own,
+    // asynchronously, right on top of the manual draw() below - without skipping it, it would
+    // instantly redraw everything at full size a moment later, wiping out the grow-in animation.
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw(), { skipFirstCallback: true });
   }
 
   /** Called by the shared chart-dialog.component.ts (unconditionally, no `?.`) on every live color edit. */
@@ -152,21 +130,13 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   private barFill(defs: any, series: BarSeries, categoryIdx: number, horizontal: boolean): string {
     const hex = this.barColor(series, categoryIdx);
     if (!(this.inject.useGradient ?? true)) return hex;
-    const id = this.gradientId(hex);
-    let grad = defs.select(`#${id}`);
-    if (grad.empty()) {
-      grad = defs.append('linearGradient').attr('id', id);
-      grad.append('stop').attr('class', 'grad-start');
-      grad.append('stop').attr('class', 'grad-end');
-    }
-    if (horizontal) {
-      grad.attr('x1', '0%').attr('y1', '0%').attr('x2', '100%').attr('y2', '0%');
-    } else {
-      grad.attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '0%');
-    }
-    grad.select('.grad-start').attr('offset', '0%').attr('stop-color', hex);
-    grad.select('.grad-end').attr('offset', '100%').attr('stop-color', lightenHex(hex, GRADIENT_LIGHTEN_AMOUNT));
-    return `url(#${id})`;
+    const axis = horizontal
+      ? { x1: '0%', y1: '0%', x2: '100%', y2: '0%' }
+      : { x1: '0%', y1: '100%', x2: '0%', y2: '0%' };
+    return ensureLinearGradient(defs, this.gradientId(hex), [
+      { offset: '0%', color: hex },
+      { offset: '100%', color: lightenHex(hex, GRADIENT_LIGHTEN_AMOUNT) }
+    ], axis);
   }
 
   /**
@@ -219,21 +189,8 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       `L${x + rx},${y + height} A${rx},${ry} 0 0,1 ${x},${y + height - ry} L${x},${y} Z`;
   }
 
-  private formatValue(value: number): string {
-    return value.toLocaleString('de-DE', { maximumFractionDigits: 6 });
-  }
-
-  private formatPercent(pct: number): string {
-    return `${pct.toLocaleString('de-DE', { maximumFractionDigits: 1 })} %`;
-  }
-
   private formatLabel(value: number, percentage: number): string {
-    const showLabels = this.inject.showLabels;
-    const showLabelsPercent = this.inject.showLabelsPercent;
-    if (showLabels && showLabelsPercent) return `${this.formatValue(value)} - ${this.formatPercent(percentage)}`;
-    if (showLabels) return this.formatValue(value);
-    if (showLabelsPercent) return this.formatPercent(percentage);
-    return '';
+    return formatValueLabel(value, percentage, this.inject.showLabels, this.inject.showLabelsPercent);
   }
 
   private percentOfSeries(series: BarSeries, catIdx: number): number {
@@ -255,10 +212,10 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     // what the title already said.
     const seriesPrefix = multiSeries ? `<strong>${seriesLabel}</strong> : ` : '';
     if (isPyramid) {
-      return title + `<div class="eda-bar-tooltip-row">${swatch}${seriesPrefix}${this.formatValue(Math.abs(value))}</div>${linkedRow}`;
+      return title + `<div class="eda-bar-tooltip-row">${swatch}${seriesPrefix}${formatDeNumber(Math.abs(value))}</div>${linkedRow}`;
     }
     return title +
-      `<div class="eda-bar-tooltip-row">${swatch}${seriesPrefix}${this.formatValue(value)} (${percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })}%)</div>${linkedRow}`;
+      `<div class="eda-bar-tooltip-row">${swatch}${seriesPrefix}${formatDeNumber(value)} (${percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })}%)</div>${linkedRow}`;
   }
 
   private measureCanvas: HTMLCanvasElement;
