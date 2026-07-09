@@ -237,21 +237,23 @@
                     </div>
                   </td>
                   <td class="p-3 text-center type-container">
-                    <span class="type-indicator" [style.background-color]="getDashboardTypeColor(dashboard.type)"></span>
-                    {{ dashboardTypeTranslations[dashboard.type] || dashboard.type | titlecase }}
-                    @if (editingTypeId !== dashboard._id) {
-                      @if (canIEdit(dashboard) && !isEditing) {
-                        <i class="fa fa-pencil edit-type-icon" (click)="startEditingType(dashboard)"></i>
-                      }
-                    } @else {
-                      <select [(ngModel)]="dashboard.type" (change)="updateDashboardType(dashboard, dashboard.type)"
-                        class="rounded-md border border-input bg-background text-sm p-1">
-                        @for (type of dashboardTypes; track type.type) {
-                          <option [value]="type.type" [hidden]="type.type === 'public' && !isAdmin">{{ type.label }}</option>
+                    <div class="type-row">
+                      <span class="type-indicator" [style.background-color]="getDashboardTypeColor(dashboard.type)"></span>
+                      <span class="type-label">{{ dashboardTypeTranslations[dashboard.type] || dashboard.type | titlecase }}</span>
+                      @if (editingTypeId !== dashboard._id) {
+                        @if (canIEdit(dashboard) && !isEditing) {
+                          <i class="fa fa-pencil edit-type-icon" (click)="startEditingType(dashboard)"></i>
                         }
-                      </select>
-                      <button type="button" class="ml-2 rounded-md border px-2 py-0.5 text-xs" (click)="cancelEditingType()" i18n="@@cancelarButton">Cancelar</button>
-                    }
+                      } @else {
+                        <select [(ngModel)]="dashboard.type" (change)="updateDashboardType(dashboard, dashboard.type)"
+                          class="rounded-md border border-input bg-background text-sm p-1">
+                          @for (type of dashboardTypes; track type.type) {
+                            <option [value]="type.type" [hidden]="type.type === 'public' && !isAdmin">{{ type.label }}</option>
+                          }
+                        </select>
+                        <button type="button" class="ml-2 rounded-md border px-2 py-0.5 text-xs" (click)="cancelEditingType()" i18n="@@cancelarButton">Cancelar</button>
+                      }
+                    </div>
                   </td>
                   <td class="p-3 text-sm">
                     @for (group of dashboard.group; track group.name) {

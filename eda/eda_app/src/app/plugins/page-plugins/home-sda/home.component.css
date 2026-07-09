@@ -57,13 +57,24 @@
 #report-table td:first-child:hover { text-decoration: underline; font-weight: 600; }
 #report-table td { color: hsl(var(--foreground)); font-size: 0.95rem; font-weight: 500; }
 
-/* ---- Report type indicator dot ---- */
+/* ---- Report type column: dot, label and edit button in one horizontal row ---- */
+.type-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
 .type-indicator {
   display: inline-block;
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  margin-right: 5px;
+  flex-shrink: 0;
+}
+
+.type-label {
+  flex-shrink: 0;
 }
 
 /* ---- Title / inline editing ---- */
