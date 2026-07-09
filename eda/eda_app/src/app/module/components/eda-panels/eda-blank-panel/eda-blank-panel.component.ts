@@ -878,8 +878,8 @@ public tableNodeExpand(event: any): void {
     */
     public onChartClick(event: any): void {
         const config = this.panelChart.getCurrentConfig();
-        if (['line', 'radar'].includes(config?.chartType) ||   //NG2 CHARTS
-            ['doughnut', 'polarArea', 'bar', 'treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
+        if (['line'].includes(config?.chartType) ||   //NG2 CHARTS
+            ['doughnut', 'polarArea', 'bar', 'radar', 'treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
             'geoJsonMap'.includes(this.panelChart.props.chartType) || //Leaflet 
             ['table', 'crosstable', 'treetable'].includes(this.panelChart.props.chartType)) // tables
         {

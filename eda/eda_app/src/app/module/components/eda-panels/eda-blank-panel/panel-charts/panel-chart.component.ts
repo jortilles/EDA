@@ -57,6 +57,8 @@ import { EdaPolarAreaComponent } from '@eda/components/eda-polar-area-d3/eda-pol
 import { EdaPolarArea } from '@eda/components/eda-polar-area-d3/eda-polar-area';
 import { EdaBarD3Component } from '@eda/components/eda-bar-d3/eda-bar.component';
 import { EdaBarD3 } from '@eda/components/eda-bar-d3/eda-bar';
+import { EdaRadarComponent } from '@eda/components/eda-radar-d3/eda-radar.component';
+import { EdaRadar } from '@eda/components/eda-radar-d3/eda-radar';
 
 @Component({
     standalone: true,
@@ -179,8 +181,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.renderEdaTable(type);
         }
 
-        if (['line', 'area', 'radar'].includes(type) || (type === 'bar' && this.props.edaChart === 'barline')) {
+        if (['line', 'area'].includes(type) || (type === 'bar' && this.props.edaChart === 'barline')) {
             this.renderEdaChart(type);
+        }
+
+        if (type === 'radar') {
+            this.renderRadar();
         }
 
         if (type === 'bar' && this.props.edaChart !== 'barline') {
@@ -1451,6 +1457,82 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
+     * Renders the D3-based radar (spider) chart. Multi-series like bar - one dataset per
+     * queried numeric column, colored per-series (no threshold/unique-color modes, those only
+     * make sense for a single-numeric-column bar chart). Reuses transformDataQuery/
+     * resolveAssignedColors/generateChartColorsFromAssignedColors unchanged - radar already falls
+     * into their generic "series" branches.
+     */
+    private renderRadar() {
+        const values = _.cloneDeep(this.props.data.values);
+        const dataTypes = this.props.query.map(col => col.column_type);
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const cfg: any = this.props.config.getConfig();
+
+        const chartData = this.chartUtils.transformDataQuery('radar', 'radar', values, dataTypes, dataDescription, false, cfg.numberOfColumns);
+        if (chartData.length == 0) {
+            chartData.push([], []);
+        }
+
+        const inject: any = new EdaRadar();
+        inject.id = this.randomID();
+        inject.chartType = 'radar';
+        inject.edaChart = 'radar';
+        inject.chartLabels = chartData[0];
+        inject.categoryFieldName = dataDescription.otherColumns[0]?.name;
+        inject.chartDataset = chartData[1];
+
+        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        const currentLabels = this.getLabelsForChartType(inject);
+
+        if (assignedColors.length === 0) {
+            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            this.props.config.getConfig()['assignedColors'] = assignedColors;
+        } else {
+            const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
+            assignedColors = currentLabels.map((label, index) => {
+                const assignedColor = colorMap.get(label);
+                if (assignedColor) {
+                    const entry: any = { value: label, color: assignedColor.color };
+                    if (assignedColor.opacity !== undefined) entry.opacity = assignedColor.opacity;
+                    return entry;
+                } else {
+                    return { value: label, color: this.paletaActual[index % this.paletaActual.length] };
+                }
+            });
+        }
+
+        inject.assignedColors = assignedColors;
+        inject.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, 'radar');
+
+        // Same isAreaOrRadar convention as the (still Chart.js) area chart and as this dialog's
+        // own applyColorsToChart(): backgroundColor carries the per-series opacity baked in via
+        // hexToRgba, borderColor (and the vertex/gradient base color the D3 component derives
+        // from it) stays the flat, fully-opaque series color.
+        chartData[1].forEach((dataset, i) => {
+            try {
+                const solidColor = inject.chartColors[i]?.borderColor as string;
+                const seriesOpacity: number = assignedColors[i]?.opacity ?? 100;
+                dataset.backgroundColor = this.chartUtils.hexToRgba(solidColor, seriesOpacity);
+                dataset.borderColor = solidColor;
+            } catch (err) {
+                const fallbackColor = this.paletaActual[i % this.paletaActual.length];
+                dataset.backgroundColor = fallbackColor;
+                dataset.borderColor = fallbackColor;
+            }
+        });
+
+        inject.chartLegend = cfg.chartLegend ?? true;
+        inject.showLabels = cfg.showLabels ?? false;
+        inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
+        inject.showGridLines = cfg.showGridLines ?? true;
+        inject.useGradient = cfg.useGradient ?? true;
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        this.createD3Component(inject, EdaRadarComponent);
+    }
+
+    /**
      * Renders the D3-based bar family: bar, horizontalBar, stackedbar, stackedbar100,
      * pyramid, histogram (everything with chartType 'bar' except 'barline', which stays
      * on Chart.js via renderEdaChart()). Reuses transformDataQuery/resolveAssignedColors/
@@ -1746,8 +1828,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 else if (this.props.chartType === 'bar' && this.props.edaChart !== 'barline') {
                     this.updateD3Colors(() => this.renderBar());
                 }
+                // Radar (D3)
+                else if (this.props.chartType === 'radar') {
+                    this.updateD3Colors(() => this.renderRadar());
+                }
                 // Charts ChartJS
-                else if (['line', 'area', 'radar'].includes(this.props.chartType) || (this.props.chartType === 'bar' && this.props.edaChart === 'barline')) {
+                else if (['line', 'area'].includes(this.props.chartType) || (this.props.chartType === 'bar' && this.props.edaChart === 'barline')) {
                     this.updateChartJSColors();
                 }
                 // KPI

@@ -117,7 +117,7 @@
             </div>
             
             <!-- Show Grid Lines -->
-            @if (['bar', 'horizontalBar', 'line', 'area', 'kpiarea', 'polarArea'].includes(panelChartConfig.edaChart)) {
+            @if (['bar', 'horizontalBar', 'line', 'area', 'kpiarea', 'polarArea', 'radar'].includes(panelChartConfig.edaChart)) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -342,7 +342,7 @@
           <span class="text-lg font-semibold" i18n="@@colorsChartH6">
             Colores
           </span>
-          @if (['bar', 'horizontalBar', 'stackedbar', 'stackedbar100', 'pyramid', 'histogram', 'barline'].includes(panelChartConfig.edaChart)) {
+          @if (['bar', 'horizontalBar', 'stackedbar', 'stackedbar100', 'pyramid', 'histogram', 'barline', 'radar'].includes(panelChartConfig.edaChart)) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5 pb-4">
                 <label i18n="@@useGradient" for="usarDegradadoBarras" class="font-medium">
