@@ -53,17 +53,26 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
 
         this.values = this.myPanelChartComponent.componentRef.instance.data.values;
 
+        // The category column isn't necessarily column 0 - that's only true if it happens to come
+        // before the numeric column in the raw query result. Use the same otherColumns[0].index
+        // eda-d3.component.ts itself uses for firstColLabels, instead of assuming v[0].
+        const labelIndex = this.myPanelChartComponent.componentRef.instance.inject.dataDescription.otherColumns[0].index;
         // real unique labels
-        this.labels = [...new Set<string>(this.values.map(v => v[0] as string))];
+        this.labels = [...new Set<string>(this.values.map(v => v[labelIndex] as string))];
 
         const chartAssignedColors =
           this.myPanelChartComponent.props.config.getConfig()['assignedColors'] || [];
 
-        this.assignedColors = this.labels.map(label => {
+        // Fall back to a palette color when a label has no saved match (e.g. it's new, or the
+        // saved assignedColors got out of sync) - leaving it undefined is what was rendering the
+        // color picker as an invalid red square and, once saved, painting that link black.
+        const paletaActual = this.stylesProviderService.ActualChartPalette?.['paleta']
+          || this.stylesProviderService.DEFAULT_PALETTE_COLOR?.['paleta'] || [];
+        this.assignedColors = this.labels.map((label, index) => {
           const match = chartAssignedColors.find(c => c.value === label);
           return {
             value: label,
-            color: match?.color
+            color: match?.color || paletaActual[index % paletaActual.length]
           };
         });
 
@@ -131,8 +140,10 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
     const labelColorMap: Record<string, string> = {};
     this.assignedColors.forEach(c => {labelColorMap[c.value] = c.color;});
 
+    // Same as ngAfterViewChecked above - the category column isn't necessarily v[0].
+    const labelIndex = this.myPanelChartComponent.componentRef.instance.inject.dataDescription.otherColumns[0].index;
     // Sankey needs colors according to data.values
-    const colorsForChart = this.values.map(v => labelColorMap[v[0] as string]);
+    const colorsForChart = this.values.map(v => labelColorMap[v[labelIndex] as string]);
 
     this.myPanelChartComponent.props.config.setConfig(new SankeyConfig([...new Set(colorsForChart)]));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
