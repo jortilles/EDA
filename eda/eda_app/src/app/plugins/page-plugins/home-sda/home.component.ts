@@ -148,6 +148,18 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
   } = {};
   public editingTypeId: string | null = null;
 
+  /**
+   * Maps a frontend dashboard "type" value to the canonical config.visible
+   * value expected by the backend (which also drives its legacy-value
+   * normalization, so these must not be conflated with the "type" strings).
+   */
+  private readonly typeToVisibleMap: { [key: string]: string } = {
+    public: "open",
+    shared: "common",
+    group: "group",
+    private: "private"
+  };
+
   constructor(
     // Services for managing dashboards and related operations
     private dashboardService: DashboardService,
@@ -917,14 +929,16 @@ public filterGroups() {
    */
   public updateDashboardType(dashboard: any, newType: string): void {
     const oldType = dashboard.type;
+    const oldVisible = dashboard.config.visible;
+    const newVisible = this.typeToVisibleMap[newType] ?? newType;
     dashboard.type = newType;
-    dashboard.config.visible = newType;
+    dashboard.config.visible = newVisible;
 
     this.dashboardService
       .updateDashboardSpecific(dashboard._id, {
         data: {
           key: "config.visible",
-          newValue: newType
+          newValue: newVisible
         }
       })
       .subscribe(
@@ -935,7 +949,7 @@ public filterGroups() {
         error => {
           this.alertService.addError($localize`:@@ErrorUpdatingDashboardType:Error al actualizar el tipo de informe.`);
           dashboard.type = oldType;
-          dashboard.config.visible = oldType;
+          dashboard.config.visible = oldVisible;
           console.error("Error updating dashboard type:", error);
         }
       );

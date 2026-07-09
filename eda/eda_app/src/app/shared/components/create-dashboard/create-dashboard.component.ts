@@ -68,7 +68,8 @@ export class CreateDashboardComponent implements OnInit {
             { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
         ];
 
-        this.form.controls['visible'].setValue(this.visibleTypes[3].value);
+        const defaultVisibleType = this.visibleTypes.find(type => type.value === 'private') ?? this.visibleTypes[0];
+        this.form.controls['visible'].setValue(defaultVisibleType?.value ?? null);
 
         this.dataSourceNameService.getDataSourceNamesForDashboard().subscribe((res) => {
             this.dataSources = res?.ds;
