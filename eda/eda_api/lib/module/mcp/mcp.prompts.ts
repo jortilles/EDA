@@ -102,7 +102,12 @@ FLOW FOR DATA QUESTIONS
 
 STEP 1 — EXPLORATION (mandatory at the start of each NEW data query — not for follow-ups):
 Call get_data_from_dashboard WITHOUT dashboard_id.
-- Extract keyword FIELDS from the question and pass them in campos_requeridos. IMPORTANT: fields in EDA may be in Spanish, Catalan, or English. ALWAYS include translations in all three languages (e.g. question "concerts" → ["concerts","conciertos","concerts","concert"]; question "vendes per país" → ["vendes","ventas","sales","país","país","country"]; question "gastos festes" → ["gastos","despeses","expenses","festes","fiestas","events"]). The system accepts panels where at least 50% of the keywords appear — not all need to match.
+- Extract keyword FIELDS from the question and pass them in campos_requeridos as an array of concept groups. Each group is an array with the concept and its translations in the other languages. Fields in EDA may be in Spanish, Catalan, or English — include all 3 variants per group so the system can match regardless of the field language. Each group counts as ONE concept: it matches if ANY variant is found. Examples:
+  - question "concerts" → [["concerts","conciertos","concerts"]]
+  - question "vendes per país" → [["vendes","ventas","sales"],["país","país","country"]]
+  - question "ODS municipals" → [["ODS","SDG"],["municipals","municipal","municipales"]]
+  - question "projectes relacionats amb l'ODS 1" → [["projectes","projects","proyectos"],["ODS","SDG","objetivos de desarrollo"]]
+  The system accepts panels where at least 25% of the concept groups match — not all need to match.
 - If the question does not mention specific fields, omit campos_requeridos to get all available options.
 - If nota_al_asistente indicates 0 options and you used campos_requeridos: call again WITHOUT campos_requeridos before informing the user. If still 0, inform that no data is available.
 - ⚠ ABSOLUTE RULE — If nota_al_asistente indicates 1 option: call get_data_from_dashboard IMMEDIATELY in STEP 3. PROHIBITED to ask "Do you want me to...?", "Shall I download...?", "Shall I proceed?", "Continue?" or any confirmation variant. Act without waiting for the user's response.

@@ -425,7 +425,7 @@ export function createMcpServer(requestUser?: any) {
             description: 'Searches EDA dashboards for panels with data relevant to a question. WITHOUT dashboard_id: exploration mode — returns a structured catalogue of options (panel, datasource, active filters) for the assistant to present to the user. WITH dashboard_id: data mode — runs the panel queries and returns the response model with real data + source.',
             inputSchema: {
                 question:           z.string().describe('The user\'s question about the data they want to query'),
-                campos_requeridos:  z.array(z.string()).optional().describe('Keyword fields that must appear in the panel (e.g. ["country","credit"]). In exploration mode, only panels where at least 50% of the keywords are present are returned (partial match, case-insensitive). The assistant must infer these keywords from the user\'s question. Always include translations in Spanish, Catalan, and English.'),
+                campos_requeridos:  z.array(z.union([z.string(), z.array(z.string())])).optional().describe('Concept groups to filter panels. Each element is either a string or an array of synonyms/translations (e.g. [["vendes","sales","ventas"],["país","country","país"]]). A group matches if ANY of its variants appear in the panel — and counts as ONE keyword. Use grouped format to avoid diluting the match ratio with multi-language variants.'),
                 dashboard_id:       z.string().optional().describe('Dashboard ID to query (optional). If not provided, the catalogue of available options is listed.'),
                 panel_index:        z.number().optional().describe('Panel index within the dashboard (0-based). If omitted, all panels in the dashboard are run.'),
                 datasource_id:      z.string().optional().describe('Datasource ID for direct query (fallback mode). Use ONLY when no panels were found in dashboards and a direct datasource query is needed.'),
@@ -448,9 +448,15 @@ export function createMcpServer(requestUser?: any) {
             console.log('[MCP] get_data_from_dashboard - sin_agregacion:', args?.sin_agregacion ?? '(no proporcionado)');
             const { question, dashboard_id, panel_index, campos_requeridos, datasource_id, campos_consulta,
                     ordenar_campo, ordenar_direccion, limite_filas, sin_agregacion } = args;
-            const camposLower: string[] = Array.isArray(campos_requeridos)
-                ? campos_requeridos.map((c: string) => c.toLowerCase())
+            // Each element can be a string or a group of synonyms/translations.
+            // camposGrupos: one entry per concept — used for ratio calculation.
+            // camposLower:  flat list — used for fallback term matching and log messages.
+            const camposGrupos: string[][] = Array.isArray(campos_requeridos)
+                ? campos_requeridos.map((c: any) =>
+                    Array.isArray(c) ? c.map((s: string) => s.toLowerCase()) : [String(c).toLowerCase()]
+                )
                 : [];
+            const camposLower: string[] = camposGrupos.flat();
 
             try {
                 const user = await resolveUser(requestUser);
@@ -1003,29 +1009,31 @@ export function createMcpServer(requestUser?: any) {
                         const rawPanelDesc = panel.description ?? panel.content?.description ?? '';
                         const panelDescStr: string = typeof rawPanelDesc === 'string' ? rawPanelDesc : (rawPanelDesc?.default ?? '');
                         console.log(`[META]   panelDescStr="${panelDescStr.substring(0, 100)}"`);
-                        if (camposLower.length > 0) {
+                        if (camposGrupos.length > 0) {
                             // All display + technical field names, accent-normalised
                             const allFieldNorms = [...fieldNames, ...fieldNamesTech].map(normQ);
                             const allDescNorm   = normQ([...camposDescripciones, ...tablasDescripciones].join(' '));
                             const titleNorm     = normQ(panel.title ?? '');
                             const descNorm      = normQ(panelDescStr);
                             const dashNorm      = normQ(db.config?.title ?? '');
+                            // Count matched concept groups (not individual keywords).
+                            // A group matches if ANY of its variants is found anywhere in the panel metadata.
                             let matchCount = 0;
-                            for (const kw of camposLower) {
-                                const kwN          = normQ(kw);
-                                const inField      = allFieldNorms.some((fn: string) => fn.includes(kwN));
-                                const inColDesc    = allDescNorm.includes(kwN);
-                                const inPanelTitle = titleNorm.includes(kwN);
-                                const inPanelDesc  = descNorm.includes(kwN);
-                                const inDashboard  = dashNorm.includes(kwN);
-                                const matched = inField || inColDesc || inPanelTitle || inPanelDesc || inDashboard;
-                                if (matched) matchCount++;
-                                console.log(`[META]   kw="${kw}" → field:${inField} colDesc:${inColDesc} panelTitle:${inPanelTitle} panelDesc:${inPanelDesc} dashboard:${inDashboard} ✔:${matched}`);
+                            for (const group of camposGrupos) {
+                                const groupMatched = group.some(kw => {
+                                    const kwN = normQ(kw);
+                                    return allFieldNorms.some((fn: string) => fn.includes(kwN))
+                                        || allDescNorm.includes(kwN)
+                                        || titleNorm.includes(kwN)
+                                        || descNorm.includes(kwN)
+                                        || dashNorm.includes(kwN);
+                                });
+                                if (groupMatched) matchCount++;
+                                console.log(`[META]   grupo=[${group.join('|')}] ✔:${groupMatched}`);
                             }
-                            const matchRatio = matchCount / camposLower.length;
-                            // A single keyword hitting the dashboard name or panel title is a strong signal —
-                            // pass the panel regardless of overall ratio (multi-language keyword lists inflate
-                            // the denominator and would otherwise discard relevant panels like "Bones pràctiques ODS").
+                            const matchRatio = matchCount / camposGrupos.length;
+                            // A group hitting the dashboard name or panel title is a strong signal —
+                            // pass the panel regardless of overall ratio.
                             const strongSignal = camposLower.some(kw => {
                                 const kwN = normQ(kw);
                                 return titleNorm.includes(kwN) || dashNorm.includes(kwN);
@@ -1088,15 +1096,17 @@ export function createMcpServer(requestUser?: any) {
                     return nh.includes(nn) || nn.includes(nh);
                 };
                 const kwMatch = (text: string): number => {
-                    if (!text || camposLower.length === 0) return 0;
-                    return camposLower.filter(kw => fuzzyContains(text, kw)).length / camposLower.length;
+                    if (!text || camposGrupos.length === 0) return 0;
+                    return camposGrupos.filter(group =>
+                        group.some(kw => fuzzyContains(text, kw))
+                    ).length / camposGrupos.length;
                 };
                 const questionMatch = (text: string): number => {
                     if (!text || questionWords.length === 0) return 0;
                     return questionWords.filter((w: string) => fuzzyContains(text, w)).length / questionWords.length;
                 };
                 const scoreOption = (o: any): number => {
-                    if (camposLower.length === 0) {
+                    if (camposGrupos.length === 0) {
                         const titleQ = questionMatch(o.panel_titulo ?? '');
                         const descQ  = questionMatch(o.panel_descripcion ?? '');
                         const dashQ  = questionMatch(o.dashboard_nombre ?? '');
@@ -1117,9 +1127,9 @@ export function createMcpServer(requestUser?: any) {
                     const tableDescScore   = kwMatch((o.tablas_descripciones ?? []).join(' '));
                     // Fraction of keywords that fuzzy-match any field name (display or technical).
                     // Replaces the old exactFieldScore (strict equality, always 0) and fieldPrecision (wrong direction).
-                    const fieldMatchScore = camposLower.filter(kw =>
-                        allFieldNorms.some(fn => fn.includes(normQ(kw)) || normQ(kw).includes(fn))
-                    ).length / camposLower.length;
+                    const fieldMatchScore = camposGrupos.filter(group =>
+                        group.some(kw => allFieldNorms.some(fn => fn.includes(normQ(kw)) || normQ(kw).includes(fn)))
+                    ).length / camposGrupos.length;
                     const textTotal = descriptionScore * 4 + titleScore * 3 + fieldDescScore * 2.5 + tableDescScore * 2 + datasourceScore * 2 + dashboardScore * 3 + fieldMatchScore * 3;
                     const noFilterBonus = (textTotal > 0 && !o.tiene_filtros) ? 0.2 : 0;
                     return textTotal + noFilterBonus;
@@ -1144,7 +1154,7 @@ export function createMcpServer(requestUser?: any) {
                     ? scored.filter(x => x.s > 0).map(x => x.o)
                     : scored.map(x => x.o);
 
-                const sinResultadosRelevantes = maxScore < BORDERLINE_RELEVANCE && (camposLower.length > 0 || questionWords.length >= 2);
+                const sinResultadosRelevantes = maxScore < BORDERLINE_RELEVANCE && (camposGrupos.length > 0 || questionWords.length >= 2);
                 const esBorderline = maxScore >= BORDERLINE_RELEVANCE && maxScore < MIN_RELEVANCE;
                 console.log('[MCP] exploración — maxScore:', maxScore.toFixed(3), '| MIN_RELEVANCE:', MIN_RELEVANCE, '| BORDERLINE:', BORDERLINE_RELEVANCE, '| sinRelevantes:', sinResultadosRelevantes, '| borderline:', esBorderline);
                 if (sinResultadosRelevantes) {
