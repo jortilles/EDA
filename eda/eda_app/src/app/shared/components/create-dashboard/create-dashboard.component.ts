@@ -11,6 +11,7 @@ import { SelectButtonModule } from "primeng/selectbutton";
 import { EdaDialog2Component } from "../shared-components.index";
 import * as _ from 'lodash';
 import { DataSourceNamesService } from "@eda/services/shared/datasource-names.service";
+import { SHOW_PUBLIC_TYPE_BUTTON_IN_REPORT_CREATION_MODAL } from "@eda/configs/customizable/customizable_default";
 
 @Component({
     standalone: true,
@@ -59,7 +60,9 @@ export class CreateDashboardComponent implements OnInit {
         });
 
         this.visibleTypes = [
-            { label: $localize`:@@publicPanel:Publico`, value: 'open', icon: 'fa fa-fw fa-globe' },
+            ...(SHOW_PUBLIC_TYPE_BUTTON_IN_REPORT_CREATION_MODAL
+                ? [{ label: $localize`:@@publicPanel:Publico`, value: 'open', icon: 'fa fa-fw fa-globe' }]
+                : []),
             { label: $localize`:@@commonPanel:Común`, value: 'common', icon: 'fa fa-fw fa-building' },
             { label: $localize`:@@group:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
             { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
@@ -82,7 +85,10 @@ export class CreateDashboardComponent implements OnInit {
             this.grups = await this.groupService.getGroupsByUser().toPromise();
 
             if (this.grups.length === 0) {
-                this.visibleTypes.splice(1, 1);
+                const groupIndex = this.visibleTypes.findIndex(type => type.value === 'group');
+                if (groupIndex > -1) {
+                    this.visibleTypes.splice(groupIndex, 1);
+                }
             }
         } catch (err) {
             this.alertService.addError(err)
