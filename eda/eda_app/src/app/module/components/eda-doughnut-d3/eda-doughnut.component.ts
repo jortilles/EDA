@@ -207,14 +207,18 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
 
         const percentage = total > 0 ? (d.data.value / total) * 100 : 0;
         const swatch = `<span class="eda-doughnut-tooltip-swatch" style="background-color:${d.data.color};"></span>`;
-        let text = seriesLabel ? `<div class="eda-doughnut-tooltip-title">${seriesLabel}</div>` : '';
+        // seriesLabel here is the CATEGORY field's own name (e.g. "Country" - see
+        // chart-utils.service.ts's transformDataQuery, which sets it from
+        // dataDescription.otherColumns[0].name), not a metric name - pairing it with the slice's
+        // own label ("Country : USA") matches how treemap/bubblechart/scatter build their title.
+        const title = seriesLabel ? `${seriesLabel} : ${d.data.label}` : d.data.label;
+        let text = `<div class="eda-doughnut-tooltip-title">${title}</div>`;
         text += `<div class="eda-doughnut-tooltip-row">${swatch}` +
-          `<strong>${d.data.label}</strong> : ` +
           `${d.data.value.toLocaleString('de-DE', { maximumFractionDigits: 6 })} - ` +
           `${percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })} %</div>`;
         if (linkedDashboard) {
           const t = $localize`:@@linkedTo:Vinculado con`;
-          text += `<br/><h6>${t} ${linkedDashboard.dashboardName}</h6>`;
+          text += `<h6>${t} ${linkedDashboard.dashboardName}</h6>`;
         }
         this.tooltipService.show(event, text, 'eda-doughnut-tooltip');
       })

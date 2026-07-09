@@ -366,7 +366,9 @@ draw() {
         const valueRow = `${swatch}${d3.format(',')(d.value)}`;
         const percentageRow = `<div class="eda-funnel-tooltip-row">${d3.format('.1%')(d.value / data[0].value)}</div>`;
 
-        const text = `<div class="eda-funnel-tooltip-title">${d.label}</div>` +
+        // Field name : value, matching treemap/bubblechart/scatter/doughnut's title convention.
+        const fieldName = this.inject.dataDescription.otherColumns[0].name;
+        const text = `<div class="eda-funnel-tooltip-title">${fieldName} : ${d.label}</div>` +
           `<div class="eda-funnel-tooltip-row">${valueRow}</div>${percentageRow}`;
 
         this.tooltipService.show(event, text, 'eda-funnel-tooltip');

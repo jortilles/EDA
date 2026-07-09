@@ -102,7 +102,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     let metricLabel = this.inject.dataDescription.numericColumns[0].name;
     const secondRow = `${metricLabel} : ${data.data.value.toLocaleString('de-DE', { maximumFractionDigits: 6 })}`;
 
-    const thirdRow = this.inject.linkedDashboard ? `Linked to ${this.inject.linkedDashboard.dashboardName}` : '';
+    const thirdRow = this.inject.linkedDashboard ? `${$localize`:@@linkedTo:Vinculado con`} ${this.inject.linkedDashboard.dashboardName}` : '';
 
     const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length * (18 / 12)]);
 

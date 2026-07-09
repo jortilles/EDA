@@ -222,7 +222,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
         let text = `<div class="eda-d3-tooltip-title">${data.names.join(" → ")}</div>` +
           `<div class="eda-d3-tooltip-row">${swatch}${valueRow}</div>`;
         if (this.inject.linkedDashboard) {
-          text += `<h6>linked to ${this.inject.linkedDashboard.dashboardName}</h6>`;
+          text += `<h6>${$localize`:@@linkedTo:Vinculado con`} ${this.inject.linkedDashboard.dashboardName}</h6>`;
         }
 
         this.tooltipService.show(d, text, 'eda-d3-tooltip');

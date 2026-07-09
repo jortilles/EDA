@@ -107,7 +107,7 @@ export class EdaTreeMap implements AfterViewInit {
     )}`;
 
     const thirdRow = this.inject.linkedDashboard
-      ? `Linked to ${this.inject.linkedDashboard.dashboardName}`
+      ? `${$localize`:@@linkedTo:Vinculado con`} ${this.inject.linkedDashboard.dashboardName}`
       : "";
 
     const maxLength = dataUtils.maxLengthElement([

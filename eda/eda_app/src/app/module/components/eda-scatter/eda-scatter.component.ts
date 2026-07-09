@@ -225,7 +225,7 @@ export class EdaScatter implements AfterViewInit {
         text += `<div class="eda-scatter-tooltip-row">${xText}</div>`;
         text += `<div class="eda-scatter-tooltip-row">${yText}</div>`;
         text = metricText ? text + `<div class="eda-scatter-tooltip-row">${metricText}</div>` : text;
-        text = this.inject.linkedDashboard ? text + `<h6>Linked to ${this.inject.linkedDashboard.dashboardName}</h6>` : text;
+        text = this.inject.linkedDashboard ? text + `<h6>${$localize`:@@linkedTo:Vinculado con`} ${this.inject.linkedDashboard.dashboardName}</h6>` : text;
 
         this.tooltipService.show(d, text, 'eda-scatter-tooltip');
         })
