@@ -201,14 +201,18 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const percentage = total > 0 ? (d.data.value / total) * 100 : 0;
         const swatch = `<span class="eda-polar-area-tooltip-swatch" style="background-color:${d.data.color};"></span>`;
-        let text = seriesLabel ? `<div class="eda-polar-area-tooltip-title">${seriesLabel}</div>` : '';
+        // seriesLabel here is the CATEGORY field's own name (e.g. "City" - see
+        // chart-utils.service.ts's transformDataQuery, which sets it from
+        // dataDescription.otherColumns[0].name), not a metric name - pairing it with the slice's
+        // own label ("City : ST Cloud") matches how treemap/bubblechart/scatter build their title.
+        const title = seriesLabel ? `${seriesLabel} : ${d.data.label}` : d.data.label;
+        let text = `<div class="eda-polar-area-tooltip-title">${title}</div>`;
         text += `<div class="eda-polar-area-tooltip-row">${swatch}` +
-          `<strong>${d.data.label}</strong> : ` +
           `${d.data.value.toLocaleString('de-DE', { maximumFractionDigits: 6 })} - ` +
           `${percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })} %</div>`;
         if (linkedDashboard) {
           const t = $localize`:@@linkedTo:Vinculado con`;
-          text += `<br/><h6>${t} ${linkedDashboard.dashboardName}</h6>`;
+          text += `<h6>${t} ${linkedDashboard.dashboardName}</h6>`;
         }
         this.tooltipService.show(event, text, 'eda-polar-area-tooltip');
       })
@@ -251,7 +255,13 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     // a hidden outlier. Uses sqrt, not linear, so the perceived AREA of a slice is proportional
     // to its value (area grows with r²) - the standard convention for rose/Nightingale charts.
     const maxValue = d3.max(visibleSlices, (s: PolarAreaSlice) => s.value) || 1;
-    const radiusScale = d3.scaleSqrt().domain([0, maxValue]).range([0, maxRadius]);
+    // .nice(4) rounds the domain max up (e.g. 510,500 -> 600,000) so the outermost grid ring lands
+    // on a round number that actually CONTAINS the largest slice, instead of the ring stopping at
+    // a "nice" tick below the true max and the slice visibly poking out past it. The "4" must match
+    // the tick count used for ringValues below (ticks(4)) - .nice() with no argument uses its own
+    // default count (10) and rounds to a DIFFERENT step, so the "niced" max (e.g. 550,000) can land
+    // off the ticks(4) step sequence (100k, 200k...) instead of on its true next value (600,000).
+    const radiusScale = d3.scaleSqrt().domain([0, maxValue]).range([0, maxRadius]).nice(4);
 
     const arcGen: any = d3.arc().innerRadius(0).outerRadius((d: any) => radiusScale(d.data.value));
     const hoverArcGen: any = d3.arc().innerRadius(0).outerRadius((d: any) => radiusScale(d.data.value) + 8);
@@ -281,7 +291,13 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     gridGroup.attr('transform', `translate(${width / 2},${height / 2})`);
     gridGroup.style('display', (this.inject.showGridLines ?? true) ? null : 'none');
 
+    // radiusScale.ticks(4) is only a hint - it rounds to whatever "nice" step fits the domain,
+    // which often doesn't land exactly on the domain's own (already niced) max - leaving the
+    // outermost ring, right at the chart's actual boundary, without a line of its own. Force it
+    // in explicitly so the boundary always gets a ring, regardless of what the auto-ticks picked.
     const ringValues = radiusScale.ticks(4).filter((v: number) => v > 0);
+    const domainMax = radiusScale.domain()[1];
+    if (domainMax > 0 && !ringValues.includes(domainMax)) ringValues.push(domainMax);
     const rings = gridGroup.selectAll('circle.polar-area-grid-ring').data(ringValues);
     rings.exit().remove();
     rings.enter()
