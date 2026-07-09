@@ -1023,8 +1023,15 @@ export function createMcpServer(requestUser?: any) {
                                 console.log(`[META]   kw="${kw}" → field:${inField} colDesc:${inColDesc} panelTitle:${inPanelTitle} panelDesc:${inPanelDesc} dashboard:${inDashboard} ✔:${matched}`);
                             }
                             const matchRatio = matchCount / camposLower.length;
-                            if (matchRatio < 0.25) {
-                                console.log(`[META]   → SALTADO por pre-filtro (${(matchRatio*100).toFixed(0)}% < 25%) | dashboard=${db.config?.title}, idx=${idx}`);
+                            // A single keyword hitting the dashboard name or panel title is a strong signal —
+                            // pass the panel regardless of overall ratio (multi-language keyword lists inflate
+                            // the denominator and would otherwise discard relevant panels like "Bones pràctiques ODS").
+                            const strongSignal = camposLower.some(kw => {
+                                const kwN = normQ(kw);
+                                return titleNorm.includes(kwN) || dashNorm.includes(kwN);
+                            });
+                            if (matchRatio < 0.25 && !strongSignal) {
+                                console.log(`[META]   → SALTADO por pre-filtro (${(matchRatio*100).toFixed(0)}% < 25%, sin señal fuerte) | dashboard=${db.config?.title}, idx=${idx}`);
                                 continue;
                             }
                             console.log(`[META]   → PASA pre-filtro (${(matchRatio*100).toFixed(0)}%) | dashboard=${db.config?.title}, idx=${idx}`);
@@ -1113,7 +1120,7 @@ export function createMcpServer(requestUser?: any) {
                     const fieldMatchScore = camposLower.filter(kw =>
                         allFieldNorms.some(fn => fn.includes(normQ(kw)) || normQ(kw).includes(fn))
                     ).length / camposLower.length;
-                    const textTotal = descriptionScore * 4 + titleScore * 3 + fieldDescScore * 2.5 + tableDescScore * 2 + datasourceScore * 2 + dashboardScore * 1.5 + fieldMatchScore * 3;
+                    const textTotal = descriptionScore * 4 + titleScore * 3 + fieldDescScore * 2.5 + tableDescScore * 2 + datasourceScore * 2 + dashboardScore * 3 + fieldMatchScore * 3;
                     const noFilterBonus = (textTotal > 0 && !o.tiene_filtros) ? 0.2 : 0;
                     return textTotal + noFilterBonus;
                 };
@@ -1127,18 +1134,21 @@ export function createMcpServer(requestUser?: any) {
                     console.log(`[MCP] exploración — score=${s.toFixed(3)} | dashboard="${o.dashboard_nombre}" | panel="${o.panel_titulo}" | campos=[${(o.campos ?? []).join(', ')}] | datasource="${o.datasource_nombre}"`);
                 });
 
-                // Minimum score for a dashboard panel to be considered relevant.
-                // Below this threshold, options are discarded and the direct-datasource fallback is tried instead.
-                const MIN_RELEVANCE = 0.5;
+                // Panels scoring above MIN_RELEVANCE are shown as options.
+                // Panels between BORDERLINE_RELEVANCE and MIN_RELEVANCE are included as lower-confidence options
+                // rather than silently discarded in favour of the direct-datasource fallback.
+                const MIN_RELEVANCE        = 0.5;
+                const BORDERLINE_RELEVANCE = 0.3;
                 const maxScore = scored.length > 0 ? scored[0].s : 0;
                 let opcionesArr = maxScore > 0
                     ? scored.filter(x => x.s > 0).map(x => x.o)
                     : scored.map(x => x.o);
 
-                const sinResultadosRelevantes = maxScore < MIN_RELEVANCE && (camposLower.length > 0 || questionWords.length >= 2);
-                console.log('[MCP] exploración — maxScore:', maxScore.toFixed(3), '| MIN_RELEVANCE:', MIN_RELEVANCE, '| sinResultadosRelevantes:', sinResultadosRelevantes);
+                const sinResultadosRelevantes = maxScore < BORDERLINE_RELEVANCE && (camposLower.length > 0 || questionWords.length >= 2);
+                const esBorderline = maxScore >= BORDERLINE_RELEVANCE && maxScore < MIN_RELEVANCE;
+                console.log('[MCP] exploración — maxScore:', maxScore.toFixed(3), '| MIN_RELEVANCE:', MIN_RELEVANCE, '| BORDERLINE:', BORDERLINE_RELEVANCE, '| sinRelevantes:', sinResultadosRelevantes, '| borderline:', esBorderline);
                 if (sinResultadosRelevantes) {
-                    console.log('[MCP] exploración — relevancia insuficiente, descartando opciones y activando fallback | descartadas:', scored.length);
+                    console.log('[MCP] exploración — relevancia insuficiente (<', BORDERLINE_RELEVANCE, '), descartando opciones | descartadas:', scored.length);
                     opcionesArr = [];
                 }
 
@@ -1237,12 +1247,14 @@ export function createMcpServer(requestUser?: any) {
                     }
                 } else if (opcionesArr.length === 1) {
                     notaAsistente = `There is exactly ONE option. MANDATORY: call get_data_from_dashboard RIGHT NOW in data mode with the dashboard_id and panel_index of this option. Do NOT ask the user, do NOT wait for confirmation.${notaTruncada}`;
+                    if (esBorderline) notaAsistente += ` NOTE: this option has LOW confidence (score ${maxScore.toFixed(2)}). If it returns irrelevant data or no data, inform the user that the match was uncertain.`;
                     if (fallbackSugerencias.length > 0) {
                         console.log(`[MCP] ▶▶▶ FALLBACK disponible como plan B — datasource: "${fallbackSugerencias[0].datasource_nombre}"`);
                         notaAsistente += ` If the panel returns no data or an error, immediately run: ${buildFallbackNota()}`;
                     }
                 } else {
                     notaAsistente = `There are ${opcionesArr.length} options. Show ONLY those whose dashboard_nombre or panel_titulo are related to "${question}". Present them numbered with the dashboard link and key differences (filters, scope). If after filtering only 1 relevant option remains, go directly to data mode without asking. Wait for user selection when several options are relevant.${notaTruncada}`;
+                    if (esBorderline) notaAsistente += ` NOTE: these options have LOW confidence (max score ${maxScore.toFixed(2)} — below the normal threshold of ${MIN_RELEVANCE}). Filter them strictly and only present those clearly related to the question.`;
                     if (fallbackSugerencias.length > 0) {
                         console.log(`[MCP] ▶▶▶ FALLBACK disponible como plan B — datasource: "${fallbackSugerencias[0].datasource_nombre}"`);
                         notaAsistente += ` If none of the options are relevant or all return no data, immediately run: ${buildFallbackNota()}`;
