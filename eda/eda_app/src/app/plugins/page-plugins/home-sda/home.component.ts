@@ -920,6 +920,16 @@ public filterGroups() {
    */
   public startEditingType(dashboard: any): void {
     this.editingTypeId = dashboard._id;
+    setTimeout(() => {
+      const select = document.getElementById("type-select-" + dashboard._id) as
+        (HTMLSelectElement & { showPicker?: () => void }) | null;
+      select?.focus();
+      try {
+        select?.showPicker?.();
+      } catch {
+        // showPicker isn't supported/allowed in every browser; focus() alone is enough.
+      }
+    });
   }
 
   /**

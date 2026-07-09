@@ -77,6 +77,19 @@
   flex-shrink: 0;
 }
 
+.type-select {
+  width: 7rem;
+  height: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* Locks the "Tipo" column width so switching between the label and the
+   edit dropdown never resizes the column / shifts the rest of the table. */
+#report-table .type-container {
+  width: 160px;
+}
+
 /* ---- Title / inline editing ---- */
 .dashboard-title-container { position: relative; display: inline-block; }
 .report-name:hover { text-decoration: underline; }

@@ -196,7 +196,7 @@
                   i18n="@@reportName" style="min-width: 250px">Nombre del Informe</th>
                 <th (click)="sortTable('type')" class="text-center cursor-pointer p-3"
                   [ngClass]="{'sort-asc': sortColumn === 'type' && sortDirection === 'asc', 'sort-desc': sortColumn === 'type' && sortDirection === 'desc'}"
-                  i18n="@@reportType">Tipo</th>
+                  i18n="@@reportType" style="min-width: 160px">Tipo</th>
                 <th class="text-left p-3" i18n="@@groups">Grupos</th>
                 <th (click)="sortTable('config.tag')" class="text-left cursor-pointer p-3"
                   [ngClass]="{'sort-asc': sortColumn === 'config.tag' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.tag' && sortDirection === 'desc'}"
@@ -239,19 +239,19 @@
                   <td class="p-3 text-center type-container">
                     <div class="type-row">
                       <span class="type-indicator" [style.background-color]="getDashboardTypeColor(dashboard.type)"></span>
-                      <span class="type-label">{{ dashboardTypeTranslations[dashboard.type] || dashboard.type | titlecase }}</span>
                       @if (editingTypeId !== dashboard._id) {
+                        <span class="type-label">{{ dashboardTypeTranslations[dashboard.type] || dashboard.type | titlecase }}</span>
                         @if (canIEdit(dashboard) && !isEditing) {
                           <i class="fa fa-pencil edit-type-icon" (click)="startEditingType(dashboard)"></i>
                         }
                       } @else {
-                        <select [(ngModel)]="dashboard.type" (change)="updateDashboardType(dashboard, dashboard.type)"
-                          class="rounded-md border border-input bg-background text-sm p-1">
+                        <select [id]="'type-select-' + dashboard._id" [(ngModel)]="dashboard.type"
+                          (change)="updateDashboardType(dashboard, dashboard.type)" (blur)="cancelEditingType()"
+                          class="type-select rounded-md border border-input bg-background text-sm p-1">
                           @for (type of dashboardTypes; track type.type) {
                             <option [value]="type.type" [hidden]="type.type === 'public' && !isAdmin">{{ type.label }}</option>
                           }
                         </select>
-                        <button type="button" class="ml-2 rounded-md border px-2 py-0.5 text-xs" (click)="cancelEditingType()" i18n="@@cancelarButton">Cancelar</button>
                       }
                     </div>
                   </td>
@@ -327,20 +327,20 @@
                   }
                 </div>
               </h5>
-              <p class="text-sm type-container mb-1">
+              <p class="text-sm type-container mb-1 type-row">
                 @if (editingTypeId !== dashboard._id) {
-                  {{ dashboardTypeTranslations[dashboard.type] || dashboard.type }}
+                  <span class="type-label">{{ dashboardTypeTranslations[dashboard.type] || dashboard.type }}</span>
                   @if (canIEdit(dashboard) && !isEditing) {
                     <i class="fa fa-pencil edit-type-icon" (click)="startEditingType(dashboard)"></i>
                   }
                 } @else {
-                  <select [(ngModel)]="dashboard.type" (change)="updateDashboardType(dashboard, dashboard.type)"
-                    class="rounded-md border border-input bg-background text-sm p-1">
+                  <select [id]="'type-select-' + dashboard._id" [(ngModel)]="dashboard.type"
+                    (change)="updateDashboardType(dashboard, dashboard.type)" (blur)="cancelEditingType()"
+                    class="type-select rounded-md border border-input bg-background text-sm p-1">
                     @for (type of dashboardTypes; track type.type) {
                       <option [value]="type.type" [hidden]="type.type === 'public' && !isAdmin">{{ type.label }}</option>
                     }
                   </select>
-                  <button type="button" class="ml-2 rounded-md border px-2 py-0.5 text-xs" (click)="cancelEditingType()" i18n="@@cancelarButton">Cancelar</button>
                 }
               </p>
               <p class="text-sm">
