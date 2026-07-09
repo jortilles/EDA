@@ -189,6 +189,9 @@ export class ChartDialogComponent {
                 this.applyColorsToChart();
             }
         }
+        if (!this.coloredBarsActive && this.showUniqueColors && this.showUniqueColorsTab) {
+            this.activeTabIndex = 1;
+        }
         this.display = true;
     }
 
@@ -358,31 +361,6 @@ export class ChartDialogComponent {
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
             this.load();
-        });
-
-    }
-
-    setShowUniqueColors() {
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;
-        let config: any = c.getConfig();
-        config.showLabels = this.showLabels;
-        config.showLabelsPercent = this.showLabelsPercent;
-        config.showUniqueColors = this.showUniqueColors;
-        config.showPointLines = this.showPointLines;
-        config.showPredictionLines = this.showPredictionLines;
-        config.numberOfColumns = this.numberOfColumns;
-        config.uniqueBarColors = [...this.uniqueBarColors];
-        this.coloredBarsActive = false;
-
-        properties.config = c;
-        /** Update chart */
-        this.panelChartConfig = new PanelChart(this.panelChartConfig);
-        setTimeout(_ => {
-            this.chart = this.panelChartComponent.componentRef.instance.inject;
-            this.load();
-            this.applyColorsToChart();
-            this.updateChartView();
         });
 
     }
@@ -885,8 +863,24 @@ export class ChartDialogComponent {
         this.activeTabIndex = index;
         // edaChart, not chartType - chartType is always literally 'bar' for every bar subtype.
         if (!['bar', 'horizontalBar'].includes(this.chart['edaChart'] as string)) return;
+        // Which coloring mode is active is now purely a function of which tab is selected - there's
+        // no separate on/off switch inside the "Colores Únicos" tab, being on it IS "activated".
         this.coloredBarsActive = index === this.intervalTabIndex;
-        this.handleInputColor();
+        this.showUniqueColors = this.showUniqueColorsTab && index === 1;
+
+        const properties = this.panelChartConfig;
+        const c: ChartConfig = properties.config;
+        const config: any = c.getConfig();
+        config.showUniqueColors = this.showUniqueColors;
+        config.uniqueBarColors = [...this.uniqueBarColors];
+        properties.config = c;
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(() => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.load();
+            this.applyColorsToChart();
+            this.updateChartView();
+        });
     }
 
     tabButtonClass(index: number): Record<string, boolean> {
