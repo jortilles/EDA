@@ -256,7 +256,7 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
     // 95 = the ring collapsed down to a thin line (inner radius 95% of the outer one). Capped at
     // 95 rather than 99 - past that, the ring gets thinner than its own border stroke, so it
     // visually reduces to just the panel-colored border line instead of disappearing outright.
-    const innerRadiusUiValue = Math.min(Math.max(this.inject.innerRadiusPercent ?? 95, 0), 95);
+    const innerRadiusUiValue = Math.min(Math.max(this.inject.innerRadiusPercent ?? 50, 0), 95);
     const innerRadiusRatio = innerRadiusUiValue / 100;
     const innerRadius = outerRadius * innerRadiusRatio;
     const strokeWidth = 2;
