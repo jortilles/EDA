@@ -1345,7 +1345,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
         // UI range is 0-95 (0 = full pie, 95 = ring collapsed to a thin line) - see draw()
         // in eda-doughnut.component.ts for how this maps to the actual inner/outer radius ratio.
-        inject.innerRadiusPercent = cfg.innerRadiusPercent ?? 95;
+        inject.innerRadiusPercent = cfg.innerRadiusPercent ?? 50;
         inject.useGradient = cfg.useGradient ?? true;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
