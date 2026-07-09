@@ -15,7 +15,7 @@ import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, SHOW_HIDDEN_FIELDS_BUTTON, SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY } from '@eda/configs/customizable/customizable_default';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
 import { PanelChart } from './panel-charts/panel-chart';
@@ -340,9 +340,13 @@ export class EdaBlankPanelComponent implements OnInit {
     private formBuilder = inject(UntypedFormBuilder);
     private iaFormStateService = inject(IaFormStateService);
 
-
     public editingTitle: boolean = false;
     public promptAvailable = computed(() => this.iaFormStateService.formData().AVAILABLE);
+
+    readonly showLockInHeader = SHOW_LOCK_IN_PANEL_HEADER;
+    readonly showHiddenFieldsButton = SHOW_HIDDEN_FIELDS_BUTTON;
+    readonly showHiddenFieldsButtonAdminOnly = SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY;
+    public showHiddenColumn: boolean = false;
 
 
     constructor(
@@ -538,7 +542,12 @@ public tableNodeExpand(event: any): void {
         return (userName !== 'edaanonim' && !this.inject.isObserver);
     }
 
-    readonly showLockInHeader = SHOW_LOCK_IN_PANEL_HEADER;
+    // Toggles whether columns marked as hidden are shown (with reduced opacity) in the attributes list.
+    public async changeHiddenMode(): Promise<void> {
+        this.showHiddenColumn = !this.showHiddenColumn;
+        const selectedTable = this.getUserSelectedTable();
+        this.loadColumns(selectedTable);
+    }
 
     isPanelLocked(): boolean {
         return (this.panel as any).dragEnabled === false;
@@ -648,7 +657,17 @@ public tableNodeExpand(event: any): void {
             PanelInteractionUtils.handleFilters(this, panelContent.query.query); // 3. populate selectedFilters (reads dateNavState)
 
             const hasNavChildren = this.currentQuery.some((col: any) => col.downChild);
-            const queryToRun = hasNavChildren ? QueryUtils.initEdaQuery(this) : panelContent.query;
+            const baseQuery = panelContent.query;
+            const queryToRun = hasNavChildren
+                ? QueryUtils.initEdaQuery(this)
+                : {
+                    ...baseQuery,
+                    dashboard: baseQuery.dashboard ?? {
+                        dashboard_id: this.inject.dashboard_id,
+                        panel_id: this.panel.id,
+                        connectionProperties: this.connectionProperties
+                    }
+                };
             const response = await QueryUtils.switchAndRun(this, queryToRun);
             
             const [labels, values] = response;
@@ -1358,6 +1377,10 @@ public tableNodeExpand(event: any): void {
             this.globalFilters.push(globalFilter);
         } else {
             this.globalFilters.push(globalFilter);
+            // New filter: if advanced (AND/OR) filters are configured, register it there too,
+            // otherwise the backend builds the WHERE clause from sortedFilters alone and this
+            // filter would never reach the query even though it shows up as a global filter.
+            this.addingGlobalFilterEbp(globalFilter);
         }
     }
 
@@ -1381,7 +1404,7 @@ public tableNodeExpand(event: any): void {
 
     public addingGlobalFilterEbp(_filter: any) {
 
-        if(this.sortedFilters.length !==0){
+        if(this.sortedFilters.length !==0 && !this.sortedFilters.some((sf: any) => sf.filter_id === _filter.filter_id)){
             const lastElement = this.sortedFilters[this.sortedFilters.length-1];
 
             const newSortedFilter = {
@@ -1407,14 +1430,30 @@ public tableNodeExpand(event: any): void {
 
     public rebootGlobalFilter(_filter: any){
 
-        if(this.sortedFilters.length !==0) {
+        const targetIndex = this.sortedFilters.findIndex((sortedFilter: any) => _filter.id === sortedFilter.filter_id);
+        if (targetIndex === -1) return; // This filter isn't part of the advanced (AND/OR) config, nothing to do
+
+        const target = this.sortedFilters[targetIndex];
+        const nextItem = this.sortedFilters.find((sortedFilter: any) => sortedFilter.y === target.y + 1);
+        const hasChildren = !!nextItem && nextItem.x > target.x;
+
+        // Removing an AND at root level with no nested children below it doesn't change the
+        // logical result of the remaining tree, so we can drop just that entry. Anything else
+        // (OR, nested item, or an item with children) would break the AND/OR tree structure,
+        // so we fall back to a full reset.
+        const canRemoveInPlace = target.x === 0 && target.value === 'and' && !hasChildren;
+
+        if (canRemoveInPlace) {
+            this.sortedFilters = this.sortedFilters
+                .filter((sortedFilter: any) => sortedFilter.filter_id !== _filter.id)
+                .sort((a: any, b: any) => a.y - b.y)
+                .map((sortedFilter: any, i: number) => ({ ...sortedFilter, y: i }));
+        } else {
             this.alertService.addWarning($localize`:@@globalFilterSettingsReboot:La configuración de filtros del panel involucrado se ha reiniciado`);
+            this.sortedFilters = [];
         }
 
-        if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
-            this.sortedFilters = [];
-            this.savePanel(); // Panel setting saved
-        }
+        this.savePanel(); // Panel setting saved
 
     }
     

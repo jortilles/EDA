@@ -3841,7 +3841,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="ChangeDefaultsColors">
     <source>Color del los gráficos</source>
     <target>Color dels gràfics</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="selectPalette">
+    <source>Seleccionar paleta</source>
+    <target>Seleccionar paleta</target>
+  </trans-unit>
 
   <trans-unit id="properties">
     <source>Propiedades</source>
@@ -7050,6 +7055,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="noFilters">
         <source>Sin filtros</source>
         <target>Sense filtres</target>
+      </trans-unit>
+      <trans-unit id="aiDashboardDescription">
+        <source>(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.</source>
+        <target>(Opcional) Descriu els panells que vols generar amb IA. Exemple: vendes per mes en barres, top clients per import, KPI de facturació total.</target>
+      </trans-unit>
+      <trans-unit id="aiGeneratingDashboard">
+        <source>Generando dashboard con IA...</source>
+        <target>Generant dashboard amb IA...</target>
       </trans-unit>
     </body>
   </file>

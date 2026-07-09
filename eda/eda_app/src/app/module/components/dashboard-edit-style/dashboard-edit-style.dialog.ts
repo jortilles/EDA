@@ -38,7 +38,7 @@ export class DashboardEditStyleDialog {
   public backgroundColor: string = this.stylesProviderService.DEFAULT_BACKGROUND_COLOR;
   public panelColor: string = this.stylesProviderService.DEFAULT_PANEL_COLOR;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
-  public selectedPalette = this.stylesProviderService.ActualChartPalette !== undefined ? this.allPalettes.find(p => p?.name === this.stylesProviderService?.ActualChartPalette['name']) : this.allPalettes[0];
+  public selectedPalette: any = null;
   public properties: boolean = true;
   
   public fonts: Array<any> =
@@ -305,8 +305,9 @@ public openImageInNewTab(): void {
 }
 
 public saveConfig(): void {
-    // Apply palette to all dashboard charts
-    this.applyPaletteToAllCharts();
+    if (this.selectedPalette) {
+        this.applyPaletteToAllCharts();
+    }
     
     const response: DashboardStyles = {
         stylesApplied: true,
@@ -336,7 +337,7 @@ public saveConfig(): void {
             fontSize: this.panelFontSize,
             fontColor: this.panelFontColor
         },
-        palette: this.selectedPalette,
+        palette: this.selectedPalette ?? this.stylesProviderService.ActualChartPalette,
         filterButtonPosition: this.positionType
     }
     
