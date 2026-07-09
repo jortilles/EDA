@@ -13,7 +13,7 @@ import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewCont
 import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
 import { EdaTableComponent } from '../../../eda-table/eda-table.component';
 import { PanelChart } from './panel-chart';
-import { ChartUtilsService, StyleConfig, StyleProviderService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleConfig, StyleProviderService, lightenHex } from '@eda/services/service.index';
 import { EdaKpiComponent } from '@eda/components/eda-kpi/eda-kpi.component';
 import { Column } from '@eda/models/model.index';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
@@ -417,11 +417,19 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         } else {
             // Mode 3: Assigned colors per series (default behavior)
             const isAreaOrRadar = ['area', 'kpiarea', 'radar'].includes(this.props.edaChart);
+            const useGradient = cfg.useGradient ?? true;
             chartData[1].forEach((dataset, i) => {
                 try {
                     const solidColor = chartConfig.chartColors[i]?.borderColor as string;
                     const seriesOpacity: number = assignedColors[i]?.opacity ?? 100;
-                    const fillColor = isAreaOrRadar ? this.chartUtils.hexToRgba(solidColor, seriesOpacity) : solidColor;
+                    // barline's bar-type datasets (the line dataset never gets `type: 'bar'` - see
+                    // transformDataQuery) can use a gradient fill, same convention as eda-bar-d3
+                    // (base color at the bottom, lighter towards the top) - Chart.js has no SVG
+                    // <linearGradient>, so this needs a scriptable backgroundColor callback that
+                    // builds a CanvasGradient once the chart area is actually laid out.
+                    const fillColor = (dataset as any).type === 'bar' && useGradient
+                        ? this.chartJsVerticalGradient(solidColor)
+                        : isAreaOrRadar ? this.chartUtils.hexToRgba(solidColor, seriesOpacity) : solidColor;
                     dataset.backgroundColor = fillColor;
                     dataset.borderColor = solidColor;
                     (dataset as any).pointBackgroundColor = solidColor;
@@ -1494,6 +1502,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartType = 'bar';
         inject.edaChart = this.props.edaChart;
         inject.chartLabels = chartData[0];
+        // Category axis field name (e.g. "Departamento") for the tooltip title - histogram's
+        // "categories" are numeric bin ranges rather than a real column, so there's no field name.
+        inject.categoryFieldName = this.props.edaChart !== 'histogram' ? dataDescription.otherColumns[0]?.name : undefined;
         inject.chartDataset = chartData[1];
 
         let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
@@ -1566,6 +1577,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.useGradient = cfg.useGradient ?? true;
+        inject.useRoundedBars = cfg.useRoundedBars ?? true;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaBarD3Component);
@@ -1688,6 +1700,26 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         return Math.floor((1 + Math.random()) * 0x10000)
             .toString(16)
             .substring(1);
+    }
+
+    /**
+     * Chart.js scriptable backgroundColor for a barline's bar dataset - base color at the bottom,
+     * lighter towards the top, same convention as eda-bar-d3's SVG gradient. Chart.js has no
+     * declarative gradient like SVG's <linearGradient>; it needs a callback returning a
+     * CanvasGradient built from the chart's own canvas context, which only exists once the chart
+     * has actually laid out (hence the chartArea guard - falls back to the flat color for the
+     * very first layout pass, before it's available).
+     */
+    private chartJsVerticalGradient(hex: string): (context: any) => any {
+        return (context: any) => {
+            const chart = context.chart;
+            const { ctx, chartArea } = chart;
+            if (!chartArea) return hex;
+            const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+            gradient.addColorStop(0, hex);
+            gradient.addColorStop(1, lightenHex(hex, 60));
+            return gradient;
+        };
     }
 
     /**
@@ -2099,7 +2131,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (sameCategoriesCount) {
             assignedColors = categories.map((category, index) => {
                 const found = savedAssignedColors.find(ac => ac.value === category);
-                return found || {
+                // A found entry with no color (leftover from a stale/mismatched save) must still
+                // fall back to the palette - otherwise an invalid color propagates to the SVG.
+                return (found && found.color) ? found : {
                     value: category,
                     color: paletaActual[index % paletaActual.length]
                 };
@@ -2108,7 +2142,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             // Categories changed (filter applied), map what you can
             assignedColors = categories.map((category, index) => {
                 const found = savedAssignedColors.find(ac => ac.value === category);
-                return found || {
+                return (found && found.color) ? found : {
                     value: category,
                     color: paletaActual[index % paletaActual.length]
                 };

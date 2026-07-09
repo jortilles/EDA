@@ -4321,6 +4321,16 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Zastosuj gradient</target>
 </trans-unit>
 
+<trans-unit id="useRoundedBars">
+  <source>Redondear barras</source>
+  <target>Zaokrąglij słupki</target>
+</trans-unit>
+
+<trans-unit id="chartRoundedBarsOptionDescription">
+  <source>Redondea la punta de las barras</source>
+  <target>Zaokrągla końcówkę słupków</target>
+</trans-unit>
+
 <trans-unit id="chartLegendOptionDescription">
   <source>Muestra la leyenda del gráfico</source>
   <target>Pokaż legendę wykresu</target>
@@ -4364,6 +4374,11 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 <trans-unit id="chartUniqueColorsOption">
   <source>Asigna un color único a cada barra o elemento</source>
   <target>Przypisuje unikalny kolor do każdego słupka lub elementu</target>
+</trans-unit>
+
+<trans-unit id="uniqueColorsTab">
+  <source> Colores Únicos </source>
+  <target> Unikalne kolory </target>
 </trans-unit>
 
 <trans-unit id="chartUniqueColorsOptionDescription">
@@ -5975,6 +5990,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="chartLabelLinePredictionOptionDescription">
         <source>Muestra la predicción de la serie</source>
         <target>Pokaż prognozę serii</target>
+      </trans-unit>
+      <trans-unit id="colorsTab">
+        <source> Colores </source>
+        <target> Kolory </target>
       </trans-unit>
       <trans-unit id="gradientTab">
         <source>Colores por intervalo</source>

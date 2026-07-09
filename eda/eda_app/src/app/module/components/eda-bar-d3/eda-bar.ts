@@ -6,6 +6,7 @@ export class EdaBarD3 {
   chartType: string;
   edaChart: string;
   chartLabels: string[];
+  categoryFieldName?: string;
   chartDataset: any[];
   chartColors: any[];
   assignedColors: any[];
@@ -14,5 +15,6 @@ export class EdaBarD3 {
   showLabelsPercent: boolean;
   showGridLines: boolean;
   useGradient: boolean;
+  useRoundedBars: boolean;
   linkedDashboard: LinkedDashboardProps;
 }

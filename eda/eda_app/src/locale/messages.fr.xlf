@@ -4820,6 +4820,16 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Utiliser un dégradé</target>
 </trans-unit>
 
+<trans-unit id="useRoundedBars">
+  <source>Redondear barras</source>
+  <target>Arrondir les barres</target>
+</trans-unit>
+
+<trans-unit id="chartRoundedBarsOptionDescription">
+  <source>Redondea la punta de las barras</source>
+  <target>Arrondit la pointe des barres</target>
+</trans-unit>
+
 <trans-unit id="chartLegendOptionDescription">
   <source>Muestra la leyenda del gráfico</source>
   <target>Afficher la légende du graphique</target>
@@ -4863,6 +4873,11 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="chartUniqueColorsOption">
   <source>Asigna un color único a cada barra o elemento</source>
   <target>Attribue une couleur unique à chaque barre ou élément</target>
+</trans-unit>
+
+<trans-unit id="uniqueColorsTab">
+  <source> Colores Únicos </source>
+  <target> Couleurs uniques </target>
 </trans-unit>
 
 <trans-unit id="chartUniqueColorsOptionDescription">
@@ -6310,6 +6325,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="chartLabelLinePredictionOptionDescription">
         <source>Muestra la predicción de la serie</source>
         <target>Afficher la prédiction de la série</target>
+      </trans-unit>
+      <trans-unit id="colorsTab">
+        <source> Colores </source>
+        <target> Couleurs </target>
       </trans-unit>
       <trans-unit id="gradientTab">
         <source>Colores por intervalo</source>

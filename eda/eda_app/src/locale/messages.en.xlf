@@ -4454,6 +4454,16 @@ Once configured you can invoke it whenever you want from the button.</target>
   <target>Use Gradient</target>
 </trans-unit>
 
+<trans-unit id="useRoundedBars">
+  <source>Redondear barras</source>
+  <target>Round bars</target>
+</trans-unit>
+
+<trans-unit id="chartRoundedBarsOptionDescription">
+<source>Redondea la punta de las barras</source>
+<target>Rounds the tip of the bars</target>
+</trans-unit>
+
 <trans-unit id="chartLegendOptionDescription">
 <source>Muestra la leyenda del gráfico</source>
 <target>Show chart legend</target>
@@ -4497,6 +4507,11 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="chartUniqueColorsOption">
 <source>Asigna un color único a cada barra o elemento</source>
 <target>Assigns a unique color to each bar or element</target>
+</trans-unit>
+
+<trans-unit id="uniqueColorsTab">
+<source> Colores Únicos </source>
+<target> Unique Colors </target>
 </trans-unit>
 
 <trans-unit id="chartUniqueColorsOptionDescription">
@@ -6115,6 +6130,10 @@ OR<ph id="5"/>
 <trans-unit id="chartLabelLinePredictionOptionDescription">
   <source>Muestra la predicción de la serie</source>
   <target>Show the series prediction</target>
+</trans-unit>
+<trans-unit id="colorsTab">
+  <source> Colores </source>
+  <target> Colors </target>
 </trans-unit>
 <trans-unit id="gradientTab">
   <source>Colores por intervalo</source>
