@@ -211,12 +211,19 @@ export class EdaScatter implements AfterViewInit {
         let categoryText = data.category ? `<div class="eda-scatter-tooltip-title">${this.inject.dataDescription.otherColumns[0].name} : ${data.category}</div>` : '';
         let serieText = data.category ? `${this.inject.dataDescription.otherColumns[1].name}  : ${data.label}`
         : `${this.inject.dataDescription.otherColumns[0].name} : ${data.label}`;
+
+        // The X/Y axis values themselves - the actual point being plotted, not just its label.
+        const xText = `${this.inject.dataDescription.numericColumns[0].name} : ${data.x.toLocaleString('de-DE', { maximumFractionDigits: 6 })}`;
+        const yText = `${this.inject.dataDescription.numericColumns[1].name} : ${data.y.toLocaleString('de-DE', { maximumFractionDigits: 6 })}`;
+
         let metricText = data.metricValue ?
         `${this.inject.dataDescription.numericColumns[2].name} :  ${data.metricValue.toLocaleString(undefined, { maximumFractionDigits: 6 })}`
         : ``;
 
         let text = categoryText;
         text += `<div class="eda-scatter-tooltip-row">${swatch}${serieText}</div>`;
+        text += `<div class="eda-scatter-tooltip-row">${xText}</div>`;
+        text += `<div class="eda-scatter-tooltip-row">${yText}</div>`;
         text = metricText ? text + `<div class="eda-scatter-tooltip-row">${metricText}</div>` : text;
         text = this.inject.linkedDashboard ? text + `<h6>Linked to ${this.inject.linkedDashboard.dashboardName}</h6>` : text;
 
