@@ -121,7 +121,6 @@ draw() {
   const colorPanel = this.styleProviderService.panelFontColor.source['_value'];
   const fontPanel = this.styleProviderService.panelFontFamily.source['_value'];
 
-  const percentages = '#093a06';
   const margin = ({ top: 25, right: 25, bottom: 35, left: 70 });
   const ledge = 0.2;
   const data: Array<FunnelData> = values.map((row, index) => {
@@ -172,11 +171,15 @@ draw() {
 
   const svg = this.svg;
 
+  // Gradient spans the FULL data domain (first step -> last step), not a hardcoded x(1)-x(3)
+  // window - with more than ~4 categories, that window only covered a narrow band in the middle,
+  // clamping to a flat gradient1 before it and a flat gradient2 after it (a hard, uneven jump
+  // instead of a smooth transition across every category).
   svg.append('linearGradient')
     .attr('id', `${this.id}_temperature-gradient`)
     .attr('gradientUnits', 'userSpaceOnUse')
-    .attr('x1', x(1)).attr('y1', 0)
-    .attr('x2', x(3)).attr('y2', 0)
+    .attr('x1', x(data[0].step)).attr('y1', 0)
+    .attr('x2', x(data[data.length - 1].step)).attr('y2', 0)
     .selectAll('stop')
     .data([
       { offset: '0%', color: gradient1 },
@@ -186,99 +189,75 @@ draw() {
     .attr('offset', function (d) { return d.offset; })
     .attr('stop-color', function (d) { return d.color; });
 
-  svg.append('path')
+  const areaGroup = svg.append('g').style('cursor', 'pointer');
+
+  areaGroup.append('path')
     .datum(data2)
     .attr('fill', `url(#${this.id}_temperature-gradient)`)
     .attr('d', area);
 
-  svg.append('path')
+  areaGroup.append('path')
     .datum(data2)
     .attr('fill',  `url(#${this.id}_temperature-gradient)`)
     .attr('d', areaMirror);
-    
+
+  // Highlight overlay for the hovered step - clipped to that step's column (see hoverAt() below),
+  // and drawn with the exact same curve as the shape itself, so it only ever paints on top of the
+  // already-drawn funnel, never spilling into the surrounding empty space.
+  const highlightClipId = `${this.id}_highlight_clip`;
+  const highlightClipRect = svg.append('clipPath').attr('id', highlightClipId)
+    .append('rect').attr('y', 0).attr('height', height);
+
+  const highlightGroup = svg.append('g')
+    .attr('clip-path', `url(#${highlightClipId})`)
+    .style('pointer-events', 'none');
+  const highlightTop = highlightGroup.append('path').datum(data2).attr('d', area).attr('fill', 'white').attr('fill-opacity', 0);
+  const highlightBottom = highlightGroup.append('path').datum(data2).attr('d', areaMirror).attr('fill', 'white').attr('fill-opacity', 0);
+
+  // Responsive labels: with many categories, a fixed 14px label/18px percentage on every single
+  // step overlaps into an unreadable mess - shrink the font and thin out how many labels are
+  // actually drawn (every Nth) once there isn't enough room per step, while keeping hover/click
+  // working on every step regardless (see areaGroup handlers below).
+  const availablePerStep = (width - margin.left - margin.right) / Math.max(data.length, 1);
+  const labelSkip = Math.max(1, Math.ceil(50 / availablePerStep));
+  const labelFontSize = availablePerStep < 40 ? 10 : availablePerStep < 70 ? 12 : 14;
+  const percentFontSize = availablePerStep < 40 ? 12 : availablePerStep < 70 ? 15 : 18;
+
   svg.selectAll('.values')
-    .data(data)
+    .data(data.filter((d, i) => i % labelSkip === 0))
     .enter()
     .append('text')
     .attr('class', 'values')
     .attr('x', ({ step }) => x(step) + 10)
     .attr('y', 30)
     .text(({ value }) => d3.format(',')(value))
-    .attr('style', `
-      fill: ${values};
-    `)
     .style("font-family",fontPanel)
     .attr("fill", colorPanel)
-    .style("font-size", "var(--panel-big)");
+    .style("font-size", `${labelFontSize}px`);
 
   svg.selectAll('.labels')
-    .data(data)
+    .data(data.filter((d, i) => i % labelSkip === 0))
     .enter()
     .append('text')
     .attr('class', 'labels')
+    .attr('id', ({ step }) => `${this.id}_label_${step}`)
     .attr('x', ({ step }) => x(step) + 10)
     .attr('y', 50)
     .text(({ label }) => label)
-    .attr('style', `
-      font-family: ${fontPanel};
-      font-size: 14px;
-      `)
-    .style("cursor", "pointer")
-    .attr("fill", colorPanel)
-    .on('click', (mouseevent, data) => {
-      if (this.inject.linkedDashboard) {
-        const props = this.inject.linkedDashboard;
-        const value = data?.label
-        const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
-        window.open(url, "_blank");
-      }else{
-        // Pass this data
-        const label = data.label;
-        const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
-        this.onClick.emit({label, filterBy });
-      }
-    })
-    .on('mouseover', (event, d) => {
-      d3.select(event.currentTarget)
-        .transition()
-        .duration(150)
-        .style('font-size', '16px');
-
-      const ratio = data.length > 1 ? d.step / (data.length - 1) : 0;
-      const stepColor = d3.interpolateRgb(gradient1, gradient2)(ratio);
-      const swatch = `<span class="eda-funnel-tooltip-swatch" style="background-color:${stepColor};"></span>`;
-
-      const valueRow = `${swatch}${d3.format(',')(d.value)}`;
-      const percentageRow = d.step === 0 ? '' : `<div class="eda-funnel-tooltip-row">${d3.format('.1%')(d.value / data[0].value)}</div>`;
-
-      const text = `<div class="eda-funnel-tooltip-title">${d.label}</div>` +
-        `<div class="eda-funnel-tooltip-row">${valueRow}</div>${percentageRow}`;
-
-      this.tooltipService.show(event, text, 'eda-funnel-tooltip');
-    })
-    .on('mouseout', (event) => {
-      d3.select(event.currentTarget)
-        .transition()
-        .duration(150)
-        .style('font-size', '14px');
-      this.tooltipService.hide();
-    })
-    .on('mousemove', (event) => {
-      this.tooltipService.move(event);
-    });
+    .style('font-family', fontPanel)
+    .style('font-size', `${labelFontSize}px`)
+    .attr("fill", colorPanel);
 
   svg.selectAll('.percentages')
-    .data(data)
+    .data(data.filter((d, i) => i % labelSkip === 0))
     .enter()
     .append('text')
     .attr('class', 'percentages')
     .attr('x', ({ step }) =>  x(step) + 10)
     .attr('y', 70)
-    .text(({ value }, index) => index === 0 ? '' : d3.format('.1%')(value / data[0].value))
-    .attr('style', `
-        fill: ${colorPanel};
-        font-size: 18px;
-    `);
+    .text((d) => d.step === 0 ? '' : d3.format('.1%')(d.value / data[0].value))
+    .style('font-size', `${percentFontSize}px`)
+    .attr('fill', colorPanel);
 
   svg.selectAll('line')
     .data(d3.range(1, data.length ))
@@ -291,5 +270,89 @@ draw() {
     .style('stroke-width', 1)
     .style('stroke', colorPanel)
     .style('fill', 'none');
+
+  // A step's "column" runs from its own guide line up to the NEXT step's guide line (matching
+  // where the black divider lines and the label/value/percentage text are already drawn - both
+  // anchor at x(step), not centered around it) - not a band centered on the step. Keeping the
+  // hover zone and the guide lines on the same convention is what keeps the highlighted section,
+  // the tooltip's data and the visible guide lines all pointing at the same category.
+  const zoneBounds = (i: number): [number, number] => {
+    const x0 = i === 0 ? margin.left : x(data[i].step);
+    const x1 = i === data.length - 1 ? width - margin.right : x(data[i + 1].step);
+    return [x0, x1];
+  };
+
+  const stepIndexAt = (mouseX: number): number => {
+    for (let i = data.length - 1; i >= 0; i--) {
+      if (mouseX >= x(data[i].step)) return i;
+    }
+    return 0;
+  };
+
+  let hoveredIndex = -1;
+
+  const clearHover = () => {
+    if (hoveredIndex === -1) return;
+    d3.select(`#${this.id}_label_${data[hoveredIndex].step}`).transition().duration(150).style('font-size', `${labelFontSize}px`);
+    highlightTop.transition().duration(150).attr('fill-opacity', 0);
+    highlightBottom.transition().duration(150).attr('fill-opacity', 0);
+    hoveredIndex = -1;
+  };
+
+  // mousemove/click are bound to the SHAPE itself (areaGroup), not an invisible full-height
+  // overlay - the browser only hit-tests the actual painted region of a path, so hover/click
+  // naturally only fire where the funnel is actually drawn, never in the empty space around it.
+  areaGroup
+    .on('mousemove', (event: any) => {
+      // @types/d3 is pinned to v5 (package.json), which predates d3.pointer (added in v6's
+      // d3-selection) - the runtime d3 package is v7 and has it, hence the cast.
+      const [mx] = (d3 as any).pointer(event, svg.node());
+      const i = stepIndexAt(mx);
+      if (i !== hoveredIndex) {
+        if (hoveredIndex !== -1) {
+          d3.select(`#${this.id}_label_${data[hoveredIndex].step}`).transition().duration(150).style('font-size', `${labelFontSize}px`);
+        }
+        hoveredIndex = i;
+        const [x0, x1] = zoneBounds(i);
+        highlightClipRect.attr('x', x0).attr('width', x1 - x0);
+        d3.select(`#${this.id}_label_${data[i].step}`).transition().duration(150).style('font-size', `${labelFontSize + 2}px`);
+        highlightTop.transition().duration(150).attr('fill-opacity', 0.25);
+        highlightBottom.transition().duration(150).attr('fill-opacity', 0.25);
+
+        const d = data[i];
+        const ratio = data.length > 1 ? d.step / (data.length - 1) : 0;
+        const stepColor = d3.interpolateRgb(gradient1, gradient2)(ratio);
+        const swatch = `<span class="eda-funnel-tooltip-swatch" style="background-color:${stepColor};"></span>`;
+
+        const valueRow = `${swatch}${d3.format(',')(d.value)}`;
+        const percentageRow = d.step === 0 ? '' : `<div class="eda-funnel-tooltip-row">${d3.format('.1%')(d.value / data[0].value)}</div>`;
+
+        const text = `<div class="eda-funnel-tooltip-title">${d.label}</div>` +
+          `<div class="eda-funnel-tooltip-row">${valueRow}</div>${percentageRow}`;
+
+        this.tooltipService.show(event, text, 'eda-funnel-tooltip');
+      }
+      this.tooltipService.move(event);
+    })
+    .on('mouseleave', () => {
+      clearHover();
+      this.tooltipService.hide();
+    })
+    .on('click', (event: any) => {
+      // @types/d3 is pinned to v5 (package.json), which predates d3.pointer (added in v6's
+      // d3-selection) - the runtime d3 package is v7 and has it, hence the cast.
+      const [mx] = (d3 as any).pointer(event, svg.node());
+      const d = data[stepIndexAt(mx)];
+      if (this.inject.linkedDashboard) {
+        const props = this.inject.linkedDashboard;
+        const value = d?.label;
+        const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+        window.open(url, "_blank");
+      } else {
+        const label = d.label;
+        const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
+        this.onClick.emit({label, filterBy });
+      }
+    });
 }
 }
