@@ -15,6 +15,7 @@ export interface Column {
     ordenation_type: string;
     format: string;
     visible: boolean;
+    hidden?: number; // Indicates whether the field is hidden.
     minimumFractionDigits:number;
     cumulativeSum: boolean;
     valueListSource: any;

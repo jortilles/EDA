@@ -15,7 +15,7 @@ import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, SHOW_HIDDEN_FIELDS_BUTTON, SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY } from '@eda/configs/customizable/customizable_default';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
 import { PanelChart } from './panel-charts/panel-chart';
@@ -340,9 +340,13 @@ export class EdaBlankPanelComponent implements OnInit {
     private formBuilder = inject(UntypedFormBuilder);
     private iaFormStateService = inject(IaFormStateService);
 
-
     public editingTitle: boolean = false;
     public promptAvailable = computed(() => this.iaFormStateService.formData().AVAILABLE);
+
+    readonly showLockInHeader = SHOW_LOCK_IN_PANEL_HEADER;
+    readonly showHiddenFieldsButton = SHOW_HIDDEN_FIELDS_BUTTON;
+    readonly showHiddenFieldsButtonAdminOnly = SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY;
+    public showHiddenColumn: boolean = false;
 
 
     constructor(
@@ -538,7 +542,12 @@ public tableNodeExpand(event: any): void {
         return (userName !== 'edaanonim' && !this.inject.isObserver);
     }
 
-    readonly showLockInHeader = SHOW_LOCK_IN_PANEL_HEADER;
+    // Toggles whether columns marked as hidden are shown (with reduced opacity) in the attributes list.
+    public async changeHiddenMode(): Promise<void> {
+        this.showHiddenColumn = !this.showHiddenColumn;
+        const selectedTable = this.getUserSelectedTable();
+        this.loadColumns(selectedTable);
+    }
 
     isPanelLocked(): boolean {
         return (this.panel as any).dragEnabled === false;
