@@ -189,7 +189,8 @@ export class EdaScatter implements AfterViewInit {
       .join("circle")
       .attr("cx", d => x(d.x))
       .attr("cy", d => y(d.y))
-      .attr("r", d => d.radius + 1)
+      .attr("r", 0)
+      .attr("opacity", 0)
       .attr("fill", d => this.pointFill(defs, this.pointColor(d)))
       .on('click', (e, data) => {
         if (this.inject.linkedDashboard) {
@@ -256,8 +257,13 @@ export class EdaScatter implements AfterViewInit {
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
           this.onClick.emit({label, filterBy});
         }
-    
+
     })
+    .transition()
+    .delay((d: any) => ((x(d.x) - x.range()[0]) / (x.range()[1] - x.range()[0])) * 2600)
+    .duration(300)
+    .attr("r", (d: any) => d.radius + 1)
+    .attr("opacity", 1);
     svg.selectAll(".tick text")
       .attr("stroke", this.styleProviderService.panelFontColor.source['_value'])
       .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
