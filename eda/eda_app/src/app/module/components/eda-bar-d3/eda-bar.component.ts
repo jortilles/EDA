@@ -14,6 +14,30 @@ interface BarSeries {
 }
 
 const GRADIENT_LIGHTEN_AMOUNT = 60;
+// Bar hover "pop": the hovered bar grows to this fraction of its normal cross-dimension (width for
+// vertical bars, height for horizontal ones), and its own lateral gap (see vBarGap/vSeriesGap in
+// draw(), capped by HOVER_GAP_CONTRIBUTION_CAP_PX) is added twice on top of that growth - once for
+// the growth itself, once again as extra breathing room - so it visibly stands out from its
+// neighbors even though, at typical padding values, it ends up overlapping the space they'd
+// normally leave clear (acceptable since this is a transient highlight, not a layout change).
+// A bar already wider/taller than HOVER_WIDTH_WIDE_THRESHOLD_PX grows by the smaller
+// HOVER_WIDTH_SCALE_WIDE factor instead - the same relative growth reads as a much bigger jump in
+// absolute pixels on a wide bar than on a thin one, so thin bars get the fuller pop and wide ones a
+// subtler one.
+const HOVER_WIDTH_WIDE_THRESHOLD_PX = 30;
+const HOVER_WIDTH_SCALE_NARROW = 1.2;
+const HOVER_WIDTH_SCALE_WIDE = 1.05;
+// Cap on the gap's own contribution to the growth (see hoverExtraWidth) - the band padding gap
+// scales with the category/series band's own step, so with very few categories (a bar taking up
+// most of the chart's width) it can be huge, which would otherwise completely swamp the intended
+// 5%/20% width-based growth above. Capping it keeps the "breathing room" a small, fixed amount
+// instead of blowing up along with the bar's own width.
+const HOVER_GAP_CONTRIBUTION_CAP_PX = 12;
+// D3TooltipService's own defaults sit the tooltip right up against the cursor - pin its
+// BOTTOM-left corner 20px to the right and 20px above the pointer instead (anchorBottomLeft: true
+// below), both on the initial show and on every subsequent mousemove.
+const TOOLTIP_OFFSET_X = 20;
+const TOOLTIP_OFFSET_Y = -20;
 
 @Component({
   standalone: true,
@@ -187,6 +211,17 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     // round the bottom end only instead (same clockwise-traversal reasoning as the horizontal case above).
     return `M${x},${y} L${x + width},${y} L${x + width},${y + height - ry} A${rx},${ry} 0 0,1 ${x + width - rx},${y + height} ` +
       `L${x + rx},${y + height} A${rx},${ry} 0 0,1 ${x},${y + height - ry} L${x},${y} Z`;
+  }
+
+  /**
+   * Extra size (width for a vertical bar, height for a horizontal one) a bar grows by on hover
+   * (see HOVER_WIDTH_SCALE_NARROW/_WIDE), split evenly across both sides - also the amount its
+   * immediate neighbor slot on either side (left/right for vertical, top/bottom for horizontal)
+   * must be nudged out of the way (half each) to make room instead of just being overlapped.
+   */
+  private hoverExtraWidth(width: number, gap: number): number {
+    const scale = width > HOVER_WIDTH_WIDE_THRESHOLD_PX ? HOVER_WIDTH_SCALE_WIDE : HOVER_WIDTH_SCALE_NARROW;
+    return width * (scale - 1) + Math.min(gap, HOVER_GAP_CONTRIBUTION_CAP_PX) * 2;
   }
 
   private formatLabel(value: number, percentage: number): string {
@@ -367,6 +402,12 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     const zeroPos = valueScale(0);
 
     const seriesScale: any = d3.scaleBand().domain(visibleSeries.map((_, i) => String(i))).range([0, categoryScale.bandwidth()]).padding(0.05);
+    // Per-side lateral gap a bar normally has towards its neighbor - a single-series/stacked bar's
+    // neighbor is the next category (categoryScale's own gap), a grouped bar's is the next series
+    // within the same category (seriesScale's, usually much smaller). Used by hoverExtraWidth for
+    // both vertical and horizontal bars.
+    const vBarGap = (categoryScale.step() - categoryScale.bandwidth()) / 2;
+    const vSeriesGap = (seriesScale.step() - seriesScale.bandwidth()) / 2;
 
     // Grid lines (value axis)
     if (this.inject.showGridLines ?? true) {
@@ -462,6 +503,61 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     const ENTRANCE_TOTAL_MS = 2000;
     const animateEntrance = !this.hasRendered;
     const perCatDelay = ENTRANCE_TOTAL_MS / Math.max(visibleCategories.length, 1);
+    const singleSeries = visibleSeries.length === 1;
+
+    // An ordered list of "bar slots" along the category axis (left-to-right for vertical bars,
+    // top-to-bottom for horizontal ones), so hovering a bar can nudge its immediate neighbor slot
+    // out of the way to make room for its hover-grow (hoverExtraWidth) instead of just silently
+    // overlapping it. A slot is one stack column (stacked - all its segments share the same
+    // position and move together), one lone bar (single series), or one bar within a group (grouped).
+    interface BarSlot { cat: string; sIdxs: number[]; }
+    const barSlots: BarSlot[] = [];
+    const slotIndexByKey = new Map<string, number>();
+    const slotKey = (cat: string, sIdx: number) => (stacked || singleSeries) ? `c:${cat}` : `c:${cat}|s:${sIdx}`;
+    if (hasVisibleData) {
+      visibleCategories.forEach((cat) => {
+        if (stacked) {
+          slotIndexByKey.set(slotKey(cat, 0), barSlots.length);
+          barSlots.push({ cat, sIdxs: visibleSeries.map((_, i) => i) });
+        } else if (singleSeries) {
+          slotIndexByKey.set(slotKey(cat, 0), barSlots.length);
+          barSlots.push({ cat, sIdxs: [0] });
+        } else {
+          visibleSeries.forEach((_, sIdx) => {
+            slotIndexByKey.set(slotKey(cat, sIdx), barSlots.length);
+            barSlots.push({ cat, sIdxs: [sIdx] });
+          });
+        }
+      });
+    }
+    // Grabs the actual <path> bar(s) - and, if shown, their value-labels - making up one slot, so
+    // a hover handler can nudge them sideways. Looked up by class + a data filter rather than kept
+    // as direct references, since the bars/labels for every series are built in their own forEach
+    // pass below, some of which run after this prepass.
+    const slotBars = (slot: BarSlot) => slot.sIdxs.map(si =>
+      barsGroup.selectAll(`.eda-bar-series-${si}`).filter((dd: any) => (stacked ? dd.data.cat : dd.cat) === slot.cat));
+    const slotLabels = (slot: BarSlot) => slot.sIdxs.map(si =>
+      labelsGroup.selectAll(`.eda-bar-label-${si}`).filter((dd: any) => (stacked ? dd.data.cat : dd.cat) === slot.cat));
+    const NEIGHBOR_SHIFT_MS = 150;
+    // Shifts along the category axis - horizontally (translate(d,0)) for vertical bars, vertically
+    // (translate(0,d)) for horizontal ones - so "before"/"after" the hovered slot always nudges
+    // towards/away from the previous/next category regardless of orientation.
+    const shiftSlot = (slot: BarSlot, delta: number) => {
+      const transform = horizontal ? `translate(0,${delta})` : `translate(${delta},0)`;
+      [...slotBars(slot), ...slotLabels(slot)].forEach(sel =>
+        sel.interrupt('neighborShift').transition('neighborShift').duration(NEIGHBOR_SHIFT_MS).attr('transform', transform));
+    };
+    // Called from every bar's mouseover/mouseout below - pushes the immediate neighbor slot on
+    // either side (left/right for vertical bars, top/bottom for horizontal ones) out of the way
+    // (or back) by half the hovered bar's own hover-grow extra size each.
+    const nudgeNeighbors = (cat: string, sIdx: number, extra: number, hovering: boolean) => {
+      const idx = slotIndexByKey.get(slotKey(cat, sIdx));
+      if (idx === undefined) return;
+      const before = barSlots[idx - 1];
+      const after = barSlots[idx + 1];
+      if (before) shiftSlot(before, hovering ? -extra / 2 : 0);
+      if (after) shiftSlot(after, hovering ? extra / 2 : 0);
+    };
 
     // Nothing visible to plot (see hasVisibleData above) - the axes/grid above are already drawn,
     // just skip building any bars on top of them.
@@ -505,10 +601,31 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
         // rounded corners need to flip to the opposite end.
         const isNegative = (d: any) => d[1] <= 0 && d[0] <= 0;
 
+        // hoverD is the shape the segment animates to on mouseover (see the .on('mouseover',...)
+        // below), set separately per orientation so the mouseover/mouseout handlers can apply it
+        // unconditionally.
+        let finalD: (d: any) => string;
+        let hoverD: (d: any) => string;
+        // Total extra size (width for vertical bars, height for horizontal ones) the hovered
+        // segment grows by - also how far its slot's neighbors get nudged out of the way (see
+        // nudgeNeighbors above).
+        let hoverExtra = 0;
+
         if (horizontal) {
-          const finalD = (d: any) => this.roundedTipRectPath(
+          finalD = (d: any) => this.roundedTipRectPath(
             valueScale(Math.min(d[0], d[1])), categoryScale(d.data.cat),
             Math.abs(valueScale(d[1]) - valueScale(d[0])), categoryScale.bandwidth(), true, isOuter(d), isNegative(d));
+          // Widens (taller) the whole stack row (all its segments share the category's full
+          // bandwidth, unlike the grouped/non-stacked case) around its own vertical center, using
+          // the category's own lateral gap (vBarGap) doubled - see hoverExtraWidth.
+          const rowHeight = categoryScale.bandwidth();
+          hoverExtra = this.hoverExtraWidth(rowHeight, vBarGap);
+          hoverD = (d: any) => {
+            const y = categoryScale(d.data.cat) - hoverExtra / 2;
+            return this.roundedTipRectPath(
+              valueScale(Math.min(d[0], d[1])), y,
+              Math.abs(valueScale(d[1]) - valueScale(d[0])), rowHeight + hoverExtra, true, isOuter(d), isNegative(d));
+          };
           if (animateEntrance) {
             // The zero-width starting point has to sit at THIS segment's own base (d[0] - always
             // the end adjacent to zero/the previous segment, by construction of the stacking
@@ -523,9 +640,19 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             bars.attr('d', finalD);
           }
         } else {
-          const finalD = (d: any) => this.roundedTipRectPath(
+          finalD = (d: any) => this.roundedTipRectPath(
             categoryScale(d.data.cat), valueScale(Math.max(d[0], d[1])),
             categoryScale.bandwidth(), Math.abs(valueScale(d[1]) - valueScale(d[0])), false, isOuter(d), isNegative(d));
+          // Widens the whole stack column (all its segments share the category's full bandwidth,
+          // unlike the grouped/non-stacked case) around its own center, using the category's own
+          // lateral gap (vBarGap) doubled - see hoverExtraWidth.
+          const width = categoryScale.bandwidth();
+          hoverExtra = this.hoverExtraWidth(width, vBarGap);
+          hoverD = (d: any) => {
+            const x = categoryScale(d.data.cat) - hoverExtra / 2;
+            return this.roundedTipRectPath(
+              x, valueScale(Math.max(d[0], d[1])), width + hoverExtra, Math.abs(valueScale(d[1]) - valueScale(d[0])), false, isOuter(d), isNegative(d));
+          };
           if (animateEntrance) {
             bars
               .attr('d', (d: any) => this.roundedTipRectPath(
@@ -577,6 +704,8 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
               .interrupt('color').transition('color').duration(150)
               .attr('fill', darkenHex(hex, 40));
             d3.select(target).attr('stroke', hex).attr('stroke-width', 1.5);
+            d3.select(target).interrupt('widen').transition('widen').duration(150).attr('d', hoverD(d));
+            nudgeNeighbors(d.data.cat, sIdx, hoverExtra, true);
             if (labelSel) {
               labelSel.filter((ld: any) => ld === d)
                 .interrupt('labelGrow').transition('labelGrow').duration(150)
@@ -586,9 +715,9 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             const catIdx = this.categories.indexOf(d.data.cat);
             const value = stacked100 ? (series.rawValues?.[catIdx] ?? 0) : series.data[catIdx];
             const percentage = stacked100 ? (series.data[catIdx] || 0) : this.percentOfSeries(series, catIdx);
-            this.tooltipService.show(event, this.tooltipHtml(series.label, d.data.cat, value, percentage, isPyramid, hex, visibleSeries.length > 1), 'eda-bar-tooltip');
+            this.tooltipService.show(event, this.tooltipHtml(series.label, d.data.cat, value, percentage, isPyramid, hex, visibleSeries.length > 1), 'eda-bar-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
           })
-          .on('mousemove', (event: any) => this.tooltipService.move(event))
+          .on('mousemove', (event: any) => this.tooltipService.move(event, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true))
           .on('mouseout', (event: any, d: any) => {
             const target = event.currentTarget;
             const hex = this.barColor(series, this.categories.indexOf(d.data.cat));
@@ -598,6 +727,8 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
               .on('end', () => {
                 d3.select(target).attr('fill', this.barFill(defs, series, this.categories.indexOf(d.data.cat), horizontal));
               });
+            d3.select(target).interrupt('widen').transition('widen').duration(150).attr('d', finalD(d));
+            nudgeNeighbors(d.data.cat, sIdx, hoverExtra, false);
             d3.select(target).attr('stroke', null).attr('stroke-width', null);
             if (labelSel) {
               labelSel.filter((ld: any) => ld === d)
@@ -608,7 +739,6 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
           });
       });
     } else {
-      const singleSeries = visibleSeries.length === 1;
       visibleSeries.forEach((series, sIdx) => {
         const rows = visibleCategories.map((cat) => ({ cat, value: series.data[this.categories.indexOf(cat)], catIdx: this.categories.indexOf(cat) }));
 
@@ -621,13 +751,34 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
         const catDelay = (d: any) => visibleCategories.indexOf(d.cat) * perCatDelay;
 
+        // hoverD is the shape the bar animates to on mouseover (see the .on('mouseover',...)
+        // below), set separately per orientation so the mouseover/mouseout handlers can apply it
+        // unconditionally.
+        let finalD: (d: any) => string;
+        let hoverD: (d: any) => string;
+        // Total extra size (width for vertical bars, height for horizontal ones) the hovered bar
+        // grows by - also how far its slot's neighbors get nudged out of the way (see
+        // nudgeNeighbors above).
+        let hoverExtra = 0;
+
         if (horizontal) {
-          const finalD = (d: any) => this.roundedTipRectPath(
+          finalD = (d: any) => this.roundedTipRectPath(
             valueScale(Math.min(0, d.value)),
             (categoryScale(d.cat) || 0) + (singleSeries ? 0 : seriesScale(String(sIdx))),
             Math.abs(valueScale(d.value) - zeroPos),
             singleSeries ? categoryScale.bandwidth() : seriesScale.bandwidth(),
             true, true, d.value < 0);
+          // Grouped bars widen (taller) within their own series slot (using seriesScale's smaller
+          // lateral gap); a lone/single series bar widens within the full category slot
+          // (categoryScale's gap) - see hoverExtraWidth.
+          const rowHeight = singleSeries ? categoryScale.bandwidth() : seriesScale.bandwidth();
+          const gap = singleSeries ? vBarGap : vSeriesGap;
+          hoverExtra = this.hoverExtraWidth(rowHeight, gap);
+          hoverD = (d: any) => {
+            const y = (categoryScale(d.cat) || 0) + (singleSeries ? 0 : seriesScale(String(sIdx))) - hoverExtra / 2;
+            return this.roundedTipRectPath(
+              valueScale(Math.min(0, d.value)), y, Math.abs(valueScale(d.value) - zeroPos), rowHeight + hoverExtra, true, true, d.value < 0);
+          };
           if (animateEntrance) {
             bars
               .attr('d', (d: any) => this.roundedTipRectPath(
@@ -641,12 +792,23 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             bars.attr('d', finalD);
           }
         } else {
-          const finalD = (d: any) => this.roundedTipRectPath(
+          finalD = (d: any) => this.roundedTipRectPath(
             (categoryScale(d.cat) || 0) + (singleSeries ? 0 : seriesScale(String(sIdx))),
             valueScale(Math.max(0, d.value)),
             singleSeries ? categoryScale.bandwidth() : seriesScale.bandwidth(),
             Math.abs(zeroPos - valueScale(d.value)),
             false, true, d.value < 0);
+          // Grouped bars widen within their own series slot (using seriesScale's smaller lateral
+          // gap); a lone/single series bar widens within the full category slot (categoryScale's
+          // gap) - see hoverExtraWidth.
+          const width = singleSeries ? categoryScale.bandwidth() : seriesScale.bandwidth();
+          const gap = singleSeries ? vBarGap : vSeriesGap;
+          hoverExtra = this.hoverExtraWidth(width, gap);
+          hoverD = (d: any) => {
+            const x = (categoryScale(d.cat) || 0) + (singleSeries ? 0 : seriesScale(String(sIdx))) - hoverExtra / 2;
+            return this.roundedTipRectPath(
+              x, valueScale(Math.max(0, d.value)), width + hoverExtra, Math.abs(zeroPos - valueScale(d.value)), false, true, d.value < 0);
+          };
           if (animateEntrance) {
             bars
               .attr('d', (d: any) => this.roundedTipRectPath(
@@ -693,6 +855,8 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
               .interrupt('color').transition('color').duration(150)
               .attr('fill', darkenHex(hex, 40));
             d3.select(target).attr('stroke', hex).attr('stroke-width', 1.5);
+            d3.select(target).interrupt('widen').transition('widen').duration(150).attr('d', hoverD(d));
+            nudgeNeighbors(d.cat, sIdx, hoverExtra, true);
             if (labelSel) {
               labelSel.filter((ld: any) => ld === d)
                 .interrupt('labelGrow').transition('labelGrow').duration(150)
@@ -700,9 +864,9 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             }
 
             const percentage = this.percentOfSeries(series, d.catIdx);
-            this.tooltipService.show(event, this.tooltipHtml(series.label, d.cat, d.value, percentage, false, hex, visibleSeries.length > 1), 'eda-bar-tooltip');
+            this.tooltipService.show(event, this.tooltipHtml(series.label, d.cat, d.value, percentage, false, hex, visibleSeries.length > 1), 'eda-bar-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
           })
-          .on('mousemove', (event: any) => this.tooltipService.move(event))
+          .on('mousemove', (event: any) => this.tooltipService.move(event, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true))
           .on('mouseout', (event: any, d: any) => {
             const target = event.currentTarget;
             const hex = this.barColor(series, d.catIdx);
@@ -712,6 +876,8 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
               .on('end', () => {
                 d3.select(target).attr('fill', this.barFill(defs, series, d.catIdx, horizontal));
               });
+            d3.select(target).interrupt('widen').transition('widen').duration(150).attr('d', finalD(d));
+            nudgeNeighbors(d.cat, sIdx, hoverExtra, false);
             d3.select(target).attr('stroke', null).attr('stroke-width', null);
             if (labelSel) {
               labelSel.filter((ld: any) => ld === d)

@@ -12,7 +12,7 @@ import * as d3 from 'd3';
 export class D3TooltipService {
   private div: any = null;
 
-  show(event: MouseEvent, html: string, cssClass: string): void {
+  show(event: MouseEvent, html: string, cssClass: string, offsetX: number = -81, offsetY: number = -25, anchorBottomLeft: boolean = false): void {
     // A stray mouseover before the previous element's mouseout fired (easy to trigger on
     // tightly-packed marks) would otherwise leak an orphaned tooltip div every time, piling
     // several up on screen at once - remove any existing one first.
@@ -23,15 +23,26 @@ export class D3TooltipService {
       .style('z-index', 9999);
     this.div.transition().duration(200).style('opacity', 0.9);
     this.div.html(html)
-      .style('left', (event.pageX - 81) + 'px')
-      .style('top', (event.pageY - 25) + 'px');
+      .style('left', (event.pageX + offsetX) + 'px')
+      .style('top', this.topFor(event, offsetY, anchorBottomLeft) + 'px');
   }
 
-  move(event: MouseEvent): void {
+  move(event: MouseEvent, offsetX: number = 0, offsetY: number = -50, anchorBottomLeft: boolean = false): void {
     if (this.div) {
-      this.div.style('left', (event.pageX) + 'px')
-        .style('top', (event.pageY - 50) + 'px');
+      this.div.style('left', (event.pageX + offsetX) + 'px')
+        .style('top', this.topFor(event, offsetY, anchorBottomLeft) + 'px');
     }
+  }
+
+  // offsetX/offsetY normally place the div's own top-left corner. anchorBottomLeft instead
+  // anchors its BOTTOM-left corner at (pageX+offsetX, pageY+offsetY) - i.e. the div grows
+  // upward from that point rather than downward - by measuring its just-rendered height and
+  // subtracting it back out of the top.
+  private topFor(event: MouseEvent, offsetY: number, anchorBottomLeft: boolean): number {
+    const top = event.pageY + offsetY;
+    if (!anchorBottomLeft) return top;
+    const height = (this.div.node() as HTMLElement).offsetHeight;
+    return top - height;
   }
 
   hide(): void {
