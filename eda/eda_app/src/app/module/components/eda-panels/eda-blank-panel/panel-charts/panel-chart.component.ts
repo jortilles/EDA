@@ -6,7 +6,7 @@ import { EdaTreeMap } from './../../../eda-treemap/eda-treemap.component';
 import { EdaTreeTable } from './../../../eda-treetable/eda-treetable.component';
 
 import { TreeMap } from './../../../eda-treemap/eda-treeMap';
-import { EdaD3Component } from './../../../eda-d3/eda-d3.component';
+import { EdaD3Component } from './../../../eda-d3-sankey/eda-d3-sankey.component';
 import { TableConfig } from './chart-configuration-models/table-config';
 import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
     OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID, Type } from '@angular/core';
@@ -29,7 +29,7 @@ import { EdaGeoJsonMapComponent } from '@eda/components/eda-map/eda-geoJsonMap.c
 
 import * as _ from 'lodash';
 import { EdaMap } from '@eda/components/eda-map/eda-map';
-import { EdaD3 } from '@eda/components/eda-d3/eda-d3';
+import { EdaD3 } from '@eda/components/eda-d3-sankey/eda-d3-sankey';
 import { EdaFunnelComponent } from '@eda/components/eda-funnel/eda-funnel.component';
 import { EdaBubblechartComponent } from '@eda/components/eda-d3-bubblechart/eda-bubblechart.component';
 import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.component';

@@ -2,7 +2,7 @@ import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output,
 import * as d3 from 'd3';
 import { sankeyLinkHorizontal } from 'd3-sankey'
 import { sankey as Sankey } from 'd3-sankey';
-import { EdaD3 } from './eda-d3';
+import { EdaD3 } from './eda-d3-sankey';
 import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, sanitizeId, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 
 import { FormsModule } from '@angular/forms';
@@ -12,8 +12,8 @@ import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.co
 @Component({
   standalone: true,
   selector: 'eda-d3',
-  templateUrl: './eda-d3.component.html',
-  styleUrls: ['./eda-d3.component.css'],
+  templateUrl: './eda-d3-sankey.component.html',
+  styleUrls: ['./eda-d3-sankey.component.css'],
   imports: [FormsModule, CommonModule, EdaChartLegendComponent]
 })
 
@@ -151,6 +151,11 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       links: _links.map(d => Object.assign({}, d))
     });
 
+    const LINK_DURATION = 700;
+    const columnX0s = Array.from(new Set((links as any[]).map(d => d.source.x0))).sort((a: number, b: number) => a - b);
+    const columnLevel = (d: any) => columnX0s.indexOf(d.source.x0);
+    const numLevels = columnX0s.length;
+
     svg.append("g")
       .selectAll("rect")
       .data(nodes)
@@ -160,6 +165,10 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("height", d => d.y1 - d.y0)
       .attr("width", d => d.x1 - d.x0)
       .attr("fill", "#242a33")
+      .attr("opacity", 0)
+      .transition()
+      .duration(200)
+      .attr("opacity", 1)
       
 
 
@@ -231,6 +240,17 @@ export class EdaD3Component implements AfterViewInit, OnInit {
         this.tooltipService.move(d);
 
       })
+      .each(function(d: any) {
+        const totalLength = (this as SVGPathElement).getTotalLength();
+        d3.select(this)
+          .attr("stroke-dasharray", `${totalLength} ${totalLength}`)
+          .attr("stroke-dashoffset", totalLength)
+          .transition()
+          .delay(columnLevel(d) * LINK_DURATION)
+          .duration(LINK_DURATION)
+          .ease(d3.easeQuadOut)
+          .attr("stroke-dashoffset", 0);
+      });
 
 
 
@@ -249,10 +269,17 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .style("pointer-events", "none")
       .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
       .style("font-size", (12 + this.styleProviderService.panelFontSize.source['_value'] * 2) + 'px')
+      .attr("opacity", 0)
       .text(d => d.name)
       .append("tspan")
       .attr("fill-opacity", 0.7)
       .text(d => ` ${d.value.toLocaleString('de-DE', { maximumFractionDigits: 6 })}`);
+
+    svg.selectAll("text")
+      .transition()
+      .delay(numLevels * LINK_DURATION - 150)
+      .duration(300)
+      .attr("opacity", 1);
   }
 
 

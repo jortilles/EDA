@@ -14,7 +14,7 @@ export * from './eda-map/eda-geoJsonMap.component';
 export * from './eda-funnel/eda-funnel.component';
 export * from './eda-d3-bubblechart/eda-bubblechart.component';
 
- // export * from './eda-d3/eda-d3.component';
+ // export * from './eda-d3-sankey/eda-d3-sankey.component';
 
 // Eda KPI
 
@@ -25,7 +25,7 @@ export { EdadynamicTextComponent } from './eda-dynamicText/eda-dynamicText.compo
 export { EdaMapComponent } from './eda-map/eda-map.component';
 
 // Eda d3
-export { EdaD3Component } from './eda-d3/eda-d3.component';
+export { EdaD3Component } from './eda-d3-sankey/eda-d3-sankey.component';
 
 
 // Eda Panels
