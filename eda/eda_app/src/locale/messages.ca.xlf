@@ -595,15 +595,19 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="resumenAtrH6" datatype="html">
 <source>
-                                    Resumen de atributos
+Resumen de atributos
 </source>
 <target>
-                                    Resum d'atributs
+Resum d'atributs
 </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-<context context-type="linenumber">137</context>
-</context-group>
+</trans-unit>
+<trans-unit id="resumenAtrH6Hover" datatype="html">
+<source>
+¿Qué estoy viendo?
+</source>
+<target>
+Qué estic veient?
+</target>
 </trans-unit>
 <trans-unit id="resumenFiltrosPanelH6" datatype="html">
 <source>
