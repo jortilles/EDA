@@ -62,7 +62,7 @@ import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-
 import { TableUtils } from './panel-utils/tables-utils';
 import { QueryUtils } from './panel-utils/query-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
-import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
+import { ChartsConfigUtils, CUSTOM_CHART_CONFIG_FIELDS } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
 import { NavigationUtils } from './panel-utils/navigation-utils';
 
@@ -87,6 +87,8 @@ import { dynamicTextDialogComponent } from '@eda/components/component.index';
 import { TableDialogComponent } from '@eda/components/component.index';
 import { TableGradientDialogComponent } from '@eda/components/component.index';
 import { KpiEditDialogComponent } from '@eda/components/component.index';
+import { DoughnutDialog } from '@eda/components/component.index';
+import { PolarAreaDialog } from '@eda/components/component.index';
 export interface IPanelAction {
     code: string;
     data: any;
@@ -103,7 +105,7 @@ const DIALOGS_COMPONENTS = [
     ChartDialogComponent,BubblechartDialog, MapCoordDialogComponent, MapEditDialogComponent,
     TreeTableDialogComponent, SunburstDialogComponent, TreeMapDialog, ScatterPlotDialog,
     FunnelDialog, KnobDialogComponent, SankeyDialog, dynamicTextDialogComponent, TableDialogComponent,
-    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent
+    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent, DoughnutDialog, PolarAreaDialog
 ];
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule, OverlayPanelModule];
@@ -159,6 +161,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public sankeyController: EdaDialogController;
     public treeMapController: EdaDialogController;
     public funnelController:EdaDialogController;
+    public doughnutController: EdaDialogController;
+    public polarAreaController: EdaDialogController;
     public bubblechartController:EdaDialogController;
     public linkDashboardController: EdaDialogController;
     public scatterPlotController: EdaDialogController;
@@ -883,8 +887,8 @@ public tableNodeExpand(event: any): void {
     */
     public onChartClick(event: any): void {
         const config = this.panelChart.getCurrentConfig();
-        if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(config?.chartType) ||   //NG2 CHARTS
-            ['treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
+        if (['line'].includes(config?.chartType) ||   //NG2 CHARTS
+            ['doughnut', 'polarArea', 'bar', 'radar', 'treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
             'geoJsonMap'.includes(this.panelChart.props.chartType) || //Leaflet 
             ['table', 'crosstable', 'treetable'].includes(this.panelChart.props.chartType)) // tables
         {
@@ -972,27 +976,23 @@ public tableNodeExpand(event: any): void {
         if (!_.isEqual(this.display_v.chart, 'no_data') && allow && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
-            // Preserve assignedColors, coloredBarsConfig, showUniqueColors, and uniqueBarColors before merging.
-            const savedAssignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
-            const savedColoredBarsConfig = config && config.getConfig() ? config.getConfig()['coloredBarsConfig'] : null;
-            const savedShowUniqueColors = config && config.getConfig() ? config.getConfig()['showUniqueColors'] : null;
-            const savedUniqueBarColors = config && config.getConfig() ? config.getConfig()['uniqueBarColors'] : null;
+            // Preserve every custom field (same list setConfig() uses to save them) before
+            // merging - setVoidChartConfig() builds a fresh ChartJsConfig without them, and
+            // _.merge() isn't trusted to carry them over correctly either.
+            const savedCustomFields: Record<string, any> = {};
+            CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+                savedCustomFields[field.name] = config && config.getConfig() ? config.getConfig()[field.name] : null;
+            });
 
             _.merge(_config, config||{});
 
-            // Restore assignedColors after merging.
-            if (savedAssignedColors) {
-                _config.getConfig()['assignedColors'] = savedAssignedColors;
-            }
-            // Restore coloredBarsConfig after merging.
-            if (savedColoredBarsConfig) {
-                _config.getConfig()['coloredBarsConfig'] = savedColoredBarsConfig;
-            }
-            // Restore showUniqueColors and uniqueBarColors after merging.
-            if (savedShowUniqueColors != null) {
-                _config.getConfig()['showUniqueColors'] = savedShowUniqueColors;
-                _config.getConfig()['uniqueBarColors'] = savedUniqueBarColors ?? [];
-            }
+            // Restore every custom field after merging.
+            CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+                const saved = savedCustomFields[field.name];
+                if (saved != null) {
+                    _config.getConfig()[field.name] = saved;
+                }
+            });
 
             // Ensure that showPredictionLines is propagated to _config (keep the prediction line when switching between chart types).
             if (['line', 'area'].includes(type) && this.graficos.showPredictionLines) {
@@ -1555,17 +1555,19 @@ public tableNodeExpand(event: any): void {
                 properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
             }
         
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend, coloredBarsConfig: this.graficos.coloredBarsConfig, showUniqueColors: this.graficos.showUniqueColors, uniqueBarColors: this.graficos.uniqueBarColors, showGridLines: this.graficos.showGridLines };
+                const customFields: Record<string, any> = {};
+                CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+                    customFields[field.name] = this.graficos[field.name] ?? field.default;
+                });
+
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, ...customFields };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
                     this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend, this.graficos.showGridLines ?? true));
-                if (this.graficos.coloredBarsConfig) {
-                    (layout.getConfig() as any)['coloredBarsConfig'] = this.graficos.coloredBarsConfig;
-                }
-                (layout.getConfig() as any)['showUniqueColors'] = this.graficos.showUniqueColors ?? false;
-                (layout.getConfig() as any)['uniqueBarColors'] = this.graficos.uniqueBarColors ?? [];
-                (layout.getConfig() as any)['showGridLines'] = this.graficos.showGridLines ?? true;
+                CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+                    (layout.getConfig() as any)[field.name] = customFields[field.name];
+                });
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message
@@ -1714,6 +1716,44 @@ public tableNodeExpand(event: any): void {
             this.dashboardService.setNotSaved(true);
         }
         this.funnelController = undefined;
+    }
+
+    public onCloseDoughnutProperties(event, response): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                assignedColors: response.assignedColors,
+                showLabels: response.showLabels,
+                showLabelsPercent: response.showLabelsPercent,
+                chartLegend: response.chartLegend,
+                innerRadiusPercent: response.innerRadiusPercent,
+                useGradient: response.useGradient
+            };
+
+            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService.setNotSaved(true);
+        }
+        this.doughnutController = undefined;
+    }
+
+    public onClosePolarAreaProperties(event, response): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                assignedColors: response.assignedColors,
+                showLabels: response.showLabels,
+                showLabelsPercent: response.showLabelsPercent,
+                chartLegend: response.chartLegend,
+                showGridLines: response.showGridLines,
+                useGradient: response.useGradient
+            };
+
+            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService.setNotSaved(true);
+        }
+        this.polarAreaController = undefined;
     }
 
     public onCloseBubblechartProperties(event, response): void {

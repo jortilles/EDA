@@ -13,6 +13,20 @@
       <div class="space-y-6 bg-slate-50 rounded-md p-4">
         <div class="space-y-4">
           <span class="text-lg font-semibold" i18n="@@colorsChartH6">Colores</span>
+
+          <!-- Use Gradient -->
+          <div class="flex items-center justify-between">
+            <label i18n="@@useGradient" for="usarDegradado" class="font-medium">
+              Usar degradado
+            </label>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="usarDegradado" name="usarDegradado" [(ngModel)]="useGradient" class="sr-only peer" (ngModelChange)="setUseGradient()">
+              <div
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+              </div>
+            </label>
+          </div>
+
           <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
           <div class="flex items-stretch gap-2 mb-4">
             <p-dropdown

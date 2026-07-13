@@ -26,6 +26,8 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
   /** Source of truth for colors by label */
   public assignedColors: { value: string; color: string }[] = [];
   private originalAssignedColors: { value: string; color: string }[] = [];
+  public useGradient: boolean = true;
+  private originalUseGradient: boolean = true;
 
   public labels: string[] = [];
   public display: boolean = false;
@@ -64,8 +66,17 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
 
         // Store copy for cancellation
         this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
+
+        this.useGradient = this.myPanelChartComponent.props.config.getConfig()['useGradient'] ?? true;
+        this.originalUseGradient = this.useGradient;
       }, 0);
     }
+  }
+
+  /** Toggle the per-cell gradient fill */
+  setUseGradient(): void {
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
+    this.myPanelChartComponent.changeChartType();
   }
 
   /** Closes the dialog */
@@ -80,6 +91,7 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
     // Update TreeMapConfig and assignedColors in the config
     this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
 
     this.myPanelChartComponent.changeChartType();
 
@@ -89,11 +101,13 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
   /** Cancel changes and restore initial state */
   closeChartConfig(): void {
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+    this.useGradient = this.originalUseGradient;
 
     // Update TreeMapConfig and assignedColors in the config
     const colorsForConfig = this.assignedColors.map(c => c.color);
     this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
 
     this.myPanelChartComponent.changeChartType();
     this.onClose(EdaDialogCloseEvent.NONE);
@@ -106,6 +120,7 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
     // Update TreeMapConfig and synchronize assignedColors
     this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
 
     this.myPanelChartComponent.changeChartType();
   }
@@ -132,6 +147,7 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
     const colorsForConfig = this.assignedColors.map(c => c.color);
     this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
 
     this.myPanelChartComponent.changeChartType();
   }

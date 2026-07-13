@@ -589,10 +589,14 @@
 <target>
                                     Résumé des attributs
 </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-<context context-type="linenumber">137</context>
-</context-group>
+</trans-unit>
+<trans-unit id="resumenAtrH6Hover" datatype="html">
+<source>
+¿Qué estoy viendo?
+</source>
+<target>
+Que suis-je en train de voir ?
+</target>
 </trans-unit>
 <trans-unit id="resumenFiltrosPanelH6" datatype="html">
 <source>
@@ -3673,10 +3677,6 @@
     <target>Afficher les étiquettes sous forme de pourcentages</target>
   </trans-unit>
 
-  <trans-unit id="showUniqueColors">
-    <source>Activar Colores Únicos</source>
-    <target>Activer les couleurs uniques</target>
-  </trans-unit>
 
   <trans-unit id="showPointLines">
     <source>Mostrar Puntos en Líneas</source>
@@ -4810,6 +4810,26 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Afficher la légende</target>
 </trans-unit>
 
+<trans-unit id="internRadius">
+  <source>Radio Interno</source>
+  <target>Radio interne</target>
+</trans-unit>
+
+<trans-unit id="useGradient">
+  <source>Usar Gradiente</source>
+  <target>Utiliser un dégradé</target>
+</trans-unit>
+
+<trans-unit id="useRoundedBars">
+  <source>Redondear barras</source>
+  <target>Arrondir les barres</target>
+</trans-unit>
+
+<trans-unit id="chartRoundedBarsOptionDescription">
+  <source>Redondea la punta de las barras</source>
+  <target>Arrondit la pointe des barres</target>
+</trans-unit>
+
 <trans-unit id="chartLegendOptionDescription">
   <source>Muestra la leyenda del gráfico</source>
   <target>Afficher la légende du graphique</target>
@@ -4850,9 +4870,9 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Il indique la valeur en pourcentage de chaque segment</target>
 </trans-unit>
 
-<trans-unit id="chartUniqueColorsOption">
-  <source>Asigna un color único a cada barra o elemento</source>
-  <target>Attribue une couleur unique à chaque barre ou élément</target>
+<trans-unit id="uniqueColorsTab">
+  <source> Colores Únicos </source>
+  <target> Couleurs uniques </target>
 </trans-unit>
 
 <trans-unit id="chartUniqueColorsOptionDescription">
@@ -6300,6 +6320,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="chartLabelLinePredictionOptionDescription">
         <source>Muestra la predicción de la serie</source>
         <target>Afficher la prédiction de la série</target>
+      </trans-unit>
+      <trans-unit id="colorsTab">
+        <source> Colores </source>
+        <target> Couleurs </target>
       </trans-unit>
       <trans-unit id="gradientTab">
         <source>Colores por intervalo</source>

@@ -8,4 +8,6 @@ export class ScatterPlot {
   colors : Array<string>;
   linkedDashboard : LinkedDashboardProps;
   assignedColors: any[];
+  useGradient?: boolean;
+  chartLegend?: boolean;
 }

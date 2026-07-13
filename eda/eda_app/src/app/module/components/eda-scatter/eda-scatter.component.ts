@@ -1,12 +1,12 @@
-import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import * as d3 from 'd3';
 import { ScatterPlot } from "./eda-scatter";
 import * as _ from 'lodash';
-import * as dataUtils from '../../../services/utils/transform-data-utils';
 
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 @Component({
   standalone: true,
@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './eda-scatter.component.html',
   styleUrls: ['./eda-scatter.component.css'],
   encapsulation: ViewEncapsulation.Emulated,
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
 })
 
 
@@ -23,8 +23,6 @@ export class EdaScatter implements AfterViewInit {
   @Input() inject: ScatterPlot;
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
-
-  div = null;
 
   id: string;
   svg: any;
@@ -36,53 +34,50 @@ export class EdaScatter implements AfterViewInit {
   width: number;
   heigth: number;
   resizeObserver!: ResizeObserver;
+  private valuesScatter: any[];
+  private colorsScatter: any[];
+  private colorScale: any;
 
-  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService){
+  chartLegend: boolean;
+  legendItems: { label: string; color: string; hidden: boolean }[] = [];
+  private hiddenIndexes: Set<number> = new Set();
+
+  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService){
 
   }
 
   ngOnInit(): void {
     this.id = `scatterPlot_${this.inject.id}`;
+    this.chartLegend = this.inject.chartLegend ?? true;
     this.data = this.formatData(this.inject.data);
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
-    
+
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
     this.assignedColors = this.inject.assignedColors;
 
+    this.legendItems = this.firstColLabels.map((label, i) => ({
+      label: String(label),
+      color: this.assignedColors[i]?.color || '#cccccc',
+      hidden: this.hiddenIndexes.has(i)
+    }));
   }
   ngOnDestroy(): void {
-    if (this.div)
-      this.div.remove();
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
+    teardownD3Chart(this.tooltipService, this.resizeObserver);
+  }
+
+  toggleLegend(index: number): void {
+    if (this.hiddenIndexes.has(index)) this.hiddenIndexes.delete(index);
+    else this.hiddenIndexes.add(index);
+    this.legendItems[index].hidden = this.hiddenIndexes.has(index);
+    this.draw();
   }
 
   ngAfterViewInit() {
-    // SVG CONTAINER
     const container = this.svgContainer.nativeElement as HTMLElement;
-
-    // Create SVG
-    this.svg = d3.select(container).append('svg');
-
-    // Create ResizeObserver to resize the chart
-    this.resizeObserver = new ResizeObserver(entries => {
-      let id = `#${this.id}`;
-      this.svg = d3.select(id);
-      if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
-        this.draw();
-      }
-    });
-    this.resizeObserver.observe(container);
-
-    
-    if (this.svg) this.svg.remove();
-    let id = `#${this.id}`;
-    this.svg = d3.select(id);
-    if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
-      this.draw();
-    }
+    if (!this.svg) this.svg = d3.select(container).append('svg');
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
   }
 
 
@@ -101,6 +96,9 @@ export class EdaScatter implements AfterViewInit {
     
     // D3 color sorting function
     const color = d3.scaleOrdinal(this.firstColLabels,  colorsScatter);
+    this.valuesScatter = valuesScatter;
+    this.colorsScatter = colorsScatter;
+    this.colorScale = color;
 
     const x_range: Array<any> = d3.extent(this.data, (d: any) => d.x);
     const y_range: Array<any> = d3.extent(this.data, (d: any) => d.y);
@@ -169,6 +167,17 @@ export class EdaScatter implements AfterViewInit {
     svg.append("g")
       .call(grid);
 
+    let defs = svg.select('defs');
+    if (defs.empty()) defs = svg.append('defs');
+
+    // Points whose category was hidden from the legend are excluded before binding - axis
+    // domains above stay fixed to the full dataset's extent (no rescale needed, only whichever
+    // categories are plotted changes).
+    const hiddenLabels = new Set(Array.from(this.hiddenIndexes).map(i => String(this.firstColLabels[i])));
+    const visiblePoints = hiddenLabels.size > 0
+      ? this.data.filter((d: any) => !hiddenLabels.has(String(d.category ?? d.label)))
+      : this.data;
+
     svg.append("g")
       .attr("stroke-width", 1.5)
       .attr("fill", "var(--panel-font-color)")
@@ -176,16 +185,13 @@ export class EdaScatter implements AfterViewInit {
       .attr("font-size", 10)
       .style("cursor", "pointer")
       .selectAll("circle")
-      .data(this.data)
+      .data(visiblePoints)
       .join("circle")
       .attr("cx", d => x(d.x))
       .attr("cy", d => y(d.y))
-      .attr("r", d => d.radius + 1)
-      .attr("fill", d => { 
-        while (d.depth > 1) d = d.parent;
-        // Return ONLY the COLOR from assignedColors that matches the data and assignedColors colors
-        return valuesScatter.findIndex((item) => d.label.includes(item)) !== -1 ? colorsScatter[valuesScatter.findIndex((item) => d.label.includes(item))] : color(d.label);
-      })
+      .attr("r", 0)
+      .attr("opacity", 0)
+      .attr("fill", d => this.pointFill(defs, this.pointColor(d)))
       .on('click', (e, data) => {
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
@@ -195,51 +201,49 @@ export class EdaScatter implements AfterViewInit {
         }
       })
       .on('mouseover', (d, data) => {
-        
 
-        let categoryText = data.category ? `${this.inject.dataDescription.otherColumns[0].name} : ${data.category} ` : '';
+        const hex = this.pointColor(data);
+        const target = d3.select(d.currentTarget);
+
+        // Grow the point outward and swap the gradient url for its own flat base color first,
+        // instantly (no transition), then transition flat -> flat - same approach as eda-doughnut-d3.
+        target.interrupt('grow').transition('grow').duration(150).attr('r', data.radius + 4);
+        target.attr('fill', hex);
+        target.interrupt('color').transition('color').duration(150).attr('fill', darkenHex(hex, 30));
+
+        const swatch = `<span class="eda-scatter-tooltip-swatch" style="background-color:${hex};"></span>`;
+
+        let categoryText = data.category ? `<div class="eda-scatter-tooltip-title">${this.inject.dataDescription.otherColumns[0].name} : ${data.category}</div>` : '';
         let serieText = data.category ? `${this.inject.dataDescription.otherColumns[1].name}  : ${data.label}`
         : `${this.inject.dataDescription.otherColumns[0].name} : ${data.label}`;
+
+        // The X/Y axis values themselves - the actual point being plotted, not just its label.
+        const xText = `${this.inject.dataDescription.numericColumns[0].name} : ${data.x.toLocaleString('de-DE', { maximumFractionDigits: 6 })}`;
+        const yText = `${this.inject.dataDescription.numericColumns[1].name} : ${data.y.toLocaleString('de-DE', { maximumFractionDigits: 6 })}`;
+
         let metricText = data.metricValue ?
-        ` ${this.inject.dataDescription.numericColumns[2].name} :  ${data.metricValue.toLocaleString(undefined, { maximumFractionDigits: 6 })}`
+        `${this.inject.dataDescription.numericColumns[2].name} :  ${data.metricValue.toLocaleString(undefined, { maximumFractionDigits: 6 })}`
         : ``;
-        
-        let linkedText = this.inject.linkedDashboard ? `Linked to ${this.inject.linkedDashboard.dashboardName} </h6>` : '';
-        
-        const maxLength = dataUtils.maxLengthElement([categoryText.length, serieText.length, metricText.length, linkedText.length]);
-        const pixelWithRate = 7;
-        const width = maxLength * pixelWithRate;
-        
-        let text = categoryText ? `${categoryText}<br/>` : '';
-        text = serieText ? text + `${serieText}<br/>` : text;
-        text = metricText ? text + `${metricText}<br/>` : text;
-        text = this.inject.linkedDashboard ? text + `<h6> ${linkedText} </h6>` : text;
-        
-        let height: any = this.inject.linkedDashboard ? 5 : 3;
-        height = data.category ? height + 1 + 'em' : height + 'em';
-        
-        this.div = d3.select("app-root").append('div')
-        .attr('class', 'd3tooltip')
-        .attr('id', 'scatterDiv')
-        .style('opacity', 0);
-        
-        this.div.transition()
-        .duration(200)
-          .style('opacity', .9);
-          this.div.html(text)
-          .style('left', (d.pageX - 81) + 'px')
-          .style('top', (d.pageY - 49) + 'px')
-          .style('width', `${width}px`)
-          .style('height', height)
-          .style('line-height', 1.1);
+
+        let text = categoryText;
+        text += `<div class="eda-scatter-tooltip-row">${swatch}${serieText}</div>`;
+        text += `<div class="eda-scatter-tooltip-row">${xText}</div>`;
+        text += `<div class="eda-scatter-tooltip-row">${yText}</div>`;
+        text = metricText ? text + `<div class="eda-scatter-tooltip-row">${metricText}</div>` : text;
+        text = this.inject.linkedDashboard ? text + `<h6>${$localize`:@@linkedTo:Vinculado con`} ${this.inject.linkedDashboard.dashboardName}</h6>` : text;
+
+        this.tooltipService.show(d, text, 'eda-scatter-tooltip');
         })
-        .on('mouseout', (d) => {
-          this.div.remove();
-      }).on("mousemove", (d, data) => {
-        const sizes = this.div.node().getBoundingClientRect();
-        this.div
-          .style("top", (d.pageY - sizes.height - 7) + "px")
-          .style("left", (d.pageX - sizes.width / 2) + "px");
+        .on('mouseout', (d, data) => {
+          const hex = this.pointColor(data);
+          const target = d3.select(d.currentTarget);
+          target.interrupt('grow').transition('grow').duration(150).attr('r', data.radius + 1);
+          target.interrupt('color').transition('color').duration(150)
+            .attr('fill', hex)
+            .on('end', () => target.attr('fill', this.pointFill(defs, hex)));
+          this.tooltipService.hide();
+      }).on("mousemove", (d) => {
+        this.tooltipService.move(d);
         }).on('click', (mouseevent, data) => {
           
         if (this.inject.linkedDashboard) {
@@ -253,11 +257,34 @@ export class EdaScatter implements AfterViewInit {
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
           this.onClick.emit({label, filterBy});
         }
-    
+
     })
+    .transition()
+    .delay((d: any) => ((x(d.x) - x.range()[0]) / (x.range()[1] - x.range()[0])) * 2600)
+    .duration(300)
+    .attr("r", (d: any) => d.radius + 1)
+    .attr("opacity", 1);
     svg.selectAll(".tick text")
       .attr("stroke", this.styleProviderService.panelFontColor.source['_value'])
       .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
+  }
+
+  private pointColor(d: any): string {
+    const idx = this.valuesScatter.findIndex((item) => d.label.includes(item));
+    return idx !== -1 ? this.colorsScatter[idx] : this.colorScale(d.label);
+  }
+
+  private gradientId(colorHex: string): string {
+    return `scatter-grad-${this.id}-${sanitizeId(colorHex)}`;
+  }
+
+  /** Radial gradient, base color at the center, lighter towards the edge - same convention as eda-doughnut-d3. */
+  private pointFill(defs: any, hex: string): string {
+    if (!(this.inject.useGradient ?? true)) return hex;
+    return ensureRadialGradient(defs, this.gradientId(hex), [
+      { offset: '0%', color: hex },
+      { offset: '100%', color: lightenHex(hex, 30) }
+    ]);
   }
 
   formatData(data) {

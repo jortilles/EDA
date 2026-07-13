@@ -1,0 +1,10 @@
+@if (items.length) {
+  <div class="eda-chart-legend">
+    @for (item of items; track item.label; let i = $index) {
+      <div class="eda-chart-legend-item" [class.hidden]="item.hidden" (click)="onToggle(i)">
+        <span class="eda-chart-legend-swatch" [style.background-color]="item.color" [style.width]="boxSize" [style.height]="boxSize"></span>
+        <span class="eda-chart-legend-label" [style.font-size]="fontSize">{{ item.label }}</span>
+      </div>
+    }
+  </div>
+}

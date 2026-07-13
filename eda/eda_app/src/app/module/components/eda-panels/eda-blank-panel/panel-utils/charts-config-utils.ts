@@ -17,6 +17,53 @@ import { SunburstConfig } from '../panel-charts/chart-configuration-models/sunbu
 import { BubblechartConfig } from '../panel-charts/chart-configuration-models/bubblechart.config';
 import { TreeTableConfig } from '../panel-charts/chart-configuration-models/treeTable-config';
 
+// Custom per-chart config fields that live outside the small set of "core" ones (chartType,
+// query, colors...). Every place that saves, reloads, or applies this config (setConfig() here,
+// changeChartType() and onCloseChartProperties() in eda-blank-panel.component.ts) needs to know
+// this exact list - keeping it in one place is what stops a newly added field (like the
+// innerRadiusPercent/useGradient/coloredBarsConfig ones before it) from silently being dropped
+// in one of the other spots. Applied uniformly regardless of chart type - a field irrelevant to
+// the current type (e.g. innerRadiusPercent on a bar chart) is simply ignored by that chart's
+// renderer, never causes an actual bug.
+export interface CustomChartConfigField {
+  name: string;
+  default: any;
+  // Only a few fields fall back to `default` when the field key itself is missing from an
+  // otherwise-present config object; the rest stay `undefined` in that case. This mirrors the
+  // pre-existing (inconsistent) behavior exactly - not something to silently "fix" as a side
+  // effect of unifying these three call sites.
+  fallbackIfMissing?: boolean;
+}
+
+export const CUSTOM_CHART_CONFIG_FIELDS: CustomChartConfigField[] = [
+  { name: 'addTrend', default: false },
+  { name: 'addComparative', default: false },
+  { name: 'showLabels', default: false },
+  { name: 'showLabelsPercent', default: false },
+  { name: 'showPointLines', default: false },
+  { name: 'showPredictionLines', default: false },
+  { name: 'numberOfColumns', default: null },
+  { name: 'assignedColors', default: [] },
+  { name: 'chartLegend', default: true, fallbackIfMissing: true },
+  { name: 'coloredBarsConfig', default: null },
+  { name: 'showUniqueColors', default: null },
+  { name: 'uniqueBarColors', default: null },
+  { name: 'showGridLines', default: true, fallbackIfMissing: true },
+  { name: 'innerRadiusPercent', default: null },
+  { name: 'useGradient', default: true, fallbackIfMissing: true },
+  { name: 'useRoundedBars', default: true, fallbackIfMissing: true },
+];
+
+function readCustomFields(cfg: any, fields: CustomChartConfigField[]): any {
+  const result: any = {};
+  fields.forEach(field => {
+    result[field.name] = cfg
+      ? (field.fallbackIfMissing ? cfg[field.name] ?? field.default : cfg[field.name])
+      : field.default;
+  });
+  return result;
+}
+
 export const ChartsConfigUtils = {
 
   setConfig: (ebp: EdaBlankPanelComponent) => {
@@ -121,9 +168,10 @@ export const ChartsConfigUtils = {
         assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || [],
         modifiedFontPoints: inst?.inject?.modifiedFontPoints || 0,
       };
-    } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
+    } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunburst"].includes(ebp.panelChart.props.chartType)) {
       config = {
         assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : [],
+        useGradient: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.useGradient ?? true : true,
       }
     } else if (ebp.panelChart.props.chartType === 'knob') {
 
@@ -133,22 +181,12 @@ export const ChartsConfigUtils = {
         semaphoreColor: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject?.semaphoreColor : ebp.panelChart.props.config.getConfig()['semaphoreColor']
       };
     } else {
-      // Chart.js
+      // Bar/line/area/radar/doughnut/polarArea family - a mix of D3 (doughnut, polarArea, the
+      // whole bar family) and still-Chart.js (line/area/radar/barline) renderers, all sharing
+      // the same set of generic visual/behavioral config fields.
       config = {
         chartType: ebp.panelChart.props.chartType,
-        addTrend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addTrend'] : false,
-        addComparative: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addComparative'] : false,
-        showLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabels'] : false,
-        showLabelsPercent: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabelsPercent'] : false,
-        showPointLines: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showPointLines'] : false,
-        showPredictionLines: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showPredictionLines'] : false,
-        numberOfColumns: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['numberOfColumns'] : null,
-        assignedColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['assignedColors'] : [], // o null?
-        chartLegend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['chartLegend'] ?? true : true,
-        coloredBarsConfig: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['coloredBarsConfig'] : null,
-        showUniqueColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showUniqueColors'] : null,
-        uniqueBarColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['uniqueBarColors'] : null,
-        showGridLines: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showGridLines'] ?? true : true
+        ...readCustomFields(ebp.panelChart.props.config?.getConfig(), CUSTOM_CHART_CONFIG_FIELDS),
       };
     }
 

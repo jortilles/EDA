@@ -2,19 +2,19 @@ import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output,
 import * as d3 from 'd3';
 import { sankeyLinkHorizontal } from 'd3-sankey'
 import { sankey as Sankey } from 'd3-sankey';
-import { EdaD3 } from './eda-d3';
-import * as dataUtils from '../../../services/utils/transform-data-utils';
-import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
+import { EdaD3 } from './eda-d3-sankey';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, sanitizeId, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 @Component({
   standalone: true,
   selector: 'eda-d3',
-  templateUrl: './eda-d3.component.html',
-  styleUrls: ['./eda-d3.component.css'],
-  imports: [FormsModule, CommonModule]
+  templateUrl: './eda-d3-sankey.component.html',
+  styleUrls: ['./eda-d3-sankey.component.css'],
+  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
 })
 
 export class EdaD3Component implements AfterViewInit, OnInit {
@@ -33,17 +33,20 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   metricIndex: number;
   width: number;
   heigth: number;
-  div = null;
   resizeObserver!: ResizeObserver;
 
+  chartLegend: boolean;
+  legendItems: { label: string; color: string; hidden: boolean }[] = [];
+  private hiddenIndexes: Set<number> = new Set();
 
-  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService) {
+  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService) {
   }
 
 
 
   ngOnInit(): void {
     this.id = `sankey_${this.inject.id}`;
+    this.chartLegend = this.inject.chartLegend ?? true;
     this.data = this.inject.data;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
@@ -53,46 +56,35 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
   }
 
+  toggleLegend(index: number): void {
+    if (this.hiddenIndexes.has(index)) this.hiddenIndexes.delete(index);
+    else this.hiddenIndexes.add(index);
+    this.legendItems[index].hidden = this.hiddenIndexes.has(index);
+    this.draw();
+  }
+
   ngAfterViewInit() {
     const container = this.svgContainer.nativeElement as HTMLElement;
-
-    // Create SVG
-    if (!this.svg)
-      this.svg = d3.select(container).append('svg');
-
-    // ResizeObserver to resize the chart
-    this.resizeObserver = new ResizeObserver(entries => {
-      const { width: w, height: h } = entries[0].contentRect;
-      if (w > 0 && h > 0) {
-        this.svg
-          .attr('width', w)
-          .attr('height', h);
-        this.draw();
-      }
-    });
-    this.resizeObserver.observe(container);
-
-    // First draw
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-    if (w > 0 && h > 0) {
-      this.svg
-        .attr('width', w)
-        .attr('height', h);
-      this.draw();
-    }
-
+    if (!this.svg) this.svg = d3.select(container).append('svg');
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
   }
 
   ngOnDestroy(): void {
-    // Remove container
-    if (this.div)
-      this.div.remove();
-    // Disconnect resize observer
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
+    teardownD3Chart(this.tooltipService, this.resizeObserver);
   }
 
+  private gradientId(colorHex: string): string {
+    return `sankey-grad-${this.id}-${sanitizeId(colorHex)}`;
+  }
+
+  /** Linear gradient along the link's own flow direction (left -> right), base color -> lighter. */
+  private linkStroke(defs: any, hex: string): string {
+    if (!(this.inject.useGradient ?? true)) return hex;
+    return ensureLinearGradient(defs, this.gradientId(hex), [
+      { offset: '0%', color: hex },
+      { offset: '100%', color: lightenHex(hex, 30) }
+    ], { x1: '0%', y1: '0%', x2: '100%', y2: '0%' });
+  }
 
   draw() {
     // Initial removal of other charts 
@@ -119,7 +111,23 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     // Color ordering function for D3
     const color = d3.scaleOrdinal(this.firstColLabels, colorsTree);
 
-    let { _nodes, _links } = this.graph(keys, data, metricKey);
+    this.legendItems = this.firstColLabels.map((label, i) => ({
+      label: String(label),
+      color: colorsTree[i] || '#cccccc',
+      hidden: this.hiddenIndexes.has(i)
+    }));
+
+    // Rows whose first-column category was hidden from the legend are excluded before rebuilding
+    // the graph - node indices are sequential/positional (see graph()'s `++index`), so this can't
+    // be done by filtering the already-built _nodes/_links, it has to filter the source rows and
+    // let graph() rebuild the whole node/link index from scratch, same as it already does on
+    // every normal draw().
+    const firstKey = keys[0];
+    const hiddenLabels = new Set(Array.from(this.hiddenIndexes).map(i => String(this.firstColLabels[i])));
+    const visibleData = hiddenLabels.size > 0 ? data.filter((d: any) => !hiddenLabels.has(String(d[firstKey]))) : data;
+    const sourceData = visibleData.length > 0 ? visibleData : data;
+
+    let { _nodes, _links } = this.graph(keys, sourceData, metricKey);
 
     //Sort links 
     for (let i = this.inject.dataDescription.otherColumns.length - 1; i >= 0; i--) {
@@ -135,10 +143,18 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
     const svg = this.svg;
 
+    let defs = svg.select('defs');
+    if (defs.empty()) defs = svg.append('defs');
+
     const { nodes, links } = sankey({
       nodes: _nodes.map(d => Object.assign({}, d)),
       links: _links.map(d => Object.assign({}, d))
     });
+
+    const LINK_DURATION = 700;
+    const columnX0s = Array.from(new Set((links as any[]).map(d => d.source.x0))).sort((a: number, b: number) => a - b);
+    const columnLevel = (d: any) => columnX0s.indexOf(d.source.x0);
+    const numLevels = columnX0s.length;
 
     svg.append("g")
       .selectAll("rect")
@@ -149,6 +165,10 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("height", d => d.y1 - d.y0)
       .attr("width", d => d.x1 - d.x0)
       .attr("fill", "#242a33")
+      .attr("opacity", 0)
+      .transition()
+      .duration(200)
+      .attr("opacity", 1)
       
 
 
@@ -185,7 +205,8 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .on('mouseout', this.hideLinks)
       .attr("stroke", d => {
         // Return ONLY THE COLOR from assignedColors that matches the data, otherwise use color scale
-        return colorsTree[valuesTree.findIndex((item) => d.names.includes(item))] || color(d.names[0]);
+        const hex = colorsTree[valuesTree.findIndex((item) => d.names.includes(item))] || color(d.names[0]);
+        return this.linkStroke(defs, hex);
       })
 
       .attr("stroke-width", d => d.width)
@@ -194,50 +215,42 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .on('mouseover', (d, data) => {
 
         this.showLinks(d, data);
-        let metricLabel = this.inject.dataDescription.numericColumns[0].name;
+        const metricLabel = this.inject.dataDescription.numericColumns[0].name;
 
-        const firstRow = `${data.names.join(" → ")}`;
-        const secondRow = `${metricLabel} : ${data.value.toLocaleString('de-DE', { maximumFractionDigits: 6 })}`;
-        const thirdRow = this.inject.linkedDashboard ? `linked to ${this.inject.linkedDashboard.dashboardName}` : '';
+        const linkColor = colorsTree[valuesTree.findIndex((item) => data.names.includes(item))] || color(data.names[0]);
+        const swatch = `<span class="eda-d3-tooltip-swatch" style="background-color:${linkColor};"></span>`;
+        const valueRow = `${metricLabel} : ${data.value.toLocaleString('de-DE', { maximumFractionDigits: 6 })}`;
 
-        const link = this.inject.linkedDashboard ? `<br/> <h6>${thirdRow}</h6>` : '';
-        let text = `${firstRow} <br/> ${secondRow} ${link}`;
+        let text = `<div class="eda-d3-tooltip-title">${data.names.join(" → ")}</div>` +
+          `<div class="eda-d3-tooltip-row">${swatch}${valueRow}</div>`;
+        if (this.inject.linkedDashboard) {
+          text += `<h6>${$localize`:@@linkedTo:Vinculado con`} ${this.inject.linkedDashboard.dashboardName}</h6>`;
+        }
 
-        const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length * (18 / 12)]);
-        const pixelWithRate = 8;
-        const width = maxLength * pixelWithRate + 10;
-
-        this.div = d3.select("body").append('div')
-          .attr('class', 'd3tooltip')
-          .style('opacity', 0);
-
-        this.div
-          .style('width', `${width}px`)
-          .style('height', 'auto');
-
-        this.div.transition()
-          .duration(200)
-          .style('opacity', .9);
-        this.div.html(text)
-          .style('left', (d.pageX - 50 - width) + 'px')
-          .style('top', (d.pageY - 80) + 'px')
-        // .style('width', width)
-        // .style('height', height);
-
+        this.tooltipService.show(d, text, 'eda-d3-tooltip');
       })
       .on('mouseout', (d) => {
 
         this.hideLinks();
 
-        this.div.remove();
+        this.tooltipService.hide();
 
-      }).on("mousemove", (d, data) => {
+      }).on("mousemove", (d) => {
 
-        this.div
-          .style("left", (d.pageX - 70) + "px")
-          .style("top", (d.pageY - 80) + "px");
+        this.tooltipService.move(d);
 
       })
+      .each(function(d: any) {
+        const totalLength = (this as SVGPathElement).getTotalLength();
+        d3.select(this)
+          .attr("stroke-dasharray", `${totalLength} ${totalLength}`)
+          .attr("stroke-dashoffset", totalLength)
+          .transition()
+          .delay(columnLevel(d) * LINK_DURATION)
+          .duration(LINK_DURATION)
+          .ease(d3.easeQuadOut)
+          .attr("stroke-dashoffset", 0);
+      });
 
 
 
@@ -256,10 +269,17 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .style("pointer-events", "none")
       .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
       .style("font-size", (12 + this.styleProviderService.panelFontSize.source['_value'] * 2) + 'px')
+      .attr("opacity", 0)
       .text(d => d.name)
       .append("tspan")
       .attr("fill-opacity", 0.7)
       .text(d => ` ${d.value.toLocaleString('de-DE', { maximumFractionDigits: 6 })}`);
+
+    svg.selectAll("text")
+      .transition()
+      .delay(numLevels * LINK_DURATION - 150)
+      .duration(300)
+      .attr("opacity", 1);
   }
 
 

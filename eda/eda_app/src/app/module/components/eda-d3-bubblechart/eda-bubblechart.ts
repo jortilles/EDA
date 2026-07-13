@@ -7,4 +7,6 @@ export class EdaBubblechart {
   colors : Array<string>;
   linkedDashboard : LinkedDashboardProps;
   assignedColors: any[];
+  useGradient?: boolean;
+  chartLegend?: boolean;
 }

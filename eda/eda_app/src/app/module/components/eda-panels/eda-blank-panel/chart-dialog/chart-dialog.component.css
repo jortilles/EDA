@@ -3,6 +3,17 @@
   box-shadow: 0 0 0 0.2rem rgba(226, 76, 76, 0.25) !important;
 }
 
+/* The threshold p-inputNumber fields (Colores por intervalo) were rendering as a borderless,
+   uncentered blank box - the global PrimeNG theme rules weren't winning the cascade here, so
+   give this component's own input a visible box explicitly rather than relying on that. */
+::ng-deep p-inputnumber .p-inputtext {
+  width: 6rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  text-align: right;
+}
+
 .toggle-blocked {
   cursor: not-allowed !important;
 
