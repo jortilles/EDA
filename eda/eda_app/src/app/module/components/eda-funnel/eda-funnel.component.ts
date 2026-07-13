@@ -59,6 +59,25 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
     this.assignedColors = this.inject.assignedColors;
     this.firstColLabels = this.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
+
+    // Set synchronously here (draw() recomputes the same thing later) so legendItems isn't still
+    // `[]` the first time Angular checks <eda-chart-legend>'s [items] binding - otherwise draw()
+    // mutating it moments later (from ngAfterViewInit) trips NG0100 in dev mode.
+    let gradient1: string, gradient2: string;
+    if (this.assignedColors?.length >= 2) {
+      gradient1 = this.assignedColors[0].color;
+      gradient2 = this.assignedColors[1].color;
+    } else {
+      const paleta = this.styleProviderService.ActualChartPalette?.['paleta'] || this.styleProviderService.DEFAULT_PALETTE_COLOR?.['paleta'] || ['#4CAF50', '#2196F3'];
+      gradient1 = paleta[0];
+      gradient2 = paleta[paleta.length - 1];
+    }
+    const allRows = this.data.values.map((row: any, index: number) => ({ label: row[this.labelIndex] }));
+    this.legendItems = allRows.map((d: any, i: number) => ({
+      label: d.label,
+      color: allRows.length > 1 ? d3.interpolateRgb(gradient1, gradient2)(i / (allRows.length - 1)) : gradient1,
+      hidden: this.hiddenStepIndexes.has(i)
+    }));
   }
 
   toggleLegend(index: number): void {
