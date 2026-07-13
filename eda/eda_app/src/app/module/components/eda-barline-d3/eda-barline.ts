@@ -1,6 +1,6 @@
 import { LinkedDashboardProps } from "../eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props";
 
-export class EdaBarD3 {
+export class EdaBarlineD3 {
   id: string;
   size: { x: number, y: number; };
   chartType: string;
@@ -17,6 +17,6 @@ export class EdaBarD3 {
   useGradient: boolean;
   useRoundedBars: boolean;
   linkedDashboard: LinkedDashboardProps;
-  /** KPI mini-chart mode (kpibar): no axes, no grid, no legend, shorter entrance. */
+  /** KPI mini-chart mode (kpitrend): no axes, no grid, no legend, shorter entrance. */
   compact?: boolean;
 }

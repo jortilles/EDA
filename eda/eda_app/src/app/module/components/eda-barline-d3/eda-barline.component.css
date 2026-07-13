@@ -1,0 +1,61 @@
+.eda-barline-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.eda-barline-wrapper .svg-container {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+::ng-deep .eda-barline-grid line {
+  stroke: #94a3b8;
+  stroke-opacity: 0.3;
+}
+
+::ng-deep .eda-barline-grid path.domain {
+  display: none;
+}
+
+/* Tooltip appended by D3TooltipService to <body> (outside this component's template, so it needs
+   ::ng-deep to escape view encapsulation). */
+::ng-deep .eda-barline-tooltip {
+  position: absolute;
+  text-align: left;
+  cursor: pointer;
+  padding: 8px 10px;
+  font: 12px;
+  color: #ffffff;
+  background: #010913ea;
+  border: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+::ng-deep .eda-barline-tooltip > h6 {
+  color: white;
+  font-weight: bold;
+}
+
+::ng-deep .eda-barline-tooltip-title {
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+::ng-deep .eda-barline-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+::ng-deep .eda-barline-tooltip-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}

@@ -16,6 +16,7 @@ export * from './utils/d3-tooltip.service';
 export * from './utils/d3-color-utils';
 export * from './utils/d3-format-utils';
 export * from './utils/d3-chart-lifecycle.util';
+export * from './utils/d3-xy-chart.util';
 
 
 // Sidebar
