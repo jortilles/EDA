@@ -13,10 +13,9 @@ import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewCont
 import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
 import { EdaTableComponent } from '../../../eda-table/eda-table.component';
 import { PanelChart } from './panel-chart';
-import { ChartUtilsService, StyleConfig, StyleProviderService, lightenHex } from '@eda/services/service.index';
+import { ChartUtilsService, StyleConfig, StyleProviderService } from '@eda/services/service.index';
 import { EdaKpiComponent } from '@eda/components/eda-kpi/eda-kpi.component';
 import { Column } from '@eda/models/model.index';
-import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import { EdaColumnDate } from '@eda/components/eda-table/eda-columns/eda-column-date';
 import { EdaColumnNumber } from '@eda/components/eda-table/eda-columns/eda-column-number';
 import { EdaColumnText } from '@eda/components/eda-table/eda-columns/eda-column-text';
@@ -275,198 +274,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Renders edaChartComponent
-     * @param type 
-     */
-    private renderEdaChart(subType: string) {
-        let values = _.cloneDeep(this.props.data.values);
-        const dataTypes = this.props.query.map(col => col.column_type);
-        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-        const isstacked = _.includes(['stackedbar', 'stackedbar100', 'pyramid'], this.props.edaChart);
-        const isbarline = this.props.edaChart === 'barline';
-
-        if (this.props.chartType === 'bar' && this.props.edaChart === 'histogram') {
-            dataDescription.numericColumns[0].name = this.histoGramDescTxt + " " + dataDescription.numericColumns[0].name + " " + this.histoGramDescTxt2;
-        }
-        
-        let cfg: any = this.props.config.getConfig();
-        // COMPARISONS
-        if (!!cfg.addComparative
-            && (['line', 'bar'].includes(cfg.chartType))
-            && this.props.query.length === 2
-            && this.props.query.filter(field => field.column_type === 'date').length > 0
-            && ['month', 'week','day'].includes(this.props.query.filter(field => field.column_type === 'date')[0].format)) {
-
-            values = this.chartUtils.comparePeriods(this.props.data, this.props.query);
-            let types = this.props.query.map(field => field.column_type);
-            let dateIndex = types.indexOf('date');
-            dataTypes.splice(dateIndex, 0, 'date');
-            let dateCol = dataDescription.otherColumns.filter(c => c.index === dateIndex)[0];
-            let newCol = { name: dateCol.name + '_newDate', index: dateCol.index + 1 };
-            dataDescription.otherColumns.push(newCol);
-            dataDescription.totalColumns++;
-        }
-        if (cfg.showPredictionLines === true) {
-            const _predQueryLen = (this.props.query?.length || 0);
-            const _hasPredCols = values?.length > 0 && (values[0]?.length || 0) > _predQueryLen;
-            values = this._preparePredictionValues(values, dataDescription, dataTypes, cfg, _predQueryLen, _hasPredCols);
-        }
-
-        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
-        if (chartData.length == 0) {
-            chartData.push([], []);
-        }
-
-        const minMax = this.props.chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
-
-        const manySeries = chartData[1]?.length > 10 ? true : false;
-        
-        const styles: StyleConfig = {
-            fontFamily: this.fontFamily,
-            fontSize: this.fontSize,
-            fontColor: this.fontColor
-        }
-
-        const ticksOptions = {
-            maxRotation: 30,
-            minRotation: 0,
-            labelOffset: 5,
-            padding: 5
-        };
-
-        const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
-            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
-            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, cfg.showGridLines ?? true, this.styleProviderService);
-
-        if (cfg.showPredictionLines === true && chartData[1]?.length > 0){
-            this._hideConnectingDot(chartData);
-        }
-        // TRENDS
-        if (cfg.addTrend && cfg.chartType === 'line' && chartData[1]?.length > 0) {
-            const trends = [];
-            const predictionSerie = cfg.showPredictionLines === true;
-            const lastSerie = predictionSerie ? chartData[1][chartData[1].length - 1] : null;
-            chartData[1].forEach((serie: any) => {
-                if (!predictionSerie || serie !== lastSerie) {
-                    trends.push(this.chartUtils.getTrend(serie));
-                }
-            });
-            trends.forEach(trend => chartData[1].push(trend));
-        }
-                
-        let chartConfig: any = {};
-        chartConfig.chartType = this.props.chartType;
-        chartConfig.edaChart = this.props.edaChart;
-        chartConfig.chartLabels = chartData[0];
-        chartConfig.chartDataset = chartData[1];
-        chartConfig.chartOptions = config.chartOptions;
-        
-        // Read assignedColors from config (if any)
-        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-
-        // Get current chart labels (after filters)
-        const currentLabels = this.getLabelsForChartType(chartConfig);
-        
-        // If there are no assignedColors, generate them from the palette
-        if (assignedColors.length === 0) {
-            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
-            this.props.config.getConfig()['assignedColors'] = assignedColors;
-        } else {
-            // Map assignedColors to current labels
-            // Create a Map for quick lookup by value
-            const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
-
-            // Map colors based on the CURRENT labels
-            const mappedAssignedColors = currentLabels.map((label, index) => {
-                // Look up assigned color for this label
-                const assignedColor = colorMap.get(label);
-
-                if (assignedColor) {
-                    // If an assigned color exists for this label, use it, include opacity if present
-                    const entry: any = { value: label, color: assignedColor.color };
-                    if (assignedColor.opacity !== undefined) entry.opacity = assignedColor.opacity;
-                    return entry;
-                } else {
-                    // If it's a new label (not in assignedColors), use a palette color
-                    const fallbackColor = this.paletaActual[index % this.paletaActual.length];
-                    return { value: label, color: fallbackColor };
-                }
-            });
-            
-            // Update assignedColors with mapped colors
-            assignedColors = mappedAssignedColors;
-        }
-
-        // Assign to chartConfig
-        chartConfig.assignedColors = assignedColors;
-
-        // Generate chartColors in Chart.js format from MAPPED assignedColors
-        chartConfig.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(
-            assignedColors,
-            this.props.chartType
-        );
-
-        // --- Determine color mode and apply ---
-        const isBar = this.props.chartType === 'bar' || this.props.chartType === 'horizontalBar';
-        const coloredBarsConfig = cfg['coloredBarsConfig'];
-        const hasThresholds = coloredBarsConfig?.thresholdHigh != null || coloredBarsConfig?.thresholdLow != null;
-        if (isBar && coloredBarsConfig?.active && hasThresholds) {
-            // Mode 1: Interval-based colors
-            const { thresholdHigh, thresholdLow, colorAbove, colorBetween, colorBelow } = coloredBarsConfig;
-            const bothThresholds = thresholdHigh != null && thresholdLow != null;
-            const baseColor = chartConfig.chartColors[0]?.backgroundColor as string || '#cccccc';
-            const colors = (chartData[1][0].data as number[]).map((value: number) => {
-                if (thresholdHigh != null && value > thresholdHigh) return colorAbove;
-                if (thresholdLow != null && value < thresholdLow) return colorBelow;
-                return bothThresholds ? colorBetween : baseColor;
-            });
-            chartData[1][0].backgroundColor = colors;
-            chartData[1][0].borderColor = colors;
-            chartConfig.chartColors = [{ backgroundColor: colors, borderColor: colors }];
-
-        } else if (isBar && cfg['showUniqueColors']) {
-            // Mode 2: Unique colors per bar (one color per label/category)
-            const uniqueBarColors: { value: string; color: string }[] = cfg['uniqueBarColors'] || [];
-            const colors = (chartData[1][0].data as number[]).map((_, idx) =>
-                uniqueBarColors[idx]?.color || this.paletaActual[idx % this.paletaActual.length]
-            );
-            chartData[1][0].backgroundColor = colors;
-            chartData[1][0].borderColor = colors;
-            chartConfig.chartColors = [{ backgroundColor: colors, borderColor: colors }];
-
-        } else {
-            // Mode 3: Assigned colors per series (default behavior)
-            const isAreaOrRadar = ['area', 'kpiarea', 'radar'].includes(this.props.edaChart);
-            const useGradient = cfg.useGradient ?? true;
-            chartData[1].forEach((dataset, i) => {
-                try {
-                    const solidColor = chartConfig.chartColors[i]?.borderColor as string;
-                    const seriesOpacity: number = assignedColors[i]?.opacity ?? 100;
-                    // barline's bar-type datasets (the line dataset never gets `type: 'bar'` - see
-                    // transformDataQuery) can use a gradient fill, same convention as eda-bar-d3
-                    // (base color at the bottom, lighter towards the top) - Chart.js has no SVG
-                    // <linearGradient>, so this needs a scriptable backgroundColor callback that
-                    // builds a CanvasGradient once the chart area is actually laid out.
-                    const fillColor = (dataset as any).type === 'bar' && useGradient
-                        ? this.chartJsVerticalGradient(solidColor)
-                        : isAreaOrRadar ? this.chartUtils.hexToRgba(solidColor, seriesOpacity) : solidColor;
-                    dataset.backgroundColor = fillColor;
-                    dataset.borderColor = solidColor;
-                    (dataset as any).pointBackgroundColor = solidColor;
-                } catch (err) {
-                    const fallbackColor = this.paletaActual[i % this.paletaActual.length];
-                    dataset.backgroundColor = fallbackColor;
-                    dataset.borderColor = fallbackColor;
-                }
-            });
-        }
-
-        chartConfig.chartLegend = cfg.chartLegend ?? true;
-        chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
-        this.createEdaChartComponent(chartConfig);
-    }
-
-    /**
      * Obtiene los labels apropiados según el tipo de chart
      * Para crear assignedColors correctamente
      */
@@ -492,21 +299,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 // Colors go by series (datasets)
                 return chartConfig.chartDataset?.map(d => d.label || '') || [];
         }
-    }
-
-    /**
-     * Creates a chart component
-     * @param inject chart configuration
-     */
-    private createEdaChartComponent(inject: any) {
-        this.currentConfig = inject;
-        this.entry.clear();
-        this.componentRef = this.entry.createComponent(EdaChartComponent);
-        this.componentRef.instance.inject = inject;
-        this.chartClickSubscription = this.componentRef.instance.onClick.subscribe(
-            (event) => this.onChartClick.emit({...event, query: this.props.query})
-        );
-        this.configUpdated.emit(this.currentConfig);
     }
 
     /**
@@ -2086,26 +1878,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Chart.js scriptable backgroundColor for a barline's bar dataset - base color at the bottom,
-     * lighter towards the top, same convention as eda-bar-d3's SVG gradient. Chart.js has no
-     * declarative gradient like SVG's <linearGradient>; it needs a callback returning a
-     * CanvasGradient built from the chart's own canvas context, which only exists once the chart
-     * has actually laid out (hence the chartArea guard - falls back to the flat color for the
-     * very first layout pass, before it's available).
-     */
-    private chartJsVerticalGradient(hex: string): (context: any) => any {
-        return (context: any) => {
-            const chart = context.chart;
-            const { ctx, chartArea } = chart;
-            if (!chartArea) return hex;
-            const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-            gradient.addColorStop(0, hex);
-            gradient.addColorStop(1, lightenHex(hex, 60));
-            return gradient;
-        };
-    }
-
-    /**
      * Destroys current component
      */
     public destroyComponent() {
@@ -2163,42 +1935,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             }
         }
     }
-
-    public updateChartJSColors() {
-    const config = this.props.config.getConfig();
-    const assignedColors = config['assignedColors'];
-
-    if (!assignedColors?.length) {
-        return;
-    }
-
-    // 1️¡cancelar suscripción Angular
-    if (this.chartClickSubscription) {
-        this.chartClickSubscription.unsubscribe();
-        this.chartClickSubscription = null;
-    }
-
-    const chartInstance = this.componentRef?.instance?.chart;
-
-    if (chartInstance) {
-        try {
-            chartInstance.destroy();
-        } catch (e) {
-            console.warn('Error al destruir chart', e);
-        }
-    }
-
-    setTimeout(() => {
-        // 3️destruir componente
-        if (this.componentRef) {
-            this.componentRef.destroy();
-            this.componentRef = null;
-        }
-
-        // recreate
-        this.renderEdaChart(this.props.edaChart);
-    });
-}
 
     public updateKPIColors() {
         const config = this.props.config.getConfig();

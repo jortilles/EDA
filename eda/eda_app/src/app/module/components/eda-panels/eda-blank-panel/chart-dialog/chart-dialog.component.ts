@@ -1,8 +1,6 @@
 
 import { PanelChartComponent } from './../panel-charts/panel-chart.component';
 import { Component, Input, ViewChild } from '@angular/core';
-import { PointStyle } from 'chart.js';
-import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
 import { StyleProviderService, ChartUtilsService, AlertService, SpinnerService } from '@eda/services/service.index';
@@ -32,8 +30,8 @@ export class ChartDialogComponent {
 
     public dialog: EdaDialog;
     public activeTabIndex: number = 0;
-    public chart: EdaChart;
-    public oldChart: EdaChart;
+    public chart: any;
+    public oldChart: any;
     public addTrend: boolean;
     public addComparative: boolean;
     public numberOfColumns: number;

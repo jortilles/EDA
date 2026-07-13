@@ -32,8 +32,25 @@
   @if(displayVsPercent !== null) {
     <div style="position:relative;">
 
-      <div #svgContainer style="height:16px;">
-        <svg #barSvg [id]="id" width="100%" height="100%"></svg>
+      <!-- Track (soft tint of the fill color) -->
+      <div style="position:relative;height:6px;border-radius:3px;"
+           [style.background-color]="trackColor">
+
+        <!-- Fill (from 0 to the value position) -->
+        <div style="position:absolute;top:0;height:100%;border-radius:3px;transition:left 0.4s,width 0.4s;"
+             [style.left]="barFillLeft + '%'"
+             [style.width]="barFillWidth + '%'"
+             [style.background-color]="fillColor">
+        </div>
+
+        <!-- Marker at the value position -->
+        <div style="position:absolute;top:-7px;transform:translateX(-50%);
+                    font-size:7px;line-height:1;pointer-events:none;"
+             [style.left]="markerLeft + '%'"
+             [style.color]="fillColor">
+          ▼
+        </div>
+
       </div>
 
       <!-- Labels: 0 at the boundary side, scale at the opposite side -->
