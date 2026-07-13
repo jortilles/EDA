@@ -1515,11 +1515,15 @@ public tableNodeExpand(event: any): void {
                 }
             });
             }else{
-                this.graficos.assignedColors = [];
-                this.graficos.chartLabels.forEach(element => {
-                    this.graficos.assignedColors.push({value: element, color: this.graficos.chartColors[0].backgroundColor})
-                });
-                properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
+                // Histogram is single-series: renderBar()'s color resolution (panel-chart.component.ts's
+                // getLabelsForChartType()) matches assignedColors by the DATASET's own label, not by the
+                // bin-range labels (chartLabels) - keying one entry per bin range here meant the lookup
+                // never matched on the next render and silently fell back to a default palette color,
+                // discarding whatever color was just picked in the dialog.
+                this.graficos.assignedColors = [{
+                    value: this.graficos.chartDataset[0]?.label,
+                    color: this.graficos.chartColors[0].backgroundColor
+                }];
             }
         
                 const customFields: Record<string, any> = {};

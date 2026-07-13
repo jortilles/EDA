@@ -142,7 +142,12 @@ export class ChartDialogComponent {
         this.showPointLines = this.controller.params.config.config.getConfig()['showPointLines'] || false;
         this.showPredictionLines = this.controller.params.config.config.getConfig()['showPredictionLines'] || false;
         this.predictionMethod = this.controller.params.config.config.getConfig()['predictionMethod'] || 'Arima'; // Initial value in the dropdown
-        this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] || false;
+        // NOT `|| false` - numberOfColumns is a number (or unset), and transformDataQuery's own
+        // "was it actually provided" check is `!isNaN(numberOfColumns) && numberOfColumns !== null`,
+        // which treats `false` as a valid override (isNaN(false) is false, coerced to 0) - that
+        // silently zeroed out every histogram bin count on the very next dialog option change,
+        // since every setter round-trips this same field back into the shared config.
+        this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] ?? undefined;
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
         this.chartLegend = this.controller.params.config.config.getConfig()['chartLegend'] ?? true;
         this.showGridLines = this.controller.params.config.config.getConfig()['showGridLines'] ?? true;
