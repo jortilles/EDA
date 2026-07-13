@@ -23,15 +23,28 @@ export class D3TooltipService {
       .style('z-index', 9999);
     this.div.transition().duration(200).style('opacity', 0.9);
     this.div.html(html)
-      .style('left', (event.pageX + offsetX) + 'px')
+      .style('left', this.leftFor(event, offsetX) + 'px')
       .style('top', this.topFor(event, offsetY, anchorBottomLeft) + 'px');
   }
 
   move(event: MouseEvent, offsetX: number = 0, offsetY: number = -50, anchorBottomLeft: boolean = false): void {
     if (this.div) {
-      this.div.style('left', (event.pageX + offsetX) + 'px')
+      this.div.style('left', this.leftFor(event, offsetX) + 'px')
         .style('top', this.topFor(event, offsetY, anchorBottomLeft) + 'px');
     }
+  }
+
+  // offsetX normally places the div's own left edge. If it would overflow past the right edge
+  // of the viewport, flip it back to the left of the cursor instead - clamped so it also never
+  // overflows off the LEFT edge (e.g. a very wide tooltip near a narrow window).
+  private leftFor(event: MouseEvent, offsetX: number): number {
+    const left = event.pageX + offsetX;
+    const width = (this.div.node() as HTMLElement).offsetWidth;
+    const viewportRight = window.scrollX + document.documentElement.clientWidth;
+    if (left + width > viewportRight) {
+      return Math.max(window.scrollX, viewportRight - width);
+    }
+    return left;
   }
 
   // offsetX/offsetY normally place the div's own top-left corner. anchorBottomLeft instead
