@@ -1679,9 +1679,10 @@ public tableNodeExpand(event: any): void {
             // Do not overwrite the entire config; only update what is necessary.
             this.panel.content.query.output.config = {
                 ...this.panel.content.query.output.config, // Keep the existing config.
-                assignedColors: response.assignedColors // Add assignedColors
+                assignedColors: response.assignedColors, // Add assignedColors
+                chartLegend: response.chartLegend
             };
-            
+
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService.setNotSaved(true);
@@ -1799,8 +1800,11 @@ public tableNodeExpand(event: any): void {
     
                 // We assign the new colors to the config.
                 this.panel.content.query.output.config = {
+                    ...this.panel.content.query.output.config,
                     colors: response.colors,
-                    assignedColors: chartInstance.assignedColors
+                    assignedColors: chartInstance.assignedColors,
+                    chartLegend: response.chartLegend,
+                    useGradient: response.useGradient
                 };
     
                 const config = new ChartConfig(this.panel.content.query.output.config);
@@ -1830,7 +1834,13 @@ public tableNodeExpand(event: any): void {
                             e.color = response.colors[indexColor]
                         }
                     });
-                    this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
+                    this.panel.content.query.output.config = {
+                        ...this.panel.content.query.output.config,
+                        colors: response.colors,
+                        assignedColors: this.panelChart.componentRef.instance.assignedColors,
+                        chartLegend: response.chartLegend,
+                        useGradient: response.useGradient
+                    };
                     const config = new ChartConfig(this.panel.content.query.output.config);
                     this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
