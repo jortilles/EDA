@@ -89,8 +89,7 @@ export class FunnelDialog implements OnInit, AfterViewChecked {
     config['chartLegend'] = this.chartLegend;
     this.myPanelChartComponent.changeChartType();
 
-    // onCloseFunnelProperties() (eda-blank-panel.component.ts) reads assignedColors/chartLegend
-    // off this response - sending just `{ assignedColors }` used to silently drop chartLegend.
+    // onCloseFunnelProperties() reads chartLegend off this response too.
     this.onClose(EdaDialogCloseEvent.UPDATE, {
       assignedColors: [...this.assignedColors],
       chartLegend: this.chartLegend

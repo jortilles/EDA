@@ -115,8 +115,7 @@ export class SunburstDialogComponent implements OnInit, AfterViewChecked {
 
     this.myPanelChartComponent.changeChartType();
 
-    // onCloseSunburstProperties() (eda-blank-panel.component.ts) reads chartLegend/useGradient
-    // off this response - sending just `{ colors }` used to silently drop both.
+    // onCloseSunburstProperties() reads chartLegend/useGradient off this response too.
     this.onClose(EdaDialogCloseEvent.UPDATE, {
       colors: colorsForConfig,
       chartLegend: this.chartLegend,
