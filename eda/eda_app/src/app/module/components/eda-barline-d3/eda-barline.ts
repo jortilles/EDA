@@ -16,6 +16,8 @@ export class EdaBarlineD3 {
   showGridLines: boolean;
   useGradient: boolean;
   useRoundedBars: boolean;
+  /** Persistent line-vertex dots (not just on hover) - same convention as eda-line-d3. */
+  showPointLines?: boolean;
   linkedDashboard: LinkedDashboardProps;
   /** KPI mini-chart mode (kpitrend): no axes, no grid, no legend, shorter entrance. */
   compact?: boolean;

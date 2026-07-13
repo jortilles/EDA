@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaBarlineD3 } from './eda-barline';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, formatDeNumber, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, roundedTipRectPath } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, formatDeNumber, formatValueLabel, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, roundedTipRectPath } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface BarlineSeriesBase {
@@ -22,6 +22,17 @@ const MAX_CATEGORY_CHARS = 8;
 const GRADIENT_LIGHTEN_AMOUNT = 60;
 const TOOLTIP_OFFSET_X = 20;
 const TOOLTIP_OFFSET_Y = -20;
+// Same hover "pop" convention as eda-bar-d3: narrow bars grow more (relatively) than wide ones so
+// the jump reads similarly in absolute pixels either way, PLUS the bar's own neighbor gap (capped)
+// added on top - on eda-bar-d3 that gap term is often the bigger contributor to how "poppy" the
+// hover reads, so leaving it out (as an earlier version of this file did) made barline's hover-grow
+// feel much weaker than plain bar's despite using the same width-scale formula. See
+// eda-bar-d3.component.ts for the full reasoning. No cross-category neighbor-nudge here (barline is
+// normally a single bar series, so there's no neighbor slot to push out of the way).
+const HOVER_WIDTH_WIDE_THRESHOLD_PX = 30;
+const HOVER_WIDTH_SCALE_NARROW = 1.2;
+const HOVER_WIDTH_SCALE_WIDE = 1.05;
+const HOVER_GAP_CONTRIBUTION_CAP_PX = 12;
 
 @Component({
   standalone: true,
@@ -110,7 +121,22 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.hiddenSeriesIndexes.has(s.originalIndex)) this.hiddenSeriesIndexes.delete(s.originalIndex);
     else this.hiddenSeriesIndexes.add(s.originalIndex);
     this.legendItems[legendIdx].hidden = this.hiddenSeriesIndexes.has(s.originalIndex);
-    this.draw();
+    // Replay the entrance animation (bar grow-in, line sweep-in, point pop-in) on every legend
+    // toggle, not just the very first draw.
+    this.hasRendered = false;
+
+    // Exit animation: draw() only ever grows things IN - without this, the outgoing state would
+    // just vanish instantly the moment draw() clears the SVG, instead of visibly leaving first.
+    const EXIT_DURATION_MS = 200;
+    const currentShapes = this.svg.selectAll(
+      '.eda-barline-bars path, .eda-barline-labels text, .eda-barline-lines path, .eda-barline-point-dot, .eda-barline-point-hit'
+    );
+    if (!currentShapes.empty()) {
+      currentShapes.transition().duration(EXIT_DURATION_MS).style('opacity', 0);
+      setTimeout(() => this.draw(), EXIT_DURATION_MS);
+    } else {
+      this.draw();
+    }
   }
 
   private truncate(label: string): string {
@@ -127,6 +153,21 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
       { offset: '0%', color: hex },
       { offset: '100%', color: lightenHex(hex, GRADIENT_LIGHTEN_AMOUNT) }
     ], { x1: '0%', y1: '100%', x2: '0%', y2: '0%' });
+  }
+
+  private hoverExtraWidth(width: number, gap: number): number {
+    const scale = width > HOVER_WIDTH_WIDE_THRESHOLD_PX ? HOVER_WIDTH_SCALE_WIDE : HOVER_WIDTH_SCALE_NARROW;
+    return width * (scale - 1) + Math.min(gap, HOVER_GAP_CONTRIBUTION_CAP_PX) * 2;
+  }
+
+  private formatLabel(value: number, percentage: number): string {
+    return formatValueLabel(value, percentage, this.inject.showLabels, this.inject.showLabelsPercent);
+  }
+
+  private percentOfSeries(series: BarlineSeriesBase, catIdx: number): number {
+    const total = series.data.reduce((a, b) => (a || 0) + (b || 0), 0);
+    const value = series.data[catIdx] || 0;
+    return total !== 0 ? (value / total) * 100 : 0;
   }
 
   private tooltipHtml(seriesLabel: string, category: string, value: number, hex: string): string {
@@ -193,6 +234,9 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
     const zeroY = valueScale(0);
     const seriesScale = d3.scaleBand<string>().domain(visibleBarSeries.map((_, i) => String(i))).range([0, categoryScale.bandwidth()]).padding(0.1);
     const xForCategoryCenter = (catIdx: number) => (categoryScale(axisCategories[catIdx]) ?? 0) + categoryScale.bandwidth() / 2;
+    // Per-side lateral gap a bar normally has towards the next category - same role as eda-bar-d3's
+    // vBarGap, feeding the hover-grow's gap contribution (see hoverExtraWidth).
+    const vBarGap = (categoryScale.step() - categoryScale.bandwidth()) / 2;
 
     if (!compact) {
       if (this.inject.showGridLines ?? true) {
@@ -225,11 +269,13 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const barsGroup = g.append('g').attr('class', 'eda-barline-bars');
+    const labelsGroup = g.append('g').attr('class', 'eda-barline-labels');
     const lineGroup = g.append('g').attr('class', 'eda-barline-lines');
 
     const ENTRANCE_MS = compact ? 600 : 1500;
     const animateEntrance = !this.hasRendered;
     const singleBarSeries = visibleBarSeries.length === 1;
+    const showLabelsOn = (this.inject.showLabels || this.inject.showLabelsPercent) && !compact;
 
     // --- Bars (grouped, never stacked - a combo's bar half always groups side by side) ---
     if (hasVisibleData) {
@@ -243,6 +289,10 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
           barX(d), valueScale(Math.max(0, d.value)), barWidth, Math.abs(zeroY - valueScale(d.value)),
           false, this.inject.useRoundedBars ?? true, true, d.value < 0);
         const zeroD = (d: any) => roundedTipRectPath(barX(d), zeroY, barWidth, 0, false, this.inject.useRoundedBars ?? true, true, d.value < 0);
+        const hoverExtra = this.hoverExtraWidth(barWidth, vBarGap);
+        const hoverD = (d: any) => roundedTipRectPath(
+          barX(d) - hoverExtra / 2, valueScale(Math.max(0, d.value)), barWidth + hoverExtra, Math.abs(zeroY - valueScale(d.value)),
+          false, this.inject.useRoundedBars ?? true, true, d.value < 0);
 
         const bars = barsGroup.selectAll(`.eda-barline-bar-series-${sIdx}`)
           .data(rows)
@@ -257,12 +307,29 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
           bars.attr('d', finalD);
         }
 
+        if (showLabelsOn) {
+          labelsGroup.selectAll(`.eda-barline-label-${sIdx}`)
+            .data(rows)
+            .join('text')
+            .attr('class', `eda-barline-label-${sIdx}`)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '11px')
+            .style('font-weight', 'bold')
+            .style('font-family', this.fontFamily)
+            .style('fill', series.color)
+            .style('pointer-events', 'none')
+            .attr('x', (d: any) => barX(d) + barWidth / 2)
+            .attr('y', (d: any) => valueScale(d.value) + (d.value < 0 ? 14 : -6))
+            .text((d: any) => this.formatLabel(d.value, this.percentOfSeries(series, d.catIdx)));
+        }
+
         bars
           .on('mouseover', (event: any, d: any) => {
             const target = event.currentTarget;
             d3.select(target).attr('fill', series.color)
               .interrupt('color').transition('color').duration(150)
               .attr('fill', darkenHex(series.color, 40));
+            d3.select(target).interrupt('widen').transition('widen').duration(150).attr('d', hoverD(d));
             this.tooltipService.show(event, this.tooltipHtml(series.label, d.cat, d.value, series.color), 'eda-barline-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
           })
           .on('mousemove', (event: any) => this.tooltipService.move(event, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true))
@@ -271,6 +338,7 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
             d3.select(target).interrupt('color').transition('color').duration(150)
               .attr('fill', series.color)
               .on('end', () => d3.select(target).attr('fill', this.barFill(defs, series.color)));
+            d3.select(target).interrupt('widen').transition('widen').duration(150).attr('d', finalD(d));
             this.tooltipService.hide();
           })
           .on('click', (event: any, d: any) => this.emitClick(d.catIdx, series.label, d.value));
@@ -283,6 +351,8 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
       .x(d => xForCategoryCenter(d.catIndex))
       .y(d => valueScale(d.value as number))
       .curve(d3.curveMonotoneX);
+
+    const showDots = this.inject.showPointLines ?? false;
 
     visibleLineSeries.forEach(series => {
       const points: LinePoint[] = series.data.map((v, catIndex) => ({ catIndex, value: v }));
@@ -317,19 +387,25 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
         .style('fill', 'transparent')
         .style('cursor', 'pointer');
 
-      dotSel.append('circle')
+      const dots = dotSel.append('circle')
         .attr('class', 'eda-barline-point-dot')
         .attr('cx', (d: LinePoint) => xForCategoryCenter(d.catIndex))
         .attr('cy', (d: LinePoint) => valueScale(d.value as number))
-        .attr('r', 0)
+        .attr('r', animateEntrance && showDots ? 0 : (showDots ? 3.5 : 0))
         .style('fill', series.color)
         .style('pointer-events', 'none');
+
+      // Dots pop in once the line itself has finished sweeping in, rather than appearing instantly
+      // alongside it - a beat of separation reads more like a deliberate reveal than a glitch.
+      if (animateEntrance && showDots) {
+        dots.transition().delay(ENTRANCE_MS).duration(250).ease(d3.easeBackOut).attr('r', 3.5);
+      }
 
       dotSel
         .on('mouseover', (event: any, d: LinePoint) => {
           d3.select(event.currentTarget).select('.eda-barline-point-dot')
             .interrupt('grow').transition('grow').duration(150)
-            .attr('r', 4.5)
+            .attr('r', 6)
             .style('fill', darkenHex(series.color, 40));
           this.tooltipService.show(event, this.tooltipHtml(series.label, this.categories[d.catIndex], d.value as number, series.color), 'eda-barline-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
         })
@@ -337,7 +413,7 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
         .on('mouseout', (event: any) => {
           d3.select(event.currentTarget).select('.eda-barline-point-dot')
             .interrupt('grow').transition('grow').duration(150)
-            .attr('r', 0)
+            .attr('r', showDots ? 3.5 : 0)
             .style('fill', series.color);
           this.tooltipService.hide();
         })
