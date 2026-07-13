@@ -1,7 +1,3 @@
-// Eda Chart
-export { EdaChartComponent } from './eda-chart/eda-chart.component';
-
-
 export * from './eda-table/eda-table';
 export * from './eda-table/eda-table.component';
 export * from './eda-table/eda-columns/eda-column-text';

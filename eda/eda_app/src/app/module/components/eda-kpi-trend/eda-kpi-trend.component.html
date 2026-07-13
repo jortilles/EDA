@@ -88,7 +88,7 @@
     <!-- Gráfico: ocupa el resto (ancho en landscape, alto en portrait) -->
     @if(edaChartInject) {
       <div style="flex:1;min-width:0;min-height:0;overflow:hidden;">
-        <eda-chart #edaTrendChart [inject]="edaChartInject" class="h-full w-full"></eda-chart>
+        <eda-barline-d3 #edaTrendChart [inject]="edaChartInject" class="h-full w-full"></eda-barline-d3>
       </div>
     }
 

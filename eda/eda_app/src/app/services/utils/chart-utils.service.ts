@@ -10,7 +10,6 @@ import { ChartJsConfig } from '../../module/components/eda-panels/eda-blank-pane
 import { ChartConfig } from '../../module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-config';
 import { Column } from './../../shared/models/dashboard-models/column.model';
 import { Injectable } from '@angular/core';
-import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
 import { KpiConfig } from '@eda/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/kpi-config';
@@ -452,7 +451,8 @@ export class ChartUtilsService {
             }
 
             //Column count not received, setting default column count
-            if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
+            // typeof guard: isNaN(false) is false, so a stray boolean sentinel would otherwise pass and zero out num_cols.
+            if(typeof numberOfColumns === 'number' && !isNaN(numberOfColumns)){
                 num_cols=numberOfColumns;
             }
 
@@ -467,7 +467,7 @@ export class ChartUtilsService {
                 grupos =   this.generateGruposOneForHistogram( num_cols,min );
             }
             else{
-                if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
+                if(typeof numberOfColumns === 'number' && !isNaN(numberOfColumns)){
                     num_cols=numberOfColumns;
                 }
                 new_data = this.generateNewDataRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max , salto);
@@ -481,7 +481,8 @@ export class ChartUtilsService {
             _output[0]=grupos;
             _output[1] = [{
                 data: new_data,
-                label:  this.histoGramRangesTxt + ' - '  + dataDescription.numericColumns[0].name
+                // renderBar() already rewrites this name into a full description - no need to prefix histoGramRangesTxt too.
+                label: dataDescription.numericColumns[0].name
             }];
 
             output =  _output;
@@ -590,9 +591,10 @@ export class ChartUtilsService {
 
 
     private  generateGruposOneForHistogram(num_cols,min ):any[] {
+        // Must match generateNewDataOneForHistogram's bins (min+i) - the old loop only worked when min===1.
         let grupos = [];
-        for(let i=min; i<=num_cols; i++){
-            grupos.push(i);
+        for(let i=0; i<num_cols; i++){
+            grupos.push(min+i);
         }
 
         return grupos;

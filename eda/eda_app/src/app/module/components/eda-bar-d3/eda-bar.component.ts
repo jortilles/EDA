@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaBarD3 } from './eda-bar';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatValueLabel, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatValueLabel, initD3ResizeObserver, teardownD3Chart, roundedTipRectPath } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface BarSeries {
@@ -71,7 +71,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.id = `bar_${this.inject.id}`;
-    this.chartLegend = this.inject.chartLegend ?? true;
+    this.chartLegend = (this.inject.compact ? false : this.inject.chartLegend) ?? true;
     this.styleProviderService.panelFontFamily.subscribe(v => this.fontFamily = v).unsubscribe();
     this.buildSeries();
   }
@@ -91,7 +91,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   /** Called by the shared chart-dialog.component.ts (unconditionally, no `?.`) on every live color edit. */
   updateChart(): void {
-    this.chartLegend = this.inject.chartLegend ?? true;
+    this.chartLegend = (this.inject.compact ? false : this.inject.chartLegend) ?? true;
     this.hiddenSeriesIndexes.clear();
     this.buildSeries();
     this.draw();
@@ -164,53 +164,14 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Path for a rect rounded only on its "tip" end (the end away from the zero baseline) - top for
-   * vertical bars, right for horizontal ones - so the base where the bar meets the axis (or, for a
-   * stacked bar, the seam with the segment below it) stays flat. A plain <rect rx ry> can't do this,
-   * since it rounds all 4 corners uniformly.
-   *
-   * The base radius is 1/6 of the bar's own cross-dimension (its bandwidth - width for vertical
-   * bars, height for horizontal ones): 1/6 for each of the two rounded corners, leaving the middle
-   * 4/6 of that edge a straight line. The radius is elliptical, not circular - doubled along the
-   * bar's own length axis (ry for vertical, rx for horizontal) for a more pronounced, dome-like cap
-   * rather than a small quarter-circle nub.
-   *
-   * `round=false` forces the radius to 0 - used for stacked segments that aren't their category's
-   * own outermost non-zero one (see lastNonZeroSidx in draw()), so they render as plain flat-cornered
-   * rects while still being a <path> (needed so every segment can use the same grow-in tween).
+   * Thin per-instance wrapper around the shared roundedTipRectPath (d3-xy-chart.util.ts, also used
+   * by eda-barline-d3) - fills in the component's own `useRoundedBars` toggle so call sites below
+   * don't each have to pass it. `round=false` forces flat corners regardless of the toggle - used
+   * for stacked segments that aren't their category's own outermost non-zero one (see
+   * lastNonZeroSidx in draw()).
    */
   private roundedTipRectPath(x: number, y: number, width: number, height: number, horizontal: boolean, round: boolean = true, flip: boolean = false): string {
-    // Global on/off toggle (chart-dialog's "Redondear barras") wins over the per-segment `round`
-    // decision (which is about WHICH segment gets the tip treatment, not whether rounding is
-    // enabled at all) - false here always forces plain flat-cornered rects.
-    const roundedBarsEnabled = this.inject.useRoundedBars ?? true;
-    const baseRadius = round && roundedBarsEnabled ? (horizontal ? height : width) / 10 : 0;
-    const rx = Math.max(0, Math.min(horizontal ? baseRadius * 2 : baseRadius, width / 2));
-    const ry = Math.max(0, Math.min(horizontal ? baseRadius : baseRadius * 2, height / 2));
-    if (horizontal) {
-      if (!flip) {
-        // Positive-direction bar (grows rightward from zero) - round the right end only.
-        return `M${x},${y} L${x + width - rx},${y} A${rx},${ry} 0 0,1 ${x + width},${y + ry} ` +
-          `L${x + width},${y + height - ry} A${rx},${ry} 0 0,1 ${x + width - rx},${y + height} L${x},${y + height} Z`;
-      }
-      // Negative-direction bar (grows leftward from zero, e.g. a pyramid's negated side) - its
-      // outer tip is on the LEFT, so round the left end only instead. Kept in the SAME clockwise
-      // traversal (top edge L->R, right edge, bottom edge R->L, left edge) as the unflipped case
-      // above, with sweep=1 only on the two arcs actually drawn - reversing the traversal instead
-      // (starting top-right and walking left) would need sweep=0, and using sweep=1 there makes
-      // the arc bulge inward (a concave notch) instead of outward.
-      return `M${x + rx},${y} L${x + width},${y} L${x + width},${y + height} L${x + rx},${y + height} ` +
-        `A${rx},${ry} 0 0,1 ${x},${y + height - ry} L${x},${y + ry} A${rx},${ry} 0 0,1 ${x + rx},${y} Z`;
-    }
-    if (!flip) {
-      // Positive-direction bar (grows upward from zero) - round the top end only.
-      return `M${x},${y + height} L${x},${y + ry} A${rx},${ry} 0 0,1 ${x + rx},${y} ` +
-        `L${x + width - rx},${y} A${rx},${ry} 0 0,1 ${x + width},${y + ry} L${x + width},${y + height} Z`;
-    }
-    // Negative-direction bar (grows downward from zero) - its outer tip is on the BOTTOM, so
-    // round the bottom end only instead (same clockwise-traversal reasoning as the horizontal case above).
-    return `M${x},${y} L${x + width},${y} L${x + width},${y + height - ry} A${rx},${ry} 0 0,1 ${x + width - rx},${y + height} ` +
-      `L${x + rx},${y + height} A${rx},${ry} 0 0,1 ${x},${y + height - ry} L${x},${y} Z`;
+    return roundedTipRectPath(x, y, width, height, horizontal, this.inject.useRoundedBars ?? true, round, flip);
   }
 
   /**
@@ -286,6 +247,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     const stacked100 = edaChart === 'stackedbar100';
     const isPyramid = edaChart === 'pyramid';
     const linkedDashboard = this.inject.linkedDashboard;
+    const compact = this.inject.compact ?? false;
 
     const visibleIdx = this.series.map((_, i) => i).filter(i => !this.hiddenSeriesIndexes.has(i));
     const visibleSeries = visibleIdx.map(i => this.series[i]);
@@ -390,7 +352,9 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       const tickLabels = probeScale.ticks(verticalTickCount).map(v => formatAxisValue(v));
       leftMargin = Math.min(Math.max(this.measureMaxLabelWidth(tickLabels, 11) + 16, 40), width * 0.3);
     }
-    const margin = { top: 16, right: 20, bottom: horizontal ? 30 : 50, left: leftMargin };
+    const margin = compact
+      ? { top: 4, right: 4, bottom: 4, left: 4 }
+      : { top: 16, right: 20, bottom: horizontal ? 30 : 50, left: leftMargin };
     const innerWidth = Math.max(width - margin.left - margin.right, 10);
     const innerHeight = Math.max(height - margin.top - margin.bottom, 10);
 
@@ -409,76 +373,78 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     const vBarGap = (categoryScale.step() - categoryScale.bandwidth()) / 2;
     const vSeriesGap = (seriesScale.step() - seriesScale.bandwidth()) / 2;
 
-    // Grid lines (value axis)
-    if (this.inject.showGridLines ?? true) {
-      const gridAxis: any = horizontal
-        ? d3.axisBottom(valueScale).ticks(horizontalTickCount).tickSize(-innerHeight).tickFormat(() => '')
-        : d3.axisLeft(valueScale).ticks(verticalTickCount).tickSize(-innerWidth).tickFormat(() => '');
+    if (!compact) {
+      // Grid lines (value axis)
+      if (this.inject.showGridLines ?? true) {
+        const gridAxis: any = horizontal
+          ? d3.axisBottom(valueScale).ticks(horizontalTickCount).tickSize(-innerHeight).tickFormat(() => '')
+          : d3.axisLeft(valueScale).ticks(verticalTickCount).tickSize(-innerWidth).tickFormat(() => '');
+        g.append('g')
+          .attr('class', 'eda-bar-grid')
+          .attr('transform', horizontal ? `translate(0,${innerHeight})` : 'translate(0,0)')
+          .call(gridAxis);
+      }
+
+      // Axes. Category labels are truncated to a fixed character count and value numbers
+      // abbreviated (500k, 1M...) purely for display - the underlying scale/data keeps the full
+      // values, so click handling, tooltips and datalabels are unaffected.
+      const categoryAxis: any = (horizontal ? d3.axisLeft(categoryScale) : d3.axisBottom(categoryScale))
+        .tickFormat((d: string) => this.truncateLabel(d));
+      const valueAxis: any = (horizontal ? d3.axisBottom(valueScale).ticks(horizontalTickCount) : d3.axisLeft(valueScale).ticks(verticalTickCount))
+        .tickFormat((v: any) => formatAxisValue(v));
+
+      const catAxisG = g.append('g')
+        .attr('class', 'eda-bar-axis')
+        .attr('transform', horizontal ? 'translate(0,0)' : `translate(0,${innerHeight})`)
+        .call(categoryAxis);
+
+      if (!horizontal) {
+        catAxisG.selectAll('text')
+          .style('text-anchor', 'end')
+          .attr('dx', '-0.5em')
+          .attr('dy', '0.4em')
+          .attr('transform', 'rotate(-30)');
+
+        // Chart.js's category axis auto-skips ticks so rotated labels never overlap; a plain d3
+        // axis renders every one regardless of how little room each category gets, so with many
+        // categories crammed into a narrow panel they collide into an unreadable mess. Walk left
+        // to right and only hide a label if it would actually overlap the last one left visible -
+        // using each label's OWN measured width (not a worst-case max for all of them), so short
+        // names still get to show up between long ones instead of being skipped needlessly.
+        const angle = Math.PI / 6; // matches the -30deg rotation above
+        const footprints = axisCategories.map(c => {
+          const w = this.measureTextWidth(this.truncateLabel(c), 11);
+          return w * Math.cos(angle) + 11 * Math.sin(angle);
+        });
+        const step = categoryScale.step();
+        let lastShown = -Infinity;
+        catAxisG.selectAll('.tick').style('display', (_: any, i: number) => {
+          if (lastShown === -Infinity || (i - lastShown) * step >= (footprints[lastShown] + footprints[i]) / 2 + 4) {
+            lastShown = i;
+            return null;
+          }
+          return 'none';
+        });
+      } else {
+        // Same auto-skip idea, vertical direction: hides whichever row labels didn't make the
+        // cut computed above (before the margin was sized), so the left margin - and the visual
+        // density of the chart - only ever account for the labels actually shown.
+        catAxisG.selectAll('.tick').style('display', (_: any, i: number) => horizontalVisibleCatIndexes.has(i) ? null : 'none');
+      }
+
       g.append('g')
-        .attr('class', 'eda-bar-grid')
+        .attr('class', 'eda-bar-axis')
         .attr('transform', horizontal ? `translate(0,${innerHeight})` : 'translate(0,0)')
-        .call(gridAxis);
+        .call(valueAxis);
+
+      // Matches the shared legend's typography (eda-chart-legend.component.css) so axis labels
+      // and legend entries read as the same typographic system.
+      g.selectAll('.eda-bar-axis text')
+        .style('font-family', this.fontFamily)
+        .style('font-size', '11px')
+        .style('font-weight', 500)
+        .style('fill', '#000000');
     }
-
-    // Axes. Category labels are truncated to a fixed character count and value numbers
-    // abbreviated (500k, 1M...) purely for display - the underlying scale/data keeps the full
-    // values, so click handling, tooltips and datalabels are unaffected.
-    const categoryAxis: any = (horizontal ? d3.axisLeft(categoryScale) : d3.axisBottom(categoryScale))
-      .tickFormat((d: string) => this.truncateLabel(d));
-    const valueAxis: any = (horizontal ? d3.axisBottom(valueScale).ticks(horizontalTickCount) : d3.axisLeft(valueScale).ticks(verticalTickCount))
-      .tickFormat((v: any) => formatAxisValue(v));
-
-    const catAxisG = g.append('g')
-      .attr('class', 'eda-bar-axis')
-      .attr('transform', horizontal ? 'translate(0,0)' : `translate(0,${innerHeight})`)
-      .call(categoryAxis);
-
-    if (!horizontal) {
-      catAxisG.selectAll('text')
-        .style('text-anchor', 'end')
-        .attr('dx', '-0.5em')
-        .attr('dy', '0.4em')
-        .attr('transform', 'rotate(-30)');
-
-      // Chart.js's category axis auto-skips ticks so rotated labels never overlap; a plain d3
-      // axis renders every one regardless of how little room each category gets, so with many
-      // categories crammed into a narrow panel they collide into an unreadable mess. Walk left
-      // to right and only hide a label if it would actually overlap the last one left visible -
-      // using each label's OWN measured width (not a worst-case max for all of them), so short
-      // names still get to show up between long ones instead of being skipped needlessly.
-      const angle = Math.PI / 6; // matches the -30deg rotation above
-      const footprints = axisCategories.map(c => {
-        const w = this.measureTextWidth(this.truncateLabel(c), 11);
-        return w * Math.cos(angle) + 11 * Math.sin(angle);
-      });
-      const step = categoryScale.step();
-      let lastShown = -Infinity;
-      catAxisG.selectAll('.tick').style('display', (_: any, i: number) => {
-        if (lastShown === -Infinity || (i - lastShown) * step >= (footprints[lastShown] + footprints[i]) / 2 + 4) {
-          lastShown = i;
-          return null;
-        }
-        return 'none';
-      });
-    } else {
-      // Same auto-skip idea, vertical direction: hides whichever row labels didn't make the
-      // cut computed above (before the margin was sized), so the left margin - and the visual
-      // density of the chart - only ever account for the labels actually shown.
-      catAxisG.selectAll('.tick').style('display', (_: any, i: number) => horizontalVisibleCatIndexes.has(i) ? null : 'none');
-    }
-
-    g.append('g')
-      .attr('class', 'eda-bar-axis')
-      .attr('transform', horizontal ? `translate(0,${innerHeight})` : 'translate(0,0)')
-      .call(valueAxis);
-
-    // Matches the shared legend's typography (eda-chart-legend.component.css) so axis labels
-    // and legend entries read as the same typographic system.
-    g.selectAll('.eda-bar-axis text')
-      .style('font-family', this.fontFamily)
-      .style('font-size', '11px')
-      .style('font-weight', 500)
-      .style('fill', '#000000');
 
     const showLabelsOn = this.inject.showLabels || this.inject.showLabelsPercent;
     const barsGroup = g.append('g').attr('class', 'eda-bar-bars');
@@ -500,7 +466,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     // Staggered grow-in animation, first draw only (see hasRendered below): the bar for category
     // 0 starts growing immediately, category 1 starts once category 0's grow finishes, and so on,
     // so the whole sequence always finishes in ENTRANCE_TOTAL_MS regardless of category count.
-    const ENTRANCE_TOTAL_MS = 2000;
+    const ENTRANCE_TOTAL_MS = compact ? 600 : 2000;
     const animateEntrance = !this.hasRendered;
     const perCatDelay = ENTRANCE_TOTAL_MS / Math.max(visibleCategories.length, 1);
     const singleSeries = visibleSeries.length === 1;

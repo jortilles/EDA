@@ -92,6 +92,25 @@ export class KnobDialogComponent implements OnInit {
         }
     }
 
+    /**
+     * The toggle previously only flipped the local flag that decides which settings section shows
+     * (manual color picker vs. the semaphore gradient strip) - it never reached the actual chart,
+     * so the live preview kept showing whatever mode it was in when the dialog opened. Persisting
+     * into config and forcing changeChartType() re-runs panel-chart.component.ts's renderKnob()
+     * (the same path saveChartConfig() eventually takes), so the preview and the saved result can
+     * never disagree - and syncing assignedColors/limits alongside semaphoreColor here (not just
+     * on final save) keeps any in-progress manual color edit from being lost if the user flips
+     * back to normal mode before saving.
+     */
+    toggleSemaphoreColor(): void {
+        this.semaphoreColor = !this.semaphoreColor;
+        const cfg = this.panelChartConfig.config.getConfig();
+        cfg['semaphoreColor'] = this.semaphoreColor;
+        cfg['assignedColors'] = [...this.assignedColors];
+        cfg['limits'] = [this.min, this.max];
+        this.myPanelChartComponent.changeChartType();
+    }
+
     saveChartConfig() {
         // Apply final colors
         this.applyColorToChart();

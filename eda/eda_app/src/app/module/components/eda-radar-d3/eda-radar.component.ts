@@ -190,6 +190,25 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
     return label.length > maxChars ? label.slice(0, maxChars - 1) + '…' : label;
   }
 
+  // Multiplies (not replaces) each series' own configured opacity when dimmed, so restoring on
+  // mouseout ("seriesLabel: null") just re-applies the normal formula rather than a hardcoded value.
+  private readonly DIM_FACTOR = 0.15;
+
+  /** Highlights one series (its polygon + own vertices) across the whole chart, dimming the rest - null restores everyone to normal. */
+  private highlightSeries(seriesLabel: string | null): void {
+    this.svg.select('g.radar-series-fill-group').selectAll('path.radar-series-fill')
+      .interrupt('highlight').transition('highlight').duration(150)
+      .attr('fill-opacity', (s: RadarSeries) => {
+        const base = (s.opacity ?? 100) / 100;
+        return (seriesLabel === null || s.label === seriesLabel) ? base : base * this.DIM_FACTOR;
+      })
+      .attr('stroke-opacity', (s: RadarSeries) => (seriesLabel === null || s.label === seriesLabel) ? 1 : this.DIM_FACTOR);
+
+    this.svg.select('g.radar-vertex-group').selectAll('circle.radar-vertex')
+      .interrupt('highlight').transition('highlight').duration(150)
+      .style('opacity', (d: any) => (seriesLabel === null || d.series.label === seriesLabel) ? 1 : this.DIM_FACTOR);
+  }
+
   private attachVertexHandlers(selection: any, linkedDashboard: any): void {
     selection
       .on('click', (event: any, d: any) => {
@@ -213,6 +232,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
           .interrupt('grow').transition('grow').duration(150)
           .attr('r', 6)
           .attr('fill', darkenHex(d.series.color, 40));
+        this.highlightSeries(d.series.label);
 
         const category = this.categories[d.point.catIndex];
         const title = `${this.inject.categoryFieldName ? this.inject.categoryFieldName + ' : ' : ''}${category}`;
@@ -232,6 +252,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
           .interrupt('grow').transition('grow').duration(150)
           .attr('r', 4)
           .attr('fill', d.series.color);
+        this.highlightSeries(null);
         this.tooltipService.hide();
       });
   }

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ViewEncapsulation, Input, forwardRef, ChangeDetectorRef, ElementRef, Output, EventEmitter} from '@angular/core';
+import { Component, ChangeDetectionStrategy, ViewEncapsulation, Input, forwardRef, ChangeDetectorRef, ElementRef, Output, EventEmitter, AfterViewInit, AfterViewChecked } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 export const KNOB_VALUE_ACCESSOR: any = {
@@ -16,7 +16,7 @@ export const KNOB_VALUE_ACCESSOR: any = {
             (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
             <path [attr.d]="rangePath()" [attr.stroke-width]="strokeWidth" [attr.stroke]="rangeColor" class="p-knob-range"></path>
             <ng-container *ngIf="gradientMode">
-                <path *ngFor="let seg of visibleSegments"
+                <path *ngFor="let seg of visibleSegments; trackBy: trackBySegmentIndex"
                       [attr.d]="seg.path" [attr.stroke-width]="strokeWidth"
                       [attr.stroke]="seg.color" fill="none" class="p-knob-value"></path>
             </ng-container>
@@ -34,7 +34,7 @@ export const KNOB_VALUE_ACCESSOR: any = {
     styleUrls: ['./knob.css'],
     imports: [CommonModule]
 })
-export class Knob {
+export class Knob implements AfterViewInit, AfterViewChecked {
 
     @Input() styleClass: string;
 
@@ -127,6 +127,50 @@ export class Knob {
     onModelTouched: Function = () => {};
 
     constructor(private cd: ChangeDetectorRef, private el: ElementRef) {}
+
+    /** Stable per-segment identity for gradientMode's *ngFor - visibleSegments is a getter that
+     * builds a brand-new array of new objects on every check, so without trackBy Angular would
+     * treat every change-detection pass (e.g. the outer eda-knob's resize observer calling
+     * detectChanges()) as "all segments removed, all new ones added": it would destroy and
+     * recreate every segment <path>, permanently losing the entrance reveal below (the fresh
+     * paths never get animated, so they'd stay at the CSS opacity:0 they start at - segment index
+     * is stable across recomputes since SEG_COLORS/the band count never changes, only how many
+     * bands are visible. */
+    trackBySegmentIndex(index: number): number {
+        return index;
+    }
+
+    ngAfterViewInit(): void {
+        this.revealValuePaths();
+    }
+
+    /**
+     * Idempotent entrance-reveal check, re-run after every view check (cheap - only touches
+     * paths that don't yet have .p-knob-value-animate) so any segment path that appears or gets
+     * recreated after the initial render - despite trackBy, e.g. before the first genuine layout
+     * pass has given it a non-zero length - still gets its one-time draw-in instead of staying
+     * invisible. Draws the value arc(s) in from nothing, like a stopwatch hand sweeping up to the
+     * reading, via the classic SVG stroke-dasharray/dashoffset reveal (dasharray = the path's own
+     * real length, dashoffset animating that same length down to 0) - the arc's endpoint is
+     * already correct as of first paint, only how much of the stroke is "drawn in" changes.
+     */
+    ngAfterViewChecked(): void {
+        this.revealValuePaths();
+    }
+
+    private revealValuePaths(): void {
+        const paths: NodeListOf<SVGPathElement> = this.el.nativeElement.querySelectorAll('.p-knob-value:not(.p-knob-value-animate)');
+        paths.forEach((path: SVGPathElement) => {
+            const length = path.getTotalLength();
+            if (length === 0) return; // not laid out yet - retry on the next view check
+            path.style.strokeDasharray = `${length}`;
+            path.style.strokeDashoffset = `${length}`;
+            // Force a reflow so the browser registers the starting offset before the reveal
+            // class is added - otherwise it can batch both into one frame and skip the draw-in.
+            path.getBoundingClientRect();
+            path.classList.add('p-knob-value-animate');
+        });
+    }
 
     mapRange(x, inMin, inMax, outMin, outMax) {
         return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
