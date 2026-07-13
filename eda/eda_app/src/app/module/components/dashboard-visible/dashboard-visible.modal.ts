@@ -7,6 +7,7 @@ import { SelectItem } from "primeng/api";
 import { MultiSelectModule } from "primeng/multiselect";
 import { SelectButtonModule } from "primeng/selectbutton";
 import { DashboardPage } from "../../pages/dashboard/dashboard.page";
+import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_default";
 
 @Component({
   selector: 'app-dashboard-visible',
@@ -51,12 +52,11 @@ private initializeForm(): void {
   });
 
   this.visibleTypes = [
-    //{ label: $localize`:@@public:public`, value: 'public', icon: 'fa fa-fw fa-globe' },
     { label: $localize`:@@publicPanel:Publico`, value: 'open', icon: 'fa fa-fw fa-globe' },
     { label: $localize`:@@commonPanel:Común`, value: 'common', icon: 'fa fa-fw fa-globe' },
     { label: $localize`:@@group:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
     { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
-  ];
+  ].filter(type => type.value !== 'open' || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS);
 
   this.form.controls['visible'].setValue(this.dashboard.dashboard.config.visible);
   this.showGroups = this.form.controls['visible'].value === 'group';

@@ -11,7 +11,7 @@ import { SelectButtonModule } from "primeng/selectbutton";
 import { EdaDialog2Component } from "../shared-components.index";
 import * as _ from 'lodash';
 import { DataSourceNamesService } from "@eda/services/shared/datasource-names.service";
-import { SHOW_PUBLIC_TYPE_BUTTON_IN_REPORT_CREATION_MODAL } from "@eda/configs/customizable/customizable_default";
+import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_default";
 
 @Component({
     standalone: true,
@@ -60,13 +60,11 @@ export class CreateDashboardComponent implements OnInit {
         });
 
         this.visibleTypes = [
-            ...(SHOW_PUBLIC_TYPE_BUTTON_IN_REPORT_CREATION_MODAL
-                ? [{ label: $localize`:@@publicPanel:Publico`, value: 'open', icon: 'fa fa-fw fa-globe' }]
-                : []),
+            { label: $localize`:@@publicPanel:Publico`, value: 'open', icon: 'fa fa-fw fa-globe' },
             { label: $localize`:@@commonPanel:Común`, value: 'common', icon: 'fa fa-fw fa-building' },
             { label: $localize`:@@group:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
             { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
-        ];
+        ].filter(type => type.value !== 'open' || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS);
 
         const defaultVisibleType = this.visibleTypes.find(type => type.value === 'private') ?? this.visibleTypes[0];
         this.form.controls['visible'].setValue(defaultVisibleType?.value ?? null);

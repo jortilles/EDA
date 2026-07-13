@@ -10,6 +10,7 @@ import { IconComponent } from "@eda/shared/components/icon/icon.component";
 import { TooltipModule } from "primeng/tooltip";
 import Swal from "sweetalert2";
 import * as _ from "lodash";
+import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_default";
 
 @Component({
   standalone: true,
@@ -186,13 +187,9 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
   }
 
   private initDashboardTypes(): void {
-    this.dashboardTypes = this.defaultDashboardTypes.filter(type => {
-      if (type.type === 'public') {
-        return this.isAdmin;
-      }
-      return true;
-    });
-
+    this.dashboardTypes = this.defaultDashboardTypes.filter(
+      type => type.type !== 'public' || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS
+    );
     this.filteredTypes = [...this.dashboardTypes];
   }
 
