@@ -978,8 +978,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Renders a KpiDeviationComponent
-     * Needs 2 numeric columns: [0] = valor actual, [1] = valor de referencia
+     * Renders a KpiDeviationComponent. Supports the two data shapes the chart-type dropdown
+     * advertises as valid for kpideviation (see chart-utils.service.ts's getNotAllowedChartTypesForDataDescription):
+     *  - 2 numeric columns, no other columns: value/reference are that single row's two columns.
+     *  - 1 numeric column (+ optionally 1 category column): value/reference are row[0]/row[1] of
+     *    that one column.
      */
     private renderEdaKpiDeviation(): void {
         const query = this.props.query;
@@ -992,18 +995,35 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             .map((c: any, i: number) => c.column_type !== 'numeric' ? i : -1)
             .filter((i: number) => i !== -1);
 
-        if (numericIndices.length === 0 || data.values.length < 2) return;
+        if (numericIndices.length === 0) return;
 
-        // Always: row[0] = value, row[1] = reference, first numeric column
-        const numIdx = numericIndices[0];
-        const catIdx = otherIndices.length > 0 ? otherIndices[0] : -1;
-        const decimals: number = query[numIdx]?.minimumFractionDigits || 0;
-        const header: string = catIdx !== -1
-            ? String(data.values[0][catIdx])
-            : (query[numIdx]?.display_name?.default || '');
+        const twoColumnShape = numericIndices.length >= 2 && otherIndices.length === 0;
 
-        const value = this._roundDecimals(Number(data.values[0][numIdx]) || 0, decimals);
-        const refValue = this._roundDecimals(Number(data.values[1][numIdx]) || 0, decimals);
+        let numIdx: number;
+        let decimals: number;
+        let header: string;
+        let value: number;
+        let refValue: number;
+
+        if (twoColumnShape) {
+            if (data.values.length === 0) return;
+            numIdx = numericIndices[0];
+            const refNumIdx = numericIndices[1];
+            decimals = query[numIdx]?.minimumFractionDigits || 0;
+            header = query[numIdx]?.display_name?.default || '';
+            value = this._roundDecimals(Number(data.values[0][numIdx]) || 0, decimals);
+            refValue = this._roundDecimals(Number(data.values[0][refNumIdx]) || 0, decimals);
+        } else {
+            if (data.values.length < 2) return;
+            numIdx = numericIndices[0];
+            const catIdx = otherIndices.length > 0 ? otherIndices[0] : -1;
+            decimals = query[numIdx]?.minimumFractionDigits || 0;
+            header = catIdx !== -1
+                ? String(data.values[0][catIdx])
+                : (query[numIdx]?.display_name?.default || '');
+            value = this._roundDecimals(Number(data.values[0][numIdx]) || 0, decimals);
+            refValue = this._roundDecimals(Number(data.values[1][numIdx]) || 0, decimals);
+        }
 
         const vsPercent = (refValue !== null && refValue !== 0)
             ? Math.round(((value - refValue) / refValue) * 1000) / 10
