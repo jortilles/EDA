@@ -194,7 +194,7 @@
                 <th (click)="sortTable('config.title')" class="text-left cursor-pointer p-3"
                   [ngClass]="{'sort-asc': sortColumn === 'config.title' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.title' && sortDirection === 'desc'}"
                   i18n="@@reportName" style="min-width: 250px">Nombre del Informe</th>
-                <th (click)="sortTable('type')" class="text-center cursor-pointer p-3"
+                <th (click)="sortTable('type')" class="text-left cursor-pointer p-3"
                   [ngClass]="{'sort-asc': sortColumn === 'type' && sortDirection === 'asc', 'sort-desc': sortColumn === 'type' && sortDirection === 'desc'}"
                   i18n="@@reportType" style="min-width: 160px">Tipo</th>
                 <th class="text-left p-3" i18n="@@groups">Grupos</th>
@@ -236,7 +236,7 @@
                       </span>
                     </div>
                   </td>
-                  <td class="p-3 text-center type-container">
+                  <td class="p-3 text-left type-container">
                     <div class="type-row">
                       <span class="type-indicator" [style.background-color]="getDashboardTypeColor(dashboard.type)"></span>
                       @if (editingTypeId !== dashboard._id) {
