@@ -201,12 +201,22 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     const linkedRow = linkedDashboard ? `<h6>${$localize`:@@linkedTo:Vinculado con`} ${linkedDashboard.dashboardName}</h6>` : '';
     // Field name : category, matching treemap/bubblechart/scatter/doughnut's title convention.
     const categoryFieldName = this.inject.categoryFieldName;
-    const title = `<div class="eda-bar-tooltip-title">${categoryFieldName ? categoryFieldName + ' : ' : ''}${category}</div>`;
-    // The series name only earns its own place in the row when there's more than one series to
-    // tell apart - with a single series it's frequently the same value as categoryFieldName
-    // itself (see chart-utils.service.ts's transformDataQuery), making it a redundant repeat of
-    // what the title already said.
-    const seriesPrefix = multiSeries ? `<strong>${seriesLabel}</strong> : ` : '';
+    // stackedbar100's single-text-column mode inverts category/series semantics (same reason as
+    // emitClick's own filterBy/label swap): `category` there is a numeric column's own name
+    // standing in for a category, while `seriesLabel` holds the text column's real, filterable
+    // value that categoryFieldName actually names. Its two-text-column mode needs no such swap -
+    // `category` and `seriesLabel` are both genuine dimension values there already, same as every
+    // other chart type.
+    const measureAsCategory = this.inject.stackedBar100MeasureAsCategory === true;
+    const titleValue = measureAsCategory ? seriesLabel : category;
+    const title = `<div class="eda-bar-tooltip-title">${categoryFieldName ? categoryFieldName + ' : ' : ''}${titleValue}</div>`;
+    // With several series on screen, seriesLabel is what tells them apart (e.g. a grouped bar's
+    // sub-category value) and has to stay in the row regardless of what it actually names.
+    // With just one, there's nothing to disambiguate, so it's replaced by valueFieldName (the
+    // real numeric column's name) when available - seriesLabel there is really the category
+    // field's name, not the value's own name (see transformDataQuery's single-dimension branch).
+    const valueName = measureAsCategory ? category : multiSeries ? seriesLabel : (this.inject.valueFieldName || seriesLabel);
+    const seriesPrefix = `<strong>${valueName}</strong> : `;
     if (isPyramid) {
       return title + `<div class="eda-bar-tooltip-row">${swatch}${seriesPrefix}${formatDeNumber(Math.abs(value))}</div>${linkedRow}`;
     }
@@ -800,12 +810,19 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             .style('pointer-events', 'none')
             .attr('class', `eda-bar-label-${sIdx}`)
             .attr('text-anchor', (d: any) => horizontal ? (d.value < 0 ? 'end' : 'start') : 'middle')
+            // Vertical bars: a positive bar's tip is its top, so the label sits 6px ABOVE it
+            // (default alphabetic baseline already extends the text upward from y, away from the
+            // bar). A negative bar's tip is its bottom instead, so the label needs to sit 6px
+            // BELOW it - just flipping the y offset isn't enough on its own, since alphabetic
+            // baseline would still draw the text upward from that y, back into the bar; switching
+            // to a 'hanging' baseline draws it downward from y instead, clear of the bar.
+            .style('dominant-baseline', (d: any) => !horizontal && d.value < 0 ? 'hanging' : null)
             .attr('x', (d: any) => horizontal
               ? valueScale(d.value) + (d.value < 0 ? -6 : 6)
               : (categoryScale(d.cat) || 0) + (singleSeries ? 0 : seriesScale(String(sIdx))) + (singleSeries ? categoryScale.bandwidth() : seriesScale.bandwidth()) / 2)
             .attr('y', (d: any) => horizontal
               ? (categoryScale(d.cat) || 0) + (singleSeries ? 0 : seriesScale(String(sIdx))) + (singleSeries ? categoryScale.bandwidth() : seriesScale.bandwidth()) / 2
-              : valueScale(d.value) - 6)
+              : valueScale(d.value) + (d.value < 0 ? 6 : -6))
             .text((d: any) => this.formatLabel(d.value, this.percentOfSeries(series, d.catIdx)))
           : null;
 

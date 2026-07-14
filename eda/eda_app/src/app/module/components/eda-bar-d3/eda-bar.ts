@@ -7,6 +7,14 @@ export class EdaBarD3 {
   edaChart: string;
   chartLabels: string[];
   categoryFieldName?: string;
+  /** Numeric/measure field name for the tooltip's value row - only set when the chart has a
+   * single numeric column, since with several (each becoming its own series) the series' own
+   * label already IS that series' measure name. */
+  valueFieldName?: string;
+  /** stackedbar100 with a single text column + several numeric ones: each numeric column's own
+   * name stands in for `category` (see transformDataQuery), so the tooltip needs to swap
+   * category/series around - see tooltipHtml() in eda-bar.component.ts. */
+  stackedBar100MeasureAsCategory?: boolean;
   chartDataset: any[];
   chartColors: any[];
   assignedColors: any[];

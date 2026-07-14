@@ -1427,6 +1427,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         // Category axis field name (e.g. "Departamento") for the tooltip title - histogram's
         // "categories" are numeric bin ranges rather than a real column, so there's no field name.
         inject.categoryFieldName = this.props.edaChart !== 'histogram' ? dataDescription.otherColumns[0]?.name : undefined;
+        // Measure name for the tooltip's value row - only meaningful when there's a single
+        // numeric column; with several, each series' own label already names its own measure.
+        inject.valueFieldName = dataDescription.numericColumns.length === 1 ? dataDescription.numericColumns[0]?.name : undefined;
+        // stackedbar100 has two unrelated data shapes (see transformDataQuery): with ONE text
+        // column and several numeric ones, each numeric column's own NAME stands in for a
+        // category (chartData[0]/`category` holds e.g. "Quantityordered", not a real dimension
+        // value) while the text column's values become the series - so category/series need to
+        // swap places in the tooltip (see tooltipHtml). With TWO text columns, `category` and
+        // `seriesLabel` are both genuine dimension values already and the default (non-swapped)
+        // template is correct as-is, same as every other chart type.
+        inject.stackedBar100MeasureAsCategory = this.props.edaChart === 'stackedbar100' && dataDescription.otherColumns.length === 1;
         inject.chartDataset = chartData[1];
 
         let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
