@@ -54,9 +54,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     this.firstColLabels = [...new Set(this.firstColLabels)];
     this.assignedColors = this.inject.assignedColors;
 
-    // Set synchronously here (draw() recomputes the same thing later) so legendItems isn't still
-    // `[]` the first time Angular checks <eda-chart-legend>'s [items] binding - otherwise draw()
-    // mutating it moments later (from ngAfterViewInit) trips NG0100 in dev mode.
+    // Set synchronously here (draw() recomputes it later) to avoid an NG0100 on the first check.
     const colorsTree = this.assignedColors?.length > 0 ? this.assignedColors.map(item => item.color) : this.colors;
     this.legendItems = this.firstColLabels.map((label, i) => ({
       label: String(label),
