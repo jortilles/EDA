@@ -254,7 +254,10 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     // A category whose only non-zero value belonged to a now-hidden series (toggled off from the
     // legend) has nothing left to show - drop it entirely (row, axis label and all) rather than
     // leaving an empty gap where it used to be.
-    const visibleCategories = this.categories.filter((cat, catIdx) => visibleSeries.some(s => (s.data[catIdx] || 0) !== 0));
+    // Histograms are exempt: a zero-count bin is a meaningful gap, not noise to hide.
+    const visibleCategories = edaChart === 'histogram'
+      ? this.categories
+      : this.categories.filter((cat, catIdx) => visibleSeries.some(s => (s.data[catIdx] || 0) !== 0));
     // Every series hidden (or all of the still-visible ones happen to be zero everywhere) - there's
     // nothing to plot, but the chart shouldn't go completely blank: keep showing the axes/grid as a
     // stable frame (using the full, un-filtered category list and value domain), just with no bars
