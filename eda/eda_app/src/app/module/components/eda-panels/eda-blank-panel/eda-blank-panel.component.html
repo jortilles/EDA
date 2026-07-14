@@ -1274,36 +1274,12 @@
   <app-cumsum-alert-dialog [controller]="cumsumAlertController"></app-cumsum-alert-dialog>
 }
 
-@if(sankeyController){
-  <app-sankey-dialog [controller]="sankeyController"></app-sankey-dialog>
-}
-
-@if(bubblechartController){
-  <app-bubblechart-dialog [controller]="bubblechartController"></app-bubblechart-dialog>
-}
-
-@if(treeMapController){
-  <app-tree-map-dialog [controller]="treeMapController"></app-tree-map-dialog>
+@if(categoryChartController){
+  <app-category-chart-dialog [controller]="categoryChartController"></app-category-chart-dialog>
 }
 
 @if(treeTableController){
   <app-tree-table-dialog [controller]="treeTableController"></app-tree-table-dialog>
-}
-
-@if(funnelController){
-  <app-funnel-dialog [controller]="funnelController"></app-funnel-dialog>
-}
-
-@if(doughnutController){
-  <app-doughnut-dialog [controller]="doughnutController"></app-doughnut-dialog>
-}
-
-@if(polarAreaController){
-  <app-polar-area-dialog [controller]="polarAreaController"></app-polar-area-dialog>
-}
-
-@if(scatterPlotController){
-  <app-scatter-plot-dialog [controller]="scatterPlotController"></app-scatter-plot-dialog>
 }
 
 @if(linkDashboardController){
@@ -1312,10 +1288,6 @@
 
 @if(knobController){
   <knob-dialog [controller]="knobController"> </knob-dialog>
-}
-
-@if(sunburstController){
-  <sunburst-dialog [controller]="sunburstController"> </sunburst-dialog>
 }
 
 @if(contextMenu){
