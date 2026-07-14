@@ -701,7 +701,15 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
               const percentage = stacked100 ? (series.data[catIdx] || 0) : this.percentOfSeries(series, catIdx);
               return this.formatLabel(value, percentage);
             })
+            .style('opacity', animateEntrance ? 0 : 1)
           : null;
+
+        // Left-to-right sequence, same as the segments themselves: a label only fades in once its
+        // own segment (catDelay(d) above) has finished growing.
+        if (animateEntrance && labelSel) {
+          const LABEL_FADE_MS = 200;
+          labelSel.transition().delay((d: any) => catDelay(d) + segmentDuration).duration(LABEL_FADE_MS).style('opacity', 1);
+        }
 
         bars
           .on('click', (event: any, d: any) => {
@@ -896,7 +904,16 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             .text((d: any) => horizontal
               ? this.formatLabel(d.value, this.percentOfSeries(series, d.catIdx))
               : this.formatCompactBarLabel(d.value, this.percentOfSeries(series, d.catIdx), barOwnWidth))
+            .style('opacity', animateEntrance ? 0 : 1)
           : null;
+
+        // Left-to-right sequence, same as the bars themselves: a label only fades in once its own
+        // bar (catDelay(d) above) has finished growing, rather than every label appearing at once
+        // the instant draw() runs while the bars are still mid-animation.
+        if (animateEntrance && labelSel) {
+          const LABEL_FADE_MS = 200;
+          labelSel.transition().delay((d: any) => catDelay(d) + perCatDelay).duration(LABEL_FADE_MS).style('opacity', 1);
+        }
 
         bars
           .on('click', (event: any, d: any) => emitClick(d.catIdx, series.label, d.value))
