@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaBarD3 } from './eda-bar';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatValueLabel, initD3ResizeObserver, teardownD3Chart, roundedTipRectPath } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatDePercent, formatValueLabel, initD3ResizeObserver, teardownD3Chart, roundedTipRectPath } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface BarSeries {
@@ -226,15 +226,51 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   private measureCanvas: HTMLCanvasElement;
 
-  private measureTextWidth(label: string, fontSizePx: number): number {
+  private measureTextWidth(label: string, fontSizePx: number, bold: boolean = false): number {
     if (!this.measureCanvas) this.measureCanvas = document.createElement('canvas');
     const ctx = this.measureCanvas.getContext('2d');
-    ctx.font = `${fontSizePx}px ${this.fontFamily === 'inherit' ? 'sans-serif' : this.fontFamily}`;
+    ctx.font = `${bold ? 'bold ' : ''}${fontSizePx}px ${this.fontFamily === 'inherit' ? 'sans-serif' : this.fontFamily}`;
     return ctx.measureText(label).width;
   }
 
   private measureMaxLabelWidth(labels: string[], fontSizePx: number): number {
     return labels.reduce((max, label) => Math.max(max, this.measureTextWidth(label, fontSizePx)), 0);
+  }
+
+  /**
+   * Data-label number formatter for vertical bars: falls back to a K/M/MM-abbreviated form
+   * (localized unit) when the full number (rendered bold, same as the label itself) would be
+   * wider than the bar it sits on/in - e.g. "3.123.123" -> "3,12 M" - so it doesn't overflow past
+   * the narrow column of a chart with many categories. Tries 2 decimals first; if even that
+   * abbreviated form is still too wide for the column, drops the decimals too ("3 M").
+   */
+  private compactNumber(value: number, maxWidthPx: number): string {
+    const full = formatDeNumber(value);
+    if (this.measureTextWidth(full, 11, true) <= maxWidthPx) return full;
+
+    const abs = Math.abs(value);
+    let divisor: number, unit: string;
+    if (abs >= 1_000_000_000) { divisor = 1_000_000_000; unit = $localize`:@@edaBarUnitBillion:MM`; }
+    else if (abs >= 1_000_000) { divisor = 1_000_000; unit = $localize`:@@edaBarUnitMillion:M`; }
+    else if (abs >= 1_000) { divisor = 1_000; unit = $localize`:@@edaBarUnitThousand:K`; }
+    else return full;
+
+    const withDecimals = `${(value / divisor).toLocaleString('de-DE', { maximumFractionDigits: 2 })} ${unit}`;
+    if (this.measureTextWidth(withDecimals, 11, true) <= maxWidthPx) return withDecimals;
+
+    return `${(value / divisor).toLocaleString('de-DE', { maximumFractionDigits: 0 })} ${unit}`;
+  }
+
+  /** Same value/percentage combining convention as formatValueLabel, but with the value portion
+   * run through compactNumber() so it can abbreviate to fit maxWidthPx - only meaningful for
+   * vertical bars, where the label sits centered on/in a single fixed-width bar. */
+  private formatCompactBarLabel(value: number, percentage: number, maxWidthPx: number): string {
+    const showValue = this.inject.showLabels;
+    const showPercent = this.inject.showLabelsPercent;
+    if (showValue && showPercent) return `${this.compactNumber(value, maxWidthPx)} - ${formatDePercent(percentage)}`;
+    if (showValue) return this.compactNumber(value, maxWidthPx);
+    if (showPercent) return formatDePercent(percentage);
+    return '';
   }
 
   private readonly maxCategoryChars = 8;
@@ -802,6 +838,16 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
           }
         }
 
+        // Vertical bars only: below this plot height there's no room to sit the label above the
+        // bar readably, so it moves INSIDE the bar (near its tip) instead, in white - recomputed
+        // from the current innerHeight on every draw() (including resize-triggered ones), same as
+        // the bars themselves, so shrinking/growing the panel actually flips both together instead
+        // of only ever recoloring a label that never moves off its "outside" position.
+        const labelInsideBar = !horizontal && innerHeight <= 150;
+        // Own width of the single bar/slot a vertical label sits centered on - constant across
+        // every category (scaleBand gives every band the same width) - used to decide when the
+        // label text needs to shrink to a compact K/M/MM form (see formatCompactBarLabel).
+        const barOwnWidth = singleSeries ? categoryScale.bandwidth() : seriesScale.bandwidth();
         const labelSel = showLabelsOn
           ? labelsGroup.selectAll(`.eda-bar-label-${sIdx}`)
             .data(rows)
@@ -813,20 +859,29 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             .style('pointer-events', 'none')
             .attr('class', `eda-bar-label-${sIdx}`)
             .attr('text-anchor', (d: any) => horizontal ? (d.value < 0 ? 'end' : 'start') : 'middle')
-            // Vertical bars: a positive bar's tip is its top, so the label sits 6px ABOVE it
-            // (default alphabetic baseline already extends the text upward from y, away from the
-            // bar). A negative bar's tip is its bottom instead, so the label needs to sit 6px
-            // BELOW it - just flipping the y offset isn't enough on its own, since alphabetic
-            // baseline would still draw the text upward from that y, back into the bar; switching
-            // to a 'hanging' baseline draws it downward from y instead, clear of the bar.
-            .style('dominant-baseline', (d: any) => !horizontal && d.value < 0 ? 'hanging' : null)
+            // Vertical bars: a positive bar's tip is its top. With room to sit ABOVE it, the label
+            // sits 6px above (default alphabetic baseline already extends the text upward from y,
+            // away from the bar). Without room, it instead sits 14px INSIDE the bar, below the tip
+            // - a 'hanging' baseline there draws the text downward from y, keeping it inside the
+            // bar instead of floating in the (now too-short) space above it.
+            // A negative bar's tip is its bottom instead, so every case mirrors: outside sits below
+            // the tip (hanging baseline), inside sits above it, back into the bar (default baseline).
+            .style('dominant-baseline', (d: any) => {
+              if (horizontal) return null;
+              return (labelInsideBar ? d.value >= 0 : d.value < 0) ? 'hanging' : null;
+            })
             .attr('x', (d: any) => horizontal
               ? valueScale(d.value) + (d.value < 0 ? -6 : 6)
               : (categoryScale(d.cat) || 0) + (singleSeries ? 0 : seriesScale(String(sIdx))) + (singleSeries ? categoryScale.bandwidth() : seriesScale.bandwidth()) / 2)
-            .attr('y', (d: any) => horizontal
-              ? (categoryScale(d.cat) || 0) + (singleSeries ? 0 : seriesScale(String(sIdx))) + (singleSeries ? categoryScale.bandwidth() : seriesScale.bandwidth()) / 2
-              : valueScale(d.value) + (d.value < 0 ? 6 : -6))
-            .text((d: any) => this.formatLabel(d.value, this.percentOfSeries(series, d.catIdx)))
+            .attr('y', (d: any) => {
+              if (horizontal) return (categoryScale(d.cat) || 0) + (singleSeries ? 0 : seriesScale(String(sIdx))) + (singleSeries ? categoryScale.bandwidth() : seriesScale.bandwidth()) / 2;
+              const outsideOffset = d.value < 0 ? 6 : -6;
+              const insideOffset = d.value < 0 ? -14 : 14;
+              return valueScale(d.value) + (labelInsideBar ? insideOffset : outsideOffset);
+            })
+            .text((d: any) => horizontal
+              ? this.formatLabel(d.value, this.percentOfSeries(series, d.catIdx))
+              : this.formatCompactBarLabel(d.value, this.percentOfSeries(series, d.catIdx), barOwnWidth))
           : null;
 
         bars
