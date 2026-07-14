@@ -170,6 +170,27 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
     return total !== 0 ? (value / total) * 100 : 0;
   }
 
+  /**
+   * Delay (ms) at which the entrance line-sweep's (right-to-left) stroke-dashoffset transition
+   * visually reaches a given x position - the mirror of eda-line-d3's lineReachDelay. Same first
+   * step (binary search via getPointAtLength to find how far along the path's own length that x
+   * sits, since arc length isn't proportional to x on a curveMonotoneX curve), but the second
+   * step inverts the OTHER way: this sweep reveals length from the path's END backward (see the
+   * -totalLength starting dashoffset where this is used), so a point near the end becomes visible
+   * early and one near the start becomes visible late.
+   */
+  private lineReachDelayFromEnd(pathNode: SVGPathElement, totalLength: number, targetX: number, durationMs: number): number {
+    if (totalLength <= 0) return 0;
+    let lo = 0, hi = totalLength;
+    for (let i = 0; i < 30; i++) {
+      const mid = (lo + hi) / 2;
+      if (pathNode.getPointAtLength(mid).x < targetX) lo = mid; else hi = mid;
+    }
+    const lengthFraction = (lo + hi) / 2 / totalLength;
+    const timeFraction = 1 - Math.cbrt(lengthFraction);
+    return durationMs * timeFraction;
+  }
+
   private tooltipHtml(seriesLabel: string, category: string, value: number, hex: string): string {
     const linkedDashboard = this.inject.linkedDashboard;
     const linkedRow = linkedDashboard ? `<h6>${$localize`:@@linkedTo:Vinculado con`} ${linkedDashboard.dashboardName}</h6>` : '';
@@ -204,25 +225,44 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
     const visibleLineSeries = this.lineSeries.filter(s => !this.hiddenSeriesIndexes.has(s.originalIndex));
     const hasVisibleData = (visibleBarSeries.length > 0 || visibleLineSeries.length > 0) && this.categories.length > 0;
     const axisCategories = this.categories;
+    // With a second axis, the lines get their own independent scale (and a right-side axis) so a
+    // measure on a very different magnitude from the bars (e.g. a percentage line over a revenue
+    // count) reads at its own natural scale instead of being flattened onto the bars' range.
+    // Without it, bars and lines keep sharing one combined domain/axis - existing behavior.
+    const secondAxis = this.inject.secondAxis ?? false;
 
-    let valueMin = 0, valueMax = 0;
     const barSource = hasVisibleData ? visibleBarSeries : this.barSeries;
     const lineSource = hasVisibleData ? visibleLineSeries : this.lineSeries;
-    barSource.forEach(s => s.data.forEach(v => { if (v === null) return; valueMin = Math.min(valueMin, v); valueMax = Math.max(valueMax, v); }));
-    lineSource.forEach(s => s.data.forEach(v => { if (v === null) return; valueMin = Math.min(valueMin, v); valueMax = Math.max(valueMax, v); }));
+    let barMin = 0, barMax = 0, lineMin = 0, lineMax = 0;
+    barSource.forEach(s => s.data.forEach(v => { if (v === null) return; barMin = Math.min(barMin, v); barMax = Math.max(barMax, v); }));
+    lineSource.forEach(s => s.data.forEach(v => { if (v === null) return; lineMin = Math.min(lineMin, v); lineMax = Math.max(lineMax, v); }));
+
+    let valueMin = secondAxis ? barMin : Math.min(barMin, lineMin);
+    let valueMax = secondAxis ? barMax : Math.max(barMax, lineMax);
     if (valueMax === valueMin) valueMax = valueMin + 1;
+
+    let lineValueMin = secondAxis ? lineMin : valueMin;
+    let lineValueMax = secondAxis ? lineMax : valueMax;
+    if (lineValueMax === lineValueMin) lineValueMax = lineValueMin + 1;
 
     const tickCount = computeYTickCount(height);
 
     let leftMargin = 8;
+    let rightMargin = 20;
     if (!compact) {
       const probeScale = d3.scaleLinear().domain([valueMin, valueMax]).nice();
       const tickLabels = probeScale.ticks(tickCount).map(v => formatAxisValue(v));
       leftMargin = Math.min(Math.max(measureMaxLabelWidth(tickLabels, 11, this.fontFamily) + 16, 40), width * 0.3);
+
+      if (secondAxis) {
+        const lineProbeScale = d3.scaleLinear().domain([lineValueMin, lineValueMax]).nice();
+        const lineTickLabels = lineProbeScale.ticks(tickCount).map(v => formatAxisValue(v));
+        rightMargin = Math.min(Math.max(measureMaxLabelWidth(lineTickLabels, 11, this.fontFamily) + 16, 40), width * 0.3);
+      }
     }
     const margin = compact
       ? { top: 4, right: 4, bottom: 4, left: 4 }
-      : { top: 16, right: 20, bottom: 50, left: leftMargin };
+      : { top: 16, right: rightMargin, bottom: 50, left: leftMargin };
     const innerWidth = Math.max(width - margin.left - margin.right, 10);
     const innerHeight = Math.max(height - margin.top - margin.bottom, 10);
 
@@ -232,6 +272,11 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
     const categoryScale = d3.scaleBand<string>().domain(axisCategories).range([0, innerWidth]).padding(0.25);
     const valueScale = d3.scaleLinear().domain([valueMin, valueMax]).nice().range([innerHeight, 0]);
     const zeroY = valueScale(0);
+    // Lines read off their own scale only when secondAxis is on - otherwise they share the bars'
+    // valueScale, same as before.
+    const lineValueScale = secondAxis
+      ? d3.scaleLinear().domain([lineValueMin, lineValueMax]).nice().range([innerHeight, 0])
+      : valueScale;
     const seriesScale = d3.scaleBand<string>().domain(visibleBarSeries.map((_, i) => String(i))).range([0, categoryScale.bandwidth()]).padding(0.1);
     const xForCategoryCenter = (catIdx: number) => (categoryScale(axisCategories[catIdx]) ?? 0) + categoryScale.bandwidth() / 2;
     // Per-side lateral gap a bar normally has towards the next category - same role as eda-bar-d3's
@@ -240,6 +285,8 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (!compact) {
       if (this.inject.showGridLines ?? true) {
+        // Grid always follows the bars' (left) axis - two overlapping grids from two different
+        // scales would just clash visually, and the bars are the chart's primary reference.
         g.append('g')
           .attr('class', 'eda-barline-grid')
           .call(d3.axisLeft(valueScale).ticks(tickCount).tickSize(-innerWidth).tickFormat(() => '' as any));
@@ -265,6 +312,14 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
       });
 
       g.append('g').attr('class', 'eda-barline-axis').call(valueAxis as any);
+
+      if (secondAxis) {
+        const lineValueAxis = d3.axisRight(lineValueScale).ticks(tickCount).tickFormat((v: any) => formatAxisValue(v));
+        g.append('g').attr('class', 'eda-barline-axis eda-barline-axis-right')
+          .attr('transform', `translate(${innerWidth},0)`)
+          .call(lineValueAxis as any);
+      }
+
       g.selectAll('.eda-barline-axis text').style('font-family', this.fontFamily).style('font-size', '11px').style('font-weight', 500).style('fill', '#000000');
     }
 
@@ -276,6 +331,11 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
     const animateEntrance = !this.hasRendered;
     const singleBarSeries = visibleBarSeries.length === 1;
     const showLabelsOn = (this.inject.showLabels || this.inject.showLabelsPercent) && !compact;
+    // Bars grow left to right, one category at a time (bar i's own growth finishes exactly when
+    // bar i+1 starts) - same staggered-handoff convention as eda-bar-d3, so the whole sequence
+    // always finishes in ENTRANCE_MS regardless of category count.
+    const perCatDelay = ENTRANCE_MS / Math.max(axisCategories.length, 1);
+    const catDelay = (catIdx: number) => catIdx * perCatDelay;
 
     // --- Bars (grouped, never stacked - a combo's bar half always groups side by side) ---
     if (hasVisibleData) {
@@ -302,13 +362,15 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
           .style('cursor', 'pointer');
 
         if (animateEntrance) {
-          bars.attr('d', zeroD).transition().duration(ENTRANCE_MS).ease(d3.easeCubicOut).attr('d', finalD);
+          bars.attr('d', zeroD)
+            .transition().delay((d: any) => catDelay(d.catIdx)).duration(perCatDelay).ease(d3.easeCubicOut)
+            .attr('d', finalD);
         } else {
           bars.attr('d', finalD);
         }
 
         if (showLabelsOn) {
-          labelsGroup.selectAll(`.eda-barline-label-${sIdx}`)
+          const labelSel = labelsGroup.selectAll(`.eda-barline-label-${sIdx}`)
             .data(rows)
             .join('text')
             .attr('class', `eda-barline-label-${sIdx}`)
@@ -320,7 +382,15 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
             .style('pointer-events', 'none')
             .attr('x', (d: any) => barX(d) + barWidth / 2)
             .attr('y', (d: any) => valueScale(d.value) + (d.value < 0 ? 14 : -6))
-            .text((d: any) => this.formatLabel(d.value, this.percentOfSeries(series, d.catIdx)));
+            .text((d: any) => this.formatLabel(d.value, this.percentOfSeries(series, d.catIdx)))
+            .style('opacity', animateEntrance ? 0 : 1);
+
+          // Left-to-right sequence, same as the bars: a label only fades in once its own bar has
+          // finished growing.
+          if (animateEntrance) {
+            const LABEL_FADE_MS = 200;
+            labelSel.transition().delay((d: any) => catDelay(d.catIdx) + perCatDelay).duration(LABEL_FADE_MS).style('opacity', 1);
+          }
         }
 
         bars
@@ -349,14 +419,13 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
     const lineGen: any = d3.line<LinePoint>()
       .defined(d => d.value !== null)
       .x(d => xForCategoryCenter(d.catIndex))
-      .y(d => valueScale(d.value as number))
+      .y(d => lineValueScale(d.value as number))
       .curve(d3.curveMonotoneX);
 
     const showDots = this.inject.showPointLines ?? false;
 
     visibleLineSeries.forEach(series => {
       const points: LinePoint[] = series.data.map((v, catIndex) => ({ catIndex, value: v }));
-      const zeroPoints: LinePoint[] = points.map(p => ({ catIndex: p.catIndex, value: p.value === null ? null : 0 }));
 
       const strokePath = lineGroup.append('path')
         .datum(points)
@@ -365,11 +434,29 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
         .attr('stroke', series.color)
         .attr('stroke-width', 2)
         .style('pointer-events', 'none')
-        .attr('d', animateEntrance ? lineGen(zeroPoints) : lineGen(points));
-      if (series.dash) strokePath.attr('stroke-dasharray', series.dash);
+        .attr('d', lineGen(points));
+
+      // Computed unconditionally (cheap) rather than only inside the animateEntrance branch below,
+      // since the dots' own pop-in timing further down also needs this path's geometry.
+      const pathNode = strokePath.node() as SVGPathElement;
+      const pathLength = pathNode.getTotalLength();
 
       if (animateEntrance) {
-        strokePath.transition().duration(ENTRANCE_MS).ease(d3.easeCubicOut).attr('d', lineGen(points));
+        // Right-to-left sweep - the mirror image of eda-line-d3's left-to-right one: same
+        // dasharray-as-total-length trick, but starting dashoffset at -length instead of
+        // +length. Both starting offsets hide the stroke completely (dasharray's [dash,gap]
+        // period is 2*length, and -length ≡ +length mod 2*length), but they reveal from
+        // opposite ends as the offset animates toward 0 - +length reveals from the path's own
+        // start (left) outward, -length reveals from its end (right) backward. See
+        // lineReachDelayFromEnd below for the matching per-point timing.
+        strokePath.attr('stroke-dasharray', `${pathLength} ${pathLength}`).attr('stroke-dashoffset', -pathLength)
+          .transition().duration(ENTRANCE_MS).ease(d3.easeCubicOut)
+          .attr('stroke-dashoffset', 0)
+          .on('end', function () {
+            d3.select(this).attr('stroke-dasharray', series.dash || null);
+          });
+      } else if (series.dash) {
+        strokePath.attr('stroke-dasharray', series.dash);
       }
 
       const vertexData = points.filter(p => p.value !== null);
@@ -382,23 +469,32 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
       dotSel.append('circle')
         .attr('class', 'eda-barline-point-hit')
         .attr('cx', (d: LinePoint) => xForCategoryCenter(d.catIndex))
-        .attr('cy', (d: LinePoint) => valueScale(d.value as number))
+        .attr('cy', (d: LinePoint) => lineValueScale(d.value as number))
         .attr('r', 8)
         .style('fill', 'transparent')
         .style('cursor', 'pointer');
 
+      const baseRadius = showDots ? 3.5 : 0;
       const dots = dotSel.append('circle')
         .attr('class', 'eda-barline-point-dot')
         .attr('cx', (d: LinePoint) => xForCategoryCenter(d.catIndex))
-        .attr('cy', (d: LinePoint) => valueScale(d.value as number))
-        .attr('r', animateEntrance && showDots ? 0 : (showDots ? 3.5 : 0))
+        .attr('cy', (d: LinePoint) => lineValueScale(d.value as number))
+        .attr('r', animateEntrance && showDots ? 0 : baseRadius)
         .style('fill', series.color)
         .style('pointer-events', 'none');
 
-      // Dots pop in once the line itself has finished sweeping in, rather than appearing instantly
-      // alongside it - a beat of separation reads more like a deliberate reveal than a glitch.
+      // Pop each dot in right as the (right-to-left) sweep reaches its x position, same sequence
+      // as the line itself, then briefly overshoot before settling - same convention as
+      // eda-line-d3's point pop-in, mirrored for the reversed direction.
       if (animateEntrance && showDots) {
-        dots.transition().delay(ENTRANCE_MS).duration(250).ease(d3.easeBackOut).attr('r', 3.5);
+        const POP_MS = 100;
+        dots.each((d: any, i: number, nodes: ArrayLike<SVGCircleElement>) => {
+          const delay = this.lineReachDelayFromEnd(pathNode, pathLength, xForCategoryCenter(d.catIndex), ENTRANCE_MS);
+          d3.select(nodes[i])
+            .transition().delay(delay).duration(0).attr('r', baseRadius)
+            .transition().duration(POP_MS).ease(d3.easeCubicOut).attr('r', baseRadius * 1.5)
+            .transition().duration(POP_MS).ease(d3.easeCubicIn).attr('r', baseRadius);
+        });
       }
 
       dotSel

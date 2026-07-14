@@ -2874,6 +2874,16 @@ Que suis-je en train de voir ?
     <target> Lié à  </target>
   </trans-unit>
 
+  <trans-unit id="secondAxis">
+    <source> Segundo Eje  </source>
+    <target>Deuxième axe</target>
+  </trans-unit>
+
+  <trans-unit id="secondAxisDescription">
+    <source> Muestra un eje independiente a la derecha para las líneas, separado del eje de las barras </source>
+    <target>Affiche un axe indépendant à droite pour les lignes, séparé de l'axe des barres</target>
+  </trans-unit>
+
   <trans-unit id="DataModelHeader">
     <source> Configurar nueva fuente de datos  </source>
     <target> Configurer la nouvelle source de données  </target>

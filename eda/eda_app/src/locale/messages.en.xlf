@@ -2638,6 +2638,16 @@ What am I seeing?
 <target>Linked to   </target>
 </trans-unit>
 
+<trans-unit id="secondAxis">
+<source> Segundo Eje  </source>
+<target>Second Axis</target>
+</trans-unit>
+
+<trans-unit id="secondAxisDescription">
+<source> Muestra un eje independiente a la derecha para las líneas, separado del eje de las barras </source>
+<target>Shows an independent axis on the right for the lines, separate from the bars' axis</target>
+</trans-unit>
+
 <trans-unit id="DataModelHeader">
 <source> Configurar nueva fuente de datos  </source>
 <target> New datasource  </target>

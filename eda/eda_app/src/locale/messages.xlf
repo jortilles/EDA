@@ -5294,6 +5294,20 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
           <context context-type="linenumber">1152</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="secondAxis" datatype="html">
+        <source>Segundo Eje</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
+          <context context-type="linenumber">310</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="secondAxisDescription" datatype="html">
+        <source>Muestra un eje independiente a la derecha para las líneas, separado del eje de las barras</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
+          <context context-type="linenumber">323</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="selectFuenteDatos" datatype="html">
         <source>Selecciona una fuente de datos *</source>
         <context-group purpose="location">

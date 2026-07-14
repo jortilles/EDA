@@ -2541,6 +2541,16 @@ Co widzę?
     <target>Połączono z    </target>
   </trans-unit>
 
+  <trans-unit id="secondAxis">
+    <source> Segundo Eje  </source>
+    <target>Druga oś</target>
+  </trans-unit>
+
+  <trans-unit id="secondAxisDescription">
+    <source> Muestra un eje independiente a la derecha para las líneas, separado del eje de las barras </source>
+    <target>Pokazuje niezależną oś po prawej stronie dla linii, oddzieloną od osi słupków</target>
+  </trans-unit>
+
   <trans-unit id="DataModelHeader">
     <source> Configurar nueva fuente de datos  </source>
     <target> Nowe źródło danych  </target>

@@ -41,6 +41,7 @@ export const CUSTOM_CHART_CONFIG_FIELDS: CustomChartConfigField[] = [
   { name: 'showLabels', default: false },
   { name: 'showLabelsPercent', default: false },
   { name: 'showPointLines', default: false },
+  { name: 'secondAxis', default: false },
   { name: 'showPredictionLines', default: false },
   { name: 'numberOfColumns', default: null },
   { name: 'assignedColors', default: [] },
