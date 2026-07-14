@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from "@angular/core";
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
-import { AlertService, GroupService, IGroup } from "@eda/services/service.index";
+import { AlertService, GroupService, IGroup, UserService } from "@eda/services/service.index";
 import { EdaDialog, EdaDialog2Component, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { SharedModule } from "@eda/shared/shared.module";
 import { SelectItem } from "primeng/api";
@@ -37,7 +37,8 @@ export class DashboardVisibleModal {
   constructor(
     private formBuilder: UntypedFormBuilder,
     private groupService: GroupService,
-    private alertService: AlertService) { }
+    private alertService: AlertService,
+    private userService: UserService) { }
 
   ngOnInit(): void {
     this.initializeForm();
@@ -56,7 +57,7 @@ private initializeForm(): void {
     { label: $localize`:@@commonPanel:Común`, value: 'common', icon: 'fa fa-fw fa-globe' },
     { label: $localize`:@@group:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
     { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
-  ].filter(type => type.value !== 'open' || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS);
+  ].filter(type => type.value !== 'open' || this.userService.isAdmin || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS);
 
   this.form.controls['visible'].setValue(this.dashboard.dashboard.config.visible);
   this.showGroups = this.form.controls['visible'].value === 'group';
@@ -70,7 +71,10 @@ private initializeForm(): void {
         this.grups = res;
 
         if (this.grups.length === 0) {
-          this.visibleTypes.splice(1, 1);
+          const commonIndex = this.visibleTypes.findIndex(type => type.value === 'common');
+          if (commonIndex > -1) {
+            this.visibleTypes.splice(commonIndex, 1);
+          }
         }
         if (this.showGroups) {
           this.form.controls['group'].setValue(this.grups.filter(grup =>

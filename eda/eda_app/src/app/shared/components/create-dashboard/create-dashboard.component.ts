@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, OnInit, Output, ViewEncapsulation } from "@angular/core";
 import { FormBuilder, FormsModule, ReactiveFormsModule, UntypedFormGroup, Validators } from "@angular/forms";
-import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService } from "@eda/services/service.index";
+import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService, UserService } from "@eda/services/service.index";
 import { SelectItem } from "primeng/api";
 import { CreateDashboardService } from "@eda/services/utils/create-dashboard.service";
 import { SharedModule } from "@eda/shared/shared.module";
@@ -24,6 +24,7 @@ import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable
 export class CreateDashboardComponent implements OnInit {
     private createDashboardService = inject(CreateDashboardService);
     private dataSourceNameService = inject(DataSourceNamesService);
+    private userService = inject(UserService);
 
     public display: boolean = false;
     public dataSources: any[] = [];
@@ -64,7 +65,7 @@ export class CreateDashboardComponent implements OnInit {
             { label: $localize`:@@commonPanel:Común`, value: 'common', icon: 'fa fa-fw fa-building' },
             { label: $localize`:@@group:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
             { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
-        ].filter(type => type.value !== 'open' || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS);
+        ].filter(type => type.value !== 'open' || this.userService.isAdmin || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS);
 
         const defaultVisibleType = this.visibleTypes.find(type => type.value === 'private') ?? this.visibleTypes[0];
         this.form.controls['visible'].setValue(defaultVisibleType?.value ?? null);

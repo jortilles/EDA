@@ -188,7 +188,7 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
 
   private initDashboardTypes(): void {
     this.dashboardTypes = this.defaultDashboardTypes.filter(
-      type => type.type !== 'public' || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS
+      type => type.type !== 'public' || this.isAdmin || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS
     );
     this.filteredTypes = [...this.dashboardTypes];
   }

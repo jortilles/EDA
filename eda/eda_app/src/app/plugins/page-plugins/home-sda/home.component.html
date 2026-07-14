@@ -249,7 +249,7 @@
                           (change)="updateDashboardType(dashboard, dashboard.type)" (blur)="cancelEditingType()"
                           class="type-select rounded-md border border-input bg-background text-sm p-1">
                           @for (type of dashboardTypes; track type.type) {
-                            <option [value]="type.type" [hidden]="type.type === 'public' && !isAdmin">{{ type.label }}</option>
+                            <option [value]="type.type">{{ type.label }}</option>
                           }
                         </select>
                       }
