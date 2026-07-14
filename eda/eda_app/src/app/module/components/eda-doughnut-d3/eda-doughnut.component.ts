@@ -294,17 +294,23 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
     merged.attr('stroke-width', strokeWidth);
 
     if (!this.hasRendered) {
-      // First render: radial sweep, like a clock hand painting the doughnut clockwise from the top
+      // First render: radial sweep, like a clock hand painting the doughnut clockwise from the top.
+      // One reusable arc generator (accessors read {t} off the datum) instead of constructing a
+      // new d3.arc() on every single animation frame for every slice - that per-frame allocation
+      // was making this entrance noticeably less smooth than eda-bar-d3's plain path-string tweens.
+      const entranceArcGen: any = d3.arc()
+        .innerRadius((d: any) => innerRadius * d.t)
+        .outerRadius((d: any) => outerRadius * d.t);
       merged.transition().duration(2000)
         .attrTween('d', (d: any) => (t: number) => {
           const sweep = t * 2 * Math.PI;
-          const scaledArc: any = d3.arc().innerRadius(innerRadius * t).outerRadius(outerRadius * t);
           const current = {
             startAngle: Math.min(d.startAngle, sweep),
-            endAngle: Math.min(d.endAngle, sweep)
+            endAngle: Math.min(d.endAngle, sweep),
+            t
           };
           d.data._current = { startAngle: d.startAngle, endAngle: d.endAngle };
-          return scaledArc(current);
+          return entranceArcGen(current);
         })
         .on('end', () => { this.hasRendered = true; });
     } else {

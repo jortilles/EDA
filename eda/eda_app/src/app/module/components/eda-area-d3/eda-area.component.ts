@@ -126,10 +126,13 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private areaFill(defs: any, series: AreaSeries): string {
     const opacity = (series.opacity ?? 100) / 100;
-    if (!(this.inject.useGradient ?? true)) return series.color;
+    if (!(this.inject.useGradient ?? true)) {
+      const rgb = d3.rgb(series.color);
+      return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`;
+    }
     return ensureLinearGradient(defs, this.gradientId(series.label), [
-      { offset: '0%', color: lightenHex(series.color, 30), opacity: opacity * 0.35 },
-      { offset: '100%', color: series.color, opacity: opacity * 0.85 }
+      { offset: '0%', color: lightenHex(series.color, 30), opacity },
+      { offset: '100%', color: series.color, opacity }
     ], { x1: '0%', y1: '0%', x2: '0%', y2: '100%' });
   }
 
