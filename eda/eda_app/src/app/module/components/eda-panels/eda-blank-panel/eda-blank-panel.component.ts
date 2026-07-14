@@ -864,8 +864,8 @@ public tableNodeExpand(event: any): void {
     public setChartProperties(config?: any) {
         config = config || this.panelChart?.getCurrentConfig();
 
-        if (config 
-            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid', 'radar'].includes(config.chartType) 
+        if (config
+            && ['bar', 'line', 'area', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid', 'radar'].includes(config.chartType)
             && config.chartType === this.graficos.chartType ) {
             this.graficos = config;
         }
