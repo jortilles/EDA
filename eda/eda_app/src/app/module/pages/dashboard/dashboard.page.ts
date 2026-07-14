@@ -638,6 +638,38 @@ export class DashboardPage implements OnInit {
           if (panel.panelChart) panel.panelChart.updateComponent();
         });
       }
+    } else if (event?.data.panel.content?.query?.query.queryMode == 'SQL' && event.code === "ADDFILTER" && this.validateDashboard('GLOBALFILTER') && filtersEnabled && !isImportedPanel) {
+      const data = event?.data;
+      let column: any = this.getCorrectColumnFilteredSQL(event);
+      const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
+console.log(event);
+      console.log(column);
+      console.log(table);
+      if (column && table) {
+        this.edaPanels.forEach(panel => {
+          if (panel.panelChart) panel.panelChart.updateComponent();
+        });
+
+        let config = this.setPanelsToFilter(panel);
+        let existingFilter = this.globalFilter.globalFilters.find(f =>
+          this.getChartClicked(f, table.table_name, column.column_name) &&
+          f.panelList.includes(panel.content.query.dashboard.panel_id)
+        );
+
+        if (existingFilter) {
+          await this.handleExistingFilter(existingFilter, data, table, column);
+        } else {
+          //
+          console.log('In SQL mode we dont  generate new filters');
+          //sawait this.handleNewFilter(table, column, data, config);
+        }
+
+        this.edaPanels.forEach(panel => {
+          if (panel.panelChart) panel.panelChart.updateComponent();
+        });
+      }
+
+
     } else if (event.code === "QUERYMODE") {
       this.setPanelsQueryMode();
     } else if (event.code === 'MAPFILTERS') {
@@ -1269,9 +1301,54 @@ public startCountdown(seconds: number) {
     }
     else {
       // If the event is from a D3Chart or Leaflet library chart
-        return event.data.query.find((query: any) => query?.column_name?.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
-//        return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
+        return event.data.query.find((query: any) => query?.column_name?.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);
+//        return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);
     }
+  }
+
+  /**
+   * SQL-mode counterpart to getCorrectColumnFiltered(): same idea (resolve the field matching
+   * filterBy, swapping a numeric match for its text sibling - filtering by a measure makes no
+   * sense, the category is what's filterable), but a SQL-mode panel's query.query.fields is the
+   * raw SQL field list rather than the structured EDA query, and its entries carry no table_id of
+   * their own - the owning table only lives on query.query.filters (matched here by filter_column,
+   * same filter_table/filter_column convention PanelInteractionUtils.handleFilterColumns uses to
+   * backfill a model column's table_id). Everything is matched lowercased, since the SQL field's
+   * own casing isn't guaranteed to match the model's. table.columns entries don't carry table_id
+   * either, so it's stamped onto the returned column from the resolved table before returning -
+   * getCorrectColumnFiltered's EDA-mode return value has it already, and callers rely on it.
+   */
+  public getCorrectColumnFilteredSQL(event): any {
+    const fields = event?.data?.panel?.content?.query?.query?.fields || [];
+    const filters = event?.data?.panel?.content?.query?.query?.filters || [];
+    const filterBy = event?.data?.filterBy;
+    if (!fields.length || !filterBy) return false;
+
+    const filterByLower = filterBy.toLowerCase();
+    const matchesFilterBy = (f: any) =>
+      f.column_name?.toLowerCase() === filterByLower || f.display_name?.default?.toLowerCase() === filterByLower;
+
+    let field = fields.find(matchesFilterBy);
+    // filterBy resolved to a numeric (measure) field - the actual filterable column is the
+    // categorical one instead, same convention as getCorrectColumnFiltered's EDA-mode handling.
+    if (field?.column_type === 'numeric') {
+      field = fields.find((f: any) => f.column_type === 'text');
+    }
+    if (!field) return false;
+
+    const columnName = field.column_name?.toLowerCase();
+    const filterEntry = filters.find((f: any) => f.filter_column?.toLowerCase() === columnName);
+    if (!filterEntry) return false;
+
+    const table = this.dataSource.model.tables.find((t: any) => t.table_name === filterEntry.filter_table);
+    if (!table) return false;
+
+    const column = table.columns?.find((c: any) => c.column_name?.toLowerCase() === columnName)
+      || table.columns?.find((c: any) => c.display_name?.default?.toLowerCase() === columnName);
+    if (!column) return false;
+
+    column.table_id = table.table_name;
+    return column;
   }
   
   //----------------------------------------//
