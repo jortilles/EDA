@@ -239,19 +239,31 @@
                   <td class="p-3 text-left type-container">
                     <div class="type-row">
                       <span class="type-indicator" [style.background-color]="getDashboardTypeColor(dashboard.type)"></span>
+                      <span class="type-label">{{ dashboardTypeTranslations[dashboard.type] || dashboard.type | titlecase }}</span>
                       @if (editingTypeId !== dashboard._id) {
-                        <span class="type-label">{{ dashboardTypeTranslations[dashboard.type] || dashboard.type | titlecase }}</span>
                         @if (canIEdit(dashboard) && !isEditing) {
-                          <i class="fa fa-pencil edit-type-icon" (click)="startEditingType(dashboard)"></i>
+                          <i class="fa fa-pencil edit-type-icon" (click)="startEditingType(dashboard, $event)"></i>
                         }
                       } @else {
-                        <select [id]="'type-select-' + dashboard._id" [(ngModel)]="dashboard.type"
-                          (change)="updateDashboardType(dashboard, dashboard.type)" (blur)="cancelEditingType()"
-                          class="type-select rounded-md border border-input bg-background text-sm p-1">
-                          @for (type of dashboardTypes; track type.type) {
-                            <option [value]="type.type">{{ type.label }}</option>
-                          }
-                        </select>
+                        <div class="type-edit-container">
+                          <p-dropdown [inputId]="'type-dd-' + dashboard._id" [options]="dashboardTypes" optionLabel="label" optionValue="type"
+                            [(ngModel)]="dashboard.type" [style]="{width: '8rem'}" appendTo="body" [autoOptionFocus]="false"
+                            panelStyleClass="type-edit-panel"
+                            (onChange)="updateDashboardType(dashboard, dashboard.type)" (onHide)="cancelEditingType()">
+                            <ng-template let-type pTemplate="selectedItem">
+                              <div class="flex items-center gap-1.5">
+                                <span class="type-indicator" [style.background-color]="type.color"></span>
+                                <span>{{ type.label }}</span>
+                              </div>
+                            </ng-template>
+                            <ng-template let-type pTemplate="item">
+                              <div class="flex items-center gap-1.5">
+                                <span class="type-indicator" [style.background-color]="type.color"></span>
+                                <span>{{ type.label }}</span>
+                              </div>
+                            </ng-template>
+                          </p-dropdown>
+                        </div>
                       }
                     </div>
                   </td>
@@ -328,19 +340,31 @@
                 </div>
               </h5>
               <p class="text-sm type-container mb-1 type-row">
+                <span class="type-label">{{ dashboardTypeTranslations[dashboard.type] || dashboard.type }}</span>
                 @if (editingTypeId !== dashboard._id) {
-                  <span class="type-label">{{ dashboardTypeTranslations[dashboard.type] || dashboard.type }}</span>
                   @if (canIEdit(dashboard) && !isEditing) {
-                    <i class="fa fa-pencil edit-type-icon" (click)="startEditingType(dashboard)"></i>
+                    <i class="fa fa-pencil edit-type-icon" (click)="startEditingType(dashboard, $event)"></i>
                   }
                 } @else {
-                  <select [id]="'type-select-' + dashboard._id" [(ngModel)]="dashboard.type"
-                    (change)="updateDashboardType(dashboard, dashboard.type)" (blur)="cancelEditingType()"
-                    class="type-select rounded-md border border-input bg-background text-sm p-1">
-                    @for (type of dashboardTypes; track type.type) {
-                      <option [value]="type.type" [hidden]="type.type === 'public' && !isAdmin">{{ type.label }}</option>
-                    }
-                  </select>
+                  <div class="type-edit-container">
+                    <p-dropdown [inputId]="'type-dd-' + dashboard._id" [options]="dashboardTypes" optionLabel="label" optionValue="type"
+                      [(ngModel)]="dashboard.type" [style]="{width: '8rem'}" appendTo="body" [autoOptionFocus]="false"
+                      panelStyleClass="type-edit-panel"
+                      (onChange)="updateDashboardType(dashboard, dashboard.type)" (onHide)="cancelEditingType()">
+                      <ng-template let-type pTemplate="selectedItem">
+                        <div class="flex items-center gap-1.5">
+                          <span class="type-indicator" [style.background-color]="type.color"></span>
+                          <span>{{ type.label }}</span>
+                        </div>
+                      </ng-template>
+                      <ng-template let-type pTemplate="item">
+                        <div class="flex items-center gap-1.5">
+                          <span class="type-indicator" [style.background-color]="type.color"></span>
+                          <span>{{ type.label }}</span>
+                        </div>
+                      </ng-template>
+                    </p-dropdown>
+                  </div>
                 }
               </p>
               <p class="text-sm">

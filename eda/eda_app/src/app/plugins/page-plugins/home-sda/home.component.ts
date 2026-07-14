@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from "@angular/core";
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone, ViewChildren, QueryList } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
@@ -8,6 +8,7 @@ import { AlertService, DashboardService, GroupService, IGroup, SidebarService, S
 import { CreateDashboardService } from "@eda/services/utils/create-dashboard.service";
 import { IconComponent } from "@eda/shared/components/icon/icon.component";
 import { TooltipModule } from "primeng/tooltip";
+import { DropdownModule, Dropdown } from "primeng/dropdown";
 import Swal from "sweetalert2";
 import * as _ from "lodash";
 import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_default";
@@ -15,7 +16,7 @@ import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable
 @Component({
   standalone: true,
   selector: "home-sda",
-  imports: [CommonModule, FormsModule, TooltipModule, IconComponent],
+  imports: [CommonModule, FormsModule, TooltipModule, IconComponent, DropdownModule],
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.css"]
 })
@@ -148,6 +149,7 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
     [key: string]: boolean;
   } = {};
   public editingTypeId: string | null = null;
+  @ViewChildren(Dropdown) private typeDropdowns!: QueryList<Dropdown>;
 
   /**
    * Maps a frontend dashboard "type" value to the canonical config.visible
@@ -223,9 +225,14 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
     this.outsideClickSub = fromEvent<MouseEvent>(document, "click")
       .pipe(filter(e => {
         const target = e.target as HTMLElement;
-        return !target.closest(".filter-dropdown-panel") && !target.closest(".filter-dropdown-toggle");
+        const insideFilter = target.closest(".filter-dropdown-panel") || target.closest(".filter-dropdown-toggle");
+        const insideTypeEdit = target.closest(".type-edit-container");
+        return !insideFilter && !insideTypeEdit;
       }))
-      .subscribe(() => { this.openFilter = null; });
+      .subscribe(() => {
+        this.openFilter = null;
+        this.editingTypeId = null;
+      });
   }
 
   /**
@@ -914,18 +921,14 @@ public filterGroups() {
   /**
    * Starts the editing mode for a dashboard type
    * @param dashboard The dashboard to edit
+   * @param event The originating click event
    */
-  public startEditingType(dashboard: any): void {
+  public startEditingType(dashboard: any, event: Event): void {
+    event.stopPropagation();
     this.editingTypeId = dashboard._id;
     setTimeout(() => {
-      const select = document.getElementById("type-select-" + dashboard._id) as
-        (HTMLSelectElement & { showPicker?: () => void }) | null;
-      select?.focus();
-      try {
-        select?.showPicker?.();
-      } catch {
-        // showPicker isn't supported/allowed in every browser; focus() alone is enough.
-      }
+      const dd = this.typeDropdowns?.find(d => d.inputId === "type-dd-" + dashboard._id);
+      dd?.show();
     });
   }
 

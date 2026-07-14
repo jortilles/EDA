@@ -77,17 +77,25 @@
   flex-shrink: 0;
 }
 
-.type-select {
-  width: 7rem;
-  height: 1.6rem;
-  line-height: 1;
-  cursor: pointer;
+/* ---- Inline type editor (p-dropdown) ---- */
+.type-edit-container ::ng-deep .p-dropdown-label {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+.type-edit-container ::ng-deep .p-dropdown-trigger {
+  width: 1.75rem;
 }
 
-/* Locks the "Tipo" column width so switching between the label and the
-   edit dropdown never resizes the column / shifts the rest of the table. */
+/* Type editor's overlay panel (appendTo="body") */
+::ng-deep .type-edit-panel .p-dropdown-item {
+  padding: 0.35rem 0.75rem;
+}
+
+/* Locks the "Tipo" column width */
 #report-table .type-container {
-  width: 160px;
+  width: 240px;
 }
 
 /* ---- Title / inline editing ---- */
