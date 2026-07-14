@@ -122,11 +122,13 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     ], { cx: 0, cy: 0, r: Math.max(radius, 1) });
   }
 
-  // Builds the path for one arc at a specific (startAngle, endAngle, radius) - used by the
-  // enter/update/exit tweens below, which interpolate all three at once (a plain d3.arc()
-  // can't do this directly here since its outerRadius is a per-datum function, not a constant).
+  // One reusable arc generator (outerRadius reads d.radius) for the enter/update/exit tweens below,
+  // which interpolate startAngle/endAngle/radius all at once per frame - reused across calls
+  // instead of constructing a new d3.arc() on every animation frame for every slice.
+  private tweenArcGen: any = d3.arc().innerRadius(0).outerRadius((d: any) => Math.max(d.radius, 0));
+
   private arcPathAt(startAngle: number, endAngle: number, radius: number): string {
-    return d3.arc().innerRadius(0).outerRadius(Math.max(radius, 0))({ startAngle, endAngle } as any);
+    return this.tweenArcGen({ startAngle, endAngle, radius } as any);
   }
 
   private attachInteractionHandlers(selection: any, seriesLabel: string, linkedDashboard: any, total: number): void {
