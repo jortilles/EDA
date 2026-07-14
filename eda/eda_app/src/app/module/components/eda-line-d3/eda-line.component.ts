@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaLineD3 } from './eda-line';
-import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface LinePoint {
@@ -151,6 +151,12 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     return truncateLabel(label, MAX_CATEGORY_CHARS);
   }
 
+  private percentOfSeries(series: LineSeries, catIndex: number): number {
+    const total = series.points.reduce((sum, p) => sum + (p.value ?? 0), 0);
+    const value = series.points.find(p => p.catIndex === catIndex)?.value ?? 0;
+    return total !== 0 ? (value / total) * 100 : 0;
+  }
+
   draw(): void {
     const container = this.svgContainer.nativeElement as HTMLElement;
     const width = container.clientWidth;
@@ -242,7 +248,9 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const linesGroup = g.append('g').attr('class', 'eda-line-series').style('pointer-events', 'none');
     const pointsGroup = g.append('g').attr('class', 'eda-line-points');
+    const labelsGroup = g.append('g').attr('class', 'eda-line-labels').style('pointer-events', 'none');
     const hoverGroup = g.append('g').attr('class', 'eda-line-hover-cols');
+    const showLabelsOn = (this.inject.showLabels || this.inject.showLabelsPercent) && !compact;
 
     const ENTRANCE_MS = compact ? 600 : 3000;
     const animateEntrance = !this.hasRendered;
@@ -336,6 +344,36 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
             .transition().duration(POP_MS).ease(d3.easeCubicOut).attr('r', baseRadius * 1.5)
             .transition().duration(POP_MS).ease(d3.easeCubicIn).attr('r', baseRadius);
         });
+      }
+
+      // Value labels: real series only (a prediction's own numbers are speculative, not worth
+      // labelling), one per point, sitting just above it. Left-to-right sequence, same as the
+      // dots above - reusing the same lineReachDelay so a label fades in right as the sweep
+      // reaches its own point instead of every label appearing at once while the line is still
+      // mid-animation.
+      if (showLabelsOn && !series.isPrediction) {
+        const labelSel = labelsGroup.selectAll(null)
+          .data(realPoints.filter(p => p.value !== null))
+          .enter()
+          .append('text')
+          .attr('class', 'eda-line-label')
+          .attr('text-anchor', 'middle')
+          .style('font-size', '11px')
+          .style('font-weight', 'bold')
+          .style('font-family', this.fontFamily)
+          .style('fill', series.color)
+          .attr('x', (d: any) => xFor(d.catIndex))
+          .attr('y', (d: any) => valueScale(d.value as number) - 10)
+          .text((d: any) => formatValueLabel(d.value as number, this.percentOfSeries(series, d.catIndex), this.inject.showLabels, this.inject.showLabelsPercent))
+          .style('opacity', animateEntrance ? 0 : 1);
+
+        if (animateEntrance) {
+          const LABEL_FADE_MS = 200;
+          labelSel.transition()
+            .delay((d: any) => this.lineReachDelay(pathNode, pathLength, xFor(d.catIndex), ENTRANCE_MS))
+            .duration(LABEL_FADE_MS)
+            .style('opacity', 1);
+        }
       }
 
       dotSel

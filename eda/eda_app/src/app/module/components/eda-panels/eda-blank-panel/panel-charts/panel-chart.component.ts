@@ -1637,6 +1637,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartLegend = cfg.chartLegend ?? true;
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.showPointLines = cfg.showPointLines ?? false;
+        inject.showLabels = cfg.showLabels ?? false;
+        inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaLineComponent);
