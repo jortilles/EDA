@@ -68,7 +68,12 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     const container = this.svgContainer.nativeElement as HTMLElement;
     if (!this.svg) this.svg = d3.select(container).append('svg');
-    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
+    // skipFirstCallback: ResizeObserver.observe() always fires its callback once on its own,
+    // asynchronously, right on top of the manual draw() below - without skipping it, it would
+    // instantly redraw everything a moment later with animateEntrance now false (hasRendered
+    // already flipped true by the first draw), wiping out the entrance animation before it's
+    // even visible.
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw(), { skipFirstCallback: true });
   }
 
   /** Called by the shared chart-dialog.component.ts (unconditionally, no `?.`) on every live color edit. */
@@ -118,6 +123,28 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
       if (source && this.hiddenSeriesIndexes.has(source.originalIndex)) return false;
     }
     return true;
+  }
+
+  /**
+   * Delay (ms) at which the entrance line-sweep's stroke-dashoffset transition visually reaches
+   * a given x position - i.e. when a point at that x should pop in, so it lines up with the line
+   * actually passing through it. Two steps: find how far along the path's own length (arc length,
+   * not x) that x sits, via binary search (getPointAtLength) since arc length isn't proportional
+   * to x on a curveMonotoneX curve; then invert easeCubicOut - the same easing the dashoffset
+   * transition uses - to turn that length fraction into a time fraction (dashoffset reveals
+   * length linearly in eased time, not real time, so using the length fraction directly would
+   * make later points pop in later than the line actually reaches them).
+   */
+  private lineReachDelay(pathNode: SVGPathElement, totalLength: number, targetX: number, durationMs: number): number {
+    if (totalLength <= 0) return 0;
+    let lo = 0, hi = totalLength;
+    for (let i = 0; i < 30; i++) {
+      const mid = (lo + hi) / 2;
+      if (pathNode.getPointAtLength(mid).x < targetX) lo = mid; else hi = mid;
+    }
+    const lengthFraction = (lo + hi) / 2 / totalLength;
+    const timeFraction = 1 - Math.cbrt(1 - lengthFraction);
+    return durationMs * timeFraction;
   }
 
   private truncate(label: string): string {
@@ -217,7 +244,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     const pointsGroup = g.append('g').attr('class', 'eda-line-points');
     const hoverGroup = g.append('g').attr('class', 'eda-line-hover-cols');
 
-    const ENTRANCE_MS = compact ? 600 : 1500;
+    const ENTRANCE_MS = compact ? 600 : 3000;
     const animateEntrance = !this.hasRendered;
 
     // Real (non-derived) series first, so trend/prediction overlays paint on top of their source.
@@ -247,10 +274,14 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         .attr('stroke-dasharray', series.isTrend ? DASH_TREND : series.isPrediction ? DASH_PREDICTION : null)
         .attr('d', gen(points));
 
+      // Computed unconditionally (cheap) rather than only inside the animateEntrance branch below,
+      // since the dots' own pop-in timing further down also needs this path's geometry to know
+      // exactly when the sweep passes each one.
+      const pathNode = path.node() as SVGPathElement;
+      const pathLength = pathNode.getTotalLength();
+
       if (animateEntrance) {
-        const node = path.node() as SVGPathElement;
-        const length = node.getTotalLength();
-        path.attr('stroke-dasharray', `${length} ${length}`).attr('stroke-dashoffset', length)
+        path.attr('stroke-dasharray', `${pathLength} ${pathLength}`).attr('stroke-dashoffset', pathLength)
           .transition().duration(ENTRANCE_MS).ease(d3.easeCubicOut)
           .attr('stroke-dashoffset', 0)
           .on('end', function () {
@@ -262,6 +293,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
       if (series.isTrend) return;
 
       const showDots = series.isPrediction || (this.inject.showPointLines ?? false);
+      const baseRadius = showDots ? (series.isPrediction ? 3 : 3.5) : 0;
       const realPoints = points.filter(p => p.value !== null && (!series.isPrediction || p !== points[0]));
 
       const vertexData = realPoints.map(p => ({ series, point: p }));
@@ -279,15 +311,32 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         .style('fill', 'transparent')
         .style('cursor', 'pointer');
 
-      dotSel.append('circle')
+      const dots = dotSel.append('circle')
         .attr('class', 'eda-line-point-dot')
         .attr('cx', (d: any) => xFor(d.point.catIndex))
         .attr('cy', (d: any) => valueScale(d.point.value))
-        .attr('r', showDots ? (series.isPrediction ? 3 : 3.5) : 0)
+        .attr('r', animateEntrance && showDots ? 0 : baseRadius)
         .style('fill', series.isPrediction ? this.panelBackgroundColor : series.color)
         .style('stroke', series.color)
         .style('stroke-width', series.isPrediction ? 1.5 : 0)
         .style('pointer-events', 'none');
+
+      // Pop each dot in right as the line-sweep reaches its x position - same sequence as the
+      // line itself - then have it briefly overshoot to 110% before settling, as if the line
+      // passing through gave it a little nudge. this.lineReachDelay inverts the very same
+      // easeCubicOut timing the path's own stroke-dashoffset transition above uses, since arc
+      // length along a curveMonotoneX path isn't proportional to x position - without that a
+      // point could pop in visibly before or after the line actually reaches it.
+      if (animateEntrance && showDots) {
+        const POP_MS = 100;
+        dots.each((d: any, i: number, nodes: ArrayLike<SVGCircleElement>) => {
+          const delay = this.lineReachDelay(pathNode, pathLength, xFor(d.point.catIndex), ENTRANCE_MS);
+          d3.select(nodes[i])
+            .transition().delay(delay).duration(0).attr('r', baseRadius)
+            .transition().duration(POP_MS).ease(d3.easeCubicOut).attr('r', baseRadius * 1.5)
+            .transition().duration(POP_MS).ease(d3.easeCubicIn).attr('r', baseRadius);
+        });
+      }
 
       dotSel
         .on('mouseover', (event: any, d: any) => {
@@ -311,7 +360,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         .on('mouseout', (event: any, d: any) => {
           d3.select(event.currentTarget).select('.eda-line-point-dot')
             .interrupt('grow').transition('grow').duration(150)
-            .attr('r', showDots ? (series.isPrediction ? 3 : 3.5) : 0)
+            .attr('r', baseRadius)
             .style('fill', series.isPrediction ? this.panelBackgroundColor : series.color);
           this.tooltipService.hide();
         })
