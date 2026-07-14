@@ -1071,12 +1071,6 @@ export class DashboardPage implements OnInit {
 
 
   public async saveDashboard() {
-    const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
-    if (emptyQuery) {
-      this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`);
-      throw new Error('empty_query');
-    }
-
     this.triggerTimer();
     const body = {
       config: {
