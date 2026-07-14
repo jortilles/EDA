@@ -838,12 +838,15 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
           }
         }
 
-        // Vertical bars only: below this plot height there's no room to sit the label above the
-        // bar readably, so it moves INSIDE the bar (near its tip) instead, in white - recomputed
-        // from the current innerHeight on every draw() (including resize-triggered ones), same as
-        // the bars themselves, so shrinking/growing the panel actually flips both together instead
-        // of only ever recoloring a label that never moves off its "outside" position.
-        const labelInsideBar = !horizontal && innerHeight <= 150;
+        // Below this plot size (bar length for horizontal, bar height for vertical) there's no
+        // room to sit the label past the bar's tip readably, so it moves INSIDE the bar (near its
+        // tip) instead, in white - recomputed
+        // from the current innerWidth/innerHeight on every draw() (including resize-triggered
+        // ones), same as the bars themselves, so shrinking/growing the panel actually flips both
+        // color AND position together instead of only ever recoloring a label that never moves
+        // off its "outside" position. Same threshold/dimension as the fill color check below (bar
+        // length for horizontal, bar height for vertical).
+        const labelInsideBar = (horizontal ? innerWidth : innerHeight) <= 150;
         // Own width of the single bar/slot a vertical label sits centered on - constant across
         // every category (scaleBand gives every band the same width) - used to decide when the
         // label text needs to shrink to a compact K/M/MM form (see formatCompactBarLabel).
@@ -855,10 +858,18 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             .style('font-size', '11px')
             .style('font-weight', 'bold')
             .style('font-family', this.fontFamily)
-            .style('fill', (d: any) => (horizontal ? innerWidth : innerHeight) > 150 ? this.barColor(series, d.catIdx) : 'white')
+            .style('fill', (d: any) => labelInsideBar ? 'white' : this.barColor(series, d.catIdx))
             .style('pointer-events', 'none')
             .attr('class', `eda-bar-label-${sIdx}`)
-            .attr('text-anchor', (d: any) => horizontal ? (d.value < 0 ? 'end' : 'start') : 'middle')
+            // Horizontal bars: a positive bar's tip is its right edge. With room to sit past it,
+            // the label sits to the right (anchor 'start', extending further right, away from the
+            // bar). Without room, it instead sits INSIDE the bar, anchored 'end' so it extends
+            // back to the left from a point just inside the tip. A negative bar's tip is its left
+            // edge instead, so every case mirrors left<->right.
+            .attr('text-anchor', (d: any) => {
+              if (!horizontal) return 'middle';
+              return (labelInsideBar ? d.value >= 0 : d.value < 0) ? 'end' : 'start';
+            })
             // Vertical bars: a positive bar's tip is its top. With room to sit ABOVE it, the label
             // sits 6px above (default alphabetic baseline already extends the text upward from y,
             // away from the bar). Without room, it instead sits 14px INSIDE the bar, below the tip
@@ -870,9 +881,12 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
               if (horizontal) return null;
               return (labelInsideBar ? d.value >= 0 : d.value < 0) ? 'hanging' : null;
             })
-            .attr('x', (d: any) => horizontal
-              ? valueScale(d.value) + (d.value < 0 ? -6 : 6)
-              : (categoryScale(d.cat) || 0) + (singleSeries ? 0 : seriesScale(String(sIdx))) + (singleSeries ? categoryScale.bandwidth() : seriesScale.bandwidth()) / 2)
+            .attr('x', (d: any) => {
+              if (!horizontal) return (categoryScale(d.cat) || 0) + (singleSeries ? 0 : seriesScale(String(sIdx))) + (singleSeries ? categoryScale.bandwidth() : seriesScale.bandwidth()) / 2;
+              const outsideOffset = d.value < 0 ? -6 : 6;
+              const insideOffset = d.value < 0 ? 14 : -14;
+              return valueScale(d.value) + (labelInsideBar ? insideOffset : outsideOffset);
+            })
             .attr('y', (d: any) => {
               if (horizontal) return (categoryScale(d.cat) || 0) + (singleSeries ? 0 : seriesScale(String(sIdx))) + (singleSeries ? categoryScale.bandwidth() : seriesScale.bandwidth()) / 2;
               const outsideOffset = d.value < 0 ? 6 : -6;
