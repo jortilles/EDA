@@ -172,7 +172,7 @@ export const ChartsConfigUtils = {
       const inst = ebp.panelChart.componentRef?.instance;
       config = {
         assignedColors: inst ? inst.assignedColors : [],
-        useGradient: inst ? inst.useGradient ?? true : true,
+        useGradient: inst ? inst.inject?.useGradient ?? true : true,
         chartLegend: inst ? inst.chartLegend ?? true : true,
       }
     } else if (ebp.panelChart.props.chartType === 'knob') {
