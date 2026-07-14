@@ -169,9 +169,11 @@ export const ChartsConfigUtils = {
         modifiedFontPoints: inst?.inject?.modifiedFontPoints || 0,
       };
     } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunburst"].includes(ebp.panelChart.props.chartType)) {
+      const inst = ebp.panelChart.componentRef?.instance;
       config = {
-        assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : [],
-        useGradient: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.useGradient ?? true : true,
+        assignedColors: inst ? inst.assignedColors : [],
+        useGradient: inst ? inst.useGradient ?? true : true,
+        chartLegend: inst ? inst.chartLegend ?? true : true,
       }
     } else if (ebp.panelChart.props.chartType === 'knob') {
 
