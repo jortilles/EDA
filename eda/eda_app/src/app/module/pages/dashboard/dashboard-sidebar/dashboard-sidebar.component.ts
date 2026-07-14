@@ -562,6 +562,8 @@ export class DashboardSidebarComponent implements AfterViewInit {
           visible: newDashboard.visible,
           tag: this.dashboard.dashboard.config.tag,
           refreshTime: (this.dashboard.refreshTime > 5) ? this.dashboard.refreshTime : this.dashboard.refreshTime ? 5 : null,
+          createdAt: res.dashboard.config.createdAt,
+          modifiedAt: new Date().toISOString(),
           mailingAlertsEnabled: this.getMailingAlertsEnabled(),
           sendViaMailConfig: this.dashboard.sendViaMailConfig,
           author: JSON.parse(localStorage.getItem('user')).name,

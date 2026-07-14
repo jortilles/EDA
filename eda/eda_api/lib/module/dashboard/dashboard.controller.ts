@@ -693,6 +693,8 @@ export class DashboardController {
     try {
       const body = req.body
       body.config.author = req.user.name;
+      body.config.createdAt = new Date().toISOString();
+      body.config.modifiedAt = new Date().toISOString();
       const dashboard: IDashboard = new Dashboard({
         config: body.config,
         user: req.user._id
