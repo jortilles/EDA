@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaRadar } from './eda-radar';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureRadialGradient, formatValueLabel, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureRadialGradient, formatValueLabel, initD3ResizeObserver, teardownD3Chart, opacityFraction } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface RadarPoint {
@@ -14,9 +14,9 @@ interface RadarPoint {
 interface RadarSeries {
   label: string;
   color: string;
-  // 0-100, from assignedColors[i].opacity (the dialog's "Opacidad" slider, same field the
-  // still-Chart.js area chart already uses via hexToRgba) - controls the fill's translucency,
-  // which matters more here than on non-overlapping charts since radar's series polygons overlap.
+  // 0-100, from assignedColors[i].opacity (the dialog's "Opacidad" slider) - controls the fill's
+  // translucency, which matters more here than on non-overlapping charts since radar's series
+  // polygons overlap.
   opacity: number;
   originalIndex: number;
   points: RadarPoint[];
@@ -75,21 +75,6 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
   }
 
-  // During a LIVE color-dialog edit (before the user hits Confirm/Save), chart-dialog.component.ts's
-  // applyColorsToChart() re-bakes the new opacity straight into chartDataset[i].backgroundColor
-  // (as an rgba(...) string) but does NOT touch inject.assignedColors[i].opacity - that only gets
-  // synced on final save. Reading opacity from assignedColors alone meant the "Opacidad" slider
-  // visibly had no effect until the dialog was confirmed. Parsing the alpha the dialog already
-  // wrote into backgroundColor is what's actually live during preview.
-  private extractOpacity(ds: any, fallback: number): number {
-    const bg = ds?.backgroundColor;
-    if (typeof bg === 'string') {
-      const match = bg.match(/rgba?\([^)]*,\s*([\d.]+)\s*\)/);
-      if (match) return Math.round(parseFloat(match[1]) * 100);
-    }
-    return fallback;
-  }
-
   private buildSeries(): void {
     const labels: string[] = this.inject.chartLabels || [];
     this.categories = labels.map(l => String(l));
@@ -97,8 +82,8 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
     const datasets = this.inject.chartDataset || [];
     this.series = datasets.map((ds: any, sIdx: number) => {
       const assigned = assignedByLabel.get(ds.label);
-      const color = ds.borderColor || assigned?.color || '#4472c4';
-      const opacity = this.extractOpacity(ds, assigned?.opacity ?? 100);
+      const color = assigned?.color || ds.borderColor || '#4472c4';
+      const opacity = assigned?.opacity ?? 100;
       const values: number[] = (ds.data || []).map((v: any) => Number(v) || 0);
       return {
         label: ds.label || '',
@@ -199,7 +184,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.svg.select('g.radar-series-fill-group').selectAll('path.radar-series-fill')
       .interrupt('highlight').transition('highlight').duration(150)
       .attr('fill-opacity', (s: RadarSeries) => {
-        const base = (s.opacity ?? 100) / 100;
+        const base = opacityFraction(s.opacity);
         return (seriesLabel === null || s.label === seriesLabel) ? base : base * this.DIM_FACTOR;
       })
       .attr('stroke-opacity', (s: RadarSeries) => (seriesLabel === null || s.label === seriesLabel) ? 1 : this.DIM_FACTOR);
@@ -419,7 +404,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
     const mergedPath = enterPath.merge(pathSel);
     mergedPath
       .attr('fill', (s: RadarSeries) => this.baseFill(s, maxRadius, defs))
-      .attr('fill-opacity', (s: RadarSeries) => (s.opacity ?? 100) / 100)
+      .attr('fill-opacity', (s: RadarSeries) => opacityFraction(s.opacity))
       .attr('stroke', (s: RadarSeries) => s.color)
       .attr('stroke-width', 2);
 

@@ -82,16 +82,23 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
   private buildSeries(): void {
     const labels: string[] = this.inject.chartLabels || [];
     this.categories = labels.map(l => String(l));
+    const assignedByLabel = new Map((this.inject.assignedColors || []).map((c: any) => [c.value, c]));
     const datasets = this.inject.chartDataset || [];
-    this.series = datasets.map((ds: any, i: number) => ({
-      label: ds.label || '',
-      color: ds.borderColor || ds.backgroundColor || '#4472c4',
-      originalIndex: i,
-      isTrend: !!ds.isTrend,
-      isPrediction: !!ds.isPrediction,
-      sourceLabel: ds.sourceLabel,
-      points: (ds.data || []).map((v: any, catIdx: number) => ({ catIndex: catIdx, value: v === null || v === undefined ? null : Number(v) }))
-    }));
+    this.series = datasets.map((ds: any, i: number) => {
+      // Trend/prediction datasets are synthetic (label is a generated "Tendencia X" string) and
+      // never get their own assignedColors entry - they always take their source series' color.
+      const key = (ds.isTrend || ds.isPrediction) ? ds.sourceLabel : ds.label;
+      const assigned = assignedByLabel.get(key);
+      return {
+        label: ds.label || '',
+        color: assigned?.color || ds.borderColor || ds.backgroundColor || '#4472c4',
+        originalIndex: i,
+        isTrend: !!ds.isTrend,
+        isPrediction: !!ds.isPrediction,
+        sourceLabel: ds.sourceLabel,
+        points: (ds.data || []).map((v: any, catIdx: number) => ({ catIndex: catIdx, value: v === null || v === undefined ? null : Number(v) }))
+      };
+    });
 
     // Trend/prediction lines are derived from a real series (same color) and would be a confusing,
     // redundant legend swatch - only real series get their own entry.

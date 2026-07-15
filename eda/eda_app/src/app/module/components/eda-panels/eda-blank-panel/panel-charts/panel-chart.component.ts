@@ -44,7 +44,6 @@ import { CommonModule, getLocaleMonthNames, FormStyle, TranslationWidth } from '
 import { FunnelConfig } from './chart-configuration-models/funnel.config';
 import { KnobConfig } from './chart-configuration-models/knob-config';
 import { MapConfig } from './chart-configuration-models/map-config';
-import { ChartJsConfig } from './chart-configuration-models/chart-js-config';
 import { Subscription } from 'rxjs';
 import { EdaKpiTrendComponent } from '@eda/components/eda-kpi-trend/eda-kpi-trend.component';
 import { KpiTrendConfig } from './chart-configuration-models/kpi-trend-config';
@@ -542,22 +541,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         cfg['assignedColors'] = assignedColors;
     }
 
-    // Apply colors to the dataset
-    for (let i = 0; i < chartData[1].length; i++) {
-        const colorConfig = assignedColors[i];
-        if (colorConfig) {
-            chartConfig.edaChart.chartDataset[i] = {
-                ...chartConfig.edaChart.chartDataset[i],
-                backgroundColor: colorConfig.color,
-                borderColor: colorConfig.color
-            };
-            
-            chartConfig.edaChart.chartColors.push({
-                backgroundColor: colorConfig.color,
-                borderColor: colorConfig.color
-            });
-        }
-    }
+    // eda-bar-d3/eda-line-d3/eda-area-d3 (the same components used at full size) resolve each
+    // series' color directly from assignedColors - matched by label, with a positional fallback
+    // for legacy saved colors that predate this field being label-keyed here.
+    chartConfig.edaChart.assignedColors = chartData[1].map((dataset: any, i: number) => {
+        const match = assignedColors.find((c: any) => c.value === dataset.label) || assignedColors[i];
+        return { value: dataset.label, color: match?.color || this.paletaActual[i % this.paletaActual.length] };
+    });
 
     // KPI Config
     let kpiValue: number;
@@ -1342,25 +1332,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             });
         }
 
+        // eda-radar-d3 resolves each series' color/opacity directly from assignedColors - no more
+        // Chart.js-shaped chartColors/backgroundColor baking needed.
         inject.assignedColors = assignedColors;
-        inject.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, 'radar');
-
-        // Same isAreaOrRadar convention as the (still Chart.js) area chart and as this dialog's
-        // own applyColorsToChart(): backgroundColor carries the per-series opacity baked in via
-        // hexToRgba, borderColor (and the vertex/gradient base color the D3 component derives
-        // from it) stays the flat, fully-opaque series color.
-        chartData[1].forEach((dataset, i) => {
-            try {
-                const solidColor = inject.chartColors[i]?.borderColor as string;
-                const seriesOpacity: number = assignedColors[i]?.opacity ?? 100;
-                dataset.backgroundColor = this.chartUtils.hexToRgba(solidColor, seriesOpacity);
-                dataset.borderColor = solidColor;
-            } catch (err) {
-                const fallbackColor = this.paletaActual[i % this.paletaActual.length];
-                dataset.backgroundColor = fallbackColor;
-                dataset.borderColor = fallbackColor;
-            }
-        });
 
         inject.chartLegend = cfg.chartLegend ?? true;
         inject.showLabels = cfg.showLabels ?? false;
@@ -1450,48 +1424,40 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         inject.assignedColors = assignedColors;
-        inject.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, 'bar');
 
-        // --- Determine color mode and apply (same 3 modes as renderEdaChart, isBar is always true here) ---
+        // --- Determine color mode (same 3 modes as before). Modes 1/2 are genuinely per-CATEGORY,
+        // not per-series - they populate categoryColorOverrides (keyed by category label) instead
+        // of baking a positional array into chartDataset/chartColors; eda-bar-d3 reads color
+        // natively from assignedColors (series default) and categoryColorOverrides (override). ---
         const coloredBarsConfig = cfg['coloredBarsConfig'];
         const hasThresholds = coloredBarsConfig?.thresholdHigh != null || coloredBarsConfig?.thresholdLow != null;
         if (coloredBarsConfig?.active && hasThresholds) {
             // Mode 1: Interval-based colors
             const { thresholdHigh, thresholdLow, colorAbove, colorBetween, colorBelow } = coloredBarsConfig;
             const bothThresholds = thresholdHigh != null && thresholdLow != null;
-            const baseColor = inject.chartColors[0]?.backgroundColor as string || '#cccccc';
-            const colors = (chartData[1][0].data as number[]).map((value: number) => {
-                if (thresholdHigh != null && value > thresholdHigh) return colorAbove;
-                if (thresholdLow != null && value < thresholdLow) return colorBelow;
-                return bothThresholds ? colorBetween : baseColor;
+            const baseColor = assignedColors[0]?.color || '#cccccc';
+            inject.categoryColorOverrides = chartData[0].map((label: string, idx: number) => {
+                const value = chartData[1][0].data[idx];
+                let color = baseColor;
+                if (thresholdHigh != null && value > thresholdHigh) color = colorAbove;
+                else if (thresholdLow != null && value < thresholdLow) color = colorBelow;
+                else if (bothThresholds) color = colorBetween;
+                return { value: label, color };
             });
-            chartData[1][0].backgroundColor = colors;
-            chartData[1][0].borderColor = colors;
-            inject.chartColors = [{ backgroundColor: colors, borderColor: colors }];
 
         } else if (cfg['showUniqueColors']) {
-            // Mode 2: Unique colors per bar (one color per label/category)
+            // Mode 2: Unique colors per bar (one color per label/category), keyed by category label.
             const uniqueBarColors: { value: string; color: string }[] = cfg['uniqueBarColors'] || [];
-            const colors = (chartData[1][0].data as number[]).map((_, idx) =>
-                uniqueBarColors[idx]?.color || this.paletaActual[idx % this.paletaActual.length]
-            );
-            chartData[1][0].backgroundColor = colors;
-            chartData[1][0].borderColor = colors;
-            inject.chartColors = [{ backgroundColor: colors, borderColor: colors }];
+            const uniqueByLabel = new Map(uniqueBarColors.map(u => [u.value, u.color]));
+            inject.categoryColorOverrides = chartData[0].map((label: string, idx: number) => ({
+                value: label,
+                color: uniqueByLabel.get(label) || this.paletaActual[idx % this.paletaActual.length]
+            }));
 
         } else {
-            // Mode 3: Assigned colors per series (default behavior)
-            chartData[1].forEach((dataset, i) => {
-                try {
-                    const solidColor = inject.chartColors[i]?.borderColor as string;
-                    dataset.backgroundColor = solidColor;
-                    dataset.borderColor = solidColor;
-                } catch (err) {
-                    const fallbackColor = this.paletaActual[i % this.paletaActual.length];
-                    dataset.backgroundColor = fallbackColor;
-                    dataset.borderColor = fallbackColor;
-                }
-            });
+            // Mode 3: Assigned colors per series (default behavior) - nothing further to do,
+            // eda-bar-d3 resolves each series' color directly from assignedColors.
+            inject.categoryColorOverrides = undefined;
         }
 
         inject.chartLegend = cfg.chartLegend ?? true;
@@ -1582,43 +1548,29 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             });
         }
 
+        // eda-line-d3 resolves each series' color directly from assignedColors (keyed by sourceLabel
+        // for trend/prediction) - no more Chart.js-shaped chartColors/backgroundColor baking needed.
         inject.assignedColors = assignedColors;
-        inject.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, 'line');
 
-        chartData[1].forEach((dataset, i) => {
-            try {
-                const solidColor = inject.chartColors[i]?.borderColor as string;
-                dataset.backgroundColor = solidColor;
-                dataset.borderColor = solidColor;
-            } catch (err) {
-                const fallbackColor = this.paletaActual[i % this.paletaActual.length];
-                dataset.backgroundColor = fallbackColor;
-                dataset.borderColor = fallbackColor;
-            }
-        });
-
-        // TREND - a straight regression line per real series, same color as its source, added
-        // after color assignment so it never gets its own palette slot/legend entry.
+        // TREND - a straight regression line per real series, same color as its source (via
+        // sourceLabel, resolved by eda-line-d3), added after color assignment so it never gets its
+        // own palette slot/legend entry.
         if (cfg.addTrend && chartData[1].length > 0) {
             const trends = chartData[1].map((serie: any) => {
                 const trend: any = this.chartUtils.getTrend(serie);
                 trend.isTrend = true;
                 trend.sourceLabel = serie.label;
-                trend.borderColor = serie.borderColor;
-                trend.backgroundColor = serie.borderColor;
                 return trend;
             });
             trends.forEach(trend => chartData[1].push(trend));
         }
 
-        // PREDICTION - dashed continuation of its source series, same color, added last so trend
-        // overlays (if any) still only cover the real series above.
+        // PREDICTION - dashed continuation of its source series, same color (via sourceLabel),
+        // added last so trend overlays (if any) still only cover the real series above.
         if (predictionDataset) {
             const source = chartData[1].find((d: any) => !d.isTrend) || chartData[1][0];
             predictionDataset.isPrediction = true;
             predictionDataset.sourceLabel = source?.label;
-            predictionDataset.borderColor = source?.borderColor;
-            predictionDataset.backgroundColor = source?.borderColor;
             chartData[1].push(predictionDataset);
         }
 
@@ -1677,25 +1629,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             });
         }
 
+        // eda-area-d3 resolves each series' color/opacity directly from assignedColors - no more
+        // Chart.js-shaped chartColors/backgroundColor baking needed.
         inject.assignedColors = assignedColors;
-        inject.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, 'area');
-
-        // Same isAreaOrRadar convention as radar and this dialog's own applyColorsToChart():
-        // backgroundColor carries the per-series opacity baked in via hexToRgba (extracted live by
-        // eda-area-d3's own extractOpacity()), borderColor (and the gradient base color the D3
-        // component derives from it) stays flat, fully-opaque.
-        chartData[1].forEach((dataset, i) => {
-            try {
-                const solidColor = inject.chartColors[i]?.borderColor as string;
-                const seriesOpacity: number = assignedColors[i]?.opacity ?? 100;
-                dataset.backgroundColor = this.chartUtils.hexToRgba(solidColor, seriesOpacity);
-                dataset.borderColor = solidColor;
-            } catch (err) {
-                const fallbackColor = this.paletaActual[i % this.paletaActual.length];
-                dataset.backgroundColor = fallbackColor;
-                dataset.borderColor = fallbackColor;
-            }
-        });
 
         inject.chartLegend = cfg.chartLegend ?? true;
         inject.showGridLines = cfg.showGridLines ?? true;

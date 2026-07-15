@@ -8,7 +8,7 @@ import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.co
 
 interface BarSeries {
   label: string;
-  color: string | string[];
+  color: string;
   data: number[];
   rawValues?: number[];
 }
@@ -61,6 +61,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   private categories: string[] = [];
   private series: BarSeries[] = [];
+  private categoryColorOverrides: Map<string, string> = new Map();
   private hiddenSeriesIndexes: Set<number> = new Set();
   private fontFamily = 'inherit';
   // Only the very first draw() gets the staggered grow-in animation - a resize or a color/hover
@@ -100,17 +101,25 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   private buildSeries(): void {
     const labels: string[] = this.inject.chartLabels || [];
     this.categories = labels.map(l => String(l));
+    const assignedByLabel = new Map((this.inject.assignedColors || []).map((c: any) => [c.value, c]));
     const datasets = this.inject.chartDataset || [];
-    this.series = datasets.map((ds: any) => ({
-      label: ds.label || '',
-      color: ds.backgroundColor || '#4472c4',
-      data: (ds.data || []).map((v: any) => Number(v) || 0),
-      rawValues: ds.value ? ds.value.map((v: any) => Number(v) || 0) : undefined
-    }));
+    this.series = datasets.map((ds: any) => {
+      const assigned = assignedByLabel.get(ds.label);
+      return {
+        label: ds.label || '',
+        color: assigned?.color || ds.backgroundColor || '#4472c4',
+        data: (ds.data || []).map((v: any) => Number(v) || 0),
+        rawValues: ds.value ? ds.value.map((v: any) => Number(v) || 0) : undefined
+      };
+    });
+
+    // Colored-bars-by-threshold / unique-per-bar modes: a per-category color, keyed by category
+    // label, takes priority over the series' own color (see barColor()).
+    this.categoryColorOverrides = new Map((this.inject.categoryColorOverrides || []).map((c: any) => [c.value, c.color]));
 
     this.legendItems = this.series.map((s, i) => ({
       label: s.label,
-      color: Array.isArray(s.color) ? (s.color[0] || '#4472c4') : (s.color || '#4472c4'),
+      color: s.color || '#4472c4',
       hidden: this.hiddenSeriesIndexes.has(i)
     }));
   }
@@ -140,7 +149,8 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private barColor(series: BarSeries, categoryIdx: number): string {
-    return Array.isArray(series.color) ? (series.color[categoryIdx] || '#4472c4') : (series.color || '#4472c4');
+    const override = this.categoryColorOverrides.get(this.categories[categoryIdx]);
+    return override || series.color || '#4472c4';
   }
 
   private gradientId(colorHex: string): string {

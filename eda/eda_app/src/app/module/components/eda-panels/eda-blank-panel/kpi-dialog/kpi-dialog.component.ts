@@ -186,42 +186,34 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         if (!this.chartContent) return;
 
         const existingColors = this.panelChartConfig.config.getConfig()['assignedColors'] || [];
+        const liveAssigned = this.chartContent.assignedColors || [];
         const dataset = this.chartContent.chartDataset;
 
-        // Create assignedColors from the dataset
+        // Create assignedColors from the dataset, saved config, or whatever's already live.
         this.assignedColors = dataset.map((ds, index) => {
-            const existingColor = existingColors.find(c => c.value === ds.label);
-            const backgroundColor = this.rgb2hex(ds.backgroundColor) || ds.backgroundColor;
-            
+            const saved = existingColors.find(c => c.value === ds.label);
+            const live = liveAssigned.find(c => c.value === ds.label);
             return {
                 value: ds.label,
-                color: existingColor?.color || backgroundColor
+                color: saved?.color || live?.color || this.getDefaultColor(index)
             };
         });
 
         this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
     }
 
+    private getDefaultColor(index: number): string {
+        const palette = this.stylesProviderService.ActualChartPalette?.['paleta'] || this.stylesProviderService.DEFAULT_PALETTE_COLOR?.['paleta'] || [];
+        return palette.length ? palette[index % palette.length] : '#4472c4';
+    }
+
+    // eda-bar-d3/eda-line-d3/eda-area-d3 resolve color directly from assignedColors - just keep
+    // it live-synced and call the cheap partial update, no more Chart.js-shaped dataset mutation.
     applyColorsToChart() {
         if (!this.chartContent) return;
         if (!this.panelChartComponent?.componentRef?.instance?.inject?.edaChart) return;
 
-        const dataset = this.chartContent.chartDataset;
-
-        for (let i = 0; i < dataset.length; i++) {
-            const colorConfig = this.assignedColors.find(c => c.value === dataset[i].label);
-
-            if (colorConfig) {
-                dataset[i].backgroundColor = this.hex2rgb(colorConfig.color, 90);
-                dataset[i].borderColor = this.hex2rgb(colorConfig.color, 100);
-                this.chartContent.chartColors[i] = {
-                    backgroundColor: dataset[i].backgroundColor,
-                    borderColor: dataset[i].borderColor
-                };
-            }
-        }
-
-        this.panelChartComponent.componentRef.instance.inject.edaChart.chartDataset = [...dataset];
+        this.chartContent.assignedColors = [...this.assignedColors];
         this.panelChartComponent.componentRef.instance.updateChart();
     }
 
@@ -242,27 +234,6 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.alerts = this.alerts.filter(alert =>
             alert.operand !== item.operand || alert.value !== item.value || alert.color !== item.color
         );
-    }
-
-    rgb2hex(rgb): string {
-        if (rgb) {
-            rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
-            return (rgb && rgb.length === 4) ? '#' +
-                ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
-                ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
-                ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
-        }
-    }
-
-    hex2rgb(hex, opacity = 100): string {
-        if (hex) {
-            hex = hex.replace('#', '');
-            const r = parseInt(hex.substring(0, 2), 16);
-            const g = parseInt(hex.substring(2, 4), 16);
-            const b = parseInt(hex.substring(4, 6), 16);
-
-            return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity / 100 + ')';
-        }
     }
 
     handleInputColor(item) {

@@ -22,7 +22,6 @@ import { PanelChart } from './panel-charts/panel-chart';
 import { PanelOptions } from './panel-utils/panel-menu-options';
 import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
-import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
 import { KpiDeviationConfig } from './panel-charts/chart-configuration-models/kpi-deviation-config';
 import { DynamicTextConfig } from './panel-charts/chart-configuration-models/dynamicText-config';
@@ -61,7 +60,7 @@ import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-
 import { TableUtils } from './panel-utils/tables-utils';
 import { QueryUtils } from './panel-utils/query-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
-import { ChartsConfigUtils, CUSTOM_CHART_CONFIG_FIELDS } from './panel-utils/charts-config-utils';
+import { ChartsConfigUtils, CUSTOM_CHART_CONFIG_FIELDS, readCustomFields } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
 import { NavigationUtils } from './panel-utils/navigation-utils';
 
@@ -950,7 +949,7 @@ public tableNodeExpand(event: any): void {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
             // Preserve every custom field (same list setConfig() uses to save them) before
-            // merging - setVoidChartConfig() builds a fresh ChartJsConfig without them, and
+            // merging - setVoidChartConfig() builds a fresh blank config without them, and
             // _.merge() isn't trusted to carry them over correctly either.
             const savedCustomFields: Record<string, any> = {};
             CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
@@ -1482,55 +1481,11 @@ public tableNodeExpand(event: any): void {
      * @param event 
      * @param properties properties to set
      */
- public onCloseChartProperties(event, properties): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            if (properties) {
-                this.graficos = {};
-                this.graficos = _.cloneDeep(properties);
-            if(properties.edaChart !== 'histogram'){
-                // assignedColors is updated by changing the color based on its label.
-                this.graficos.assignedColors.forEach((e) => {
-                if (this.graficos.chartLabels.includes(e.value)) {
-                        let indexColor = this.graficos.chartLabels.findIndex(element => element === e.value)
-                        const candidateColor = this.graficos.chartColors[0].backgroundColor[indexColor];
-                        // Solo sobreescribir si es un array de colores (doughnut/polarArea), no un string de color único
-                        if (candidateColor?.length > 1) {
-                            e.color = candidateColor;
-                        }
-                        // For area/radar/line charts, preserve the original hex color from assignedColors.
-                }
-            });
-            }else{
-                // Histogram is single-series: renderBar()'s color resolution (panel-chart.component.ts's
-                // getLabelsForChartType()) matches assignedColors by the DATASET's own label, not by the
-                // bin-range labels (chartLabels) - keying one entry per bin range here meant the lookup
-                // never matched on the next render and silently fell back to a default palette color,
-                // discarding whatever color was just picked in the dialog.
-                this.graficos.assignedColors = [{
-                    value: this.graficos.chartDataset[0]?.label,
-                    color: this.graficos.chartColors[0].backgroundColor
-                }];
-            }
-        
-                const customFields: Record<string, any> = {};
-                CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
-                    customFields[field.name] = this.graficos[field.name] ?? field.default;
-                });
-
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, ...customFields };
-                const layout =
-                    new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
-                    this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
-                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend, this.graficos.showGridLines ?? true));
-                CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
-                    (layout.getConfig() as any)[field.name] = customFields[field.name];
-                });
-                this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
-            }
-            //not saved alert message
-        this.dashboardService.setNotSaved(true);
-    }
-    this.chartController = undefined;
+ public onCloseChartProperties(event, response): void {
+        // response is already the small typed patch chart-dialog.component.ts's saveChartConfig()
+        // builds (assignedColors + this family's own fields) - no more Chart.js-shaped chartColors/
+        // chartDataset to reconcile, so no per-type recolor step is needed here.
+        this.applyDialogChartConfig(event, readCustomFields(response, CUSTOM_CHART_CONFIG_FIELDS), 'chartController');
 }
 
 
@@ -1607,7 +1562,7 @@ public tableNodeExpand(event: any): void {
     }
 
     /** Shared tail for every onClose*Properties handler: merges into the existing config (not a wholesale replace), re-renders, clears the controller. */
-    private applyDialogChartConfig(event: EdaDialogCloseEvent, configPatch: any, controllerField: 'categoryChartController'): void {
+    private applyDialogChartConfig(event: EdaDialogCloseEvent, configPatch: any, controllerField: 'categoryChartController' | 'chartController'): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config = {
                 ...this.panel.content.query.output.config,
@@ -1743,18 +1698,20 @@ public tableNodeExpand(event: any): void {
             this.panel.content.query.output.config.chartType = response.chartType;
             this.panel.content.query.output.config.chartSubType = response.chartSubType;
 
-            layout = new ChartJsConfig(
-                response.edaChart.chartColors,
-                response.edaChart.chartType,
-                response.edaChart.addTrend,
-                response.edaChart.addComparative,
-                response.edaChart.showLabels,
-                response.edaChart.showLabelsPercent,
-                response.edaChart.numberOfColumns,
-                response.assignedColors,  //  Pass assignedColors from the response, not from edaChart.
-                response.edaChart.showPointLines,
-                response.edaChart.showPredictionLines,
-            );
+            layout = {
+                colors: response.edaChart.chartColors,
+                chartType: response.edaChart.chartType,
+                addTrend: response.edaChart.addTrend,
+                addComparative: response.edaChart.addComparative,
+                showLabels: response.edaChart.showLabels,
+                showLabelsPercent: response.edaChart.showLabelsPercent,
+                numberOfColumns: response.edaChart.numberOfColumns,
+                assignedColors: response.assignedColors,  //  Pass assignedColors from the response, not from edaChart.
+                showPointLines: response.edaChart.showPointLines,
+                showPredictionLines: response.edaChart.showPredictionLines,
+                chartLegend: true,
+                showGridLines: true,
+            };
         }
 
         const config = new ChartConfig(

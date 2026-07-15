@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaAreaD3 } from './eda-area';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, formatDeNumber, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, formatDeNumber, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, opacityFraction } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface AreaPoint {
@@ -74,19 +74,6 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     this.draw();
   }
 
-  // During a live color-dialog edit, backgroundColor already carries the current opacity baked in
-  // as an rgba(...) string (chart-dialog.component.ts's applyColorsToChart(), isAreaOrRadar
-  // branch) - same convention/same fix as eda-radar-d3's extractOpacity, parsing it directly is
-  // what keeps the "Opacidad" slider live during preview instead of only after Confirm.
-  private extractOpacity(ds: any, fallback: number): number {
-    const bg = ds?.backgroundColor;
-    if (typeof bg === 'string') {
-      const match = bg.match(/rgba?\([^)]*,\s*([\d.]+)\s*\)/);
-      if (match) return Math.round(parseFloat(match[1]) * 100);
-    }
-    return fallback;
-  }
-
   private buildSeries(): void {
     const labels: string[] = this.inject.chartLabels || [];
     this.categories = labels.map(l => String(l));
@@ -94,8 +81,8 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     const datasets = this.inject.chartDataset || [];
     this.series = datasets.map((ds: any, i: number) => {
       const assigned = assignedByLabel.get(ds.label);
-      const color = ds.borderColor || assigned?.color || '#4472c4';
-      const opacity = this.extractOpacity(ds, assigned?.opacity ?? 100);
+      const color = assigned?.color || ds.borderColor || '#4472c4';
+      const opacity = assigned?.opacity ?? 100;
       return {
         label: ds.label || '',
         color,
@@ -125,7 +112,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private areaFill(defs: any, series: AreaSeries): string {
-    const opacity = (series.opacity ?? 100) / 100;
+    const opacity = opacityFraction(series.opacity);
     if (!(this.inject.useGradient ?? true)) {
       const rgb = d3.rgb(series.color);
       return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`;

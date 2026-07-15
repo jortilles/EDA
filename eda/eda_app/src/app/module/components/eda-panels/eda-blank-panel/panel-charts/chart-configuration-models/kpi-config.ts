@@ -1,28 +1,43 @@
-import { ChartJsConfig } from "./chart-js-config";
+export interface KpiEdaChart {
+    colors: any[];
+    chartType: string;
+    addTrend: boolean;
+    addComparative: boolean;
+    showLabels: boolean;
+    showLabelsPercent: boolean;
+    numberOfColumns: number;
+    assignedColors: any[];
+    showPointLines: boolean;
+    showPredictionLines: boolean;
+    chartLegend: boolean;
+    showGridLines: boolean;
+}
 
 export class KpiConfig {
     sufix: string = '';
     assignedColors: any[] = [];
     alertLimits: any[] = [];
-    edaChart: ChartJsConfig;
+    edaChart: KpiEdaChart;
     modifiedFontPoints: number = 0;
     backgroundColor: string = '';
     kpiColor: string = '';
     prefixImage: string = '';
     constructor(init?: Partial<KpiConfig>) {
-        this.edaChart = new ChartJsConfig(
-            init?.edaChart?.colors || [],
-            init?.edaChart?.chartType || '',
-            init?.edaChart?.addTrend || false,
-            init?.edaChart?.addComparative || false,
-            init?.edaChart?.showLabels || false,
-            init?.edaChart?.showLabelsPercent || false,
-            init?.edaChart?.numberOfColumns || 0,
-            init?.edaChart?.assignedColors || [],
-            init?.edaChart?.showPointLines || false,
-            init?.edaChart?.showPredictionLines || false,
-        );
-        
+        this.edaChart = {
+            colors: init?.edaChart?.colors || [],
+            chartType: init?.edaChart?.chartType || '',
+            addTrend: init?.edaChart?.addTrend || false,
+            addComparative: init?.edaChart?.addComparative || false,
+            showLabels: init?.edaChart?.showLabels || false,
+            showLabelsPercent: init?.edaChart?.showLabelsPercent || false,
+            numberOfColumns: init?.edaChart?.numberOfColumns || 0,
+            assignedColors: init?.edaChart?.assignedColors || [],
+            showPointLines: init?.edaChart?.showPointLines || false,
+            showPredictionLines: init?.edaChart?.showPredictionLines || false,
+            chartLegend: init?.edaChart?.chartLegend ?? true,
+            showGridLines: init?.edaChart?.showGridLines ?? true,
+        };
+
         Object.assign(this, init);
 
 
