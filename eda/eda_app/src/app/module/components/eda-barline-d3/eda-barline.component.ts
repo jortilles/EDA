@@ -91,11 +91,12 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
   private buildSeries(): void {
     const labels: string[] = this.inject.chartLabels || [];
     this.categories = labels.map(l => String(l));
+    const assignedByLabel = new Map((this.inject.assignedColors || []).map((c: any) => [c.value, c]));
     const datasets = this.inject.chartDataset || [];
     this.barSeries = [];
     this.lineSeries = [];
     datasets.forEach((ds: any, i: number) => {
-      const color = ds.borderColor || '#4472c4';
+      const color = assignedByLabel.get(ds.label)?.color || ds.borderColor || '#4472c4';
       const entry: BarlineSeriesBase = {
         label: ds.label || '',
         color,

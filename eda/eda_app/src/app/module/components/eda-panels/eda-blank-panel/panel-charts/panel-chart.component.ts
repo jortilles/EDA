@@ -665,6 +665,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const { kpiValue, spyValue, vsPercent, labels, currentSeries, previousSeries } =
             this._computeTrendDisplay(currentGroup, compGroup, dateFormat, decimals);
 
+        // Computed first since assignedColors' default keys the comparison series by this same
+        // label - it has to match rawDatasets[1].label below for eda-barline-d3's by-label lookup
+        // (and loadChartColors() on reopen) to actually find it, unlike the old hardcoded 'prev' key.
+        const compLabel = this._comparisonLabel(dateFormat);
+
         // --- assignedColors – same pattern as renderEdaKpiChart ---
         const existingColors = cfg['assignedColors'] || [];
         let assignedColors: any[] = [];
@@ -677,23 +682,21 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                              this.styleProviderService?.DEFAULT_PALETTE_COLOR?.['paleta']?.[0];
             assignedColors = [
                 { value: header, color: this.paletaActual[0] || fallback },
-                { value: 'prev', color: this.paletaActual[1] || fallback }
+                { value: compLabel, color: this.paletaActual[1] || fallback }
             ];
             cfg['assignedColors'] = assignedColors;
         }
         const color0 = assignedColors[0]?.color || this.paletaActual[0];
         const color1 = assignedColors[1]?.color || this.paletaActual[1] || color0;
 
-        // --- Build datasets (label = column name for bars, comparison label for line) ---
-        const compLabel = this._comparisonLabel(dateFormat);
+        // --- Build datasets (label = column name for bars, comparison label for line) - color
+        // resolved natively by eda-barline-d3 from assignedColors, these are just data/style fields. ---
         const rawDatasets: any[] = [{
             label: header,
             data: currentSeries,
             type: 'bar',
             borderRadius: 2,
             order: 2,
-            backgroundColor: color0,
-            borderColor: color0,
             datalabels: { display: false }
         }];
         if (hasTwoSeries) {
@@ -707,8 +710,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 fill: false,
                 tension: 0.3,
                 order: 1,
-                backgroundColor: color1,
-                borderColor: color1,
                 datalabels: { display: false }
             });
         }
@@ -738,7 +739,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartLabels: labels,
             chartDataset: rawDatasets,
             chartOptions: chartOptions.chartOptions,
-            chartColors: rawDatasets.map(d => ({ backgroundColor: d.backgroundColor, borderColor: d.borderColor })),
+            // eda-barline-d3 resolves each series' color directly from this - no more Chart.js-shaped
+            // chartColors/backgroundColor baking needed.
+            assignedColors: assignedColors,
             chartLegend: false,
             // eda-barline-d3 mini-chart mode (see eda-kpi-trend.component.html): no axes, no grid,
             // shorter entrance - the current/comparison legend chips above it already cover what a
@@ -1684,20 +1687,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             });
         }
 
+        // eda-barline-d3 resolves each series' color directly from assignedColors - no more
+        // Chart.js-shaped chartColors/backgroundColor baking needed.
         inject.assignedColors = assignedColors;
-        inject.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, 'bar');
-
-        chartData[1].forEach((dataset, i) => {
-            try {
-                const solidColor = inject.chartColors[i]?.borderColor as string;
-                dataset.backgroundColor = solidColor;
-                dataset.borderColor = solidColor;
-            } catch (err) {
-                const fallbackColor = this.paletaActual[i % this.paletaActual.length];
-                dataset.backgroundColor = fallbackColor;
-                dataset.borderColor = fallbackColor;
-            }
-        });
 
         inject.chartLegend = cfg.chartLegend ?? true;
         inject.showLabels = cfg.showLabels ?? false;

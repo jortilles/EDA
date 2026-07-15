@@ -105,7 +105,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     }
 
     ngAfterViewChecked(): void {
-        if (!this.colorsLoaded && this.panelChartComponent?.componentRef?.instance?.inject?.edaChart.chartType) {
+        if (!this.colorsLoaded && this.panelChartComponent?.componentRef?.instance?.inject?.edaChart?.chartType) {
             this.chartContent = this.panelChartComponent.componentRef.instance.inject.edaChart;
             if (this.assignedColors.length === 0) {
                 setTimeout(() => {
