@@ -530,6 +530,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
   public async saveDashboardAs(newDashboard: any) {
     this.isSaveAsDialogVisible = false;
+    console.log('[DASH-TRACE][dashboard-sidebar] saveDashboardAs() received from dialog ->', newDashboard);
     // onClose
     if (!newDashboard) {
       return;
@@ -551,7 +552,9 @@ export class DashboardSidebarComponent implements AfterViewInit {
         group: (newDashboard.group || []).map((g: any) => g._id)
       };
 
+      console.log('[DASH-TRACE][dashboard-sidebar] saveDashboardAs() bodyNew (create) ->', bodyNew);
       const res = await lastValueFrom(this.dashboardService.addNewDashboard(bodyNew));
+      console.log('[DASH-TRACE][dashboard-sidebar] saveDashboardAs() create response ->', res);
       const body = {
         config: {
           title: newDashboard.name,
@@ -576,13 +579,16 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
       this.dashboard.edaPanels.forEach(panel => panel.savePanel());
 
-      await lastValueFrom(this.dashboardService.updateDashboard(res.dashboard._id, body));
+      console.log('[DASH-TRACE][dashboard-sidebar] saveDashboardAs() body (update, panels included) ->', body);
+      const updateRes = await lastValueFrom(this.dashboardService.updateDashboard(res.dashboard._id, body));
+      console.log('[DASH-TRACE][dashboard-sidebar] saveDashboardAs() update response ->', updateRes);
       this.dashboardService.setNotSaved(false);
       this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
       this.router.navigate(['/dashboard/', res.dashboard._id]).then(() => {
         window.location.reload();
       });
     } catch (err) {
+      console.log('[DASH-TRACE][dashboard-sidebar] saveDashboardAs() ERROR ->', err);
       this.alertService.addError(err);
       throw err;
     }

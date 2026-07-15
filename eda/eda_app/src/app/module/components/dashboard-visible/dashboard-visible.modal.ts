@@ -62,6 +62,7 @@ private initializeForm(): void {
   this.form.controls['visible'].setValue(this.dashboard.dashboard.config.visible);
   this.showGroups = this.form.controls['visible'].value === 'group';
   this.showUrl = this.form.controls['visible'].value === 'open';
+  console.log('[DASH-TRACE][dashboard-visible] initializeForm() dashboard.config.visible=', this.dashboard.dashboard.config.visible, 'visibleTypes=', this.visibleTypes.map(t => t.value));
   }
 
   private loadGroups(): void {
@@ -69,10 +70,12 @@ private initializeForm(): void {
     this.groupService.getGroupsByUser().subscribe(
       res => {
         this.grups = res;
+        console.log('[DASH-TRACE][dashboard-visible] loadGroups() userGroups=', this.grups?.length, this.grups);
 
         if (this.grups.length === 0) {
           const commonIndex = this.visibleTypes.findIndex(type => type.value === 'common');
           if (commonIndex > -1) {
+            console.warn('[DASH-TRACE][dashboard-visible] user has 0 groups -> removing "common" from visibleTypes (looks like it should remove "group" instead). currentFormVisible=', this.form.controls['visible'].value);
             this.visibleTypes.splice(commonIndex, 1);
           }
         }
@@ -81,6 +84,7 @@ private initializeForm(): void {
             this.dashboard.dashboard.group.includes(grup['_id'])));
         }
       }, err => {
+        console.log('[DASH-TRACE][dashboard-visible] loadGroups ERROR ->', err);
         this.alertService.addError(err)
       }
     );
