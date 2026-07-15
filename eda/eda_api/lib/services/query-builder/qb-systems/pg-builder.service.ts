@@ -564,7 +564,7 @@ export class PgBuilderService extends QueryBuilderService {
 
             }else{
               //Si es una vista
-              joinString.push(` ${myJoin} join ${t} on  "${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+              joinString.push(` ${myJoin} join ${t} on  "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
             }
             
           }
