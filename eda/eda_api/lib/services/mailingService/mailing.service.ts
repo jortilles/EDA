@@ -77,7 +77,9 @@ export class MailingService {
 
       dashboards.forEach(dashboard => {
         const cfg = dashboard.config.sendViaMailConfig;
-        const userMails = cfg.users.map((user: any) => user.email);
+        const registeredMails = (cfg.users || []).map((user: any) => user.email);
+        const manualMails = (cfg.otherRecipients || '').split(/\s+/).map((m: string) => m.trim()).filter((m: string) => m.length > 0);
+        const userMails: string[] = Array.from(new Set([...registeredMails, ...manualMails]));
         const dashboardID: string = dashboard._id.toString();
         let shouldUpdate = true;
 

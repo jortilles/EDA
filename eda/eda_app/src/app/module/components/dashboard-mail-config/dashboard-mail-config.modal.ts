@@ -40,6 +40,7 @@ export class DashboardMailConfigModal {
   public currentAlert = null;
   public users: any;
   public selectedUsers: any = [];
+  public otherRecipients: string = '';
   public enabled: boolean = true;
 
   constructor(private alertService: AlertService, private userService: UserService) { }
@@ -62,8 +63,24 @@ export class DashboardMailConfigModal {
     this.units = config.units;
     this.quantity = config.quantity;
     this.selectedUsers = config.users;
+    this.otherRecipients = config.otherRecipients || '';
     this.mailMessage = config.mailMessage;
     this.enabled = config.enabled;
+  }
+
+  /** Emails typed by hand in the "Otros destinatarios" input, space-separated */
+  public parseOtherRecipients(): string[] {
+    return this.otherRecipients
+      .split(/\s+/)
+      .map(email => email.trim())
+      .filter(email => email.length > 0);
+  }
+
+  /** All recipients (registered users + manually typed emails), deduplicated, for the dialog summary */
+  public get allRecipientEmails(): string[] {
+    const registered = (this.selectedUsers || []).map((u: any) => u.email).filter(Boolean);
+    const manual = this.parseOtherRecipients();
+    return Array.from(new Set([...registered, ...manual]));
   }
 
   save() {
@@ -79,6 +96,7 @@ export class DashboardMailConfigModal {
       hours: hours,
       minutes: minutes,
       users: this.selectedUsers,
+      otherRecipients: this.otherRecipients,
       mailMessage: this.mailMessage,
       lastUpdated: new Date().toISOString(),
       enabled: this.enabled,

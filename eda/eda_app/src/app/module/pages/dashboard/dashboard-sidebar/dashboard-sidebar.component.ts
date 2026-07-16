@@ -661,7 +661,8 @@ export class DashboardSidebarComponent implements AfterViewInit {
       minutes: sendViaMailConfig.minutes,
       quantity: sendViaMailConfig.quantity,
       units: sendViaMailConfig.units,
-      users: sendViaMailConfig.users
+      users: sendViaMailConfig.users,
+      otherRecipients: sendViaMailConfig.otherRecipients
     };
 
     // Assign data to config and persist to DB

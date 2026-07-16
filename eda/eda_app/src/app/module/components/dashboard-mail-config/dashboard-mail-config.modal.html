@@ -62,6 +62,14 @@
                 i18n-defaultLabel="@@selectRecipients" defaultLabel="Selecciona los destinatarios *"
                 class="flex w-[auto] border border-gray-300 rounded-lg" [maxSelectedLabels]="2">
             </p-multiSelect>
+
+            <div class="flex flex-col gap-1">
+                <label for="other-recipients" i18n="@@otherRecipients" class="text-base text-gray-700 font-medium">Otros destinatarios:</label>
+                <span i18n="@@otherRecipientsHint" class="text-sm text-gray-400">(separados por un espacio)</span>
+                <input id="other-recipients" type="text" [(ngModel)]="otherRecipients"
+                    i18n-placeholder="@@otherRecipientsPlaceholder" placeholder="correo1@dominio.com correo2@dominio.com"
+                    class="mail-input w-full border border-gray-300 px-3 py-2.5 rounded-lg">
+            </div>
         </div>
 
 
@@ -75,6 +83,13 @@
         </div>
 
     </div>
+
+    @if (enabled && allRecipientEmails.length > 0) {
+        <div class="mt-4 text-base text-gray-600">
+            <span class="font-semibold" i18n="@@sendToSummary">Enviar a:</span>
+            {{ allRecipientEmails.join(', ') }}
+        </div>
+    }
 </div>
 
 </eda-dialog2>

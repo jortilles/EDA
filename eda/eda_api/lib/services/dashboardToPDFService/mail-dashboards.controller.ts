@@ -45,24 +45,31 @@ export class MailDashboardsController {
 
       let authToken: string | null = null;
       let authUser: object | null = null;
+      let loginFailureDetail: string | null = null;
 
       loginPage.on('response', async (response: any) => {
+        if (!response.url().includes('/admin/user/fake-login/')) return;
         try {
           const contentType = response.headers()['content-type'] || '';
-          if (!contentType.includes('application/json')) return;
+          if (!contentType.includes('application/json')) {
+            loginFailureDetail = `status ${response.status()}, content-type: ${contentType}`;
+            return;
+          }
           const body = await response.json();
           if (body?.token && body?.user?._id) {
             authToken = body.token;
             authUser = body.user;
+          } else {
+            loginFailureDetail = `status ${response.status()}, body: ${JSON.stringify(body)}`;
           }
-        } catch (_) { /* ignore non-JSON responses */ }
+        } catch (err: any) { loginFailureDetail = `error reading response: ${err.message}`; }
       });
 
       await loginPage.goto(loginUrl, { waitUntil: 'networkidle' });
       await loginContext.close();
 
       if (!authToken || !authUser) {
-        throw new Error(`[Dashboard] No se pudo obtener token para ${userMail}`);
+        throw new Error(`[Dashboard] No se pudo obtener token para ${userMail}${loginFailureDetail ? ` (${loginFailureDetail})` : ''}`);
       }
       console.log(`[Dashboard] Token obtenido para ${userMail}`);
 
