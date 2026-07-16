@@ -307,7 +307,7 @@
                           <eda-icon name="bin" size="sm"></eda-icon>
                         </button>
                       }
-                      @if (dashboard.type === 'public') {
+                      @if (dashboard.type === 'open') {
                         <button type="button" class="rounded-md p-2 hover:bg-muted" (click)="copyUrl(dashboard)" i18n-title="@@copyURL" title="Copiar url pública">
                           <eda-icon name="link" size="sm"></eda-icon>
                         </button>
@@ -409,7 +409,7 @@
                     <eda-icon name="document-duplicated" size="sm"></eda-icon>
                   </button>
                 }
-                @if (dashboard.type === 'public') {
+                @if (dashboard.type === 'open') {
                   <button type="button" class="rounded-md p-2 hover:bg-muted" (click)="copyUrl(dashboard)" i18n-title="@@copyURL" title="Copiar url pública">
                     <eda-icon name="link" size="sm"></eda-icon>
                   </button>

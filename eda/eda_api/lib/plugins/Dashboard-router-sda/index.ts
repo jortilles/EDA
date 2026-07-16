@@ -54,8 +54,8 @@ setImmediate(() => {
   DashboardController.getDashboards = (async function (req: Request, res: Response, next: NextFunction) {
     const originalJson = res.json.bind(res);
     res.json = ((body: any) => {
-      if (body?.ok && body.isAdmin !== true && Array.isArray(body.publics)) {
-        body.publics = [];
+      if (body?.ok && body.isAdmin !== true && Array.isArray(body.open)) {
+        body.open = [];
       }
       return originalJson(body);
     }) as any;

@@ -76,7 +76,7 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
     color: string;
   }> = [
     {
-      type: "public",
+      type: "open",
       label: $localize`:@@Public:Público`,
       icon: "fa-circle",
       color: "#add8e7"
@@ -102,13 +102,13 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
     color: string;
   }> = [
     {
-      type: "public",
+      type: "open",
       label: $localize`:@@Public:Público`,
       icon: "fa-circle",
       color: "#b4bc32"
     },
     {
-      type: "shared",
+      type: "common",
       label: $localize`:@@Common:Común`,
       icon: "fa-circle",
       color: "#add8e7"
@@ -134,8 +134,8 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
 
   // Dashboard Type Translations
   public dashboardTypeTranslations = {
-    public: $localize`:@@Public:Público`,
-    shared: $localize`:@@Common:Común`,
+    open: $localize`:@@Public:Público`,
+    common: $localize`:@@Common:Común`,
     group: $localize`:@@Group:Grupo`,
     private: $localize`:@@Private:Privado`
   };
@@ -150,18 +150,6 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
   } = {};
   public editingTypeId: string | null = null;
   @ViewChildren(Dropdown) private typeDropdowns!: QueryList<Dropdown>;
-
-  /**
-   * Maps a frontend dashboard "type" value to the canonical config.visible
-   * value expected by the backend (which also drives its legacy-value
-   * normalization, so these must not be conflated with the "type" strings).
-   */
-  private readonly typeToVisibleMap: { [key: string]: string } = {
-    public: "open",
-    shared: "common",
-    group: "group",
-    private: "private"
-  };
 
   constructor(
     // Services for managing dashboards and related operations
@@ -190,7 +178,7 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
 
   private initDashboardTypes(): void {
     this.dashboardTypes = this.defaultDashboardTypes.filter(
-      type => type.type !== 'public' || this.isAdmin || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS
+      type => type.type !== 'open' || this.isAdmin || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS
     );
     this.filteredTypes = [...this.dashboardTypes];
   }
@@ -292,10 +280,10 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
     this.dashboardService.getDashboards().subscribe(
       res => {
         this.allDashboards = [
-          ...res.publics.map(d => this.normalizeDashboard(d, "public")),
-          ...res.shared.map(d => this.normalizeDashboard(d, "shared")),
+          ...res.open.map(d => this.normalizeDashboard(d, "open")),
+          ...res.common.map(d => this.normalizeDashboard(d, "common")),
           ...res.group.map(d => this.normalizeDashboard(d, "group")),
-          ...res.dashboards.map(d => this.normalizeDashboard(d, "private"))
+          ...res.private.map(d => this.normalizeDashboard(d, "private"))
         ].sort((a, b) => (a.config.title > b.config.title ? 1 : b.config.title > a.config.title ? -1 : 0));
 
         this.groups = _.map(_.uniqBy(res.group, "group._id"), "group");
@@ -824,7 +812,7 @@ public filterGroups() {
    * @param dashboard The dashboard whose URL to copy
    */
   public copyUrl(dashboard: any): void {
-    if (dashboard.type === "public") {
+    if (dashboard.type === "open") {
       const href = location.href;
       const baseURL = href.slice(0, href.indexOf('#'));
 
@@ -940,15 +928,14 @@ public filterGroups() {
   public updateDashboardType(dashboard: any, newType: string): void {
     const oldType = dashboard.type;
     const oldVisible = dashboard.config.visible;
-    const newVisible = this.typeToVisibleMap[newType] ?? newType;
     dashboard.type = newType;
-    dashboard.config.visible = newVisible;
+    dashboard.config.visible = newType;
 
     this.dashboardService
       .updateDashboardSpecific(dashboard._id, {
         data: {
           key: "config.visible",
-          newValue: newVisible
+          newValue: newType
         }
       })
       .subscribe(

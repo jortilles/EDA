@@ -35,7 +35,7 @@ export class HomePage implements OnInit, OnDestroy {
   publicReports: any[] = [];
   privateReports: any[] = [];
   roleReports: any[] = [];
-  sharedReports: any[] = [];
+  commonReports: any[] = [];
   reportMap: any = {};
 
   tags: any[] = [];
@@ -123,19 +123,19 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private async loadReports() {
-    const { publics, shared, dashboards, group } = await lastValueFrom(this.dashboardService.getDashboards());
-    this.publicReports = shared;
-    this.privateReports = dashboards;
+    const { open, common, private: privateDashboards, group } = await lastValueFrom(this.dashboardService.getDashboards());
+    this.publicReports = open;
+    this.privateReports = privateDashboards;
     this.roleReports = group;
-    this.sharedReports = publics;
+    this.commonReports = common;
 
-    this.allDashboards = [].concat(this.publicReports, this.privateReports, this.roleReports, this.sharedReports);
+    this.allDashboards = [].concat(this.publicReports, this.privateReports, this.roleReports, this.commonReports);
 
     this.reportMap = {
       private: this.privateReports,
       group: this.roleReports,
-      public: this.publicReports,
-      shared: this.sharedReports
+      open: this.publicReports,
+      common: this.commonReports
     };
 
     this.handleSorting();
@@ -197,7 +197,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   private async initTagSelection(): Promise<void> {
     const dashboards = await lastValueFrom(this.dashboardService.getDashboards());
-    const AllDashboards = [...dashboards.publics, ...dashboards.shared, ...dashboards.dashboards, ...dashboards.group];
+    const AllDashboards = [...dashboards.open, ...dashboards.common, ...dashboards.private, ...dashboards.group];
     const moreThan20Dashboards = AllDashboards.length > 20;
     const todoGroupedOption = { label: this.allTagsGroupedLabel, value: this.allTagsValue };
     const todoFlatOption = { label: this.allTagsFlatLabel, value: this.allTagsFlatValue };
@@ -276,13 +276,13 @@ export class HomePage implements OnInit, OnDestroy {
   public filterByTags() {
     const tags = sessionStorage.getItem('activeTags') || '[]';
     if (tags.includes($localize`:@@AllTags:Todos`) || tags.includes(this.allTagsFlatValue) || tags === '[]') {
-      this.publicReports  = [...this.reportMap.public];
-      this.sharedReports  = [...this.reportMap.shared];
+      this.publicReports  = [...this.reportMap.open];
+      this.commonReports  = [...this.reportMap.common];
       this.privateReports = [...this.reportMap.private];
       this.roleReports    = [...this.reportMap.group];
     } else {
-      this.publicReports  = this.checkTagsIntoReports(this.reportMap.public, tags);
-      this.sharedReports  = this.checkTagsIntoReports(this.reportMap.shared, tags);
+      this.publicReports  = this.checkTagsIntoReports(this.reportMap.open, tags);
+      this.commonReports  = this.checkTagsIntoReports(this.reportMap.common, tags);
       this.privateReports = this.checkTagsIntoReports(this.reportMap.private, tags);
       this.roleReports    = this.checkTagsIntoReports(this.reportMap.group, tags);
     }
@@ -336,8 +336,8 @@ export class HomePage implements OnInit, OnDestroy {
     const activeTags = sessionStorage.getItem('activeTags') || '[]';
     const hasActiveTag = !activeTags.includes($localize`:@@AllTags:Todos`) && !activeTags.includes(this.allTagsFlatValue) && activeTags !== '[]';
     return {
-      public:  hasActiveTag ? this.checkTagsIntoReports(this.reportMap.public,  activeTags) : this.reportMap.public,
-      shared:  hasActiveTag ? this.checkTagsIntoReports(this.reportMap.shared,  activeTags) : this.reportMap.shared,
+      open:    hasActiveTag ? this.checkTagsIntoReports(this.reportMap.open,  activeTags) : this.reportMap.open,
+      common:  hasActiveTag ? this.checkTagsIntoReports(this.reportMap.common,  activeTags) : this.reportMap.common,
       private: hasActiveTag ? this.checkTagsIntoReports(this.reportMap.private, activeTags) : this.reportMap.private,
       group:   hasActiveTag ? this.checkTagsIntoReports(this.reportMap.group,   activeTags) : this.reportMap.group,
     };
@@ -376,8 +376,8 @@ export class HomePage implements OnInit, OnDestroy {
     });
 
     const base = this.getActiveTagBase();
-    this.publicReports  = filterFn(base.public);
-    this.sharedReports  = filterFn(base.shared);
+    this.publicReports  = filterFn(base.open);
+    this.commonReports  = filterFn(base.common);
     this.privateReports = filterFn(base.private);
     this.roleReports    = filterFn(base.group);
   }
@@ -474,7 +474,7 @@ export class HomePage implements OnInit, OnDestroy {
               }
             }
 
-            const listNames = ['publicReports', 'privateReports', 'roleReports', 'sharedReports'];
+            const listNames = ['publicReports', 'privateReports', 'roleReports', 'commonReports'];
 
             for (const name of listNames) {
               const list = this[name];
@@ -502,7 +502,7 @@ export class HomePage implements OnInit, OnDestroy {
 
           const allReports = [
             ...this.privateReports, ...this.publicReports,
-            ...this.roleReports,    ...this.sharedReports
+            ...this.roleReports,    ...this.commonReports
           ];
           const clonedReport = allReports.find(d => d._id === newId);
           if (clonedReport) {
@@ -599,8 +599,8 @@ export class HomePage implements OnInit, OnDestroy {
     });
 
     const base = this.getActiveTagBase();
-    this.publicReports  = filterFn(base.public);
-    this.sharedReports  = filterFn(base.shared);
+    this.publicReports  = filterFn(base.open);
+    this.commonReports  = filterFn(base.common);
     this.privateReports = filterFn(base.private);
     this.roleReports    = filterFn(base.group);
     if (updateSearchBar) this.buildSearchQuery();
@@ -667,9 +667,9 @@ export class HomePage implements OnInit, OnDestroy {
       return direction === 'asc' ? comparison : -comparison;
     };
 
-    this.publicReports = reports.public.sort(compareFn);
+    this.publicReports = reports.open.sort(compareFn);
     this.privateReports = reports.private.sort(compareFn);
     this.roleReports = reports.group.sort(compareFn);
-    this.sharedReports = reports.shared.sort(compareFn);
+    this.commonReports = reports.common.sort(compareFn);
   }
 }
