@@ -85,8 +85,11 @@ export class MailDashboardsController {
       const page = await dashboardContext.newPage();
       await page.setViewportSize({ width: 1380, height: 900 });
 
+      // The root index.html does a client-side locale redirect (e.g. "/" -> "/es/") that
+      // breaks hash-based deep links, so navigate straight to the locale-prefixed URL.
+      const locale = serverConfig.locale || 'es';
       const baseURL = serverConfig.server_baseURL.replace(/\/?$/, '/');
-      const dashboardUrl = `${baseURL}#/dashboard/${dashboard}`;
+      const dashboardUrl = `${baseURL}${locale}/#/dashboard/${dashboard}`;
       console.log(`[Dashboard] Navegando a: ${dashboardUrl}`);
 
       await page.goto(dashboardUrl, { waitUntil: 'networkidle', timeout: 60000 });
@@ -163,7 +166,7 @@ export class MailDashboardsController {
       console.log(`[Dashboard] PDF generado: ${filename}`);
 
       // 7. Send the email with the generated PDF attached
-      const link = `${baseURL}#/dashboard/${dashboard}`;
+      const link = dashboardUrl;
       MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail);
       console.log(`[Dashboard] Email enviado a ${userMail}`);
 
