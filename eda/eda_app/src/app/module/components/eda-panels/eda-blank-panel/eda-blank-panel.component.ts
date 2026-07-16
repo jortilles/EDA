@@ -564,6 +564,16 @@ public tableNodeExpand(event: any): void {
         this.dashboardService.setNotSaved(true);
     }
 
+    isClickFiltersEnabled(): boolean {
+        return (this.panel as any).clickFiltersEnabled ?? true;
+    }
+
+    toggleClickFilters(): void {
+        const panel = this.panel as any;
+        panel.clickFiltersEnabled = !this.isClickFiltersEnabled();
+        this.dashboardService.setNotSaved(true);
+    }
+
     public showWhatIfSection(): boolean {
         return this.currentQuery.some((query: any) => query.whatif_column);
     }

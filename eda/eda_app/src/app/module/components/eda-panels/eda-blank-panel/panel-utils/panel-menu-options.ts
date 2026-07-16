@@ -394,6 +394,23 @@ export const PanelOptions = {
     });
   },
 
+  toggleClickFilter: (panelComponent: EdaBlankPanelComponent) => {
+    return new EdaContextMenuItem({
+      label: panelComponent.isClickFiltersEnabled()
+        ? $localize`:@@panelOptionsEnableFilters:Click en filtros habilitado`
+        : $localize`:@@panelOptionsDisableFilters:Click en filtros deshabilitado`,
+      icon: panelComponent.isClickFiltersEnabled() ? 'pi pi-bolt' : 'pi pi-ban',
+      command: () => {
+        panelComponent.toggleClickFilters();
+        // Defer reassignment by one tick: the click must finish bubbling before we
+        // replace the DOM, otherwise onOutsideClick sees a detached target and closes the menu
+        setTimeout(() => {
+          panelComponent.contextMenu.contextMenuItems = PanelOptions.generateMenu(panelComponent);
+        }, 0);
+      }
+    });
+  },
+
   generateMenu: (ebp: EdaBlankPanelComponent) => {
     const isEditable = ebp.isEditable(); 
     const isRemovable = ebp.isRemovable();
@@ -440,6 +457,10 @@ export const PanelOptions = {
       {
         show: !isRoOrAnonimus && !SHOW_LOCK_IN_PANEL_HEADER,
         item: () => PanelOptions.toggleLock(ebp),
+      },
+      {
+        show: !isRoOrAnonimus && isEditable,
+        item: () => PanelOptions.toggleClickFilter(ebp),
       },
       {
         show: !isRoOrAnonimus && isEditable && ebp.availableChatGpt,

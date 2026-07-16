@@ -600,7 +600,8 @@ export class DashboardPage implements OnInit {
   public async onPanelAction(event: IPanelAction): Promise<void> {
     let modeEDA = false;
     const panel = event?.data?.panel;
-    const filtersEnabled: boolean = this.dashboard.config.clickFiltersEnabled;
+    const panelFiltersEnabled: boolean = panel?.clickFiltersEnabled ?? true;
+    const filtersEnabled: boolean = this.dashboard.config.clickFiltersEnabled && panelFiltersEnabled;
     const isImportedPanel: boolean = panel?.globalFilterMap;
 
     if (panel) {
