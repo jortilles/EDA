@@ -40,7 +40,7 @@ export class DashboardMailConfigModal {
   public currentAlert = null;
   public users: any;
   public selectedUsers: any = [];
-  public enabled: boolean = false;
+  public enabled: boolean = true;
 
   constructor(private alertService: AlertService, private userService: UserService) { }
 
