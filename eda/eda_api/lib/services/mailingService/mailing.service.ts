@@ -156,8 +156,11 @@ export class MailingService {
       let condition = MailingService.compareValues(result, alert.value.value, alert.value.operand);
       console.log(`[MailingService] alerta KPI | resultado: ${result} | condición: ${result} ${alert.value.operand} ${alert.value.value} = ${condition} | destinatario: ${user.email}`);
 
+      // The root index.html does a client-side locale redirect (e.g. "/" -> "/es/") that
+      // breaks hash-based deep links, so link straight to the locale-prefixed URL.
+      const locale = mailConfig.locale || 'es';
       const appBase = mailConfig.server_baseURL.replace(/\/?$/, '/');
-      const dashboardLink = `${appBase}#/dashboard/${alert.query.dashboard.dashboard_id}`;
+      const dashboardLink = `${appBase}${locale}/#/dashboard/${alert.query.dashboard.dashboard_id}`;
 
       let text = `${alert.value.mailing.mailMessage}\n-------------------------------------------- \n\n` +
         `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${dashboardLink}`
