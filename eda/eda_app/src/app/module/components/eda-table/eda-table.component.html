@@ -244,7 +244,9 @@
                                 </ng-container>
                                 <ng-container *ngSwitchCase="'EdaColumnChart'">
 
-                                    <p-chart type="line" [data]="lodash.get(rowData, col.field)" width="90%" height="20%" [options]="chartOptions"></p-chart>
+                                    <div class="eda-table-sparkline">
+                                        <eda-line-d3 [inject]="lodash.get(rowData, col.field)"></eda-line-d3>
+                                    </div>
 
                                 </ng-container>
                             </ng-container>

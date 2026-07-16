@@ -1,8 +1,8 @@
 import { Component, inject, OnInit, AfterViewChecked, signal, ViewChild, ElementRef, NgZone, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { NgChartsModule } from 'ng2-charts';
-import { ChartData, ChartOptions } from 'chart.js';
+import { EdaBarD3Component } from '@eda/components/eda-bar-d3/eda-bar.component';
+import { EdaBarD3 } from '@eda/components/eda-bar-d3/eda-bar';
 import { Subscription } from 'rxjs';
 import { IaChatService, ChatMessage, ChatOption, BarChart } from '@eda/services/api/ia-chat.service';
 import type { ChatEvent } from '@eda/services/api/ia-chat.service';
@@ -11,7 +11,7 @@ import { CORPORATE_COLORS } from '@eda/configs/index';
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, NgChartsModule],
+  imports: [CommonModule, EdaBarD3Component],
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.css']
 })
@@ -39,10 +39,9 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   private finalResponse: string | null = null;
   private chatSubscription: Subscription | null = null;
 
-  private readonly chartPalette = ['b3', '99', '80', '70', '60'];
   private readonly chartExtraColors = ['#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
-  private chartDataCache = new WeakMap<BarChart, ChartData<'bar'>>();
-  private chartOptsCache = new WeakMap<BarChart, ChartOptions<'bar'>>();
+  private chartInjectCache = new WeakMap<BarChart, EdaBarD3>();
+  private chartInjectId = 0;
 
   private readonly statusLabels: Record<string, string> = {
     connecting: $localize`:@@chatStatusConnecting:Conectando con las fuentes de datos...`,
@@ -86,38 +85,30 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  buildChartData(chart: BarChart): ChartData<'bar'> {
-    if (this.chartDataCache.has(chart)) return this.chartDataCache.get(chart)!;
+  buildBarD3Inject(chart: BarChart): EdaBarD3 {
+    if (this.chartInjectCache.has(chart)) return this.chartInjectCache.get(chart)!;
     const primary = CORPORATE_COLORS.primary;
-    const result: ChartData<'bar'> = {
-      labels: chart.labels,
-      datasets: chart.datasets.map((ds, i) => {
-        const base = i === 0 ? primary : (this.chartExtraColors[i - 1] ?? this.chartExtraColors[this.chartExtraColors.length - 1]);
-        const alpha = this.chartPalette[i] ?? 'b3';
-        return { label: ds.label, data: ds.values, backgroundColor: base + alpha, borderColor: base, borderWidth: 1, borderRadius: 4 };
-      }),
-    };
-    this.chartDataCache.set(chart, result);
-    return result;
-  }
 
-  buildChartOptions(chart: BarChart): ChartOptions<'bar'> {
-    if (this.chartOptsCache.has(chart)) return this.chartOptsCache.get(chart)!;
-    const result: ChartOptions<'bar'> = {
-      responsive: true,
-      maintainAspectRatio: true,
-      animation: { duration: 400 },
-      plugins: {
-        legend: { display: chart.datasets.length > 1, labels: { font: { size: 10 }, boxWidth: 12 } },
-        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('es-ES')}` } },
-      },
-      scales: {
-        x: { ticks: { font: { size: 9 }, maxRotation: 35 } },
-        y: { beginAtZero: true, ticks: { font: { size: 9 } } },
-      },
-    };
-    this.chartOptsCache.set(chart, result);
-    return result;
+    const inject = new EdaBarD3();
+    inject.id = `chatbot_${this.chartInjectId++}`;
+    inject.chartType = 'bar';
+    inject.edaChart = 'bar';
+    inject.chartLabels = chart.labels;
+    inject.categoryFieldName = chart.labelKey;
+    inject.chartDataset = chart.datasets.map(ds => ({ label: ds.label, data: ds.values }));
+    inject.assignedColors = chart.datasets.map((ds, i) => ({
+      value: ds.label,
+      color: i === 0 ? primary : (this.chartExtraColors[i - 1] ?? this.chartExtraColors[this.chartExtraColors.length - 1])
+    }));
+    inject.chartLegend = chart.datasets.length > 1;
+    inject.showLabels = false;
+    inject.showLabelsPercent = false;
+    inject.showGridLines = true;
+    inject.useGradient = true;
+    inject.useRoundedBars = true;
+
+    this.chartInjectCache.set(chart, inject);
+    return inject;
   }
 
   onMessagesScroll(): void {
