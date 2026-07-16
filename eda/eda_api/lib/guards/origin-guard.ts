@@ -8,12 +8,11 @@ export const originGuard = async function (req: Request, res: Response, next: Ne
   jwt.verify(req.params.token, SEED, (err, decoded) => {
 
     if (err) {
-      console.log(`[originGuard] Invalid Token: ${err.message} | path: ${req.path}`);
-      return next(new HttpException(401, 'Invalid Token'));
+      return next(new HttpException(401, `Invalid Token: ${err.message}`));
     } else {
 
       if (!isThisLocalhost(req)) {
-        return next(new HttpException(401, 'Invalid Origin'));
+        return next(new HttpException(401, `Invalid Origin: ip=${req.socket.remoteAddress}, host=${req.get('host')}`));
       } else {
         next();
       }
