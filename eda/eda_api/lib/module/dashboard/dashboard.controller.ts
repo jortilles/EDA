@@ -16,6 +16,8 @@ import { DateUtil } from '../../utils/date.util'
 import _ from 'lodash'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
+// TODO: pendiente subir los archivos customizables (eda_api/config/customizable/) antes de activar esto
+// const { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } = require('../../../config/customizable/customizable_default');
 export class DashboardController {
 
 
@@ -40,6 +42,7 @@ export class DashboardController {
         privates = await DashboardController.getPrivateDashboards(req, dataSources)
         group = await DashboardController.getGroupsDashboards(req, dataSources)
         shared = await DashboardController.getSharedDashboards(req, dataSources)
+        // publics = await DashboardController.getPublicsDashboards(req, dataSources, isAdmin) // TODO: pasar isAdmin cuando se active el flag (ver import comentado arriba)
         publics = await DashboardController.getPublicsDashboards(req, dataSources)
       }
 
@@ -217,8 +220,12 @@ export class DashboardController {
    * @param dss List of available datasources
    * @returns List of public dashboards
    */
-  static async getPublicsDashboards(req: Request, dss: any[]) {
+  static async getPublicsDashboards(req: Request, dss: any[] /*, isAdmin: boolean = false */) {
     try {
+      // TODO: activar junto con el import de ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS de arriba
+      // if (!isAdmin && !ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS) {
+      //   return [];
+      // }
       const dashboards = await DashboardController.findAllDashboardsWithMeta();
       const publics = []
       for (const dashboard of dashboards) {

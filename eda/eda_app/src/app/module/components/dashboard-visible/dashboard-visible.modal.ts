@@ -62,7 +62,6 @@ private initializeForm(): void {
   this.form.controls['visible'].setValue(this.dashboard.dashboard.config.visible);
   this.showGroups = this.form.controls['visible'].value === 'group';
   this.showUrl = this.form.controls['visible'].value === 'open';
-  console.log('[DASH-TRACE][dashboard-visible] initializeForm() dashboard.config.visible=', this.dashboard.dashboard.config.visible, 'visibleTypes=', this.visibleTypes.map(t => t.value));
   }
 
   private loadGroups(): void {
@@ -84,7 +83,6 @@ private initializeForm(): void {
             this.dashboard.dashboard.group.includes(grup['_id'])));
         }
       }, err => {
-        console.log('[DASH-TRACE][dashboard-visible] loadGroups ERROR ->', err);
         this.alertService.addError(err)
       }
     );

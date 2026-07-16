@@ -51,12 +51,8 @@ export class DashboardSaveAsDialog implements OnInit {
             { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
         ].filter(type => type.value !== 'open' || this.userService.isAdmin || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS);
 
-        console.log('[DASH-TRACE][dashboard-save-as] isAdmin=', this.userService.isAdmin, 'ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS=', ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS, 'visibleTypes=', this.visibleTypes.map(t => t.value), '(length=' + this.visibleTypes.length + ')');
-        if (!this.visibleTypes[3]) {
-          console.warn('[DASH-TRACE][dashboard-save-as] BUG HIT: visibleTypes[3] is undefined (array only has ' + this.visibleTypes.length + ' item(s) because "open" was filtered out for a non-admin user). The next line will throw and the "visible" control will NEVER get a default value.');
-        }
-        this.form.controls['visible'].setValue(this.visibleTypes[3].value);
-        console.log('[DASH-TRACE][dashboard-save-as] default visible set to', this.form.controls['visible'].value);
+        const defaultVisibleType = this.visibleTypes.find(type => type.value === 'private') ?? this.visibleTypes[0];
+        this.form.controls['visible'].setValue(defaultVisibleType?.value ?? null);
   }
 
   private loadGroups(): void {
@@ -64,18 +60,7 @@ export class DashboardSaveAsDialog implements OnInit {
     this.groupService.getGroupsByUser().subscribe(
       res => {
         this.grups = res;
-        console.log('[DASH-TRACE][dashboard-save-as] loadGroups() userGroups=', this.grups?.length, this.grups);
-
-        if (this.grups.length === 0) {
-          const commonIndex = this.visibleTypes.findIndex(type => type.value === 'common');
-          if (commonIndex > -1) {
-            console.warn('[DASH-TRACE][dashboard-save-as] user has 0 groups -> removing "common" from visibleTypes (this looks like it should remove "group" instead, not "common"). visibleTypes before splice=', this.visibleTypes.map(t => t.value));
-            this.visibleTypes.splice(commonIndex, 1);
-            console.log('[DASH-TRACE][dashboard-save-as] visibleTypes after splice=', this.visibleTypes.map(t => t.value), 'current form visible value=', this.form.controls['visible'].value);
-          }
-        }
       }, err => {
-        console.log('[DASH-TRACE][dashboard-save-as] loadGroups ERROR ->', err);
         this.alertService.addError(err)
       }
     );
@@ -106,7 +91,6 @@ export class DashboardSaveAsDialog implements OnInit {
   }
 
   public onApply() {
-    console.log('[DASH-TRACE][dashboard-save-as] onApply() form.value=', this.form.value, 'form.valid=', this.form.valid);
     this.display = false;
     this.close.emit(this.form.value);
   }

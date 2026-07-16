@@ -193,7 +193,6 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
       type => type.type !== 'public' || this.isAdmin || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS
     );
     this.filteredTypes = [...this.dashboardTypes];
-    console.log(`[DASH-TRACE][home.component] initDashboardTypes isAdmin=${this.isAdmin} ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS=${ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS} -> dashboardTypes=`, this.dashboardTypes.map(t => t.type));
   }
 
   /**
@@ -290,30 +289,14 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
    * Initializes dashboards, sets up groups, and performs initial filtering.
    */
   private initDashboards(): void {
-    console.log('[DASH-TRACE][home.component] initDashboards() called');
     this.dashboardService.getDashboards().subscribe(
       res => {
-        console.log('[DASH-TRACE][home.component] raw response from getDashboards ->', {
-          isAdmin: res.isAdmin,
-          isDataSourceCreator: res.isDataSourceCreator,
-          publicsCount: res.publics?.length,
-          publicsTitles: res.publics?.map(d => d.config.title),
-          sharedCount: res.shared?.length,
-          sharedTitles: res.shared?.map(d => d.config.title),
-          groupCount: res.group?.length,
-          groupTitles: res.group?.map(d => d.config.title),
-          privatesCount: res.dashboards?.length,
-          privatesTitles: res.dashboards?.map(d => d.config.title)
-        });
-
         this.allDashboards = [
           ...res.publics.map(d => this.normalizeDashboard(d, "public")),
           ...res.shared.map(d => this.normalizeDashboard(d, "shared")),
           ...res.group.map(d => this.normalizeDashboard(d, "group")),
           ...res.dashboards.map(d => this.normalizeDashboard(d, "private"))
         ].sort((a, b) => (a.config.title > b.config.title ? 1 : b.config.title > a.config.title ? -1 : 0));
-
-        console.log(`[DASH-TRACE][home.component] allDashboards built, total=${this.allDashboards.length}`, this.allDashboards.map(d => ({ title: d.config.title, type: d.type, visible: d.config.visible })));
 
         this.groups = _.map(_.uniqBy(res.group, "group._id"), "group");
         console.log("Groups obtained from service:", this.groups);
@@ -328,10 +311,7 @@ export class HomeSdaComponent implements OnInit, OnDestroy {
 
         this.setIsObserver();
       },
-      err => {
-        console.log('[DASH-TRACE][home.component] initDashboards ERROR ->', err);
-        this.alertService.addError(err);
-      }
+      err => this.alertService.addError(err)
     );
   }
 

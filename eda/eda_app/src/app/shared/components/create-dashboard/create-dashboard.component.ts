@@ -69,7 +69,6 @@ export class CreateDashboardComponent implements OnInit {
 
         const defaultVisibleType = this.visibleTypes.find(type => type.value === 'private') ?? this.visibleTypes[0];
         this.form.controls['visible'].setValue(defaultVisibleType?.value ?? null);
-        console.log('[DASH-TRACE][create-dashboard] isAdmin=', this.userService.isAdmin, 'ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS=', ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS, 'visibleTypes=', this.visibleTypes.map(t => t.value), 'defaultVisible=', defaultVisibleType?.value);
 
         this.dataSourceNameService.getDataSourceNamesForDashboard().subscribe((res) => {
             this.dataSources = res?.ds;
@@ -132,13 +131,10 @@ export class CreateDashboardComponent implements OnInit {
                     : undefined
             };
 
-            console.log('[DASH-TRACE][create-dashboard] createNewDashboard() form.value=', this.form.value, 'body sent=', body);
             try {
                 const res = await this.dashboardService.addNewDashboard(body).toPromise();
-                console.log('[DASH-TRACE][create-dashboard] created OK, response=', res);
                 this.onClose(res.dashboard);
             } catch (err) {
-                console.log('[DASH-TRACE][create-dashboard] createNewDashboard ERROR ->', err);
                 this.alertService.addError(err);
                 throw err;
             }

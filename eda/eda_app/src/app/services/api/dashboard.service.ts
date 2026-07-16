@@ -1,6 +1,5 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 
 @Injectable({
@@ -19,20 +18,7 @@ export class DashboardService extends ApiService {
     }
 
     getDashboards(): Observable<any> {
-        console.log('[DASH-TRACE][frontend][dashboard.service] GET /dashboard -> request sent');
-        return this.get(this.route).pipe(
-            tap({
-                next: (res) => console.log('[DASH-TRACE][frontend][dashboard.service] GET /dashboard response ->', {
-                    isAdmin: res?.isAdmin,
-                    publics: res?.publics?.length,
-                    shared: res?.shared?.length,
-                    group: res?.group?.length,
-                    dashboards: res?.dashboards?.length,
-                    raw: res
-                }),
-                error: (err) => console.log('[DASH-TRACE][frontend][dashboard.service] GET /dashboard ERROR ->', err)
-            })
-        );
+        return this.get(this.route);
     }
 
     getDashboard(id): Observable<any> {
@@ -48,23 +34,11 @@ export class DashboardService extends ApiService {
     }
 
     addNewDashboard(dashboard): Observable<any> {
-        console.log('[DASH-TRACE][frontend][dashboard.service] POST /dashboard (create) body ->', dashboard);
-        return this.post(this.route, dashboard).pipe(
-            tap({
-                next: (res) => console.log('[DASH-TRACE][frontend][dashboard.service] POST /dashboard response ->', res),
-                error: (err) => console.log('[DASH-TRACE][frontend][dashboard.service] POST /dashboard ERROR ->', err)
-            })
-        );
+        return this.post(this.route, dashboard);
     }
 
     updateDashboard(id, body): Observable<any> {
-        console.log(`[DASH-TRACE][frontend][dashboard.service] PUT /dashboard/${id} body ->`, body);
-        return this.put(`${this.route}${id}`, body).pipe(
-            tap({
-                next: (res) => console.log(`[DASH-TRACE][frontend][dashboard.service] PUT /dashboard/${id} response ->`, res),
-                error: (err) => console.log(`[DASH-TRACE][frontend][dashboard.service] PUT /dashboard/${id} ERROR ->`, err)
-            })
-        );
+        return this.put(`${this.route}${id}`, body);
     }
 
     deleteDashboard(id): Observable<any> {
