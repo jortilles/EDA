@@ -40,7 +40,7 @@ export class MailingService {
       let dashboardsToUpdate: any[] = [];
       /**Check alerts  */
       alerts.forEach((alert) => {
-        console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${alert.value.mailing.units} | lastUpdated: ${alert.value.mailing.lastUpdated} | shouldUpdate: ${shouldUpdate}`);
+        console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${alert.value.mailing.units} | lastUpdated: ${alert.value.mailing.lastUpdated}S`);
         // para validar se puede forzar la variable. 
         // console.log('Forzado del should upddate.....')
         // shouldUpdate = true;
