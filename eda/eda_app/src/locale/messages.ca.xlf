@@ -7074,6 +7074,26 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Generando dashboard con IA...</source>
         <target>Generant dashboard amb IA...</target>
       </trans-unit>
+      <trans-unit id="otherRecipients">
+        <source>Otros destinatarios:</source>
+        <target>Altres destinataris:</target>
+      </trans-unit>
+      <trans-unit id="otherRecipientsHint">
+        <source>(separados por un espacio)</source>
+        <target>(separats per un espai)</target>
+      </trans-unit>
+      <trans-unit id="otherRecipientsPlaceholder">
+        <source>correo1@dominio.com correo2@dominio.com</source>
+        <target>correu1@domini.com correu2@domini.com</target>
+      </trans-unit>
+      <trans-unit id="sendToSummary">
+        <source>Enviar a:</source>
+        <target>Enviar a:</target>
+      </trans-unit>
+      <trans-unit id="kpiMailConfigTitle">
+        <source>Configuración de la alerta KPI por email</source>
+        <target>Configuració de l'alerta KPI per email</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -6767,6 +6767,26 @@ OR<ph id="5"/>
   <source>Generando dashboard con IA...</source>
   <target>Generating dashboard with AI...</target>
 </trans-unit>
+<trans-unit id="otherRecipients">
+  <source>Otros destinatarios:</source>
+  <target>Other recipients:</target>
+</trans-unit>
+<trans-unit id="otherRecipientsHint">
+  <source>(separados por un espacio)</source>
+  <target>(separated by a space)</target>
+</trans-unit>
+<trans-unit id="otherRecipientsPlaceholder">
+  <source>correo1@dominio.com correo2@dominio.com</source>
+  <target>email1@domain.com email2@domain.com</target>
+</trans-unit>
+<trans-unit id="sendToSummary">
+  <source>Enviar a:</source>
+  <target>Send to:</target>
+</trans-unit>
+<trans-unit id="kpiMailConfigTitle">
+  <source>Configuración de la alerta KPI por email</source>
+  <target>KPI alert email configuration</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

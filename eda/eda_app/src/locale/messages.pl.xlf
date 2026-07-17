@@ -6707,6 +6707,26 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Generando dashboard con IA...</source>
         <target>Generowanie dashboardu za pomocą AI...</target>
       </trans-unit>
+      <trans-unit id="otherRecipients">
+        <source>Otros destinatarios:</source>
+        <target>Inni odbiorcy:</target>
+      </trans-unit>
+      <trans-unit id="otherRecipientsHint">
+        <source>(separados por un espacio)</source>
+        <target>(oddzielone spacją)</target>
+      </trans-unit>
+      <trans-unit id="otherRecipientsPlaceholder">
+        <source>correo1@dominio.com correo2@dominio.com</source>
+        <target>email1@domena.com email2@domena.com</target>
+      </trans-unit>
+      <trans-unit id="sendToSummary">
+        <source>Enviar a:</source>
+        <target>Wyślij do:</target>
+      </trans-unit>
+      <trans-unit id="kpiMailConfigTitle">
+        <source>Configuración de la alerta KPI por email</source>
+        <target>Konfiguracja alertu KPI e-mail</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

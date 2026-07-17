@@ -7042,6 +7042,26 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Generando dashboard con IA...</source>
         <target>Génération du tableau de bord avec l'IA...</target>
       </trans-unit>
+      <trans-unit id="otherRecipients">
+        <source>Otros destinatarios:</source>
+        <target>Autres destinataires :</target>
+      </trans-unit>
+      <trans-unit id="otherRecipientsHint">
+        <source>(separados por un espacio)</source>
+        <target>(séparés par un espace)</target>
+      </trans-unit>
+      <trans-unit id="otherRecipientsPlaceholder">
+        <source>correo1@dominio.com correo2@dominio.com</source>
+        <target>email1@domaine.com email2@domaine.com</target>
+      </trans-unit>
+      <trans-unit id="sendToSummary">
+        <source>Enviar a:</source>
+        <target>Envoyer à :</target>
+      </trans-unit>
+      <trans-unit id="kpiMailConfigTitle">
+        <source>Configuración de la alerta KPI por email</source>
+        <target>Configuration de l'alerte KPI par email</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

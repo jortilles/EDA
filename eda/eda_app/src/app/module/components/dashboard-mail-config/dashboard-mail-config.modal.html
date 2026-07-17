@@ -1,5 +1,6 @@
 <eda-dialog2 [display]="display"   i18n-header="@@sendMailHeader"
-  header="Configuración de los envíos por email" width="50vw" height="65vh"
+  header="Configuración de los envíos por email" width="70vw" height="65vh"
+  overflow="auto"
   [disableApply]="disableApply()"
   (apply)="onApply()"
   (close)="onClose()"
@@ -59,8 +60,9 @@
             <h5 i18n="@@SendMailWho" class="text-lg font-semibold text-gray-800">Destinatarios</h5>
 
             <p-multiSelect id="dashboard-mail-config" [(ngModel)]="selectedUsers" [options]="users" optionLabel="label"
+                dataKey="_id"
                 i18n-defaultLabel="@@selectRecipients" defaultLabel="Selecciona los destinatarios *"
-                class="flex w-[auto] border border-gray-300 rounded-lg" [maxSelectedLabels]="2">
+                class="flex w-full border border-gray-300 rounded-lg" [style]="{'width':'100%'}" [maxSelectedLabels]="2">
             </p-multiSelect>
 
             <div class="flex flex-col gap-1">

@@ -47,7 +47,7 @@ export class DashboardMailConfigModal {
 
   ngOnInit(): void {
     this.userService.getUsers().subscribe(
-      res => this.users = res.map(user => ({ label: user.name, value: user })),
+      res => this.users = res.map(user => ({ label: user.name || user.email, value: user })),
       err => console.log(err)
     );
 
