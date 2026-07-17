@@ -40,11 +40,16 @@ export class MailingService {
       let dashboardsToUpdate: any[] = [];
       /**Check alerts  */
       alerts.forEach((alert) => {
-        let shouldUpdate = true;
         console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${alert.value.mailing.units} | lastUpdated: ${alert.value.mailing.lastUpdated} | shouldUpdate: ${shouldUpdate}`);
-                // para validar se puede forzar la variable. 
+        // para validar se puede forzar la variable. 
         // console.log('Forzado del should upddate.....')
         // shouldUpdate = true;
+        const mailing = alert.value.mailing;
+        const shouldUpdate = mailing.units === 'days'
+          ? SchedulerFunctions.checkScheduleDays(mailing.quantity, mailing.hours, mailing.minutes, mailing.lastUpdated)
+          : SchedulerFunctions.checkScheduleHours(mailing.quantity, mailing.lastUpdated);
+
+        console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${mailing.units} | lastUpdated: ${mailing.lastUpdated} | shouldUpdate: ${shouldUpdate}`);
         if (shouldUpdate) {
           MailingService.mailAlertsSending(alert, transporter, senderEmail);
           if (updateTimestamp) {
@@ -81,12 +86,13 @@ export class MailingService {
         const manualMails = (cfg.otherRecipients || '').split(/\s+/).map((m: string) => m.trim()).filter((m: string) => m.length > 0);
         const userMails: string[] = Array.from(new Set([...registeredMails, ...manualMails]));
         const dashboardID: string = dashboard._id.toString();
-        let shouldUpdate = true;
 
         const now = SchedulerFunctions.totLocalISOTime(new Date());
-        const nextSend = new Date(Date.parse(cfg.lastUpdated) + cfg.quantity * 60 * 60000);
-        console.log(`[MailingService] dashboard: "${dashboard.config.title}" | ahora: ${now} | lastUpdated: ${cfg.lastUpdated} | proxEnvio: ${SchedulerFunctions.totLocalISOTime(nextSend)} | shouldUpdate: ${shouldUpdate} | recipients: ${userMails.join(', ')}`);
-        
+        console.log(`[MailingService] dashboard: "${dashboard.config.title}" | ahora: ${now} | lastUpdated: ${cfg.lastUpdated} | recipients: ${userMails.join(', ')}`);
+        const shouldUpdate = cfg.units === 'days'
+          ? SchedulerFunctions.checkScheduleDays(cfg.quantity, cfg.hours, cfg.minutes, cfg.lastUpdated)
+          : SchedulerFunctions.checkScheduleHours(cfg.quantity, cfg.lastUpdated);
+
         //  console.log('Forzado del should upddate de los dashboards.....');
         //  shouldUpdate = true;
 
