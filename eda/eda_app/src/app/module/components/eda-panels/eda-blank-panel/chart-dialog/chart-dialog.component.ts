@@ -575,6 +575,12 @@ export class ChartDialogComponent {
 
     }
 
+    stepOpacity(idx: number, delta: number): void {
+        const current = this.assignedColors[idx].opacity ?? 100;
+        this.assignedColors[idx].opacity = Math.min(100, Math.max(0, current + delta));
+        this.handleInputColor();
+    }
+
     private updateChartView(): void {
         if (!this.panelChartComponent?.componentRef?.instance) {
             console.error('No hay componentRef disponible');
