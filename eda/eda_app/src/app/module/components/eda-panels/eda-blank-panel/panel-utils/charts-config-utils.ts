@@ -222,8 +222,9 @@ export const ChartsConfigUtils = {
         } else if (type === 'kpi') {
             return new KpiConfig();
         } else if (['kpibar', 'kpiline', 'kpiarea'].includes(type)) {
+            // Unlike a full-size chart, the KPI mini-chart starts compact (no legend/gridlines) -
             return new KpiConfig({
-                edaChart: { chartType: type, ...readCustomFields(null, CUSTOM_CHART_CONFIG_FIELDS) }
+                edaChart: { chartType: type, ...readCustomFields(null, CUSTOM_CHART_CONFIG_FIELDS), chartLegend: false, showGridLines: false }
             });
         } else if (type === 'dynamicText') {
             return new DynamicTextConfig(null);

@@ -2882,6 +2882,14 @@ What am I seeing?
 <source>Tendencia</source>
 <target>Trend</target>
 </trans-unit>
+<trans-unit id="kpiGrafico">
+<source>Gráfico</source>
+<target>Chart</target>
+</trans-unit>
+<trans-unit id="opacityLabel">
+<source>Opacidad</source>
+<target>Opacity</target>
+</trans-unit>
 <trans-unit id="removetrend">
 <source>Quitar tendencia</source>
 <target>Delete trend</target>

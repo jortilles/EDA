@@ -2785,6 +2785,14 @@ Co widzę?
     <source>Tendencia</source>
     <target>Tendencja</target>
   </trans-unit>
+  <trans-unit id="kpiGrafico">
+    <source>Gráfico</source>
+    <target>Wykres</target>
+  </trans-unit>
+  <trans-unit id="opacityLabel">
+    <source>Opacidad</source>
+    <target>Nieprzezroczystość</target>
+  </trans-unit>
   <trans-unit id="removetrend">
     <source>Quitar tendencia</source>
     <target>Usuń trend</target>

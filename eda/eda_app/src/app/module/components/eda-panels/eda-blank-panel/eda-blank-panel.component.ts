@@ -1692,27 +1692,19 @@ public tableNodeExpand(event: any): void {
             prefixImage: response.prefixImage || '',
         };
 
-        let layout: any;
         if (response.edaChart) {
-            this.panel.content.query.output.config.colors = response.edaChart.chartColors;
             this.panel.content.query.output.config.chartType = response.chartType;
             this.panel.content.query.output.config.chartSubType = response.chartSubType;
-
-            layout = {
-                colors: response.edaChart.chartColors,
-                chartType: response.edaChart.chartType,
-                addTrend: response.edaChart.addTrend,
-                addComparative: response.edaChart.addComparative,
-                showLabels: response.edaChart.showLabels,
-                showLabelsPercent: response.edaChart.showLabelsPercent,
-                numberOfColumns: response.edaChart.numberOfColumns,
-                assignedColors: response.assignedColors,  //  Pass assignedColors from the response, not from edaChart.
-                showPointLines: response.edaChart.showPointLines,
-                showPredictionLines: response.edaChart.showPredictionLines,
-                chartLegend: true,
-                showGridLines: true,
-            };
         }
+
+        // graphOptions is only present for kpibar/kpiline/kpiarea (see kpi-dialog.component.ts's
+        // showGraphTab) - the compact mini-chart's own bar/line/area options tab.
+        const graphOptions = response.graphOptions;
+        const layout: any = graphOptions ? {
+            chartType: response.chartSubType,
+            assignedColors: response.assignedColors,
+            ...graphOptions,
+        } : undefined;
 
         const config = new ChartConfig(
             new KpiConfig({

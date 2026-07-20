@@ -459,14 +459,32 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     const chartType = this.props.chartType.split('kpi')[1];
     const chartSubType = this.props.edaChart.split('kpi')[1];
     const cfg: any = this.props.config.getConfig();
-    
+    const edaCfg: any = cfg.edaChart || {};
+    const supportsTrendCompare = chartSubType === 'line' || chartSubType === 'area';
+
     const chartConfig: any = {};
     const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
     const dataTypes = this.props.query.map((column: any) => column.column_type);
 
     let values = _.cloneDeep(this.props.data.values);
 
-    const chartData = this.chartUtils.transformDataQuery(chartType, chartSubType, values, dataTypes, dataDescription, false, cfg.numberOfColumns);
+    // COMPARISONS - same as renderLine()/renderArea() (line/area only).
+    if (supportsTrendCompare && !!edaCfg.addComparative
+        && this.props.query.length === 2
+        && this.props.query.filter((f: any) => f.column_type === 'date').length > 0
+        && ['month', 'week', 'day'].includes(this.props.query.filter((f: any) => f.column_type === 'date')[0].format)) {
+
+        values = this.chartUtils.comparePeriods(this.props.data, this.props.query);
+        let types = this.props.query.map((f: any) => f.column_type);
+        let dateIndex = types.indexOf('date');
+        dataTypes.splice(dateIndex, 0, 'date');
+        let dateCol = dataDescription.otherColumns.filter((c: any) => c.index === dateIndex)[0];
+        let newCol = { name: dateCol.name + '_newDate', index: dateCol.index + 1 };
+        dataDescription.otherColumns.push(newCol);
+        dataDescription.totalColumns++;
+    }
+
+    const chartData = this.chartUtils.transformDataQuery(chartType, chartSubType, values, dataTypes, dataDescription, false, edaCfg.numberOfColumns);
 
     if (chartData.length == 0) {
         chartData.push([], []);
@@ -481,7 +499,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         fontSize: this.fontSize,
         fontColor: this.fontColor
     }
-    
+
     const dimensions = this.getDimensions();
     dimensions.height = !dimensions.height ? 255 : dimensions.height;
     dimensions.width = !dimensions.width ? 1300 : dimensions.width;
@@ -495,10 +513,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         padding: -2
     };
 
+    // chartOptions is a vestigial Chart.js-shaped structure - the D3 mini-chart never reads it,
+    // initChartOptions() is only called for its other required-shape side effects.
     const chartOptions = this.chartUtils.initChartOptions(
         chartType, dataDescription.numericColumns[0]?.name,
         dataDescription.otherColumns, manySeries, false, dimensions, null,
-        minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, chartSubType, ticksOptions, false, cfg.showGridLines ?? true, this.styleProviderService
+        minMax, styles, edaCfg.showLabels, edaCfg.showLabelsPercent, edaCfg.showPointLines, edaCfg.showPredictionLines, edaCfg.numberOfColumns, chartSubType, ticksOptions, false, edaCfg.showGridLines ?? true, this.styleProviderService
     );
 
     // Initialize chartConfig
@@ -508,15 +528,33 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.edaChart.edaChart = chartSubType;
     chartConfig.edaChart.chartType = chartType;
     chartConfig.edaChart.chartLabels = chartData[0];
-    chartConfig.edaChart.chartDataset = chartData[1];
     chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
     chartConfig.edaChart.chartColors = []; // Initialize chartColors
-    chartConfig.edaChart.chartLegend = false;
+    chartConfig.edaChart.chartLegend = edaCfg.chartLegend ?? false;
     chartConfig.edaChart.compact = true;
     chartConfig.edaChart.categoryFieldName = dataDescription.otherColumns[0]?.name;
-    chartConfig.edaChart.useGradient = cfg.useGradient ?? true;
-    chartConfig.edaChart.useRoundedBars = cfg.useRoundedBars ?? true;
-    chartConfig.edaChart.showGridLines = false;
+    chartConfig.edaChart.useGradient = edaCfg.useGradient ?? true;
+    chartConfig.edaChart.useRoundedBars = edaCfg.useRoundedBars ?? true;
+    chartConfig.edaChart.showGridLines = edaCfg.showGridLines ?? false;
+    chartConfig.edaChart.showLabels = edaCfg.showLabels ?? false;
+    chartConfig.edaChart.showLabelsPercent = edaCfg.showLabelsPercent ?? false;
+    if (supportsTrendCompare) {
+        chartConfig.edaChart.showPointLines = edaCfg.showPointLines ?? false;
+    }
+
+    // TREND (line/area only) - added before color resolution so it gets its own (editable)
+    // assignedColors row, defaulting to its source series' color.
+    if (supportsTrendCompare && edaCfg.addTrend && chartData[1].length > 0) {
+        const trends = chartData[1].map((serie: any) => {
+            const trend: any = this.chartUtils.getTrend(serie);
+            trend.isTrend = true;
+            trend.sourceLabel = serie.label;
+            return trend;
+        });
+        trends.forEach((trend: any) => chartData[1].push(trend));
+    }
+
+    chartConfig.edaChart.chartDataset = chartData[1];
 
     // Load assignedColors or use default colors
     const existingColors = cfg['assignedColors'] || [];
@@ -527,10 +565,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         assignedColors = existingColors;
     } else {
         // Create default colors from dataset
-        const paletteColor = this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] || 
+        const paletteColor = this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] ||
                             this.styleProviderService?.DEFAULT_PALETTE_COLOR?.['paleta']?.[0];
-        
-        assignedColors = chartData[1].map((dataset, index) => ({
+
+        assignedColors = chartData[1].filter((d: any) => !d.isTrend).map((dataset, index) => ({
             value: dataset.label || `Series ${index + 1}`,
             color: this.paletaActual[index % this.paletaActual.length] || paletteColor
         }));
@@ -540,11 +578,23 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // eda-bar-d3/eda-line-d3/eda-area-d3 (the same components used at full size) resolve each
-    // series' color directly from assignedColors - matched by label, with a positional fallback
-    // for legacy saved colors that predate this field being label-keyed here.
+    // series' color directly from assignedColors, by its own label first (so a trend row is
+    // independently editable) - matched by label, with a positional fallback for legacy saved
+    // colors that predate this field being label-keyed here.
+    const colorMap = new Map<string, any>(assignedColors.map((c: any) => [c.value, c]));
     chartConfig.edaChart.assignedColors = chartData[1].map((dataset: any, i: number) => {
-        const match = assignedColors.find((c: any) => c.value === dataset.label) || assignedColors[i];
-        return { value: dataset.label, color: match?.color || this.paletaActual[i % this.paletaActual.length] };
+        const match = colorMap.get(dataset.label) || assignedColors[i];
+        if (match) {
+            const entry: any = { value: dataset.label, color: match.color };
+            if (match.opacity !== undefined) entry.opacity = match.opacity;
+            return entry;
+        }
+        // Trend defaults to its source series' resolved color and a lighter 25% opacity for area.
+        const isTrend = !!dataset.isTrend;
+        const sourceColor = isTrend ? colorMap.get(dataset.sourceLabel)?.color : undefined;
+        const entry: any = { value: dataset.label, color: sourceColor || this.paletaActual[i % this.paletaActual.length] };
+        if (isTrend && chartSubType === 'area') entry.opacity = 25;
+        return entry;
     });
 
     // KPI Config

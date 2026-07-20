@@ -11,6 +11,8 @@ export interface KpiEdaChart {
     showPredictionLines: boolean;
     chartLegend: boolean;
     showGridLines: boolean;
+    useGradient: boolean;
+    useRoundedBars: boolean;
 }
 
 export class KpiConfig {
@@ -34,8 +36,10 @@ export class KpiConfig {
             assignedColors: init?.edaChart?.assignedColors || [],
             showPointLines: init?.edaChart?.showPointLines || false,
             showPredictionLines: init?.edaChart?.showPredictionLines || false,
-            chartLegend: init?.edaChart?.chartLegend ?? true,
-            showGridLines: init?.edaChart?.showGridLines ?? true,
+            chartLegend: init?.edaChart?.chartLegend ?? false,
+            showGridLines: init?.edaChart?.showGridLines ?? false,
+            useGradient: init?.edaChart?.useGradient ?? true,
+            useRoundedBars: init?.edaChart?.useRoundedBars ?? true,
         };
 
         Object.assign(this, init);

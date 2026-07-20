@@ -72,7 +72,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.id = `bar_${this.inject.id}`;
-    this.chartLegend = (this.inject.compact ? false : this.inject.chartLegend) ?? true;
+    this.chartLegend = this.inject.chartLegend ?? !(this.inject.compact ?? false);
     this.styleProviderService.panelFontFamily.subscribe(v => this.fontFamily = v).unsubscribe();
     this.buildSeries();
   }
@@ -92,7 +92,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   /** Called by the shared chart-dialog.component.ts (unconditionally, no `?.`) on every live color edit. */
   updateChart(): void {
-    this.chartLegend = (this.inject.compact ? false : this.inject.chartLegend) ?? true;
+    this.chartLegend = this.inject.chartLegend ?? !(this.inject.compact ?? false);
     this.hiddenSeriesIndexes.clear();
     this.buildSeries();
     this.draw();
@@ -337,6 +337,11 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     // axis) instead. Measure the actual widest label - using a throwaway scale/ticks for the
     // vertical case, since the real valueScale's range depends on this same margin - capped so
     // one outlier label can't eat the whole chart.
+    // showGridLines drives the value axis and its gridlines independently of compact for vertical
+    // bars (mirrors eda-line-d3/eda-area-d3) - horizontal bars keep the existing compact behavior,
+    // since their value axis runs along the bottom margin, not the left one this reuses.
+    const showGrid = this.inject.showGridLines ?? !compact;
+
     let leftMargin: number;
     // Which category labels survive auto-skip (populated below for the horizontal case, where
     // - unlike the vertical one - the label footprint is vertical, not affected by left margin,
@@ -366,7 +371,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       leftMargin = Math.min(Math.max(this.measureMaxLabelWidth(tickLabels, 11) + 16, 40), width * 0.3);
     }
     const margin = compact
-      ? { top: 4, right: 4, bottom: 4, left: 4 }
+      ? { top: 4, right: 4, bottom: 4, left: (!horizontal && showGrid) ? leftMargin : 4 }
       : { top: 16, right: 20, bottom: horizontal ? 30 : 50, left: leftMargin };
     const innerWidth = Math.max(width - margin.left - margin.right, 10);
     const innerHeight = Math.max(height - margin.top - margin.bottom, 10);
@@ -386,18 +391,29 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     const vBarGap = (categoryScale.step() - categoryScale.bandwidth()) / 2;
     const vSeriesGap = (seriesScale.step() - seriesScale.bandwidth()) / 2;
 
-    if (!compact) {
-      // Grid lines (value axis)
-      if (this.inject.showGridLines ?? true) {
-        const gridAxis: any = horizontal
-          ? d3.axisBottom(valueScale).ticks(horizontalTickCount).tickSize(-innerHeight).tickFormat(() => '')
-          : d3.axisLeft(valueScale).ticks(verticalTickCount).tickSize(-innerWidth).tickFormat(() => '');
-        g.append('g')
-          .attr('class', 'eda-bar-grid')
-          .attr('transform', horizontal ? `translate(0,${innerHeight})` : 'translate(0,0)')
-          .call(gridAxis);
-      }
+    // Grid lines (value axis) - shown independently of compact when explicitly enabled, so a KPI
+    // mini-chart can opt into them without needing full axis labels too.
+    if (this.inject.showGridLines ?? !compact) {
+      const gridAxis: any = horizontal
+        ? d3.axisBottom(valueScale).ticks(horizontalTickCount).tickSize(-innerHeight).tickFormat(() => '')
+        : d3.axisLeft(valueScale).ticks(verticalTickCount).tickSize(-innerWidth).tickFormat(() => '');
+      g.append('g')
+        .attr('class', 'eda-bar-grid')
+        .attr('transform', horizontal ? `translate(0,${innerHeight})` : 'translate(0,0)')
+        .call(gridAxis);
+    }
 
+    // Compact mode explicitly opted into gridlines - also show the vertical value axis' numbers
+    // (not the category axis, which still needs the full non-compact layout). Horizontal bars'
+    // value axis runs along the bottom margin, which compact doesn't allocate space for, so it
+    // stays compact-gated below with the rest.
+    if (compact && !horizontal && this.inject.showGridLines === true) {
+      const valueAxis: any = d3.axisLeft(valueScale).ticks(verticalTickCount).tickFormat((v: any) => formatAxisValue(v));
+      g.append('g').attr('class', 'eda-bar-axis').attr('transform', 'translate(0,0)').call(valueAxis);
+      g.selectAll('.eda-bar-axis text').style('font-family', this.fontFamily).style('font-size', '11px').style('font-weight', 500).style('fill', '#000000');
+    }
+
+    if (!compact) {
       // Axes. Category labels are truncated to a fixed character count and value numbers
       // abbreviated (500k, 1M...) purely for display - the underlying scale/data keeps the full
       // values, so click handling, tooltips and datalabels are unaffected.

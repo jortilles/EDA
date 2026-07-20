@@ -3166,6 +3166,14 @@ Qué estic veient?
     <source>Tendencia</source>
     <target>Tendència</target>
   </trans-unit>
+  <trans-unit id="kpiGrafico">
+    <source>Gráfico</source>
+    <target>Gràfic</target>
+  </trans-unit>
+  <trans-unit id="opacityLabel">
+    <source>Opacidad</source>
+    <target>Opacitat</target>
+  </trans-unit>
 
   <trans-unit id="removetrend">
     <source>Quitar tendencia</source>
