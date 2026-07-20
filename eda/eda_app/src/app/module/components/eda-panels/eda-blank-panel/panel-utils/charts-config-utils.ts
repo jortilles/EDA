@@ -39,6 +39,8 @@ export const CUSTOM_CHART_CONFIG_FIELDS: CustomChartConfigField[] = [
   { name: 'addComparative', default: false },
   { name: 'showLabels', default: false },
   { name: 'showLabelsPercent', default: false },
+  { name: 'labelColorMode', default: 'series', fallbackIfMissing: true },
+  { name: 'labelCustomColor', default: '#000000' },
   { name: 'showPointLines', default: false },
   { name: 'showPredictionLines', default: false },
   { name: 'numberOfColumns', default: null },

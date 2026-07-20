@@ -254,6 +254,26 @@
                 </label>
               </div>
 
+              @if (showLabels || showLabelsPercent) {
+                <div class="flex items-center justify-between md:col-span-2">
+                  <label class="font-medium" i18n="@@labelColorOption">Color de las etiquetas</label>
+                  <div class="flex items-center gap-3">
+                    <div class="flex border rounded-md overflow-hidden text-sm">
+                      <button type="button" class="px-3 py-1.5" [ngClass]="labelColorButtonClass('series')"
+                        (click)="labelColorMode = 'series'; setLabelColor()" i18n="@@labelColorSeries">Propio</button>
+                      <button type="button" class="px-3 py-1.5 border-l" [ngClass]="labelColorButtonClass('custom')"
+                        (click)="labelColorMode = 'custom'; setLabelColor()" i18n="@@labelColorCustom">Personalizado</button>
+                    </div>
+                    @if (labelColorMode === 'custom') {
+                      <div class="flex items-center border rounded-md overflow-hidden">
+                        <input [(ngModel)]="labelCustomColor" (input)="setLabelColor()" class="text-sm text-slate-600 font-mono w-20 px-3 py-1.5 focus:outline-none">
+                        <p-colorPicker [(ngModel)]="labelCustomColor" (onChange)="setLabelColor()" format="hex" appendTo="body" />
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
               @if (showTrendComparative) {
                 <div class="flex items-center justify-between">
                   <label class="font-medium" i18n="@@showLines">Mostrar Líneas de Puntos</label>

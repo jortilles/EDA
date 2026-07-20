@@ -2793,6 +2793,26 @@ Co widzę?
     <source>Opacidad</source>
     <target>Nieprzezroczystość</target>
   </trans-unit>
+  <trans-unit id="labelColorOption">
+    <source>Color de las etiquetas</source>
+    <target>Kolor etykiet</target>
+  </trans-unit>
+  <trans-unit id="labelColorSeries">
+    <source>Propio</source>
+    <target>Własny</target>
+  </trans-unit>
+  <trans-unit id="labelColorBlack">
+    <source>Negro</source>
+    <target>Czarny</target>
+  </trans-unit>
+  <trans-unit id="labelColorWhite">
+    <source>Blanco</source>
+    <target>Biały</target>
+  </trans-unit>
+  <trans-unit id="labelColorCustom">
+    <source>Personalizado</source>
+    <target>Niestandardowy</target>
+  </trans-unit>
   <trans-unit id="removetrend">
     <source>Quitar tendencia</source>
     <target>Usuń trend</target>

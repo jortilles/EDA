@@ -15,6 +15,9 @@ export class EdaBarD3 {
   chartLegend: boolean;
   showLabels: boolean;
   showLabelsPercent: boolean;
+  /** Data label text color: 'black' | 'white' | 'custom' (uses labelCustomColor). Defaults to black. */
+  labelColorMode?: string;
+  labelCustomColor?: string;
   showGridLines: boolean;
   useGradient: boolean;
   useRoundedBars: boolean;

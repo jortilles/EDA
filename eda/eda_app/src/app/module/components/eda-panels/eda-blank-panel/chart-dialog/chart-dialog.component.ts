@@ -41,6 +41,8 @@ export class ChartDialogComponent {
     public display: boolean = false;
     public showLabels: boolean = false;
     public showLabelsPercent: boolean = false;
+    public labelColorMode: string = 'series';
+    public labelCustomColor: string = '#000000';
     public showUniqueColors: boolean = false;
     public showPointLines: boolean = false;
     public showPredictionLines: boolean = false;
@@ -78,6 +80,8 @@ export class ChartDialogComponent {
         addTrend: boolean;
         showLabels: boolean;
         showLabelsPercent: boolean;
+        labelColorMode: string;
+        labelCustomColor: string;
         showUniqueColors: boolean;
         showPointLines: boolean;
         showPredictionLines: boolean;
@@ -137,6 +141,8 @@ export class ChartDialogComponent {
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
         this.showLabelsPercent = this.controller.params.config.config.getConfig()['showLabelsPercent'] || false;
+        this.labelColorMode = this.controller.params.config.config.getConfig()['labelColorMode'] || 'series';
+        this.labelCustomColor = this.controller.params.config.config.getConfig()['labelCustomColor'] || '#000000';
         this.showUniqueColors = this.controller.params.config.config.getConfig()['showUniqueColors'] || false;
         this.showPointLines = this.controller.params.config.config.getConfig()['showPointLines'] || false;
         this.showPredictionLines = this.controller.params.config.config.getConfig()['showPredictionLines'] || false;
@@ -158,6 +164,8 @@ export class ChartDialogComponent {
             addTrend: this.addTrend,
             showLabels: this.showLabels,
             showLabelsPercent: this.showLabelsPercent,
+            labelColorMode: this.labelColorMode,
+            labelCustomColor: this.labelCustomColor,
             showUniqueColors: this.showUniqueColors,
             showPointLines: this.showPointLines,
             showPredictionLines: this.showPredictionLines,
@@ -288,6 +296,8 @@ export class ChartDialogComponent {
             numberOfColumns: this.numberOfColumns,
             assignedColors: [...this.assignedColors],
             chartLegend: this.chartLegend,
+            labelColorMode: this.labelColorMode,
+            labelCustomColor: this.labelCustomColor,
             coloredBarsConfig: {
                 thresholdHigh: this.thresholdHigh,
                 thresholdLow: this.thresholdLow,
@@ -384,6 +394,18 @@ export class ChartDialogComponent {
     setShowLables() {
         this.syncCustomFields();
         this.refreshPreview();
+    }
+
+    setLabelColor() {
+        this.syncCustomFields();
+        this.refreshPreview();
+    }
+
+    labelColorButtonClass(mode: string): Record<string, boolean> {
+        const active = this.labelColorMode === mode;
+        return {
+            'bg-[var(--corporate-primary)] text-white': active
+        };
     }
 
     setChartLegend() {
@@ -712,6 +734,8 @@ export class ChartDialogComponent {
         this.addTrend = this.originalLabelValues.addTrend;
         this.showLabels = this.originalLabelValues.showLabels;
         this.showLabelsPercent = this.originalLabelValues.showLabelsPercent;
+        this.labelColorMode = this.originalLabelValues.labelColorMode;
+        this.labelCustomColor = this.originalLabelValues.labelCustomColor;
         this.showUniqueColors = this.originalLabelValues.showUniqueColors;
         this.showPointLines = this.originalLabelValues.showPointLines;
         this.showPredictionLines = this.originalLabelValues.showPredictionLines;

@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaBarD3 } from './eda-bar';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatValueLabel, initD3ResizeObserver, teardownD3Chart, roundedTipRectPath } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, roundedTipRectPath } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface BarSeries {
@@ -667,7 +667,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             .style('font-size', '11px')
             .style('font-weight', 'bold')
             .style('font-family', this.fontFamily)
-            .style('fill', 'white')
+            .style('fill', (d: any) => resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, this.barColor(series, this.categories.indexOf(d.data.cat))))
             .style('pointer-events', 'none')
             .attr('x', (d: any) => horizontal
               ? (valueScale(d[0]) + valueScale(d[1])) / 2
@@ -825,7 +825,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             .style('font-size', '11px')
             .style('font-weight', 'bold')
             .style('font-family', this.fontFamily)
-            .style('fill', (d: any) => (horizontal ? innerWidth : innerHeight) > 150 ? this.barColor(series, d.catIdx) : 'white')
+            .style('fill', (d: any) => resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, this.barColor(series, d.catIdx)))
             .style('pointer-events', 'none')
             .attr('class', `eda-bar-label-${sIdx}`)
             .attr('text-anchor', (d: any) => horizontal ? (d.value < 0 ? 'end' : 'start') : 'middle')

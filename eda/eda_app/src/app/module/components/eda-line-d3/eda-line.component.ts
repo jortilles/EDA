@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaLineD3 } from './eda-line';
-import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface LinePoint {
@@ -304,7 +304,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
           .style('font-size', '11px')
           .style('font-weight', 'bold')
           .style('font-family', this.fontFamily)
-          .style('fill', series.color)
+          .style('fill', resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, series.color))
           .attr('x', (d: any) => xFor(d.point.catIndex))
           .attr('y', (d: any) => valueScale(d.point.value) - 10)
           .text((d: any) => this.formatLabel(series, d.point.catIndex, d.point.value));

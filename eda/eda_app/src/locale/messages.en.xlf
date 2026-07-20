@@ -2890,6 +2890,26 @@ What am I seeing?
 <source>Opacidad</source>
 <target>Opacity</target>
 </trans-unit>
+<trans-unit id="labelColorOption">
+<source>Color de las etiquetas</source>
+<target>Label color</target>
+</trans-unit>
+<trans-unit id="labelColorSeries">
+<source>Propio</source>
+<target>Series</target>
+</trans-unit>
+<trans-unit id="labelColorBlack">
+<source>Negro</source>
+<target>Black</target>
+</trans-unit>
+<trans-unit id="labelColorWhite">
+<source>Blanco</source>
+<target>White</target>
+</trans-unit>
+<trans-unit id="labelColorCustom">
+<source>Personalizado</source>
+<target>Custom</target>
+</trans-unit>
 <trans-unit id="removetrend">
 <source>Quitar tendencia</source>
 <target>Delete trend</target>

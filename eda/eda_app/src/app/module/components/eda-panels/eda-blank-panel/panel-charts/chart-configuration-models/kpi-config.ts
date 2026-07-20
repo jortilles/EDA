@@ -5,6 +5,8 @@ export interface KpiEdaChart {
     addComparative: boolean;
     showLabels: boolean;
     showLabelsPercent: boolean;
+    labelColorMode: string;
+    labelCustomColor: string;
     numberOfColumns: number;
     assignedColors: any[];
     showPointLines: boolean;
@@ -32,6 +34,8 @@ export class KpiConfig {
             addComparative: init?.edaChart?.addComparative || false,
             showLabels: init?.edaChart?.showLabels || false,
             showLabelsPercent: init?.edaChart?.showLabelsPercent || false,
+            labelColorMode: init?.edaChart?.labelColorMode || 'series',
+            labelCustomColor: init?.edaChart?.labelCustomColor || '#000000',
             numberOfColumns: init?.edaChart?.numberOfColumns || 0,
             assignedColors: init?.edaChart?.assignedColors || [],
             showPointLines: init?.edaChart?.showPointLines || false,

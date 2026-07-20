@@ -76,6 +76,8 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public useRoundedBars: boolean = true;
     public showLabels: boolean = false;
     public showLabelsPercent: boolean = false;
+    public labelColorMode: string = 'series';
+    public labelCustomColor: string = '#000000';
     public showPointLines: boolean = false;
     public addTrend: boolean = false;
     public addComparative: boolean = false;
@@ -167,6 +169,8 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.useRoundedBars = edaCfg.useRoundedBars ?? true;
         this.showLabels = edaCfg.showLabels ?? false;
         this.showLabelsPercent = edaCfg.showLabelsPercent ?? false;
+        this.labelColorMode = edaCfg.labelColorMode ?? 'series';
+        this.labelCustomColor = edaCfg.labelCustomColor ?? '#000000';
         this.showPointLines = edaCfg.showPointLines ?? false;
         this.addTrend = edaCfg.addTrend ?? false;
         this.addComparative = edaCfg.addComparative ?? false;
@@ -194,6 +198,8 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             useRoundedBars: this.useRoundedBars,
             showLabels: this.showLabels,
             showLabelsPercent: this.showLabelsPercent,
+            labelColorMode: this.labelColorMode,
+            labelCustomColor: this.labelCustomColor,
             showPointLines: this.showPointLines,
             addTrend: this.addTrend,
             addComparative: this.addComparative,
@@ -320,9 +326,14 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     setUseRoundedBars(): void { this.refreshGraphPreview(); }
     setShowLabels(): void { this.refreshGraphPreview(); }
     setShowLabelsPercent(): void { this.refreshGraphPreview(); }
+    setLabelColor(): void { this.refreshGraphPreview(); }
     setShowPointLines(): void { this.refreshGraphPreview(); }
     setAddTrend(): void { this.refreshGraphPreview(); }
     setAddComparative(): void { this.refreshGraphPreview(); }
+
+    labelColorButtonClass(mode: string): Record<string, boolean> {
+        return { 'bg-[var(--corporate-primary)] text-white': this.labelColorMode === mode };
+    }
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {
         return this.controller.close(event, response);

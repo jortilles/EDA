@@ -538,6 +538,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.edaChart.showGridLines = edaCfg.showGridLines ?? false;
     chartConfig.edaChart.showLabels = edaCfg.showLabels ?? false;
     chartConfig.edaChart.showLabelsPercent = edaCfg.showLabelsPercent ?? false;
+    chartConfig.edaChart.labelColorMode = edaCfg.labelColorMode ?? 'series';
+    chartConfig.edaChart.labelCustomColor = edaCfg.labelCustomColor;
     if (supportsTrendCompare) {
         chartConfig.edaChart.showPointLines = edaCfg.showPointLines ?? false;
     }
@@ -1375,6 +1377,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartLegend = cfg.chartLegend ?? true;
         inject.showLabels = cfg.showLabels ?? false;
         inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
+        inject.labelColorMode = cfg.labelColorMode ?? 'series';
+        inject.labelCustomColor = cfg.labelCustomColor;
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.useGradient = cfg.useGradient ?? true;
         inject.linkedDashboard = this.props.linkedDashboardProps;
@@ -1496,6 +1500,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartLegend = cfg.chartLegend ?? true;
         inject.showLabels = cfg.showLabels ?? false;
         inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
+        inject.labelColorMode = cfg.labelColorMode ?? 'series';
+        inject.labelCustomColor = cfg.labelCustomColor;
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.useGradient = cfg.useGradient ?? true;
         inject.useRoundedBars = cfg.useRoundedBars ?? true;
@@ -1609,6 +1615,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartLegend = cfg.chartLegend ?? true;
         inject.showLabels = cfg.showLabels ?? false;
         inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
+        inject.labelColorMode = cfg.labelColorMode ?? 'series';
+        inject.labelCustomColor = cfg.labelCustomColor;
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.showPointLines = cfg.showPointLines ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
@@ -1705,6 +1713,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartLegend = cfg.chartLegend ?? true;
         inject.showLabels = cfg.showLabels ?? false;
         inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
+        inject.labelColorMode = cfg.labelColorMode ?? 'series';
+        inject.labelCustomColor = cfg.labelCustomColor;
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.showPointLines = cfg.showPointLines ?? false;
         inject.useGradient = cfg.useGradient ?? true;
@@ -1762,6 +1772,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartLegend = cfg.chartLegend ?? true;
         inject.showLabels = cfg.showLabels ?? false;
         inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
+        inject.labelColorMode = cfg.labelColorMode ?? 'series';
+        inject.labelCustomColor = cfg.labelCustomColor;
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.useGradient = cfg.useGradient ?? true;
         inject.useRoundedBars = cfg.useRoundedBars ?? true;

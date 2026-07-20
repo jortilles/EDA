@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaRadar } from './eda-radar';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, formatAxisValue, ensureRadialGradient, formatValueLabel, initD3ResizeObserver, teardownD3Chart, opacityFraction } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, formatAxisValue, ensureRadialGradient, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, opacityFraction } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface RadarPoint {
@@ -483,7 +483,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
             .style('font-family', this.fontFamily)
             .style('font-size', '10px')
             .style('font-weight', 'bold')
-            .style('fill', s.color)
+            .style('fill', resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, s.color))
             .style('paint-order', 'stroke')
             .attr('stroke', this.panelBackgroundColor)
             .attr('stroke-width', 3)

@@ -259,7 +259,7 @@
         <ng-template pTemplate="footer" id="totalsFooter" >
             @if(inject.withColSubTotals){
                 <tr>
-                    <td *ngFor="let column of  inject.partialTotalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [class]=column.class>
+                    <td *ngFor="let column of  inject.partialTotalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [ngStyle]="getStyle()" [class]=column.class>
                         {{column.data}}
                     </td>
                 </tr>
