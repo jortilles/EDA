@@ -851,7 +851,7 @@ public tableNodeExpand(event: any): void {
 
         if (config
             && ['bar', 'line', 'area', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid', 'radar'].includes(config.chartType)
-            && config.chartType === this.graficos.chartType ) {
+            && config.edaChart === this.graficos.edaChart ) {
             this.graficos = config;
         }
     }

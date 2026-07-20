@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaLineD3 } from './eda-line';
-import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface LinePoint {
@@ -85,10 +85,10 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     const assignedByLabel = new Map((this.inject.assignedColors || []).map((c: any) => [c.value, c]));
     const datasets = this.inject.chartDataset || [];
     this.series = datasets.map((ds: any, i: number) => {
-      // Trend/prediction datasets are synthetic (label is a generated "Tendencia X" string) and
-      // never get their own assignedColors entry - they always take their source series' color.
-      const key = (ds.isTrend || ds.isPrediction) ? ds.sourceLabel : ds.label;
-      const assigned = assignedByLabel.get(key);
+      // Trend/prediction rows are independently editable by their own label - only fall back to
+      // their source series' color if they don't have their own assignedColors entry yet.
+      const assigned = assignedByLabel.get(ds.label)
+        || ((ds.isTrend || ds.isPrediction) ? assignedByLabel.get(ds.sourceLabel) : undefined);
       return {
         label: ds.label || '',
         color: assigned?.color || ds.borderColor || ds.backgroundColor || '#4472c4',
@@ -100,16 +100,12 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
       };
     });
 
-    // Trend/prediction lines are derived from a real series (same color) and would be a confusing,
-    // redundant legend swatch - only real series get their own entry.
     this.legendItems = this.series
-      .filter(s => !s.isTrend && !s.isPrediction)
       .map(s => ({ label: s.label, color: s.color, hidden: this.hiddenSeriesIndexes.has(s.originalIndex) }));
   }
 
   toggleLegend(legendIdx: number): void {
-    const realSeries = this.series.filter(s => !s.isTrend && !s.isPrediction);
-    const s = realSeries[legendIdx];
+    const s = this.series[legendIdx];
     if (!s) return;
     if (this.hiddenSeriesIndexes.has(s.originalIndex)) this.hiddenSeriesIndexes.delete(s.originalIndex);
     else this.hiddenSeriesIndexes.add(s.originalIndex);
@@ -129,6 +125,16 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private truncate(label: string): string {
     return truncateLabel(label, MAX_CATEGORY_CHARS);
+  }
+
+  private percentOfSeries(series: LineSeries, catIndex: number): number {
+    const total = series.points.reduce((a, p) => a + (p.value ?? 0), 0);
+    const value = series.points.find(p => p.catIndex === catIndex)?.value ?? 0;
+    return total ? (value / total) * 100 : 0;
+  }
+
+  private formatLabel(series: LineSeries, catIndex: number, value: number): string {
+    return formatValueLabel(value, this.percentOfSeries(series, catIndex), this.inject.showLabels, this.inject.showLabelsPercent);
   }
 
   draw(): void {
@@ -222,7 +228,9 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const linesGroup = g.append('g').attr('class', 'eda-line-series').style('pointer-events', 'none');
     const pointsGroup = g.append('g').attr('class', 'eda-line-points');
+    const labelsGroup = g.append('g').attr('class', 'eda-line-labels').style('pointer-events', 'none');
     const hoverGroup = g.append('g').attr('class', 'eda-line-hover-cols');
+    const showLabelsOn = !compact && (this.inject.showLabels || this.inject.showLabelsPercent);
 
     const ENTRANCE_MS = compact ? 600 : 1500;
     const animateEntrance = !this.hasRendered;
@@ -277,6 +285,21 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         .enter()
         .append('g')
         .attr('class', 'eda-line-point-group');
+
+      if (showLabelsOn && !series.isPrediction) {
+        labelsGroup.selectAll(null)
+          .data(vertexData)
+          .enter()
+          .append('text')
+          .attr('text-anchor', 'middle')
+          .style('font-size', '11px')
+          .style('font-weight', 'bold')
+          .style('font-family', this.fontFamily)
+          .style('fill', series.color)
+          .attr('x', (d: any) => xFor(d.point.catIndex))
+          .attr('y', (d: any) => valueScale(d.point.value) - 10)
+          .text((d: any) => this.formatLabel(series, d.point.catIndex, d.point.value));
+      }
 
       dotSel.append('circle')
         .attr('class', 'eda-line-point-hit')

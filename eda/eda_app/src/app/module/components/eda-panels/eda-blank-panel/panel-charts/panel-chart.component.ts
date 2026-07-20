@@ -1504,35 +1504,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.edaChart = 'line';
         inject.chartLabels = chartData[0];
         inject.categoryFieldName = dataDescription.otherColumns[0]?.name;
-        inject.chartDataset = chartData[1];
 
-        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        const currentLabels = this.getLabelsForChartType(inject);
-
-        if (assignedColors.length === 0) {
-            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
-            this.props.config.getConfig()['assignedColors'] = assignedColors;
-        } else {
-            const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
-            assignedColors = currentLabels.map((label, index) => {
-                const assignedColor = colorMap.get(label);
-                if (assignedColor) {
-                    const entry: any = { value: label, color: assignedColor.color };
-                    if (assignedColor.opacity !== undefined) entry.opacity = assignedColor.opacity;
-                    return entry;
-                } else {
-                    return { value: label, color: this.paletaActual[index % this.paletaActual.length] };
-                }
-            });
-        }
-
-        // eda-line-d3 resolves each series' color directly from assignedColors (keyed by sourceLabel
-        // for trend/prediction) - no more Chart.js-shaped chartColors/backgroundColor baking needed.
-        inject.assignedColors = assignedColors;
-
-        // TREND - a straight regression line per real series, same color as its source (via
-        // sourceLabel, resolved by eda-line-d3), added after color assignment so it never gets its
-        // own palette slot/legend entry.
+        // TREND - a straight regression line per real series. Added before color resolution so it
+        // gets its own (editable) assignedColors row, defaulting to its source series' color.
         if (cfg.addTrend && chartData[1].length > 0) {
             const trends = chartData[1].map((serie: any) => {
                 const trend: any = this.chartUtils.getTrend(serie);
@@ -1543,48 +1517,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             trends.forEach(trend => chartData[1].push(trend));
         }
 
-        // PREDICTION - dashed continuation of its source series, same color (via sourceLabel),
-        // added last so trend overlays (if any) still only cover the real series above.
+        // PREDICTION - dashed continuation of its source series, added after trend so its row comes
+        // after it in the dialog list.
         if (predictionDataset) {
-            const source = chartData[1].find((d: any) => !d.isTrend) || chartData[1][0];
+            const source = chartData[1].find((d: any) => !d.isTrend && !d.isPrediction) || chartData[1][0];
             predictionDataset.isPrediction = true;
             predictionDataset.sourceLabel = source?.label;
             chartData[1].push(predictionDataset);
         }
 
-        inject.chartDataset = chartData[1];
-        inject.chartLegend = cfg.chartLegend ?? true;
-        inject.showGridLines = cfg.showGridLines ?? true;
-        inject.showPointLines = cfg.showPointLines ?? false;
-        inject.linkedDashboard = this.props.linkedDashboardProps;
-
-        this.createD3Component(inject, EdaLineComponent);
-    }
-
-    /**
-     * Renders the D3-based area chart. No trend/comparison/prediction/showPointLines (never
-     * exposed in the dialog for area) - just plain series + gradient fill. Also fixes today's
-     * broken click-to-filter (missing from eda-blank-panel.component.ts's allowlist) simply by
-     * being a normal D3 component that emits the same {inx, label, value, filterBy} shape as
-     * everything else.
-     */
-    private renderArea() {
-        const values = _.cloneDeep(this.props.data.values);
-        const dataTypes = this.props.query.map(col => col.column_type);
-        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-        const cfg: any = this.props.config.getConfig();
-
-        const chartData = this.chartUtils.transformDataQuery('area', 'area', values, dataTypes, dataDescription, false, cfg.numberOfColumns);
-        if (chartData.length == 0) {
-            chartData.push([], []);
-        }
-
-        const inject: any = new EdaAreaD3();
-        inject.id = this.randomID();
-        inject.chartType = 'area';
-        inject.edaChart = 'area';
-        inject.chartLabels = chartData[0];
-        inject.categoryFieldName = dataDescription.otherColumns[0]?.name;
         inject.chartDataset = chartData[1];
 
         let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
@@ -1602,17 +1543,120 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     if (assignedColor.opacity !== undefined) entry.opacity = assignedColor.opacity;
                     return entry;
                 } else {
-                    return { value: label, color: this.paletaActual[index % this.paletaActual.length] };
+                    // Trend/prediction default to their source series' resolved color, not the next palette slot.
+                    const ds = chartData[1].find((d: any) => d.label === label);
+                    const sourceColor = (ds?.isTrend || ds?.isPrediction) ? colorMap.get(ds.sourceLabel)?.color : undefined;
+                    return { value: label, color: sourceColor || this.paletaActual[index % this.paletaActual.length] };
                 }
             });
         }
 
-        // eda-area-d3 resolves each series' color/opacity directly from assignedColors - no more
-        // Chart.js-shaped chartColors/backgroundColor baking needed.
+        // eda-line-d3 resolves each series' color/opacity directly from assignedColors, by its own
+        // label first (so trend/prediction rows are independently editable) falling back to the
+        // source series' entry only when they have none of their own yet.
         inject.assignedColors = assignedColors;
 
         inject.chartLegend = cfg.chartLegend ?? true;
+        inject.showLabels = cfg.showLabels ?? false;
+        inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
         inject.showGridLines = cfg.showGridLines ?? true;
+        inject.showPointLines = cfg.showPointLines ?? false;
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        this.createD3Component(inject, EdaLineComponent);
+    }
+
+    /**
+     * Renders the D3-based area chart. Same trend/comparison handling as renderLine() (area is
+     * conceptually a filled line). Also fixes today's broken click-to-filter (missing from
+     * eda-blank-panel.component.ts's allowlist) simply by being a normal D3 component that emits
+     * the same {inx, label, value, filterBy} shape as everything else.
+     */
+    private renderArea() {
+        let values = _.cloneDeep(this.props.data.values);
+        const dataTypes = this.props.query.map(col => col.column_type);
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const cfg: any = this.props.config.getConfig();
+
+        // COMPARISONS
+        if (!!cfg.addComparative
+            && this.props.query.length === 2
+            && this.props.query.filter(field => field.column_type === 'date').length > 0
+            && ['month', 'week', 'day'].includes(this.props.query.filter(field => field.column_type === 'date')[0].format)) {
+
+            values = this.chartUtils.comparePeriods(this.props.data, this.props.query);
+            let types = this.props.query.map(field => field.column_type);
+            let dateIndex = types.indexOf('date');
+            dataTypes.splice(dateIndex, 0, 'date');
+            let dateCol = dataDescription.otherColumns.filter(c => c.index === dateIndex)[0];
+            let newCol = { name: dateCol.name + '_newDate', index: dateCol.index + 1 };
+            dataDescription.otherColumns.push(newCol);
+            dataDescription.totalColumns++;
+        }
+
+        const chartData = this.chartUtils.transformDataQuery('area', 'area', values, dataTypes, dataDescription, false, cfg.numberOfColumns);
+        if (chartData.length == 0) {
+            chartData.push([], []);
+        }
+
+        const inject: any = new EdaAreaD3();
+        inject.id = this.randomID();
+        inject.chartType = 'line';
+        inject.edaChart = 'area';
+        inject.chartLabels = chartData[0];
+        inject.categoryFieldName = dataDescription.otherColumns[0]?.name;
+
+        // TREND - a straight regression line per real series. Added before color resolution so it
+        // gets its own (editable) assignedColors row, defaulting to its source series' color.
+        if (cfg.addTrend && chartData[1].length > 0) {
+            const trends = chartData[1].map((serie: any) => {
+                const trend: any = this.chartUtils.getTrend(serie);
+                trend.isTrend = true;
+                trend.sourceLabel = serie.label;
+                return trend;
+            });
+            trends.forEach(trend => chartData[1].push(trend));
+        }
+
+        inject.chartDataset = chartData[1];
+
+        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        const currentLabels = this.getLabelsForChartType(inject);
+
+        if (assignedColors.length === 0) {
+            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            this.props.config.getConfig()['assignedColors'] = assignedColors;
+        } else {
+            const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
+            assignedColors = currentLabels.map((label, index) => {
+                const assignedColor = colorMap.get(label);
+                if (assignedColor) {
+                    const entry: any = { value: label, color: assignedColor.color };
+                    if (assignedColor.opacity !== undefined) entry.opacity = assignedColor.opacity;
+                    return entry;
+                } else {
+                    // Trend defaults to its source series' resolved color and a lighter 25% opacity,
+                    // not the next palette slot - still independently editable afterwards.
+                    const ds = chartData[1].find((d: any) => d.label === label);
+                    const isTrend = !!ds?.isTrend;
+                    const sourceColor = isTrend ? colorMap.get(ds.sourceLabel)?.color : undefined;
+                    const entry: any = { value: label, color: sourceColor || this.paletaActual[index % this.paletaActual.length] };
+                    if (isTrend) entry.opacity = 25;
+                    return entry;
+                }
+            });
+        }
+
+        // eda-area-d3 resolves each series' color/opacity directly from assignedColors, by its own
+        // label first (so the trend row is independently editable) falling back to the source
+        // series' entry only when it has none of its own yet.
+        inject.assignedColors = assignedColors;
+
+        inject.chartLegend = cfg.chartLegend ?? true;
+        inject.showLabels = cfg.showLabels ?? false;
+        inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
+        inject.showGridLines = cfg.showGridLines ?? true;
+        inject.showPointLines = cfg.showPointLines ?? false;
         inject.useGradient = cfg.useGradient ?? true;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 

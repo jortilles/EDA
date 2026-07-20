@@ -218,10 +218,16 @@ export class ChartDialogComponent {
         } else {
             this.assignedColors = labels.map((label, index) => {
                 const match = existingColors.find(c => c.value === label);
+                // Trend/prediction rows default to their source series' color (and, for area, a
+                // lighter 25% default opacity) instead of the next palette slot - still fully
+                // editable afterwards like any other row.
+                const ds: any = this.chart.chartDataset?.find((d: any) => d.label === label);
+                const isDerived = !!(ds?.isTrend || ds?.isPrediction);
+                const sourceColor = isDerived ? existingColors.find(c => c.value === ds.sourceLabel)?.color : undefined;
                 return {
                     value: label,
-                    color: match?.color || this.getDefaultColor(index),
-                    opacity: match?.opacity ?? 100
+                    color: match?.color || sourceColor || this.getDefaultColor(index),
+                    opacity: match?.opacity ?? (isDerived ? 25 : 100)
                 };
             });
         }
@@ -263,7 +269,7 @@ export class ChartDialogComponent {
 
     // Get labels for this dialog's chart family (doughnut/polarArea moved to category-chart-dialog).
     private getChartLabels(): string[] {
-        return this.chart.chartDataset?.filter((d: any) => !d.isTrend && !d.isPrediction).map(d => d.label) || [];
+        return this.chart.chartDataset?.map(d => d.label) || [];
     }
 
 
@@ -307,7 +313,29 @@ export class ChartDialogComponent {
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
             this.load();
+            this.syncAssignedColorsWithChart();
         });
+    }
+
+    // Toggles like Tendencia/Comparativa add or remove a dataset (and its label) on the fly - keeps
+    // assignedColors' row list matching the chart's current labels immediately, without waiting for
+    // a dialog close/reopen. Existing rows (and their colors/opacity) are preserved untouched.
+    private syncAssignedColorsWithChart(): void {
+        const labels = this.getChartLabels();
+        const existingByLabel = new Map(this.assignedColors.map(c => [c.value, c]));
+        this.assignedColors = labels.map((label, index) => {
+            const existing = existingByLabel.get(label);
+            if (existing) return existing;
+            const ds: any = this.chart.chartDataset?.find((d: any) => d.label === label);
+            const isDerived = !!(ds?.isTrend || ds?.isPrediction);
+            const sourceColor = isDerived ? existingByLabel.get(ds.sourceLabel)?.color : undefined;
+            return {
+                value: label,
+                color: sourceColor || this.getDefaultColor(index),
+                opacity: isDerived ? 25 : 100
+            };
+        });
+        this.applyColorsToChart();
     }
 
     SetNumberOfColumns() {

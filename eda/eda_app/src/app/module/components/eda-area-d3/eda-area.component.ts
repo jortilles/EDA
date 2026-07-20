@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaAreaD3 } from './eda-area';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, formatAxisValue, formatDeNumber, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, opacityFraction } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, opacityFraction, DASH_TREND } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface AreaPoint {
@@ -16,6 +16,9 @@ interface AreaSeries {
   color: string;
   opacity: number;
   originalIndex: number;
+  isTrend: boolean;
+  /** For a trend series, the label of the real series it derives from - used to share its color and hide it together. */
+  sourceLabel?: string;
   points: AreaPoint[];
 }
 
@@ -80,18 +83,23 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     const assignedByLabel = new Map((this.inject.assignedColors || []).map((c: any) => [c.value, c]));
     const datasets = this.inject.chartDataset || [];
     this.series = datasets.map((ds: any, i: number) => {
-      const assigned = assignedByLabel.get(ds.label);
+      // Trend rows are independently editable by their own label - only fall back to their source
+      // series' color/opacity if they don't have their own assignedColors entry yet.
+      const assigned = assignedByLabel.get(ds.label) || (ds.isTrend ? assignedByLabel.get(ds.sourceLabel) : undefined);
       const color = assigned?.color || ds.borderColor || '#4472c4';
-      const opacity = assigned?.opacity ?? 100;
+      const opacity = assigned?.opacity ?? (ds.isTrend ? 25 : 100);
       return {
         label: ds.label || '',
         color,
         opacity,
         originalIndex: i,
+        isTrend: !!ds.isTrend,
+        sourceLabel: ds.sourceLabel,
         points: (ds.data || []).map((v: any, catIdx: number) => ({ catIndex: catIdx, value: v === null || v === undefined ? null : Number(v) }))
       } as AreaSeries;
     });
-    this.legendItems = this.series.map(s => ({ label: s.label, color: s.color, hidden: this.hiddenSeriesIndexes.has(s.originalIndex) }));
+    this.legendItems = this.series
+      .map(s => ({ label: s.label, color: s.color, hidden: this.hiddenSeriesIndexes.has(s.originalIndex) }));
   }
 
   toggleLegend(legendIdx: number): void {
@@ -103,12 +111,32 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     this.draw();
   }
 
+  /** A trend series is visible only when its own real source series is (and isn't itself hidden). */
+  private isSeriesVisible(s: AreaSeries): boolean {
+    if (this.hiddenSeriesIndexes.has(s.originalIndex)) return false;
+    if (s.sourceLabel) {
+      const source = this.series.find(o => o.label === s.sourceLabel && !o.isTrend);
+      if (source && this.hiddenSeriesIndexes.has(source.originalIndex)) return false;
+    }
+    return true;
+  }
+
   private truncate(label: string): string {
     return truncateLabel(label, MAX_CATEGORY_CHARS);
   }
 
-  private gradientId(index: number): string {
-    return `area-grad-${this.id}-${index}`;
+  private percentOfSeries(series: AreaSeries, catIndex: number): number {
+    const total = series.points.reduce((a, p) => a + (p.value ?? 0), 0);
+    const value = series.points.find(p => p.catIndex === catIndex)?.value ?? 0;
+    return total ? (value / total) * 100 : 0;
+  }
+
+  private formatLabel(series: AreaSeries, catIndex: number, value: number): string {
+    return formatValueLabel(value, this.percentOfSeries(series, catIndex), this.inject.showLabels, this.inject.showLabelsPercent);
+  }
+
+  private gradientId(key: number | string): string {
+    return `area-grad-${this.id}-${key}`;
   }
 
   private areaFill(defs: any, series: AreaSeries): string {
@@ -133,8 +161,9 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     const compact = this.inject.compact ?? false;
     const linkedDashboard = this.inject.linkedDashboard;
 
-    const visibleSeries = this.series.filter((_, i) => !this.hiddenSeriesIndexes.has(i));
-    const hasVisibleData = visibleSeries.length > 0 && this.categories.length > 0;
+    const visibleSeries = this.series.filter(s => this.isSeriesVisible(s));
+    const realVisible = visibleSeries.filter(s => !s.isTrend);
+    const hasVisibleData = realVisible.length > 0 && this.categories.length > 0;
     const axisCategories = this.categories;
 
     let valueMin = 0, valueMax = 0;
@@ -211,13 +240,67 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       .y(d => valueScale(d.value as number))
       .curve(d3.curveMonotoneX);
 
+    const straightGen: any = d3.line<AreaPoint>()
+      .defined(d => d.value !== null)
+      .x(d => xFor(d.catIndex))
+      .y(d => valueScale(d.value as number))
+      .curve(d3.curveLinear);
+
     const fillGroup = g.append('g').attr('class', 'eda-area-fill-group').style('pointer-events', 'none');
     const pointsGroup = g.append('g').attr('class', 'eda-area-points');
+    const labelsGroup = g.append('g').attr('class', 'eda-area-labels').style('pointer-events', 'none');
+    const showLabelsOn = !compact && (this.inject.showLabels || this.inject.showLabelsPercent);
 
     const ENTRANCE_MS = compact ? 600 : 1500;
     const animateEntrance = !this.hasRendered;
 
-    visibleSeries.forEach(series => {
+    // Real (non-derived) series first, so the trend overlay paints on top of its source.
+    const drawOrder = [...visibleSeries.filter(s => !s.isTrend), ...visibleSeries.filter(s => s.isTrend)];
+
+    drawOrder.forEach(series => {
+      if (series.isTrend) {
+        // Trend is a straight dashed line over its own fill - no points, no tooltip, no click.
+        const trendOpacity = opacityFraction(series.opacity);
+        const trendFill = (this.inject.useGradient ?? true)
+          ? ensureLinearGradient(defs, this.gradientId(`trend-${series.originalIndex}`), [
+              { offset: '0%', color: lightenHex(series.color, 30), opacity: trendOpacity },
+              { offset: '100%', color: series.color, opacity: trendOpacity }
+            ], { x1: '0%', y1: '0%', x2: '0%', y2: '100%' })
+          : (() => { const rgb = d3.rgb(series.color); return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${trendOpacity})`; })();
+
+        fillGroup.append('path')
+          .datum(series.points)
+          .attr('class', 'eda-area-trend-fill')
+          .attr('fill', trendFill)
+          .attr('d', areaGen(series.points));
+
+        fillGroup.append('path')
+          .datum(series.points)
+          .attr('class', 'eda-area-trend')
+          .attr('fill', 'none')
+          .attr('stroke', series.color)
+          .attr('stroke-width', 1.5)
+          .attr('stroke-dasharray', DASH_TREND)
+          .attr('d', straightGen(series.points));
+
+        if (showLabelsOn) {
+          const trendVertexData = series.points.filter(p => p.value !== null).map(p => ({ series, point: p }));
+          labelsGroup.selectAll(null)
+            .data(trendVertexData)
+            .enter()
+            .append('text')
+            .attr('text-anchor', 'middle')
+            .style('font-size', '11px')
+            .style('font-weight', 'bold')
+            .style('font-family', this.fontFamily)
+            .style('fill', series.color)
+            .attr('x', (d: any) => xFor(d.point.catIndex))
+            .attr('y', (d: any) => valueScale(d.point.value) - 10)
+            .text((d: any) => this.formatLabel(series, d.point.catIndex, d.point.value));
+        }
+        return;
+      }
+
       const zeroPoints = series.points.map(p => ({ catIndex: p.catIndex, value: p.value === null ? null : 0 }));
 
       const fillPath = fillGroup.append('path')
@@ -246,6 +329,21 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
         .append('g')
         .attr('class', 'eda-area-point-group');
 
+      if (showLabelsOn) {
+        labelsGroup.selectAll(null)
+          .data(vertexData)
+          .enter()
+          .append('text')
+          .attr('text-anchor', 'middle')
+          .style('font-size', '11px')
+          .style('font-weight', 'bold')
+          .style('font-family', this.fontFamily)
+          .style('fill', series.color)
+          .attr('x', (d: any) => xFor(d.point.catIndex))
+          .attr('y', (d: any) => valueScale(d.point.value) - 10)
+          .text((d: any) => this.formatLabel(series, d.point.catIndex, d.point.value));
+      }
+
       dotSel.append('circle')
         .attr('class', 'eda-area-point-hit')
         .attr('cx', (d: any) => xFor(d.point.catIndex))
@@ -254,11 +352,13 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
         .style('fill', 'transparent')
         .style('cursor', 'pointer');
 
+      const showDots = this.inject.showPointLines ?? false;
+
       dotSel.append('circle')
         .attr('class', 'eda-area-point-dot')
         .attr('cx', (d: any) => xFor(d.point.catIndex))
         .attr('cy', (d: any) => valueScale(d.point.value))
-        .attr('r', 0)
+        .attr('r', showDots ? 3.5 : 0)
         .style('fill', series.color)
         .style('pointer-events', 'none');
 
@@ -272,7 +372,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
           const category = this.categories[d.point.catIndex];
           const title = `${this.inject.categoryFieldName ? this.inject.categoryFieldName + ' : ' : ''}${category}`;
           const swatch = `<span class="eda-area-tooltip-swatch" style="background-color:${series.color};"></span>`;
-          const multiSeries = visibleSeries.length > 1;
+          const multiSeries = realVisible.length > 1;
           const seriesPrefix = multiSeries ? `<strong>${series.label}</strong> : ` : '';
           let text = `<div class="eda-area-tooltip-title">${title}</div>` +
             `<div class="eda-area-tooltip-row">${swatch}${seriesPrefix}${formatDeNumber(d.point.value)}</div>`;
@@ -283,7 +383,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
         .on('mouseout', (event: any) => {
           d3.select(event.currentTarget).select('.eda-area-point-dot')
             .interrupt('grow').transition('grow').duration(150)
-            .attr('r', 0)
+            .attr('r', showDots ? 3.5 : 0)
             .style('fill', series.color);
           this.tooltipService.hide();
         })

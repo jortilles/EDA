@@ -14,6 +14,7 @@ export class EdaAreaD3 {
   showLabels: boolean;
   showLabelsPercent: boolean;
   showGridLines: boolean;
+  showPointLines: boolean;
   useGradient: boolean;
   linkedDashboard: LinkedDashboardProps;
   /** KPI mini-chart mode: no axes, no grid, no legend, shorter entrance. */
