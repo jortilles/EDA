@@ -504,6 +504,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     // Initialize chartConfig
     chartConfig.edaChart = {}
     chartConfig.showChart = true;
+    // eda-bar-d3/eda-line-d3/eda-area-d3 derive their SVG gradient element ids from this.inject.id -
+    chartConfig.edaChart.id = this.randomID();
     chartConfig.edaChart.edaChart = chartSubType;
     chartConfig.edaChart.chartType = chartType;
     chartConfig.edaChart.chartLabels = chartData[0];
@@ -512,8 +514,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.edaChart.chartColors = []; // Initialize chartColors
     chartConfig.edaChart.chartLegend = false;
     // eda-bar-d3/eda-line-d3/eda-area-d3 mini-chart mode (see eda-kpi.component.html): no axes,
-    // no grid, shorter entrance - reuses the same full-size D3 components instead of a separate
-    // KPI-only chart implementation.
     chartConfig.edaChart.compact = true;
     chartConfig.edaChart.categoryFieldName = dataDescription.otherColumns[0]?.name;
     chartConfig.edaChart.useGradient = cfg.useGradient ?? true;
@@ -734,6 +734,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const chartConfig: any = {};
         chartConfig.showChart = true;
         chartConfig.edaChart = {
+            id: this.randomID(),
             edaChart: 'barline',
             chartType: 'bar',
             chartLabels: labels,
