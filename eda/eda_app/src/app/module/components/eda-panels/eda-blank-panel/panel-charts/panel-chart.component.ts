@@ -185,11 +185,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.renderEdaTable(type);
         }
 
-        if (type === 'line') {
+        if (type === 'line' && this.props.edaChart !== 'area') {
             this.renderLine();
         }
 
-        if (type === 'area') {
+        if (type === 'line' && this.props.edaChart === 'area') {
             this.renderArea();
         }
 
@@ -1831,10 +1831,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     this.updateD3Colors(() => this.renderRadar());
                 }
                 // Line/area/barline (D3)
-                else if (this.props.chartType === 'line') {
+                else if (this.props.chartType === 'line' && this.props.edaChart !== 'area') {
                     this.updateD3Colors(() => this.renderLine());
                 }
-                else if (this.props.chartType === 'area') {
+                else if (this.props.chartType === 'line' && this.props.edaChart === 'area') {
                     this.updateD3Colors(() => this.renderArea());
                 }
                 else if (this.props.chartType === 'bar' && this.props.edaChart === 'barline') {
