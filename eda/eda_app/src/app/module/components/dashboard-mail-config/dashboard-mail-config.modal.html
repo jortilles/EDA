@@ -29,7 +29,7 @@
             <div>
                 @if (units==='days') {
                 <p i18n="@@at" class="mb-2 text-gray-600">A las</p>
-                <p-calendar [timeOnly]="true" [(ngModel)]="hours"
+                <p-calendar [timeOnly]="true" [stepMinute]="30" [(ngModel)]="hours" (onBlur)="onHoursBlur()"
                     class="w-full border border-gray-300 px-3 py-2.5 rounded-lg shadow-sm"></p-calendar>
                 }
             </div>
