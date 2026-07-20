@@ -504,7 +504,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     // Initialize chartConfig
     chartConfig.edaChart = {}
     chartConfig.showChart = true;
-    // eda-bar-d3/eda-line-d3/eda-area-d3 derive their SVG gradient element ids from this.inject.id -
     chartConfig.edaChart.id = this.randomID();
     chartConfig.edaChart.edaChart = chartSubType;
     chartConfig.edaChart.chartType = chartType;
@@ -513,7 +512,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
     chartConfig.edaChart.chartColors = []; // Initialize chartColors
     chartConfig.edaChart.chartLegend = false;
-    // eda-bar-d3/eda-line-d3/eda-area-d3 mini-chart mode (see eda-kpi.component.html): no axes,
     chartConfig.edaChart.compact = true;
     chartConfig.edaChart.categoryFieldName = dataDescription.otherColumns[0]?.name;
     chartConfig.edaChart.useGradient = cfg.useGradient ?? true;
@@ -1186,7 +1184,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartLabels = chartData[0];
         inject.chartDataset = chartData[1];
 
-        this.applySingleSeriesColors(inject, chartData, 'doughnut');
+        this.applySingleSeriesColors(inject);
 
         inject.chartLegend = cfg.chartLegend ?? true;
         inject.showLabels = cfg.showLabels ?? false;
@@ -1215,11 +1213,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // Shared by renderDoughnut/renderPolarArea (both single-series, category-per-slice charts):
-    // resolves assignedColors against the current category labels, generates chartColors from
-    // them, and applies a flat color per dataset. Mutates `inject` and `chartData` in place.
-    // renderBar() isn't included - it layers 3 additional color modes (threshold/unique/assigned)
-    // on top that don't apply here.
-    private applySingleSeriesColors(inject: any, chartData: any[], colorGenType: 'doughnut' | 'polarArea'): void {
+    // resolves assignedColors against the current category labels. eda-doughnut-d3/eda-polar-area-d3
+    // resolve each slice's color directly from assignedColors by label - no chartColors/
+    // backgroundColor baking needed. renderBar() isn't included - it layers 3 additional color
+    // modes (threshold/unique/assigned) on top that don't apply here.
+    private applySingleSeriesColors(inject: any): void {
         let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
         const currentLabels = this.getLabelsForChartType(inject);
 
@@ -1239,26 +1237,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         inject.assignedColors = assignedColors;
-        inject.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(assignedColors, colorGenType);
-
-        chartData[1].forEach((dataset, i) => {
-            try {
-                const solidColor = inject.chartColors[i]?.borderColor;
-                dataset.backgroundColor = solidColor;
-                dataset.borderColor = solidColor;
-            } catch (err) {
-                dataset.backgroundColor = this.paletaActual;
-                dataset.borderColor = this.paletaActual;
-            }
-        });
     }
 
     /**
-     * Renders the D3-based polarArea (rose/Nightingale) chart. Same data shape and
-     * category-color logic as doughnut (transformDataQuery/generateChartColorsFromAssignedColors
-     * share a 'doughnut'/'polarArea' branch in ChartUtilsService) - rendered as equal-angle,
-     * value-driven-radius slices instead of doughnut's equal-radius/variable-angle ones.
-     * No innerRadiusPercent - polar area has no cutout concept.
+     * Renders the D3-based polarArea (rose/Nightingale) chart. Same data shape and category-color
+     * logic as doughnut, rendered as equal-angle, value-driven-radius slices instead of doughnut's
+     * equal-radius/variable-angle ones. No innerRadiusPercent - polar area has no cutout concept.
      */
     private renderPolarArea() {
         const values = _.cloneDeep(this.props.data.values);
@@ -1278,7 +1262,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartLabels = chartData[0];
         inject.chartDataset = chartData[1];
 
-        this.applySingleSeriesColors(inject, chartData, 'polarArea');
+        this.applySingleSeriesColors(inject);
 
         inject.chartLegend = cfg.chartLegend ?? true;
         inject.showLabels = cfg.showLabels ?? false;
@@ -1293,9 +1277,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Renders the D3-based radar (spider) chart. Multi-series like bar - one dataset per
      * queried numeric column, colored per-series (no threshold/unique-color modes, those only
-     * make sense for a single-numeric-column bar chart). Reuses transformDataQuery/
-     * resolveAssignedColors/generateChartColorsFromAssignedColors unchanged - radar already falls
-     * into their generic "series" branches.
+     * make sense for a single-numeric-column bar chart).
      */
     private renderRadar() {
         const values = _.cloneDeep(this.props.data.values);
@@ -1351,11 +1333,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Renders the D3-based bar family: bar, horizontalBar, stackedbar, stackedbar100,
-     * pyramid, histogram (everything with chartType 'bar' except 'barline', which stays
-     * on Chart.js via renderEdaChart()). Reuses transformDataQuery/resolveAssignedColors/
-     * generateChartColorsFromAssignedColors and the 3 color modes unchanged - only the
-     * Chart.js-specific initChartOptions() call and the line-only TRENDS block are skipped.
+     * Renders the D3-based bar family: bar, horizontalBar, stackedbar, stackedbar100, pyramid,
+     * histogram (everything with chartType 'bar' except 'barline', handled by renderBarlineD3()).
      */
     private renderBar() {
         let values = _.cloneDeep(this.props.data.values);
@@ -1476,14 +1455,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Renders the D3-based line chart. Same transformDataQuery/comparePeriods/getTrend/
-     * _preparePredictionValues pipeline as the old Chart.js path (renderEdaChart) - only the
-     * final assembly changes: trend and prediction datasets are appended AFTER the real series get
-     * their assigned colors, inheriting their source series' color directly (isTrend/isPrediction/
-     * sourceLabel flags) instead of consuming their own palette slot/legend entry the way Chart.js
-     * used to. _hideConnectingDot is now obsolete (eda-line-d3 anchors the prediction dash at the
-     * source's own last real point instead of relying on padded/hidden points) - left untouched,
-     * unused dead code, same precedent as the old bar-family Chart.js path after its migration.
+     * Renders the D3-based line chart. Trend and prediction datasets are appended after the real
+     * series get their assigned colors, inheriting their source series' color directly via the
+     * isTrend/isPrediction/sourceLabel flags (eda-line-d3 resolves them by sourceLabel).
      */
     private renderLine() {
         let values = _.cloneDeep(this.props.data.values);
@@ -1647,9 +1621,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * Renders the D3-based barline (mixed bar+line combo) chart. Unlike bar's family, barline
-     * doesn't carry the 3 extra color modes (threshold/unique/assigned) - it never did even on
-     * Chart.js (renderEdaChart only ever applied the generic per-series assigned-colors mode to
-     * it), so only that one mode is reproduced here.
+     * doesn't carry the 3 extra color modes (threshold/unique/assigned) - only per-series assigned
+     * colors apply here.
      */
     private renderBarlineD3() {
         let values = _.cloneDeep(this.props.data.values);
@@ -1849,7 +1822,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 else if (this.props.chartType === 'polarArea') {
                     this.updateD3Colors(() => this.renderPolarArea());
                 }
-                // Bar family (D3), except barline which stays on Chart.js
+                // Bar family (D3), except barline (its own branch below)
                 else if (this.props.chartType === 'bar' && this.props.edaChart !== 'barline') {
                     this.updateD3Colors(() => this.renderBar());
                 }

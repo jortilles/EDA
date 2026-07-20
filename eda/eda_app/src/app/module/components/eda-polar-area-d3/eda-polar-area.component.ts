@@ -75,7 +75,6 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     const labels: string[] = this.inject.chartLabels || [];
     const dataset = this.inject.chartDataset?.[0] || { data: [] };
     const values: number[] = dataset.data || [];
-    const colors: string[] = dataset.backgroundColor || this.inject.assignedColors?.map(c => c.color) || [];
     const colorByLabel = new Map((this.inject.assignedColors || []).map(c => [c.value, c.color]));
 
     this.slices = labels.map((rawLabel, i) => {
@@ -83,7 +82,7 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       return {
         label,
         value: Number(values[i]) || 0,
-        color: colors[i] || colorByLabel.get(rawLabel) || colorByLabel.get(label) || '#cccccc',
+        color: colorByLabel.get(rawLabel) || colorByLabel.get(label) || '#cccccc',
         originalIndex: i
       };
     });

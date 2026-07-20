@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaAreaD3 } from './eda-area';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, formatDeNumber, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, opacityFraction } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, formatAxisValue, formatDeNumber, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, opacityFraction } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface AreaPoint {
@@ -107,8 +107,8 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     return truncateLabel(label, MAX_CATEGORY_CHARS);
   }
 
-  private gradientId(label: string): string {
-    return `area-grad-${this.id}-${sanitizeId(label)}`;
+  private gradientId(index: number): string {
+    return `area-grad-${this.id}-${index}`;
   }
 
   private areaFill(defs: any, series: AreaSeries): string {
@@ -117,7 +117,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       const rgb = d3.rgb(series.color);
       return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`;
     }
-    return ensureLinearGradient(defs, this.gradientId(series.label), [
+    return ensureLinearGradient(defs, this.gradientId(series.originalIndex), [
       { offset: '0%', color: lightenHex(series.color, 30), opacity },
       { offset: '100%', color: series.color, opacity }
     ], { x1: '0%', y1: '0%', x2: '0%', y2: '100%' });

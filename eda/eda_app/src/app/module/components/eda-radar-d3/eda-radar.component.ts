@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaRadar } from './eda-radar';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureRadialGradient, formatValueLabel, initD3ResizeObserver, teardownD3Chart, opacityFraction } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, formatAxisValue, ensureRadialGradient, formatValueLabel, initD3ResizeObserver, teardownD3Chart, opacityFraction } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface RadarPoint {
@@ -136,8 +136,8 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
     return lineGen(pts);
   }
 
-  private gradientId(label: string): string {
-    return `radar-grad-${this.id}-${sanitizeId(label)}`;
+  private gradientId(index: number): string {
+    return `radar-grad-${this.id}-${index}`;
   }
 
   // Centered at the shared chart origin (0,0) - unlike polarArea's per-slice gradient, every
@@ -146,7 +146,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
   // stop-color) keeps the fill translucent even at the "solid" end, so overlapping series stay
   // legible regardless of gradient vs flat fill.
   private ensureGradient(defs: any, series: RadarSeries, maxRadius: number): string {
-    return ensureRadialGradient(defs, this.gradientId(series.label), [
+    return ensureRadialGradient(defs, this.gradientId(series.originalIndex), [
       { offset: '0%', color: series.color, opacity: 0.5 },
       { offset: '100%', color: lightenHex(series.color, GRADIENT_LIGHTEN_AMOUNT), opacity: 0.15 }
     ], { cx: 0, cy: 0, r: Math.max(maxRadius, 1) });
