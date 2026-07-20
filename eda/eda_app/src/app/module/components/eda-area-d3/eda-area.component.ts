@@ -228,7 +228,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     const pointsGroup = g.append('g').attr('class', 'eda-area-points');
 
     const ENTRANCE_MS = compact ? 600 : 1500;
-    const animateEntrance = !this.hasRendered;
+    const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
 
     visibleSeries.forEach(series => {
       const zeroPoints = series.points.map(p => ({ catIndex: p.catIndex, value: p.value === null ? null : 0 }));

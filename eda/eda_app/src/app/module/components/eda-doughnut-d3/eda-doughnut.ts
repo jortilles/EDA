@@ -15,4 +15,6 @@ export class EdaDoughnutD3 {
   innerRadiusPercent: number;
   useGradient: boolean;
   linkedDashboard: LinkedDashboardProps;
+  /** Radial sweep entrance animation on first render. On by default. */
+  chartAnimation?: boolean;
 }

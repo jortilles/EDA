@@ -358,19 +358,30 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Equal-angle slots mean the angles themselves only shift when the number of visible
     // slices changes (legend toggle) - the radius is what animates on first render.
-    merged.transition().duration(this.hasRendered ? 500 : 800)
-      .attrTween('d', (d: any) => {
-        const current = d.data._current || { startAngle: d.startAngle, endAngle: d.endAngle, radius: 0 };
-        const startI = d3.interpolate(current.startAngle, d.startAngle);
-        const endI = d3.interpolate(current.endAngle, d.endAngle);
-        const radiusI = d3.interpolate(current.radius, radiusScale(d.data.value));
-        return (t: number) => {
-          const interpolated = { startAngle: startI(t), endAngle: endI(t), radius: radiusI(t) };
-          d.data._current = interpolated;
-          return this.arcPathAt(interpolated.startAngle, interpolated.endAngle, interpolated.radius);
-        };
-      })
-      .on('end', () => { this.hasRendered = true; });
+    const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+    if (!this.hasRendered && !animateEntrance) {
+      // Entrance animation disabled: jump straight to the final state, no transition.
+      merged.attr('d', (d: any) => {
+        const final = { startAngle: d.startAngle, endAngle: d.endAngle, radius: radiusScale(d.data.value) };
+        d.data._current = final;
+        return this.arcPathAt(final.startAngle, final.endAngle, final.radius);
+      });
+      this.hasRendered = true;
+    } else {
+      merged.transition().duration(this.hasRendered ? 500 : 800)
+        .attrTween('d', (d: any) => {
+          const current = d.data._current || { startAngle: d.startAngle, endAngle: d.endAngle, radius: 0 };
+          const startI = d3.interpolate(current.startAngle, d.startAngle);
+          const endI = d3.interpolate(current.endAngle, d.endAngle);
+          const radiusI = d3.interpolate(current.radius, radiusScale(d.data.value));
+          return (t: number) => {
+            const interpolated = { startAngle: startI(t), endAngle: endI(t), radius: radiusI(t) };
+            d.data._current = interpolated;
+            return this.arcPathAt(interpolated.startAngle, interpolated.endAngle, interpolated.radius);
+          };
+        })
+        .on('end', () => { this.hasRendered = true; });
+    }
 
     g.selectAll('g.polar-area-label').remove();
     if (showLabelsOn) {

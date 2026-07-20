@@ -86,6 +86,23 @@
                 </div>
               </label>
             </div>
+
+            <!-- Chart Entrance Animation -->
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@chartAnimation" for="animarGrafico" class="font-medium">
+                    Animar Gráfico
+                  </label>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="animarGrafico" name="animarGrafico" [(ngModel)]="chartAnimation" class="sr-only peer" (ngModelChange)="setChartAnimation()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                </div>
+              </label>
+            </div>
           </div>
         </div>
       </div>

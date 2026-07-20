@@ -328,7 +328,7 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
     const lineGroup = g.append('g').attr('class', 'eda-barline-lines');
 
     const ENTRANCE_MS = compact ? 600 : 1500;
-    const animateEntrance = !this.hasRendered;
+    const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
     const singleBarSeries = visibleBarSeries.length === 1;
     const showLabelsOn = (this.inject.showLabels || this.inject.showLabelsPercent) && !compact;
     // Bars grow left to right, one category at a time (bar i's own growth finishes exactly when

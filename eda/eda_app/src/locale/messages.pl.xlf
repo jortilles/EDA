@@ -4356,6 +4356,16 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Pokaż lub ukryj linie siatki wykresu</target>
 </trans-unit>
 
+<trans-unit id="chartAnimation">
+  <source>Animar Gráfico</source>
+  <target>Animuj wykres</target>
+</trans-unit>
+
+<trans-unit id="chartAnimationOptionDescription">
+  <source>Anima la aparición de los datos al cargar el gráfico</source>
+  <target>Animuje pojawianie się danych podczas ładowania wykresu</target>
+</trans-unit>
+
 <trans-unit id="histogramColum">
   <source>Columnas</source>
   <target>Kolumny</target>

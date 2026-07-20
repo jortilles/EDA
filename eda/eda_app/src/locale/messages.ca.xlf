@@ -4910,6 +4910,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Mostra o amaga les línies guia del gràfic</target>
 </trans-unit>
 
+<trans-unit id="chartAnimation">
+  <source>Animar Gráfico</source>
+  <target>Anima el gràfic</target>
+</trans-unit>
+
+<trans-unit id="chartAnimationOptionDescription">
+  <source>Anima la aparición de los datos al cargar el gráfico</source>
+  <target>Anima l'aparició de les dades en carregar el gràfic</target>
+</trans-unit>
+
 <trans-unit id="histogramColum">
   <source>Columnas</source>
   <target>Columnes</target>

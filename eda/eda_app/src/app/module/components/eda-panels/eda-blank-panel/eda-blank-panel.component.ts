@@ -1743,7 +1743,8 @@ public tableNodeExpand(event: any): void {
             showLabelsPercent: response.showLabelsPercent,
             chartLegend: response.chartLegend,
             innerRadiusPercent: response.innerRadiusPercent,
-            useGradient: response.useGradient
+            useGradient: response.useGradient,
+            chartAnimation: response.chartAnimation
         }, 'doughnutController');
     }
 
@@ -1754,7 +1755,8 @@ public tableNodeExpand(event: any): void {
             showLabelsPercent: response.showLabelsPercent,
             chartLegend: response.chartLegend,
             showGridLines: response.showGridLines,
-            useGradient: response.useGradient
+            useGradient: response.useGradient,
+            chartAnimation: response.chartAnimation
         }, 'polarAreaController');
     }
 

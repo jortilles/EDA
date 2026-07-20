@@ -27,4 +27,6 @@ export class EdaBarD3 {
   linkedDashboard: LinkedDashboardProps;
   /** KPI mini-chart mode (kpibar): no axes, no grid, no legend, shorter entrance. */
   compact?: boolean;
+  /** Sequential left-to-right entrance animation on first render. On by default. */
+  chartAnimation?: boolean;
 }

@@ -4855,6 +4855,16 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Afficher ou masquer les lignes de grille du graphique</target>
 </trans-unit>
 
+<trans-unit id="chartAnimation">
+  <source>Animar Gráfico</source>
+  <target>Animer le graphique</target>
+</trans-unit>
+
+<trans-unit id="chartAnimationOptionDescription">
+  <source>Anima la aparición de los datos al cargar el gráfico</source>
+  <target>Anime l'apparition des données lors du chargement du graphique</target>
+</trans-unit>
+
 <trans-unit id="histogramColum">
   <source>Columnas</source>
   <target>Colonnes</target>

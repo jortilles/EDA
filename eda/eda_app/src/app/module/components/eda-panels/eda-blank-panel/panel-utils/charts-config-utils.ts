@@ -53,6 +53,7 @@ export const CUSTOM_CHART_CONFIG_FIELDS: CustomChartConfigField[] = [
   { name: 'innerRadiusPercent', default: null },
   { name: 'useGradient', default: true, fallbackIfMissing: true },
   { name: 'useRoundedBars', default: true, fallbackIfMissing: true },
+  { name: 'chartAnimation', default: true, fallbackIfMissing: true },
 ];
 
 function readCustomFields(cfg: any, fields: CustomChartConfigField[]): any {

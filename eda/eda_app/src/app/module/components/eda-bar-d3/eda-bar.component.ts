@@ -516,7 +516,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     // 0 starts growing immediately, category 1 starts once category 0's grow finishes, and so on,
     // so the whole sequence always finishes in ENTRANCE_TOTAL_MS regardless of category count.
     const ENTRANCE_TOTAL_MS = compact ? 600 : 2000;
-    const animateEntrance = !this.hasRendered;
+    const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
     const perCatDelay = ENTRANCE_TOTAL_MS / Math.max(visibleCategories.length, 1);
     const singleSeries = visibleSeries.length === 1;
 

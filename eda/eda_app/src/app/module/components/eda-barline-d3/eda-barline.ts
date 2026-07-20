@@ -26,4 +26,6 @@ export class EdaBarlineD3 {
   linkedDashboard: LinkedDashboardProps;
   /** KPI mini-chart mode (kpitrend): no axes, no grid, no legend, shorter entrance. */
   compact?: boolean;
+  /** Sequential left-to-right entrance animation on first render. On by default. */
+  chartAnimation?: boolean;
 }

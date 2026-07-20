@@ -253,7 +253,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     const showLabelsOn = (this.inject.showLabels || this.inject.showLabelsPercent) && !compact;
 
     const ENTRANCE_MS = compact ? 600 : 3000;
-    const animateEntrance = !this.hasRendered;
+    const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
 
     // Real (non-derived) series first, so trend/prediction overlays paint on top of their source.
     const drawOrder = [...visibleSeries.filter(s => !s.isTrend && !s.isPrediction), ...visibleSeries.filter(s => s.isTrend || s.isPrediction)];

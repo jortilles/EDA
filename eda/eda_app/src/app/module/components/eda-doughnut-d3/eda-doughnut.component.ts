@@ -293,7 +293,15 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
     // slider drags - only the innerRadius/strokeWidth pairing changes, not the slice keys.
     merged.attr('stroke-width', strokeWidth);
 
-    if (!this.hasRendered) {
+    const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+    if (!this.hasRendered && !animateEntrance) {
+      // Entrance animation disabled: jump straight to the final state, no transition.
+      merged.attr('d', (d: any) => {
+        d.data._current = { startAngle: d.startAngle, endAngle: d.endAngle };
+        return arcGen(d);
+      });
+      this.hasRendered = true;
+    } else if (animateEntrance) {
       // First render: radial sweep, like a clock hand painting the doughnut clockwise from the top.
       // One reusable arc generator (accessors read {t} off the datum) instead of constructing a
       // new d3.arc() on every single animation frame for every slice - that per-frame allocation

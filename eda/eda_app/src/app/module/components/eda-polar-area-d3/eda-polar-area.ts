@@ -15,4 +15,6 @@ export class EdaPolarArea {
   showGridLines: boolean;
   useGradient: boolean;
   linkedDashboard: LinkedDashboardProps;
+  /** Grow-out-from-center entrance animation on first render. On by default. */
+  chartAnimation?: boolean;
 }

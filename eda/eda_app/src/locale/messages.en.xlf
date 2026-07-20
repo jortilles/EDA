@@ -4489,6 +4489,16 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Show or hide chart grid lines</target>
 </trans-unit>
 
+<trans-unit id="chartAnimation">
+<source>Animar Gráfico</source>
+<target>Animate Chart</target>
+</trans-unit>
+
+<trans-unit id="chartAnimationOptionDescription">
+<source>Anima la aparición de los datos al cargar el gráfico</source>
+<target>Animates the appearance of data when the chart loads</target>
+</trans-unit>
+
 <trans-unit id="histogramColum">
 <source>Columnas</source>
 <target>Columns</target>

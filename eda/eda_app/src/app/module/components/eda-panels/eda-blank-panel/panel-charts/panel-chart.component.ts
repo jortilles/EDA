@@ -1201,6 +1201,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         // in eda-doughnut.component.ts for how this maps to the actual inner/outer radius ratio.
         inject.innerRadiusPercent = cfg.innerRadiusPercent ?? 50;
         inject.useGradient = cfg.useGradient ?? true;
+        inject.chartAnimation = cfg.chartAnimation ?? true;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaDoughnut);
@@ -1291,6 +1292,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.useGradient = cfg.useGradient ?? true;
+        inject.chartAnimation = cfg.chartAnimation ?? true;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaPolarAreaComponent);
@@ -1511,6 +1513,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.useGradient = cfg.useGradient ?? true;
         inject.useRoundedBars = cfg.useRoundedBars ?? true;
+        inject.chartAnimation = cfg.chartAnimation ?? true;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaBarD3Component);
@@ -1639,6 +1642,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showPointLines = cfg.showPointLines ?? false;
         inject.showLabels = cfg.showLabels ?? false;
         inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
+        inject.chartAnimation = cfg.chartAnimation ?? true;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaLineComponent);
@@ -1713,6 +1717,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartLegend = cfg.chartLegend ?? true;
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.useGradient = cfg.useGradient ?? true;
+        inject.chartAnimation = cfg.chartAnimation ?? true;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaAreaComponent);
@@ -1784,6 +1789,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.useRoundedBars = cfg.useRoundedBars ?? true;
         inject.showPointLines = cfg.showPointLines ?? false;
         inject.secondAxis = cfg.secondAxis ?? false;
+        inject.chartAnimation = cfg.chartAnimation ?? true;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaBarlineComponent);

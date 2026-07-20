@@ -3,7 +3,7 @@ import { PanelChartComponent } from './../panel-charts/panel-chart.component';
 import { Component, Input, ViewChild } from '@angular/core';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
-import { StyleProviderService, ChartUtilsService, AlertService, SpinnerService } from '@eda/services/service.index';
+import { StyleProviderService, ChartUtilsService, AlertService, SpinnerService, DashboardService } from '@eda/services/service.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 import { CommonModule } from '@angular/common';
@@ -48,6 +48,7 @@ export class ChartDialogComponent {
     public showPredictionLines: boolean = false;
     public chartLegend: boolean = true;
     public showGridLines: boolean = true;
+    public chartAnimation: boolean = true;
     public showPredictionDialog: boolean = false;
     public predictionMethod: string = 'Arima';
     public selectedPalette: { name: string; paleta: any } | null = null;
@@ -90,6 +91,7 @@ export class ChartDialogComponent {
         showGridLines: boolean;
         useGradient: boolean;
         useRoundedBars: boolean;
+        chartAnimation: boolean;
     };
 
     public drops = {
@@ -108,7 +110,8 @@ export class ChartDialogComponent {
 
     constructor(private chartUtils: ChartUtilsService, private stylesProviderService: StyleProviderService,
         private alertService: AlertService,
-        private spinnerService: SpinnerService
+        private spinnerService: SpinnerService,
+        private dashboardService: DashboardService
     ) {
         this.drops.pointStyles = [
             { label: 'Puntos', value: 'circle' },
@@ -154,6 +157,7 @@ export class ChartDialogComponent {
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
         this.chartLegend = this.controller.params.config.config.getConfig()['chartLegend'] ?? true;
         this.showGridLines = this.controller.params.config.config.getConfig()['showGridLines'] ?? true;
+        this.chartAnimation = this.controller.params.config.config.getConfig()['chartAnimation'] ?? true;
         this.useGradient = this.controller.params.config.config.getConfig()['useGradient'] ?? true;
         this.useRoundedBars = this.controller.params.config.config.getConfig()['useRoundedBars'] ?? true;
 
@@ -171,7 +175,8 @@ export class ChartDialogComponent {
             chartLegend: this.chartLegend,
             showGridLines: this.showGridLines,
             useGradient: this.useGradient,
-            useRoundedBars: this.useRoundedBars
+            useRoundedBars: this.useRoundedBars,
+            chartAnimation: this.chartAnimation
         };
 
         this.oldChart = _.cloneDeep(this.controller.params.chart);
@@ -291,7 +296,15 @@ export class ChartDialogComponent {
 
     // Methods that update the chart configuration
 
+    /** Flags the dashboard as having unsaved changes - called by every handler below that
+     * live-updates the chart config, not just the final "Guardar" button (which already goes
+     * through eda-blank-panel's onCloseChartProperties -> setNotSaved(true) on its own). */
+    private markUnsaved(): void {
+        this.dashboardService.setNotSaved(true);
+    }
+
     SetNumberOfColumns() {
+        this.markUnsaved();
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -313,6 +326,7 @@ export class ChartDialogComponent {
     }
 
     checkTrend() {
+        this.markUnsaved();
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -329,6 +343,7 @@ export class ChartDialogComponent {
     }
 
     setComparative() {
+        this.markUnsaved();
 
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
@@ -354,6 +369,7 @@ export class ChartDialogComponent {
 
 
     setShowLablesPercent() {
+        this.markUnsaved();
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -399,6 +415,7 @@ export class ChartDialogComponent {
 
 
     setShowLables() {
+        this.markUnsaved();
 
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
@@ -422,6 +439,7 @@ export class ChartDialogComponent {
     }
 
     setChartLegend() {
+        this.markUnsaved();
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -444,6 +462,7 @@ export class ChartDialogComponent {
     }
 
     setShowGridLines() {
+        this.markUnsaved();
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -457,7 +476,23 @@ export class ChartDialogComponent {
         });
     }
 
+    setChartAnimation() {
+        this.markUnsaved();
+        const properties = this.panelChartConfig;
+        let c: ChartConfig = properties.config;
+        let config: any = c.getConfig();
+        config.chartAnimation = this.chartAnimation;
+
+        properties.config = c;
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(_ => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.load();
+        });
+    }
+
     setShowLines() {
+        this.markUnsaved();
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -479,6 +514,7 @@ export class ChartDialogComponent {
     }
 
     setSecondAxis() {
+        this.markUnsaved();
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -748,6 +784,7 @@ export class ChartDialogComponent {
     }
 
     handleUniqueColorInput(): void {
+        this.markUnsaved();
         this.applyColorsToChart();
         this.controller.params.config.config.getConfig()['uniqueBarColors'] = [...this.uniqueBarColors];
         if (this.panelChartComponent?.componentRef?.instance) {
@@ -760,6 +797,7 @@ export class ChartDialogComponent {
 
     // Simplified method for color changes
     handleInputColor(): void {
+        this.markUnsaved();
         // Apply assignedColors to the chart
         this.applyColorsToChart();
 
@@ -899,6 +937,7 @@ export class ChartDialogComponent {
         this.activeTabIndex = index;
         // edaChart, not chartType - chartType is always literally 'bar' for every bar subtype.
         if (!['bar', 'horizontalBar'].includes(this.chart['edaChart'] as string)) return;
+        this.markUnsaved();
         // Which coloring mode is active is now purely a function of which tab is selected - there's
         // no separate on/off switch inside the "Colores Únicos" tab, being on it IS "activated".
         this.coloredBarsActive = index === this.intervalTabIndex;
@@ -957,6 +996,7 @@ export class ChartDialogComponent {
         this.chart['showGridLines'] = this.showGridLines;
         this.chart['useGradient'] = this.useGradient;
         this.chart['useRoundedBars'] = this.useRoundedBars;
+        this.chart['chartAnimation'] = this.chartAnimation;
 
         // Save in config too (for persistence)
         this.controller.params.config.config.getConfig()['addTrend'] = this.addTrend;
@@ -973,6 +1013,7 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['showGridLines'] = this.showGridLines;
         this.controller.params.config.config.getConfig()['useGradient'] = this.useGradient;
         this.controller.params.config.config.getConfig()['useRoundedBars'] = this.useRoundedBars;
+        this.controller.params.config.config.getConfig()['chartAnimation'] = this.chartAnimation;
 
         // Save colored bars config
         const coloredBarsConfig = {
@@ -1004,6 +1045,7 @@ export class ChartDialogComponent {
         this.showGridLines = this.originalLabelValues.showGridLines;
         this.useGradient = this.originalLabelValues.useGradient;
         this.useRoundedBars = this.originalLabelValues.useRoundedBars;
+        this.chartAnimation = this.originalLabelValues.chartAnimation;
 
         // Restore in config
         this.controller.params.config.config.getConfig()['addTrend'] = this.originalLabelValues.addTrend;
@@ -1019,6 +1061,7 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['showGridLines'] = this.originalLabelValues.showGridLines;
         this.controller.params.config.config.getConfig()['useGradient'] = this.originalLabelValues.useGradient;
         this.controller.params.config.config.getConfig()['useRoundedBars'] = this.originalLabelValues.useRoundedBars;
+        this.controller.params.config.config.getConfig()['chartAnimation'] = this.originalLabelValues.chartAnimation;
         this.controller.params.config.config.getConfig()['assignedColors'] = this.assignedColors = _.cloneDeep(this.originalAssignedColors);
         this.controller.params.config.config.getConfig()['uniqueBarColors'] = this.uniqueBarColors = _.cloneDeep(this.originalUniqueBarColors);
     }

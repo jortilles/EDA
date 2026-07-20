@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
-import { StyleProviderService } from '@eda/services/service.index';
+import { StyleProviderService, DashboardService } from '@eda/services/service.index';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
@@ -33,12 +33,13 @@ export class DoughnutDialog implements OnInit {
   public chartLegend = true;
   public innerRadiusPercent = 50;
   public useGradient = true;
-  private originalValues: { showLabels: boolean; showLabelsPercent: boolean; chartLegend: boolean; innerRadiusPercent: number; useGradient: boolean };
+  public chartAnimation = true;
+  private originalValues: { showLabels: boolean; showLabelsPercent: boolean; chartLegend: boolean; innerRadiusPercent: number; useGradient: boolean; chartAnimation: boolean };
 
   public selectedPalette: { name: string; paleta: string[] } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
-  constructor(private stylesProviderService: StyleProviderService) { }
+  constructor(private stylesProviderService: StyleProviderService, private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
@@ -49,13 +50,15 @@ export class DoughnutDialog implements OnInit {
     this.chartLegend = config['chartLegend'] ?? true;
     this.innerRadiusPercent = config['innerRadiusPercent'] ?? 50;
     this.useGradient = config['useGradient'] ?? true;
+    this.chartAnimation = config['chartAnimation'] ?? true;
 
     this.originalValues = {
       showLabels: this.showLabels,
       showLabelsPercent: this.showLabelsPercent,
       chartLegend: this.chartLegend,
       innerRadiusPercent: this.innerRadiusPercent,
-      useGradient: this.useGradient
+      useGradient: this.useGradient,
+      chartAnimation: this.chartAnimation
     };
 
     this.loadChartColors();
@@ -84,8 +87,14 @@ export class DoughnutDialog implements OnInit {
     this.controller.close(event, response);
   }
 
+  /** Flags the dashboard as having unsaved changes on every live preview change. */
+  private markUnsaved(): void {
+    this.dashboardService.setNotSaved(true);
+  }
+
   /* COLOR PICKER */
   handleInputColor(): void {
+    this.markUnsaved();
     this.panelChartConfig.config.getConfig()['assignedColors'] = [...this.assignedColors];
     this.myPanelChartComponent.changeChartType();
   }
@@ -93,6 +102,7 @@ export class DoughnutDialog implements OnInit {
   /* PALETTE */
   onPaletteSelected(): void {
     if (!this.selectedPalette) return;
+    this.markUnsaved();
     const palette = this.selectedPalette.paleta;
 
     this.assignedColors = this.assignedColors.map((item, index) => ({
@@ -106,27 +116,38 @@ export class DoughnutDialog implements OnInit {
 
   /* TOGGLES */
   setShowLabels(): void {
+    this.markUnsaved();
     this.panelChartConfig.config.getConfig()['showLabels'] = this.showLabels;
     this.myPanelChartComponent.changeChartType();
   }
 
   setShowLabelsPercent(): void {
+    this.markUnsaved();
     this.panelChartConfig.config.getConfig()['showLabelsPercent'] = this.showLabelsPercent;
     this.myPanelChartComponent.changeChartType();
   }
 
   setChartLegend(): void {
+    this.markUnsaved();
     this.panelChartConfig.config.getConfig()['chartLegend'] = this.chartLegend;
     this.myPanelChartComponent.changeChartType();
   }
 
   setInnerRadius(): void {
+    this.markUnsaved();
     this.panelChartConfig.config.getConfig()['innerRadiusPercent'] = this.innerRadiusPercent;
     this.myPanelChartComponent.changeChartType();
   }
 
   setUseGradient(): void {
+    this.markUnsaved();
     this.panelChartConfig.config.getConfig()['useGradient'] = this.useGradient;
+    this.myPanelChartComponent.changeChartType();
+  }
+
+  setChartAnimation(): void {
+    this.markUnsaved();
+    this.panelChartConfig.config.getConfig()['chartAnimation'] = this.chartAnimation;
     this.myPanelChartComponent.changeChartType();
   }
 
@@ -139,6 +160,7 @@ export class DoughnutDialog implements OnInit {
     config['chartLegend'] = this.chartLegend;
     config['innerRadiusPercent'] = this.innerRadiusPercent;
     config['useGradient'] = this.useGradient;
+    config['chartAnimation'] = this.chartAnimation;
 
     this.onClose(EdaDialogCloseEvent.UPDATE, {
       assignedColors: [...this.assignedColors],
@@ -146,7 +168,8 @@ export class DoughnutDialog implements OnInit {
       showLabelsPercent: this.showLabelsPercent,
       chartLegend: this.chartLegend,
       innerRadiusPercent: this.innerRadiusPercent,
-      useGradient: this.useGradient
+      useGradient: this.useGradient,
+      chartAnimation: this.chartAnimation
     });
   }
 
@@ -158,6 +181,7 @@ export class DoughnutDialog implements OnInit {
     this.chartLegend = this.originalValues.chartLegend;
     this.innerRadiusPercent = this.originalValues.innerRadiusPercent;
     this.useGradient = this.originalValues.useGradient;
+    this.chartAnimation = this.originalValues.chartAnimation;
 
     const config = this.panelChartConfig.config.getConfig();
     config['assignedColors'] = [...this.assignedColors];
@@ -166,6 +190,7 @@ export class DoughnutDialog implements OnInit {
     config['chartLegend'] = this.chartLegend;
     config['innerRadiusPercent'] = this.innerRadiusPercent;
     config['useGradient'] = this.useGradient;
+    config['chartAnimation'] = this.chartAnimation;
 
     this.myPanelChartComponent.changeChartType();
     this.onClose(EdaDialogCloseEvent.NONE);
