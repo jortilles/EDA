@@ -263,7 +263,7 @@ export class ChartDialogComponent {
 
     // Get labels for this dialog's chart family (doughnut/polarArea moved to category-chart-dialog).
     private getChartLabels(): string[] {
-        return this.chart.chartDataset?.map(d => d.label) || [];
+        return this.chart.chartDataset?.filter((d: any) => !d.isTrend && !d.isPrediction).map(d => d.label) || [];
     }
 
 
