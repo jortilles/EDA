@@ -16,8 +16,6 @@ import { DateUtil } from '../../utils/date.util'
 import _ from 'lodash'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
-// TODO: pendiente subir los archivos customizables (eda_api/config/customizable/) antes de activar esto
-// const { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } = require('../../../config/customizable/customizable_default');
 export class DashboardController {
 
 
@@ -44,8 +42,7 @@ export class DashboardController {
         privateDashboards = await DashboardController.getPrivateDashboards(req, dataSources)
         group = await DashboardController.getGroupsDashboards(req, dataSources)
         commonDashboards = await DashboardController.getCommonDashboards(req, dataSources)
-        // openDashboards = await DashboardController.getOpenDashboards(req, dataSources, isAdmin) // TODO: pasar isAdmin cuando se active el flag (ver import comentado arriba)
-        openDashboards = await DashboardController.getOpenDashboards(req, dataSources)
+        openDashboards = await DashboardController.getOpenDashboards(req, dataSources, isAdmin)
       }
 
       // Modificación de fecha y adición de autor si no lo tiene (informes viejos)
@@ -224,12 +221,11 @@ export class DashboardController {
    * @param dss List of available datasources
    * @returns List of open dashboards
    */
-  static async getOpenDashboards(req: Request, dss: any[] /*, isAdmin: boolean = false */) {
+  static async getOpenDashboards(req: Request, dss: any[], isAdmin: boolean = false) {
     try {
-      // TODO: activar junto con el import de ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS de arriba
-      // if (!isAdmin && !ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS) {
-      //   return [];
-      // }
+      if (!isAdmin && !eda_api_config.custom_behaviour.ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS) {
+        return [];
+      }
       // 'shared' es el valor legacy que normalizeVisibility traduce a 'open' — se incluye en la
       // query para no perder dashboards antiguos aún no migrados.
       const dashboards = await DashboardController.findAllDashboardsWithMeta({ 'config.visible': { $in: ['open', 'shared'] } });
@@ -558,6 +554,10 @@ export class DashboardController {
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
 
+        if (DashboardController.isPublicVisibility(dashboard.config.visible) && !DashboardController.canManagePublicDashboards(req)) {
+          return next(new HttpException(403, 'Only an administrator can view public dashboards'));
+        }
+
         await DashboardController.initDashboardPanels(dashboard);
 
         const visibilityCheck = !['open', 'common'].includes(dashboard.config.visible);
@@ -705,6 +705,11 @@ export class DashboardController {
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body
+
+      if (DashboardController.isPublicVisibility(body.config?.visible) && !DashboardController.canManagePublicDashboards(req)) {
+        return next(new HttpException(403, 'Only an administrator can create public dashboards'));
+      }
+
       body.config.author = req.user.name;
       body.config.createdAt = new Date().toISOString();
       body.config.modifiedAt = new Date().toISOString();
@@ -739,6 +744,15 @@ export class DashboardController {
           return next(
             new HttpException(400, 'Dashboard not exist with this id')
           )
+        }
+
+        if (!DashboardController.canManagePublicDashboards(req)) {
+          if (DashboardController.isPublicVisibility(body.config?.visible)) {
+            return next(new HttpException(403, 'Only an administrator can make a dashboard public'));
+          }
+          if (DashboardController.isPublicVisibility(dashboard.config.visible)) {
+            return next(new HttpException(403, 'You do not have permission to modify a public dashboard'));
+          }
         }
 
         dashboard.config = body.config
@@ -805,6 +819,16 @@ export class DashboardController {
         };
       }
 
+      if (!DashboardController.canManagePublicDashboards(req)) {
+        if (key === 'config.visible' && DashboardController.isPublicVisibility(newValue)) {
+          return next(new HttpException(403, 'Only an administrator can make a dashboard public'));
+        }
+        const current = await Dashboard.findById(id, 'config.visible').exec();
+        if (DashboardController.isPublicVisibility(current?.config?.visible)) {
+          return next(new HttpException(403, 'You do not have permission to modify a public dashboard'));
+        }
+      }
+
       const dashboard = await Dashboard.findByIdAndUpdate(
         id,
         { $set: updateObj },
@@ -833,6 +857,13 @@ export class DashboardController {
 
   static async delete(req: Request, res: Response, next: NextFunction) {
     try {
+      if (!DashboardController.canManagePublicDashboards(req)) {
+        const current = await Dashboard.findById(req.params.id, 'config.visible').exec();
+        if (DashboardController.isPublicVisibility(current?.config?.visible)) {
+          return next(new HttpException(403, 'You do not have permission to delete a public dashboard'));
+        }
+      }
+
       const dashboard = await Dashboard.findByIdAndDelete(req.params.id);
 
       if (!dashboard) {
@@ -2273,6 +2304,10 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         return next(new HttpException(404, 'Dashboard not found'));
       }
 
+      if (DashboardController.isPublicVisibility(originalDashboard.config.visible) && !DashboardController.canManagePublicDashboards(req)) {
+        return next(new HttpException(403, 'You do not have permission to clone a public dashboard'));
+      }
+
       const dashboards = await Dashboard.find({},
         'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
       ).populate('user', 'name').exec()
@@ -2360,6 +2395,24 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     } else if (dashboard.config.visible === 'shared') {
       dashboard.config.visible = 'open';
     }
+  }
+
+  /**
+   * "open" y su alias legacy "shared" son las visibilidades públicas.
+   * @param visible Valor de config.visible a comprobar
+   */
+  private static isPublicVisibility(visible: any): boolean {
+    return ['open', 'shared'].includes(visible);
+  }
+
+  /**
+   * Un admin siempre puede gestionar dashboards públicos; un no-admin solo si
+   * custom_behaviour.ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS está activado.
+   * @param req Express Request con la información del usuario
+   */
+  private static canManagePublicDashboards(req: Request): boolean {
+    const isAdmin = req.user.role.includes('135792467811111111111110');
+    return isAdmin || !!eda_api_config.custom_behaviour?.ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS;
   }
 
 }
