@@ -589,10 +589,14 @@
 <target>
                                     Résumé des attributs
 </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-<context context-type="linenumber">137</context>
-</context-group>
+</trans-unit>
+<trans-unit id="resumenAtrH6Hover" datatype="html">
+<source>
+¿Qué estoy viendo?
+</source>
+<target>
+Que suis-je en train de voir ?
+</target>
 </trans-unit>
 <trans-unit id="resumenFiltrosPanelH6" datatype="html">
 <source>
@@ -2870,6 +2874,16 @@
     <target> Lié à  </target>
   </trans-unit>
 
+  <trans-unit id="secondAxis">
+    <source> Segundo Eje  </source>
+    <target>Deuxième axe</target>
+  </trans-unit>
+
+  <trans-unit id="secondAxisDescription">
+    <source> Muestra un eje independiente a la derecha para las líneas, separado del eje de las barras </source>
+    <target>Affiche un axe indépendant à droite pour les lignes, séparé de l'axe des barres</target>
+  </trans-unit>
+
   <trans-unit id="DataModelHeader">
     <source> Configurar nueva fuente de datos  </source>
     <target> Configurer la nouvelle source de données  </target>
@@ -3433,6 +3447,10 @@
     <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
     <target>KPI Tendance nécessite une colonne de date au format mois et une colonne numérique</target>
   </trans-unit>
+  <trans-unit id="chartInfoKpiDeviation">
+    <source>KPI Desviación necesita dos columnas numéricas: valor actual y valor de referencia</source>
+    <target>KPI Déviation nécessite deux colonnes numériques : valeur actuelle et valeur de référence</target>
+  </trans-unit>
   <trans-unit id="trendTitleYear"><source>Año actual</source><target>Année en cours</target></trans-unit>
   <trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Mois en cours</target></trans-unit>
   <trans-unit id="trendTitleWeek"><source>Semana actual</source><target>Semaine en cours</target></trans-unit>
@@ -3669,10 +3687,6 @@
     <target>Afficher les étiquettes sous forme de pourcentages</target>
   </trans-unit>
 
-  <trans-unit id="showUniqueColors">
-    <source>Activar Colores Únicos</source>
-    <target>Activer les couleurs uniques</target>
-  </trans-unit>
 
   <trans-unit id="showPointLines">
     <source>Mostrar Puntos en Líneas</source>
@@ -3775,7 +3789,12 @@
   <trans-unit id="ChangeDefaultsColors">
     <source>Color del los gráficos</source>
     <target>Couleur des graphismes</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="selectPalette">
+    <source>Seleccionar paleta</source>
+    <target>Sélectionner la palette</target>
+  </trans-unit>
 
   <trans-unit id="properties">
     <source>Propiedades</source>
@@ -4047,6 +4066,10 @@
       <trans-unit id="chartTypesKPITrend">
         <source>KPI Tendencia</source>
         <target>KPI Tendance</target>
+      </trans-unit>
+      <trans-unit id="chartTypesKPIDeviation">
+        <source>KPI Desviación</source>
+        <target>KPI Déviation</target>
       </trans-unit>
 
   <trans-unit id="urlEditSaveError">
@@ -4797,6 +4820,26 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Afficher la légende</target>
 </trans-unit>
 
+<trans-unit id="internRadius">
+  <source>Radio Interno</source>
+  <target>Radio interne</target>
+</trans-unit>
+
+<trans-unit id="useGradient">
+  <source>Usar Gradiente</source>
+  <target>Utiliser un dégradé</target>
+</trans-unit>
+
+<trans-unit id="useRoundedBars">
+  <source>Redondear barras</source>
+  <target>Arrondir les barres</target>
+</trans-unit>
+
+<trans-unit id="chartRoundedBarsOptionDescription">
+  <source>Redondea la punta de las barras</source>
+  <target>Arrondit la pointe des barres</target>
+</trans-unit>
+
 <trans-unit id="chartLegendOptionDescription">
   <source>Muestra la leyenda del gráfico</source>
   <target>Afficher la légende du graphique</target>
@@ -4810,6 +4853,16 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="chartGridLinesOptionDescription">
   <source>Muestra u oculta las líneas guía del gráfico</source>
   <target>Afficher ou masquer les lignes de grille du graphique</target>
+</trans-unit>
+
+<trans-unit id="chartAnimation">
+  <source>Animar Gráfico</source>
+  <target>Animer le graphique</target>
+</trans-unit>
+
+<trans-unit id="chartAnimationOptionDescription">
+  <source>Anima la aparición de los datos al cargar el gráfico</source>
+  <target>Anime l'apparition des données lors du chargement du graphique</target>
 </trans-unit>
 
 <trans-unit id="histogramColum">
@@ -4837,9 +4890,9 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Il indique la valeur en pourcentage de chaque segment</target>
 </trans-unit>
 
-<trans-unit id="chartUniqueColorsOption">
-  <source>Asigna un color único a cada barra o elemento</source>
-  <target>Attribue une couleur unique à chaque barre ou élément</target>
+<trans-unit id="uniqueColorsTab">
+  <source> Colores Únicos </source>
+  <target> Couleurs uniques </target>
 </trans-unit>
 
 <trans-unit id="chartUniqueColorsOptionDescription">
@@ -5250,6 +5303,21 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="numValTrigAlert">
   <source>Valor numérico que activará la alerta</source>
   <target>Valeur numérique qui déclenchera l'alerte</target>
+</trans-unit>
+
+<trans-unit id="thresholdValuePercent">
+  <source>Valor umbral (%)</source>
+  <target>Valeur seuil (%)</target>
+</trans-unit>
+
+<trans-unit id="deviationPercTrigAlert">
+  <source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
+  <target>% d'écart qui déclenchera l'alerte (ex: -10 = lorsque l'écart est inférieur à -10%)</target>
+</trans-unit>
+
+<trans-unit id="whenKpiDeviationIs">
+  <source>Cuando el % es</source>
+  <target>Quand le % est</target>
 </trans-unit>
 
 <trans-unit id="textChangeColor">
@@ -6273,6 +6341,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Muestra la predicción de la serie</source>
         <target>Afficher la prédiction de la série</target>
       </trans-unit>
+      <trans-unit id="colorsTab">
+        <source> Colores </source>
+        <target> Couleurs </target>
+      </trans-unit>
       <trans-unit id="gradientTab">
         <source>Colores por intervalo</source>
         <target>Couleurs par intervalle</target>
@@ -6649,12 +6721,16 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Quels tableaux de bord ai-je ?</target>
       </trans-unit>
       <trans-unit id="chatSuggestion2" datatype="html">
-        <source>¿Qué datasources hay?</source>
-        <target>Quels datasources sont disponibles ?</target>
+        <source>¿Qué fuentes de datos hay?</source>
+        <target>Quelles sont les sources de données?</target>
       </trans-unit>
       <trans-unit id="chatSuggestion3" datatype="html">
         <source>Estado del servidor</source>
         <target>État du serveur</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion4" datatype="html">
+        <source>¿Qué informes tengo disponibles?</source>
+        <target>Quels rapports sont disponibles pour moi?</target>
       </trans-unit>
       <trans-unit id="chatInputPlaceholder" datatype="html">
         <source>Escribe un mensaje...</source>
@@ -6796,6 +6872,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Navegar</source>
         <target>Parcourir</target>
       </trans-unit>
+      <trans-unit id="resultSortingText" datatype="html">
+        <source>Ordenar los resultados por:</source>
+        <target>Trier les résultats par:</target>
+      </trans-unit>
+      <trans-unit id="draggResultSorting" datatype="html">
+        <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
+        <target>Faites glisser ici les attributs selon lesquels vous souhaitez trier</target>
+      </trans-unit>
       <trans-unit id="noDuckDbFile">
         <source>Debe cargar un archivo CSV primero</source>
         <target>Vous devez charger un fichier CSV d&apos;abord</target>
@@ -6927,6 +7011,66 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="holdedCreated">
         <source>Fuente de datos Holded creada correctamente</source>
         <target>Source de données Holded créée avec succès</target>
+      </trans-unit>
+      <trans-unit id="multipleSelectionText">
+        <source>Selección múltiple</source>
+        <target>Sélection multiple</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionText">
+        <source>Selección única</source>
+        <target>Sélection unique</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionDescription">
+        <source>Active esta opción para permitir la selección múltiple.</source>
+        <target>Activez cette option pour autoriser la sélection multiple.</target>
+      </trans-unit>      
+      <trans-unit id="multipleSelectionDescription">
+        <source>Desactive esta opción para permitir la selección única.</source>
+        <target>Désactivez cette option pour autoriser une sélection unique.</target>
+      </trans-unit>
+      <trans-unit id="enablePanelLockButton">
+        <source>Bloquear los paneles</source>
+        <target>Verrouiller les panneaux</target>
+      </trans-unit>
+      <trans-unit id="disablePanelLockButton">
+        <source>Desbloquear los paneles</source>
+        <target>Déverrouiller les panneaux</target>
+      </trans-unit>
+      <trans-unit id="noAttributes">
+        <source>Sin atributos</source>
+        <target>Sans attributs</target>
+      </trans-unit>
+      <trans-unit id="noFilters">
+        <source>Sin filtros</source>
+        <target>Sans filtres</target>
+      </trans-unit>
+      <trans-unit id="aiDashboardDescription">
+        <source>(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.</source>
+        <target>(Optionnel) Décrivez les panneaux que vous souhaitez générer avec l'IA. Exemple : ventes par mois en barres, top clients par montant, KPI de facturation totale.</target>
+      </trans-unit>
+      <trans-unit id="aiGeneratingDashboard">
+        <source>Generando dashboard con IA...</source>
+        <target>Génération du tableau de bord avec l'IA...</target>
+      </trans-unit>
+      <trans-unit id="otherRecipients">
+        <source>Otros destinatarios:</source>
+        <target>Autres destinataires :</target>
+      </trans-unit>
+      <trans-unit id="otherRecipientsHint">
+        <source>(separados por un espacio)</source>
+        <target>(séparés par un espace)</target>
+      </trans-unit>
+      <trans-unit id="otherRecipientsPlaceholder">
+        <source>correo1@dominio.com correo2@dominio.com</source>
+        <target>email1@domaine.com email2@domaine.com</target>
+      </trans-unit>
+      <trans-unit id="sendToSummary">
+        <source>Enviar a:</source>
+        <target>Envoyer à :</target>
+      </trans-unit>
+      <trans-unit id="kpiMailConfigTitle">
+        <source>Configuración de la alerta KPI por email</source>
+        <target>Configuration de l'alerte KPI par email</target>
       </trans-unit>
     </body>
   </file>

@@ -40,11 +40,16 @@ export class MailingService {
       let dashboardsToUpdate: any[] = [];
       /**Check alerts  */
       alerts.forEach((alert) => {
-        let shouldUpdate = true;
-        console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${alert.value.mailing.units} | lastUpdated: ${alert.value.mailing.lastUpdated} | shouldUpdate: ${shouldUpdate}`);
-                // para validar se puede forzar la variable. 
+        console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${alert.value.mailing.units} | lastUpdated: ${alert.value.mailing.lastUpdated}S`);
+        // para validar se puede forzar la variable. 
         // console.log('Forzado del should upddate.....')
         // shouldUpdate = true;
+        const mailing = alert.value.mailing;
+        const shouldUpdate = mailing.units === 'days'
+          ? SchedulerFunctions.checkScheduleDays(mailing.quantity, mailing.hours, mailing.minutes, mailing.lastUpdated)
+          : SchedulerFunctions.checkScheduleHours(mailing.quantity, mailing.lastUpdated);
+
+        console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${mailing.units} | lastUpdated: ${mailing.lastUpdated} | shouldUpdate: ${shouldUpdate}`);
         if (shouldUpdate) {
           MailingService.mailAlertsSending(alert, transporter, senderEmail);
           if (updateTimestamp) {
@@ -77,14 +82,17 @@ export class MailingService {
 
       dashboards.forEach(dashboard => {
         const cfg = dashboard.config.sendViaMailConfig;
-        const userMails = cfg.users.map((user: any) => user.email);
+        const registeredMails = (cfg.users || []).map((user: any) => user.email);
+        const manualMails = (cfg.otherRecipients || '').split(/\s+/).map((m: string) => m.trim()).filter((m: string) => m.length > 0);
+        const userMails: string[] = Array.from(new Set([...registeredMails, ...manualMails]));
         const dashboardID: string = dashboard._id.toString();
-        let shouldUpdate = true;
 
         const now = SchedulerFunctions.totLocalISOTime(new Date());
-        const nextSend = new Date(Date.parse(cfg.lastUpdated) + cfg.quantity * 60 * 60000);
-        console.log(`[MailingService] dashboard: "${dashboard.config.title}" | ahora: ${now} | lastUpdated: ${cfg.lastUpdated} | proxEnvio: ${SchedulerFunctions.totLocalISOTime(nextSend)} | shouldUpdate: ${shouldUpdate} | recipients: ${userMails.join(', ')}`);
-        
+        console.log(`[MailingService] dashboard: "${dashboard.config.title}" | ahora: ${now} | lastUpdated: ${cfg.lastUpdated} | recipients: ${userMails.join(', ')}`);
+        const shouldUpdate = cfg.units === 'days'
+          ? SchedulerFunctions.checkScheduleDays(cfg.quantity, cfg.hours, cfg.minutes, cfg.lastUpdated)
+          : SchedulerFunctions.checkScheduleHours(cfg.quantity, cfg.lastUpdated);
+
         //  console.log('Forzado del should upddate de los dashboards.....');
         //  shouldUpdate = true;
 
@@ -154,8 +162,11 @@ export class MailingService {
       let condition = MailingService.compareValues(result, alert.value.value, alert.value.operand);
       console.log(`[MailingService] alerta KPI | resultado: ${result} | condición: ${result} ${alert.value.operand} ${alert.value.value} = ${condition} | destinatario: ${user.email}`);
 
+      // The root index.html does a client-side locale redirect (e.g. "/" -> "/es/") that
+      // breaks hash-based deep links, so link straight to the locale-prefixed URL.
+      const locale = mailConfig.locale || 'es';
       const appBase = mailConfig.server_baseURL.replace(/\/?$/, '/');
-      const dashboardLink = `${appBase}#/dashboard/${alert.query.dashboard.dashboard_id}`;
+      const dashboardLink = `${appBase}${locale}/#/dashboard/${alert.query.dashboard.dashboard_id}`;
 
       let text = `${alert.value.mailing.mailMessage}\n-------------------------------------------- \n\n` +
         `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${dashboardLink}`

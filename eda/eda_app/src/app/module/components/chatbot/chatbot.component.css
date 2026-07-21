@@ -484,4 +484,40 @@
 .chat-textarea { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* ---- Utility ---- */
-.text-corporate-primary { color: var(--corporate-primary); }
+.text-corporate-primary  { color: var(--corporate-primary); }
+.bg-corporate-primary    { background: var(--corporate-primary); }
+.border-corporate-primary { border-color: var(--corporate-primary); }
+
+/* ---- Mobile backdrop ---- */
+.chat-mobile-backdrop {
+  display: none;
+}
+
+/* ---- Mobile: overlay chat at 80vw ---- */
+@media (max-width: 640px) {
+  .chat-mobile-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 99;
+    animation: fadeIn 0.2s ease both;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .chat-panel--open {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 80vw;
+    z-index: 100;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.18);
+  }
+
+  .chat-panel--open > div {
+    width: 80vw !important;
+  }
+}

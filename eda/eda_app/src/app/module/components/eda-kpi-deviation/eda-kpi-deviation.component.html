@@ -1,0 +1,70 @@
+<div class="absolute inset-0 flex flex-col justify-center overflow-hidden"
+     [style.background-color]="inject?.backgroundColor || null"
+     style="padding: 10px 14px;">
+
+  <!-- Header label -->
+  <div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;
+              margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+    {{ displayHeader }}
+  </div>
+
+  <!-- Main value (with prefix image if set) -->
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;min-width:0;" [ngStyle]="getContainerStyle()">
+    @if(inject?.prefixImage) {
+      <img [src]="inject.prefixImage" style="height:1em;width:auto;object-fit:contain;flex-shrink:0;" />
+    }
+    <div class="font-bold" [ngStyle]="getValueStyle()"
+         style="line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+      {{ formatValue(displayValue) }}
+    </div>
+  </div>
+
+  <!-- Percentage delta -->
+  @if(displayVsPercent !== null) {
+    <div style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:700;margin-bottom:12px;"
+         [style.color]="fillColor">
+      <span>{{ isPositive ? '▲' : '▼' }}</span>
+      <span>{{ (isPositive ? '+' : '') }}{{ displayVsPercent | number:'1.1-1':'es' }}%</span>
+    </div>
+  }
+
+  <!-- Deviation bar -->
+  @if(displayVsPercent !== null) {
+    <div style="position:relative;">
+
+      <!-- Track (soft tint of the fill color) -->
+      <div style="position:relative;height:6px;border-radius:3px;"
+           [style.background-color]="trackColor">
+
+        <!-- Fill (from 0 to the value position) -->
+        <div style="position:absolute;top:0;height:100%;border-radius:3px;transition:left 0.4s,width 0.4s;"
+             [style.left]="barFillLeft + '%'"
+             [style.width]="barFillWidth + '%'"
+             [style.background-color]="fillColor">
+        </div>
+
+        <!-- Marker at the value position -->
+        <div style="position:absolute;top:-7px;transform:translateX(-50%);
+                    font-size:7px;line-height:1;pointer-events:none;"
+             [style.left]="markerLeft + '%'"
+             [style.color]="fillColor">
+          ▼
+        </div>
+
+      </div>
+
+      <!-- Labels: 0 at the boundary side, scale at the opposite side -->
+      <div style="display:flex;justify-content:space-between;margin-top:4px;">
+        @if (isPositive) {
+          <span style="font-size:8px;color:#999;font-weight:600;">0</span>
+          <span style="font-size:8px;color:#bbb;">+{{ barScale }}%</span>
+        } @else {
+          <span style="font-size:8px;color:#bbb;">-{{ barScale }}%</span>
+          <span style="font-size:8px;color:#999;font-weight:600;">0</span>
+        }
+      </div>
+
+    </div>
+  }
+
+</div>

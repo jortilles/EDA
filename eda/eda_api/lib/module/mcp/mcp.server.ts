@@ -229,7 +229,7 @@ export function createMcpServer(requestUser?: any) {
                 const lines = visibleDs.map((ds: any) => {
                     const link = baseUrl ? ` — ${baseUrl}/data-source/${encodeURIComponent(ds._id)}` : '';
                     const desc = ds.model_description ? ` — ${ds.model_description}` : '';
-                    return `  - ${ds.model_name ?? '(sin nombre)'}${desc}${link}`;
+                    return `  - ${ds.model_name ?? '(sin nombre)'} [datasource_id: ${ds._id}]${desc}${link}`;
                 });
                 if (hiddenDsCount > 0) {
                     lines.push(`\n_(Nota: existen ${hiddenDsCount} modelo(s) de datos adicionales en el sistema a los que no tengo acceso.)_`);
@@ -425,7 +425,7 @@ export function createMcpServer(requestUser?: any) {
             description: 'Searches EDA dashboards for panels with data relevant to a question. WITHOUT dashboard_id: exploration mode — returns a structured catalogue of options (panel, datasource, active filters) for the assistant to present to the user. WITH dashboard_id: data mode — runs the panel queries and returns the response model with real data + source.',
             inputSchema: {
                 question:           z.string().describe('The user\'s question about the data they want to query'),
-                campos_requeridos:  z.array(z.string()).optional().describe('Keyword fields that must appear in the panel (e.g. ["country","credit"]). In exploration mode, only panels where at least 50% of the keywords are present are returned (partial match, case-insensitive). The assistant must infer these keywords from the user\'s question. Always include translations in Spanish, Catalan, and English.'),
+                campos_requeridos:  z.array(z.union([z.string(), z.array(z.string())])).optional().describe('Concept groups to filter panels. Each element is either a string or an array of synonyms/translations (e.g. [["vendes","sales","ventas"],["país","country","país"]]). A group matches if ANY of its variants appear in the panel — and counts as ONE keyword. Use grouped format to avoid diluting the match ratio with multi-language variants.'),
                 dashboard_id:       z.string().optional().describe('Dashboard ID to query (optional). If not provided, the catalogue of available options is listed.'),
                 panel_index:        z.number().optional().describe('Panel index within the dashboard (0-based). If omitted, all panels in the dashboard are run.'),
                 datasource_id:      z.string().optional().describe('Datasource ID for direct query (fallback mode). Use ONLY when no panels were found in dashboards and a direct datasource query is needed.'),
@@ -448,9 +448,15 @@ export function createMcpServer(requestUser?: any) {
             console.log('[MCP] get_data_from_dashboard - sin_agregacion:', args?.sin_agregacion ?? '(no proporcionado)');
             const { question, dashboard_id, panel_index, campos_requeridos, datasource_id, campos_consulta,
                     ordenar_campo, ordenar_direccion, limite_filas, sin_agregacion } = args;
-            const camposLower: string[] = Array.isArray(campos_requeridos)
-                ? campos_requeridos.map((c: string) => c.toLowerCase())
+            // Each element can be a string or a group of synonyms/translations.
+            // camposGrupos: one entry per concept — used for ratio calculation.
+            // camposLower:  flat list — used for fallback term matching and log messages.
+            const camposGrupos: string[][] = Array.isArray(campos_requeridos)
+                ? campos_requeridos.map((c: any) =>
+                    Array.isArray(c) ? c.map((s: string) => s.toLowerCase()) : [String(c).toLowerCase()]
+                )
                 : [];
+            const camposLower: string[] = camposGrupos.flat();
 
             try {
                 const user = await resolveUser(requestUser);
@@ -633,8 +639,7 @@ export function createMcpServer(requestUser?: any) {
                                 throw new Error('El usuario no tiene permiso para ver los datos de este panel.');
                             }
                             const allRows: any[][] = Array.isArray(responseRows) ? responseRows.filter((r: any) => Array.isArray(r) && r.length > 0) : [];
-                            const rows = allRows;
-                            console.log(`[MCP] panel ${idx} — rows: ${allRows.length} (mostrando ${rows.length}) | labels: ${(responseLabels ?? []).join(', ')}`);
+                            console.log(`[MCP] panel ${idx} — rows: ${allRows.length} | labels: ${(responseLabels ?? []).join(', ')}`);
 
                             const displayNameMap = new Map<string, string>();
                             (innerQuery.fields ?? []).forEach((f: any) => {
@@ -645,8 +650,8 @@ export function createMcpServer(requestUser?: any) {
                                 (lbl: string) => displayNameMap.get(lbl) ?? lbl
                             );
 
-                            if (rows.length > 0) {
-                                const barChart = generateBarChart(columnas, rows);
+                            if (allRows.length > 0) {
+                                const barChart = generateBarChart(columnas, allRows);
                                 resultados.push({
                                     panel_index: idx,
                                     panel_titulo: panel.title ?? '(sin título)',
@@ -655,7 +660,7 @@ export function createMcpServer(requestUser?: any) {
                                     filtros_activos: filterSummary,
                                     tiene_filtros: activeFilters.length > 0,
                                     modelo_datos: accessibleDsIds.get(modelId) ?? modelId,
-                                    datos: { columnas, filas: rows, total_filas: allRows.length, truncado: allRows.length > 10 },
+                                    datos: { columnas, filas: allRows, total_filas: allRows.length, truncado: allRows.length > 10 },
                                     ...(barChart ? { grafico_barras: barChart } : {}),
                                 });
                             } else {
@@ -698,8 +703,10 @@ export function createMcpServer(requestUser?: any) {
 
                 // ── MODO FALLBACK: datasource_id sin dashboard_id ──────────────────────
                 if (datasource_id) {
-                    console.log('[MCP][FALLBACK] ═══════════════════════════════════════');
-                    console.log('[MCP][FALLBACK] INICIO MODO FALLBACK');
+                    console.log('');
+                    console.log('[MCP] ════════════════════════════════════════════════');
+                    console.log('[MCP] ▶▶▶ EJECUTANDO CONSULTA DIRECTA A BASE DE DATOS');
+                    console.log('[MCP] ════════════════════════════════════════════════');
                     console.log('[MCP][FALLBACK] datasource_id:', datasource_id);
                     console.log('[MCP][FALLBACK] question:', question);
                     console.log('[MCP][FALLBACK] campos_consulta recibidos:', JSON.stringify(campos_consulta));
@@ -864,12 +871,15 @@ export function createMcpServer(requestUser?: any) {
 
                 // ── MODO EXPLORACIÓN: sin dashboard_id ─────────────────────────────────
                 console.log('[MCP] get_data_from_dashboard - MODO EXPLORACIÓN');
-                const { privados, grupo, comunes, publicos } = await getAllDashboards(user._id.toString());
-                const allDashboards = [...privados, ...grupo, ...comunes, ...publicos];
-                console.log('[MCP] exploración — dashboards:', allDashboards.length);
 
-                const accessibleDsIds = await getCachedAccessibleDsIds(user);
-                console.log('[MCP] exploración — datasources accesibles:', accessibleDsIds.size);
+                // Phase 1 — two independent calls in parallel
+                const t0 = Date.now();
+                const [{ privados, grupo, comunes, publicos }, accessibleDsIds] = await Promise.all([
+                    getAllDashboards(user._id.toString()),
+                    getCachedAccessibleDsIds(user),
+                ]);
+                const allDashboards = [...privados, ...grupo, ...comunes, ...publicos];
+                console.log('[MCP] exploración — dashboards:', allDashboards.length, '| datasources accesibles:', accessibleDsIds.size, `| fase1: ${Date.now() - t0}ms`);
 
                 const dsSchemaCache = new Map<string, any>();
                 const getDsSchema = async (modelId: string): Promise<any> => {
@@ -886,9 +896,9 @@ export function createMcpServer(requestUser?: any) {
                 };
 
                 const visibleColsCache = new Map<string, Set<string> | null>();
-                const getVisibleCols = async (modelId: string): Promise<Set<string> | null> => {
+                const getVisibleCols = (modelId: string): Set<string> | null => {
                     if (visibleColsCache.has(modelId)) return visibleColsCache.get(modelId)!;
-                    const schema = await getDsSchema(modelId);
+                    const schema = dsSchemaCache.get(modelId);
                     if (!schema?.tables) { visibleColsCache.set(modelId, null); return null; }
                     const cols = new Set<string>(
                         ([] as string[]).concat(
@@ -901,12 +911,21 @@ export function createMcpServer(requestUser?: any) {
                     return cols;
                 };
 
+                // Phase 2 — bulk dashboard load + all schema pre-loads in parallel
+                const t1 = Date.now();
                 const allIds = allDashboards.map((d: any) => d._id);
-                const docs = await Dashboard.find({ _id: { $in: allIds } }).exec();
+                const [docs] = await Promise.all([
+                    Dashboard.find({ _id: { $in: allIds } }).exec(),
+                    Promise.all([...accessibleDsIds.keys()].map(dsId => getDsSchema(dsId))),
+                ]);
                 const docById = new Map(docs.map((doc: any) => [doc._id.toString(), doc]));
                 const fullDashboards = allDashboards.map((d: any) => docById.get(d._id.toString()) ?? null);
+                console.log(`[MCP] exploración — fase2 (dashboards+schemas): ${Date.now() - t1}ms`);
 
                 const opcionesMap = new Map<string, any>();
+
+                // Defined here so it's available in both the pre-filter loop and the scoring section below.
+                const normQ = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
                 for (let di = 0; di < allDashboards.length; di++) {
                     const d = allDashboards[di];
@@ -943,8 +962,8 @@ export function createMcpServer(requestUser?: any) {
                             continue;
                         }
 
-                        const dsSchema = await getDsSchema(query.model_id);
-                        const visibleCols = await getVisibleCols(query.model_id);
+                        const dsSchema    = await getDsSchema(query.model_id);
+                        const visibleCols = getVisibleCols(query.model_id);
 
                         const visibleFields = visibleCols
                             ? fields.filter((f: any) => {
@@ -957,7 +976,8 @@ export function createMcpServer(requestUser?: any) {
                             continue;
                         }
 
-                        const fieldNames = visibleFields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
+                        const fieldNames     = visibleFields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
+                        const fieldNamesTech = visibleFields.map((f: any) => f.field_name ?? '').filter(Boolean);
 
                         const camposDescripciones: string[] = [];
                         const tablasDescripciones: string[] = [];
@@ -989,26 +1009,37 @@ export function createMcpServer(requestUser?: any) {
                         const rawPanelDesc = panel.description ?? panel.content?.description ?? '';
                         const panelDescStr: string = typeof rawPanelDesc === 'string' ? rawPanelDesc : (rawPanelDesc?.default ?? '');
                         console.log(`[META]   panelDescStr="${panelDescStr.substring(0, 100)}"`);
-                        if (camposLower.length > 0) {
-                            const fieldNamesLower = fieldNames.map((n: string) => n.toLowerCase());
-                            const allDescText = [...camposDescripciones, ...tablasDescripciones].join(' ').toLowerCase();
-                            const panelTitleLower = (panel.title ?? '').toLowerCase();
-                            const panelDescLower = panelDescStr.toLowerCase();
-                            const dashboardNameLower = (db.config?.title ?? '').toLowerCase();
+                        if (camposGrupos.length > 0) {
+                            // All display + technical field names, accent-normalised
+                            const allFieldNorms = [...fieldNames, ...fieldNamesTech].map(normQ);
+                            const allDescNorm   = normQ([...camposDescripciones, ...tablasDescripciones].join(' '));
+                            const titleNorm     = normQ(panel.title ?? '');
+                            const descNorm      = normQ(panelDescStr);
+                            const dashNorm      = normQ(db.config?.title ?? '');
+                            // Count matched concept groups (not individual keywords).
+                            // A group matches if ANY of its variants is found anywhere in the panel metadata.
                             let matchCount = 0;
-                            for (const kw of camposLower) {
-                                const inField      = fieldNamesLower.some((fn: string) => fn.includes(kw));
-                                const inColDesc    = allDescText.includes(kw);
-                                const inPanelTitle = panelTitleLower.includes(kw);
-                                const inPanelDesc  = panelDescLower.includes(kw);
-                                const inDashboard  = dashboardNameLower.includes(kw);
-                                const matched = inField || inColDesc || inPanelTitle || inPanelDesc || inDashboard;
-                                if (matched) matchCount++;
-                                console.log(`[META]   kw="${kw}" → field:${inField} colDesc:${inColDesc} panelTitle:${inPanelTitle} panelDesc:${inPanelDesc} dashboard:${inDashboard} ✔:${matched}`);
+                            for (const group of camposGrupos) {
+                                const groupMatched = group.some(kw => {
+                                    const kwN = normQ(kw);
+                                    return allFieldNorms.some((fn: string) => fn.includes(kwN))
+                                        || allDescNorm.includes(kwN)
+                                        || titleNorm.includes(kwN)
+                                        || descNorm.includes(kwN)
+                                        || dashNorm.includes(kwN);
+                                });
+                                if (groupMatched) matchCount++;
+                                console.log(`[META]   grupo=[${group.join('|')}] ✔:${groupMatched}`);
                             }
-                            const matchRatio = matchCount / camposLower.length;
-                            if (matchRatio < 0.5) {
-                                console.log(`[META]   → SALTADO por pre-filtro (${(matchRatio*100).toFixed(0)}% < 50%) | dashboard=${db.config?.title}, idx=${idx}`);
+                            const matchRatio = matchCount / camposGrupos.length;
+                            // A group hitting the dashboard name or panel title is a strong signal —
+                            // pass the panel regardless of overall ratio.
+                            const strongSignal = camposLower.some(kw => {
+                                const kwN = normQ(kw);
+                                return titleNorm.includes(kwN) || dashNorm.includes(kwN);
+                            });
+                            if (matchRatio < 0.25 && !strongSignal) {
+                                console.log(`[META]   → SALTADO por pre-filtro (${(matchRatio*100).toFixed(0)}% < 25%, sin señal fuerte) | dashboard=${db.config?.title}, idx=${idx}`);
                                 continue;
                             }
                             console.log(`[META]   → PASA pre-filtro (${(matchRatio*100).toFixed(0)}%) | dashboard=${db.config?.title}, idx=${idx}`);
@@ -1044,6 +1075,7 @@ export function createMcpServer(requestUser?: any) {
                                 panel_descripcion:     panelDescStr,
                                 datasource_nombre:     accessibleDsIds.get(query.model_id) ?? null,
                                 campos:                fieldNames,
+                                campos_tecnicos:       fieldNamesTech,
                                 campos_descripciones:  camposDescripciones,
                                 tablas_descripciones:  tablasDescripciones,
                                 tiene_filtros:         activeFilters.length > 0,
@@ -1059,21 +1091,22 @@ export function createMcpServer(requestUser?: any) {
                 const MAX_OPTIONS = 5;
 
                 const questionWords = (question ?? '').toLowerCase().split(/\s+/).filter((w: string) => w.length >= 3);
-                const normQ = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
                 const fuzzyContains = (haystack: string, needle: string): boolean => {
                     const nh = normQ(haystack); const nn = normQ(needle);
                     return nh.includes(nn) || nn.includes(nh);
                 };
                 const kwMatch = (text: string): number => {
-                    if (!text || camposLower.length === 0) return 0;
-                    return camposLower.filter(kw => fuzzyContains(text, kw)).length / camposLower.length;
+                    if (!text || camposGrupos.length === 0) return 0;
+                    return camposGrupos.filter(group =>
+                        group.some(kw => fuzzyContains(text, kw))
+                    ).length / camposGrupos.length;
                 };
                 const questionMatch = (text: string): number => {
                     if (!text || questionWords.length === 0) return 0;
                     return questionWords.filter((w: string) => fuzzyContains(text, w)).length / questionWords.length;
                 };
                 const scoreOption = (o: any): number => {
-                    if (camposLower.length === 0) {
+                    if (camposGrupos.length === 0) {
                         const titleQ = questionMatch(o.panel_titulo ?? '');
                         const descQ  = questionMatch(o.panel_descripcion ?? '');
                         const dashQ  = questionMatch(o.dashboard_nombre ?? '');
@@ -1081,21 +1114,23 @@ export function createMcpServer(requestUser?: any) {
                         const noFilterBonus = (textScore > 0 && !o.tiene_filtros) ? 0.1 : 0;
                         return textScore + noFilterBonus;
                     }
-                    const fieldNamesLower: string[] = (o.campos as string[]).map((n: string) => n.toLowerCase());
-                    const titleScore      = kwMatch(o.panel_titulo ?? '');
-                    const datasourceScore = kwMatch(o.datasource_nombre ?? '');
-                    const dashboardScore  = kwMatch(o.dashboard_nombre ?? '');
+                    // All field names (display + technical), normalised — used for field-level matching
+                    const allFieldNorms: string[] = [
+                        ...(o.campos         as string[]),
+                        ...(o.campos_tecnicos as string[] ?? []),
+                    ].map(normQ);
+                    const titleScore       = kwMatch(o.panel_titulo ?? '');
+                    const datasourceScore  = kwMatch(o.datasource_nombre ?? '');
+                    const dashboardScore   = kwMatch(o.dashboard_nombre ?? '');
                     const descriptionScore = kwMatch(o.panel_descripcion ?? '');
-                    const fieldDescScore  = kwMatch((o.campos_descripciones ?? []).join(' '));
-                    const tableDescScore  = kwMatch((o.tablas_descripciones ?? []).join(' '));
-                    const exactFieldScore = camposLower.filter(kw =>
-                        fieldNamesLower.some(fn => fn === kw)
-                    ).length / camposLower.length;
-                    const coveredFields = fieldNamesLower.filter(fn =>
-                        camposLower.some(kw => fn.includes(kw))
-                    ).length;
-                    const fieldPrecision = fieldNamesLower.length > 0 ? coveredFields / fieldNamesLower.length : 0;
-                    const textTotal = descriptionScore * 4 + titleScore * 3 + fieldDescScore * 2.5 + tableDescScore * 2 + datasourceScore * 2 + dashboardScore * 1.5 + exactFieldScore * 2 + fieldPrecision;
+                    const fieldDescScore   = kwMatch((o.campos_descripciones ?? []).join(' '));
+                    const tableDescScore   = kwMatch((o.tablas_descripciones ?? []).join(' '));
+                    // Fraction of keywords that fuzzy-match any field name (display or technical).
+                    // Replaces the old exactFieldScore (strict equality, always 0) and fieldPrecision (wrong direction).
+                    const fieldMatchScore = camposGrupos.filter(group =>
+                        group.some(kw => allFieldNorms.some(fn => fn.includes(normQ(kw)) || normQ(kw).includes(fn)))
+                    ).length / camposGrupos.length;
+                    const textTotal = descriptionScore * 4 + titleScore * 3 + fieldDescScore * 2.5 + tableDescScore * 2 + datasourceScore * 2 + dashboardScore * 3 + fieldMatchScore * 3;
                     const noFilterBonus = (textTotal > 0 && !o.tiene_filtros) ? 0.2 : 0;
                     return textTotal + noFilterBonus;
                 };
@@ -1109,15 +1144,21 @@ export function createMcpServer(requestUser?: any) {
                     console.log(`[MCP] exploración — score=${s.toFixed(3)} | dashboard="${o.dashboard_nombre}" | panel="${o.panel_titulo}" | campos=[${(o.campos ?? []).join(', ')}] | datasource="${o.datasource_nombre}"`);
                 });
 
+                // Panels scoring above MIN_RELEVANCE are shown as options.
+                // Panels between BORDERLINE_RELEVANCE and MIN_RELEVANCE are included as lower-confidence options
+                // rather than silently discarded in favour of the direct-datasource fallback.
+                const MIN_RELEVANCE        = 0.5;
+                const BORDERLINE_RELEVANCE = 0.3;
                 const maxScore = scored.length > 0 ? scored[0].s : 0;
                 let opcionesArr = maxScore > 0
                     ? scored.filter(x => x.s > 0).map(x => x.o)
                     : scored.map(x => x.o);
 
-                const sinResultadosRelevantes = maxScore === 0 && (camposLower.length > 0 || questionWords.length >= 2);
-                console.log('[MCP] exploración — maxScore:', maxScore, '| sinResultadosRelevantes:', sinResultadosRelevantes);
+                const sinResultadosRelevantes = maxScore < BORDERLINE_RELEVANCE && (camposGrupos.length > 0 || questionWords.length >= 2);
+                const esBorderline = maxScore >= BORDERLINE_RELEVANCE && maxScore < MIN_RELEVANCE;
+                console.log('[MCP] exploración — maxScore:', maxScore.toFixed(3), '| MIN_RELEVANCE:', MIN_RELEVANCE, '| BORDERLINE:', BORDERLINE_RELEVANCE, '| sinRelevantes:', sinResultadosRelevantes, '| borderline:', esBorderline);
                 if (sinResultadosRelevantes) {
-                    console.log('[MCP] exploración — sin resultados relevantes (maxScore=0), activando fallback hacia datasource | opciones descartadas:', scored.length);
+                    console.log('[MCP] exploración — relevancia insuficiente (<', BORDERLINE_RELEVANCE, '), descartando opciones | descartadas:', scored.length);
                     opcionesArr = [];
                 }
 
@@ -1127,34 +1168,31 @@ export function createMcpServer(requestUser?: any) {
                     const { campos_descripciones: _cd, tablas_descripciones: _td, ...rest } = o;
                     return { ...rest, opcion_num: i + 1 };
                 });
-                console.log('[MCP] MODO EXPLORACIÓN finalizado | opciones únicas:', totalOpciones, truncada ? `(top ${MAX_OPTIONS} por relevancia)` : '');
+                console.log('[MCP] MODO EXPLORACIÓN finalizado | opciones:', totalOpciones, truncada ? `(top ${MAX_OPTIONS})` : '');
+
+                // Always search for fallback datasources — not only when opcionesArr is empty.
+                // This lets the AI fall back to a direct SQL query even when low-relevance panels exist.
+                const fallbackTerms = camposLower.length > 0
+                    ? camposLower
+                    : questionWords.filter((w: string) => w.length >= 4);
 
                 let fallbackSugerencias: any[] = [];
-                if (opcionesArr.length === 0) {
-                    const fallbackTerms = camposLower.length > 0
-                        ? camposLower
-                        : questionWords.filter((w: string) => w.length >= 4);
-                    console.log('[MCP] fallback — iniciando búsqueda | términos:', fallbackTerms, '| datasources a revisar:', accessibleDsIds.size);
-                    const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-                    const stem = (s: string) => {
-                        if (s.length > 6 && s.endsWith('es')) return s.slice(0, -2);
-                        if (s.length > 5 && s.endsWith('s'))  return s.slice(0, -1);
-                        return s;
-                    };
+                if (fallbackTerms.length > 0) {
+                    console.log('[MCP] fallback — buscando datasources | términos:', fallbackTerms, '| total ds:', accessibleDsIds.size);
+                    const norm      = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+                    const stem      = (s: string) =>
+                        s.length > 6 && s.endsWith('es') ? s.slice(0, -2) :
+                        s.length > 5 && s.endsWith('s')  ? s.slice(0, -1) : s;
                     const flexMatch = (a: string, b: string): boolean => {
                         const na = norm(a); const nb = norm(b);
                         if (na.includes(nb) || nb.includes(na)) return true;
-                        const sa = stem(na); const sb = stem(nb);
-                        return sa.includes(sb) || sb.includes(sa);
+                        return stem(na).includes(stem(nb)) || stem(nb).includes(stem(na));
                     };
-                    const normTerms = fallbackTerms.map(norm);
-                    console.log('[MCP] fallback — términos normalizados:', normTerms);
+
                     for (const [dsId, dsName] of accessibleDsIds) {
                         const schema = await getDsSchema(dsId);
-                        if (!schema?.tables) {
-                            console.log('[MCP] fallback — ds sin schema saltado:', dsName);
-                            continue;
-                        }
+                        if (!schema?.tables) continue;
+
                         const allDsCols: string[] = ([] as string[]).concat(
                             ...(schema.tables as any[]).map((t: any) =>
                                 (t.columns ?? []).map((c: any) => c.column_name ?? c.name ?? '') as string[]
@@ -1162,48 +1200,82 @@ export function createMcpServer(requestUser?: any) {
                         ).filter(Boolean);
                         const allTableNames: string[] = (schema.tables as any[])
                             .map((t: any) => t.table_name ?? t.name ?? '').filter(Boolean);
-                        const dsNameMatch    = fallbackTerms.some((kw: string) => flexMatch(dsName, kw));
-                        const matchingCols   = fallbackTerms.length > 0 ? allDsCols.filter(cn => fallbackTerms.some((kw: string) => flexMatch(cn, kw))) : [];
-                        const matchingTables = fallbackTerms.length > 0 ? allTableNames.filter(tn => fallbackTerms.some((kw: string) => flexMatch(tn, kw))) : [];
-                        const tableMatch     = matchingTables.length > 0;
-                        const coveredTermCount = fallbackTerms.filter((kw: string) =>
+
+                        const dsNameMatch  = fallbackTerms.some((kw: string) => flexMatch(dsName, kw));
+                        const matchingCols = allDsCols.filter(cn => fallbackTerms.some((kw: string) => flexMatch(cn, kw)));
+                        const matchingTabs = allTableNames.filter(tn => fallbackTerms.some((kw: string) => flexMatch(tn, kw)));
+
+                        // Description words — datasources have an explicit description field meant for AI matching
+                        const dsDescRaw: string = norm(schema.model_description ?? '');
+                        const dsDescWords: string[] = dsDescRaw.split(/\s+/).filter(Boolean);
+                        const dsDescMatch = fallbackTerms.some((kw: string) => dsDescWords.some(w => flexMatch(w, kw)));
+
+                        const coveredTerms = fallbackTerms.filter((kw: string) =>
                             allDsCols.some(cn => flexMatch(cn, kw)) ||
                             allTableNames.some(tn => flexMatch(tn, kw)) ||
-                            flexMatch(dsName, kw)
+                            flexMatch(dsName, kw) ||
+                            dsDescWords.some(w => flexMatch(w, kw))
                         ).length;
-                        const requiredMatches = Math.max(1, Math.ceil(fallbackTerms.length / 2));
-                        console.log(`[MCP] fallback — ds "${dsName}" | dsNameMatch:${dsNameMatch} | tablas: [${allTableNames.join(', ')}] | cols match: [${matchingCols.join(', ')}] | table match: [${matchingTables.join(', ')}] | covered: ${coveredTermCount}/${fallbackTerms.length} (req: ${requiredMatches})`);
-                        if ((matchingCols.length > 0 || tableMatch || dsNameMatch) && coveredTermCount >= requiredMatches) {
+
+                        // Datasource criterion differs from dashboards: name and description are "intent signals"
+                        // — if either matches, lower the threshold by 1 so a ds like "Asistentes" (desc: "asistentes datolada")
+                        // is not discarded just because multilingual keyword variants inflate the term list.
+                        const baseRequired = Math.max(1, Math.ceil(fallbackTerms.length / 4));
+                        const requiredMatches = (dsNameMatch || dsDescMatch) ? Math.max(1, baseRequired - 1) : baseRequired;
+
+                        console.log(`[MCP] fallback — ds "${dsName}" | dsNameMatch:${dsNameMatch} | dsDescMatch:${dsDescMatch} | tablas: [${allTableNames.join(', ')}] | cols match: [${matchingCols.join(', ')}] | table match: [${matchingTabs.join(', ')}] | covered: ${coveredTerms}/${fallbackTerms.length} (req: ${requiredMatches})`);
+
+                        if ((matchingCols.length > 0 || matchingTabs.length > 0 || dsNameMatch || dsDescMatch) && coveredTerms >= requiredMatches) {
                             const relevantCols = matchingCols.length > 0 ? matchingCols : allDsCols.slice(0, 5);
                             console.log(`[MCP] fallback — ✓ ds "${dsName}" incluido | cols relevantes: [${relevantCols.slice(0, 8).join(', ')}]`);
                             fallbackSugerencias.push({ datasource_id: dsId, datasource_nombre: dsName, campos_relevantes: relevantCols.slice(0, 8) });
-                        } else if (matchingCols.length > 0 || tableMatch || dsNameMatch) {
-                            console.log(`[MCP] fallback — ✗ ds "${dsName}" descartado (cobertura insuficiente: ${coveredTermCount} < ${requiredMatches} términos)`);
+                        } else {
+                            console.log(`[MCP] fallback — ✗ ds "${dsName}" descartado (cobertura insuficiente: ${coveredTerms} < ${requiredMatches} términos)`);
                         }
                     }
                     fallbackSugerencias = fallbackSugerencias.slice(0, 2);
-                    console.log('[MCP] fallback — resultado final:', fallbackSugerencias.length, 'sugerencias:', fallbackSugerencias.map((s: any) => s.datasource_nombre));
+                    console.log('[MCP] fallback — resultado:', fallbackSugerencias.length, 'sugerencias:', fallbackSugerencias.map((s: any) => s.datasource_nombre));
                 }
 
-                const buildFallbackNota = () => fallbackSugerencias.length > 0
-                    ? `MANDATORY ACTION — Call get_data_from_dashboard RIGHT NOW with datasource_id="${fallbackSugerencias[0].datasource_id}" and campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. Do NOT ask the user, do NOT request confirmation, act directly. If the query returns data, present it as a normal response without mentioning it was a direct search, without commenting on data quality, without further questions. If it returns null or 0 rows, respond ONLY with a single sentence in the user's language saying no data is available. Nothing else.`
-                    : '';
-                const notaSinResultados = opcionesArr.length > 0 ? '' : fallbackSugerencias.length > 0
-                    ? buildFallbackNota()
-                    : camposLower.length > 0
-                        ? `No panels found with fields [${camposLower.join(', ')}]. MANDATORY: call this tool again WITHOUT campos_requeridos. If the result is still 0 options, respond ONLY with a single sentence in the user's language saying no data is available. ABSOLUTE PROHIBITION: do not offer alternatives, do not suggest verifying anything, do not mention dashboards or databases, do not add any additional sentence.`
-                        : `Respond ONLY with a single sentence in the user's language saying no data is available about their question. ABSOLUTE PROHIBITION: do not offer alternatives, do not suggest verifying anything, do not mention dashboards or databases, do not add any additional sentence.`;
-                const notaTruncada = truncada ? ` NOTE: showing the ${MAX_OPTIONS} most relevant options out of ${totalOpciones} found. The rest were discarded due to lower relevance.` : '';
+                const buildFallbackNota = () =>
+                    `MANDATORY ACTION — Call get_data_from_dashboard RIGHT NOW with datasource_id="${fallbackSugerencias[0].datasource_id}" and campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. Do NOT ask the user or wait for confirmation. If the query returns data, present it with a brief notice that no dashboard was found for the question and the data comes from a direct query to the datasource (use the datasource_nombre from fuente, never the technical ID). If it returns null or 0 rows, respond ONLY with a single sentence in the user's language saying no data is available.`;
+
+                const notaTruncada = truncada ? ` NOTE: showing the ${MAX_OPTIONS} most relevant options out of ${totalOpciones} found.` : '';
+
+                let notaAsistente: string;
+                if (opcionesArr.length === 0) {
+                    if (fallbackSugerencias.length > 0) {
+                        console.log('');
+                        console.log('[MCP] ▶▶▶ FALLBACK ACTIVADO — sin paneles relevantes, IA consultará DB directamente');
+                        console.log(`[MCP] ▶▶▶ datasource: "${fallbackSugerencias[0].datasource_nombre}" | cols: [${fallbackSugerencias[0].campos_relevantes.join(', ')}]`);
+                        console.log('');
+                        notaAsistente = buildFallbackNota();
+                    } else if (camposLower.length > 0) {
+                        notaAsistente = `No panels found with fields [${camposLower.join(', ')}]. MANDATORY: call this tool again WITHOUT campos_requeridos. If still 0 options, respond ONLY with a single sentence in the user's language saying no data is available. ABSOLUTE PROHIBITION: do not offer alternatives or mention databases.`;
+                    } else {
+                        notaAsistente = `Respond ONLY with a single sentence in the user's language saying no data is available. ABSOLUTE PROHIBITION: do not offer alternatives or mention databases.`;
+                    }
+                } else if (opcionesArr.length === 1) {
+                    notaAsistente = `There is exactly ONE option. MANDATORY: call get_data_from_dashboard RIGHT NOW in data mode with the dashboard_id and panel_index of this option. Do NOT ask the user, do NOT wait for confirmation.${notaTruncada}`;
+                    if (esBorderline) notaAsistente += ` NOTE: this option has LOW confidence (score ${maxScore.toFixed(2)}). If it returns irrelevant data or no data, inform the user that the match was uncertain.`;
+                    if (fallbackSugerencias.length > 0) {
+                        console.log(`[MCP] ▶▶▶ FALLBACK disponible como plan B — datasource: "${fallbackSugerencias[0].datasource_nombre}"`);
+                        notaAsistente += ` If the panel returns no data or an error, immediately run: ${buildFallbackNota()}`;
+                    }
+                } else {
+                    notaAsistente = `There are ${opcionesArr.length} options. Show ONLY those whose dashboard_nombre or panel_titulo are related to "${question}". Present them numbered with the dashboard link and key differences (filters, scope). If after filtering only 1 relevant option remains, go directly to data mode without asking. Wait for user selection when several options are relevant.${notaTruncada}`;
+                    if (esBorderline) notaAsistente += ` NOTE: these options have LOW confidence (max score ${maxScore.toFixed(2)} — below the normal threshold of ${MIN_RELEVANCE}). Filter them strictly and only present those clearly related to the question.`;
+                    if (fallbackSugerencias.length > 0) {
+                        console.log(`[MCP] ▶▶▶ FALLBACK disponible como plan B — datasource: "${fallbackSugerencias[0].datasource_nombre}"`);
+                        notaAsistente += ` If none of the options are relevant or all return no data, immediately run: ${buildFallbackNota()}`;
+                    }
+                }
 
                 const respuestaExploracion: any = {
                     pregunta: question,
                     opciones_unicas: opcionesArr,
                     ...(fallbackSugerencias.length > 0 ? { fallback_sugerencias: fallbackSugerencias } : {}),
-                    nota_al_asistente: opcionesArr.length === 0
-                        ? notaSinResultados
-                        : opcionesArr.length === 1
-                            ? 'There is exactly ONE option. MANDATORY: call get_data_from_dashboard RIGHT NOW in data mode with the dashboard_id and panel_index of this option. Do NOT ask the user, do NOT wait for confirmation.' + notaTruncada
-                            : `There are ${opcionesArr.length} options in total. IMPORTANT: show the user ONLY the options whose dashboard_nombre or panel_titulo are related to the question "${question}". If an option clearly has no relation to the question (e.g. question about water but the option is about sales), do NOT include it. Present them numbered with the dashboard link, highlighting the key difference between them (with/without filters, different scopes). If after filtering only 1 relevant option remains, go directly to STEP 3 without asking. Wait for the user's selection BEFORE running data mode when there are several relevant options.` + notaTruncada,
+                    nota_al_asistente: notaAsistente,
                 };
 
                 return { content: [{ type: 'text', text: JSON.stringify(respuestaExploracion) }] };
@@ -1215,7 +1287,37 @@ export function createMcpServer(requestUser?: any) {
         }
     );
     console.log('[MCP] createMcpServer - get_data_from_dashboard registrado');
-    console.log('[MCP] createMcpServer - server_status registrado. Total tools: 5');
+
+    // ── propose_dashboard ───────────────────────────────────────────────────
+    (server as any).registerTool(
+        'propose_dashboard',
+        {
+            description: 'Proposes a new dashboard to the user — shows a confirmation card with an editable title. Use this INSTEAD of generate_dashboard. Call list_datasources first to get the datasource_id. The user confirms (and can edit the title) in the UI; the frontend then generates the dashboard automatically.',
+            inputSchema: {
+                datasource_id:   z.string().describe('ID of the datasource to use (from list_datasources)'),
+                datasource_name: z.string().describe('Human-readable name of the datasource'),
+                title:           z.string().describe("Proposed dashboard title in the user's language, concise and descriptive"),
+                description:     z.string().describe("Description passed to the AI generator — reuse the user's original request"),
+            },
+        },
+        async (args: any) => {
+            const { datasource_id, datasource_name, title, description } = args;
+            console.log('[MCP] tool: propose_dashboard — datasource:', datasource_name, '| title:', title);
+            return {
+                content: [{
+                    type: 'text',
+                    text: JSON.stringify({
+                        type: 'dashboard_proposal',
+                        datasource_id,
+                        datasource_name,
+                        proposed_title: title,
+                        description,
+                    }),
+                }],
+            };
+        }
+    );
+    console.log('[MCP] createMcpServer - propose_dashboard registrado. Total tools: 6');
 
     return server;
 }

@@ -28,6 +28,10 @@ export class SunburstDialogComponent implements OnInit, AfterViewChecked {
   /** Single source of truth */
   public assignedColors: { value: string; color: string }[] = [];
   private originalAssignedColors: { value: string; color: string }[] = [];
+  public useGradient: boolean = true;
+  private originalUseGradient: boolean = true;
+  public chartLegend: boolean = true;
+  private originalChartLegend: boolean = true;
 
   public labels: string[] = [];
   public display = false;
@@ -70,8 +74,25 @@ export class SunburstDialogComponent implements OnInit, AfterViewChecked {
         // Snapshot for canceling changes
         this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
 
+        this.useGradient = this.myPanelChartComponent.props.config.getConfig()['useGradient'] ?? true;
+        this.originalUseGradient = this.useGradient;
+
+        this.chartLegend = this.myPanelChartComponent.props.config.getConfig()['chartLegend'] ?? true;
+        this.originalChartLegend = this.chartLegend;
+
       }, 0);
     }
+  }
+
+  /** Toggle the per-arc gradient fill */
+  setUseGradient(): void {
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
+    this.myPanelChartComponent.changeChartType();
+  }
+
+  setChartLegend(): void {
+    this.myPanelChartComponent.props.config.getConfig()['chartLegend'] = this.chartLegend;
+    this.myPanelChartComponent.changeChartType();
   }
 
   /* Closes the dialog */
@@ -89,15 +110,24 @@ export class SunburstDialogComponent implements OnInit, AfterViewChecked {
 
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
       [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
+    this.myPanelChartComponent.props.config.getConfig()['chartLegend'] = this.chartLegend;
 
     this.myPanelChartComponent.changeChartType();
 
-    this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig });
+    // onCloseSunburstProperties() reads chartLegend/useGradient off this response too.
+    this.onClose(EdaDialogCloseEvent.UPDATE, {
+      colors: colorsForConfig,
+      chartLegend: this.chartLegend,
+      useGradient: this.useGradient
+    });
   }
 
   /** CANCEL */
   closeChartConfig(): void {
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+    this.useGradient = this.originalUseGradient;
+    this.chartLegend = this.originalChartLegend;
 
     const colorsForConfig = this.assignedColors.map(c => c.color);
 
@@ -107,6 +137,8 @@ export class SunburstDialogComponent implements OnInit, AfterViewChecked {
 
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
       [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
+    this.myPanelChartComponent.props.config.getConfig()['chartLegend'] = this.chartLegend;
 
     this.myPanelChartComponent.changeChartType();
     this.onClose(EdaDialogCloseEvent.NONE);
@@ -122,6 +154,8 @@ export class SunburstDialogComponent implements OnInit, AfterViewChecked {
 
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
       [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
+    this.myPanelChartComponent.props.config.getConfig()['chartLegend'] = this.chartLegend;
 
     this.myPanelChartComponent.changeChartType();
   }
@@ -151,6 +185,8 @@ export class SunburstDialogComponent implements OnInit, AfterViewChecked {
 
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
       [...this.assignedColors];
+    this.myPanelChartComponent.props.config.getConfig()['useGradient'] = this.useGradient;
+    this.myPanelChartComponent.props.config.getConfig()['chartLegend'] = this.chartLegend;
 
     this.myPanelChartComponent.changeChartType();
   }

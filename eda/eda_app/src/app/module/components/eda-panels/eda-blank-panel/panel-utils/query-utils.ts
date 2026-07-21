@@ -6,7 +6,7 @@ import { EdaBlankPanelComponent } from '../eda-blank-panel.component';
 import { ChartsConfigUtils } from './charts-config-utils';
 import { PanelInteractionUtils } from './panel-interaction-utils';
 
-import { NULL_VALUE, EMPTY_VALUE } from '../../../../../config/personalitzacio/customizables'
+import { NULL_VALUE, EMPTY_VALUE } from '../../../../../config/customizable/customizable_default'
 
 export const QueryUtils = {
 
@@ -156,8 +156,11 @@ export const QueryUtils = {
 
     for(let i=0; i<ebp.sortedFilters.length; i++){
       if(ebp.sortedFilters[i].isGlobal) {
-        ebp.sortedFilters[i].filter_elements = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id).filter_elements;
-        ebp.sortedFilters[i].filter_codes = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id).filter_codes;
+        const matchingGlobalFilter = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id);
+        if (matchingGlobalFilter) {
+          ebp.sortedFilters[i].filter_elements = matchingGlobalFilter.filter_elements;
+          ebp.sortedFilters[i].filter_codes = matchingGlobalFilter.filter_codes;
+        }
       }
     }
 
@@ -406,6 +409,7 @@ export const QueryUtils = {
       prediction: ebp.panel?.content?.query?.query?.prediction ? ebp.panel.content.query.query.prediction:'None',
       predictionConfig: ebp.panel?.content?.query?.query?.predictionConfig || undefined,
       sortedFilters: ebp.sortedFilters,
+      resultSortingColumns: ebp.resultSortingColumns
     };
     return ebp.queryBuilder.normalQuery(fields, params, ebp.selectedQueryMode);
   },

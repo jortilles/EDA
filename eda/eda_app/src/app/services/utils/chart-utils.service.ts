@@ -10,7 +10,6 @@ import { ChartJsConfig } from '../../module/components/eda-panels/eda-blank-pane
 import { ChartConfig } from '../../module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-config';
 import { Column } from './../../shared/models/dashboard-models/column.model';
 import { Injectable } from '@angular/core';
-import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
 import { KpiConfig } from '@eda/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/kpi-config';
@@ -65,6 +64,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypesKPILINE:KPI + Gráfico de Lineas`, value: 'kpiline', subValue: 'kpiline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPIAREA:KPI + Gráfico de Áreas`, value: 'kpiline', subValue: 'kpiarea', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPITrend:KPI Tendencia`, value: 'kpitrend', subValue: 'kpitrend', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesKPIDeviation:KPI Desviación`, value: 'kpideviation', subValue: 'kpideviation', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesDynamicText:Texto Dinámico`, value: 'dynamicText', subValue: 'dynamicText', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes15:Velocímetro`, value: 'knob', subValue: 'knob', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes3:Gráfico de Pastel`, value: 'doughnut', subValue: 'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -451,7 +451,8 @@ export class ChartUtilsService {
             }
 
             //Column count not received, setting default column count
-            if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
+            // typeof guard: isNaN(false) is false, so a stray boolean sentinel would otherwise pass and zero out num_cols.
+            if(typeof numberOfColumns === 'number' && !isNaN(numberOfColumns)){
                 num_cols=numberOfColumns;
             }
 
@@ -466,7 +467,7 @@ export class ChartUtilsService {
                 grupos =   this.generateGruposOneForHistogram( num_cols,min );
             }
             else{
-                if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
+                if(typeof numberOfColumns === 'number' && !isNaN(numberOfColumns)){
                     num_cols=numberOfColumns;
                 }
                 new_data = this.generateNewDataRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max , salto);
@@ -480,7 +481,8 @@ export class ChartUtilsService {
             _output[0]=grupos;
             _output[1] = [{
                 data: new_data,
-                label:  this.histoGramRangesTxt + ' - '  + dataDescription.numericColumns[0].name
+                // renderBar() already rewrites this name into a full description - no need to prefix histoGramRangesTxt too.
+                label: dataDescription.numericColumns[0].name
             }];
 
             output =  _output;
@@ -500,31 +502,18 @@ export class ChartUtilsService {
      * @returns grupos
      */
     private generateGruposRangeForHistogram( num_cols,min,max, salto , esEntero , minimumFractionDigits ):any[] {
-        let mi_salto =  0;
+        // Always produce exactly num_cols labels - the old early-exit dropped bins once the rounded-up salto overshot max.
         let mi_min = min;
         let grupos = [];
         for(let i=0; i<num_cols; i++){
-            mi_salto =  min+((salto*i)+salto)  ;
-            if( mi_salto < max){
-                if(esEntero){
-                    grupos.push(mi_min+" - "+( mi_salto -1));
-                }else{
-                    grupos.push(mi_min.toFixed( minimumFractionDigits ) +" - "+ (mi_salto-0.1).toFixed( minimumFractionDigits ));
-                }
+            const isLast = i === num_cols - 1;
+            const mi_salto = isLast ? max : min+((salto*i)+salto);
+            if(esEntero){
+                grupos.push(mi_min+" - "+(isLast ? mi_salto : mi_salto-1));
             }else{
-                if(Number.isInteger(mi_min)){
-                    grupos.push(mi_min+" - "+max);
-                }else{
-                    grupos.push( mi_min.toFixed(minimumFractionDigits)+" - "+max.toFixed( minimumFractionDigits ));
-                }
-                // Exit the loop
-                i = i+num_cols;
+                grupos.push(mi_min.toFixed( minimumFractionDigits ) +" - "+ (isLast ? mi_salto : mi_salto-0.1).toFixed( minimumFractionDigits ));
             }
-
-
-
-           mi_min = mi_salto;
-
+            mi_min = mi_salto;
         }
 
         return grupos;
@@ -535,22 +524,19 @@ export class ChartUtilsService {
 
 
     private   generateNewDataRangeForHistogram(allNumbers,distinctNumbers, num_cols,min,max, salto ):any[] {
-        let mi_salto =  0;
+        // Always produce exactly num_cols bins - see generateGruposRangeForHistogram.
         let mi_min = min;
         let new_data = [];
 
         for(let i=0; i<num_cols; i++){
-            mi_salto =   min+((salto*i)+salto)   ;
+            const isLast = i === num_cols - 1;
+            const mi_salto = isLast ? max : min+((salto*i)+salto);
             let grupo = [];
 
             for( let j=0; j < allNumbers.length; j++){
-               if(  ( allNumbers[j] >= mi_min && allNumbers[j] < mi_salto)   &&
-               ( mi_salto <  max )
-               ){
-                    grupo.push(allNumbers[j]);
-               }else  if(
-                        ( allNumbers[j] >= mi_min && allNumbers[j] <= mi_salto)   &&
-                        ( mi_salto >=  max )
+               if( isLast
+                   ? ( allNumbers[j] >= mi_min && allNumbers[j] <= mi_salto )
+                   : ( allNumbers[j] >= mi_min && allNumbers[j] < mi_salto )
                ){
                     grupo.push(allNumbers[j]);
                }
@@ -559,10 +545,6 @@ export class ChartUtilsService {
 
            new_data.push( grupo.length);
            mi_min = mi_salto;
-           if( mi_min >= max){
-            // Exit
-            i = num_cols;
-           }
 
         }
 
@@ -589,9 +571,10 @@ export class ChartUtilsService {
 
 
     private  generateGruposOneForHistogram(num_cols,min ):any[] {
+        // Must match generateNewDataOneForHistogram's bins (min+i) - the old loop only worked when min===1.
         let grupos = [];
-        for(let i=min; i<=num_cols; i++){
-            grupos.push(i);
+        for(let i=0; i<num_cols; i++){
+            grupos.push(min+i);
         }
 
         return grupos;
@@ -653,7 +636,7 @@ export class ChartUtilsService {
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'kpiline', 'area', 'kpiarea', 'bar', 'kpibar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
-                'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst', 'kpitrend'
+                'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst', 'kpitrend', 'kpideviation'
             ];
 
         //table (at least one column)
@@ -788,6 +771,12 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('kpitrend'), 1);
         }
 
+        // kpideviation: 2 numeric cols (no others), or 1 categorical + 1 numeric (like knob)
+        if ((dataDescription.numericColumns.length === 2 && dataDescription.otherColumns.length === 0)
+            || (dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length === 1)) {
+            notAllowed.splice(notAllowed.indexOf('kpideviation'), 1);
+        }
+
         return notAllowed;
 
     }
@@ -800,7 +789,7 @@ export class ChartUtilsService {
      */
     public getTooManyDataForCharts(dataSize: number): any[] {
         let notAllowed =
-            ['table', 'crosstable', 'kpi', 'dynamicText', 'knob', 'doughnut', 'polarArea', 'line', 'kpiline', 'bar', 'kpibar','histogram',
+            ['table', 'crosstable', 'kpi', 'dynamicText', 'knob', 'kpideviation', 'doughnut', 'polarArea', 'line', 'kpiline', 'bar', 'kpibar','histogram',
                 'horizontalBar', 'barline', 'area', 'kpiarea', 'geoJsonMap', 'coordinateMap', 'radar'];
 
         //table (at least one column)
@@ -818,10 +807,10 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('kpi'), 1);
             notAllowed.splice(notAllowed.indexOf('dynamicText'), 1);
         }
-        // Knomb (only one or two  numeric column)
-        // only 2 values
+        // Knob / kpideviation: only 2 rows allowed
         if (dataSize <= 2) {
             notAllowed.splice(notAllowed.indexOf('knob'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpideviation'), 1);
         }
         // Pie && Polar (Only one numeric column and one char/date column)
         if (dataSize < 100) {
@@ -958,7 +947,7 @@ export class ChartUtilsService {
         let names = [];
         labels.forEach(label => {
             columns.forEach(column => {
-                if (column.column_name === label) {
+                if (column.column_name === label || column.display_name?.default === label) {
                     names.push(column.display_name.default);
                 }
             });

@@ -29,8 +29,11 @@ export const PanelInteractionUtils = {
         return !matcher && tableColumn.visible === true;
     });
 
+    // Hide columns marked as hidden unless the user toggled them visible via the eye button
+    const visibleColumns = filteredColumns.filter((tableColumn: Column) => ebp.showHiddenColumn || !tableColumn.hidden);
+
     // Sort columns by default display name
-    ebp.columns = filteredColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
+    ebp.columns = visibleColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
 
     // Reload Inputs when call func from select table 
     if(reloadInputs){ ebp.columnInput = ''; }
@@ -356,6 +359,7 @@ export const PanelInteractionUtils = {
                         duplicatedColumn.whatif = contentColumn.whatif || {};
                         duplicatedColumn.format = contentColumn.hasOwnProperty("format")?contentColumn.format:null ; // Agregando el Formato
                         duplicatedColumn.dateNav = contentColumn.dateNav || false;
+                        duplicatedColumn.ordenation_type = contentColumn.ordenation_type;
                         PanelInteractionUtils.handleAggregationType4DuplicatedColumns(ebp, duplicatedColumn);
                         // Moc la columna directament perque es una duplicada.... o no....
 
@@ -503,6 +507,7 @@ export const PanelInteractionUtils = {
                   duplicatedColumn.whatif = contentColumn.whatif || {};
                   duplicatedColumn.joins = contentColumn.joins || [];
                   duplicatedColumn.autorelation = contentColumn.autorelation || false;
+                  duplicatedColumn.ordenation_type = contentColumn.ordenation_type;
                   PanelInteractionUtils.handleAggregationType4DuplicatedColumns(ebp, duplicatedColumn);
                   // Moc la columna directament perque es una duplicada.... o no....
                   ebp.currentQuery.push(duplicatedColumn);
@@ -849,6 +854,9 @@ export const PanelInteractionUtils = {
       ebp.currentQuery[match].aggregation_type.forEach(ag => ag.selected = false);
       ebp.currentQuery[match].format = '';
       ebp.currentQuery.splice(match, 1);
+      // ebp.resultSortingColumns = ebp.resultSortingColumns.filter(
+      //   col => !(col.column_name === c.column_name && col.table_id === c.table_id)
+      // );
     } else if (list === 'filter') {
       const match = _.findIndex(ebp.filtredColumns, { column_name: c.column_name, table_id: c.table_id });
       ebp.filtredColumns.splice(match, 1);

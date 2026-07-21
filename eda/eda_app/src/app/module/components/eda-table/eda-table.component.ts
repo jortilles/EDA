@@ -4,7 +4,7 @@ import { StyleProviderService, AlertService } from '@eda/services/service.index'
 import { Table } from 'primeng/table';
 // import { FilterUtils } from 'primeng/utils';
 import { EdaTable } from './eda-table';
-import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/personalitzacio/customizables';
+import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_default';
 import { registerLocaleData } from '@angular/common';
 
 import es from '@angular/common/locales/es';

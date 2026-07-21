@@ -280,8 +280,8 @@ export class DashboardController {
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
-        const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() ); 
         if (dashboard.config.visible === 'common') {
+          const ds = dss.find( e=> e._id.toString() == dashboard.config.ds?._id?.toString() );
           if( ds ){
               // Obtain the name of the data source
               dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
@@ -292,12 +292,7 @@ export class DashboardController {
           }else{
             console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
           }
-
-
-
         }
-
-        
       }
 
       /*Edalitics Free */ 
@@ -764,16 +759,16 @@ export class DashboardController {
           const dashboardToUpdate = await dashboard.save();
           return res.status(200).json({ ok: true, dashboard })
         } catch (err) {
-          return (new HttpException(500, 'Error updating dashboard'))
+          return next(new HttpException(500, 'Error updating dashboard'))
         }
       } catch (error) {
         console.log(error);
-        return (new HttpException(500, 'Error searching the dashboard'))
+        return next(new HttpException(500, 'Error searching the dashboard'))
       }
 
     } catch (error) {
       console.log(error);
-      return (new HttpException(500, 'Error updating dashboard'))
+      return next(new HttpException(500, 'Error updating dashboard'))
     }
   }
 
@@ -1400,6 +1395,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
           myQuery.filters = req.body.query.filters
         }
         myQuery.sortedFilters = req.body.query.sortedFilters;
+        myQuery.resultSortingColumns = req.body.query.resultSortingColumns;
       } else {
         // las etiquetas son el nombre técnico...
         myQuery = JSON.parse(JSON.stringify(req.body.query))
@@ -1611,8 +1607,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
   console.log(
     '\x1b[32m%s\x1b[0m',
-    `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-    } Panel:${req.body.dashboard.panel_id} DONE\n`
+    `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard?.dashboard_id
+    } Panel:${req.body.dashboard?.panel_id} DONE\n`
   );
 
   return res.status(200).json(output);
@@ -2014,8 +2010,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
         console.log(
           '\x1b[32m%s\x1b[0m',
-          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-          } Panel:${req.body.dashboard.panel_id} DONE\n`
+          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard?.dashboard_id
+          } Panel:${req.body.dashboard?.panel_id} DONE\n`
         )
         //console.log('Query output');
         //console.log(output);
@@ -2024,8 +2020,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
         console.log(
           '\x1b[32m%s\x1b[0m',
-          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-          } Panel:${req.body.dashboard.panel_id} DONE\n`
+          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard?.dashboard_id
+          } Panel:${req.body.dashboard?.panel_id} DONE\n`
         )
         return res.status(200).json(cachedQuery.cachedQuery.response)
       }
@@ -2356,7 +2352,9 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
    * @param dashboard Dashboard to normalize
    */
   private static normalizeVisibility(dashboard: any): void {
-    if (dashboard.config.visible === 'public') {
+    if (!dashboard.config.visible) {
+      dashboard.config.visible = 'private';
+    } else if (dashboard.config.visible === 'public') {
       dashboard.config.visible = 'common';
     } else if (dashboard.config.visible === 'shared') {
       dashboard.config.visible = 'open';

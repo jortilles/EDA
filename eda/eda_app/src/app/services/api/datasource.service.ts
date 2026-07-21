@@ -5,7 +5,7 @@ import { TreeNode } from 'primeng/api';
 import { ApiService } from './api.service';
 import { EditModelPanel, EditColumnPanel, EditTablePanel, Relation, ValueListSource } from '@eda/models/data-source-model/data-source-models';
 import { AlertService } from '../alerts/alert.service';
-import { aggTypes } from '../../config/aggretation-types';
+import { AGG_TYPES } from '../../config/customizable/customizable_default';
 import { map } from 'rxjs/internal/operators/map';
 import { catchError } from 'rxjs/internal/operators/catchError';
 
@@ -130,7 +130,12 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 tables.push(currTable);
 
                 // Column nodes
-                (table.columns ?? []).forEach((column: any) => {
+                const sortedColumns = (table.columns ?? []).slice().sort((a: any, b: any) => {
+                    const la = (a.display_name?.default ?? a.column_name ?? '').toLowerCase();
+                    const lb = (b.display_name?.default ?? b.column_name ?? '').toLowerCase();
+                    return la < lb ? -1 : la > lb ? 1 : 0;
+                });
+                sortedColumns.forEach((column: any) => {
                     const currCol: TreeNode = {};
                     currCol.label = column.display_name?.default ?? column.column_name;
                     currCol.data = 'columna';
@@ -489,7 +494,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             tmp_model[tableIndex].columns[columnindex].SQLexpression = panel.SQLexpression;
 
             tmp_model[tableIndex].columns[columnindex].aggregation_type = panel.aggregation_type.map((a: any) => {
-                let display_name = aggTypes.filter(tmp => tmp.value === a);
+                let display_name = AGG_TYPES.filter(tmp => tmp.value === a);
                 return { value: a, 'display_name': display_name[0] ? display_name[0].label : 'No' };
             });
 
@@ -730,24 +735,12 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this.get(`${this.globalDSRoute}/duckdb-folders`);
     }
 
-    addOdooDataSource(connection: any): Observable<any> {
-        return this.post(`${this.globalDSRoute}/add-odoo-data-source`, connection);
+    callPluginPost(apiBasePath: string, endpoint: string, body: any): Observable<any> {
+        return this.post(`${apiBasePath}${endpoint}`, body);
     }
 
-    addGoogleAnalyticsDataSource(connection: any): Observable<any> {
-        return this.post(`${this.globalDSRoute}/add-google-analytics-data-source`, connection);
-    }
-
-    getGA4AuthUrl(): Observable<any> {
-        return this.get(`/google-analytics/auth-url`);
-    }
-
-    pollGA4Token(state: string): Observable<any> {
-        return this.get(`/google-analytics/poll-token?state=${state}`);
-    }
-
-    addHoldedDataSource(connection: any): Observable<any> {
-        return this.post(`${this.globalDSRoute}/add-holded-data-source`, connection);
+    callPluginGet(apiBasePath: string, endpoint: string): Observable<any> {
+        return this.get(`${apiBasePath}${endpoint}`);
     }
 
     deleteDuckDbCsv(datasourceId: string, tableName: string): Observable<any> {

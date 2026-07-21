@@ -6,6 +6,7 @@ import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-pan
 import { OverlayPanelModule } from "primeng/overlaypanel";
 import * as _ from 'lodash';
 import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
+import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/customizable/customizable_default';
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from "@angular/forms";
 import { StyleProviderService } from '@eda/services/service.index';
@@ -118,8 +119,8 @@ export class GlobalFilterComponent implements OnInit {
 
     public async initGlobalFilters(filters: any[]): Promise<void> {
         this.globalFilters = _.cloneDeep(filters);
-        const userName = JSON.parse(localStorage.getItem('user'))?.name;
-        this.isDashboardCreator = userName === this.dashboard.dashboard?.config?.author;
+        const userName = JSON.parse(localStorage.getItem('user'))?.id;
+        this.isDashboardCreator = userName === this.dashboard.dashboard?.user;
         this.setFiltersVisibility();
         this.setFilterButtonVisibilty();
         await this.fillFiltersData();
@@ -547,6 +548,7 @@ export class GlobalFilterComponent implements OnInit {
                     filter.visible = this.globalFilter.visible;
                     filter.isAutocompleted = this.globalFilter.isAutocompleted !== undefined ? this.globalFilter.isAutocompleted : false;
                     filter.applyToAll = this.globalFilter.applyToAll;
+                    filter.multipleSelection = this.globalFilter.multipleSelection ?? true;
 
                     if (filter.pathList) {
                         for (const key in filter.pathList) {
@@ -692,7 +694,7 @@ export class GlobalFilterComponent implements OnInit {
         this.removeMapFilter(filter);
 
         if (reload) {
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
     }
 
@@ -754,6 +756,7 @@ export class GlobalFilterComponent implements OnInit {
         }
 
         this.applyGlobalFilter(filter);
+        this.setGlobalFilterItems(filter);
         // filter = this.globalFilterService.formatGlobalFilter(filter);
         // this.applyGlobalFilter(filter);
     }
@@ -919,6 +922,14 @@ export class GlobalFilterComponent implements OnInit {
         }
     }
 
+    public getPanelWidthVar(filter: any): any {
+        if (!filter.data || filter.data.length === 0) return {};
+        const longest = filter.data.reduce((max: number, item: any) =>
+            Math.max(max, (item.label?.length ?? 0)), 0);
+        const px = Math.min(Math.max(longest * 6 + 80, 150), 500);
+        return { '--ms-panel-width': px + 'px' };
+    }
+
     public disableGlobalFilter(filter: any): boolean {
         let disabled = false;
 
@@ -1044,6 +1055,17 @@ export class GlobalFilterComponent implements OnInit {
         this.setGlobalFilterItems(filter);
     }
 
+    public onSingleSelectChange(filter: any): void {
+        if (filter.selectedItems?.length > 1) {
+            filter.selectedItems = [filter.selectedItems[filter.selectedItems.length - 1]];
+        }
+        this.setGlobalFilterItems(filter);
+    }
+
+    public onFilterChange(filter: any): void {
+        this.setGlobalFilterItems(filter);
+    }
+
     public setDropdownOpen(value: boolean): void {
         this.isDropdownOpen = value;
     }
@@ -1069,5 +1091,9 @@ export class GlobalFilterComponent implements OnInit {
             op?.hide();
             this.tooltipHideTimeout = null;
         }, 150);
+    }
+
+    get filterButtonPosition(): string {
+        return this.dashboard?.dashboard?.config?.styles?.filterButtonPosition ?? GLOBAL_FILTER_BUTTON_POSITION;
     }
 }

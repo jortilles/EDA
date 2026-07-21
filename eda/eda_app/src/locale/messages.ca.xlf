@@ -595,15 +595,19 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="resumenAtrH6" datatype="html">
 <source>
-                                    Resumen de atributos
+Resumen de atributos
 </source>
 <target>
-                                    Resum d'atributs
+Resum d'atributs
 </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-<context context-type="linenumber">137</context>
-</context-group>
+</trans-unit>
+<trans-unit id="resumenAtrH6Hover" datatype="html">
+<source>
+¿Qué estoy viendo?
+</source>
+<target>
+Qué estic veient?
+</target>
 </trans-unit>
 <trans-unit id="resumenFiltrosPanelH6" datatype="html">
 <source>
@@ -2911,6 +2915,16 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Vinculat amb   </target>
   </trans-unit>
 
+  <trans-unit id="secondAxis">
+    <source> Segundo Eje  </source>
+    <target>Segon Eix</target>
+  </trans-unit>
+
+  <trans-unit id="secondAxisDescription">
+    <source> Muestra un eje independiente a la derecha para las líneas, separado del eje de las barras </source>
+    <target>Mostra un eix independent a la dreta per a les línies, separat de l'eix de les barres</target>
+  </trans-unit>
+
   <trans-unit id="DataModelHeader">
     <source> Configurar nueva fuente de datos  </source>
     <target> Configurar nova font de dades  </target>
@@ -3486,6 +3500,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
     <target>KPI Tendència necessita una columna de data en format mes i una columna numèrica</target>
   </trans-unit>
+  <trans-unit id="chartInfoKpiDeviation">
+    <source>KPI Desviación necesita dos columnas numéricas: valor actual y valor de referencia</source>
+    <target>KPI Desviació necessita dues columnes numèriques: valor actual i valor de referència</target>
+  </trans-unit>
 
   <trans-unit id="trendTitleYear"><source>Año actual</source><target>Any actual</target></trans-unit>
   <trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Mes actual</target></trans-unit>
@@ -3730,10 +3748,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Mostra Etiquetes en Percentatges</target>
   </trans-unit>
 
-  <trans-unit id="showUniqueColors">
-    <source>Activar Colores Únicos</source>
-    <target>Activa Colors Únics</target>
-  </trans-unit>
 
   <trans-unit id="showPointLines">
     <source>Mostrar Puntos en Líneas</source>
@@ -3837,7 +3851,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="ChangeDefaultsColors">
     <source>Color del los gráficos</source>
     <target>Color dels gràfics</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="selectPalette">
+    <source>Seleccionar paleta</source>
+    <target>Seleccionar paleta</target>
+  </trans-unit>
 
   <trans-unit id="properties">
     <source>Propiedades</source>
@@ -4111,6 +4130,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
       <trans-unit id="chartTypesKPITrend">
         <source>KPI Tendencia</source>
         <target>KPI Tendència</target>
+      </trans-unit>
+      <trans-unit id="chartTypesKPIDeviation">
+        <source>KPI Desviación</source>
+        <target>KPI Desviació</target>
       </trans-unit>
 
   <trans-unit id="urlEditSaveError">
@@ -4852,6 +4875,26 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Mostra la llegenda</target>
 </trans-unit>
 
+<trans-unit id="internRadius">
+  <source>Radio Interno</source>
+  <target>Radi Intern</target>
+</trans-unit>
+
+<trans-unit id="useGradient">
+  <source>Usar Gradiente</source>
+  <target>Utilitza gradient</target>
+</trans-unit>
+
+<trans-unit id="useRoundedBars">
+  <source>Redondear barras</source>
+  <target>Arrodonir barres</target>
+</trans-unit>
+
+<trans-unit id="chartRoundedBarsOptionDescription">
+  <source>Redondea la punta de las barras</source>
+  <target>Arrodoneix la punta de les barres</target>
+</trans-unit>
+
 <trans-unit id="chartLegendOptionDescription">
   <source>Muestra la leyenda del gráfico</source>
   <target>Mostra la llegenda del gràfic</target>
@@ -4865,6 +4908,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="chartGridLinesOptionDescription">
   <source>Muestra u oculta las líneas guía del gráfico</source>
   <target>Mostra o amaga les línies guia del gràfic</target>
+</trans-unit>
+
+<trans-unit id="chartAnimation">
+  <source>Animar Gráfico</source>
+  <target>Anima el gràfic</target>
+</trans-unit>
+
+<trans-unit id="chartAnimationOptionDescription">
+  <source>Anima la aparición de los datos al cargar el gráfico</source>
+  <target>Anima l'aparició de les dades en carregar el gràfic</target>
 </trans-unit>
 
 <trans-unit id="histogramColum">
@@ -4902,9 +4955,9 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Mostra el valor percentual de cada segment</target>
 </trans-unit>
 
-<trans-unit id="chartUniqueColorsOption">
-  <source>Asigna un color único a cada barra o elemento</source>
-  <target>Assigna un color únic a cada barra o element</target>
+<trans-unit id="uniqueColorsTab">
+  <source> Colores Únicos </source>
+  <target> Colors Únics </target>
 </trans-unit>
 
 <trans-unit id="chartUniqueColorsOptionDescription">
@@ -5316,6 +5369,21 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="numValTrigAlert">
   <source>Valor numérico que activará la alerta</source>
   <target>Valor numèric que activarà l'alerta</target>
+</trans-unit>
+
+<trans-unit id="thresholdValuePercent">
+  <source>Valor umbral (%)</source>
+  <target>Valor llindar (%)</target>
+</trans-unit>
+
+<trans-unit id="deviationPercTrigAlert">
+  <source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
+  <target>% de desviació que activarà l'alerta (ex: -10 = quan la desviació sigui inferior al -10%)</target>
+</trans-unit>
+
+<trans-unit id="whenKpiDeviationIs">
+  <source>Cuando el % es</source>
+  <target>Quan el % és</target>
 </trans-unit>
 
 <trans-unit id="textChangeColor">
@@ -6301,6 +6369,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Muestra la predicción de la serie</source>
         <target>Mostra la predicció de la sèrie</target>
       </trans-unit>
+      <trans-unit id="colorsTab">
+        <source> Colores </source>
+        <target> Colors </target>
+      </trans-unit>
       <trans-unit id="gradientTab">
         <source>Colores por intervalo</source>
         <target>Colors per interval</target>
@@ -6681,12 +6753,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Quins dashboards tinc?</target>
       </trans-unit>
       <trans-unit id="chatSuggestion2" datatype="html">
-        <source>¿Qué datasources hay?</source>
-        <target>Quins datasources hi ha?</target>
+        <source>¿Qué fuentes de datos hay?</source>
+        <target>Quines fonts de dades hi ha?</target>
       </trans-unit>
       <trans-unit id="chatSuggestion3" datatype="html">
         <source>Estado del servidor</source>
         <target>Estat del servidor</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion4" datatype="html">
+        <source>¿Qué informes tengo disponibles?</source>
+        <target>Quins informes tinc disponibles?</target>
       </trans-unit>
       <trans-unit id="chatInputPlaceholder" datatype="html">
         <source>Escribe un mensaje...</source>
@@ -6828,6 +6904,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Navegar</source>
         <target>Navegar</target>
       </trans-unit>
+      <trans-unit id="resultSortingText" datatype="html">
+        <source>Ordenar los resultados por:</source>
+        <target>Ordenar els resultats per:</target>
+      </trans-unit>
+      <trans-unit id="draggResultSorting" datatype="html">
+        <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
+        <target>Arrossegueu aquí els atributs pels quals voleu ordenar</target>
+      </trans-unit>
       <trans-unit id="noDuckDbFile">
         <source>Debe cargar un archivo CSV primero</source>
         <target>Cal carregar un arxiu CSV primer</target>
@@ -6959,6 +7043,66 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="holdedCreated">
         <source>Fuente de datos Holded creada correctamente</source>
         <target>Font de dades Holded creada correctament</target>
+      </trans-unit>
+      <trans-unit id="multipleSelectionText">
+        <source>Selección múltiple</source>
+        <target>Selecció múltiple</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionText">
+        <source>Selección única</source>
+        <target>Selecció única</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionDescription">
+        <source>Active esta opción para permitir la selección múltiple.</source>
+        <target>Activeu aquesta opció per permetre la selecció múltiple.</target>
+      </trans-unit>      
+      <trans-unit id="multipleSelectionDescription">
+        <source>Desactive esta opción para permitir la selección única.</source>
+        <target>Desactiveu aquesta opció per permetre la selecció única.</target>
+      </trans-unit>
+      <trans-unit id="enablePanelLockButton">
+        <source>Bloquear los paneles</source>
+        <target>Bloquejar els panells</target>
+      </trans-unit>
+      <trans-unit id="disablePanelLockButton">
+        <source>Desbloquear los paneles</source>
+        <target>Desbloquejar els panells</target>
+      </trans-unit>
+      <trans-unit id="noAttributes">
+        <source>Sin atributos</source>
+        <target>Sense atributs</target>
+      </trans-unit>
+      <trans-unit id="noFilters">
+        <source>Sin filtros</source>
+        <target>Sense filtres</target>
+      </trans-unit>
+      <trans-unit id="aiDashboardDescription">
+        <source>(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.</source>
+        <target>(Opcional) Descriu els panells que vols generar amb IA. Exemple: vendes per mes en barres, top clients per import, KPI de facturació total.</target>
+      </trans-unit>
+      <trans-unit id="aiGeneratingDashboard">
+        <source>Generando dashboard con IA...</source>
+        <target>Generant dashboard amb IA...</target>
+      </trans-unit>
+      <trans-unit id="otherRecipients">
+        <source>Otros destinatarios:</source>
+        <target>Altres destinataris:</target>
+      </trans-unit>
+      <trans-unit id="otherRecipientsHint">
+        <source>(separados por un espacio)</source>
+        <target>(separats per un espai)</target>
+      </trans-unit>
+      <trans-unit id="otherRecipientsPlaceholder">
+        <source>correo1@dominio.com correo2@dominio.com</source>
+        <target>correu1@domini.com correu2@domini.com</target>
+      </trans-unit>
+      <trans-unit id="sendToSummary">
+        <source>Enviar a:</source>
+        <target>Enviar a:</target>
+      </trans-unit>
+      <trans-unit id="kpiMailConfigTitle">
+        <source>Configuración de la alerta KPI por email</source>
+        <target>Configuració de l'alerta KPI per email</target>
       </trans-unit>
     </body>
   </file>

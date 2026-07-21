@@ -1,14 +1,15 @@
 <eda-dialog2
   i18n-header="@@kpiMailConfigTitle"
-  header="Configuración de envío por email"
+  header="Configuración de la alerta KPI por email"
   width="70vw"
   height="65vh"
+  overflow="auto"
   [disableApply]="disableApply()"
   (apply)="onApply()"
   (close)="onClose()">
 
   <div content class="p-8 bg-gray-50 h-[50vh]">
-    <div class="grid grid-cols-[25%_30%_40%] gap-8 h-full">
+    <div class="grid grid-cols-3 gap-8">
 
       <!-- Frequency -->
       <div class="bg-white shadow-lg rounded-2xl p-6 space-y-5">
@@ -50,28 +51,27 @@
       </div>
 
       <!-- Recipients -->
-      <div class="bg-white shadow-lg rounded-2xl p-6 flex flex-col gap-4">
+      <div class="bg-white shadow-lg rounded-2xl p-6 space-y-4">
         <h5 i18n="@@SendMailWho" class="text-lg font-semibold text-gray-800">Destinatarios</h5>
+
         <p-multiSelect
           [(ngModel)]="selectedUsers"
           [options]="users"
           optionLabel="label"
+          dataKey="_id"
           i18n-defaultLabel="@@selectRecipients"
           defaultLabel="Selecciona los destinatarios *"
-          styleClass="w-full"
+          class="flex w-full border border-gray-300 rounded-lg"
           [style]="{'width': '100%'}"
           [maxSelectedLabels]="2">
         </p-multiSelect>
 
-        <div class="max-h-40 overflow-y-auto border border-gray-200 rounded-lg divide-y divide-gray-100">
-          @for (user of selectedUsers; track $index) {
-            <div class="flex items-center gap-2 px-3 py-2 text-sm text-gray-700">
-              <span class="kpi-mail-user-dot"></span>
-              {{ user?.label ?? user?.name ?? user }}
-            </div>
-          } @empty {
-            <p i18n="@@noRecipientsSelected" class="text-sm text-gray-400 px-3 py-2">Sin destinatarios seleccionados</p>
-          }
+        <div class="flex flex-col gap-1">
+          <label for="kpi-other-recipients" i18n="@@otherRecipients" class="text-base text-gray-700 font-medium">Otros destinatarios:</label>
+          <span i18n="@@otherRecipientsHint" class="text-sm text-gray-400">(separados por un espacio)</span>
+          <input id="kpi-other-recipients" type="text" [(ngModel)]="otherRecipients"
+            i18n-placeholder="@@otherRecipientsPlaceholder" placeholder="correo1@dominio.com correo2@dominio.com"
+            class="kpi-mail-input w-full border border-gray-300 px-3 py-2.5 rounded-lg outline-none">
         </div>
       </div>
 
@@ -86,6 +86,13 @@
       </div>
 
     </div>
+
+    @if (enabled && allRecipientEmails.length > 0) {
+      <div class="mt-4 text-base text-gray-600">
+        <span class="font-semibold" i18n="@@sendToSummary">Enviar a:</span>
+        {{ allRecipientEmails.join(', ') }}
+      </div>
+    }
   </div>
 
 </eda-dialog2>

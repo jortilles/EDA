@@ -14,6 +14,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { DropdownModule } from 'primeng/dropdown';
 import { CommonModule } from '@angular/common';
 import { DashboardPage } from "../../pages/dashboard/dashboard.page";
+import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/customizable/customizable_default';
+
 
 @Component({
   selector: 'app-dashboard-edit-style',
@@ -36,7 +38,7 @@ export class DashboardEditStyleDialog {
   public backgroundColor: string = this.stylesProviderService.DEFAULT_BACKGROUND_COLOR;
   public panelColor: string = this.stylesProviderService.DEFAULT_PANEL_COLOR;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
-  public selectedPalette = this.stylesProviderService.ActualChartPalette !== undefined ? this.allPalettes.find(p => p?.name === this.stylesProviderService?.ActualChartPalette['name']) : this.allPalettes[0];
+  public selectedPalette: any = null;
   public properties: boolean = true;
   
   public fonts: Array<any> =
@@ -107,8 +109,13 @@ export class DashboardEditStyleDialog {
   public samplePanelContentStyle: {};
   public panelBG: string;
 
-    
-    
+  globalFilterButtonPosition: any[] = [
+    { icon: 'pi pi-arrow-left', label: 'Left', positionType: 'left' },
+    { icon: 'pi pi-arrow-right', label: 'Right', positionType: 'right' }
+  ];  
+  
+  public positionType: string = GLOBAL_FILTER_BUTTON_POSITION;
+
   constructor(private formBuilder: UntypedFormBuilder, private alertService: AlertService
     , private stylesProviderService: StyleProviderService) {
       this.dashBoardStyles = {} as DashboardStyles;
@@ -154,7 +161,7 @@ export class DashboardEditStyleDialog {
 
     this.css = styles.customCss;
     this.backgroundImage = styles.backgroundImage || null;
-
+    this.positionType = styles.filterButtonPosition ?? GLOBAL_FILTER_BUTTON_POSITION;
     }
 
     public setSampleGlobalStyle() {
@@ -298,8 +305,9 @@ public openImageInNewTab(): void {
 }
 
 public saveConfig(): void {
-    // Apply palette to all dashboard charts
-    this.applyPaletteToAllCharts();
+    if (this.selectedPalette) {
+        this.applyPaletteToAllCharts();
+    }
     
     const response: DashboardStyles = {
         stylesApplied: true,
@@ -329,7 +337,8 @@ public saveConfig(): void {
             fontSize: this.panelFontSize,
             fontColor: this.panelFontColor
         },
-        palette: this.selectedPalette
+        palette: this.selectedPalette ?? this.stylesProviderService.ActualChartPalette,
+        filterButtonPosition: this.positionType
     }
     
     this.stylesProviderService.setStyles(response);
@@ -359,5 +368,9 @@ public comparePalettes = (p1: any, p2: any) => p1 && p2 && p1?.name === p2?.name
     public onClose(): void {
         this.display = false;
         this.close.emit();
+    }
+
+    onGlobalFilterButtonPositionChange(type?: any) {
+        this.positionType = type.positionType;
     }
 }

@@ -1,18 +1,24 @@
 {
   "compilerOptions": {
       "module": "commonjs",
-      "moduleResolution": "node",
+      "moduleResolution": "node10",
       "esModuleInterop": true,
       "pretty": true,
       "sourceMap": true,
-      "target": "es6",
+      "target": "es2020",
+      "lib": ["es2020", "dom"],
       "outDir": "./dist",
       "baseUrl": "./lib",
-      "resolveJsonModule":  true,
+      "resolveJsonModule": true,
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
       "typeRoots": ["lib/types", "node_modules/@types"],
-      "skipLibCheck": true
+      "skipLibCheck": true,
+      "noImplicitAny": false,
+      "noImplicitThis": false,
+      "strictNullChecks": false,
+      "strictPropertyInitialization": false,
+      "useUnknownInCatchVariables": false
   },
   "include": [
       "lib/**/*.ts"

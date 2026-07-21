@@ -1,3 +1,8 @@
+<!-- Mobile backdrop (overlay semitransparente al abrir el chat) -->
+@if (chatAvailable() && chatOpen()) {
+  <div class="chat-mobile-backdrop" (click)="toggleChat()"></div>
+}
+
 <!-- Panel lateral chat IA (siempre en DOM, slide con CSS) -->
 <div class="chat-panel" [class.chat-panel--open]="chatAvailable() && chatOpen()">
   <div class="w-[27.5vw] h-full flex flex-col border-l bg-white">
@@ -43,11 +48,14 @@
             <p class="text-xs text-gray-400 mt-1" i18n="@@chatEmptySubtitle">Consulta dashboards, datasources y datos</p>
           </div>
           <div class="flex flex-col gap-2 w-full">
-            <button class="chat-suggestion" (click)="useSuggestion(chatSuggestion2)" i18n="@@chatSuggestion2">¿Qué datasources hay?</button>
+            <button class="chat-suggestion" (click)="useSuggestion(chatSuggestion2)" i18n="@@chatSuggestion2">¿Qué fuentes de datos hay?</button>
+          </div>
+          <div class="flex flex-col gap-2 w-full">
+            <button class="chat-suggestion" (click)="useSuggestion(chatSuggestion4)" i18n="@@chatSuggestion4">¿Qué informes tengo disponibles?</button>
           </div>
         </div>
       }
-      @for (msg of chatHistory; track $index) {
+      @for (msg of chatHistory; track msg; let msgIdx = $index) {
         <div class="chat-msg-row group" [class.chat-msg-row--user]="msg.role === 'user'">
           @if (msg.role === 'assistant') {
             <div class="chat-msg-avatar">
@@ -58,9 +66,16 @@
             <div class="chat-bubble chat-bubble--user whitespace-pre-wrap">{{ msg.displayContent ?? msg.content }}</div>
           } @else {
             <div class="chat-assistant-col">
+              @if (msgIdx === generatingMsgIndex()) {
+                <div class="chat-bubble chat-bubble--assistant chat-loading-bubble">
+                  <span class="chat-status-indicator"></span>
+                  <span class="chat-status-text" i18n="@@chatGeneratingDashboard">Generando dashboard...</span>
+                </div>
+              } @else {
               <div class="chat-bubble chat-bubble--assistant chat-message-content"
-                   [class.chat-bubble--streaming]="$index === streamingIndex()"
+                   [class.chat-bubble--streaming]="msgIdx === streamingIndex()"
                    [innerHTML]="renderMarkdown(msg.content)"></div>
+              }
               @if (msg.chart) {
                 <div class="chat-chart-wrapper">
                   <p class="chat-chart-title">{{ msg.chart.title }}</p>
@@ -71,12 +86,12 @@
                   </canvas>
                 </div>
               }
-              @if ($index !== streamingIndex()) {
+              @if (msgIdx !== streamingIndex() && msgIdx !== generatingMsgIndex()) {
                 <button class="chat-copy-btn opacity-0 group-hover:opacity-100"
-                        [class.chat-copy-btn--copied]="copiedIndex() === $index"
-                        (click)="copyMessage($index, msg.content)"
-                        [title]="copiedIndex() === $index ? 'Copiado' : 'Copiar'">
-                  @if (copiedIndex() === $index) {
+                        [class.chat-copy-btn--copied]="copiedIndex() === msgIdx"
+                        (click)="copyMessage(msgIdx, msg.content)"
+                        [title]="copiedIndex() === msgIdx ? 'Copiado' : 'Copiar'">
+                  @if (copiedIndex() === msgIdx) {
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                     </svg>

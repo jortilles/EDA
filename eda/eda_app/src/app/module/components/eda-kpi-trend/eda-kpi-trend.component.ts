@@ -1,10 +1,10 @@
-import { Component, OnInit, OnChanges, SimpleChanges, Input, HostBinding,
+import { Component, OnInit, OnChanges, OnDestroy, SimpleChanges, Input, HostBinding,
          ChangeDetectorRef, AfterViewInit, ViewChild, ElementRef, Self, Inject, LOCALE_ID } from '@angular/core';
 import { CommonModule, getLocaleMonthNames, FormStyle, TranslationWidth } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { EdaKpiTrend, TrendPeriodGroup } from './eda-kpi-trend';
-import { EdaChartComponent } from '../eda-chart/eda-chart.component';
+import { EdaBarlineComponent } from '../eda-barline-d3/eda-barline.component';
 import { StyleProviderService } from '@eda/services/service.index';
 
 @Component({
@@ -12,11 +12,11 @@ import { StyleProviderService } from '@eda/services/service.index';
     selector: 'eda-kpi-trend',
     templateUrl: './eda-kpi-trend.component.html',
     styleUrls: ['./eda-kpi-trend.component.css'],
-    imports: [CommonModule, FormsModule, DropdownModule, EdaChartComponent]
+    imports: [CommonModule, FormsModule, DropdownModule, EdaBarlineComponent]
 })
-export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
+export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     @Input() inject: EdaKpiTrend;
-    @ViewChild('edaTrendChart') edaTrendChart: EdaChartComponent;
+    @ViewChild('edaTrendChart') edaTrendChart: EdaBarlineComponent;
     @ViewChild('kpiLeft') kpiLeftRef: ElementRef;
 
     @HostBinding('style.display') readonly hostDisplay = 'block';
@@ -38,6 +38,10 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     displayAvailableComparisons: { key: string; label: string }[] = [];
     edaChartInject: any = null;
     selectedComparisonKey: string = '';
+
+    // Layout
+    isPortrait: boolean = false;
+    private _resizeObs: ResizeObserver | null = null;
 
     // KPI Style
     color: string = '#67757c';
@@ -65,7 +69,20 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
+        const host = this.hostRef.nativeElement as HTMLElement;
+        this._resizeObs = new ResizeObserver(() => {
+            const portrait = host.offsetHeight > host.offsetWidth ;
+            if (portrait !== this.isPortrait) {
+                this.isPortrait = portrait;
+                this.cdr.detectChanges();
+            }
+        });
+        this._resizeObs.observe(host);
         this.cdr.detectChanges();
+    }
+
+    ngOnDestroy(): void {
+        this._resizeObs?.disconnect();
     }
 
     /** Synchronizes all local properties from inject */
@@ -211,11 +228,13 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
         try {
             const host = this.hostRef.nativeElement as HTMLElement;
             const panelH = host.offsetHeight || 120;
+            const panelW = host.offsetWidth || 200;
             const colEl = this.kpiLeftRef?.nativeElement as HTMLElement | undefined;
-            const colW = (colEl?.offsetWidth || host.offsetWidth * 0.4) - 16;
+            const colW = (colEl?.offsetWidth || (this.isPortrait ? panelW : panelW * 0.4)) - 16;
+            const kpiAreaH = this.isPortrait ? panelH * 0.3 : panelH;
             const text = this.formatValue(this.displayKpiValue) + this.displaySufix;
             const charCount = Math.max(text.length, 1);
-            let size = Math.min(panelH * 0.22, colW / charCount * 1.6);
+            let size = Math.min(kpiAreaH * 0.22, colW / charCount * 1.6);
             size = Math.max(12, Math.min(size, 34));
             size = Math.max(8, size + (this.inject?.modifiedFontPoints ?? this.modifiedFontPoints));
             return size.toFixed(0) + 'px';

@@ -350,10 +350,14 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>
                                     Attribute summary
 </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-<context context-type="linenumber">137</context>
-</context-group>
+</trans-unit>
+<trans-unit id="resumenAtrH6Hover" datatype="html">
+<source>
+¿Qué estoy viendo?
+</source>
+<target>
+What am I seeing?
+</target>
 </trans-unit>
 <trans-unit id="resumenFiltrosPanelH6" datatype="html">
 <source>
@@ -2634,6 +2638,16 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Linked to   </target>
 </trans-unit>
 
+<trans-unit id="secondAxis">
+<source> Segundo Eje  </source>
+<target>Second Axis</target>
+</trans-unit>
+
+<trans-unit id="secondAxisDescription">
+<source> Muestra un eje independiente a la derecha para las líneas, separado del eje de las barras </source>
+<target>Shows an independent axis on the right for the lines, separate from the bars' axis</target>
+</trans-unit>
+
 <trans-unit id="DataModelHeader">
 <source> Configurar nueva fuente de datos  </source>
 <target> New datasource  </target>
@@ -3189,6 +3203,10 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
 <target>KPI Trend needs a date column in month format and a numeric column</target>
 </trans-unit>
+<trans-unit id="chartInfoKpiDeviation">
+<source>KPI Desviación necesita dos columnas numéricas: valor actual y valor de referencia</source>
+<target>KPI Deviation needs two numeric columns: current value and reference value</target>
+</trans-unit>
 <trans-unit id="trendTitleYear"><source>Año actual</source><target>Current Year</target></trans-unit>
 <trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Current Month</target></trans-unit>
 <trans-unit id="trendTitleWeek"><source>Semana actual</source><target>Current Week</target></trans-unit>
@@ -3446,10 +3464,6 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Show Tags in Percent</target>
 </trans-unit>
 
-<trans-unit id="showUniqueColors">
-<source>Activar Colores Únicos</source>
-<target>Activate Unique Colors</target>
-</trans-unit>
 
 <trans-unit id="showPointLines">
 <source>Mostrar Puntos en Líneas</source>
@@ -3536,6 +3550,11 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <trans-unit id="ChangeDefaultsColors">
 <source>Color del los gráficos</source>
 <target>Chart color</target>
+</trans-unit>
+
+<trans-unit id="selectPalette">
+<source>Seleccionar paleta</source>
+<target>Select palette</target>
 </trans-unit>
 
 <trans-unit id="properties">
@@ -3815,6 +3834,10 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <trans-unit id="chartTypesKPITrend">
 <source>KPI Tendencia</source>
 <target>KPI Trend</target>
+</trans-unit>
+<trans-unit id="chartTypesKPIDeviation">
+<source>KPI Desviación</source>
+<target>KPI Deviation</target>
 </trans-unit>
 
 <trans-unit id="urlEditSaveError">
@@ -4431,6 +4454,26 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Show Legend</target>
 </trans-unit>
 
+<trans-unit id="internRadius">
+  <source>Radio Interno</source>
+  <target>Intern Radius</target>
+</trans-unit>
+
+<trans-unit id="useGradient">
+  <source>Usar Gradiente</source>
+  <target>Use Gradient</target>
+</trans-unit>
+
+<trans-unit id="useRoundedBars">
+  <source>Redondear barras</source>
+  <target>Round bars</target>
+</trans-unit>
+
+<trans-unit id="chartRoundedBarsOptionDescription">
+<source>Redondea la punta de las barras</source>
+<target>Rounds the tip of the bars</target>
+</trans-unit>
+
 <trans-unit id="chartLegendOptionDescription">
 <source>Muestra la leyenda del gráfico</source>
 <target>Show chart legend</target>
@@ -4444,6 +4487,16 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="chartGridLinesOptionDescription">
 <source>Muestra u oculta las líneas guía del gráfico</source>
 <target>Show or hide chart grid lines</target>
+</trans-unit>
+
+<trans-unit id="chartAnimation">
+<source>Animar Gráfico</source>
+<target>Animate Chart</target>
+</trans-unit>
+
+<trans-unit id="chartAnimationOptionDescription">
+<source>Anima la aparición de los datos al cargar el gráfico</source>
+<target>Animates the appearance of data when the chart loads</target>
 </trans-unit>
 
 <trans-unit id="histogramColum">
@@ -4471,9 +4524,9 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Displays the percentage value of each segment</target>
 </trans-unit>
 
-<trans-unit id="chartUniqueColorsOption">
-<source>Asigna un color único a cada barra o elemento</source>
-<target>Assigns a unique color to each bar or element</target>
+<trans-unit id="uniqueColorsTab">
+<source> Colores Únicos </source>
+<target> Unique Colors </target>
 </trans-unit>
 
 <trans-unit id="chartUniqueColorsOptionDescription">
@@ -4883,6 +4936,21 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="numValTrigAlert">
 <source>Valor numérico que activará la alerta</source>
 <target>Numeric value that triggers the alert</target>
+</trans-unit>
+
+<trans-unit id="thresholdValuePercent">
+<source>Valor umbral (%)</source>
+<target>Threshold value (%)</target>
+</trans-unit>
+
+<trans-unit id="deviationPercTrigAlert">
+<source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
+<target>% deviation that will trigger the alert (e.g. -10 = when the deviation is below -10%)</target>
+</trans-unit>
+
+<trans-unit id="whenKpiDeviationIs">
+<source>Cuando el % es</source>
+<target>When the % is</target>
 </trans-unit>
 
 <trans-unit id="textChangeColor">
@@ -6078,6 +6146,10 @@ OR<ph id="5"/>
   <source>Muestra la predicción de la serie</source>
   <target>Show the series prediction</target>
 </trans-unit>
+<trans-unit id="colorsTab">
+  <source> Colores </source>
+  <target> Colors </target>
+</trans-unit>
 <trans-unit id="gradientTab">
   <source>Colores por intervalo</source>
   <target>Colors by interval</target>
@@ -6374,12 +6446,16 @@ OR<ph id="5"/>
   <target>What dashboards do I have?</target>
 </trans-unit>
 <trans-unit id="chatSuggestion2" datatype="html">
-  <source>¿Qué datasources hay?</source>
-  <target>What datasources are available?</target>
+  <source>¿Qué fuentes de datos hay?</source>
+  <target>What data sources are there?</target>
 </trans-unit>
 <trans-unit id="chatSuggestion3" datatype="html">
   <source>Estado del servidor</source>
   <target>Server status</target>
+</trans-unit>
+<trans-unit id="chatSuggestion4" datatype="html">
+  <source>¿Qué informes tengo disponibles?</source>
+  <target>What reports do I have available?</target>
 </trans-unit>
 <trans-unit id="chatInputPlaceholder" datatype="html">
   <source>Escribe un mensaje...</source>
@@ -6521,6 +6597,14 @@ OR<ph id="5"/>
   <source>Navegar</source>
   <target>Navigate</target>
 </trans-unit>
+<trans-unit id="resultSortingText" datatype="html">
+  <source>Ordenar los resultados por:</source>
+  <target>Sort results by:</target>
+</trans-unit>
+<trans-unit id="draggResultSorting" datatype="html">
+  <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
+  <target>Drag here the attributes you want to sort by</target>
+</trans-unit>
 <trans-unit id="noDuckDbFile">
   <source>Debe cargar un archivo CSV primero</source>
   <target>You must load a CSV file first</target>
@@ -6652,6 +6736,66 @@ OR<ph id="5"/>
 <trans-unit id="holdedCreated">
   <source>Fuente de datos Holded creada correctamente</source>
   <target>Holded data source created successfully</target>
+</trans-unit>
+<trans-unit id="multipleSelectionText">
+  <source>Selección múltiple</source>
+  <target>Multiple choice</target>
+</trans-unit>
+<trans-unit id="uniqueSelectionText">
+  <source>Selección única</source>
+  <target>Single choice</target>
+</trans-unit>
+<trans-unit id="uniqueSelectionDescription">
+  <source>Active esta opción para permitir la selección múltiple.</source>
+  <target>Enable this option to allow multiple selection.</target>
+</trans-unit>
+<trans-unit id="multipleSelectionDescription">
+  <source>Desactive esta opción para permitir la selección única.</source>
+  <target>Disable this option to allow single selection.</target>
+</trans-unit>
+<trans-unit id="enablePanelLockButton">
+  <source>Bloquear los paneles</source>
+  <target>Lock the panels</target>
+</trans-unit>
+<trans-unit id="disablePanelLockButton">
+  <source>Desbloquear los paneles</source>
+  <target>Unlock the panels</target>
+</trans-unit>
+<trans-unit id="noAttributes">
+  <source>Sin atributos</source>
+  <target>Without attributes</target>
+</trans-unit>
+<trans-unit id="noFilters">
+  <source>Sin filtros</source>
+  <target>Without filters</target>
+</trans-unit>
+<trans-unit id="aiDashboardDescription">
+  <source>(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.</source>
+  <target>(Optional) Describe the panels you want to generate with AI. Example: monthly sales as bars, top customers by amount, total billing KPI.</target>
+</trans-unit>
+<trans-unit id="aiGeneratingDashboard">
+  <source>Generando dashboard con IA...</source>
+  <target>Generating dashboard with AI...</target>
+</trans-unit>
+<trans-unit id="otherRecipients">
+  <source>Otros destinatarios:</source>
+  <target>Other recipients:</target>
+</trans-unit>
+<trans-unit id="otherRecipientsHint">
+  <source>(separados por un espacio)</source>
+  <target>(separated by a space)</target>
+</trans-unit>
+<trans-unit id="otherRecipientsPlaceholder">
+  <source>correo1@dominio.com correo2@dominio.com</source>
+  <target>email1@domain.com email2@domain.com</target>
+</trans-unit>
+<trans-unit id="sendToSummary">
+  <source>Enviar a:</source>
+  <target>Send to:</target>
+</trans-unit>
+<trans-unit id="kpiMailConfigTitle">
+  <source>Configuración de la alerta KPI por email</source>
+  <target>KPI alert email configuration</target>
 </trans-unit>
 </body>
 </file>

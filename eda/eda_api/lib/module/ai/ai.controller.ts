@@ -1,9 +1,10 @@
-import { NextFunction, Request, response, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { HttpException } from "../global/model/index";
 import AIUsage from "./model/ai-usage.model" // A utilizar proximamente
 import { PromptService } from "../../services/prompt/prompt-assistant.service";
 import { AIProviderFactory } from "../../services/prompt/providers/ai-provider.factory";
 import { NormalizedMessage } from "../../services/prompt/providers/ai-provider.interface";
+import { generateDashboard } from "./ai-generate-dashboard.service";
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -52,7 +53,7 @@ export class AiController {
                 ok: true,
                 response: response
             })
-            
+
         } catch (err) {
             console.log(err);
             next(new HttpException(400, 'some Error occurred with the AI availability'))
@@ -163,6 +164,17 @@ export class AiController {
         }
     }
 
+    static async aiGenerateDashboard(req: Request, res: Response, next: NextFunction) {
+        try {
+            const config = getAiConfig();
+            if (!config.AVAILABLE) return next(new HttpException(503, 'El servicio de IA no está disponible'));
+            await generateDashboard(req, res, next, config);
+        } catch (err) {
+            console.error('[AI Dashboard] Error:', err);
+            next(new HttpException(500, 'Error generando el dashboard con IA'));
+        }
+    }
+
     static async aIsaveConfig(req: Request, res: Response, next: NextFunction) {
         try {
             const { PROVIDER, API_KEY, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, MODEL, CONTEXT, AVAILABLE, LIMIT, MAX_TOKENS, EDA_APP_URL, MCP_URL, MCP_EMAIL, MCP_PASSWORD } = req.body;
@@ -178,7 +190,8 @@ export class AiController {
             const finalMcpUrl = MCP_URL ?? currentConfig.MCP_URL ?? '';
             const finalMcpEmail = MCP_EMAIL ?? currentConfig.MCP_EMAIL ?? '';
             const finalMcpPassword = MCP_PASSWORD ?? currentConfig.MCP_PASSWORD ?? '';
-            const content = `module.exports = { \n    PROVIDER: '${finalProvider}',\n    API_KEY: '${finalApiKey}',\n    AWS_ACCESS_KEY: '${finalAwsAccessKey}',\n    AWS_SECRET_KEY: '${finalAwsSecretKey}',\n    AWS_REGION: '${finalAwsRegion}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n    MAX_TOKENS: ${finalMaxTokens},\n    EDA_APP_URL: '${finalEdaAppUrl}',\n    MCP_URL: '${finalMcpUrl}',\n    MCP_EMAIL: '${finalMcpEmail}',\n    MCP_PASSWORD: '${finalMcpPassword}',\n};\n`;
+            const safeContext = (CONTEXT || '').replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
+            const content = `module.exports = { \n    PROVIDER: '${finalProvider}',\n    API_KEY: '${finalApiKey}',\n    AWS_ACCESS_KEY: '${finalAwsAccessKey}',\n    AWS_SECRET_KEY: '${finalAwsSecretKey}',\n    AWS_REGION: '${finalAwsRegion}',\n    MODEL: '${MODEL}',\n    CONTEXT: \`${safeContext}\`,\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n    MAX_TOKENS: ${finalMaxTokens},\n    EDA_APP_URL: '${finalEdaAppUrl}',\n    MCP_URL: '${finalMcpUrl}',\n    MCP_EMAIL: '${finalMcpEmail}',\n    MCP_PASSWORD: '${finalMcpPassword}',\n};\n`;
             fs.writeFile(configPath, content, 'utf8', (err) => {
                 if (err) return next(new HttpException(500, 'Error saving the AI configuration'));
                 return res.status(200).json({ ok: true });

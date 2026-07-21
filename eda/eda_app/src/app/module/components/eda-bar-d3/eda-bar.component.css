@@ -1,0 +1,61 @@
+.eda-bar-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.eda-bar-wrapper .svg-container {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Axes/grid/bars are appended by D3 directly into the nested <svg> it creates at runtime,
+   outside Angular's template compiler, so they never get the [_ngcontent] attribute -
+   ::ng-deep is required to style them from this component's own stylesheet. */
+::ng-deep .eda-bar-grid line {
+  stroke: #94a3b8;
+}
+
+::ng-deep .eda-bar-grid path {
+  display: none;
+}
+
+::ng-deep .eda-bar-axis path,
+::ng-deep .eda-bar-axis line {
+  stroke: #94a3b8;
+}
+
+::ng-deep .eda-bar-tooltip {
+  position: absolute;
+  text-align: left;
+  cursor: pointer;
+  padding: 8px 10px;
+  font: 12px;
+  color: #ffffff;
+  background: #010913ea;
+  border: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+::ng-deep .eda-bar-tooltip-title {
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+::ng-deep .eda-bar-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+::ng-deep .eda-bar-tooltip-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}

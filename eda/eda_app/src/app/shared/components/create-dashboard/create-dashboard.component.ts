@@ -31,6 +31,7 @@ export class CreateDashboardComponent implements OnInit {
     public grups: IGroup[] = [];
     public visibleTypes: SelectItem[] = [];
     public showGroups: boolean = false;
+    public aiLoading: boolean = false;
 
     @Output() close: EventEmitter<any> = new EventEmitter();
 
@@ -55,7 +56,8 @@ export class CreateDashboardComponent implements OnInit {
             name: [null, Validators.required],
             ds: [null, Validators.required],
             visible: [null, Validators.required],
-            group: [null]
+            group: [null],
+            aiDescription: [null]
         });
 
         this.visibleTypes = [
@@ -107,6 +109,28 @@ export class CreateDashboardComponent implements OnInit {
     public async createNewDashboard(): Promise<void> {
         if (this.form.invalid) {
             this.alertService.addError('Recuerde rellenar los campos obligatorios');
+            return;
+        }
+
+        const aiDescription: string = (this.form.value.aiDescription || '').trim();
+        const group = this.form.value.group ? _.map(this.form.value.group, '_id') : undefined;
+
+        if (aiDescription) {
+            this.aiLoading = true;
+            try {
+                const res = await this.dashboardService.generateDashboardWithAI({
+                    datasource_id: this.form.value.ds._id,
+                    description: aiDescription,
+                    title: this.form.value.name,
+                    visible: this.form.value.visible,
+                    group,
+                }).toPromise();
+                this.onClose(res.dashboard);
+            } catch (err) {
+                this.alertService.addError(err);
+            } finally {
+                this.aiLoading = false;
+            }
         } else {
             const ds = { _id: this.form.value.ds._id };
             const body = {
@@ -114,17 +138,14 @@ export class CreateDashboardComponent implements OnInit {
                     ds,
                     title: this.form.value.name,
                     visible: this.form.value.visible,
-                    tag: null, 
+                    tag: null,
                     refreshTime:null, 
                     clickFiltersEnabled:true, 
                     styles: this.stylesProviderService.generateDefaultStyles(),
                     external: null
                 },
-                group: this.form.value.group
-                    ? _.map(this.form.value.group, '_id')
-                    : undefined
+                group,
             };
-
             try {
                 const res = await this.dashboardService.addNewDashboard(body).toPromise();
                 this.onClose(res.dashboard);

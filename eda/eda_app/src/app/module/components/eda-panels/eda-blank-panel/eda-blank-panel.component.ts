@@ -2,7 +2,7 @@
 import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { DragDropModule, CdkDrag, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem, copyArrayItem } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import * as _ from 'lodash';
@@ -15,8 +15,7 @@ import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
-import { NULL_VALUE, EMPTY_VALUE} from '../../../../config/personalitzacio/customizables';
-import { aggTypes } from 'app/config/aggretation-types';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, SHOW_HIDDEN_FIELDS_BUTTON, SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY } from '@eda/configs/customizable/customizable_default';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
 import { PanelChart } from './panel-charts/panel-chart';
@@ -25,6 +24,7 @@ import { TableConfig } from './panel-charts/chart-configuration-models/table-con
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
+import { KpiDeviationConfig } from './panel-charts/chart-configuration-models/kpi-deviation-config';
 import { DynamicTextConfig } from './panel-charts/chart-configuration-models/dynamicText-config';
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 // Eda Services
@@ -38,7 +38,6 @@ import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
 import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent} from '@eda/shared/components/shared-components.index';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
-import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import { PanelChartComponent } from './panel-charts/panel-chart.component';
 import { DragDropComponent } from '@eda/components/drag-drop/drag-drop.component';
 import { ColumnDialogComponent } from '@eda/components/component.index';
@@ -52,6 +51,7 @@ import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
 import { EdadynamicTextComponent } from '@eda/components/component.index';
 import { EdaTitlePanelComponent } from '@eda/components/component.index';
 import { PanelMenuModule } from 'primeng/panelmenu';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ChartTypeSelectorDialogComponent } from './chart-type-selector-dialog/chart-type-selector-dialog.component';
 import { PromptComponent } from '@eda/components/prompt/prompt.component';
 import { FilterAndOrDialogComponent } from './filter-and-or-dialog/filter-and-or-dialog.component';
@@ -61,7 +61,7 @@ import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-
 import { TableUtils } from './panel-utils/tables-utils';
 import { QueryUtils } from './panel-utils/query-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
-import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
+import { ChartsConfigUtils, CUSTOM_CHART_CONFIG_FIELDS } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
 import { NavigationUtils } from './panel-utils/navigation-utils';
 
@@ -86,6 +86,8 @@ import { dynamicTextDialogComponent } from '@eda/components/component.index';
 import { TableDialogComponent } from '@eda/components/component.index';
 import { TableGradientDialogComponent } from '@eda/components/component.index';
 import { KpiEditDialogComponent } from '@eda/components/component.index';
+import { DoughnutDialog } from '@eda/components/component.index';
+import { PolarAreaDialog } from '@eda/components/component.index';
 export interface IPanelAction {
     code: string;
     data: any;
@@ -102,10 +104,10 @@ const DIALOGS_COMPONENTS = [
     ChartDialogComponent,BubblechartDialog, MapCoordDialogComponent, MapEditDialogComponent,
     TreeTableDialogComponent, SunburstDialogComponent, TreeMapDialog, ScatterPlotDialog,
     FunnelDialog, KnobDialogComponent, SankeyDialog, dynamicTextDialogComponent, TableDialogComponent,
-    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent
+    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent, DoughnutDialog, PolarAreaDialog
 ];
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
-const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
+const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule, OverlayPanelModule];
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, ChatEdaAIComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
@@ -125,7 +127,6 @@ export class EdaBlankPanelComponent implements OnInit {
     /** Reference to the dashboard root element (used for image capture during Excel export) */
     public elRef = inject(ElementRef);
 
-    @ViewChild('edaChart', { static: false }) edaChart: EdaChartComponent;
     @ViewChild('PanelChartComponent', { static: false }) panelChart: PanelChartComponent;
     @ViewChild('panelChartComponentPreview', { static: false }) panelChartPreview: PanelChartComponent;
     @ViewChild('op', { static: false }) op: any;
@@ -158,6 +159,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public sankeyController: EdaDialogController;
     public treeMapController: EdaDialogController;
     public funnelController:EdaDialogController;
+    public doughnutController: EdaDialogController;
+    public polarAreaController: EdaDialogController;
     public bubblechartController:EdaDialogController;
     public linkDashboardController: EdaDialogController;
     public scatterPlotController: EdaDialogController;
@@ -221,6 +224,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public limitRowsInfo: string = $localize`:@@limitRowsInfo:Establece un Top n para la consulta`;
     public draggFields: string = $localize`:@@dragFields:Arrastre aquí los atributos que quiera ver en su panel`;
     public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
+    public draggResultSorting: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiere ordenar`;
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
@@ -233,6 +237,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public columns: any[] = [];
     public aggregationsTypes: any[] = [];
     public filtredColumns: Column[] = [];
+    public resultSortingColumns: any[] = [];
     public ordenationTypes: OrdenationType[];
     public currentQuery: any[] = [];
     public currentSQLQuery: string = '';
@@ -335,9 +340,13 @@ export class EdaBlankPanelComponent implements OnInit {
     private formBuilder = inject(UntypedFormBuilder);
     private iaFormStateService = inject(IaFormStateService);
 
-
     public editingTitle: boolean = false;
     public promptAvailable = computed(() => this.iaFormStateService.formData().AVAILABLE);
+
+    readonly showLockInHeader = SHOW_LOCK_IN_PANEL_HEADER;
+    readonly showHiddenFieldsButton = SHOW_HIDDEN_FIELDS_BUTTON;
+    readonly showHiddenFieldsButtonAdminOnly = SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY;
+    public showHiddenColumn: boolean = false;
 
 
     constructor(
@@ -411,6 +420,7 @@ export class EdaBlankPanelComponent implements OnInit {
             }
             this.loadChartsData(this.panel.content);
             this.dynamicFilters = this.panel.content.dynamicFilters ?? true;
+            this.resultSortingColumns = this.panel.content.resultSortingColumns ?? [];
             } catch(e){
                 console.error('Error loading panel conent: ');
                 throw e;
@@ -421,6 +431,7 @@ export class EdaBlankPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
+
         this.extraStyles =
             ['knob', 'radar'].includes(this.panel.content?.chart) ? { minHeight: '55vh', minWidth: '55vw', display: 'inline-block', alignItems: 'center' } :
             ['kpi'].includes(this.panel.content?.chart) ? {height: '100%', width: '100%', alignContent: 'center'} : 
@@ -431,6 +442,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     }
     
+    public openContextMenu(event: MouseEvent): void {
+        this.contextMenu.contextMenuItems = PanelOptions.generateMenu(this);
+        this.contextMenu.showContextMenu(event);
+    }
+
     /**
      * When selecting a node from the tree, it loads the columns to display.
      * @param event selected node. Can be rootNode (table_id) or childNode (child_id).
@@ -515,17 +531,47 @@ public tableNodeExpand(event: any): void {
 
     isEditable() {
         const user = localStorage.getItem('user');
-        const userName = JSON.parse(user).name;
+        const userName = JSON.parse(user)._id;
         const userRole = JSON.parse(user).role;
         const isAdmin = userRole.includes('135792467811111111111110');
-        const imProperty = userName === this.dashboard.dashboard.config.author;
-        return (userName !== 'edaanonim' && !this.inject.isObserver) && !this.readonly && (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin);
+        const imProperty = userName === this.dashboard.dashboard.user;
+        return (userName !== '135792467811111111111112' && !this.inject.isObserver) && !this.readonly && (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin);
     }
 
     isRemovable() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
         return (userName !== 'edaanonim' && !this.inject.isObserver);
+    }
+
+    // Toggles whether columns marked as hidden are shown (with reduced opacity) in the attributes list.
+    public async changeHiddenMode(): Promise<void> {
+        this.showHiddenColumn = !this.showHiddenColumn;
+        const selectedTable = this.getUserSelectedTable();
+        this.loadColumns(selectedTable);
+    }
+
+    isPanelLocked(): boolean {
+        return (this.panel as any).dragEnabled === false;
+    }
+
+    togglePanelLock(): void {
+        const panel = this.panel as any;
+        const locked = this.isPanelLocked();
+        panel.dragEnabled = locked;
+        panel.resizeEnabled = locked;
+        this.dashboard.gridsterOptions.api?.optionsChanged();
+        this.dashboardService.setNotSaved(true);
+    }
+
+    isClickFiltersEnabled(): boolean {
+        return (this.panel as any).clickFiltersEnabled ?? true;
+    }
+
+    toggleClickFilters(): void {
+        const panel = this.panel as any;
+        panel.clickFiltersEnabled = !this.isClickFiltersEnabled();
+        this.dashboardService.setNotSaved(true);
     }
 
     public showWhatIfSection(): boolean {
@@ -623,7 +669,17 @@ public tableNodeExpand(event: any): void {
             PanelInteractionUtils.handleFilters(this, panelContent.query.query); // 3. populate selectedFilters (reads dateNavState)
 
             const hasNavChildren = this.currentQuery.some((col: any) => col.downChild);
-            const queryToRun = hasNavChildren ? QueryUtils.initEdaQuery(this) : panelContent.query;
+            const baseQuery = panelContent.query;
+            const queryToRun = hasNavChildren
+                ? QueryUtils.initEdaQuery(this)
+                : {
+                    ...baseQuery,
+                    dashboard: baseQuery.dashboard ?? {
+                        dashboard_id: this.inject.dashboard_id,
+                        panel_id: this.panel.id,
+                        connectionProperties: this.connectionProperties
+                    }
+                };
             const response = await QueryUtils.switchAndRun(this, queryToRun);
             
             const [labels, values] = response;
@@ -734,8 +790,9 @@ public tableNodeExpand(event: any): void {
             // Nav filters are runtime-only — strip before saving so they don't pollute
             // the saved filters. They are restored via navActiveNodes.navFilters on reload.
             query.query.filters = (query.query.filters || []).filter((f: any) => !f.isNavFilter);
-            const chart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
-            const edaChart = this.panelChart?.props.edaChart;
+            const formChart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
+            const chart = formChart || this.graficos?.chartType;
+            const edaChart = this.panelChart?.props.edaChart || this.graficos?.edaChart;
             const navigationLinks: any[] = this.buildNavigationLinks(query);
             const navActiveNodes = (this.navState || []).map((entry: any) => ({
                 parentKey: entry.rootKey,
@@ -749,7 +806,7 @@ public tableNodeExpand(event: any): void {
                 currentFormatIndex: entry.currentFormatIndex,
                 navFilters: entry.navFilters
             }));
-            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, navActiveNodes, savedDateNavState, fullCurrentQuery: this.currentQuery };
+            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, navActiveNodes, savedDateNavState, fullCurrentQuery: this.currentQuery, resultSortingColumns: this.resultSortingColumns };
 
             /**This is to repaint on panel redimension */
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
@@ -762,7 +819,7 @@ public tableNodeExpand(event: any): void {
 
 
         //not saved alert message
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
 
         // Reset the prompt chat.
         this.promptMessages = [];
@@ -826,8 +883,8 @@ public tableNodeExpand(event: any): void {
     public setChartProperties(config?: any) {
         config = config || this.panelChart?.getCurrentConfig();
 
-        if (config 
-            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid', 'radar'].includes(config.chartType) 
+        if (config
+            && ['bar', 'line', 'area', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid', 'radar'].includes(config.chartType)
             && config.chartType === this.graficos.chartType ) {
             this.graficos = config;
         }
@@ -837,9 +894,7 @@ public tableNodeExpand(event: any): void {
      * Chart click event
     */
     public onChartClick(event: any): void {
-        const config = this.panelChart.getCurrentConfig();
-        if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(config?.chartType) ||   //NG2 CHARTS
-            ['treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
+        if (['doughnut', 'polarArea', 'bar', 'radar', 'line', 'area', 'treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
             'geoJsonMap'.includes(this.panelChart.props.chartType) || //Leaflet 
             ['table', 'crosstable', 'treetable'].includes(this.panelChart.props.chartType)) // tables
         {
@@ -927,27 +982,23 @@ public tableNodeExpand(event: any): void {
         if (!_.isEqual(this.display_v.chart, 'no_data') && allow && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
-            // Preserve assignedColors, coloredBarsConfig, showUniqueColors, and uniqueBarColors before merging.
-            const savedAssignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
-            const savedColoredBarsConfig = config && config.getConfig() ? config.getConfig()['coloredBarsConfig'] : null;
-            const savedShowUniqueColors = config && config.getConfig() ? config.getConfig()['showUniqueColors'] : null;
-            const savedUniqueBarColors = config && config.getConfig() ? config.getConfig()['uniqueBarColors'] : null;
+            // Preserve every custom field (same list setConfig() uses to save them) before
+            // merging - setVoidChartConfig() builds a fresh ChartJsConfig without them, and
+            // _.merge() isn't trusted to carry them over correctly either.
+            const savedCustomFields: Record<string, any> = {};
+            CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+                savedCustomFields[field.name] = config && config.getConfig() ? config.getConfig()[field.name] : null;
+            });
 
             _.merge(_config, config||{});
 
-            // Restore assignedColors after merging.
-            if (savedAssignedColors) {
-                _config.getConfig()['assignedColors'] = savedAssignedColors;
-            }
-            // Restore coloredBarsConfig after merging.
-            if (savedColoredBarsConfig) {
-                _config.getConfig()['coloredBarsConfig'] = savedColoredBarsConfig;
-            }
-            // Restore showUniqueColors and uniqueBarColors after merging.
-            if (savedShowUniqueColors != null) {
-                _config.getConfig()['showUniqueColors'] = savedShowUniqueColors;
-                _config.getConfig()['uniqueBarColors'] = savedUniqueBarColors ?? [];
-            }
+            // Restore every custom field after merging.
+            CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+                const saved = savedCustomFields[field.name];
+                if (saved != null) {
+                    _config.getConfig()[field.name] = saved;
+                }
+            });
 
             // Ensure that showPredictionLines is propagated to _config (keep the prediction line when switching between chart types).
             if (['line', 'area'].includes(type) && this.graficos.showPredictionLines) {
@@ -1147,6 +1198,58 @@ public tableNodeExpand(event: any): void {
 
 
 
+    public dropToResultSorting(event: CdkDragDrop<any[]>) {
+
+        console.log('event ==> ', event);
+
+        if (event.previousContainer === event.container) {
+            moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+        } else {
+            const draggedColumn = event.previousContainer.data[event.previousIndex];
+
+            // Si no tenemos ordenation_type, añadimos 
+            draggedColumn.ordenation_type ??= 'No';
+
+            const alreadyAdded = this.resultSortingColumns
+                .some(col => col.column_name === draggedColumn.column_name);
+            if (!alreadyAdded) {
+                copyArrayItem(
+                    event.previousContainer.data,
+                    event.container.data,
+                    event.previousIndex,
+                    event.currentIndex
+                );
+            }
+        }
+
+        console.log('resultSortingColumns: ', this.resultSortingColumns);
+
+    }
+
+    public changeResultSortingValue(column: any) {
+
+        if (column.ordenation_type === 'Asc') {
+            column.ordenation_type = 'No';
+        } else if (column.ordenation_type === 'No') {
+            column.ordenation_type = 'Desc';
+        } else if (column.ordenation_type === 'Desc') {
+            column.ordenation_type = 'Asc';
+        }
+
+        const newValue = column.ordenation_type;
+        const syncOrdenation = (arr: any[]) => {
+            const match = arr.find(c => c.column_name === column.column_name && c.table_id === column.table_id);
+            if (match) match.ordenation_type = newValue;
+        };
+        syncOrdenation(this.currentQuery);
+        syncOrdenation(this.resultSortingColumns);
+    }
+
+    public removeResultSorting(column: any) {
+        this.resultSortingColumns = this.resultSortingColumns
+            .filter(col => col.column_name !== column.column_name);
+    }
+
     /* Condicions Drag&Drop */
     public isAllowed = (drag?: CdkDrag, drop?) => false;
 
@@ -1219,6 +1322,13 @@ public tableNodeExpand(event: any): void {
                         } 
                     }
 
+                    for (const sortCol of this.resultSortingColumns) {
+                        const match = this.currentQuery.find(c =>
+                            c.column_name === sortCol.column_name && c.table_id === sortCol.table_id
+                        );
+                        if (match) sortCol.ordenation_type = match.ordenation_type;
+                    }
+
                     if (event === EdaDialogCloseEvent.NONE) {
                         this.configController = undefined;
                     }
@@ -1273,6 +1383,10 @@ public tableNodeExpand(event: any): void {
             this.globalFilters.push(globalFilter);
         } else {
             this.globalFilters.push(globalFilter);
+            // New filter: if advanced (AND/OR) filters are configured, register it there too,
+            // otherwise the backend builds the WHERE clause from sortedFilters alone and this
+            // filter would never reach the query even though it shows up as a global filter.
+            this.addingGlobalFilterEbp(globalFilter);
         }
     }
 
@@ -1296,7 +1410,7 @@ public tableNodeExpand(event: any): void {
 
     public addingGlobalFilterEbp(_filter: any) {
 
-        if(this.sortedFilters.length !==0){
+        if(this.sortedFilters.length !==0 && !this.sortedFilters.some((sf: any) => sf.filter_id === _filter.filter_id)){
             const lastElement = this.sortedFilters[this.sortedFilters.length-1];
 
             const newSortedFilter = {
@@ -1322,14 +1436,30 @@ public tableNodeExpand(event: any): void {
 
     public rebootGlobalFilter(_filter: any){
 
-        if(this.sortedFilters.length !==0) {
+        const targetIndex = this.sortedFilters.findIndex((sortedFilter: any) => _filter.id === sortedFilter.filter_id);
+        if (targetIndex === -1) return; // This filter isn't part of the advanced (AND/OR) config, nothing to do
+
+        const target = this.sortedFilters[targetIndex];
+        const nextItem = this.sortedFilters.find((sortedFilter: any) => sortedFilter.y === target.y + 1);
+        const hasChildren = !!nextItem && nextItem.x > target.x;
+
+        // Removing an AND at root level with no nested children below it doesn't change the
+        // logical result of the remaining tree, so we can drop just that entry. Anything else
+        // (OR, nested item, or an item with children) would break the AND/OR tree structure,
+        // so we fall back to a full reset.
+        const canRemoveInPlace = target.x === 0 && target.value === 'and' && !hasChildren;
+
+        if (canRemoveInPlace) {
+            this.sortedFilters = this.sortedFilters
+                .filter((sortedFilter: any) => sortedFilter.filter_id !== _filter.id)
+                .sort((a: any, b: any) => a.y - b.y)
+                .map((sortedFilter: any, i: number) => ({ ...sortedFilter, y: i }));
+        } else {
             this.alertService.addWarning($localize`:@@globalFilterSettingsReboot:La configuración de filtros del panel involucrado se ha reiniciado`);
+            this.sortedFilters = [];
         }
 
-        if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
-            this.sortedFilters = [];
-            this.savePanel(); // Panel setting saved
-        }
+        this.savePanel(); // Panel setting saved
 
     }
     
@@ -1424,28 +1554,34 @@ public tableNodeExpand(event: any): void {
                 }
             });
             }else{
-                this.graficos.assignedColors = [];
-                this.graficos.chartLabels.forEach(element => {
-                    this.graficos.assignedColors.push({value: element, color: this.graficos.chartColors[0].backgroundColor})
-                });
-                properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
+                // Histogram is single-series: renderBar()'s color resolution (panel-chart.component.ts's
+                // getLabelsForChartType()) matches assignedColors by the DATASET's own label, not by the
+                // bin-range labels (chartLabels) - keying one entry per bin range here meant the lookup
+                // never matched on the next render and silently fell back to a default palette color,
+                // discarding whatever color was just picked in the dialog.
+                this.graficos.assignedColors = [{
+                    value: this.graficos.chartDataset[0]?.label,
+                    color: this.graficos.chartColors[0].backgroundColor
+                }];
             }
         
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend, coloredBarsConfig: this.graficos.coloredBarsConfig, showUniqueColors: this.graficos.showUniqueColors, uniqueBarColors: this.graficos.uniqueBarColors, showGridLines: this.graficos.showGridLines };
+                const customFields: Record<string, any> = {};
+                CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+                    customFields[field.name] = this.graficos[field.name] ?? field.default;
+                });
+
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, ...customFields };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
                     this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend, this.graficos.showGridLines ?? true));
-                if (this.graficos.coloredBarsConfig) {
-                    (layout.getConfig() as any)['coloredBarsConfig'] = this.graficos.coloredBarsConfig;
-                }
-                (layout.getConfig() as any)['showUniqueColors'] = this.graficos.showUniqueColors ?? false;
-                (layout.getConfig() as any)['uniqueBarColors'] = this.graficos.uniqueBarColors ?? [];
-                (layout.getConfig() as any)['showGridLines'] = this.graficos.showGridLines ?? true;
+                CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+                    (layout.getConfig() as any)[field.name] = customFields[field.name];
+                });
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
     }
     this.chartController = undefined;
 }
@@ -1461,7 +1597,7 @@ public tableNodeExpand(event: any): void {
 
             }
             //not saved alert message
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.tableController = undefined;
     }
@@ -1491,7 +1627,7 @@ public tableNodeExpand(event: any): void {
 
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart( this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.mapController = undefined;
     }
@@ -1518,7 +1654,7 @@ public tableNodeExpand(event: any): void {
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 
                 this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.mapCoordController = undefined;
     }
@@ -1539,30 +1675,46 @@ public tableNodeExpand(event: any): void {
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
 
         }
         this.sankeyController = undefined;
     }
 
-    public onCloseTreeMapProperties(event, response): void {
+    /** Shared tail for every onClose*Properties handler: merges into the existing config (not a wholesale replace), re-renders, clears the controller. */
+    private applyDialogChartConfig(event: EdaDialogCloseEvent, configPatch: any, controllerField: 'doughnutController' | 'polarAreaController' | 'funnelController' | 'bubblechartController' | 'scatterPlotController' | 'treeMapController' | 'sunburstController'): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            //  We iterate over all assignedColors we have.
-            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                // Label values in the chart.
-                let chartValues = this.panelChart.componentRef.instance.data.children.map(item => item.name);
-                // If any chart labels match those in assignedColors, they will be replaced.
-                if (chartValues.includes(e.value)) {
-                    let indexColor = chartValues.findIndex(element => element === e.value)
-                    e.color = response.colors[indexColor]
-                }
-            });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                ...configPatch
+            };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
-        this.treeMapController = undefined;
+        (this as any)[controllerField] = undefined;
+    }
+
+    /** Matches bubblechart/scatter/treeMap's positional `colors` array back onto assignedColors by chart value. */
+    private recolorLegacyAssignedColors(chartValues: string[], response: any): any[] {
+        const instance = this.panelChart.componentRef.instance;
+        instance.assignedColors.forEach((e: any) => {
+            if (chartValues.includes(e.value)) {
+                const indexColor = chartValues.findIndex((v: string) => v === e.value);
+                e.color = response.colors[indexColor];
+            }
+        });
+        return instance.assignedColors;
+    }
+
+    public onCloseTreeMapProperties(event, response): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            const chartValues = this.panelChart.componentRef.instance.data.children.map((item: any) => item.name);
+            const assignedColors = this.recolorLegacyAssignedColors(chartValues, response);
+            this.applyDialogChartConfig(event, { colors: response.colors, assignedColors }, 'treeMapController');
+        } else {
+            this.treeMapController = undefined;
+        }
     }
 
     public onCloseTreeTableProperties(event, response) {
@@ -1578,132 +1730,92 @@ public tableNodeExpand(event: any): void {
     }
 
     public onCloseFunnelProperties(event, response): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            // Do not overwrite the entire config; only update what is necessary.
-            this.panel.content.query.output.config = {
-                ...this.panel.content.query.output.config, // Keep the existing config.
-                assignedColors: response.assignedColors // Add assignedColors
-            };
-            
-            const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
-        }
-        this.funnelController = undefined;
+        this.applyDialogChartConfig(event, {
+            assignedColors: response.assignedColors,
+            chartLegend: response.chartLegend
+        }, 'funnelController');
+    }
+
+    public onCloseDoughnutProperties(event, response): void {
+        this.applyDialogChartConfig(event, {
+            assignedColors: response.assignedColors,
+            showLabels: response.showLabels,
+            showLabelsPercent: response.showLabelsPercent,
+            chartLegend: response.chartLegend,
+            innerRadiusPercent: response.innerRadiusPercent,
+            useGradient: response.useGradient,
+            chartAnimation: response.chartAnimation
+        }, 'doughnutController');
+    }
+
+    public onClosePolarAreaProperties(event, response): void {
+        this.applyDialogChartConfig(event, {
+            assignedColors: response.assignedColors,
+            showLabels: response.showLabels,
+            showLabelsPercent: response.showLabelsPercent,
+            chartLegend: response.chartLegend,
+            showGridLines: response.showGridLines,
+            useGradient: response.useGradient,
+            chartAnimation: response.chartAnimation
+        }, 'polarAreaController');
     }
 
     public onCloseBubblechartProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            // We iterate over all assignedColors we have.
-            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                // Label values in the chart.
-                let chartValues = this.panelChart.componentRef.instance.data.children.map(item => item.name);
-                // If any chart labels match those in assignedColors, they will be replaced.
-                if (chartValues.includes(e.value)) {
-                    let indexColor = chartValues.findIndex(element => element === e.value)
-                    e.color = response.colors[indexColor]
-                }
-            });
-            
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
-            const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            const chartValues = this.panelChart.componentRef.instance.data.children.map((item: any) => item.name);
+            const assignedColors = this.recolorLegacyAssignedColors(chartValues, response);
+            this.applyDialogChartConfig(event, { colors: response.colors, assignedColors }, 'bubblechartController');
+        } else {
+            this.bubblechartController = undefined;
         }
-        this.bubblechartController = undefined;
     }
 
     public onCloseScatterProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            // We iterate over all assignedColors we have.
-            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                // Label values in the chart.
-                let chartValues = this.panelChart.componentRef.instance.data.map(item => item.label);
-                // If any chart labels match those in assignedColors, they will be replaced.
-                if (chartValues.includes(e.value)) {
-                    let indexColor = chartValues.findIndex(element => element === e.value)
-                    e.color = response.colors[indexColor]
-                }
-            });
-
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
-            const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-
-            this.dashboardService._notSaved.next(true);
-
+            const chartValues = this.panelChart.componentRef.instance.data.map((item: any) => item.label);
+            const assignedColors = this.recolorLegacyAssignedColors(chartValues, response);
+            this.applyDialogChartConfig(event, { colors: response.colors, assignedColors }, 'scatterPlotController');
+        } else {
+            this.scatterPlotController = undefined;
         }
-        this.scatterPlotController = undefined;
     }
 
     public onCloseSunburstProperties(event: any, response: any): void {
         const chartInstance = this.panelChart?.componentRef?.instance;
         const dataDescription = chartInstance?.inject?.dataDescription;
         const otherColumns = dataDescription?.otherColumns;
-    
-        // Main validation to proceed.
-        if (otherColumns && Array.isArray(otherColumns) && otherColumns.length > 1) {
-            if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                // We extract string values from the data.
-                let chartValues: string[] = Array.from(
-                    new Set(
-                        chartInstance.data.map((item: any[]) => {
-                            const found = item.find(value => typeof value === 'string');
-                            return found ? found.split("|")[0] : "";
-                        })
-                    )
-                );  
-    
-                chartInstance.assignedColors.forEach((assignedColor: any) => {    
-                    // We check whether any chart value matches the assigned color value.
+
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            // Multi-level: rows are '|'-joined path strings, take the top segment. Single-level: plain category strings.
+            const isMultiLevel = otherColumns && Array.isArray(otherColumns) && otherColumns.length > 1;
+            const chartValues: string[] = isMultiLevel
+                ? Array.from(new Set(chartInstance.data.map((item: any[]) => {
+                    const found = item.find((value: any) => typeof value === 'string');
+                    return found ? found.split("|")[0] : "";
+                })))
+                : chartInstance.data.map((item: any[]) => item.find((value: any) => typeof value === 'string'));
+
+            chartInstance.assignedColors.forEach((assignedColor: any) => {
+                const matches = isMultiLevel
+                    ? chartValues.some(value => value === assignedColor.value)
+                    : chartValues.some(value => value.includes(assignedColor.value));
+                if (matches) {
                     const indexColor = chartValues.findIndex(value => value === assignedColor.value);
-                    if (indexColor >= 0 && response.colors && response.colors[indexColor]) {
+                    if (indexColor >= 0 && response.colors?.[indexColor]) {
                         assignedColor.color = response.colors[indexColor];
                     }
-                });
-    
-                // We assign the new colors to the config.
-                this.panel.content.query.output.config = {
-                    colors: response.colors,
-                    assignedColors: chartInstance.assignedColors
-                };
-    
-                const config = new ChartConfig(this.panel.content.query.output.config);
-    
-                this.renderChart(
-                    this.currentQuery,
-                    this.chartLabels,
-                    this.chartData,
-                    this.graficos.chartType,
-                    this.graficos.edaChart,
-                    config
-                );
-    
-                // We indicate that there are unsaved changes.
-                this.dashboardService._notSaved.next(true);
-            }
-        
-        } else {
-                if(!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                    // We iterate over all assignedColors we have.
-                    // Values of labels in the chart.
-                    let chartValues = this.panelChart.componentRef.instance.data.map(item => item.find(value => typeof value === 'string'));
-                    this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                        // If any chart labels match those in assignedColors, they will be replaced.
-                        if (chartValues.some(value => value.includes(e.value))) {
-                            let indexColor = chartValues.findIndex(element => element === e.value)
-                            e.color = response.colors[indexColor]
-                        }
-                    });
-                    this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
-                    const config = new ChartConfig(this.panel.content.query.output.config);
-                    this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+                }
+            });
 
-                    this.dashboardService._notSaved.next(true);
-                }  
-            } 
-            // Close the dialog.
+            this.applyDialogChartConfig(event, {
+                colors: response.colors,
+                assignedColors: chartInstance.assignedColors,
+                chartLegend: response.chartLegend,
+                useGradient: response.useGradient
+            }, 'sunburstController');
+        } else {
             this.sunburstController = undefined;
+        }
     }
     public onCloseKnobProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
@@ -1712,7 +1824,7 @@ public tableNodeExpand(event: any): void {
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
 
         }
         this.knobController = undefined;
@@ -1730,7 +1842,7 @@ public tableNodeExpand(event: any): void {
             );
 
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
 
         this.linkDashboardController = undefined;
@@ -1738,6 +1850,30 @@ public tableNodeExpand(event: any): void {
 
     public onCloseKpiProperties(event, response): void {
     if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+        if (response.chartType === 'kpideviation') {
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                backgroundColor: response.backgroundColor || '',
+                kpiColor: response.kpiColor || '',
+                prefixImage: response.prefixImage || '',
+                modifiedFontPoints: response.modifiedFontPoints || 0,
+                alertLimits: response.alerts || [],
+            };
+            const config = new ChartConfig(new KpiDeviationConfig({
+                backgroundColor: response.backgroundColor || '',
+                kpiColor: response.kpiColor || '',
+                prefixImage: response.prefixImage || '',
+                modifiedFontPoints: response.modifiedFontPoints || 0,
+                alertLimits: response.alerts || [],
+            }));
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 'kpideviation', 'kpideviation', config);
+            this.dashboardService.setNotSaved(true);
+            this.kpiController = undefined;
+            return;
+        }
+
+        // Usar spread operator para mantener el config existente
         // Use the spread operator to preserve the existing config.
         this.panel.content.query.output.config = {
             ...this.panel.content.query.output.config,
@@ -1769,7 +1905,7 @@ public tableNodeExpand(event: any): void {
                 response.edaChart.showPredictionLines,
             );
         }
-        
+
         const config = new ChartConfig(
             new KpiConfig({
                 sufix: response.sufix,
@@ -1782,16 +1918,16 @@ public tableNodeExpand(event: any): void {
                 prefixImage: response.prefixImage || '',
             })
         );
-        
+
         this.renderChart(
-            this.currentQuery, 
-            this.chartLabels, 
-            this.chartData, 
-            response.chartType, 
-            response.chartSubType, 
+            this.currentQuery,
+            this.chartLabels,
+            this.chartData,
+            response.chartType,
+            response.chartSubType,
             config
         );
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
     }
     this.kpiController = undefined;
 }
@@ -1801,7 +1937,7 @@ public tableNodeExpand(event: any): void {
             const config = new ChartConfig(new DynamicTextConfig(response.color, response.modifiedFontPoints || 0));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.dynamicTextController = undefined;
     }
@@ -1955,6 +2091,16 @@ public tableNodeExpand(event: any): void {
     public moveItem = (column: any) => {
         PanelInteractionUtils.moveItem(this, column);
 
+        const sortingMatch = this.resultSortingColumns.find(
+            c => c.column_name === column.column_name && c.table_id === column.table_id
+        );
+        if (sortingMatch?.ordenation_type) {
+            const queryMatch = this.currentQuery.find(
+                c => c.column_name === column.column_name && c.table_id === column.table_id
+            );
+            if (queryMatch) queryMatch.ordenation_type = sortingMatch.ordenation_type;
+        }
+
         if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
             this.displayedTableNodes = this.tableNodes;
@@ -2095,6 +2241,20 @@ public tableNodeExpand(event: any): void {
     }
 
 
+    private _panelInfoOverlayTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    public showPanelInfoOverlay(event: Event, overlay: any): void {
+        this._panelInfoOverlayTimeout = setTimeout(() => overlay.show(event), 1000);
+    }
+
+    public hidePanelInfoOverlay(overlay: any): void {
+        if (this._panelInfoOverlayTimeout) {
+            clearTimeout(this._panelInfoOverlayTimeout);
+            this._panelInfoOverlayTimeout = null;
+        }
+        overlay.hide();
+    }
+
     /** This funciton return the display name for a given table. Its used for the query resumen      */
     public getNiceTableName(table: any) {
         return this.tables.find( t => t.table_name === table)?.display_name?.default;
@@ -2148,7 +2308,7 @@ public tableNodeExpand(event: any): void {
 
     public getDisplayAggregation(aggregation: any) {
         let str = '';
-        const aggregationText = aggTypes.filter(agg => agg.value === aggregation.value)[0].label
+        const aggregationText = AGG_TYPES.filter(agg => agg.value === aggregation.value)[0].label
         str = `&nbsp<strong>( ${aggregationText} )</strong>&nbsp`;
         return str;
     }
@@ -2193,13 +2353,13 @@ public tableNodeExpand(event: any): void {
 
 
             let aggregationLabel = '';
-            if(aggTypes.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
+            if(AGG_TYPES.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = AGG_TYPES.filter(agg => agg.value === aggregation)[0].label;
 
             // Added internationalization for the “between” operator.
             let filterType = filter.filter_type
             if(filterType === 'between') filterType = this.textBetween;
 
-            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
+            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp${aggregationLabel ? ` - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>` : ''}&nbsp`;
         }
 
         return str;
@@ -2398,7 +2558,7 @@ public tableNodeExpand(event: any): void {
 
     dynamicFiltersInteraction(): void {
         this.dynamicFilters = !this.dynamicFilters;
-    } 
+    }
 
     newCurrentQueryUpdate(event: any) {
         this.currentQuery = event;

@@ -1,11 +1,9 @@
 
 import { PanelChartComponent } from './../panel-charts/panel-chart.component';
 import { Component, Input, ViewChild } from '@angular/core';
-import { PointStyle } from 'chart.js';
-import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
-import { StyleProviderService, ChartUtilsService, AlertService, SpinnerService } from '@eda/services/service.index';
+import { StyleProviderService, ChartUtilsService, AlertService, SpinnerService, DashboardService } from '@eda/services/service.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 import { CommonModule } from '@angular/common';
@@ -13,7 +11,6 @@ import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
-import { TabViewModule } from 'primeng/tabview';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../prediction-dialog/prediction-dialog.component';
 import Swal from 'sweetalert2';
@@ -23,7 +20,7 @@ import Swal from 'sweetalert2';
     selector: 'app-chart-dialog',
     templateUrl: './chart-dialog.component.html',
     styleUrls: ['./chart-dialog.component.css'],
-    imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, PredictionDialogComponent, TabViewModule, InputNumberModule, DropdownModule]
+    imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, PredictionDialogComponent, InputNumberModule, DropdownModule]
 })
 
 export class ChartDialogComponent {
@@ -33,8 +30,8 @@ export class ChartDialogComponent {
 
     public dialog: EdaDialog;
     public activeTabIndex: number = 0;
-    public chart: EdaChart;
-    public oldChart: EdaChart;
+    public chart: any;
+    public oldChart: any;
     public addTrend: boolean;
     public addComparative: boolean;
     public numberOfColumns: number;
@@ -47,9 +44,11 @@ export class ChartDialogComponent {
     public showLabelsPercent: boolean = false;
     public showUniqueColors: boolean = false;
     public showPointLines: boolean = false;
+    public secondAxis: boolean = false;
     public showPredictionLines: boolean = false;
     public chartLegend: boolean = true;
     public showGridLines: boolean = true;
+    public chartAnimation: boolean = true;
     public showPredictionDialog: boolean = false;
     public predictionMethod: string = 'Arima';
     public selectedPalette: { name: string; paleta: any } | null = null;
@@ -66,6 +65,8 @@ export class ChartDialogComponent {
     public colorAbove: string = '#ff4444';
     public colorBetween: string = '#ffcc00';
     public colorBelow: string = '#44bb44';
+    public useGradient: boolean = true;
+    public useRoundedBars: boolean = true;
 
     public comparativeTooltip = $localize`:@@comparativeTooltip:La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes o semana y un único campo numérico agregado`
     public trendTooltip = $localize`:@@trendTooltip:La función de añadir tendencia sólo se puede activar en los gràficos de lineas`
@@ -82,11 +83,15 @@ export class ChartDialogComponent {
         showLabelsPercent: boolean;
         showUniqueColors: boolean;
         showPointLines: boolean;
+        secondAxis: boolean;
         showPredictionLines: boolean;
         numberOfColumns: number;
         addComparative: boolean;
         chartLegend: boolean;
         showGridLines: boolean;
+        useGradient: boolean;
+        useRoundedBars: boolean;
+        chartAnimation: boolean;
     };
 
     public drops = {
@@ -105,7 +110,8 @@ export class ChartDialogComponent {
 
     constructor(private chartUtils: ChartUtilsService, private stylesProviderService: StyleProviderService,
         private alertService: AlertService,
-        private spinnerService: SpinnerService
+        private spinnerService: SpinnerService,
+        private dashboardService: DashboardService
     ) {
         this.drops.pointStyles = [
             { label: 'Puntos', value: 'circle' },
@@ -139,12 +145,21 @@ export class ChartDialogComponent {
         this.showLabelsPercent = this.controller.params.config.config.getConfig()['showLabelsPercent'] || false;
         this.showUniqueColors = this.controller.params.config.config.getConfig()['showUniqueColors'] || false;
         this.showPointLines = this.controller.params.config.config.getConfig()['showPointLines'] || false;
+        this.secondAxis = this.controller.params.config.config.getConfig()['secondAxis'] || false;
         this.showPredictionLines = this.controller.params.config.config.getConfig()['showPredictionLines'] || false;
         this.predictionMethod = this.controller.params.config.config.getConfig()['predictionMethod'] || 'Arima'; // Initial value in the dropdown
-        this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] || false;
+        // NOT `|| false` - numberOfColumns is a number (or unset), and transformDataQuery's own
+        // "was it actually provided" check is `!isNaN(numberOfColumns) && numberOfColumns !== null`,
+        // which treats `false` as a valid override (isNaN(false) is false, coerced to 0) - that
+        // silently zeroed out every histogram bin count on the very next dialog option change,
+        // since every setter round-trips this same field back into the shared config.
+        this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] ?? undefined;
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
         this.chartLegend = this.controller.params.config.config.getConfig()['chartLegend'] ?? true;
         this.showGridLines = this.controller.params.config.config.getConfig()['showGridLines'] ?? true;
+        this.chartAnimation = this.controller.params.config.config.getConfig()['chartAnimation'] ?? true;
+        this.useGradient = this.controller.params.config.config.getConfig()['useGradient'] ?? true;
+        this.useRoundedBars = this.controller.params.config.config.getConfig()['useRoundedBars'] ?? true;
 
         // NEW: Save original label values
         this.originalLabelValues = {
@@ -153,11 +168,15 @@ export class ChartDialogComponent {
             showLabelsPercent: this.showLabelsPercent,
             showUniqueColors: this.showUniqueColors,
             showPointLines: this.showPointLines,
+            secondAxis: this.secondAxis,
             showPredictionLines: this.showPredictionLines,
             numberOfColumns: this.numberOfColumns,
             addComparative: this.addComparative,
             chartLegend: this.chartLegend,
-            showGridLines: this.showGridLines
+            showGridLines: this.showGridLines,
+            useGradient: this.useGradient,
+            useRoundedBars: this.useRoundedBars,
+            chartAnimation: this.chartAnimation
         };
 
         this.oldChart = _.cloneDeep(this.controller.params.chart);
@@ -178,9 +197,12 @@ export class ChartDialogComponent {
             this.colorBelow = coloredBarsConfig.colorBelow ?? '#44bb44';
             this.coloredBarsActive = coloredBarsConfig.active ?? false;
             if (this.coloredBarsActive) {
-                this.activeTabIndex = 1;
+                this.activeTabIndex = this.intervalTabIndex;
                 this.applyColorsToChart();
             }
+        }
+        if (!this.coloredBarsActive && this.showUniqueColors && this.showUniqueColorsTab) {
+            this.activeTabIndex = 1;
         }
         this.display = true;
     }
@@ -235,13 +257,13 @@ export class ChartDialogComponent {
     }
 
     loadChartTypeProperties() {
-        const type: any = this.chart.chartType;
+        // edaChart, not chartType - chartType is always literally 'bar' for every bar subtype,
+        // so switching on it here meant the 'horizontalBar' case below could never be reached.
+        const type: any = this.chart['edaChart'];
         switch (type) {
 
             case 'bar':
-                if (_.startsWith(this.chart.chartType, 'bar')) {
-                    this.direction = { label: 'Vertical', value: 'bar' };
-                }
+                this.direction = { label: 'Vertical', value: 'bar' };
                 break;
             case 'horizontalBar':
                 this.direction = { label: 'Horizontal', value: 'horizontalBar' };
@@ -274,7 +296,15 @@ export class ChartDialogComponent {
 
     // Methods that update the chart configuration
 
+    /** Flags the dashboard as having unsaved changes - called by every handler below that
+     * live-updates the chart config, not just the final "Guardar" button (which already goes
+     * through eda-blank-panel's onCloseChartProperties -> setNotSaved(true) on its own). */
+    private markUnsaved(): void {
+        this.dashboardService.setNotSaved(true);
+    }
+
     SetNumberOfColumns() {
+        this.markUnsaved();
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -282,6 +312,7 @@ export class ChartDialogComponent {
         config.showLabelsPercent = this.showLabelsPercent;
         config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
+        config.secondAxis = this.secondAxis;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
 
@@ -295,6 +326,7 @@ export class ChartDialogComponent {
     }
 
     checkTrend() {
+        this.markUnsaved();
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -311,6 +343,7 @@ export class ChartDialogComponent {
     }
 
     setComparative() {
+        this.markUnsaved();
 
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
@@ -321,6 +354,7 @@ export class ChartDialogComponent {
         config.showLabelsPercent = this.showLabelsPercent;
         config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
+        config.secondAxis = this.secondAxis;
         config.showPredictionLines = this.showPredictionLines;
 
         properties.config = c;
@@ -335,6 +369,7 @@ export class ChartDialogComponent {
 
 
     setShowLablesPercent() {
+        this.markUnsaved();
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -342,6 +377,7 @@ export class ChartDialogComponent {
         config.showLabelsPercent = this.showLabelsPercent;
         config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
+        config.secondAxis = this.secondAxis;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
 
@@ -351,32 +387,6 @@ export class ChartDialogComponent {
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
             this.load();
-        });
-
-    }
-
-    setShowUniqueColors() {
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;
-        let config: any = c.getConfig();
-        config.showLabels = this.showLabels;
-        config.showLabelsPercent = this.showLabelsPercent;
-        config.showUniqueColors = this.showUniqueColors;
-        config.showPointLines = this.showPointLines;
-        config.showPredictionLines = this.showPredictionLines;
-        config.numberOfColumns = this.numberOfColumns;
-        config.uniqueBarColors = [...this.uniqueBarColors];
-        this.activeTabIndex = 0;
-        this.coloredBarsActive = false;
-
-        properties.config = c;
-        /** Update chart */
-        this.panelChartConfig = new PanelChart(this.panelChartConfig);
-        setTimeout(_ => {
-            this.chart = this.panelChartComponent.componentRef.instance.inject;
-            this.load();
-            this.applyColorsToChart();
-            this.updateChartView();
         });
 
     }
@@ -405,6 +415,7 @@ export class ChartDialogComponent {
 
 
     setShowLables() {
+        this.markUnsaved();
 
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
@@ -413,6 +424,7 @@ export class ChartDialogComponent {
         config.showLabelsPercent = this.showLabelsPercent;
         config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
+        config.secondAxis = this.secondAxis;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
 
@@ -427,6 +439,7 @@ export class ChartDialogComponent {
     }
 
     setChartLegend() {
+        this.markUnsaved();
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -435,6 +448,7 @@ export class ChartDialogComponent {
         config.showLabelsPercent = this.showLabelsPercent;
         config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
+        config.secondAxis = this.secondAxis;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
         
@@ -448,6 +462,7 @@ export class ChartDialogComponent {
     }
 
     setShowGridLines() {
+        this.markUnsaved();
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -461,7 +476,23 @@ export class ChartDialogComponent {
         });
     }
 
+    setChartAnimation() {
+        this.markUnsaved();
+        const properties = this.panelChartConfig;
+        let c: ChartConfig = properties.config;
+        let config: any = c.getConfig();
+        config.chartAnimation = this.chartAnimation;
+
+        properties.config = c;
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(_ => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.load();
+        });
+    }
+
     setShowLines() {
+        this.markUnsaved();
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -469,6 +500,29 @@ export class ChartDialogComponent {
         config.showLabelsPercent = this.showLabelsPercent;
         config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
+        config.secondAxis = this.secondAxis;
+        config.showPredictionLines = this.showPredictionLines;
+        config.numberOfColumns = this.numberOfColumns;
+
+        properties.config = c;
+        /** Update chart */
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(_ => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.load();
+        });
+    }
+
+    setSecondAxis() {
+        this.markUnsaved();
+        const properties = this.panelChartConfig;
+        let c: ChartConfig = properties.config;
+        let config: any = c.getConfig();
+        config.showLabels = this.showLabels;
+        config.showLabelsPercent = this.showLabelsPercent;
+        config.showUniqueColors = this.showUniqueColors;
+        config.showPointLines = this.showPointLines;
+        config.secondAxis = this.secondAxis;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
 
@@ -547,6 +601,7 @@ export class ChartDialogComponent {
         config.showLabelsPercent = this.showLabelsPercent;
         config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
+        config.secondAxis = this.secondAxis;
         config.numberOfColumns = this.numberOfColumns;
         config.showPredictionLines = this.showPredictionLines;
 
@@ -595,6 +650,7 @@ export class ChartDialogComponent {
         config.showLabelsPercent = this.showLabelsPercent;
         config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
+        config.secondAxis = this.secondAxis;
         config.numberOfColumns = this.numberOfColumns;
         config.showPredictionLines = this.showPredictionLines;
 
@@ -660,7 +716,10 @@ export class ChartDialogComponent {
                 break;
                 
             default: {
-                const isBar = (this.chart.chartType as string) === 'bar' || (this.chart.chartType as string) === 'horizontalBar';
+                // `type` here is already `this.chart.edaChart` (the true bar-subtype discriminator -
+                // `chartType` is always literally 'bar' for every subtype, so checking it directly
+                // would incorrectly also match stackedbar/stackedbar100/pyramid/histogram).
+                const isBar = type === 'bar' || type === 'horizontalBar';
 
                 // Colors by interval
                 const hasThresholds = this.thresholdHigh !== null || this.thresholdLow !== null;
@@ -725,6 +784,7 @@ export class ChartDialogComponent {
     }
 
     handleUniqueColorInput(): void {
+        this.markUnsaved();
         this.applyColorsToChart();
         this.controller.params.config.config.getConfig()['uniqueBarColors'] = [...this.uniqueBarColors];
         if (this.panelChartComponent?.componentRef?.instance) {
@@ -737,6 +797,7 @@ export class ChartDialogComponent {
 
     // Simplified method for color changes
     handleInputColor(): void {
+        this.markUnsaved();
         // Apply assignedColors to the chart
         this.applyColorsToChart();
 
@@ -849,11 +910,60 @@ export class ChartDialogComponent {
         this.handleInputColor();
     }
 
-    onTabChange(event: any): void {
-
-        if (!['bar', 'horizontalBar'].includes(this.chart.chartType as string)) return;
-        this.coloredBarsActive = event.index === 1;
+    applyUseGradient(): void {
+        this.controller.params.config.config.getConfig()['useGradient'] = this.useGradient;
+        this.chart['useGradient'] = this.useGradient;
         this.handleInputColor();
+    }
+
+    applyUseRoundedBars(): void {
+        this.controller.params.config.config.getConfig()['useRoundedBars'] = this.useRoundedBars;
+        this.chart['useRoundedBars'] = this.useRoundedBars;
+        this.handleInputColor();
+    }
+
+    // Unique colors only make sense for a single-series bar/horizontalBar chart - when true, the
+    // colors tab bar grows a third "Colores Únicos" tab between "Colores" and "Colores por intervalo".
+    get showUniqueColorsTab(): boolean {
+        return ['bar', 'horizontalBar'].includes(this.chart?.['edaChart'] as string) && this.queryNumericColumns.length === 1;
+    }
+
+    // "Colores por intervalo" is always the last tab, whether or not the unique-colors tab is present.
+    get intervalTabIndex(): number {
+        return this.showUniqueColorsTab ? 2 : 1;
+    }
+
+    setActiveTab(index: number): void {
+        this.activeTabIndex = index;
+        // edaChart, not chartType - chartType is always literally 'bar' for every bar subtype.
+        if (!['bar', 'horizontalBar'].includes(this.chart['edaChart'] as string)) return;
+        this.markUnsaved();
+        // Which coloring mode is active is now purely a function of which tab is selected - there's
+        // no separate on/off switch inside the "Colores Únicos" tab, being on it IS "activated".
+        this.coloredBarsActive = index === this.intervalTabIndex;
+        this.showUniqueColors = this.showUniqueColorsTab && index === 1;
+
+        const properties = this.panelChartConfig;
+        const c: ChartConfig = properties.config;
+        const config: any = c.getConfig();
+        config.showUniqueColors = this.showUniqueColors;
+        config.uniqueBarColors = [...this.uniqueBarColors];
+        properties.config = c;
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(() => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.load();
+            this.applyColorsToChart();
+            this.updateChartView();
+        });
+    }
+
+    tabButtonClass(index: number): Record<string, boolean> {
+        const active = this.activeTabIndex === index;
+        return {
+            'bg-[var(--corporate-primary)] text-white border-[var(--corporate-primary)]': active,
+            'border-transparent hover:bg-gray-200/40': !active
+        };
     }
 
     get isAreaOrRadarChart(): boolean {
@@ -879,10 +989,14 @@ export class ChartDialogComponent {
         this.chart.showLabelsPercent = this.showLabelsPercent;
         this.chart.showUniqueColors = this.showUniqueColors;
         this.chart.showPointLines = this.showPointLines;
+        this.chart.secondAxis = this.secondAxis;
         this.chart.showPredictionLines = this.showPredictionLines;
         this.chart.numberOfColumns = this.numberOfColumns;
         this.chart.chartLegend = this.chartLegend;
         this.chart['showGridLines'] = this.showGridLines;
+        this.chart['useGradient'] = this.useGradient;
+        this.chart['useRoundedBars'] = this.useRoundedBars;
+        this.chart['chartAnimation'] = this.chartAnimation;
 
         // Save in config too (for persistence)
         this.controller.params.config.config.getConfig()['addTrend'] = this.addTrend;
@@ -890,12 +1004,16 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.showLabelsPercent;
         this.controller.params.config.config.getConfig()['showUniqueColors'] = this.showUniqueColors;
         this.controller.params.config.config.getConfig()['showPointLines'] = this.showPointLines;
+        this.controller.params.config.config.getConfig()['secondAxis'] = this.secondAxis;
         this.controller.params.config.config.getConfig()['showPredictionLines'] = this.showPredictionLines;
         this.controller.params.config.config.getConfig()['predictionMethod'] = this.predictionMethod;
         this.controller.params.config.config.getConfig()['numberOfColumns'] = this.numberOfColumns;
         this.controller.params.config.config.getConfig()['addComparative'] = this.addComparative;
         this.controller.params.config.config.getConfig()['chartLegend'] = this.chartLegend;
         this.controller.params.config.config.getConfig()['showGridLines'] = this.showGridLines;
+        this.controller.params.config.config.getConfig()['useGradient'] = this.useGradient;
+        this.controller.params.config.config.getConfig()['useRoundedBars'] = this.useRoundedBars;
+        this.controller.params.config.config.getConfig()['chartAnimation'] = this.chartAnimation;
 
         // Save colored bars config
         const coloredBarsConfig = {
@@ -919,11 +1037,15 @@ export class ChartDialogComponent {
         this.showLabelsPercent = this.originalLabelValues.showLabelsPercent;
         this.showUniqueColors = this.originalLabelValues.showUniqueColors;
         this.showPointLines = this.originalLabelValues.showPointLines;
+        this.secondAxis = this.originalLabelValues.secondAxis;
         this.showPredictionLines = this.originalLabelValues.showPredictionLines;
         this.numberOfColumns = this.originalLabelValues.numberOfColumns;
         this.addComparative = this.originalLabelValues.addComparative;
         this.chartLegend = this.originalLabelValues.chartLegend;
         this.showGridLines = this.originalLabelValues.showGridLines;
+        this.useGradient = this.originalLabelValues.useGradient;
+        this.useRoundedBars = this.originalLabelValues.useRoundedBars;
+        this.chartAnimation = this.originalLabelValues.chartAnimation;
 
         // Restore in config
         this.controller.params.config.config.getConfig()['addTrend'] = this.originalLabelValues.addTrend;
@@ -931,11 +1053,15 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.originalLabelValues.showLabelsPercent;
         this.controller.params.config.config.getConfig()['showUniqueColors'] = this.originalLabelValues.showUniqueColors;
         this.controller.params.config.config.getConfig()['showPointLines'] = this.originalLabelValues.showPointLines;
+        this.controller.params.config.config.getConfig()['secondAxis'] = this.originalLabelValues.secondAxis;
         this.controller.params.config.config.getConfig()['showPredictionLines'] = this.originalLabelValues.showPredictionLines;
         this.controller.params.config.config.getConfig()['numberOfColumns'] = this.originalLabelValues.numberOfColumns;
         this.controller.params.config.config.getConfig()['addComparative'] = this.originalLabelValues.addComparative;
         this.controller.params.config.config.getConfig()['chartLegend'] = this.originalLabelValues.chartLegend;
         this.controller.params.config.config.getConfig()['showGridLines'] = this.originalLabelValues.showGridLines;
+        this.controller.params.config.config.getConfig()['useGradient'] = this.originalLabelValues.useGradient;
+        this.controller.params.config.config.getConfig()['useRoundedBars'] = this.originalLabelValues.useRoundedBars;
+        this.controller.params.config.config.getConfig()['chartAnimation'] = this.originalLabelValues.chartAnimation;
         this.controller.params.config.config.getConfig()['assignedColors'] = this.assignedColors = _.cloneDeep(this.originalAssignedColors);
         this.controller.params.config.config.getConfig()['uniqueBarColors'] = this.uniqueBarColors = _.cloneDeep(this.originalUniqueBarColors);
     }

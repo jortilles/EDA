@@ -26,13 +26,84 @@
       </div>
     }
 
+    <!-- Lock button (visible in header when showLockInHeader is true) -->
+    @if (showLockInHeader && isEditable()) {
+      <i
+        [class]="isPanelLocked() ? 'pi pi-lock text-red-500' : 'pi pi-lock-open text-green-500'"
+        class="cursor-pointer ml-2 w-[28px] h-[28px] flex items-center justify-center text-center rounded-full content-center"
+        (click)="togglePanelLock()"
+        (mousedown)="$event.stopPropagation()"
+      ></i>
+    }
+
     <!-- Icon on the right -->
-    <i 
+    <i
       [ngClass]="{'edit-blink': lodash.isEmpty(panel.content)}"
       class="pi pi-ellipsis-v cursor-pointer ml-2  w-[28px] h-[28px] flex items-center justify-center text-center rounded-full content-center"
-      (click)="contextMenu.showContextMenu($event)"
+      (click)="openContextMenu($event)"
+      (mouseenter)="!lodash.isEmpty(panel.content) && showPanelInfoOverlay($event, panelInfoOverlay)"
+      (mouseleave)="hidePanelInfoOverlay(panelInfoOverlay)"
     >
     </i>
+
+    <!-- Panel info overlay (attributes + filters summary) -->
+    <p-overlayPanel #panelInfoOverlay appendTo="body" [style]="{'max-width': '35vw', 'min-width': '22vw'}">
+      <ng-template pTemplate>
+        <div class="max-h-[50vh] overflow-auto p-1">
+
+          <!-- Atributos -->
+          <div class="mb-3">
+            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenAtrH6Hover">¿Qué estoy viendo?</h4>
+            @if (currentQuery.length === 0) {
+              <span class="text-sm text-gray-400 italic" i18n="@@noAttributes">Sin atributos</span>
+            }
+            @for (column of currentQuery; track column.display_name.default) {
+              <div class="flex items-center gap-1 text-sm py-0.5">
+                <strong class="text-gray-400 text-xs" [innerHTML]="getColumnJoins(column)"></strong>
+                <span class="font-semibold text-gray-700">{{ getNiceTableName(column.table_id) }}</span>
+                <i class="pi pi-angle-right text-gray-400 text-xs"></i>
+                <span class="text-gray-700">{{ column.display_name.default }}</span>
+                @for (aggregation of column.aggregation_type; track aggregation.display_name) {
+                  @if (aggregation.selected && !['No', 'no'].includes(aggregation.display_name)) {
+                    <span class="text-gray-500 text-xs">({{ aggregation.display_name }})</span>
+                  }
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Filtros del panel -->
+          <div class="mb-3">
+            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenFiltrosPanelH6">Filtros del panel</h4>
+            @if (selectedFilters.length === 0) {
+              <span class="text-sm text-gray-400 italic" i18n="@@noFilters">Sin filtros</span>
+            }
+            @for (filter of selectedFilters; track filter) {
+              <div class="text-sm py-0.5">
+                <span class="text-gray-400 text-xs" [innerHTML]="getFilterJoins(filter)"></span>
+                <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+              </div>
+            }
+          </div>
+
+          <!-- Filtros del informe -->
+          <div>
+            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenFiltrosInformeH6">Filtros del informe</h4>
+            @if (globalFilters.length === 0) {
+              <span class="text-sm text-gray-400 italic" i18n="@@noFilters">Sin filtros</span>
+            }
+            @for (filter of globalFilters; track filter) {
+              <div class="text-sm py-0.5">
+                <span class="text-gray-400 text-xs" [innerHTML]="getFilterJoins(filter)"></span>
+                <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+              </div>
+            }
+          </div>
+
+        </div>
+      </ng-template>
+    </p-overlayPanel>
+
   </div>
 
 
@@ -247,14 +318,27 @@
 
                 @if(userSelectedTable){
                   <div class="border-b p-3 pt-0">
-                    <h3 
-                      class="text-lg mb-2 font-bold" 
-                      i18n="@@atributosH4" 
-                      i18n-title="@@atributsTitle"
-                      title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes"
-                    >
-                      Atributos
-                    </h3>
+                    <div class="flex items-center justify-between mb-2">
+                      <h3
+                        class="text-lg font-bold"
+                        i18n="@@atributosH4"
+                        i18n-title="@@atributsTitle"
+                        title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes"
+                      >
+                        Atributos
+                      </h3>
+
+                      @if (showHiddenFieldsButton && (!showHiddenFieldsButtonAdminOnly || userService.isAdmin)) {
+                        <span
+                          i18n-title="@@hiddenAttributes"
+                          title="Mostrar/ocultar campos ocultos"
+                          class="cursor-pointer"
+                          (click)="changeHiddenMode()"
+                        >
+                          <i [class]="showHiddenColumn ? 'pi pi-eye' : 'pi pi-eye-slash'" style="font-size: 1.2rem"></i>
+                        </span>
+                      }
+                    </div>
                     <div class="relative w-full">
                       <eda-icon name="search" class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500"></eda-icon>
                       <input 
@@ -271,7 +355,7 @@
                 <div class="flex w-full overflow-y-auto h-[58vh] text-base">
                   <div class="w-full">
                     <div class="space-y-1 p-2" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
-                      [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
+                      [cdkDropListConnectedTo]="[selectList, filterList, 'result-sorting-list']" (cdkDropListDropped)="drop($event)"
                       [cdkDropListEnterPredicate]="isAllowed">
                       @for (attr of columns; track attr.name) {
                         <div
@@ -304,8 +388,8 @@
               </div>
       
               <!-- Main Content Area -->
-              <div class="flex-1 p-3 pt-0 w-4/6 overflow-y-auto h-auto">
-                <div>
+              <div class="flex-1 p-3 pt-0 w-4/6 flex flex-col overflow-hidden">
+                <div class="flex flex-col flex-1 min-h-0">
                   <!-- Selected Attributes -->
                   <div>
                     <h3 
@@ -322,7 +406,7 @@
                       #selectList="cdkDropList" 
                       cdkDropListOrientation="horizontal"
                       [cdkDropListData]="currentQuery" 
-                      [cdkDropListConnectedTo]="[columnsList, filterList]"
+                      [cdkDropListConnectedTo]="[columnsList, filterList, 'result-sorting-list']"
                       (cdkDropListDropped)="drop($event, 'select-list')"
                     >
                       @for (attr of currentQuery; track attr) {
@@ -360,7 +444,7 @@
                       #filterList="cdkDropList" 
                       cdkDropListOrientation="horizontal"
                       [cdkDropListData]="filtredColumns" 
-                      [cdkDropListConnectedTo]="[columnsList, selectList]"
+                      [cdkDropListConnectedTo]="[columnsList, selectList, 'result-sorting-list']"
                       (cdkDropListDropped)="drop($event)"
                     >
                       @for (attr of filtredColumns; track attr.display_name.default) {
@@ -402,7 +486,7 @@
 
                   <!-- AI assistant => When currentQuery is zero -->
                   @if(currentQuery.length === 0 && promptAvailable()) {
-                    <div class=" ml-3 p-2">
+                    <div class="ml-3 p-2 flex-1 flex flex-col min-h-0">
                       <Prompt
                         [(messages)]="promptMessages"
                         [edaBlankPanel]="this"
@@ -433,15 +517,18 @@
                         <!-- Query container -->
                         @if(display_v.showQueryContainer) {
                           <div class="fixed inset-0 z-40" (click)="display_v.showQueryContainer = false"></div>
-                          <div id="query-container" class="absolute top-full left-0 mt-2 w-[42vw] bg-white z-50 shadow-xl rounded-xl border border-gray-200 flex flex-col overflow-hidden">
-                            <!-- Header -->
-                            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50">
+                          <div id="query-container" cdkDrag cdkDragBoundary="body"
+                            class="absolute top-full left-0 mt-2 bg-white z-50 shadow-xl rounded-xl border border-gray-200 flex flex-col resize overflow-auto"
+                            style="width:42vw; height:38vh; min-width:320px; min-height:220px; max-width:90vw; max-height:80vh;">
+                            <!-- Header (drag handle) -->
+                            <div cdkDragHandle class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50 shrink-0 cursor-move">
                               <div class="flex items-center gap-2">
                                 <i class="pi pi-code text-[var(--corporate-primary)] text-base"></i>
                                 <span class="text-base font-semibold text-gray-700" i18n="@@yourQuerySQL">Mi consulta SQL</span>
                               </div>
                               <button
                                 (click)="display_v.showQueryContainer = false"
+                                (mousedown)="$event.stopPropagation()"
                                 class="flex items-center justify-center w-6 h-6 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors"
                               >
                                 <i class="pi pi-times text-xs"></i>
@@ -454,14 +541,13 @@
                               </div>
                             }
                             @if(!display_v.minispinnerSQL) {
-                              <div class="flex flex-col gap-3 p-4">
+                              <div class="flex flex-col gap-3 p-4 flex-1 min-h-0">
                                 <textarea
-                                  class="w-full h-[22vh] p-3 border border-gray-200 rounded-lg resize-none text-base font-mono bg-gray-50 focus:outline-none focus:border-[var(--corporate-primary)] leading-relaxed"
+                                  class="w-full flex-1 min-h-0 p-3 border border-gray-200 rounded-lg resize-none text-base font-mono bg-gray-50 focus:outline-none focus:border-[var(--corporate-primary)] leading-relaxed"
                                   [(ngModel)]="queryFromServer"
                                   pInputTextarea
-                                  autoResize="autoResize"
                                 ></textarea>
-                                <div class="flex justify-end gap-2">
+                                <div class="flex justify-end gap-2 shrink-0">
                                   <button
                                     type="button"
                                     (click)="display_v.showQueryContainer = false"
@@ -561,7 +647,60 @@
                     }
                     
                     @else if(display_v.advancedSetting === 1){
-                      <div class="flex gap-4 border rounded-lg bg-gray-50 p-4 min-h-[30vh] overflow-y-auto">
+                      <div class="flex flex-wrap gap-4 border rounded-lg bg-gray-50 p-4 min-h-[30vh] overflow-y-auto">
+
+                        <!-- Ordenamiento de resultados -->
+                        <div class="w-full">
+                          <div class="pb-1">
+                            <h3 class="text-lg mb-2 mt-2 font-bold" i18n="@@resultSortingText">Ordenar los resultados por:</h3>
+                            <div
+                              class="flex gap-1 rounded-lg border p-2 min-h-[25px] filter-list text-base"
+                              cdkDropList
+                              #resultSortingList="cdkDropList"
+                              id="result-sorting-list"
+                              cdkDropListOrientation="horizontal"
+                              [cdkDropListData]="resultSortingColumns"
+                              [cdkDropListConnectedTo]="[]"
+                              (cdkDropListDropped)="dropToResultSorting($event)"
+                            >
+                              @for (attr of resultSortingColumns; track attr.display_name.default) {
+                                <div
+                                  class="flex justify-start items-center gap-1 rounded-md px-1.5 py-0.5 font-bold bg-muted/50 cursor-move bg-white select-box text-center text-xs w-fit"
+                                  (click)="changeResultSortingValue(attr)"
+                                  (contextmenu)="removeResultSorting(attr); $event.preventDefault()"
+                                  [cdkDragData]="columns"
+                                  cdkDrag
+                                >
+                                  <i class="drag-handle-icon"></i>
+                                  @if (attr.ordenation_type === 'Asc') {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--corporate-primary)] shrink-0">
+                                      <line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline>
+                                    </svg>
+                                  } @else if (attr.ordenation_type === 'Desc') {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--corporate-primary)] shrink-0">
+                                      <line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline>
+                                    </svg>
+                                  } @else {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--corporate-primary)] shrink-0">
+                                      <line x1="5" y1="9" x2="19" y2="9"></line><line x1="5" y1="15" x2="19" y2="15"></line>
+                                    </svg>
+                                  }
+                                  {{attr.display_name.default}}
+                                  <button class="ml-auto rounded-full hover:bg-muted-foreground/20" (click)="removeResultSorting(attr); $event.stopPropagation()">
+                                    <i class="fa fa-close"></i>
+                                  </button>
+                
+                                </div>
+                              }
+
+                              @if (resultSortingColumns.length === 0) {
+                                <div class="absolute inset-0 text-muted-foreground text-center py-2 font-bold pointer-events-none">
+                                  {{draggResultSorting}}
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        </div>
 
                         <!-- Options -->
                         <div class="flex flex-col gap-3 w-[35%] shrink-0">
@@ -624,6 +763,7 @@
                               {{ dynamicFilters ? 'Sí' : 'No' }}
                             </button>
                           </div>
+                          
                         </div>
 
                         <!-- Instructions -->
@@ -1167,6 +1307,14 @@
 
 @if(funnelController){
   <app-funnel-dialog [controller]="funnelController"></app-funnel-dialog>
+}
+
+@if(doughnutController){
+  <app-doughnut-dialog [controller]="doughnutController"></app-doughnut-dialog>
+}
+
+@if(polarAreaController){
+  <app-polar-area-dialog [controller]="polarAreaController"></app-polar-area-dialog>
 }
 
 @if(scatterPlotController){

@@ -27,6 +27,7 @@ export class KpiMailConfigModal implements OnInit {
   public mailMessage = '';
   public users: any[] = [];
   public selectedUsers: any[] = [];
+  public otherRecipients: string = '';
   public enabled: boolean = false;
 
   constructor(private userService: UserService) {}
@@ -39,19 +40,35 @@ export class KpiMailConfigModal implements OnInit {
       this.units = mailing.units;
       this.quantity = mailing.quantity;
       this.mailMessage = mailing.mailMessage || '';
+      this.otherRecipients = mailing.otherRecipients || '';
       this.enabled = mailing.enabled;
     }
 
     this.userService.getUsers().subscribe(
       res => {
-        this.users = res.map(user => ({ label: user.name, value: user }));
+        this.users = res.map(user => ({ label: user.name || user.email, value: user }));
         const savedUsers = mailing?.users || [];
-        this.selectedUsers = this.users.filter(opt =>
-          savedUsers.some((u: any) => u._id === opt.value._id || u.email === opt.value.email)
+        this.selectedUsers = res.filter((user: any) =>
+          savedUsers.some((u: any) => u._id === user._id || u.email === user.email)
         );
       },
       err => console.log(err)
     );
+  }
+
+  /** Emails typed by hand in the "Otros destinatarios" input, space-separated */
+  public parseOtherRecipients(): string[] {
+    return this.otherRecipients
+      .split(/\s+/)
+      .map(email => email.trim())
+      .filter(email => email.length > 0);
+  }
+
+  /** All recipients (registered users + manually typed emails), deduplicated, for the dialog summary */
+  public get allRecipientEmails(): string[] {
+    const registered = (this.selectedUsers || []).map((u: any) => (u.value ?? u).email).filter(Boolean);
+    const manual = this.parseOtherRecipients();
+    return Array.from(new Set([...registered, ...manual]));
   }
 
   save() {
@@ -66,6 +83,7 @@ export class KpiMailConfigModal implements OnInit {
       hours,
       minutes,
       users: this.selectedUsers.map((u: any) => u.value ?? u),
+      otherRecipients: this.otherRecipients,
       mailMessage: this.mailMessage,
       lastUpdated: '2000-01-01T00:00:01.000',
       enabled: this.enabled,
@@ -73,7 +91,7 @@ export class KpiMailConfigModal implements OnInit {
   }
 
   disableApply(): boolean {
-    return !this.quantity || !this.units || this.selectedUsers.length === 0 || !this.mailMessage;
+    return !this.quantity || !this.units || this.allRecipientEmails.length === 0 || !this.mailMessage;
   }
 
   onApply() { this.save(); }

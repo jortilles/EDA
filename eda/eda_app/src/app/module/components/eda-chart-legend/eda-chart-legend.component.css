@@ -1,0 +1,34 @@
+.eda-chart-legend {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 2px 12px;
+  padding: 4px 8px;
+  line-height: 1.2;
+}
+
+.eda-chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.eda-chart-legend-item.hidden {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.eda-chart-legend-swatch {
+  display: inline-block;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.eda-chart-legend-label {
+  font-weight: 500;
+  color: #000000;
+}

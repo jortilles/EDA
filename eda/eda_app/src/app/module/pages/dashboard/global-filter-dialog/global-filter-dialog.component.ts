@@ -61,6 +61,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public allPanels: any[] = [];
     public filteredPanels: any[] = [];
     public loading: boolean = true;
+    public multipleSelection: boolean = true;
 
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
     @Output() globalFilterChange: EventEmitter<any> = new EventEmitter<any>();
@@ -83,6 +84,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public tooltipApplyToAll: string = $localize`:@@tooltipApplyToAll:Si está activado, el filtro se aplica a todos los paneles del informe.`;
     public tooltipAutocomplete: string = $localize`:@@tooltipAutocomplete:Si está activado, los valores se buscan dinámicamente mediante autocompletado.`;
     public tooltipMandatory: string = $localize`:@@tooltipMandatory:Si está activado, el filtro debe tener un valor seleccionado para poder visualizar el informe.`;
+    public uniqueSelectionDescription: string = $localize`:@@uniqueSelectionDescription:Active esta opción para permitir la selección múltiple.`;
+    public multipleSelectionDescription: string = $localize`:@@multipleSelectionDescription:Desactive esta opción para permitir la selección única.`;
     public tooltipVisibility: string = $localize`:@@tooltipVisibility:Público: todos pueden usarlo. Deshabilitado: otros usuarios pueden ver el filtro pero no modificarlo. Oculto: no visible para otros pero se aplica igualmente.`;
 
     public tables: any[] = [];
@@ -149,6 +152,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 isGlobal: true,
                 isAutocompleted: false,
                 isMandatory: false,
+                multipleSelection: true,
                 queryMode: this.globalFilter.queryMode,
                 data: null,
                 selectedTable: {},
@@ -169,6 +173,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             else this.initPanelsLegacy();
             this.isAutocompleted = this.globalFilter.isAutocompleted;
             this.isMandatory = this.globalFilter.isMandatory;
+            this.multipleSelection = this.globalFilter.multipleSelection ?? true;
             this.initTablesForFilter();
 
             const tableName = this.globalFilter.selectedTable.table_name;
@@ -188,6 +193,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         // We retrieve the switch value
         this.globalFilter.isAutocompleted = this.isAutocompleted;
         this.globalFilter.isMandatory = this.isMandatory;
+        this.globalFilter.multipleSelection = this.multipleSelection;
     }
 
     public ngOnDestroy(): void {
@@ -306,7 +312,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         for (const panel of panels) {
             const fields = panel.content.query.query.fields ?? [];
             for (const field of fields) {
-                queryTables.add(field.table_id.split(".")[0]);
+                if (field.table_id) queryTables.add(field.table_id.split(".")[0]);
             }
         }
 
@@ -776,6 +782,17 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
         this.isMandatory = !this.isMandatory;
         this.globalFilter.isMandatory = this.isMandatory;
     }
+    public multipleSelectionCheck() {
+        this.multipleSelection = !this.multipleSelection;
+        this.globalFilter.multipleSelection = this.multipleSelection;
+        this.globalFilter.selectedItems = [];
+    }
+
+    public onSingleSelectChange(): void {
+        if (this.globalFilter.selectedItems?.length > 1) {
+            this.globalFilter.selectedItems = [this.globalFilter.selectedItems[this.globalFilter.selectedItems.length - 1]];
+        }
+    }
 
     public toggleShowAlias() {
         this.showAlias = !this.showAlias;
@@ -819,7 +836,12 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
     }
 
     public onApply(): void {
+
+        console.log('hola....')
+
         if (this.validateGlobalFilter()) {
+            this.globalFilter.multipleSelection = this.multipleSelection;
+
             if (this.globalFilter.queryMode != 'EDA2') {
                 this.globalFilter.panelList = this.filteredPanels.map((p: any) => p.id);
                 this.globalFilter.applyToAll = this.applyToAll;

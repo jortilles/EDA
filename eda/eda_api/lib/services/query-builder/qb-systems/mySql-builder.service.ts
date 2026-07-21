@@ -262,26 +262,72 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
 
 
-    // GroupBy
-    if (grouping.length > 0 && ((groupByEnabled))) {
-      myQuery += '\ngroup by ' + grouping.join(', ');
+    // Compute resultSortingColumns before GROUP BY
+    const sortingCols: any[] = this.queryTODO.resultSortingColumns ?? [];
+
+    // GroupBy — sorting columns first, then regular grouping (no duplicates)
+    const effectiveGrouping: string[] = [];
+    const addedToGrouping = new Set<string>();
+
+    for (const col of sortingCols) {
+      const matchingField = this.queryTODO.fields.find(
+        (f: any) => f.table_id === col.table_id && f.column_name === col.column_name
+      );
+      if (matchingField?.aggregation_type && matchingField.aggregation_type !== 'none') continue;
+
+      let tc: string;
+      if (matchingField?.computed_column === 'computed') {
+        if (matchingField.column_type !== 'numeric') continue;
+        tc = `"${col.column_name}"`;
+      } else {
+        tc = `\`${col.table_id}\`.\`${col.column_name}\``;
+      }
+
+      if (!addedToGrouping.has(tc)) {
+        effectiveGrouping.push(tc);
+        addedToGrouping.add(tc);
+      }
+    }
+    for (const g of grouping) {
+      if (!addedToGrouping.has(g)) {
+        effectiveGrouping.push(g);
+        addedToGrouping.add(g);
+      }
     }
 
-    //HAVING 
+    if (effectiveGrouping.length > 0 && ((groupByEnabled))) {
+      myQuery += '\ngroup by ' + effectiveGrouping.join(', ');
+    }
+
+    //HAVING
     myQuery += this.getHavingFilters(havingFilters);
 
     // OrderBy
-    const orderColumns = this.queryTODO.fields.map(col => {
-      let out;
+    let orderColumns: string[];
 
-      if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
-        out = `\`${col.display_name}\` ${col.ordenation_type}`
-      } else {
-        out = false;
-      }
-
-      return out;
-    }).filter(e => e !== false);
+    if (sortingCols.length > 0) {
+      orderColumns = sortingCols
+        .filter(col => col.ordenation_type !== 'No' && col.ordenation_type !== undefined)
+        .map(col => {
+          const matchingField = this.queryTODO.fields.find(
+            (f: any) => f.table_id === col.table_id && f.column_name === col.column_name
+          );
+          if (matchingField) {
+            return `\`${matchingField.display_name}\` ${col.ordenation_type}`;
+          } else {
+            return `\`${col.table_id}\`.\`${col.column_name}\` ${col.ordenation_type}`;
+          }
+        });
+    } else {
+      orderColumns = this.queryTODO.fields
+        .map((col: any) => {
+          if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
+            return `\`${col.display_name}\` ${col.ordenation_type}`;
+          }
+          return false;
+        })
+        .filter((e: any) => e !== false) as string[];
+    }
 
     const order_columns_string = orderColumns.join(',');
     if (order_columns_string.length > 0) {
