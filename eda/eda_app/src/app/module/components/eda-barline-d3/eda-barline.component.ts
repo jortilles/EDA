@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaBarlineD3 } from './eda-barline';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, formatDeNumber, formatValueLabel, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, roundedTipRectPath } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, roundedTipRectPath } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface BarlineSeriesBase {
@@ -91,11 +91,12 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
   private buildSeries(): void {
     const labels: string[] = this.inject.chartLabels || [];
     this.categories = labels.map(l => String(l));
+    const assignedByLabel = new Map((this.inject.assignedColors || []).map((c: any) => [c.value, c]));
     const datasets = this.inject.chartDataset || [];
     this.barSeries = [];
     this.lineSeries = [];
     datasets.forEach((ds: any, i: number) => {
-      const color = ds.borderColor || '#4472c4';
+      const color = assignedByLabel.get(ds.label)?.color || ds.borderColor || '#4472c4';
       const entry: BarlineSeriesBase = {
         label: ds.label || '',
         color,
@@ -378,7 +379,7 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
             .style('font-size', '11px')
             .style('font-weight', 'bold')
             .style('font-family', this.fontFamily)
-            .style('fill', series.color)
+            .style('fill', resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, series.color))
             .style('pointer-events', 'none')
             .attr('x', (d: any) => barX(d) + barWidth / 2)
             .attr('y', (d: any) => valueScale(d.value) + (d.value < 0 ? 14 : -6))

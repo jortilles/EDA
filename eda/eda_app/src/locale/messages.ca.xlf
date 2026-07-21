@@ -3176,6 +3176,34 @@ Qué estic veient?
     <source>Tendencia</source>
     <target>Tendència</target>
   </trans-unit>
+  <trans-unit id="kpiGrafico">
+    <source>Gráfico</source>
+    <target>Gràfic</target>
+  </trans-unit>
+  <trans-unit id="opacityLabel">
+    <source>Opacidad</source>
+    <target>Opacitat</target>
+  </trans-unit>
+  <trans-unit id="labelColorOption">
+    <source>Color de las etiquetas</source>
+    <target>Color de les etiquetes</target>
+  </trans-unit>
+  <trans-unit id="labelColorSeries">
+    <source>Propio</source>
+    <target>Propi</target>
+  </trans-unit>
+  <trans-unit id="labelColorBlack">
+    <source>Negro</source>
+    <target>Negre</target>
+  </trans-unit>
+  <trans-unit id="labelColorWhite">
+    <source>Blanco</source>
+    <target>Blanc</target>
+  </trans-unit>
+  <trans-unit id="labelColorCustom">
+    <source>Personalizado</source>
+    <target>Personalitzat</target>
+  </trans-unit>
 
   <trans-unit id="removetrend">
     <source>Quitar tendencia</source>

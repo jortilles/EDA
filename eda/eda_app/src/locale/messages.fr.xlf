@@ -3131,6 +3131,34 @@ Que suis-je en train de voir ?
     <source>Tendencia</source>
     <target>Tendance</target>
   </trans-unit>
+  <trans-unit id="kpiGrafico">
+    <source>Gráfico</source>
+    <target>Graphique</target>
+  </trans-unit>
+  <trans-unit id="opacityLabel">
+    <source>Opacidad</source>
+    <target>Opacité</target>
+  </trans-unit>
+  <trans-unit id="labelColorOption">
+    <source>Color de las etiquetas</source>
+    <target>Couleur des étiquettes</target>
+  </trans-unit>
+  <trans-unit id="labelColorSeries">
+    <source>Propio</source>
+    <target>Série</target>
+  </trans-unit>
+  <trans-unit id="labelColorBlack">
+    <source>Negro</source>
+    <target>Noir</target>
+  </trans-unit>
+  <trans-unit id="labelColorWhite">
+    <source>Blanco</source>
+    <target>Blanc</target>
+  </trans-unit>
+  <trans-unit id="labelColorCustom">
+    <source>Personalizado</source>
+    <target>Personnalisé</target>
+  </trans-unit>
 
   <trans-unit id="removetrend">
     <source>Quitar tendencia</source>

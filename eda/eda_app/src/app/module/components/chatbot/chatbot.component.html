@@ -79,11 +79,9 @@
               @if (msg.chart) {
                 <div class="chat-chart-wrapper">
                   <p class="chat-chart-title">{{ msg.chart.title }}</p>
-                  <canvas baseChart
-                    [data]="buildChartData(msg.chart)"
-                    [options]="buildChartOptions(msg.chart)"
-                    type="bar">
-                  </canvas>
+                  <div class="chat-chart-canvas">
+                    <eda-bar-d3 [inject]="buildBarD3Inject(msg.chart)"></eda-bar-d3>
+                  </div>
                 </div>
               }
               @if (msgIdx !== streamingIndex() && msgIdx !== generatingMsgIndex()) {

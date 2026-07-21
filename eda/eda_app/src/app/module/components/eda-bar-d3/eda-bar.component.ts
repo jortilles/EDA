@@ -3,12 +3,12 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaBarD3 } from './eda-bar';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatDePercent, formatValueLabel, initD3ResizeObserver, teardownD3Chart, roundedTipRectPath } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatDePercent, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, roundedTipRectPath } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface BarSeries {
   label: string;
-  color: string | string[];
+  color: string;
   data: number[];
   rawValues?: number[];
 }
@@ -61,6 +61,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   private categories: string[] = [];
   private series: BarSeries[] = [];
+  private categoryColorOverrides: Map<string, string> = new Map();
   private hiddenSeriesIndexes: Set<number> = new Set();
   private fontFamily = 'inherit';
   // Only the very first draw() gets the staggered grow-in animation - a resize or a color/hover
@@ -71,7 +72,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.id = `bar_${this.inject.id}`;
-    this.chartLegend = (this.inject.compact ? false : this.inject.chartLegend) ?? true;
+    this.chartLegend = this.inject.chartLegend ?? !(this.inject.compact ?? false);
     this.styleProviderService.panelFontFamily.subscribe(v => this.fontFamily = v).unsubscribe();
     this.buildSeries();
   }
@@ -91,7 +92,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   /** Called by the shared chart-dialog.component.ts (unconditionally, no `?.`) on every live color edit. */
   updateChart(): void {
-    this.chartLegend = (this.inject.compact ? false : this.inject.chartLegend) ?? true;
+    this.chartLegend = this.inject.chartLegend ?? !(this.inject.compact ?? false);
     this.hiddenSeriesIndexes.clear();
     this.buildSeries();
     this.draw();
@@ -100,17 +101,25 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   private buildSeries(): void {
     const labels: string[] = this.inject.chartLabels || [];
     this.categories = labels.map(l => String(l));
+    const assignedByLabel = new Map((this.inject.assignedColors || []).map((c: any) => [c.value, c]));
     const datasets = this.inject.chartDataset || [];
-    this.series = datasets.map((ds: any) => ({
-      label: ds.label || '',
-      color: ds.backgroundColor || '#4472c4',
-      data: (ds.data || []).map((v: any) => Number(v) || 0),
-      rawValues: ds.value ? ds.value.map((v: any) => Number(v) || 0) : undefined
-    }));
+    this.series = datasets.map((ds: any) => {
+      const assigned = assignedByLabel.get(ds.label);
+      return {
+        label: ds.label || '',
+        color: assigned?.color || ds.backgroundColor || '#4472c4',
+        data: (ds.data || []).map((v: any) => Number(v) || 0),
+        rawValues: ds.value ? ds.value.map((v: any) => Number(v) || 0) : undefined
+      };
+    });
+
+    // Colored-bars-by-threshold / unique-per-bar modes: a per-category color, keyed by category
+    // label, takes priority over the series' own color (see barColor()).
+    this.categoryColorOverrides = new Map((this.inject.categoryColorOverrides || []).map((c: any) => [c.value, c.color]));
 
     this.legendItems = this.series.map((s, i) => ({
       label: s.label,
-      color: Array.isArray(s.color) ? (s.color[0] || '#4472c4') : (s.color || '#4472c4'),
+      color: s.color || '#4472c4',
       hidden: this.hiddenSeriesIndexes.has(i)
     }));
   }
@@ -140,7 +149,8 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private barColor(series: BarSeries, categoryIdx: number): string {
-    return Array.isArray(series.color) ? (series.color[categoryIdx] || '#4472c4') : (series.color || '#4472c4');
+    const override = this.categoryColorOverrides.get(this.categories[categoryIdx]);
+    return override || series.color || '#4472c4';
   }
 
   private gradientId(colorHex: string): string {
@@ -373,6 +383,11 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     // axis) instead. Measure the actual widest label - using a throwaway scale/ticks for the
     // vertical case, since the real valueScale's range depends on this same margin - capped so
     // one outlier label can't eat the whole chart.
+    // showGridLines drives the value axis and its gridlines independently of compact for vertical
+    // bars (mirrors eda-line-d3/eda-area-d3) - horizontal bars keep the existing compact behavior,
+    // since their value axis runs along the bottom margin, not the left one this reuses.
+    const showGrid = this.inject.showGridLines ?? !compact;
+
     let leftMargin: number;
     // Which category labels survive auto-skip (populated below for the horizontal case, where
     // - unlike the vertical one - the label footprint is vertical, not affected by left margin,
@@ -402,7 +417,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       leftMargin = Math.min(Math.max(this.measureMaxLabelWidth(tickLabels, 11) + 16, 40), width * 0.3);
     }
     const margin = compact
-      ? { top: 4, right: 4, bottom: 4, left: 4 }
+      ? { top: 4, right: 4, bottom: 4, left: (!horizontal && showGrid) ? leftMargin : 4 }
       : { top: 16, right: 20, bottom: horizontal ? 30 : 50, left: leftMargin };
     const innerWidth = Math.max(width - margin.left - margin.right, 10);
     const innerHeight = Math.max(height - margin.top - margin.bottom, 10);
@@ -422,18 +437,29 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     const vBarGap = (categoryScale.step() - categoryScale.bandwidth()) / 2;
     const vSeriesGap = (seriesScale.step() - seriesScale.bandwidth()) / 2;
 
-    if (!compact) {
-      // Grid lines (value axis)
-      if (this.inject.showGridLines ?? true) {
-        const gridAxis: any = horizontal
-          ? d3.axisBottom(valueScale).ticks(horizontalTickCount).tickSize(-innerHeight).tickFormat(() => '')
-          : d3.axisLeft(valueScale).ticks(verticalTickCount).tickSize(-innerWidth).tickFormat(() => '');
-        g.append('g')
-          .attr('class', 'eda-bar-grid')
-          .attr('transform', horizontal ? `translate(0,${innerHeight})` : 'translate(0,0)')
-          .call(gridAxis);
-      }
+    // Grid lines (value axis) - shown independently of compact when explicitly enabled, so a KPI
+    // mini-chart can opt into them without needing full axis labels too.
+    if (this.inject.showGridLines ?? !compact) {
+      const gridAxis: any = horizontal
+        ? d3.axisBottom(valueScale).ticks(horizontalTickCount).tickSize(-innerHeight).tickFormat(() => '')
+        : d3.axisLeft(valueScale).ticks(verticalTickCount).tickSize(-innerWidth).tickFormat(() => '');
+      g.append('g')
+        .attr('class', 'eda-bar-grid')
+        .attr('transform', horizontal ? `translate(0,${innerHeight})` : 'translate(0,0)')
+        .call(gridAxis);
+    }
 
+    // Compact mode explicitly opted into gridlines - also show the vertical value axis' numbers
+    // (not the category axis, which still needs the full non-compact layout). Horizontal bars'
+    // value axis runs along the bottom margin, which compact doesn't allocate space for, so it
+    // stays compact-gated below with the rest.
+    if (compact && !horizontal && this.inject.showGridLines === true) {
+      const valueAxis: any = d3.axisLeft(valueScale).ticks(verticalTickCount).tickFormat((v: any) => formatAxisValue(v));
+      g.append('g').attr('class', 'eda-bar-axis').attr('transform', 'translate(0,0)').call(valueAxis);
+      g.selectAll('.eda-bar-axis text').style('font-family', this.fontFamily).style('font-size', '11px').style('font-weight', 500).style('fill', '#000000');
+    }
+
+    if (!compact) {
       // Axes. Category labels are truncated to a fixed character count and value numbers
       // abbreviated (500k, 1M...) purely for display - the underlying scale/data keeps the full
       // values, so click handling, tooltips and datalabels are unaffected.
@@ -687,7 +713,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             .style('font-size', '11px')
             .style('font-weight', 'bold')
             .style('font-family', this.fontFamily)
-            .style('fill', 'white')
+            .style('fill', (d: any) => resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, this.barColor(series, this.categories.indexOf(d.data.cat))))
             .style('pointer-events', 'none')
             .attr('x', (d: any) => horizontal
               ? (valueScale(d[0]) + valueScale(d[1])) / 2
@@ -866,7 +892,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             .style('font-size', '11px')
             .style('font-weight', 'bold')
             .style('font-family', this.fontFamily)
-            .style('fill', (d: any) => labelInsideBar ? 'white' : this.barColor(series, d.catIdx))
+            .style('fill', (d: any) => (labelInsideBar && this.inject.labelColorMode !== 'custom') ? 'white' : resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, this.barColor(series, d.catIdx)))
             .style('pointer-events', 'none')
             .attr('class', `eda-bar-label-${sIdx}`)
             // Horizontal bars: a positive bar's tip is its right edge. With room to sit past it,

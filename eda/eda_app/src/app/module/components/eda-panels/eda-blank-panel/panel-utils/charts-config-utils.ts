@@ -2,7 +2,6 @@ import { KnobConfig } from './../panel-charts/chart-configuration-models/knob-co
 import { TreeMapConfig } from './../panel-charts/chart-configuration-models/treeMap-config';
 import { EdaBlankPanelComponent } from '../eda-blank-panel.component';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
-import { ChartJsConfig } from '../panel-charts/chart-configuration-models/chart-js-config';
 import { KpiConfig } from '../panel-charts/chart-configuration-models/kpi-config';
 import { DynamicTextConfig } from '../panel-charts/chart-configuration-models/dynamicText-config';
 import { MapConfig } from '../panel-charts/chart-configuration-models/map-config';
@@ -40,6 +39,8 @@ export const CUSTOM_CHART_CONFIG_FIELDS: CustomChartConfigField[] = [
   { name: 'addComparative', default: false },
   { name: 'showLabels', default: false },
   { name: 'showLabelsPercent', default: false },
+  { name: 'labelColorMode', default: 'series', fallbackIfMissing: true },
+  { name: 'labelCustomColor', default: '#000000' },
   { name: 'showPointLines', default: false },
   { name: 'secondAxis', default: false },
   { name: 'showPredictionLines', default: false },
@@ -56,7 +57,7 @@ export const CUSTOM_CHART_CONFIG_FIELDS: CustomChartConfigField[] = [
   { name: 'chartAnimation', default: true, fallbackIfMissing: true },
 ];
 
-function readCustomFields(cfg: any, fields: CustomChartConfigField[]): any {
+export function readCustomFields(cfg: any, fields: CustomChartConfigField[]): any {
   const result: any = {};
   fields.forEach(field => {
     result[field.name] = cfg
@@ -205,7 +206,7 @@ export const ChartsConfigUtils = {
         if (['table', 'crosstable'].includes(type)) {
           return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false, false ,  []);
         }else if (['bar', 'line', 'area', 'pie', 'doughnut', 'polarArea', 'barline', 'horizontalBar', 'pyramid', 'histogram', 'radar'].includes(type)) {
-            return new ChartJsConfig(null, type, false, false, false, false, null,[], false, false);
+            return { chartType: type, ...readCustomFields(null, CUSTOM_CHART_CONFIG_FIELDS) };
         } else if (type === 'parallelSets') {
             return new SankeyConfig([]);
         } else if (type === 'treeMap') {
@@ -225,8 +226,9 @@ export const ChartsConfigUtils = {
         } else if (type === 'kpi') {
             return new KpiConfig();
         } else if (['kpibar', 'kpiline', 'kpiarea'].includes(type)) {
+            // Unlike a full-size chart, the KPI mini-chart starts compact (no legend/gridlines) -
             return new KpiConfig({
-                edaChart:  new ChartJsConfig(null, type, false, false, false, false, null,[], false, false)
+                edaChart: { chartType: type, ...readCustomFields(null, CUSTOM_CHART_CONFIG_FIELDS), chartLegend: false, showGridLines: false }
             });
         } else if (type === 'dynamicText') {
             return new DynamicTextConfig(null);
@@ -237,7 +239,7 @@ export const ChartsConfigUtils = {
         }
     },
 
-  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | KnobConfig | FunnelConfig | BubblechartConfig | SunburstConfig | KpiTrendConfig) => {
+  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | any | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | KnobConfig | FunnelConfig | BubblechartConfig | SunburstConfig | KpiTrendConfig) => {
 
     return new ChartConfig(config ?? undefined);
 

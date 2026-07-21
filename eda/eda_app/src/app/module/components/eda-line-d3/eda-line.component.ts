@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaLineD3 } from './eda-line';
-import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface LinePoint {
@@ -55,7 +55,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.id = `line_${this.inject.id}`;
-    this.chartLegend = (this.inject.compact ? false : this.inject.chartLegend) ?? true;
+    this.chartLegend = this.inject.chartLegend ?? !(this.inject.compact ?? false);
     this.styleProviderService.panelFontFamily.subscribe(v => this.fontFamily = v).unsubscribe();
     this.styleProviderService.panelColor.subscribe(v => this.panelBackgroundColor = v || '#ffffff').unsubscribe();
     this.buildSeries();
@@ -78,7 +78,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** Called by the shared chart-dialog.component.ts (unconditionally, no `?.`) on every live color edit. */
   updateChart(): void {
-    this.chartLegend = (this.inject.compact ? false : this.inject.chartLegend) ?? true;
+    this.chartLegend = this.inject.chartLegend ?? !(this.inject.compact ?? false);
     this.hiddenSeriesIndexes.clear();
     this.buildSeries();
     this.draw();
@@ -87,27 +87,30 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
   private buildSeries(): void {
     const labels: string[] = this.inject.chartLabels || [];
     this.categories = labels.map(l => String(l));
+    const assignedByLabel = new Map((this.inject.assignedColors || []).map((c: any) => [c.value, c]));
     const datasets = this.inject.chartDataset || [];
-    this.series = datasets.map((ds: any, i: number) => ({
-      label: ds.label || '',
-      color: ds.borderColor || ds.backgroundColor || '#4472c4',
-      originalIndex: i,
-      isTrend: !!ds.isTrend,
-      isPrediction: !!ds.isPrediction,
-      sourceLabel: ds.sourceLabel,
-      points: (ds.data || []).map((v: any, catIdx: number) => ({ catIndex: catIdx, value: v === null || v === undefined ? null : Number(v) }))
-    }));
+    this.series = datasets.map((ds: any, i: number) => {
+      // Trend/prediction rows are independently editable by their own label - only fall back to
+      // their source series' color if they don't have their own assignedColors entry yet.
+      const assigned = assignedByLabel.get(ds.label)
+        || ((ds.isTrend || ds.isPrediction) ? assignedByLabel.get(ds.sourceLabel) : undefined);
+      return {
+        label: ds.label || '',
+        color: assigned?.color || ds.borderColor || ds.backgroundColor || '#4472c4',
+        originalIndex: i,
+        isTrend: !!ds.isTrend,
+        isPrediction: !!ds.isPrediction,
+        sourceLabel: ds.sourceLabel,
+        points: (ds.data || []).map((v: any, catIdx: number) => ({ catIndex: catIdx, value: v === null || v === undefined ? null : Number(v) }))
+      };
+    });
 
-    // Trend/prediction lines are derived from a real series (same color) and would be a confusing,
-    // redundant legend swatch - only real series get their own entry.
     this.legendItems = this.series
-      .filter(s => !s.isTrend && !s.isPrediction)
       .map(s => ({ label: s.label, color: s.color, hidden: this.hiddenSeriesIndexes.has(s.originalIndex) }));
   }
 
   toggleLegend(legendIdx: number): void {
-    const realSeries = this.series.filter(s => !s.isTrend && !s.isPrediction);
-    const s = realSeries[legendIdx];
+    const s = this.series[legendIdx];
     if (!s) return;
     if (this.hiddenSeriesIndexes.has(s.originalIndex)) this.hiddenSeriesIndexes.delete(s.originalIndex);
     else this.hiddenSeriesIndexes.add(s.originalIndex);
@@ -157,6 +160,10 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     return total !== 0 ? (value / total) * 100 : 0;
   }
 
+  private formatLabel(series: LineSeries, catIndex: number, value: number): string {
+    return formatValueLabel(value, this.percentOfSeries(series, catIndex), this.inject.showLabels, this.inject.showLabelsPercent);
+  }
+
   draw(): void {
     const container = this.svgContainer.nativeElement as HTMLElement;
     const width = container.clientWidth;
@@ -185,14 +192,20 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const tickCount = computeYTickCount(height);
 
+    // Grid lines follow showGridLines independently of compact. Value axis LABELS follow the same
+    // field but only in compact mode - a full-size chart always shows them regardless of
+    // showGridLines (that field has only ever toggled the lines there), matching prior behavior.
+    const showGridLinesOn = this.inject.showGridLines ?? !compact;
+    const showValueAxis = !compact || this.inject.showGridLines === true;
+
     let leftMargin = 8;
-    if (!compact) {
+    if (showValueAxis) {
       const probeScale = d3.scaleLinear().domain([valueMin, valueMax]).nice();
       const tickLabels = probeScale.ticks(tickCount).map(v => formatAxisValue(v));
       leftMargin = Math.min(Math.max(measureMaxLabelWidth(tickLabels, 11, this.fontFamily) + 16, 40), width * 0.3);
     }
     const margin = compact
-      ? { top: 4, right: 4, bottom: 4, left: 4 }
+      ? { top: 4, right: 4, bottom: 4, left: showValueAxis ? leftMargin : 4 }
       : { top: 16, right: 20, bottom: 50, left: leftMargin };
     const innerWidth = Math.max(width - margin.left - margin.right, 10);
     const innerHeight = Math.max(height - margin.top - margin.bottom, 10);
@@ -204,19 +217,25 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     const valueScale = d3.scaleLinear().domain([valueMin, valueMax]).nice().range([innerHeight, 0]);
     const xFor = (catIdx: number) => (categoryScale(axisCategories[catIdx]) ?? 0) + categoryScale.bandwidth() / 2;
 
-    if (!compact) {
-      if (this.inject.showGridLines ?? true) {
-        g.append('g')
-          .attr('class', 'eda-line-grid')
-          .call(d3.axisLeft(valueScale).ticks(tickCount).tickSize(-innerWidth).tickFormat(() => '' as any));
-      }
+    if (showGridLinesOn) {
+      g.append('g')
+        .attr('class', 'eda-line-grid')
+        .call(d3.axisLeft(valueScale).ticks(tickCount).tickSize(-innerWidth).tickFormat(() => '' as any));
+    }
 
-      const categoryAxis = d3.axisBottom(categoryScale).tickFormat((d: string) => this.truncate(d));
+    if (showValueAxis) {
       const valueAxis = d3.axisLeft(valueScale).ticks(tickCount).tickFormat((v: any) => formatAxisValue(v));
+      g.append('g').attr('class', 'eda-line-axis').call(valueAxis as any);
+      g.selectAll('.eda-line-axis text').style('font-family', this.fontFamily).style('font-size', '11px').style('font-weight', 500).style('fill', '#000000');
+    }
+
+    if (!compact) {
+      const categoryAxis = d3.axisBottom(categoryScale).tickFormat((d: string) => this.truncate(d));
 
       const catAxisG = g.append('g').attr('class', 'eda-line-axis')
         .attr('transform', `translate(0,${innerHeight})`).call(categoryAxis as any);
-      catAxisG.selectAll('text').style('text-anchor', 'end').attr('dx', '-0.5em').attr('dy', '0.4em').attr('transform', 'rotate(-30)');
+      catAxisG.selectAll('text').style('text-anchor', 'end').attr('dx', '-0.5em').attr('dy', '0.4em').attr('transform', 'rotate(-30)')
+        .style('font-family', this.fontFamily).style('font-size', '11px').style('font-weight', 500).style('fill', '#000000');
 
       const angle = Math.PI / 6;
       const footprints = axisCategories.map(c => measureTextWidth(this.truncate(c), 11, this.fontFamily) * Math.cos(angle) + 11 * Math.sin(angle));
@@ -229,9 +248,6 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         return 'none';
       });
-
-      g.append('g').attr('class', 'eda-line-axis').call(valueAxis as any);
-      g.selectAll('.eda-line-axis text').style('font-family', this.fontFamily).style('font-size', '11px').style('font-weight', 500).style('fill', '#000000');
     }
 
     const lineGen: any = d3.line<LinePoint>()
@@ -250,7 +266,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     const pointsGroup = g.append('g').attr('class', 'eda-line-points');
     const labelsGroup = g.append('g').attr('class', 'eda-line-labels').style('pointer-events', 'none');
     const hoverGroup = g.append('g').attr('class', 'eda-line-hover-cols');
-    const showLabelsOn = (this.inject.showLabels || this.inject.showLabelsPercent) && !compact;
+    const showLabelsOn = this.inject.showLabels || this.inject.showLabelsPercent;
 
     const ENTRANCE_MS = compact ? 600 : 3000;
     const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
@@ -361,10 +377,10 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
           .style('font-size', '11px')
           .style('font-weight', 'bold')
           .style('font-family', this.fontFamily)
-          .style('fill', series.color)
+          .style('fill', resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, series.color))
           .attr('x', (d: any) => xFor(d.catIndex))
           .attr('y', (d: any) => valueScale(d.value as number) - 10)
-          .text((d: any) => formatValueLabel(d.value as number, this.percentOfSeries(series, d.catIndex), this.inject.showLabels, this.inject.showLabelsPercent))
+          .text((d: any) => this.formatLabel(series, d.catIndex, d.value as number))
           .style('opacity', animateEntrance ? 0 : 1);
 
         if (animateEntrance) {
