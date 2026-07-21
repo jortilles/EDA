@@ -126,6 +126,7 @@ export const ChartsConfigUtils = {
       }
 
       if (kpiChart?.hasOwnProperty('edaChart')) {
+        Object.assign(config.edaChart, readCustomFields(kpiChart, CUSTOM_CHART_CONFIG_FIELDS));
         config.edaChart.colors = kpiChart.chartColors;
         config.edaChart.chartType = ebp.panelChart.props.chartType;
         config.edaChart.assignedColors = ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null;  // ambién en edaChart

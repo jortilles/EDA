@@ -204,8 +204,10 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
       const tickLabels = probeScale.ticks(tickCount).map(v => formatAxisValue(v));
       leftMargin = Math.min(Math.max(measureMaxLabelWidth(tickLabels, 11, this.fontFamily) + 16, 40), width * 0.3);
     }
+    const showCompactCategoryAxis = compact && this.inject.showGridLines === true;
+    const showCompactLabels = compact && (this.inject.showLabels || this.inject.showLabelsPercent);
     const margin = compact
-      ? { top: 4, right: 4, bottom: 4, left: showValueAxis ? leftMargin : 4 }
+      ? { top: showCompactLabels ? 14 : 4, right: 4, bottom: showCompactCategoryAxis ? 18 : 4, left: showValueAxis ? leftMargin : 4 }
       : { top: 16, right: 20, bottom: 50, left: leftMargin };
     const innerWidth = Math.max(width - margin.left - margin.right, 10);
     const innerHeight = Math.max(height - margin.top - margin.bottom, 10);
@@ -248,6 +250,24 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         return 'none';
       });
+    } else if (showCompactCategoryAxis) {
+      // Compact mode has no room for the full diagonal collision-avoidance axis above - cap to at
+      // most 3 evenly-spaced labels (first/middle/last), horizontal instead of rotated.
+      const categoryAxis = d3.axisBottom(categoryScale).tickFormat((d: string) => this.truncate(d));
+      const catAxisG = g.append('g').attr('class', 'eda-line-axis')
+        .attr('transform', `translate(0,${innerHeight})`).call(categoryAxis as any);
+      catAxisG.selectAll('text').style('text-anchor', 'middle')
+        .style('font-family', this.fontFamily).style('font-size', '10px').style('font-weight', 500).style('fill', '#000000');
+
+      // At 1/4, 1/2 and 3/4 rather than first/middle/last - the very edge categories sit right at
+      // the plot boundary, where a centered label's text overflows past the SVG edge and clips.
+      const n = axisCategories.length;
+      const keepIdx = n <= 3 ? new Set(axisCategories.map((_, i) => i)) : new Set([
+        Math.round((n - 1) * 2 / 8),
+        Math.round((n - 1) * 4 / 8),
+        Math.round((n - 1) * 6 / 8)
+      ]);
+      catAxisG.selectAll('.tick').style('display', (_: any, i: number) => keepIdx.has(i) ? null : 'none');
     }
 
     const lineGen: any = d3.line<LinePoint>()

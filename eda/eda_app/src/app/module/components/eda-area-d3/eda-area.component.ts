@@ -66,7 +66,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     const container = this.svgContainer.nativeElement as HTMLElement;
     if (!this.svg) this.svg = d3.select(container).append('svg');
-    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw(), { skipFirstCallback: true });
   }
 
   /** Called by the shared chart-dialog.component.ts (unconditionally, no `?.`) on every live color edit. */
@@ -123,6 +123,20 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private truncate(label: string): string {
     return truncateLabel(label, MAX_CATEGORY_CHARS);
+  }
+
+  /** Delay (ms) at which the entrance sweep visually reaches a given x position - see eda-line's
+   * identical helper for the full reasoning (binary search + easeCubicOut inversion). */
+  private lineReachDelay(pathNode: SVGPathElement, totalLength: number, targetX: number, durationMs: number): number {
+    if (totalLength <= 0) return 0;
+    let lo = 0, hi = totalLength;
+    for (let i = 0; i < 30; i++) {
+      const mid = (lo + hi) / 2;
+      if (pathNode.getPointAtLength(mid).x < targetX) lo = mid; else hi = mid;
+    }
+    const lengthFraction = (lo + hi) / 2 / totalLength;
+    const timeFraction = 1 - Math.cbrt(1 - lengthFraction);
+    return durationMs * timeFraction;
   }
 
   private percentOfSeries(series: AreaSeries, catIndex: number): number {
@@ -189,8 +203,14 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       const tickLabels = probeScale.ticks(tickCount).map(v => formatAxisValue(v));
       leftMargin = Math.min(Math.max(measureMaxLabelWidth(tickLabels, 11, this.fontFamily) + 16, 40), width * 0.3);
     }
+    // Compact + explicit grid lines also earns a (capped, horizontal) category axis below - needs
+    // a little vertical room the otherwise-axisless compact layout doesn't normally allocate.
+    const showCompactCategoryAxis = compact && this.inject.showGridLines === true;
+    // Compact + value labels need headroom above the topmost point too, or a point near the very
+    // top gets its label clipped by the SVG's own edge.
+    const showCompactLabels = compact && (this.inject.showLabels || this.inject.showLabelsPercent);
     const margin = compact
-      ? { top: 4, right: 4, bottom: 4, left: showValueAxis ? leftMargin : 4 }
+      ? { top: showCompactLabels ? 14 : 4, right: 4, bottom: showCompactCategoryAxis ? 18 : 4, left: showValueAxis ? leftMargin : 4 }
       : { top: 16, right: 20, bottom: 50, left: leftMargin };
     const innerWidth = Math.max(width - margin.left - margin.right, 10);
     const innerHeight = Math.max(height - margin.top - margin.bottom, 10);
@@ -234,6 +254,24 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         return 'none';
       });
+    } else if (showCompactCategoryAxis) {
+      // Compact mode has no room for the full diagonal collision-avoidance axis above - cap to at
+      // most 3 evenly-spaced labels (first/middle/last), horizontal instead of rotated.
+      const categoryAxis = d3.axisBottom(categoryScale).tickFormat((d: string) => this.truncate(d));
+      const catAxisG = g.append('g').attr('class', 'eda-area-axis')
+        .attr('transform', `translate(0,${innerHeight})`).call(categoryAxis as any);
+      catAxisG.selectAll('text').style('text-anchor', 'middle')
+        .style('font-family', this.fontFamily).style('font-size', '10px').style('font-weight', 500).style('fill', '#000000');
+
+      // At 1/4, 1/2 and 3/4 rather than first/middle/last - the very edge categories sit right at
+      // the plot boundary, where a centered label's text overflows past the SVG edge and clips.
+      const n = axisCategories.length;
+      const keepIdx = n <= 3 ? new Set(axisCategories.map((_, i) => i)) : new Set([
+        Math.round((n - 1) * 2 / 8),
+        Math.round((n - 1) * 4 / 8),
+        Math.round((n - 1) * 6 / 8)
+      ]);
+      catAxisG.selectAll('.tick').style('display', (_: any, i: number) => keepIdx.has(i) ? null : 'none');
     }
 
     const areaGen: any = d3.area<AreaPoint>()
@@ -260,7 +298,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     const labelsGroup = g.append('g').attr('class', 'eda-area-labels').style('pointer-events', 'none');
     const showLabelsOn = this.inject.showLabels || this.inject.showLabelsPercent;
 
-    const ENTRANCE_MS = compact ? 600 : 1500;
+    const ENTRANCE_MS = compact ? 600 : 3000;
     const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
 
     // Real (non-derived) series first, so the trend overlay paints on top of its source.
@@ -318,40 +356,40 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
         .attr('fill', this.areaFill(defs, series))
         .attr('d', animateEntrance ? areaGen(zeroPoints) : areaGen(series.points));
 
+      if (animateEntrance) {
+        fillPath.transition().duration(ENTRANCE_MS).ease(d3.easeCubicOut).attr('d', areaGen(series.points));
+      }
+
       const strokePath = fillGroup.append('path')
         .datum(series.points)
         .attr('class', 'eda-area-stroke')
         .attr('fill', 'none')
         .attr('stroke', series.color)
         .attr('stroke-width', 2)
-        .attr('d', animateEntrance ? lineGen(zeroPoints) : lineGen(series.points));
+        .attr('d', lineGen(series.points));
+
+      // Computed unconditionally (cheap) rather than only inside the animateEntrance branch below,
+      // since the dots'/labels' own pop-in/fade-in timing further down needs this path's geometry
+      // to know exactly when the sweep passes each one.
+      const pathNode = strokePath.node() as SVGPathElement;
+      const pathLength = pathNode.getTotalLength();
 
       if (animateEntrance) {
-        fillPath.transition().duration(ENTRANCE_MS).ease(d3.easeCubicOut).attr('d', areaGen(series.points));
-        strokePath.transition().duration(ENTRANCE_MS).ease(d3.easeCubicOut).attr('d', lineGen(series.points));
+        strokePath.attr('stroke-dasharray', `${pathLength} ${pathLength}`).attr('stroke-dashoffset', pathLength)
+          .transition().duration(ENTRANCE_MS).ease(d3.easeCubicOut)
+          .attr('stroke-dashoffset', 0);
       }
 
-      const vertexData = series.points.filter(p => p.value !== null).map(p => ({ series, point: p }));
+      const showDots = this.inject.showPointLines ?? false;
+      const baseRadius = showDots ? 3.5 : 0;
+      const realPoints = series.points.filter(p => p.value !== null);
+
+      const vertexData = realPoints.map(p => ({ series, point: p }));
       const dotSel = pointsGroup.selectAll(null)
         .data(vertexData)
         .enter()
         .append('g')
         .attr('class', 'eda-area-point-group');
-
-      if (showLabelsOn) {
-        labelsGroup.selectAll(null)
-          .data(vertexData)
-          .enter()
-          .append('text')
-          .attr('text-anchor', 'middle')
-          .style('font-size', '11px')
-          .style('font-weight', 'bold')
-          .style('font-family', this.fontFamily)
-          .style('fill', resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, series.color))
-          .attr('x', (d: any) => xFor(d.point.catIndex))
-          .attr('y', (d: any) => valueScale(d.point.value) - 10)
-          .text((d: any) => this.formatLabel(series, d.point.catIndex, d.point.value));
-      }
 
       dotSel.append('circle')
         .attr('class', 'eda-area-point-hit')
@@ -361,15 +399,50 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
         .style('fill', 'transparent')
         .style('cursor', 'pointer');
 
-      const showDots = this.inject.showPointLines ?? false;
-
-      dotSel.append('circle')
+      const dots = dotSel.append('circle')
         .attr('class', 'eda-area-point-dot')
         .attr('cx', (d: any) => xFor(d.point.catIndex))
         .attr('cy', (d: any) => valueScale(d.point.value))
-        .attr('r', showDots ? 3.5 : 0)
+        .attr('r', animateEntrance && showDots ? 0 : baseRadius)
         .style('fill', series.color)
         .style('pointer-events', 'none');
+
+      // Pop each dot in right as the sweep reaches its x position - same idea as eda-line.
+      if (animateEntrance && showDots) {
+        const POP_MS = 100;
+        dots.each((d: any, i: number, nodes: ArrayLike<SVGCircleElement>) => {
+          const delay = this.lineReachDelay(pathNode, pathLength, xFor(d.point.catIndex), ENTRANCE_MS);
+          d3.select(nodes[i])
+            .transition().delay(delay).duration(0).attr('r', baseRadius)
+            .transition().duration(POP_MS).ease(d3.easeCubicOut).attr('r', baseRadius * 1.5)
+            .transition().duration(POP_MS).ease(d3.easeCubicIn).attr('r', baseRadius);
+        });
+      }
+
+      if (showLabelsOn) {
+        const labelSel = labelsGroup.selectAll(null)
+          .data(realPoints)
+          .enter()
+          .append('text')
+          .attr('class', 'eda-area-label')
+          .attr('text-anchor', 'middle')
+          .style('font-size', '11px')
+          .style('font-weight', 'bold')
+          .style('font-family', this.fontFamily)
+          .style('fill', resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, series.color))
+          .attr('x', (d: any) => xFor(d.catIndex))
+          .attr('y', (d: any) => valueScale(d.value as number) - 10)
+          .text((d: any) => this.formatLabel(series, d.catIndex, d.value as number))
+          .style('opacity', animateEntrance ? 0 : 1);
+
+        if (animateEntrance) {
+          const LABEL_FADE_MS = 200;
+          labelSel.transition()
+            .delay((d: any) => this.lineReachDelay(pathNode, pathLength, xFor(d.catIndex), ENTRANCE_MS))
+            .duration(LABEL_FADE_MS)
+            .style('opacity', 1);
+        }
+      }
 
       dotSel
         .on('mouseover', (event: any, d: any) => {
@@ -392,7 +465,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
         .on('mouseout', (event: any) => {
           d3.select(event.currentTarget).select('.eda-area-point-dot')
             .interrupt('grow').transition('grow').duration(150)
-            .attr('r', showDots ? 3.5 : 0)
+            .attr('r', baseRadius)
             .style('fill', series.color);
           this.tooltipService.hide();
         })

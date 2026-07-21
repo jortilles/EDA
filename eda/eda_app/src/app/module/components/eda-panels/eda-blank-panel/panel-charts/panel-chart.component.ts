@@ -542,6 +542,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.edaChart.labelCustomColor = edaCfg.labelCustomColor;
     if (supportsTrendCompare) {
         chartConfig.edaChart.showPointLines = edaCfg.showPointLines ?? false;
+        chartConfig.edaChart.addTrend = edaCfg.addTrend ?? false;
+        chartConfig.edaChart.addComparative = edaCfg.addComparative ?? false;
     }
 
     // TREND (line/area only) - added before color resolution so it gets its own (editable)
