@@ -7,4 +7,5 @@ export interface ChartDialogSaveResponseBase {
   showLabelsPercent?: boolean;
   showGridLines?: boolean;
   innerRadiusPercent?: number;
+  chartAnimation?: boolean;
 }

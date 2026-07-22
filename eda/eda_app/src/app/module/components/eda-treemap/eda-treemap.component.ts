@@ -42,6 +42,7 @@ export class EdaTreeMap implements AfterViewInit {
   chartLegend: boolean;
   legendItems: { label: string; color: string; hidden: boolean }[] = [];
   private hiddenIndexes: Set<number> = new Set();
+  private hasRendered = false;
 
   constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService) {
     this.update = true;
@@ -79,7 +80,7 @@ export class EdaTreeMap implements AfterViewInit {
   ngAfterViewInit() {
     const container = this.svgContainer.nativeElement as HTMLElement;
     if (!this.svg) this.svg = d3.select(container).append('svg');
-    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw(), { skipFirstCallback: true });
   }
 
 
@@ -183,6 +184,7 @@ export class EdaTreeMap implements AfterViewInit {
     const root = treemap(visibleData);
 
     const svg = this.svg;
+    const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
 
     let defs = svg.select('defs');
     if (defs.empty()) defs = svg.append('defs');
@@ -198,11 +200,11 @@ export class EdaTreeMap implements AfterViewInit {
     // leaf.append("title")
     //   .text(d => `${d.ancestors().reverse().map(d => d.data.name).join("/")}\n${d.value}`);
 
-    leaf
+    const rects = leaf
       .append("rect")
       .attr("id", (d) => (d.leafUid = this.randomID()))
       .attr("fill", (d) => this.cellFill(defs, this.leafColor(d)))
-      .attr("fill-opacity", 0.6)
+      .attr("fill-opacity", animateEntrance ? 0 : 0.6)
       .attr("width", (d) => d.x1 - d.x0)
       .attr("height", (d) => d.y1 - d.y0)
       .on("click", (mouseevent, data) => {
@@ -268,8 +270,13 @@ export class EdaTreeMap implements AfterViewInit {
         this.tooltipService.move(d);
       });
 
+    if (animateEntrance) {
+      rects.transition().delay((d: any, i: number) => i * 20).duration(300).attr('fill-opacity', 0.6);
+    }
+
     leaf
       .append("text")
+      .style("opacity", animateEntrance ? 0 : 1)
       .selectAll("tspan")
       .data((d) => {
         let value =
@@ -301,6 +308,12 @@ export class EdaTreeMap implements AfterViewInit {
           i === nodes.length - 1 ? 0.7 : null
       )
       .text((d) => d);
+
+    if (animateEntrance) {
+      leaf.select('text').transition().delay((d: any, i: number) => i * 20).duration(300).style('opacity', 1);
+    }
+
+    this.hasRendered = true;
   }
 
   formatData(data) {

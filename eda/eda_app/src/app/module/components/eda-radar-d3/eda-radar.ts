@@ -18,5 +18,6 @@ export class EdaRadar {
   labelCustomColor?: string;
   showGridLines: boolean;
   useGradient: boolean;
+  chartAnimation?: boolean;
   linkedDashboard: LinkedDashboardProps;
 }

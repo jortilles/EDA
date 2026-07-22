@@ -51,6 +51,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   chartLegend: boolean;
   legendItems: { label: string; color: string; hidden: boolean }[] = [];
   private hiddenIndexes: Set<number> = new Set();
+  private hasRendered = false;
 
   constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService) { }
 
@@ -86,7 +87,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     const container = this.svgContainer.nativeElement as HTMLElement;
     if (!this.svg) this.svg = d3.select(container).append('svg');
-    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw(), { skipFirstCallback: true });
   }
 
   private getToolTipData = (data) => {
@@ -174,6 +175,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     const root = treemap(visibleData);
     // get svg panel
     const svg = this.svg;
+    const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
 
     // Define thresholds and corresponding min/max sizes for circles and their text depending on SVG height
 
@@ -220,7 +222,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       .attr("fill", d => this.bubbleFill(defs, this.leafColor(d)))
       .attr("class", "node")
       .attr("r", function (d) {
-        return size(d.value)
+        return animateEntrance ? 0 : size(d.value)
       })// The size function picks the numeric value and assigns the diameter
       .style("cursor", "pointer")
       .style("fill-opacity", 1)
@@ -307,6 +309,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
 
     // create and place a text block inside the "g" block
     elemEnter.append("text")
+      .style("opacity", animateEntrance ? 0 : 1)
       .attr("font-size", function (d) {
         return textSize(d.value) // The textSize function maps the numeric value to text size
       })
@@ -342,7 +345,10 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.9 : null)
       .text(d => d)// Load the text into each tspan
 
-
+    if (animateEntrance) {
+      node.transition().delay((d: any, i: number) => i * 15).duration(400).ease(d3.easeCubicOut).attr('r', (d: any) => size(d.value));
+      elemEnter.select('text').transition().delay((d: any, i: number) => i * 15).duration(400).style('opacity', 1);
+    }
 
     // Physics properties applied to nodes:
     const simulation = d3.forceSimulation()
@@ -392,6 +398,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       d.fy = null;
     }
 
+    this.hasRendered = true;
   }
 
   formatData(data) {

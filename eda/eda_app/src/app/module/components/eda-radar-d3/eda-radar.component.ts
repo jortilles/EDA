@@ -411,7 +411,10 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
     // No first-render/resize/legend-toggle special-casing (unlike bar's fade+rebuild approach) -
     // every draw() interpolates from wherever each series' _current radii last were. This is what
     // lets hiding a dominant series smoothly rescale the remaining ones instead of snapping.
-    mergedPath.transition().duration(this.hasRendered ? 500 : 800)
+    // chartAnimation off collapses every one of these to a 0ms transition instead of restructuring
+    // the continuous morph itself, since resize/legend-toggle redraws reuse the same code path.
+    const animDuration = (this.inject.chartAnimation ?? true) ? (this.hasRendered ? 500 : 800) : 0;
+    mergedPath.transition().duration(animDuration)
       .attrTween('d', (s: RadarSeries) => {
         const start = s._current || s.points.map(() => 0);
         const end = s.points.map((p: RadarPoint) => radiusScale(p.value));
@@ -457,7 +460,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
       .attr('stroke-width', 2)
       .style('opacity', 1);
 
-    mergedVertex.transition().duration(this.hasRendered ? 500 : 800)
+    mergedVertex.transition().duration(animDuration)
       .attr('cx', (d: any) => this.xFor(this.angleFor(d.point.catIndex, n), radiusScale(d.point.value)))
       .attr('cy', (d: any) => this.yFor(this.angleFor(d.point.catIndex, n), radiusScale(d.point.value)));
 

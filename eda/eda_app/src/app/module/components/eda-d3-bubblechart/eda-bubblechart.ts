@@ -9,4 +9,5 @@ export class EdaBubblechart {
   assignedColors: any[];
   useGradient?: boolean;
   chartLegend?: boolean;
+  chartAnimation?: boolean;
 }

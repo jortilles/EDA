@@ -11,7 +11,10 @@ export function getChartCategoryValues(chartType: CategoryChartType, componentRe
   switch (chartType) {
     case 'doughnut':
     case 'polarArea':
-      return componentRefInstance.firstColLabels ?? [];
+      // These two are D3 components rewritten this session - they store categories as
+      // inject.chartLabels (see buildSlices() in both), not the legacy firstColLabels the
+      // still-Chart.js-era chart types below carry.
+      return componentRefInstance.inject?.chartLabels ?? [];
     case 'sunburst': {
       const otherColumns = componentRefInstance?.inject?.dataDescription?.otherColumns;
       const isMultiLevel = Array.isArray(otherColumns) && otherColumns.length > 1;
@@ -28,7 +31,10 @@ export function getChartCategoryValues(chartType: CategoryChartType, componentRe
       return [...new Set<string>(componentRefInstance.data.values.map((v: any[]) => v[labelIndex] as string))];
     }
     case 'funnel':
-      return ['Inicio', 'Fin'];
+      // Matches the keys resolveAndPersistGradientColors() in panel-chart.component.ts actually
+      // saves under - the dialog's "Inicio"/"Final" are hardcoded display labels, not bound to
+      // these values, so this only needs to match for lookup/persistence, not display.
+      return ['start', 'end'];
   }
 }
 

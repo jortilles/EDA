@@ -44,6 +44,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
   chartLegend: boolean;
   legendItems: { label: string; color: string; hidden: boolean }[] = [];
   private hiddenStepIndexes: Set<number> = new Set();
+  private hasRendered = false;
 
   constructor( private styleProviderService : StyleProviderService, private chartUtils : ChartUtilsService, private tooltipService: D3TooltipService) {
   }
@@ -88,7 +89,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
   ngAfterViewInit() {
     const container = this.svgContainer.nativeElement as HTMLElement;
     if (!this.svg) this.svg = d3.select(container).append('svg');
-    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw(), { skipFirstCallback: true });
   }
 
   ngOnDestroy() {
@@ -101,6 +102,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
 draw() {
   // Initial cleanup of other charts
   this.svg.selectAll('*').remove();
+  const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
 
   /** Variables */
   const width = this.svgContainer.nativeElement.clientWidth - 20;
@@ -214,7 +216,10 @@ draw() {
     .attr('offset', function (d) { return d.offset; })
     .attr('stop-color', function (d) { return d.color; });
 
-  const areaGroup = svg.append('g').style('cursor', 'pointer');
+  const areaGroup = svg.append('g').style('cursor', 'pointer').style('opacity', animateEntrance ? 0 : 1);
+  if (animateEntrance) {
+    areaGroup.transition().duration(500).style('opacity', 1);
+  }
 
   areaGroup.append('path')
     .datum(data2)
@@ -420,5 +425,7 @@ draw() {
         this.onClick.emit({label, filterBy });
       }
     });
+
+  this.hasRendered = true;
 }
 }

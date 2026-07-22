@@ -61,12 +61,14 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
   public toggleState: Record<string, boolean> = {};
   public innerRadiusPercent = 50;
   public useGradient = true;
+  public chartAnimation = true;
 
   private original: {
     assignedColors: { value: string | number; color: string }[];
     toggleState: Record<string, boolean>;
     innerRadiusPercent: number;
     useGradient: boolean;
+    chartAnimation: boolean;
   };
 
   public selectedPalette: { name: string; paleta: string[] } | null = null;
@@ -100,12 +102,14 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
 
         this.innerRadiusPercent = config['innerRadiusPercent'] ?? 50;
         this.useGradient = config['useGradient'] ?? true;
+        this.chartAnimation = config['chartAnimation'] ?? true;
 
         this.original = {
           assignedColors: this.assignedColors.map(c => ({ ...c })),
           toggleState: { ...this.toggleState },
           innerRadiusPercent: this.innerRadiusPercent,
-          useGradient: this.useGradient
+          useGradient: this.useGradient,
+          chartAnimation: this.chartAnimation
         };
       }, 0);
     }
@@ -128,6 +132,10 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
   }
 
   setInnerRadius(): void {
+    this.syncChart();
+  }
+
+  setChartAnimation(): void {
     this.syncChart();
   }
 
@@ -158,7 +166,8 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
     const response: ChartDialogSaveResponseBase = {
       colors: config['colors'],
       assignedColors: [...this.assignedColors],
-      chartLegend: this.toggleState['chartLegend']
+      chartLegend: this.toggleState['chartLegend'],
+      chartAnimation: this.chartAnimation
     };
     if (this.spec.hasUseGradient) response.useGradient = this.useGradient;
     if (this.spec.toggles.includes('showLabels')) response.showLabels = this.toggleState['showLabels'];
@@ -174,6 +183,7 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
     this.toggleState = { ...this.original.toggleState };
     this.innerRadiusPercent = this.original.innerRadiusPercent;
     this.useGradient = this.original.useGradient;
+    this.chartAnimation = this.original.chartAnimation;
 
     this.syncChart();
     this.onClose(EdaDialogCloseEvent.NONE);
@@ -188,6 +198,7 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
     }
     if (this.spec.hasUseGradient) config['useGradient'] = this.useGradient;
     if (this.spec.hasInnerRadius) config['innerRadiusPercent'] = this.innerRadiusPercent;
+    config['chartAnimation'] = this.chartAnimation;
 
     if (this.spec.chartType === 'parallelSets') {
       // Sankey's colors[] is positional-per-row, not positional-per-unique-label.

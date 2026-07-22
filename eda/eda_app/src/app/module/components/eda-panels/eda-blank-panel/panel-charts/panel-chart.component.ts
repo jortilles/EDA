@@ -1385,6 +1385,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.labelCustomColor = cfg.labelCustomColor;
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.useGradient = cfg.useGradient ?? true;
+        inject.chartAnimation = cfg.chartAnimation ?? true;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaRadarComponent);
@@ -1830,6 +1831,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
+        inject.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
         this.createLegacyD3Component(inject, EdaD3Component);
     }
 
@@ -1848,6 +1850,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.assignedColors = this.resolveAndPersistGradientColors(this.props, this.paletaActual);
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
+        inject.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
         this.createLegacyD3Component(inject, EdaFunnelComponent);
     }
 
@@ -1864,6 +1867,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
+        inject.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
         this.createLegacyD3Component(inject, EdaBubblechartComponent);
     }
 
@@ -1881,6 +1885,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
+        inject.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
 
         this.createLegacyD3Component(inject, EdaTreeMap);
     }
@@ -1899,6 +1904,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
+        inject.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
         this.createLegacyD3Component(inject, EdaScatter);
     }
 
@@ -1916,6 +1922,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
+        inject.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
         this.createLegacyD3Component(inject, EdaSunburstComponent);
     }
 
@@ -1993,7 +2000,16 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const config = this.props.config.getConfig();
         const assignedColors = config['assignedColors'];
 
-        this.props.config.setConfig(new KpiConfig(assignedColors));
+        // Passing the bare assignedColors array as `init` (as this used to) has no `.edaChart` of
+        // its own, so KpiConfig's constructor rebuilds edaChart from defaults - silently reverting
+        // every graph option (trend, comparative, legend, grid lines, label color mode, gradient,
+        // rounded bars...) back to default the moment a palette gets applied. Spread the existing
+        // config first so only the color fields actually change.
+        this.props.config.setConfig(new KpiConfig({
+            ...config,
+            assignedColors,
+            edaChart: { ...config['edaChart'], assignedColors }
+        }));
         // Re-render KPI from scratch
         this.renderEdaKpiChart();
     }

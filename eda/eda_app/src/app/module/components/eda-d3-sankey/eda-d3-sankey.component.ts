@@ -38,6 +38,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   chartLegend: boolean;
   legendItems: { label: string; color: string; hidden: boolean }[] = [];
   private hiddenIndexes: Set<number> = new Set();
+  private hasRendered = false;
 
   constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService) {
   }
@@ -73,7 +74,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     const container = this.svgContainer.nativeElement as HTMLElement;
     if (!this.svg) this.svg = d3.select(container).append('svg');
-    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw(), { skipFirstCallback: true });
   }
 
   ngOnDestroy(): void {
@@ -158,6 +159,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       links: _links.map(d => Object.assign({}, d))
     });
 
+    const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
     const LINK_DURATION = 700;
     const columnX0s = Array.from(new Set((links as any[]).map(d => d.source.x0))).sort((a: number, b: number) => a - b);
     const columnLevel = (d: any) => columnX0s.indexOf(d.source.x0);
@@ -172,9 +174,9 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("height", d => d.y1 - d.y0)
       .attr("width", d => d.x1 - d.x0)
       .attr("fill", "#242a33")
-      .attr("opacity", 0)
+      .attr("opacity", animateEntrance ? 0 : 1)
       .transition()
-      .duration(200)
+      .duration(animateEntrance ? 200 : 0)
       .attr("opacity", 1)
       
 
@@ -263,10 +265,10 @@ export class EdaD3Component implements AfterViewInit, OnInit {
         const totalLength = (this as SVGPathElement).getTotalLength();
         d3.select(this)
           .attr("stroke-dasharray", `${totalLength} ${totalLength}`)
-          .attr("stroke-dashoffset", totalLength)
+          .attr("stroke-dashoffset", animateEntrance ? totalLength : 0)
           .transition()
-          .delay(columnLevel(d) * LINK_DURATION)
-          .duration(LINK_DURATION)
+          .delay(animateEntrance ? columnLevel(d) * LINK_DURATION : 0)
+          .duration(animateEntrance ? LINK_DURATION : 0)
           .ease(d3.easeQuadOut)
           .attr("stroke-dashoffset", 0);
       });
@@ -288,7 +290,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .style("pointer-events", "none")
       .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
       .style("font-size", (12 + this.styleProviderService.panelFontSize.source['_value'] * 2) + 'px')
-      .attr("opacity", 0)
+      .attr("opacity", animateEntrance ? 0 : 1)
       .text(d => d.name)
       .append("tspan")
       .attr("fill-opacity", 0.7)
@@ -296,9 +298,11 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
     svg.selectAll("text")
       .transition()
-      .delay(numLevels * LINK_DURATION - 150)
-      .duration(300)
+      .delay(animateEntrance ? numLevels * LINK_DURATION - 150 : 0)
+      .duration(animateEntrance ? 300 : 0)
       .attr("opacity", 1);
+
+    this.hasRendered = true;
   }
 
 
