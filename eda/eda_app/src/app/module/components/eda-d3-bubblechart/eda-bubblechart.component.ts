@@ -260,6 +260,12 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
                 target.attr('fill', hex);
                 target.interrupt('color').transition('color').duration(150).attr('fill', darkenHex(hex, 30));
 
+                // Grow and bold this bubble's own label - same hover treatment as eda-treemap.
+                d3.select(d.currentTarget.parentNode).select('text')
+                  .interrupt('grow').transition('grow').duration(150)
+                  .attr('font-size', `${textSize(data.value) * 1.3}px`)
+                  .style('font-weight', 'bold');
+
                 // Create a label that contains the data for each bubble
                 const tooltipData = this.getToolTipData(data);
                 const swatch = `<span class="eda-bubblechart-tooltip-swatch" style="background-color:${hex};"></span>`;
@@ -284,6 +290,11 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
         target.interrupt('color').transition('color').duration(150)
           .attr('fill', hex)
           .on('end', () => target.attr('fill', this.bubbleFill(defs, hex)));
+
+        d3.select(d.currentTarget.parentNode).select('text')
+          .interrupt('grow').transition('grow').duration(150)
+          .attr('font-size', `${textSize(data.value)}px`)
+          .style('font-weight', null);
 
         this.tooltipService.hide();
       })

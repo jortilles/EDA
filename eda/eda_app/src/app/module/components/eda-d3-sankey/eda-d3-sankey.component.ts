@@ -222,6 +222,14 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .on('mouseover', (d, data) => {
 
         this.showLinks(d, data);
+
+        // Grow this link's own two node labels - same hover treatment as eda-bubblechart/eda-treemap
+        // (already bold by default here, so only the size grows).
+        d3.selectAll(`#${this.id}`).selectAll('text')
+          .filter((t: any) => data.names.includes(t.name))
+          .interrupt('grow').transition('grow').duration(150)
+          .style('font-size', `${(12 + this.styleProviderService.panelFontSize.source['_value'] * 2) * 1.3}px`);
+
         const metricLabel = this.inject.dataDescription.numericColumns[0].name;
 
         const linkColor = colorsTree[valuesTree.findIndex((item) => data.names.includes(item))] || color(data.names[0]);
@@ -239,6 +247,10 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .on('mouseout', (d) => {
 
         this.hideLinks();
+
+        d3.selectAll(`#${this.id}`).selectAll('text')
+          .interrupt('grow').transition('grow').duration(150)
+          .style('font-size', `${12 + this.styleProviderService.panelFontSize.source['_value'] * 2}px`);
 
         this.tooltipService.hide();
 

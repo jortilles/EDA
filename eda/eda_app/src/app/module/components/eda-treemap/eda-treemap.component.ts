@@ -232,6 +232,12 @@ export class EdaTreeMap implements AfterViewInit {
         target.interrupt('color').transition('color').duration(150).attr('fill', darkenHex(hex, 30));
         target.interrupt('opacity').transition('opacity').duration(150).attr('fill-opacity', 1);
 
+        // Grow and bold this cell's own label - same hover treatment as eda-bubblechart.
+        d3.select(d.currentTarget.parentNode).selectAll('tspan')
+          .interrupt('grow').transition('grow').duration(150)
+          .style('font-size', `${(12 + this.styleProviderService.panelFontSize.source['_value'] * 2) * 1.3}px`)
+          .style('font-weight', 'bold');
+
         const tooltipData = this.getToolTipData(data);
         const swatch = `<span class="eda-treemap-tooltip-swatch" style="background-color:${hex};"></span>`;
 
@@ -250,6 +256,12 @@ export class EdaTreeMap implements AfterViewInit {
           .attr('fill', hex)
           .on('end', () => target.attr('fill', this.cellFill(defs, hex)));
         target.interrupt('opacity').transition('opacity').duration(150).attr('fill-opacity', 0.6);
+
+        d3.select(d.currentTarget.parentNode).selectAll('tspan')
+          .interrupt('grow').transition('grow').duration(150)
+          .style('font-size', `${12 + this.styleProviderService.panelFontSize.source['_value'] * 2}px`)
+          .style('font-weight', null);
+
         this.tooltipService.hide();
       })
       .on("mousemove", (d) => {
