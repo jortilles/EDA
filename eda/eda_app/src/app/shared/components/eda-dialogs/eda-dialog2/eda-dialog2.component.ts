@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges, Input, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { EdaDialog2 } from './eda-dialog2';
 import { Dialog } from 'primeng/dialog';
 
@@ -53,23 +53,28 @@ import { FormsModule } from '@angular/forms'; // for [(ngModel)] if you use it
       }
     `
 })
-export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('dialogRef') dialogRef!: Dialog;
     @ViewChild('contentWrapper') contentWrapper!: ElementRef;
     @Input() overflow: string = 'hidden';
     @Input() draggable: string;
+    /** Renders the same header/content/footer inline (no floating p-dialog) so it can be embedded inside another dialog */
+    @Input() embedded: boolean = false;
 
 
     private resizeObserver!: ResizeObserver;
-    public ifShowApply: boolean;
-    public ifShowClose: boolean;
-    public ifShowReset: boolean;
-    public ifShowDuplicate: boolean;
-    public ifShowDeleteFilter: boolean;
-    public ifNoStyles: boolean;
-    public ifShowNextStep: boolean;
-    public ifShowSwitchRedirecction: boolean;
-    public ifShowCheckExpression: boolean;
+
+    // Getters (not fields set once in ngOnInit) so a dialog can toggle e.g. [showClose] at
+    // runtime -- like hiding the outer dialog's Cancelar while an embedded form owns its own footer
+    public get ifShowApply(): boolean { return this.apply.observers.length > 0 && this.showApply; }
+    public get ifShowClose(): boolean { return this.close.observers.length > 0 && this.showClose; }
+    public get ifShowReset(): boolean { return this.reset.observers.length > 0 && this.showReset; }
+    public get ifShowDuplicate(): boolean { return this.duplicate.observers.length > 0 && this.showDuplicate; }
+    public get ifShowDeleteFilter(): boolean { return this.delete.observers.length > 0 && this.showDelete; }
+    public get ifNoStyles(): boolean { return this.notstyles.observers.length > 0 && this.showNotStyles; }
+    public get ifShowNextStep(): boolean { return this.nextstep.observers.length > 0 && this.showNextStep; }
+    public get ifShowSwitchRedirecction(): boolean { return this.switchredirecction.observers.length > 0 && this.showRedirecction; }
+    public get ifShowCheckExpression(): boolean { return this.checkexpression.observers.length > 0 && this.showCheckExpression; }
 
     // Automatically translated for PrimeNG
     get translatedBreakpoints(): Record<string, string> {
@@ -89,22 +94,6 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges
 
     public ngOnInit(): void {
         this.display = true;
-
-        this.ifShowApply = this.apply.observers.length > 0 && this.showApply;
-        this.ifShowClose = this.close.observers.length > 0 && this.showClose;
-        this.ifShowDuplicate = this.duplicate.observers.length > 0 && this.showDuplicate;
-        this.ifShowReset = this.reset.observers.length > 0 && this.showReset;
-        this.ifShowDeleteFilter = this.delete.observers.length > 0 && this.showDelete;
-        this.ifNoStyles = this.notstyles.observers.length > 0 && this.showNotStyles;
-        this.ifShowNextStep = this.nextstep.observers.length > 0 && this.showNextStep;
-        this.ifShowSwitchRedirecction = this.switchredirecction.observers.length > 0 && this.showRedirecction;
-        this.ifShowCheckExpression = this.checkexpression.observers.length > 0 && this.showCheckExpression;
-    }
-
-    public ngOnChanges(changes: SimpleChanges): void {
-        if (changes['showNextStep']) {
-            this.ifShowNextStep = this.nextstep.observers.length > 0 && this.showNextStep;
-        }
     }
 
     ngAfterViewInit(): void {

@@ -1,0 +1,79 @@
+<eda-dialog2
+  [display]="true"
+  header="Opciones avanzadas"
+  i18n-header="@@dashboardAdvancedOptionsTitle"
+  width="80vw"
+  height="85vh"
+  [showApply]="false"
+  [showClose]="!activeEmbedId"
+  [overflow]="'hidden'"
+  (close)="onClose()">
+  <div content class="flex h-full">
+    <!-- Left nav: every category is always expanded -->
+    <div class="w-64 shrink-0 border-r bg-gray-50 py-2 flex flex-col overflow-y-auto h-full">
+      @for (group of groups; track group.id) {
+        <div class="advanced-nav-item advanced-nav-header">
+          <i [class]="group.icon"></i>
+          <span>{{ group.label }}</span>
+        </div>
+
+        <div class="advanced-subnav">
+          @for (item of group.items; track item.id; let i = $index) {
+            @if (item.type === 'toggle') {
+              <div class="advanced-row" [style.animation-delay.ms]="i * 30">
+                <i [class]="item.icon + ' text-gray-600'"></i>
+                <span class="flex-1">{{ item.label }}</span>
+                <p-inputSwitch [ngModel]="item.value" (onChange)="item.command()"></p-inputSwitch>
+              </div>
+              @if (item.extra === 'refreshSeconds' && item.value) {
+                <div class="advanced-row-extra">
+                  <span i18n="@@secondsToRefresh">Segundos para refrescar</span>
+                  <input type="number"
+                    class="advanced-number-input"
+                    [ngModel]="refreshTime"
+                    (ngModelChange)="refreshTimeChange.emit($event)" />
+                </div>
+              }
+            } @else {
+              <button type="button" class="advanced-row advanced-row-action"
+                [class.active]="item.embed && item.embed === activeEmbedId"
+                [style.animation-delay.ms]="i * 30"
+                (click)="item.embed ? selectEmbed(item.embed) : item.command()">
+                <i [class]="item.icon + ' text-gray-600'"></i>
+                <span class="flex-1 text-left">{{ item.label }}</span>
+                @if (item.embed) {
+                  <i class="pi pi-chevron-right text-gray-400"></i>
+                }
+              </button>
+            }
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Right content: only the embedded dialog opened from the nav -->
+    <div class="flex-1 overflow-y-auto px-5 py-4">
+      @if (activeEmbedId === 'editStyles') {
+        <app-dashboard-edit-style [embedded]="true" [dashboard]="dashboard"
+          (apply)="onEmbedApply('editStyles', $event)" (close)="onEmbedClose()"></app-dashboard-edit-style>
+      } @else if (activeEmbedId === 'dashboardPrivacity') {
+        <app-dashboard-visible [embedded]="true" [dashboard]="dashboard"
+          (apply)="onEmbedApply('dashboardPrivacity', $event)" (close)="onEmbedClose()"></app-dashboard-visible>
+      } @else if (activeEmbedId === 'addTag') {
+        <app-dashboard-tag-modal [embedded]="true" [dashboard]="dashboard"
+          (close)="onEmbedTagClose($event)"></app-dashboard-tag-modal>
+      } @else if (activeEmbedId === 'sendEmail') {
+        <app-dashboard-mail-config [embedded]="true" [dashboard]="dashboard"
+          (apply)="onEmbedApply('sendEmail', $event)" (close)="onEmbedClose()"></app-dashboard-mail-config>
+      } @else if (activeEmbedId === 'customAction') {
+        <app-dashboard-custom-action [embedded]="true" [dashboard]="dashboard"
+          (apply)="onEmbedApply('customAction', $event)" (close)="onEmbedClose()"></app-dashboard-custom-action>
+      } @else {
+        <div class="advanced-empty-state">
+          <i class="pi pi-sliders-h"></i>
+          <span i18n="@@advancedOptionsEmptyState">Selecciona una opción para configurarla</span>
+        </div>
+      }
+    </div>
+  </div>
+</eda-dialog2>

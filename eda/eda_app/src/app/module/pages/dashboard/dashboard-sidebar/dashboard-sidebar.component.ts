@@ -21,28 +21,20 @@ import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-
 
 // Sidebar imports
 import { DashboardSaveAsDialog } from "../../../components/dashboard-save-as/dashboard-save-as.dialog";
-import { DashboardEditStyleDialog } from "../../../components/dashboard-edit-style/dashboard-edit-style.dialog";
-import { DashboardCustomActionDialog } from "../../../components/dashboard-custom-action/dashboard-custom-action.dialog";
-import { DashboardTagModal } from "../dashboard-tag/dashboard-tag.modal";
-import { DashboardMailConfigModal } from "../../../components/dashboard-mail-config/dashboard-mail-config.modal";
 import { ImportPanelDialog } from "../../../components/import-panel/import-panel.dialog";
 import { DependentFilters } from "../../../components/dependent-filters/dependent-filters.component";
-import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
 import { GlobalFilterDialogComponent } from "../../../pages/dashboard/global-filter-dialog/global-filter-dialog.component";
 import { GlobalFilterComponent } from "@eda/components/global-filter/global-filter.component";
+import { DashboardAdvancedOptionsDialog, AdvancedOptionGroup, AdvancedOptionItem } from "../../../components/dashboard-advanced-options/dashboard-advanced-options.dialog";
 
 const STANDALONE_COMPONENTS = [
     DashboardSaveAsDialog,
-    DashboardEditStyleDialog,
-    DashboardCustomActionDialog,
-    DashboardTagModal,
-    DashboardMailConfigModal,
-    DashboardVisibleModal,
     ImportPanelDialog,
     DependentFilters,
     GlobalFilterDialogComponent,
-    GlobalFilterComponent
-] 
+    GlobalFilterComponent,
+    DashboardAdvancedOptionsDialog
+]
 
 const ANGULAR_MODULES = [
   OverlayModule,
@@ -99,11 +91,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
   isPopoverVisible = false; // Controls overlay visibility
   isSaveAsDialogVisible = false;
-  isEditStyleDialogVisible = false;
-  isCustomActionDialogVisible = false;
-  isMailConfigDialogVisible = false;
-  isVisibleModalVisible = false;
-  isTagModalVisible = false;
   inputVisible: boolean = false;
   refreshTime: number = null;
   clickFiltersEnabled: boolean = true;
@@ -111,15 +98,18 @@ export class DashboardSidebarComponent implements AfterViewInit {
   onlyIcanEdit: boolean = true; // Only I can edit, but I can save as
   isReadOnly: boolean = false; // this is a read-only dashboard
   isEditable: boolean = false; // can edit the dashboard
-  mostrarOpciones = false;
   mostrarFiltros = false;
   mostrarDescargas = false;
   hayFiltros;
 
   isImportPanelVisible = false;
   isDependentFiltersVisible = false;
+  isAdvancedOptionsDialogVisible = false;
   editingTitle: boolean = false;
   editableTitle: string = '';
+
+  // Placeholder only: not wired to any real behaviour yet (POC for the advanced options dialog)
+  animationsEnabledPlaceholder: boolean = false;
 
   sidebarItems: any[] = [];
 
@@ -209,20 +199,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
         command: () => this.onImportPanel()
       },
       {
-        id: 'refreshDashboard',
-        label: $localize`:@@dashboardSidebarRefreshDashboard: Recargar informe`,
-        icon: "pi pi-refresh",
-        command: () => this.cleanPanelsCache()
-      },
-      {
-        id: 'liveDashboard',
-        label: $localize`:@@dashboardSidebarLiveDashboard: Live Dashboard`,
-        icon: "pi pi-desktop",
-        items: [],
-        command: () => {
-          this.inputVisible = !this.inputVisible;
-        },
-      }, {
         id: 'save',
         label: $localize`:@@dashboardSidebarSave: Guardar`,
         icon: "pi pi-save",
@@ -242,62 +218,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
         label: $localize`:@@dashboardSidebarDeleteDashboard: Eliminar informe`,
         icon: "pi pi-trash",
         command: () => this.removeDashboard()
-      },
-      {
-        id: 'moreOptions',
-        label: $localize`:@@dashboardSidebarMoreOptions: Más opciones`,
-      },
-      {
-        id: 'editStyles',
-        label: $localize`:@@dashboardSidebarEditStyles: Editar estilos`,
-        icon: "pi pi-palette",
-        command: () => {
-          this.isEditStyleDialogVisible = true;
-          this.hidePopover();
-        }
-      },
-      {
-        id: 'dashboardPrivacity',
-        label: $localize`:@@dashboardSidebarDashboardPrivacity: Privacidad informe`,
-        icon: "pi pi-lock",
-        command: () => {
-          this.isVisibleModalVisible = true;
-          this.hidePopover();
-        }
-      }, {
-        id: 'addTag',
-        label: $localize`:@@addTag: Añadir etiqueta`,
-        icon: "pi pi-tag",
-        command: () => {
-          this.isTagModalVisible = true;
-          this.hidePopover();
-        }
-      },
-      {
-        id: 'enableFilters',
-        label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado`
-          : $localize`:@@disableFilters:Click en filtros deshabilitado`,
-        icon: this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban",
-        command: () => {
-          this.toggleClickFilters();
-        }
-      },
-      {
-        id: 'enablePanelLock',
-        label: this.clickPanelLockButton ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
-          : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
-        icon: this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock",
-        command: () => {
-          this.panelLockButton();
-        }
-      },
-      {
-        id: 'enableEdition',
-        label: this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
-        icon: this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
-        command: () => {
-          this.toggleEdit();
-        }
       },
       {
         id: 'download',
@@ -330,24 +250,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
           },
         ]
       },
-      {
-        id: 'sendEmail',
-        label: $localize`:@@opcionMail: Enviar por email`,
-        icon: "pi pi-envelope",
-        command: () => {
-          this.isMailConfigDialogVisible = true;
-          this.hidePopover();
-        }
-      },
-      {
-        id: 'customAction',
-        label: $localize`:@@dashboardSidebarCustomAction: Acción personalizada`,
-        icon: "pi pi-cog",
-        command: () => {
-          this.isCustomActionDialogVisible = true;
-          this.hidePopover();
-        }
-      },
     ]
   }
 
@@ -361,7 +263,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
   hidePopover() {
     this.isPopoverVisible = false;
     this.popover.hide();
-    this.mostrarOpciones = false;
     this.mostrarFiltros = false;
     this.mostrarDescargas = false;
   }
@@ -587,21 +488,11 @@ export class DashboardSidebarComponent implements AfterViewInit {
   }
 
 
-  public closeCustomAction() {
-    this.isCustomActionDialogVisible = false;
-  }
-
   public saveCustomAction(url: any) {
-    this.isCustomActionDialogVisible = false;
     this.dashboard.dashboard.config.urls = url;
   }
 
-  public closeStyles() {
-    this.isEditStyleDialogVisible = false;
-  }
-
   public saveStyles(newStyles: any) {
-      this.isEditStyleDialogVisible = false;
       this.dashboard.dashboard.config.styles = newStyles;
       this.dashboardService.setNotSaved(true);
       this.ChartUtilsService.MyPaletteColors = newStyles.palette?.paleta || this.ChartUtilsService.MyPaletteColors;
@@ -621,12 +512,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
       }, 100);
   }
 
-  public closeVisibleModal() {
-    this.isVisibleModalVisible = false;
-  }
-
   public async saveVisibleModal(privacity: any) {
-    this.isVisibleModalVisible = false;
     const previousVisible = this.dashboard.dashboard.config.visible;
     const previousGroup = [...(this.dashboard.dashboard.group || [])];
 
@@ -644,14 +530,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     }
   }
 
-  public closeMailConfig() {
-    this.isMailConfigDialogVisible = false;
-  }
-
   public async saveMailConfig(sendViaMailConfig: any) {
-    // Close panel
-    this.isMailConfigDialogVisible = false;
-
     // Clone sendViaMailConfig info
     const configToSave = {
       enabled: sendViaMailConfig.enabled,
@@ -673,13 +552,24 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
 
   public closeTagModal(tags: any[]) {
-    this.isTagModalVisible = false;
     // Normalize tags to array of strings
     const normalizedTags = tags ? tags.map(tag =>
       typeof tag === 'string' ? tag : tag.value || tag.label
     ) : [];
     this.dashboard.selectedTags = normalizedTags;
     this.dashboard.dashboard.config.tag = normalizedTags;
+  }
+
+  // Dispatches an apply event coming from a form embedded in the "Opciones avanzadas" dialog
+  // to the same save logic used before those forms had their own floating dialog
+  public onApplyEmbed({ id, value }: { id: string; value: any }): void {
+    switch (id) {
+      case 'editStyles': this.saveStyles(value); break;
+      case 'dashboardPrivacity': this.saveVisibleModal(value); break;
+      case 'addTag': this.closeTagModal(value); break;
+      case 'sendEmail': this.saveMailConfig(value); break;
+      case 'customAction': this.saveCustomAction(value); break;
+    }
   }
 
   public removeDashboard() {
@@ -948,21 +838,149 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
 
   // Sidebar creation methods
-  public indiceMasOpciones(): number {
-    return this.sidebarItems.findIndex(item => item.id === 'moreOptions');
-  }
-
   public itemsVisibles() {
-    return this.sidebarItems.slice(0, this.indiceMasOpciones());
+    return this.sidebarItems.filter(item => item.id !== 'download');
   }
 
-  public itemsDesplegables() {
-    return this.sidebarItems.slice(this.indiceMasOpciones());
+  public get downloadItem() {
+    return this.sidebarItems.find(item => item.id === 'download');
   }
 
-  public toggleOpciones() {
-    // Toggle sidebar states
-    this.mostrarOpciones = !this.mostrarOpciones;
+  public openAdvancedOptions(): void {
+    this.isPopoverVisible = false;
+    this.popover.hide();
+    this.isAdvancedOptionsDialogVisible = true;
+  }
+
+  public closeAdvancedOptions(): void {
+    this.isAdvancedOptionsDialogVisible = false;
+  }
+
+  // Builds the grouped content for the "Opciones avanzadas" dialog (proof of concept:
+  // "Activar animaciones" is a placeholder switch with no behaviour behind it yet)
+  public advancedOptionsGroups(): AdvancedOptionGroup[] {
+    const canEdit = this.isEditable && !this.isReadOnly;
+    const groups: AdvancedOptionGroup[] = [
+      {
+        id: 'diseno',
+        label: $localize`:@@advancedOptionsGroupDesign:Diseño`,
+        icon: 'pi pi-palette',
+        items: ([
+          {
+            id: 'editStyles',
+            label: $localize`:@@dashboardSidebarEditStyles: Editar estilos`,
+            icon: 'pi pi-palette',
+            type: 'action',
+            embed: 'editStyles'
+          },
+          {
+            id: 'toggleAnimations',
+            label: $localize`:@@advancedOptionsToggleAnimations:Activar animaciones`,
+            icon: 'pi pi-star',
+            type: 'toggle',
+            value: this.animationsEnabledPlaceholder,
+            command: () => { this.animationsEnabledPlaceholder = !this.animationsEnabledPlaceholder; }
+          },
+          {
+            id: 'enablePanelLock',
+            label: this.clickPanelLockButton
+              ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
+              : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
+            icon: this.clickPanelLockButton ? 'pi pi-lock-open' : 'pi pi-lock',
+            type: 'toggle',
+            value: this.clickPanelLockButton,
+            command: () => this.panelLockButton()
+          },
+          {
+            id: 'enableFilters',
+            label: this.clickFiltersEnabled
+              ? $localize`:@@enableFilters: Click en filtros habilitado`
+              : $localize`:@@disableFilters:Click en filtros deshabilitado`,
+            icon: this.clickFiltersEnabled ? 'pi pi-bolt' : 'pi pi-ban',
+            type: 'toggle',
+            value: this.clickFiltersEnabled,
+            command: () => this.toggleClickFilters()
+          },
+        ] as AdvancedOptionItem[]).filter(() => canEdit)
+      },
+      {
+        id: 'informe',
+        label: $localize`:@@advancedOptionsGroupReport:Informe`,
+        icon: 'pi pi-desktop',
+        items: [
+          ...(canEdit ? [{
+            id: 'liveDashboard',
+            label: $localize`:@@advancedOptionsLiveDashboard:Dashboard activo/inactivo`,
+            icon: 'pi pi-desktop',
+            type: 'toggle' as const,
+            value: this.inputVisible,
+            extra: 'refreshSeconds',
+            command: () => { this.inputVisible = !this.inputVisible; }
+          }] : []),
+          ...(!this.isReadOnly ? [{
+            id: 'refreshDashboard',
+            label: $localize`:@@dashboardSidebarRefreshDashboard: Recargar informe`,
+            icon: 'pi pi-refresh',
+            type: 'action' as const,
+            command: () => this.cleanPanelsCache()
+          }] : []),
+          ...(canEdit ? [{
+            id: 'customAction',
+            label: $localize`:@@dashboardSidebarCustomAction: Acción personalizada`,
+            icon: 'pi pi-cog',
+            type: 'action' as const,
+            embed: 'customAction'
+          }] : []),
+        ]
+      },
+      {
+        id: 'visibilidad',
+        label: $localize`:@@advancedOptionsGroupVisibility:Visibilidad`,
+        icon: 'pi pi-eye',
+        items: ([
+          {
+            id: 'dashboardPrivacity',
+            label: $localize`:@@dashboardSidebarDashboardPrivacity: Privacidad informe`,
+            icon: 'pi pi-lock',
+            type: 'action',
+            embed: 'dashboardPrivacity'
+          },
+          {
+            id: 'addTag',
+            label: $localize`:@@addTag: Añadir etiqueta`,
+            icon: 'pi pi-tag',
+            type: 'action',
+            embed: 'addTag'
+          },
+          {
+            id: 'enableEdition',
+            label: this.onlyIcanEdit
+              ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada`
+              : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
+            icon: this.onlyIcanEdit ? 'pi pi-check' : 'pi pi-ban',
+            type: 'toggle',
+            value: this.onlyIcanEdit,
+            command: () => this.toggleEdit()
+          },
+        ] as AdvancedOptionItem[]).filter(() => canEdit)
+      },
+      {
+        id: 'compartir',
+        label: $localize`:@@advancedOptionsGroupShare:Compartir`,
+        icon: 'pi pi-share-alt',
+        items: ([
+          {
+            id: 'sendEmail',
+            label: $localize`:@@opcionMail: Enviar por email`,
+            icon: 'pi pi-envelope',
+            type: 'action',
+            embed: 'sendEmail'
+          },
+        ] as AdvancedOptionItem[]).filter(() => canEdit)
+      },
+    ];
+
+    return groups.filter(g => g.items.length > 0);
   }
 
   public toggleGlobalFilter() {
@@ -1013,10 +1031,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
   }
 
   toggleClickFilters() {
-    // Find the item once
-    const clickItem = this.sidebarItems.find(item => item.id === 'enableFilters');
-
-    // Toggle the state
     this.clickFiltersEnabled = !this.clickFiltersEnabled;
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
 
@@ -1025,16 +1039,9 @@ export class DashboardSidebarComponent implements AfterViewInit {
       (panel as any).clickFiltersEnabled = this.clickFiltersEnabled;
     }
     this.dashboardService.setNotSaved(true);
-
-    // Update label and icon based on state
-    clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
-    clickItem.icon = this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban";
-
   }
 
   panelLockButton() {
-    const lockItem = this.sidebarItems.find(item => item.id === 'enablePanelLock');
-
     this.clickPanelLockButton = !this.clickPanelLockButton;
     const locked = !this.clickPanelLockButton;
 
@@ -1046,23 +1053,10 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.dashboard.gridsterOptions.api?.optionsChanged();
     this.dashboard.dashboard.config.panelLockEnabled = this.clickPanelLockButton;
     this.dashboardService.setNotSaved(true);
-
-    lockItem.label = this.clickPanelLockButton
-      ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
-      : $localize`:@@disablePanelLockButton:Desbloquear los paneles`;
-    lockItem.icon = this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock";
   }
-  
+
   toggleEdit() {
-    // Find the item once
-    const clickItem = this.sidebarItems.find(item => item.id === 'enableEdition');
-
-    // Toggle the state
     this.onlyIcanEdit = !this.onlyIcanEdit;
-
-    // Update label and icon based on state
-    clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`;
-    clickItem.icon = this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban";
   }
 
   toggleDownload() {

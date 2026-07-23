@@ -22,6 +22,7 @@ export class DashboardCustomActionDialog{
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
   @Output() apply: EventEmitter<any> = new EventEmitter<any>();
   @Input() dashboard: DashboardPage;
+  @Input() embedded: boolean = false;
   public form: UntypedFormGroup;
   public display: boolean = false;
   public urls: any[] = [];

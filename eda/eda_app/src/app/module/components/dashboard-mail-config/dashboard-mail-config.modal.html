@@ -2,11 +2,12 @@
   header="Configuración de los envíos por email" width="70vw" height="65vh"
   overflow="auto"
   [disableApply]="disableApply()"
+  [embedded]="embedded"
   (apply)="onApply()"
   (close)="onClose()"
   >
 
-<div content class="p-8 bg-gray-50 h-[50vh]">
+<div content class="p-8 bg-gray-50 h-full">
     <div class="grid grid-cols-3 gap-8">
 
         <!-- Frequency configuration -->

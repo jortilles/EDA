@@ -1,4 +1,5 @@
 
+@if (!embedded) {
 <p-dialog #dialogRef
     class="eda-dialog2" [header]="header"
     [(visible)]="display"
@@ -19,81 +20,100 @@
     }
 
     <ng-template pTemplate="content">
-         <div #contentWrapper>
-             <ng-content select="[content]"></ng-content>
+         <div #contentWrapper class="h-full">
+             <ng-container [ngTemplateOutlet]="contentTpl"></ng-container>
          </div>
     </ng-template>
 
     <ng-template pTemplate="footer">
-        <hr>
-        <div class="flex justify-end p-2 border-t gap-1.5">
-            <ng-content select="[footer]"></ng-content>
-            
-            @if(ifShowClose){
-                <button class="cancel-button" (click)="onClose()">
-                    <i class="fa fa-times"></i>
-                    <span i18n="@@cancelarBtn">Cancelar</span>
-                </button>
-            }
-            
-            @if(ifShowReset){
-                <button class="execute-button place-content-center w-[14.5vw]" (click)="onReset()">
-                   <i class="fa fa-refresh"></i>
-                   <span i18n="@@resetStylesBtn">Volver a los valores por defecto</span>
-                </button>
-            }
-            @if(ifShowDuplicate){
-                <button class="execute-button" (click)="onDuplicate()">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    <span i18n="@@duplicateColumnButton">Duplicar columna</span>
-                </button>
-            }
-            @if (ifShowDeleteFilter) {
-                <button class="execute-button" (click)="onDelete()">
-                   <i class="fa fa-trash-o"></i>
-                   <span i18n="@@deleteFilters">Eliminar</span>
-                </button>
-            }
-            @if (ifNoStyles) {
-                <button class="execute-button w-[7vw] text-center" (click)="onNotStyles()">
-                   <i class="fa fa-paint-brush"></i>
-                   <span i18n="@@deleteFilters">Quitar estilos</span>
-                </button>
-            }
-            @if (ifShowNextStep) {
-                <button class="execute-button w-[8vw] text-center" [disabled]="disableNextStep" (click)="onNextStep()">
-                   <i class="fa fa-arrow-right"></i>
-                   <span i18n="@@nextStepBtn">Siguiente paso</span>
-                </button>
-            }
-            @if (ifShowSwitchRedirecction) {
-                @if(!isOpeningNewTab){
-                    <button class="switch-tab-btn" (click)="onSwitchRedirecction()">
-                        <i class="pi pi-window-maximize"></i>
-                        <span i18n="@@openInNewTabBtn">Abrir en NUEVA pestaña</span>
-                    </button>
-                }@else{
-                    <button class="switch-tab-btn" (click)="onSwitchRedirecction()">
-                        <i class="pi pi-window-minimize"></i>
-                        <span i18n="@@openInSameTabBtn">Abrir en MISMA pestaña</span>
-                    </button>
-                }
-            }
-            
-            @if(ifShowCheckExpression){
-                <button class="execute-button w-auto text-center gap-0" (click)="onCheckExpression()">
-                    <i class="fa fa-cogs"></i>
-                    <span i18n="@@CheckExpression" class="whitespace-nowrap pr-2">Comprobar expresión</span>
-                </button>
-            }
-            @if(ifShowApply){
-                <button class="confirm-button" [disabled]="disableApply" (click)="onApply()">
-                    <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-                </button>
-            }
-        </div>
+        <ng-container [ngTemplateOutlet]="footerTpl"></ng-container>
     </ng-template>
 
 </p-dialog>
+} @else {
+<div class="eda-dialog2-embedded flex flex-col h-full">
+    @if (header) {
+        <h3 class="text-lg font-semibold mb-3">{{ header }}</h3>
+    }
+    <div #contentWrapper class="flex-1" [style.overflow]="overflow">
+        <ng-container [ngTemplateOutlet]="contentTpl"></ng-container>
+    </div>
+    <ng-container [ngTemplateOutlet]="footerTpl"></ng-container>
+</div>
+}
+
+<ng-template #contentTpl>
+    <ng-content select="[content]"></ng-content>
+</ng-template>
+
+<ng-template #footerTpl>
+    <hr>
+    <div class="flex justify-end p-2 border-t gap-1.5">
+        <ng-content select="[footer]"></ng-content>
+
+        @if(ifShowClose){
+            <button class="cancel-button" (click)="onClose()">
+                <i class="fa fa-times"></i>
+                <span i18n="@@cancelarBtn">Cancelar</span>
+            </button>
+        }
+
+        @if(ifShowReset){
+            <button class="execute-button place-content-center w-[14.5vw]" (click)="onReset()">
+               <i class="fa fa-refresh"></i>
+               <span i18n="@@resetStylesBtn">Volver a los valores por defecto</span>
+            </button>
+        }
+        @if(ifShowDuplicate){
+            <button class="execute-button" (click)="onDuplicate()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <span i18n="@@duplicateColumnButton">Duplicar columna</span>
+            </button>
+        }
+        @if (ifShowDeleteFilter) {
+            <button class="execute-button" (click)="onDelete()">
+               <i class="fa fa-trash-o"></i>
+               <span i18n="@@deleteFilters">Eliminar</span>
+            </button>
+        }
+        @if (ifNoStyles) {
+            <button class="execute-button w-[7vw] text-center" (click)="onNotStyles()">
+               <i class="fa fa-paint-brush"></i>
+               <span i18n="@@deleteFilters">Quitar estilos</span>
+            </button>
+        }
+        @if (ifShowNextStep) {
+            <button class="execute-button w-[8vw] text-center" [disabled]="disableNextStep" (click)="onNextStep()">
+               <i class="fa fa-arrow-right"></i>
+               <span i18n="@@nextStepBtn">Siguiente paso</span>
+            </button>
+        }
+        @if (ifShowSwitchRedirecction) {
+            @if(!isOpeningNewTab){
+                <button class="switch-tab-btn" (click)="onSwitchRedirecction()">
+                    <i class="pi pi-window-maximize"></i>
+                    <span i18n="@@openInNewTabBtn">Abrir en NUEVA pestaña</span>
+                </button>
+            }@else{
+                <button class="switch-tab-btn" (click)="onSwitchRedirecction()">
+                    <i class="pi pi-window-minimize"></i>
+                    <span i18n="@@openInSameTabBtn">Abrir en MISMA pestaña</span>
+                </button>
+            }
+        }
+
+        @if(ifShowCheckExpression){
+            <button class="execute-button w-auto text-center gap-0" (click)="onCheckExpression()">
+                <i class="fa fa-cogs"></i>
+                <span i18n="@@CheckExpression" class="whitespace-nowrap pr-2">Comprobar expresión</span>
+            </button>
+        }
+        @if(ifShowApply){
+            <button class="confirm-button" [disabled]="disableApply" (click)="onApply()">
+                <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
+            </button>
+        }
+    </div>
+</ng-template>

@@ -952,7 +952,7 @@ p-inputnumber.ng-dirty.ng-invalid > .p-inputnumber > .p-inputtext {
 .p-inputswitch.p-focus .p-inputswitch-slider {
   outline: 0 none;
   outline-offset: 0;
-  box-shadow: 0 0 0 0.2rem #b7e0b8;
+  box-shadow: 0 0 0 0.2rem rgba(var(--corporate-primary-rgb), 0.35);
 }
 .p-inputswitch:not(.p-disabled):hover .p-inputswitch-slider {
   background: #b6bfc8;
@@ -964,7 +964,7 @@ p-inputnumber.ng-dirty.ng-invalid > .p-inputnumber > .p-inputtext {
   background: #ffffff;
 }
 .p-inputswitch.p-inputswitch-checked:not(.p-disabled):hover .p-inputswitch-slider {
-  background: #449e48;
+  background: var(--corporate-primary-dark);
 }
 
 p-inputswitch.ng-dirty.ng-invalid > .p-inputswitch {

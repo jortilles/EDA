@@ -45,7 +45,7 @@
       <div class="flex flex-col gap-2 text-lg">
         @for (item of itemsVisibles(); track item.label) {
           @if(!isReadOnly){
-            @if(isEditable || item.id === 'refreshDashboard'){
+            @if(isEditable){
               @if (item.id === "editFilters") {
                 @if(hayFiltros){
                   <button class="sidebarLabels "
@@ -77,18 +77,8 @@
                     (click)="item.command()">
                     <i [class]="item.icon + ' text-gray-600'"></i>
                     <span>{{ item.label }}</span>
-                    @if (item.items) {
-                    <i class="pi pi-chevron-down ml-auto text-gray-400"
-                      [style.transform]="inputVisible ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: transform 0.3s"></i>
-                    }
                   </button>
-                  @if (item.id === "liveDashboard" || item.id === "newTabs") {
-                    @if (item.id === "liveDashboard" && inputVisible) {
-                      <input type="number" [value]="refreshTime" (input)="refreshTime = $any($event.target).value"
-                        class="w-full mt-1 px-2 py-1 border rounded-md"
-                        i18n-placeholder="@@secondsToRefresh"
-                        placeholder="Segundos para refrescar" />
-                    }
+                  @if (item.id === "newTabs") {
                     <hr class="my-2" />
                   }
                 }
@@ -96,54 +86,51 @@
             }
          }
 
-        <button class="sidebarLabels "
-          (click)="toggleOpciones()">
-          <!-- <i class="pi pi-chevron-down text-gray-600"></i> -->
-          <span i18n="@@dashboardSidebarMoreOptions">Más opciones</span>
-          <i class="pi pi-chevron-down ml-auto text-gray-400"
-            [style.transform]="mostrarOpciones ? 'rotate(180deg)' : 'rotate(0deg)'"
-            style="transition: transform 0.3s"></i>
-        </button>
-
-        @if (mostrarOpciones) {
-          <div class="ml-6 flex flex-col gap-2">
-            @for (item of itemsDesplegables().slice(1); track item.label) {
-              @if(isEditable && !isReadOnly || item.id === 'download'){
-                @if (item.id === 'download') {
-                  <button class="sidebarLabels "
-                    (click)="mostrarDescargas = !mostrarDescargas">
-                    <i [class]="item.icon + ' text-gray-600'"></i>
-                    <span>{{ item.label }}</span>
-                    <i class="pi pi-chevron-down ml-auto text-gray-400"
-                      [style.transform]="mostrarDescargas ? 'rotate(180deg)' : 'rotate(0deg)'"
-                      style="transition: transform 0.3s"></i>
-                  </button>
-                  @if (mostrarDescargas) {
-                    <div class="ml-6 flex flex-col gap-2">
-                      @for (subItem of item.items; track subItem.label) {
-                        <button class="sidebarLabels "
-                          (click)="subItem.command()">
-                          <i [class]="subItem.icon + ' text-gray-600'"></i>
-                          <span>{{ subItem.label }}</span>
-                        </button>
-                      }
-                    </div>
-                  }
-                } @else {
-                  <button class="sidebarLabels "
-                    (click)="item.command()">
-                    <i [class]="item.icon + ' text-gray-600'"></i>
-                    <span>{{ item.label }}</span>
-                  </button>
-                }
+        @if (downloadItem) {
+          <button class="sidebarLabels "
+            (click)="mostrarDescargas = !mostrarDescargas">
+            <i [class]="downloadItem.icon + ' text-gray-600'"></i>
+            <span>{{ downloadItem.label }}</span>
+            <i class="pi pi-chevron-down ml-auto text-gray-400"
+              [style.transform]="mostrarDescargas ? 'rotate(180deg)' : 'rotate(0deg)'"
+              style="transition: transform 0.3s"></i>
+          </button>
+          @if (mostrarDescargas) {
+            <div class="ml-6 flex flex-col gap-2">
+              @for (subItem of downloadItem.items; track subItem.label) {
+                <button class="sidebarLabels "
+                  (click)="subItem.command()">
+                  <i [class]="subItem.icon + ' text-gray-600'"></i>
+                  <span>{{ subItem.label }}</span>
+                </button>
               }
-            }
-          </div>
+            </div>
+          }
+        }
+
+        @if (!isReadOnly) {
+          <button class="sidebarLabels "
+            (click)="openAdvancedOptions()">
+            <i class="pi pi-sliders-h text-gray-600"></i>
+            <span i18n="@@dashboardSidebarMoreOptions">Más opciones</span>
+            <i class="pi pi-chevron-right ml-auto text-gray-400"></i>
+          </button>
         }
       </div>
     </div>
   </div>
 </p-overlayPanel>
+
+@if (isAdvancedOptionsDialogVisible) {
+  <app-dashboard-advanced-options
+    [groups]="advancedOptionsGroups()"
+    [refreshTime]="refreshTime"
+    [dashboard]="dashboard"
+    (refreshTimeChange)="refreshTime = $event"
+    (applyEmbed)="onApplyEmbed($event)"
+    (close)="closeAdvancedOptions()">
+  </app-dashboard-advanced-options>
+}
 
 <!-- Overlay Backdrop -->
 @if (isPopoverVisible) {
@@ -152,26 +139,6 @@
 
 @if (isSaveAsDialogVisible) {
   <app-dashboard-save-as (close)="saveDashboardAs($event)"></app-dashboard-save-as>
-}
-
-@if (isTagModalVisible) {
-  <app-dashboard-tag-modal [dashboard]="dashboard" (close)="closeTagModal($event)"></app-dashboard-tag-modal>
-}
-
-@if(isEditStyleDialogVisible){
-  <app-dashboard-edit-style [dashboard]="dashboard" (apply)="saveStyles($event)" (close)="closeStyles()"></app-dashboard-edit-style>
-}
-
-@if(isCustomActionDialogVisible){
-  <app-dashboard-custom-action [dashboard]="dashboard" (apply)="saveCustomAction($event)" (close)="closeCustomAction()"></app-dashboard-custom-action>
-}
-
-@if(isMailConfigDialogVisible){
-  <app-dashboard-mail-config [dashboard]="dashboard" (apply)="saveMailConfig($event)" (close)="closeMailConfig()"></app-dashboard-mail-config>
-}
-
-@if(isVisibleModalVisible){
-  <app-dashboard-visible [dashboard]="dashboard" (apply)="saveVisibleModal($event)" (close)="closeVisibleModal()"></app-dashboard-visible>
 }
 
 @if (isImportPanelVisible) {

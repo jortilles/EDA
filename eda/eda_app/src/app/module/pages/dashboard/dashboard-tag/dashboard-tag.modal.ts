@@ -20,6 +20,7 @@ import { EdaDialog2Component } from "@eda/shared/components/shared-components.in
 export class DashboardTagModal implements OnInit {
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
   @Input() dashboard: DashboardPage;
+  @Input() embedded: boolean = false;
   public display: boolean = false;
 
   public newTag: any;

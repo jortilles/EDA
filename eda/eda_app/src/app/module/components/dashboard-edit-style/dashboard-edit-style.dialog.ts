@@ -29,6 +29,7 @@ export class DashboardEditStyleDialog {
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
   @Output() apply: EventEmitter<any> = new EventEmitter<any>();
   @Input() dashboard: DashboardPage;
+  @Input() embedded: boolean = false;
   public dialog: EdaDialog;
   public form: UntypedFormGroup;
   public visibleTypes: SelectItem[] = [];
