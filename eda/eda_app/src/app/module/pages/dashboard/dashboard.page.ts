@@ -14,7 +14,7 @@ import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, Style
 import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
 import { GlobalFilterComponent } from '@eda/components/global-filter/global-filter.component'; 
-import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
+import { EdaBlankPanelComponent, IPanelAction, QUERY_MODE_LABELS } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { FormsModule } from '@angular/forms';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { CommonModule } from '@angular/common';
@@ -1026,13 +1026,13 @@ export class DashboardPage implements OnInit {
 
     for (const panel of this.edaPanels) {
       if (treeQueryMode) {
-        panel.queryModes = QUERY_MODE.filter(m => m.value !== 'EDA');
+        panel.queryModes = QUERY_MODE.filter(v => v !== 'EDA').map(v => QUERY_MODE_LABELS.find(l => l.value === v));
         panel.selectedQueryMode = 'TREE';
       } else if (standardQueryMode) {
-        panel.queryModes = QUERY_MODE.filter(m => m.value !== 'TREE');
+        panel.queryModes = QUERY_MODE.filter(v => v !== 'TREE').map(v => QUERY_MODE_LABELS.find(l => l.value === v));
       }
       if (((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) && this.globalFilter.globalFilters.length === 0) {
-        panel.queryModes = QUERY_MODE;
+        panel.queryModes = QUERY_MODE.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
       }
     }
   }

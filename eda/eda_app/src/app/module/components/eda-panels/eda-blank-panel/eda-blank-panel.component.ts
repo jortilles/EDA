@@ -115,6 +115,13 @@ const STANDALONE_COMPONENTS = [
     IconComponent, FocusOnShowDirective, PromptComponent,
     FilterAndOrDialogComponent,
 ]
+// Label for each possible query mode value. Not client-configurable — QUERY_MODE (customizable_default.ts) decides which values are enabled and in what order.
+export const QUERY_MODE_LABELS: any[] = [
+    { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
+    { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
+    { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'TREE' },
+]
+
 @Component({
     standalone: true,
     imports : [ STANDALONE_COMPONENTS,PRIMENG_MODULES, ANGULAR_MODULES, DIALOGS_COMPONENTS],
@@ -244,9 +251,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public groupByEnabled: boolean = true;
     public dynamicFilters: boolean = true;
 
-    public queryModes: any[] = QUERY_MODE
+    public queryModes: any[] = QUERY_MODE.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
 
-    public selectedQueryMode: string = QUERY_MODE[0].value;
+    public selectedQueryMode: string = QUERY_MODE[0];
 
     // Depreacted use selectedQueryMode instead of
     // public modeSQL: boolean;
