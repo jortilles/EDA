@@ -70,6 +70,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public showGraphTab: boolean = false;
     public isKpiBar: boolean = false;
     public showTrendComparative: boolean = false;
+    public showComparative: boolean = false;
     public chartLegend: boolean = true;
     public showGridLines: boolean = true;
     public useGradient: boolean = true;
@@ -163,6 +164,8 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.showGraphTab = ['kpibar', 'kpiline', 'kpiarea'].includes(this.edaChart);
         this.isKpiBar = this.edaChart === 'kpibar';
         this.showTrendComparative = this.edaChart === 'kpiline' || this.edaChart === 'kpiarea';
+        // showComparative additionally needs a query shape (date field aggregated by // month/week/day)
+        this.showComparative = this.showTrendComparative && this.allowComparative(this.panelChartConfig.query);
         const edaCfg: any = config.edaChart || {};
         this.chartLegend = edaCfg.chartLegend ?? false;
         this.showGridLines = edaCfg.showGridLines ?? false;
@@ -334,6 +337,19 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     setShowPointLines(): void { this.refreshGraphPreview(); }
     setAddTrend(): void { this.refreshGraphPreview(); }
     setAddComparative(): void { this.refreshGraphPreview(); }
+
+    // comparativa only makes sense with a date field aggregated by month/week/day, exactly 2 query columns
+    private allowComparative(query: any[]): boolean {
+        if (!query) return false;
+        const dateFields = query.filter(field => field.column_type === 'date');
+        const haveDate = dateFields.length > 0;
+        const monthformat = haveDate && ['month', 'week', 'day'].includes(dateFields[0].format);
+        const onlyTwoCols = query.length === 2;
+        const aggregation = query.filter(col => col.column_type === 'numeric')
+            .map(col => col.aggregation_type.filter(agg => agg.selected === true && agg.value !== 'none').map(agg => agg.selected))
+            .reduce((a, b) => a || b, false)[0];
+        return haveDate && onlyTwoCols && monthformat && aggregation;
+    }
 
     labelColorButtonClass(mode: string): Record<string, boolean> {
         return { 'bg-[var(--corporate-primary)] text-white': this.labelColorMode === mode };
