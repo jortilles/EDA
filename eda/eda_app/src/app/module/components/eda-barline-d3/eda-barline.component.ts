@@ -425,7 +425,7 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const showDots = this.inject.showPointLines ?? false;
 
-    visibleLineSeries.forEach(series => {
+    visibleLineSeries.forEach((series, lIdx) => {
       const points: LinePoint[] = series.data.map((v, catIndex) => ({ catIndex, value: v }));
 
       const strokePath = lineGroup.append('path')
@@ -496,6 +496,33 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
             .transition().duration(POP_MS).ease(d3.easeCubicOut).attr('r', baseRadius * 1.5)
             .transition().duration(POP_MS).ease(d3.easeCubicIn).attr('r', baseRadius);
         });
+      }
+
+      // Value labels for the line's own points - bars already get theirs above, the line half was
+      // missing its equivalent entirely.
+      if (showLabelsOn) {
+        const lineLabelSel = labelsGroup.selectAll(`.eda-barline-line-label-${lIdx}`)
+          .data(vertexData)
+          .join('text')
+          .attr('class', `eda-barline-line-label-${lIdx}`)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '11px')
+          .style('font-weight', 'bold')
+          .style('font-family', this.fontFamily)
+          .style('fill', resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, series.color))
+          .style('pointer-events', 'none')
+          .attr('x', (d: any) => xForCategoryCenter(d.catIndex))
+          .attr('y', (d: any) => lineValueScale(d.value as number) - 10)
+          .text((d: any) => this.formatLabel(d.value as number, this.percentOfSeries(series, d.catIndex)))
+          .style('opacity', animateEntrance ? 0 : 1);
+
+        if (animateEntrance) {
+          const LABEL_FADE_MS = 200;
+          lineLabelSel.transition()
+            .delay((d: any) => this.lineReachDelayFromEnd(pathNode, pathLength, xForCategoryCenter(d.catIndex), ENTRANCE_MS))
+            .duration(LABEL_FADE_MS)
+            .style('opacity', 1);
+        }
       }
 
       dotSel

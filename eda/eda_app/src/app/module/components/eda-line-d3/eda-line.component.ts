@@ -333,8 +333,26 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
           });
       }
 
-      // Trend lines are purely decorative - no points, no hover, no click, no tooltip.
-      if (series.isTrend) return;
+      // Trend lines are purely decorative - no points, no hover, no click, no tooltip - but do get
+      // a label per point same as eda-area-d3's trend, since that's the value being pointed at.
+      if (series.isTrend) {
+        if (showLabelsOn) {
+          const trendVertexData = series.points.filter(p => p.value !== null).map(p => ({ series, point: p }));
+          labelsGroup.selectAll(null)
+            .data(trendVertexData)
+            .enter()
+            .append('text')
+            .attr('text-anchor', 'middle')
+            .style('font-size', '11px')
+            .style('font-weight', 'bold')
+            .style('font-family', this.fontFamily)
+            .style('fill', resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, series.color))
+            .attr('x', (d: any) => xFor(d.point.catIndex))
+            .attr('y', (d: any) => valueScale(d.point.value) - 10)
+            .text((d: any) => this.formatLabel(series, d.point.catIndex, d.point.value));
+        }
+        return;
+      }
 
       const showDots = series.isPrediction || (this.inject.showPointLines ?? false);
       const baseRadius = showDots ? (series.isPrediction ? 3 : 3.5) : 0;
