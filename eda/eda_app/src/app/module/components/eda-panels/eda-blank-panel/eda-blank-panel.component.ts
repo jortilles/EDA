@@ -246,7 +246,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public queryModes: any[] = QUERY_MODE
 
-    public selectedQueryMode: string = QUERY_MODE[0];
+    public selectedQueryMode: string = QUERY_MODE[0].value;
 
     // Depreacted use selectedQueryMode instead of
     // public modeSQL: boolean;
