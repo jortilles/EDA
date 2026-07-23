@@ -1440,7 +1440,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
           mylabels.push(req.body.query.fields[c].column_name)
         }
       }
-      myQuery.queryMode = QueryModeUtil.normalize(req.body.query.queryMode ? req.body.query.queryMode : eda_api_config.custom_behaviour.QUERY_MODE[0].value);
+      myQuery.queryMode = QueryModeUtil.normalize(req.body.query.queryMode ? req.body.query.queryMode : 'EDA');
       myQuery.rootTable = myQuery.queryMode == 'TREE' && req.body.query.rootTable ? req.body.query.rootTable : '';
       myQuery.simple = req.body.query.simple;
       myQuery.queryLimit = req.body.query.queryLimit;

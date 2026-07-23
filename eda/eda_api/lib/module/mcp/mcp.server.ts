@@ -13,8 +13,6 @@ import {
     detectRankingIntent,
 } from './mcp.helpers';
 
-const eda_api_config = require('../../../config/eda_api_config');
-
 // ============================================================
 // HELPERS
 // ============================================================
@@ -610,7 +608,7 @@ export function createMcpServer(requestUser?: any) {
                                 console.log(`[MCP] panel ${idx} — sin_agregacion: todas las agregaciones eliminadas | queryLimit: 500`);
                             }
 
-                            innerQuery.queryMode   = QueryModeUtil.normalize(innerQuery.queryMode ?? eda_api_config.custom_behaviour.QUERY_MODE[0].value);
+                            innerQuery.queryMode   = QueryModeUtil.normalize(innerQuery.queryMode ?? 'EDA');
                             innerQuery.rootTable   = innerQuery.queryMode === 'TREE' ? (innerQuery.rootTable ?? '') : '';
                             innerQuery.joinType    = innerQuery.joinType   ?? 'inner';
                             innerQuery.forSelector = false;

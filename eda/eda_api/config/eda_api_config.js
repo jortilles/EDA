@@ -18,10 +18,5 @@ module.exports = {
     custom_behaviour:{
       ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: false, // true -> Non-admin users can manage "open" dashboards.
       USE_FLAT_PERMISSIONS: false, // true -> QueryBuilderService.builder() getPermissions (EDA). false -> with getTreePermissions (SDA).
-      QUERY_MODE: [
-        { label: 'Modo EDA', value: 'EDA' },
-        { label: 'Modo SQL', value: 'SQL' },
-        { label: 'Modo Árbol', value: 'TREE' },
-      ]
     }
   }
