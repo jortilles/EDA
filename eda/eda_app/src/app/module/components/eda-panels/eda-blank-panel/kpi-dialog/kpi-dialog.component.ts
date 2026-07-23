@@ -74,6 +74,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public showGridLines: boolean = true;
     public useGradient: boolean = true;
     public useRoundedBars: boolean = true;
+    public chartAnimation: boolean = true;
     public showLabels: boolean = false;
     public showLabelsPercent: boolean = false;
     public labelColorMode: string = 'series';
@@ -167,6 +168,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.showGridLines = edaCfg.showGridLines ?? false;
         this.useGradient = edaCfg.useGradient ?? true;
         this.useRoundedBars = edaCfg.useRoundedBars ?? true;
+        this.chartAnimation = edaCfg.chartAnimation ?? true;
         this.showLabels = edaCfg.showLabels ?? false;
         this.showLabelsPercent = edaCfg.showLabelsPercent ?? false;
         this.labelColorMode = edaCfg.labelColorMode ?? 'series';
@@ -196,6 +198,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             showGridLines: this.showGridLines,
             useGradient: this.useGradient,
             useRoundedBars: this.useRoundedBars,
+            chartAnimation: this.chartAnimation,
             showLabels: this.showLabels,
             showLabelsPercent: this.showLabelsPercent,
             labelColorMode: this.labelColorMode,
@@ -323,6 +326,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     setChartLegend(): void { this.refreshGraphPreview(); }
     setShowGridLines(): void { this.refreshGraphPreview(); }
     setUseGradient(): void { this.refreshGraphPreview(); }
+    setChartAnimation(): void { this.refreshGraphPreview(); }
     setUseRoundedBars(): void { this.refreshGraphPreview(); }
     setShowLabels(): void { this.refreshGraphPreview(); }
     setShowLabelsPercent(): void { this.refreshGraphPreview(); }

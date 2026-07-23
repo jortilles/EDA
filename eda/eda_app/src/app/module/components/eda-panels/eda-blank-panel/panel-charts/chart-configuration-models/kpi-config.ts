@@ -15,6 +15,7 @@ export interface KpiEdaChart {
     showGridLines: boolean;
     useGradient: boolean;
     useRoundedBars: boolean;
+    chartAnimation: boolean;
 }
 
 export class KpiConfig {
@@ -44,6 +45,7 @@ export class KpiConfig {
             showGridLines: init?.edaChart?.showGridLines ?? false,
             useGradient: init?.edaChart?.useGradient ?? true,
             useRoundedBars: init?.edaChart?.useRoundedBars ?? true,
+            chartAnimation: init?.edaChart?.chartAnimation ?? true,
         };
 
         Object.assign(this, init);

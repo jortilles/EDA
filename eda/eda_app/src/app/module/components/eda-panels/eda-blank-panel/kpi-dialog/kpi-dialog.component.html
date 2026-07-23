@@ -204,6 +204,32 @@
             </div>
             <div class="p-4 grid gap-4 md:grid-cols-2">
 
+              @if (showTrendComparative) {
+                <div class="flex items-center justify-between">
+                  <label class="font-medium" i18n="@@addtrend">Tendencia</label>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" [(ngModel)]="addTrend" (ngModelChange)="setAddTrend()" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                  </label>
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <label class="font-medium" i18n="@@addComparative">Comparativa</label>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" [(ngModel)]="addComparative" (ngModelChange)="setAddComparative()" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                  </label>
+                </div>
+              }
+
+              <div class="flex items-center justify-between">
+                <label class="font-medium" i18n="@@chartAnimation">Animar Gráfico</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" [(ngModel)]="chartAnimation" (ngModelChange)="setChartAnimation()" class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                </label>
+              </div>
+
               <div class="flex items-center justify-between">
                 <label class="font-medium" i18n="@@showLegend">Mostrar Leyenda</label>
                 <label class="relative inline-flex items-center cursor-pointer">
@@ -220,45 +246,11 @@
                 </label>
               </div>
 
-              <div class="flex items-center justify-between">
-                <label class="font-medium" i18n="@@useGradient">Usar degradado</label>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" [(ngModel)]="useGradient" (ngModelChange)="setUseGradient()" class="sr-only peer">
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                </label>
-              </div>
-
-              @if (isKpiBar) {
-                <div class="flex items-center justify-between">
-                  <label class="font-medium" i18n="@@useRoundedBars">Redondear barras</label>
-                  <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" [(ngModel)]="useRoundedBars" (ngModelChange)="setUseRoundedBars()" class="sr-only peer">
-                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                  </label>
-                </div>
-              }
-
               @if (showTrendComparative) {
                 <div class="flex items-center justify-between">
                   <label class="font-medium" i18n="@@showLines">Mostrar Líneas de Puntos</label>
                   <label class="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" [(ngModel)]="showPointLines" (ngModelChange)="setShowPointLines()" class="sr-only peer">
-                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                  </label>
-                </div>
-
-                <div class="flex items-center justify-between">
-                  <label class="font-medium" i18n="@@addtrend">Tendencia</label>
-                  <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" [(ngModel)]="addTrend" (ngModelChange)="setAddTrend()" class="sr-only peer">
-                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                  </label>
-                </div>
-
-                <div class="flex items-center justify-between">
-                  <label class="font-medium" i18n="@@addComparative">Comparativa</label>
-                  <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" [(ngModel)]="addComparative" (ngModelChange)="setAddComparative()" class="sr-only peer">
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
                   </label>
                 </div>
@@ -300,6 +292,16 @@
                 </div>
               }
 
+              @if (isKpiBar) {
+                <div class="flex items-center justify-between">
+                  <label class="font-medium" i18n="@@useRoundedBars">Redondear barras</label>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" [(ngModel)]="useRoundedBars" (ngModelChange)="setUseRoundedBars()" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                  </label>
+                </div>
+              }
+
             </div>
           </div>
 
@@ -309,6 +311,13 @@
               <h3 class="font-medium text-slate-800" i18n="@@colorsChartH6">Colores del gráfico</h3>
             </div>
             <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between">
+                <label class="font-medium" i18n="@@useGradient">Usar degradado</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" [(ngModel)]="useGradient" (ngModelChange)="setUseGradient()" class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                </label>
+              </div>
               <p-dropdown
                 [(ngModel)]="selectedPalette"
                 [options]="allPalettes"

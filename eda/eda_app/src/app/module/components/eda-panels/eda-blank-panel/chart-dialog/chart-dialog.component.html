@@ -45,7 +45,7 @@
               </div>
               <label class="relative inline-flex items-center" [class.toggle-blocked]="addComparative" [attr.data-tooltip]="addComparative ? tooltipBlockedByComparative : null">
                 <input type="checkbox" [(ngModel)]="addTrend" class="sr-only peer" (ngModelChange)="checkTrend()" [disabled]="addComparative">
-                <div 
+                <div
                   class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                 </div>
               </label>
@@ -78,228 +78,6 @@
               <label class="relative inline-flex items-center" [class.toggle-blocked]="addTrend || showPredictionLines" [attr.data-tooltip]="(addTrend || showPredictionLines) ? tooltipBlockedByTrendOrPrediction : null">
                 <input type="checkbox" [(ngModel)]="addComparative" class="sr-only peer"
                   (ngModelChange)="setComparative()" [disabled]="addTrend || showPredictionLines">
-                <div 
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
-                </div>
-              </label>
-            </div>
-            }
-            }
-            
-            <!-- Show Legend -->
-            <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <div class="flex items-center gap-2">
-                  <label i18n="@@showLegend" for="mostrarLeyenda" class="font-medium">
-                    Mostrar Leyenda
-                  </label>
-                  <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="text-slate-400">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4"></path>
-                      <path d="M12 8h.01"></path>
-                    </svg>
-                    <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      <span i18n="@@chartLegendOptionDescription">Muestra la leyenda del gráfico</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" [(ngModel)]="chartLegend" class="sr-only peer" (ngModelChange)="setChartLegend()">
-                <div
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
-                </div>
-              </label>
-            </div>
-            
-            <!-- Show Grid Lines -->
-            @if (['bar', 'horizontalBar', 'line', 'area', 'kpiarea', 'polarArea', 'radar', 'barline'].includes(panelChartConfig.edaChart)) {
-            <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <div class="flex items-center gap-2">
-                  <label i18n="@@showGridLines" for="mostrarLineasGuia" class="font-medium">
-                    Mostrar Líneas Guía
-                  </label>
-                  <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="text-slate-400">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4"></path>
-                      <path d="M12 8h.01"></path>
-                    </svg>
-                    <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      <span i18n="@@chartGridLinesOptionDescription">Muestra u oculta las líneas guía del gráfico</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" [(ngModel)]="showGridLines" class="sr-only peer" (ngModelChange)="setShowGridLines()">
-                <div
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
-                </div>
-              </label>
-            </div>
-            }
-
-            <!-- Chart Entrance Animation -->
-            @if (['bar', 'horizontalBar', 'stackedbar', 'stackedbar100', 'pyramid', 'histogram', 'line', 'area', 'barline', 'doughnut', 'polarArea'].includes(panelChartConfig.edaChart)) {
-            <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <div class="flex items-center gap-2">
-                  <label i18n="@@chartAnimation" for="animarGrafico" class="font-medium">
-                    Animar Gráfico
-                  </label>
-                  <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="text-slate-400">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4"></path>
-                      <path d="M12 8h.01"></path>
-                    </svg>
-                    <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      <span i18n="@@chartAnimationOptionDescription">Anima la aparición de los datos al cargar el gráfico</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" id="animarGrafico" name="animarGrafico" [(ngModel)]="chartAnimation" class="sr-only peer" (ngModelChange)="setChartAnimation()">
-                <div
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
-                </div>
-              </label>
-            </div>
-            }
-
-            <!-- Round Bars -->
-            @if (['bar', 'horizontalBar', 'stackedbar', 'stackedbar100', 'pyramid', 'histogram', 'barline'].includes(panelChartConfig.edaChart)) {
-            <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <div class="flex items-center gap-2">
-                  <label i18n="@@useRoundedBars" for="redondearBarras" class="font-medium">
-                    Redondear barras
-                  </label>
-                  <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="text-slate-400">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4"></path>
-                      <path d="M12 8h.01"></path>
-                    </svg>
-                    <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      <span i18n="@@chartRoundedBarsOptionDescription">Redondea la punta de las barras</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" id="redondearBarras" name="redondearBarras" [(ngModel)]="useRoundedBars" class="sr-only peer" (ngModelChange)="applyUseRoundedBars()">
-                <div
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
-                </div>
-              </label>
-            </div>
-            }
-
-            <!-- Number of Columns (histogram only) -->
-            @if (showNumberOfColumns) {
-            <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <div class="flex items-center gap-2">
-                  <label i18n="@@histogramColum" for="numberOfColumns" class="font-medium">
-                    Columnas
-                  </label>
-                  <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="text-slate-400">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4"></path>
-                      <path d="M12 8h.01"></path>
-                    </svg>
-                    <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      <span>{{ columnsTooltip }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <input type="number" id="numberOfColumns" name="numberOfColumns"
-                min="3" max="100" [(ngModel)]="numberOfColumns" (change)="SetNumberOfColumns()"
-                class="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm">
-            </div>
-            }
-
-            <!-- Point markers: line charts and barline's line half -->
-            @if (showTrend || panelChartConfig.edaChart === 'barline') {
-            <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <div class="flex items-center gap-2">
-                  <label i18n="@@showLines" class="font-medium">
-                    Mostrar Líneas de Puntos
-                  </label>
-                  <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="text-slate-400">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4"></path>
-                      <path d="M12 8h.01"></path>
-                    </svg>
-                    <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      <span i18n="@@chartLabelLineOptionDescription">Muestra líneas conectando los puntos</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" [(ngModel)]="showPointLines" class="sr-only peer"
-                  (ngModelChange)="setShowLines()">
-                <div
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
-                </div>
-              </label>
-            </div>
-            }
-
-            <!-- Second axis: barline only - lines get their own scale/axis on the right -->
-            @if (panelChartConfig.edaChart === 'barline') {
-            <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <div class="flex items-center gap-2">
-                  <label i18n="@@secondAxis" class="font-medium">
-                    Segundo Eje
-                  </label>
-                  <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="text-slate-400">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4"></path>
-                      <path d="M12 8h.01"></path>
-                    </svg>
-                    <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      <span i18n="@@secondAxisDescription">Muestra un eje independiente a la derecha para las líneas, separado del eje de las barras</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" [(ngModel)]="secondAxis" class="sr-only peer"
-                  (ngModelChange)="setSecondAxis()">
                 <div
                   class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                 </div>
@@ -333,6 +111,134 @@
               <label class="relative inline-flex items-center" [class.toggle-blocked]="addComparative" [attr.data-tooltip]="addComparative ? tooltipBlockedByComparative : null">
                 <input type="checkbox" [(ngModel)]="showPredictionLines" class="sr-only peer"
                   (ngModelChange)="setPredictionLines()" [disabled]="addComparative">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                </div>
+              </label>
+            </div>
+            }
+            }
+
+            <!-- Chart Entrance Animation -->
+            @if (['bar', 'horizontalBar', 'stackedbar', 'stackedbar100', 'pyramid', 'histogram', 'line', 'area', 'barline', 'doughnut', 'polarArea', 'radar'].includes(panelChartConfig.edaChart)) {
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@chartAnimation" for="animarGrafico" class="font-medium">
+                    Animar Gráfico
+                  </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartAnimationOptionDescription">Anima la aparición de los datos al cargar el gráfico</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="animarGrafico" name="animarGrafico" [(ngModel)]="chartAnimation" class="sr-only peer" (ngModelChange)="setChartAnimation()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                </div>
+              </label>
+            </div>
+            }
+
+            <!-- Show Legend -->
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@showLegend" for="mostrarLeyenda" class="font-medium">
+                    Mostrar Leyenda
+                  </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartLegendOptionDescription">Muestra la leyenda del gráfico</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="chartLegend" class="sr-only peer" (ngModelChange)="setChartLegend()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                </div>
+              </label>
+            </div>
+
+            <!-- Show Grid Lines -->
+            @if (['bar', 'horizontalBar', 'line', 'area', 'kpiarea', 'polarArea', 'radar', 'barline'].includes(panelChartConfig.edaChart)) {
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@showGridLines" for="mostrarLineasGuia" class="font-medium">
+                    Mostrar Líneas Guía
+                  </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartGridLinesOptionDescription">Muestra u oculta las líneas guía del gráfico</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="showGridLines" class="sr-only peer" (ngModelChange)="setShowGridLines()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                </div>
+              </label>
+            </div>
+            }
+
+            <!-- Point markers: line charts and barline's line half -->
+            @if (showTrend || panelChartConfig.edaChart === 'barline') {
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@showLines" class="font-medium">
+                    Mostrar Líneas de Puntos
+                  </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartLabelLineOptionDescription">Muestra líneas conectando los puntos</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="showPointLines" class="sr-only peer"
+                  (ngModelChange)="setShowLines()">
                 <div
                   class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                 </div>
@@ -423,6 +329,100 @@
                   }
                 </div>
               </div>
+            }
+
+            <!-- Round Bars -->
+            @if (['bar', 'horizontalBar', 'stackedbar', 'stackedbar100', 'pyramid', 'histogram', 'barline'].includes(panelChartConfig.edaChart)) {
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@useRoundedBars" for="redondearBarras" class="font-medium">
+                    Redondear barras
+                  </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartRoundedBarsOptionDescription">Redondea la punta de las barras</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="redondearBarras" name="redondearBarras" [(ngModel)]="useRoundedBars" class="sr-only peer" (ngModelChange)="applyUseRoundedBars()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                </div>
+              </label>
+            </div>
+            }
+
+            <!-- Second axis: barline only - lines get their own scale/axis on the right -->
+            @if (panelChartConfig.edaChart === 'barline') {
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@secondAxis" class="font-medium">
+                    Segundo Eje
+                  </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@secondAxisDescription">Muestra un eje independiente a la derecha para las líneas, separado del eje de las barras</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="secondAxis" class="sr-only peer"
+                  (ngModelChange)="setSecondAxis()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                </div>
+              </label>
+            </div>
+            }
+
+            <!-- Number of Columns (histogram only) -->
+            @if (showNumberOfColumns) {
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@histogramColum" for="numberOfColumns" class="font-medium">
+                    Columnas
+                  </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span>{{ columnsTooltip }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <input type="number" id="numberOfColumns" name="numberOfColumns"
+                min="3" max="100" [(ngModel)]="numberOfColumns" (change)="SetNumberOfColumns()"
+                class="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm">
+            </div>
             }
           </div>
         </div>

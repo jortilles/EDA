@@ -31,7 +31,7 @@ const TOGGLE_DEFAULTS: Record<ToggleKey, boolean> = {
 
 const CHART_TYPE_SPECS: Record<CategoryChartType, ChartTypeSpec> = {
   doughnut:     { chartType: 'doughnut',     colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: true,  toggles: ['chartLegend', 'showLabels', 'showLabelsPercent'] },
-  polarArea:    { chartType: 'polarArea',    colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, toggles: ['chartLegend', 'showLabels', 'showLabelsPercent', 'showGridLines'] },
+  polarArea:    { chartType: 'polarArea',    colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, toggles: ['chartLegend', 'showGridLines', 'showLabels', 'showLabelsPercent'] },
   sunburst:     { chartType: 'sunburst',     colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, toggles: ['chartLegend'] },
   treeMap:      { chartType: 'treeMap',      colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, toggles: ['chartLegend'] },
   scatterPlot:  { chartType: 'scatterPlot',  colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, toggles: ['chartLegend'] },

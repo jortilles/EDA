@@ -535,6 +535,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.edaChart.categoryFieldName = dataDescription.otherColumns[0]?.name;
     chartConfig.edaChart.useGradient = edaCfg.useGradient ?? true;
     chartConfig.edaChart.useRoundedBars = edaCfg.useRoundedBars ?? true;
+    chartConfig.edaChart.chartAnimation = edaCfg.chartAnimation ?? true;
     chartConfig.edaChart.showGridLines = edaCfg.showGridLines ?? false;
     chartConfig.edaChart.showLabels = edaCfg.showLabels ?? false;
     chartConfig.edaChart.showLabelsPercent = edaCfg.showLabelsPercent ?? false;
