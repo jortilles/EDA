@@ -3,6 +3,9 @@ import { HttpException } from "../global/model";
 import ManagerConnectionService from "../../services/connection/manager-connection.service";
 import { DashboardController } from "../dashboard/dashboard.controller";
 import formatDate from '../../services/date-format/date-format.service'
+import { QueryModeUtil } from '../../utils/query-mode.util';
+
+const eda_api_config = require('../../../config/eda_api_config');
 
 
 /** Esta clase sirve para analizar los datos de una consulta si hay duplicados, etc. */
@@ -67,7 +70,7 @@ export class QueryController {
                 }
             }
 
-            myQuery.queryMode = req.body.query.queryMode ? req.body.query.queryMode : 'EDA'; /** lo añado siempre */
+            myQuery.queryMode = QueryModeUtil.normalize(req.body.query.queryMode ? req.body.query.queryMode : eda_api_config.custom_behaviour.QUERY_MODE[0].value); /** lo añado siempre */
             myQuery.rootTable = req.body.query.rootTable ? req.body.query.rootTable : ''; /** lo añado siempre */
             myQuery.simple = req.body.query.simple;
             myQuery.queryLimit = req.body.query.queryLimit;
