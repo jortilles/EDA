@@ -2088,34 +2088,39 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         // Extract only the colors from the assignedColors array
         const colors = assignedColors.map(item => item.color);
-        // setConfig() below replaces the whole config object with a bare *Config instance (only
-        // holding `colors`) - useGradient would otherwise be silently reset to its default.
-        const useGradient = config['useGradient'] ?? true;
+        // setConfig() below replaces the whole config object with a bare *Config instance built
+        // from just `colors` - every other custom field (useGradient, chartAnimation, chartLegend,
+        // showLabels, showLabelsPercent, showGridLines, innerRadiusPercent...) would otherwise
+        // silently reset to that class's own defaults on every "aplicar paleta" - preserve the
+        // full previous config and let it win over the fresh defaults (a field genuinely absent
+        // from the old config - e.g. a dashboard saved before it existed - still falls back to the
+        // fresh instance's default, since a spread never manifests a missing key as `undefined`).
+        const previousConfig = { ...config };
 
         switch (chartType) {
             case 'treeMap':
                 this.props.config.setConfig(new TreeMapConfig(colors));
-                this.props.config.getConfig()['useGradient'] = useGradient;
+                Object.assign(this.props.config.getConfig(), previousConfig);
                 this.renderTreeMap();
                 break;
             case 'sunburst':
                 this.props.config.setConfig(new SunburstConfig(colors));
-                this.props.config.getConfig()['useGradient'] = useGradient;
+                Object.assign(this.props.config.getConfig(), previousConfig);
                 this.renderSunburst();
                 break;
             case 'parallelSets':
                 this.props.config.setConfig(new SankeyConfig(colors));
-                this.props.config.getConfig()['useGradient'] = useGradient;
+                Object.assign(this.props.config.getConfig(), previousConfig);
                 this.renderParallelSets();
                 break;
             case 'scatterPlot':
                 this.props.config.setConfig(new ScatterConfig(colors));
-                this.props.config.getConfig()['useGradient'] = useGradient;
+                Object.assign(this.props.config.getConfig(), previousConfig);
                 this.renderScatter();
                 break;
             case 'funnel':
                 this.props.config.setConfig(new FunnelConfig(assignedColors));
-                this.props.config.getConfig()['useGradient'] = useGradient;
+                Object.assign(this.props.config.getConfig(), previousConfig);
                 this.renderFunnel();
                 break;
             // case 'knob': // Knob disabled for now because it does not work
@@ -2125,7 +2130,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             //     break;
             case 'bubblechart':
                 this.props.config.setConfig(new BubblechartConfig(colors));
-                this.props.config.getConfig()['useGradient'] = useGradient;
+                Object.assign(this.props.config.getConfig(), previousConfig);
                 this.renderBubblechart();
                 break;
             default:
