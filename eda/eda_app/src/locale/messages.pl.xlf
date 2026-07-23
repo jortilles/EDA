@@ -6692,6 +6692,18 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Fuente de datos</source>
         <target>Źródło danych</target>
       </trans-unit>
+      <trans-unit id="queryModeEda">
+        <source>Editor visual</source>
+        <target>Edytor wizualny</target>
+      </trans-unit>
+      <trans-unit id="queryModeTree">
+        <source>Árbol de datos</source>
+        <target>Drzewo danych</target>
+      </trans-unit>
+      <trans-unit id="queryModeSql">
+        <source>Consulta SQL</source>
+        <target>Zapytanie SQL</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
