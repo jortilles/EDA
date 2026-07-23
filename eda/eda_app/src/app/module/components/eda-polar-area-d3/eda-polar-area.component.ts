@@ -137,6 +137,13 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     return (this.inject.chartAnimation ?? true) ? ms : 0;
   }
 
+  /** Outward "grow" and label-scale hover feedback are skipped entirely (not just instant) when
+   * chartAnimation is off - the flat-color darken is left unaffected, still the hover cue left
+   * when animation is off. */
+  private chartAnimOn(): boolean {
+    return this.inject.chartAnimation ?? true;
+  }
+
   private attachInteractionHandlers(selection: any, seriesLabel: string, linkedDashboard: any, total: number): void {
     selection
       .on('click', (event: any, d: any) => {
@@ -159,15 +166,17 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
         d3.select(target)
           .interrupt('color').transition('color').duration(this.hoverMs())
           .attr('fill', darkenHex(d.data.color, 60));
-        d3.select(target)
-          .interrupt('grow').transition('grow').duration(this.hoverMs())
-          .attr('d', this.currentHoverArcGen(d));
+        if (this.chartAnimOn()) {
+          d3.select(target)
+            .interrupt('grow').transition('grow').duration(this.hoverMs())
+            .attr('d', this.currentHoverArcGen(d));
 
-        if (this.currentLabelsContainer) {
-          this.currentLabelsContainer.selectAll('g.polar-area-label')
-            .filter((ld: any) => ld.data.label === d.data.label)
-            .interrupt('labelScale').transition('labelScale').duration(this.hoverMs())
-            .attr('transform', `translate(${this.currentHoverArcGen.centroid(d)}) scale(1.25)`);
+          if (this.currentLabelsContainer) {
+            this.currentLabelsContainer.selectAll('g.polar-area-label')
+              .filter((ld: any) => ld.data.label === d.data.label)
+              .interrupt('labelScale').transition('labelScale').duration(this.hoverMs())
+              .attr('transform', `translate(${this.currentHoverArcGen.centroid(d)}) scale(1.25)`);
+          }
         }
 
         const percentage = total > 0 ? (d.data.value / total) * 100 : 0;
@@ -196,15 +205,17 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
           .on('end', () => {
             d3.select(target).attr('fill', this.baseFill(d.data.label, d.data.color));
           });
-        d3.select(target)
-          .interrupt('grow').transition('grow').duration(this.hoverMs())
-          .attr('d', this.currentArcGen(d));
+        if (this.chartAnimOn()) {
+          d3.select(target)
+            .interrupt('grow').transition('grow').duration(this.hoverMs())
+            .attr('d', this.currentArcGen(d));
 
-        if (this.currentLabelsContainer) {
-          this.currentLabelsContainer.selectAll('g.polar-area-label')
-            .filter((ld: any) => ld.data.label === d.data.label)
-            .interrupt('labelScale').transition('labelScale').duration(this.hoverMs())
-            .attr('transform', `translate(${this.currentArcGen.centroid(d)}) scale(1)`);
+          if (this.currentLabelsContainer) {
+            this.currentLabelsContainer.selectAll('g.polar-area-label')
+              .filter((ld: any) => ld.data.label === d.data.label)
+              .interrupt('labelScale').transition('labelScale').duration(this.hoverMs())
+              .attr('transform', `translate(${this.currentArcGen.centroid(d)}) scale(1)`);
+          }
         }
         this.tooltipService.hide();
       });

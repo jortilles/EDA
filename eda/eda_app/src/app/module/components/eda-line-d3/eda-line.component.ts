@@ -451,10 +451,14 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
       dotSel
         .on('mouseover', (event: any, d: any) => {
           const hitCircle = d3.select(event.currentTarget).select('.eda-line-point-hit');
-          d3.select(event.currentTarget).select('.eda-line-point-dot')
-            .interrupt('grow').transition('grow').duration(hoverMs(150))
-            .attr('r', 6)
+          const dot = d3.select(event.currentTarget).select('.eda-line-point-dot');
+          dot.interrupt('color').transition('color').duration(hoverMs(150))
             .style('fill', darkenHex(series.color, 40));
+          // Size growth is skipped entirely (not just instant) when chartAnimation is off - only
+          // the color darken above still gives some hover feedback in that case.
+          if (chartAnimOn) {
+            dot.interrupt('grow').transition('grow').duration(hoverMs(150)).attr('r', 6);
+          }
 
           const category = this.categories[d.point.catIndex];
           const title = `${this.inject.categoryFieldName ? this.inject.categoryFieldName + ' : ' : ''}${category}`;
@@ -468,10 +472,12 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         })
         .on('mousemove', (event: any) => this.tooltipService.move(event, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true))
         .on('mouseout', (event: any, d: any) => {
-          d3.select(event.currentTarget).select('.eda-line-point-dot')
-            .interrupt('grow').transition('grow').duration(hoverMs(150))
-            .attr('r', baseRadius)
+          const dot = d3.select(event.currentTarget).select('.eda-line-point-dot');
+          dot.interrupt('color').transition('color').duration(hoverMs(150))
             .style('fill', series.isPrediction ? this.panelBackgroundColor : series.color);
+          if (chartAnimOn) {
+            dot.interrupt('grow').transition('grow').duration(hoverMs(150)).attr('r', baseRadius);
+          }
           this.tooltipService.hide();
         })
         .on('click', (event: any, d: any) => {
@@ -504,9 +510,11 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
               .filter(r => r.p && r.p.value !== null);
             if (rows.length === 0) return;
 
-            pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
-              .filter((d: any) => d.point.catIndex === catIdx)
-              .interrupt('colGrow').transition('colGrow').duration(hoverMs(100)).attr('r', 5);
+            if (chartAnimOn) {
+              pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
+                .filter((d: any) => d.point.catIndex === catIdx)
+                .interrupt('colGrow').transition('colGrow').duration(hoverMs(100)).attr('r', 5);
+            }
 
             const title = `${this.inject.categoryFieldName ? this.inject.categoryFieldName + ' : ' : ''}${cat}`;
             const rowsHtml = rows.map(r =>
@@ -515,10 +523,12 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
             this.tooltipService.show(event, `<div class="eda-line-tooltip-title">${title}</div>${rowsHtml}`, 'eda-line-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
           })
           .on('mouseout', () => {
-            pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
-              .filter((d: any) => d.point.catIndex === catIdx)
-              .interrupt('colGrow').transition('colGrow').duration(hoverMs(100))
-              .attr('r', (d: any) => (d.series.isPrediction || (this.inject.showPointLines ?? false)) ? (d.series.isPrediction ? 3 : 3.5) : 0);
+            if (chartAnimOn) {
+              pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
+                .filter((d: any) => d.point.catIndex === catIdx)
+                .interrupt('colGrow').transition('colGrow').duration(hoverMs(100))
+                .attr('r', (d: any) => (d.series.isPrediction || (this.inject.showPointLines ?? false)) ? (d.series.isPrediction ? 3 : 3.5) : 0);
+            }
             this.tooltipService.hide();
           });
       });

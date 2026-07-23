@@ -181,6 +181,10 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     // is off.
     const HOVER_MS = (this.inject.chartAnimation ?? true) ? 150 : 0;
     const HOVER_STROKE_MS = (this.inject.chartAnimation ?? true) ? 200 : 0;
+    // Stroke-width growth and label font-size growth on hover are skipped entirely (not just
+    // instant) when chartAnimation is off - color darken is left unaffected, still the hover cue
+    // left when animation is off.
+    const chartAnimOn = this.inject.chartAnimation ?? true;
 
     // Define thresholds and corresponding min/max sizes for circles and their text depending on SVG height
 
@@ -256,22 +260,26 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
                 const hex = this.leafColor(data);
                 const target = d3.select(d.currentTarget);
 
-                // Increase the bubble border width
-                target
-                    .transition()
-                    .duration(HOVER_STROKE_MS)
-                    .style("stroke-width", 3);
+                if (chartAnimOn) {
+                  // Increase the bubble border width
+                  target
+                      .transition()
+                      .duration(HOVER_STROKE_MS)
+                      .style("stroke-width", 3);
+                }
 
                 // Swap the gradient url for its own flat base color first, instantly (no
                 // transition), then transition flat -> flat - same approach as eda-doughnut-d3.
                 target.attr('fill', hex);
                 target.interrupt('color').transition('color').duration(HOVER_MS).attr('fill', darkenHex(hex, 30));
 
-                // Grow and bold this bubble's own label - same hover treatment as eda-treemap.
-                d3.select(d.currentTarget.parentNode).select('text')
-                  .interrupt('grow').transition('grow').duration(HOVER_MS)
-                  .attr('font-size', `${textSize(data.value) * 1.3}px`)
-                  .style('font-weight', 'bold');
+                if (chartAnimOn) {
+                  // Grow and bold this bubble's own label - same hover treatment as eda-treemap.
+                  d3.select(d.currentTarget.parentNode).select('text')
+                    .interrupt('grow').transition('grow').duration(HOVER_MS)
+                    .attr('font-size', `${textSize(data.value) * 1.3}px`)
+                    .style('font-weight', 'bold');
+                }
 
                 // Create a label that contains the data for each bubble
                 const tooltipData = this.getToolTipData(data);
@@ -287,21 +295,24 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
         const hex = this.leafColor(data);
         const target = d3.select(d.currentTarget);
 
-        // Reduce the bubble border back to original size
-        target
-          .transition()
-          .duration(HOVER_STROKE_MS)
-
-          .style("stroke-width", 1);
+        if (chartAnimOn) {
+          // Reduce the bubble border back to original size
+          target
+            .transition()
+            .duration(HOVER_STROKE_MS)
+            .style("stroke-width", 1);
+        }
 
         target.interrupt('color').transition('color').duration(HOVER_MS)
           .attr('fill', hex)
           .on('end', () => target.attr('fill', this.bubbleFill(defs, hex)));
 
-        d3.select(d.currentTarget.parentNode).select('text')
-          .interrupt('grow').transition('grow').duration(HOVER_MS)
-          .attr('font-size', `${textSize(data.value)}px`)
-          .style('font-weight', null);
+        if (chartAnimOn) {
+          d3.select(d.currentTarget.parentNode).select('text')
+            .interrupt('grow').transition('grow').duration(HOVER_MS)
+            .attr('font-size', `${textSize(data.value)}px`)
+            .style('font-weight', null);
+        }
 
         this.tooltipService.hide();
       })

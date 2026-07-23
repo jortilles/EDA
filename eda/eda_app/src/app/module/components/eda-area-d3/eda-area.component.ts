@@ -317,6 +317,9 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     // Hover micro-animation (dot grow) - separate from the entrance sweep above, should be
     // instant rather than just skipped-on-first-render when chartAnimation is off.
     const HOVER_MS = (this.inject.chartAnimation ?? true) ? 150 : 0;
+    // Size growth hover feedback is skipped entirely (not just instant) when chartAnimation is
+    // off - color darken is left unaffected, still the one hover cue left when animation is off.
+    const chartAnimOn = this.inject.chartAnimation ?? true;
 
     // Real (non-derived) series first, so the trend overlay paints on top of its source.
     const drawOrder = [...visibleSeries.filter(s => !s.isTrend), ...visibleSeries.filter(s => s.isTrend)];
@@ -463,10 +466,12 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
 
       dotSel
         .on('mouseover', (event: any, d: any) => {
-          d3.select(event.currentTarget).select('.eda-area-point-dot')
-            .interrupt('grow').transition('grow').duration(HOVER_MS)
-            .attr('r', 4.5)
+          const dot = d3.select(event.currentTarget).select('.eda-area-point-dot');
+          dot.interrupt('color').transition('color').duration(HOVER_MS)
             .style('fill', darkenHex(series.color, 40));
+          if (chartAnimOn) {
+            dot.interrupt('grow').transition('grow').duration(HOVER_MS).attr('r', 4.5);
+          }
 
           const category = this.categories[d.point.catIndex];
           const title = `${this.inject.categoryFieldName ? this.inject.categoryFieldName + ' : ' : ''}${category}`;
@@ -480,10 +485,11 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
         })
         .on('mousemove', (event: any) => this.tooltipService.move(event, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true))
         .on('mouseout', (event: any) => {
-          d3.select(event.currentTarget).select('.eda-area-point-dot')
-            .interrupt('grow').transition('grow').duration(HOVER_MS)
-            .attr('r', baseRadius)
-            .style('fill', series.color);
+          const dot = d3.select(event.currentTarget).select('.eda-area-point-dot');
+          dot.interrupt('color').transition('color').duration(HOVER_MS).style('fill', series.color);
+          if (chartAnimOn) {
+            dot.interrupt('grow').transition('grow').duration(HOVER_MS).attr('r', baseRadius);
+          }
           this.tooltipService.hide();
         })
         .on('click', (event: any, d: any) => {

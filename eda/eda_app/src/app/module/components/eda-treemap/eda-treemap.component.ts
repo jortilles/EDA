@@ -188,6 +188,10 @@ export class EdaTreeMap implements AfterViewInit {
     // Hover micro-animations (darken, opacity, label grow) - separate from the entrance fade
     // above, should be instant rather than just skipped-on-first-render when chartAnimation is off.
     const HOVER_MS = (this.inject.chartAnimation ?? true) ? 150 : 0;
+    // Label font-size growth on hover is skipped entirely (not just instant) when chartAnimation
+    // is off - color darken/opacity are left unaffected, still the hover cues left when
+    // animation is off.
+    const chartAnimOn = this.inject.chartAnimation ?? true;
 
     let defs = svg.select('defs');
     if (defs.empty()) defs = svg.append('defs');
@@ -238,10 +242,12 @@ export class EdaTreeMap implements AfterViewInit {
         target.interrupt('opacity').transition('opacity').duration(HOVER_MS).attr('fill-opacity', 1);
 
         // Grow and bold this cell's own label - same hover treatment as eda-bubblechart.
-        d3.select(d.currentTarget.parentNode).selectAll('tspan')
-          .interrupt('grow').transition('grow').duration(HOVER_MS)
-          .style('font-size', `${(12 + this.styleProviderService.panelFontSize.source['_value'] * 2) * 1.3}px`)
-          .style('font-weight', 'bold');
+        if (chartAnimOn) {
+          d3.select(d.currentTarget.parentNode).selectAll('tspan')
+            .interrupt('grow').transition('grow').duration(HOVER_MS)
+            .style('font-size', `${(12 + this.styleProviderService.panelFontSize.source['_value'] * 2) * 1.3}px`)
+            .style('font-weight', 'bold');
+        }
 
         const tooltipData = this.getToolTipData(data);
         const swatch = `<span class="eda-treemap-tooltip-swatch" style="background-color:${hex};"></span>`;
@@ -262,10 +268,12 @@ export class EdaTreeMap implements AfterViewInit {
           .on('end', () => target.attr('fill', this.cellFill(defs, hex)));
         target.interrupt('opacity').transition('opacity').duration(HOVER_MS).attr('fill-opacity', 0.6);
 
-        d3.select(d.currentTarget.parentNode).selectAll('tspan')
-          .interrupt('grow').transition('grow').duration(HOVER_MS)
-          .style('font-size', `${12 + this.styleProviderService.panelFontSize.source['_value'] * 2}px`)
-          .style('font-weight', null);
+        if (chartAnimOn) {
+          d3.select(d.currentTarget.parentNode).selectAll('tspan')
+            .interrupt('grow').transition('grow').duration(HOVER_MS)
+            .style('font-size', `${12 + this.styleProviderService.panelFontSize.source['_value'] * 2}px`)
+            .style('font-weight', null);
+        }
 
         this.tooltipService.hide();
       })

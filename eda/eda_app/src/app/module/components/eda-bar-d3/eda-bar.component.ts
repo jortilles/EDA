@@ -567,6 +567,11 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     // above - they should be instant, not just skipped-on-first-render, whenever chartAnimation
     // is off.
     const HOVER_MS = (this.inject.chartAnimation ?? true) ? 150 : 0;
+    // Size/position hover feedback (widen, neighbor nudge, label grow) is skipped entirely (not
+    // just instant) when chartAnimation is off - the user's complaint was specifically that bars
+    // still visibly got wider even at 0ms. Color darken is left unaffected, still the one hover
+    // cue left when animation is off.
+    const chartAnimOn = this.inject.chartAnimation ?? true;
     const perCatDelay = ENTRANCE_TOTAL_MS / Math.max(visibleCategories.length, 1);
     const singleSeries = visibleSeries.length === 1;
 
@@ -776,13 +781,15 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             d3.select(target).attr('fill', hex)
               .interrupt('color').transition('color').duration(HOVER_MS)
               .attr('fill', darkenHex(hex, 40));
-            d3.select(target).attr('stroke', hex).attr('stroke-width', 1.5);
-            d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', hoverD(d));
-            nudgeNeighbors(d.data.cat, sIdx, hoverExtra, true);
-            if (labelSel) {
-              labelSel.filter((ld: any) => ld === d)
-                .interrupt('labelGrow').transition('labelGrow').duration(HOVER_MS)
-                .style('font-size', '14px');
+            if (chartAnimOn) {
+              d3.select(target).attr('stroke', hex).attr('stroke-width', 1.5);
+              d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', hoverD(d));
+              nudgeNeighbors(d.data.cat, sIdx, hoverExtra, true);
+              if (labelSel) {
+                labelSel.filter((ld: any) => ld === d)
+                  .interrupt('labelGrow').transition('labelGrow').duration(HOVER_MS)
+                  .style('font-size', '14px');
+              }
             }
 
             const catIdx = this.categories.indexOf(d.data.cat);
@@ -800,13 +807,15 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
               .on('end', () => {
                 d3.select(target).attr('fill', this.barFill(defs, series, this.categories.indexOf(d.data.cat), horizontal));
               });
-            d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', finalD(d));
-            nudgeNeighbors(d.data.cat, sIdx, hoverExtra, false);
-            d3.select(target).attr('stroke', null).attr('stroke-width', null);
-            if (labelSel) {
-              labelSel.filter((ld: any) => ld === d)
-                .interrupt('labelGrow').transition('labelGrow').duration(HOVER_MS)
-                .style('font-size', '11px');
+            if (chartAnimOn) {
+              d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', finalD(d));
+              nudgeNeighbors(d.data.cat, sIdx, hoverExtra, false);
+              d3.select(target).attr('stroke', null).attr('stroke-width', null);
+              if (labelSel) {
+                labelSel.filter((ld: any) => ld === d)
+                  .interrupt('labelGrow').transition('labelGrow').duration(HOVER_MS)
+                  .style('font-size', '11px');
+              }
             }
             this.tooltipService.hide();
           });
@@ -981,13 +990,15 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             d3.select(target).attr('fill', hex)
               .interrupt('color').transition('color').duration(HOVER_MS)
               .attr('fill', darkenHex(hex, 40));
-            d3.select(target).attr('stroke', hex).attr('stroke-width', 1.5);
-            d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', hoverD(d));
-            nudgeNeighbors(d.cat, sIdx, hoverExtra, true);
-            if (labelSel) {
-              labelSel.filter((ld: any) => ld === d)
-                .interrupt('labelGrow').transition('labelGrow').duration(HOVER_MS)
-                .style('font-size', '14px');
+            if (chartAnimOn) {
+              d3.select(target).attr('stroke', hex).attr('stroke-width', 1.5);
+              d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', hoverD(d));
+              nudgeNeighbors(d.cat, sIdx, hoverExtra, true);
+              if (labelSel) {
+                labelSel.filter((ld: any) => ld === d)
+                  .interrupt('labelGrow').transition('labelGrow').duration(HOVER_MS)
+                  .style('font-size', '14px');
+              }
             }
 
             const percentage = this.percentOfSeries(series, d.catIdx);
@@ -1003,13 +1014,15 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
               .on('end', () => {
                 d3.select(target).attr('fill', this.barFill(defs, series, d.catIdx, horizontal));
               });
-            d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', finalD(d));
-            nudgeNeighbors(d.cat, sIdx, hoverExtra, false);
-            d3.select(target).attr('stroke', null).attr('stroke-width', null);
-            if (labelSel) {
-              labelSel.filter((ld: any) => ld === d)
-                .interrupt('labelGrow').transition('labelGrow').duration(HOVER_MS)
-                .style('font-size', '11px');
+            if (chartAnimOn) {
+              d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', finalD(d));
+              nudgeNeighbors(d.cat, sIdx, hoverExtra, false);
+              d3.select(target).attr('stroke', null).attr('stroke-width', null);
+              if (labelSel) {
+                labelSel.filter((ld: any) => ld === d)
+                  .interrupt('labelGrow').transition('labelGrow').duration(HOVER_MS)
+                  .style('font-size', '11px');
+              }
             }
             this.tooltipService.hide();
           });

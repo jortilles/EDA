@@ -334,6 +334,9 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
     // Hover micro-animations (darken, widen, dot grow) - separate from the entrance sweep above,
     // should be instant rather than just skipped-on-first-render when chartAnimation is off.
     const HOVER_MS = (this.inject.chartAnimation ?? true) ? 150 : 0;
+    // Size/width hover feedback is skipped entirely (not just instant) when chartAnimation is off
+    // - color darken is left unaffected, still the one hover cue left when animation is off.
+    const chartAnimOn = this.inject.chartAnimation ?? true;
     const singleBarSeries = visibleBarSeries.length === 1;
     const showLabelsOn = (this.inject.showLabels || this.inject.showLabelsPercent) && !compact;
     // Bars grow left to right, one category at a time (bar i's own growth finishes exactly when
@@ -404,7 +407,9 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
             d3.select(target).attr('fill', series.color)
               .interrupt('color').transition('color').duration(HOVER_MS)
               .attr('fill', darkenHex(series.color, 40));
-            d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', hoverD(d));
+            if (chartAnimOn) {
+              d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', hoverD(d));
+            }
             this.tooltipService.show(event, this.tooltipHtml(series.label, d.cat, d.value, series.color), 'eda-barline-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
           })
           .on('mousemove', (event: any) => this.tooltipService.move(event, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true))
@@ -413,7 +418,9 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
             d3.select(target).interrupt('color').transition('color').duration(HOVER_MS)
               .attr('fill', series.color)
               .on('end', () => d3.select(target).attr('fill', this.barFill(defs, series.color)));
-            d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', finalD(d));
+            if (chartAnimOn) {
+              d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', finalD(d));
+            }
             this.tooltipService.hide();
           })
           .on('click', (event: any, d: any) => this.emitClick(d.catIdx, series.label, d.value));
@@ -531,18 +538,21 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
 
       dotSel
         .on('mouseover', (event: any, d: LinePoint) => {
-          d3.select(event.currentTarget).select('.eda-barline-point-dot')
-            .interrupt('grow').transition('grow').duration(HOVER_MS)
-            .attr('r', 6)
+          const dot = d3.select(event.currentTarget).select('.eda-barline-point-dot');
+          dot.interrupt('color').transition('color').duration(HOVER_MS)
             .style('fill', darkenHex(series.color, 40));
+          if (chartAnimOn) {
+            dot.interrupt('grow').transition('grow').duration(HOVER_MS).attr('r', 6);
+          }
           this.tooltipService.show(event, this.tooltipHtml(series.label, this.categories[d.catIndex], d.value as number, series.color), 'eda-barline-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
         })
         .on('mousemove', (event: any) => this.tooltipService.move(event, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true))
         .on('mouseout', (event: any) => {
-          d3.select(event.currentTarget).select('.eda-barline-point-dot')
-            .interrupt('grow').transition('grow').duration(HOVER_MS)
-            .attr('r', showDots ? 3.5 : 0)
-            .style('fill', series.color);
+          const dot = d3.select(event.currentTarget).select('.eda-barline-point-dot');
+          dot.interrupt('color').transition('color').duration(HOVER_MS).style('fill', series.color);
+          if (chartAnimOn) {
+            dot.interrupt('grow').transition('grow').duration(HOVER_MS).attr('r', showDots ? 3.5 : 0);
+          }
           this.tooltipService.hide();
         })
         .on('click', (event: any, d: LinePoint) => this.emitClick(d.catIndex, series.label, d.value as number));

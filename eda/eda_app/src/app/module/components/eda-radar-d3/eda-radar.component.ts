@@ -187,6 +187,13 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
     return (this.inject.chartAnimation ?? true) ? ms : 0;
   }
 
+  /** Vertex radius growth on hover is skipped entirely (not just instant) when chartAnimation is
+   * off - color darken/series dimming are left unaffected, still the hover cues left when
+   * animation is off. */
+  private chartAnimOn(): boolean {
+    return this.inject.chartAnimation ?? true;
+  }
+
   /** Highlights one series (its polygon + own vertices) across the whole chart, dimming the rest - null restores everyone to normal. */
   private highlightSeries(seriesLabel: string | null): void {
     this.svg.select('g.radar-series-fill-group').selectAll('path.radar-series-fill')
@@ -222,9 +229,11 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
       .on('mouseover', (event: any, d: any) => {
         const target = event.currentTarget;
         d3.select(target)
-          .interrupt('grow').transition('grow').duration(this.hoverMs())
-          .attr('r', 6)
+          .interrupt('color').transition('color').duration(this.hoverMs())
           .attr('fill', darkenHex(d.series.color, 40));
+        if (this.chartAnimOn()) {
+          d3.select(target).interrupt('grow').transition('grow').duration(this.hoverMs()).attr('r', 6);
+        }
         this.highlightSeries(d.series.label);
 
         const category = this.categories[d.point.catIndex];
@@ -241,10 +250,13 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .on('mousemove', (event: any) => this.tooltipService.move(event))
       .on('mouseout', (event: any, d: any) => {
-        d3.select(event.currentTarget)
-          .interrupt('grow').transition('grow').duration(this.hoverMs())
-          .attr('r', 4)
+        const target = event.currentTarget;
+        d3.select(target)
+          .interrupt('color').transition('color').duration(this.hoverMs())
           .attr('fill', d.series.color);
+        if (this.chartAnimOn()) {
+          d3.select(target).interrupt('grow').transition('grow').duration(this.hoverMs()).attr('r', 4);
+        }
         this.highlightSeries(null);
         this.tooltipService.hide();
       });

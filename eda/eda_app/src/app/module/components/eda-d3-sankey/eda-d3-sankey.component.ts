@@ -163,6 +163,10 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     // Hover micro-animation (node label grow) - separate from the entrance sweep above, should
     // be instant rather than just skipped-on-first-render when chartAnimation is off.
     const HOVER_MS = (this.inject.chartAnimation ?? true) ? 150 : 0;
+    // Node-label font-size growth on hover is skipped entirely (not just instant) when
+    // chartAnimation is off - opacity-based link highlight is left unaffected, still the hover
+    // cue left when animation is off.
+    const chartAnimOn = this.inject.chartAnimation ?? true;
     const LINK_DURATION = 700;
     const columnX0s = Array.from(new Set((links as any[]).map(d => d.source.x0))).sort((a: number, b: number) => a - b);
     const columnLevel = (d: any) => columnX0s.indexOf(d.source.x0);
@@ -230,10 +234,12 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
         // Grow this link's own two node labels - same hover treatment as eda-bubblechart/eda-treemap
         // (already bold by default here, so only the size grows).
-        d3.selectAll(`#${this.id}`).selectAll('text')
-          .filter((t: any) => data.names.includes(t.name))
-          .interrupt('grow').transition('grow').duration(HOVER_MS)
-          .style('font-size', `${(12 + this.styleProviderService.panelFontSize.source['_value'] * 2) * 1.3}px`);
+        if (chartAnimOn) {
+          d3.selectAll(`#${this.id}`).selectAll('text')
+            .filter((t: any) => data.names.includes(t.name))
+            .interrupt('grow').transition('grow').duration(HOVER_MS)
+            .style('font-size', `${(12 + this.styleProviderService.panelFontSize.source['_value'] * 2) * 1.3}px`);
+        }
 
         const metricLabel = this.inject.dataDescription.numericColumns[0].name;
 
@@ -253,9 +259,11 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
         this.hideLinks();
 
-        d3.selectAll(`#${this.id}`).selectAll('text')
-          .interrupt('grow').transition('grow').duration(HOVER_MS)
-          .style('font-size', `${12 + this.styleProviderService.panelFontSize.source['_value'] * 2}px`);
+        if (chartAnimOn) {
+          d3.selectAll(`#${this.id}`).selectAll('text')
+            .interrupt('grow').transition('grow').duration(HOVER_MS)
+            .style('font-size', `${12 + this.styleProviderService.panelFontSize.source['_value'] * 2}px`);
+        }
 
         this.tooltipService.hide();
 
