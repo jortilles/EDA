@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DateUtils } from '@eda/services/utils/date-utils.service';
 import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
+import { QUERY_MODE } from '@eda/configs/customizable/customizable_default';
 import * as _ from 'lodash';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
@@ -1025,23 +1026,13 @@ export class DashboardPage implements OnInit {
 
     for (const panel of this.edaPanels) {
       if (treeQueryMode) {
-        panel.queryModes = [
-          { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'TREE' },
-          { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
-        ];
+        panel.queryModes = QUERY_MODE.filter(m => m.value !== 'EDA');
         panel.selectedQueryMode = 'TREE';
       } else if (standardQueryMode) {
-        panel.queryModes = [
-          { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
-          { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
-        ];
+        panel.queryModes = QUERY_MODE.filter(m => m.value !== 'TREE');
       }
       if (((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) && this.globalFilter.globalFilters.length === 0) {
-        panel.queryModes = [
-          { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
-          { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
-          { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'TREE' }
-        ];
+        panel.queryModes = QUERY_MODE;
       }
     }
   }
