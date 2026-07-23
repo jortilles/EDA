@@ -210,7 +210,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     // top gets its label clipped by the SVG's own edge.
     const showCompactLabels = compact && (this.inject.showLabels || this.inject.showLabelsPercent);
     const margin = compact
-      ? { top: showCompactLabels ? 14 : 4, right: 4, bottom: showCompactCategoryAxis ? 18 : 4, left: showValueAxis ? leftMargin : 4 }
+      ? { top: showCompactLabels ? 20 : 4, right: 4, bottom: showCompactCategoryAxis ? 18 : 4, left: showValueAxis ? leftMargin : 4 }
       : { top: 16, right: 20, bottom: 50, left: leftMargin };
     const innerWidth = Math.max(width - margin.left - margin.right, 10);
     const innerHeight = Math.max(height - margin.top - margin.bottom, 10);
