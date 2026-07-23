@@ -206,7 +206,22 @@
 
               @if (showTrendComparative) {
                 <div class="flex items-center justify-between">
-                  <label class="font-medium" i18n="@@addtrend">Tendencia</label>
+                  <div class="flex items-center gap-2">
+                    <label class="font-medium" i18n="@@addtrend">Tendencia</label>
+                    <div class="relative group">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-slate-400">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                      </svg>
+                      <div
+                        class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                        <span i18n="@@chartTrendOption">Mostrar línea de tendencia en el gráfico</span>
+                      </div>
+                    </div>
+                  </div>
                   <label class="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" [(ngModel)]="addTrend" (ngModelChange)="setAddTrend()" class="sr-only peer">
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
@@ -216,7 +231,22 @@
 
               @if (showComparative) {
                 <div class="flex items-center justify-between">
-                  <label class="font-medium" i18n="@@addComparative">Comparativa</label>
+                  <div class="flex items-center gap-2">
+                    <label class="font-medium" i18n="@@addComparative">Comparativa</label>
+                    <div class="relative group">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-slate-400">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                      </svg>
+                      <div
+                        class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                        <span i18n="@@chartComparationOption">Habilita la comparación con períodos anteriores</span>
+                      </div>
+                    </div>
+                  </div>
                   <label class="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" [(ngModel)]="addComparative" (ngModelChange)="setAddComparative()" class="sr-only peer">
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
@@ -225,7 +255,22 @@
               }
 
               <div class="flex items-center justify-between">
-                <label class="font-medium" i18n="@@chartAnimation">Animar Gráfico</label>
+                <div class="flex items-center gap-2">
+                  <label class="font-medium" i18n="@@chartAnimation">Animar Gráfico</label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartAnimationOptionDescription">Anima la aparición de los datos al cargar el gráfico</span>
+                    </div>
+                  </div>
+                </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" [(ngModel)]="chartAnimation" (ngModelChange)="setChartAnimation()" class="sr-only peer">
                   <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
@@ -233,7 +278,22 @@
               </div>
 
               <div class="flex items-center justify-between">
-                <label class="font-medium" i18n="@@showLegend">Mostrar Leyenda</label>
+                <div class="flex items-center gap-2">
+                  <label class="font-medium" i18n="@@showLegend">Mostrar Leyenda</label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartLegendOptionDescription">Muestra la leyenda del gráfico</span>
+                    </div>
+                  </div>
+                </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" [(ngModel)]="chartLegend" (ngModelChange)="setChartLegend()" class="sr-only peer">
                   <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
@@ -241,7 +301,22 @@
               </div>
 
               <div class="flex items-center justify-between">
-                <label class="font-medium" i18n="@@showGridLines">Mostrar Líneas Guía</label>
+                <div class="flex items-center gap-2">
+                  <label class="font-medium" i18n="@@showGridLines">Mostrar Líneas Guía</label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartGridLinesOptionDescription">Muestra u oculta las líneas guía del gráfico</span>
+                    </div>
+                  </div>
+                </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" [(ngModel)]="showGridLines" (ngModelChange)="setShowGridLines()" class="sr-only peer">
                   <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
@@ -250,7 +325,22 @@
 
               @if (showTrendComparative) {
                 <div class="flex items-center justify-between">
-                  <label class="font-medium" i18n="@@showLines">Mostrar Líneas de Puntos</label>
+                  <div class="flex items-center gap-2">
+                    <label class="font-medium" i18n="@@showLines">Mostrar Líneas de Puntos</label>
+                    <div class="relative group">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-slate-400">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                      </svg>
+                      <div
+                        class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                        <span i18n="@@chartLabelLineOptionDescription">Muestra líneas conectando los puntos</span>
+                      </div>
+                    </div>
+                  </div>
                   <label class="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" [(ngModel)]="showPointLines" (ngModelChange)="setShowPointLines()" class="sr-only peer">
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
@@ -259,7 +349,22 @@
               }
 
               <div class="flex items-center justify-between">
-                <label class="font-medium" i18n="@@showLabels">Mostrar Etiquetas</label>
+                <div class="flex items-center gap-2">
+                  <label class="font-medium" i18n="@@showLabels">Mostrar Etiquetas</label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartLabelOption">Muestra etiquetas con valores en el gráfico</span>
+                    </div>
+                  </div>
+                </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" [(ngModel)]="showLabels" (ngModelChange)="setShowLabels()" class="sr-only peer">
                   <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
@@ -267,7 +372,22 @@
               </div>
 
               <div class="flex items-center justify-between">
-                <label class="font-medium" i18n="@@showLabelsPercent">Etiquetas en Porcentaje</label>
+                <div class="flex items-center gap-2">
+                  <label class="font-medium" i18n="@@showLabelsPercent">Etiquetas en Porcentaje</label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartLabelPercentOption">Muestra etiquetas en formato porcentaje</span>
+                    </div>
+                  </div>
+                </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" [(ngModel)]="showLabelsPercent" (ngModelChange)="setShowLabelsPercent()" class="sr-only peer">
                   <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
@@ -296,7 +416,22 @@
 
               @if (isKpiBar) {
                 <div class="flex items-center justify-between">
-                  <label class="font-medium" i18n="@@useRoundedBars">Redondear barras</label>
+                  <div class="flex items-center gap-2">
+                    <label class="font-medium" i18n="@@useRoundedBars">Redondear barras</label>
+                    <div class="relative group">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-slate-400">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                      </svg>
+                      <div
+                        class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                        <span i18n="@@chartRoundedBarsOptionDescription">Redondea la punta de las barras</span>
+                      </div>
+                    </div>
+                  </div>
                   <label class="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" [(ngModel)]="useRoundedBars" (ngModelChange)="setUseRoundedBars()" class="sr-only peer">
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
