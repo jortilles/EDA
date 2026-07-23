@@ -550,7 +550,7 @@ export const PanelInteractionUtils = {
   * Sets tables and tablesToShow when column is selected
   */
   searchRelations: (ebp: EdaBlankPanelComponent, c: Column, event?: CdkDragDrop<string[]>) => {
-    if (ebp.selectedQueryMode !== 'EDA2') {
+    if (ebp.selectedQueryMode !== 'TREE') {
       // Check to drag & drop only to correct container
       if (!_.isNil(event) && event.container.id === event.previousContainer.id) {
         return;
@@ -822,7 +822,7 @@ export const PanelInteractionUtils = {
     ebp.disableBtnSave();
     // Search index in array, remove the column and do it
     if (list === 'select') {
-      if (ebp.selectedQueryMode == 'EDA2') {
+      if (ebp.selectedQueryMode == 'TREE') {
 
         const rootTable = ebp.rootTable.table_name;
 

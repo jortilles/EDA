@@ -7027,18 +7027,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Fuente de datos</source>
         <target>Source de données</target>
       </trans-unit>
-      <trans-unit id="queryModeEda">
-        <source>Editor visual</source>
-        <target>Éditeur visuel</target>
-      </trans-unit>
-      <trans-unit id="queryModeTree">
-        <source>Árbol de datos</source>
-        <target>Arbre de données</target>
-      </trans-unit>
-      <trans-unit id="queryModeSql">
-        <source>Consulta SQL</source>
-        <target>Requête SQL</target>
-      </trans-unit>
     </body>
   </file>
 </xliff>

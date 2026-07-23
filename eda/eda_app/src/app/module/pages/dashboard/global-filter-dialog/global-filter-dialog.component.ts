@@ -113,7 +113,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public showAlias: boolean = false;
 
     get dialogHeight(): string {
-        return this.globalFilter?.queryMode === 'EDA2' ? '80vh' : '70vh';
+        return this.globalFilter?.queryMode === 'TREE' ? '80vh' : '70vh';
     }
 
     // Legacy
@@ -164,12 +164,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 visible: 'public',
             };
 
-            if (this.globalFilter.queryMode == 'EDA2') this.initPanels();
+            if (this.globalFilter.queryMode == 'TREE') this.initPanels();
             else this.initPanelsLegacy();
 
             this.initTablesForFilter();
         } else {
-            if (this.globalFilter.queryMode == 'EDA2') this.initPanels();
+            if (this.globalFilter.queryMode == 'TREE') this.initPanels();
             else this.initPanelsLegacy();
             this.isAutocompleted = this.globalFilter.isAutocompleted;
             this.isMandatory = this.globalFilter.isMandatory;
@@ -449,7 +449,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public findPanelPathTables() {
-        if (this.globalFilter.queryMode !== 'EDA2') return;
+        if (this.globalFilter.queryMode !== 'TREE') return;
 
         for (const panel of this.filteredPanels) {
             panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
@@ -681,7 +681,7 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
     }
 
     private clearFilterPaths(clearPanel?: any) {
-        if (this.globalFilter.queryMode !== 'EDA2') return;
+        if (this.globalFilter.queryMode !== 'TREE') return;
 
         if (clearPanel) {
             this.globalFilter.panelList = this.globalFilter.panelList.filter((p) => p !== clearPanel.id);
@@ -812,7 +812,7 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
             this.globalFilter.selectedItems = [];
             this.globalFilter.isdeleted = true;
 
-            if (this.globalFilter.queryMode != 'EDA2') {
+            if (this.globalFilter.queryMode != 'TREE') {
                 this.globalFilter.panelList = this.filteredPanels.map((p: any) => p.id);
                 this.globalFilter.applyToAll = this.applyToAll;
             }
@@ -842,7 +842,7 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
         if (this.validateGlobalFilter()) {
             this.globalFilter.multipleSelection = this.multipleSelection;
 
-            if (this.globalFilter.queryMode != 'EDA2') {
+            if (this.globalFilter.queryMode != 'TREE') {
                 this.globalFilter.panelList = this.filteredPanels.map((p: any) => p.id);
                 this.globalFilter.applyToAll = this.applyToAll;
             }

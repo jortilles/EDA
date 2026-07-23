@@ -218,8 +218,8 @@ export const  AGG_TYPES  = [
 /** Feature flags variables  */ 
 export const SHOW_LOCK_IN_PANEL_HEADER: boolean = true; // true → lock button visible in panel header | false → lock in context menu
 export const ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: boolean = false; // true → public visibility option shown in dashboard creation/edit UIs | false → hidden
-export const QUERY_MODE: any[] = [
-    { mode: "eda", value: "EDA", description: $localize`:@@queryModeEda:Editor visual` },
-    { mode: "tree", value: "TREE", description: $localize`:@@queryModeTree:Árbol de datos` },
-    { mode: "sql", value: "SQL", description: $localize`:@@queryModeSql:Consulta SQL` },
+export const QUERY_MODE: any[] = [ // QUERY_MODE Order matters; the first value "QUERY_MODE[0]" is considered the default query mode
+    { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },      
+    { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },       
+    { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'TREE' },  
 ]

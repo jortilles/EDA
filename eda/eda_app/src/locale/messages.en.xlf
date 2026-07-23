@@ -6752,18 +6752,6 @@ OR<ph id="5"/>
   <source>Fuente de datos</source>
   <target>Data source</target>
 </trans-unit>
-<trans-unit id="queryModeEda">
-  <source>Editor visual</source>
-  <target>Visual Editor</target>
-</trans-unit>
-<trans-unit id="queryModeTree">
-  <source>Árbol de datos</source>
-  <target>Data Tree</target>
-</trans-unit>
-<trans-unit id="queryModeSql">
-  <source>Consulta SQL</source>
-  <target>SQL Query</target>
-</trans-unit>
 </body>
 </file>
 </xliff>

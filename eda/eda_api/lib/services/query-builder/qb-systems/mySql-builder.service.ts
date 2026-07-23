@@ -236,7 +236,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     // JOINS
     let joinString: any[];
     let alias: any;
-    // joined == EDA2
+    // joined == TREE
     if (this.queryTODO.joined) {
       /**tree */
       const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);

@@ -7,6 +7,7 @@ import { OverlayPanelModule } from "primeng/overlaypanel";
 import * as _ from 'lodash';
 import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
 import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/customizable/customizable_default';
+import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from "@angular/forms";
 import { StyleProviderService } from '@eda/services/service.index';
@@ -118,7 +119,10 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public async initGlobalFilters(filters: any[]): Promise<void> {
-        this.globalFilters = _.cloneDeep(filters);
+        this.globalFilters = _.cloneDeep(filters).map((f: any) => {
+            if (f.queryMode) f.queryMode = normalizeQueryMode(f.queryMode);
+            return f;
+        });
         const userName = JSON.parse(localStorage.getItem('user'))?.id;
         this.isDashboardCreator = userName === this.dashboard.dashboard?.user;
         this.setFiltersVisibility();
@@ -409,12 +413,12 @@ export class GlobalFilterComponent implements OnInit {
         if (this.dashboard.validateDashboard('GLOBALFILTER')) {
 
             const treeQueryMode = this.dashboard.edaPanels.some(
-                (panel) => panel.selectedQueryMode === 'EDA2'
+                (panel) => panel.selectedQueryMode === 'TREE'
             );
 
             const globalFilter: any = {
                 isnew,
-                queryMode: treeQueryMode ? 'EDA2' : 'EDA',
+                queryMode: treeQueryMode ? 'TREE' : 'EDA',
                 ...filter
             };
 

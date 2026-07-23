@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Q
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DateUtils } from '@eda/services/utils/date-utils.service';
+import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
 import * as _ from 'lodash';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
@@ -184,7 +185,7 @@ export class DashboardPage implements OnInit {
               this.setPanelsQueryMode();
   
               setTimeout(() => {
-                  const treeQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA2');
+                  const treeQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'TREE');
   
                   unsetPanels.forEach(panel => {
                       globalFilters.forEach(filter => {
@@ -805,7 +806,7 @@ export class DashboardPage implements OnInit {
   private checkFiltersVisibility(filters, tables) {
     if (filters && filters.length > 0) {
       filters.forEach((f) => {
-        // Check if the filter was created in EDA2 mode (tree mode)
+        // Check if the filter was created in TREE mode
         if (f.selectedColumn && f.selectedTable) {
           f.selectedColumn.visible = (
             (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.visible == true) &&
@@ -1019,16 +1020,16 @@ export class DashboardPage implements OnInit {
 
   /** Selects the mode in which queries will be allowed. EDA and Tree type queries cannot be mixed in the same report. */
   private setPanelsQueryMode(): void {
-    const treeQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA2');
+    const treeQueryMode = this.panels.some((p) => normalizeQueryMode(p.content?.query?.query?.queryMode) === 'TREE');
     const standardQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA');
 
     for (const panel of this.edaPanels) {
       if (treeQueryMode) {
         panel.queryModes = [
-          { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' },
+          { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'TREE' },
           { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
         ];
-        panel.selectedQueryMode = 'EDA2';
+        panel.selectedQueryMode = 'TREE';
       } else if (standardQueryMode) {
         panel.queryModes = [
           { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
@@ -1039,7 +1040,7 @@ export class DashboardPage implements OnInit {
         panel.queryModes = [
           { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
           { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
-          { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
+          { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'TREE' }
         ];
       }
     }

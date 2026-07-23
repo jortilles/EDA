@@ -2,6 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import DataSource from '../datasource/model/datasource.model';
 import Dashboard from '../dashboard/model/dashboard.model';
+import { QueryModeUtil } from '../../utils/query-mode.util';
 import {
     resolveUser,
     buildApiCall,
@@ -607,8 +608,8 @@ export function createMcpServer(requestUser?: any) {
                                 console.log(`[MCP] panel ${idx} — sin_agregacion: todas las agregaciones eliminadas | queryLimit: 500`);
                             }
 
-                            innerQuery.queryMode   = innerQuery.queryMode  ?? 'EDA';
-                            innerQuery.rootTable   = innerQuery.queryMode === 'EDA2' ? (innerQuery.rootTable ?? '') : '';
+                            innerQuery.queryMode   = QueryModeUtil.normalize(innerQuery.queryMode ?? 'EDA');
+                            innerQuery.rootTable   = innerQuery.queryMode === 'TREE' ? (innerQuery.rootTable ?? '') : '';
                             innerQuery.joinType    = innerQuery.joinType   ?? 'inner';
                             innerQuery.forSelector = false;
 

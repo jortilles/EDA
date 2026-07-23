@@ -7059,18 +7059,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Fuente de datos</source>
         <target>Font de dades</target>
       </trans-unit>
-      <trans-unit id="queryModeEda">
-        <source>Editor visual</source>
-        <target>Editor visual</target>
-      </trans-unit>
-      <trans-unit id="queryModeTree">
-        <source>Árbol de datos</source>
-        <target>Arbre de dades</target>
-      </trans-unit>
-      <trans-unit id="queryModeSql">
-        <source>Consulta SQL</source>
-        <target>Consulta SQL</target>
-      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -13,6 +13,7 @@ import { TimeFormatService } from '../../services/time-format/time-format.servic
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
 import { DateUtil } from '../../utils/date.util'
+import { QueryModeUtil } from '../../utils/query-mode.util'
 import _ from 'lodash'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
@@ -1439,8 +1440,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
           mylabels.push(req.body.query.fields[c].column_name)
         }
       }
-      myQuery.queryMode = req.body.query.queryMode ? req.body.query.queryMode : 'EDA'; /** lo añado siempre */
-      myQuery.rootTable = myQuery.queryMode == 'EDA2' && req.body.query.rootTable ? req.body.query.rootTable : ''; /** lo añado siempre  pero solo para las consulas EDA2*/
+      myQuery.queryMode = QueryModeUtil.normalize(req.body.query.queryMode ? req.body.query.queryMode : 'EDA');
+      myQuery.rootTable = myQuery.queryMode == 'TREE' && req.body.query.rootTable ? req.body.query.rootTable : '';
       myQuery.simple = req.body.query.simple;
       myQuery.queryLimit = req.body.query.queryLimit;
       myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';

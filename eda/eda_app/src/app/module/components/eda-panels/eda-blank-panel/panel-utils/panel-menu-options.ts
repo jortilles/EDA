@@ -14,7 +14,7 @@ export const PanelOptions = {
         if (panelComponent.panel.content) {
 
           panelComponent.panelDeepCopy = _.cloneDeep(panelComponent.panel.content, true);
-          if (panelComponent.selectedQueryMode == 'EDA2') {
+          if (panelComponent.selectedQueryMode == 'TREE') {
             panelComponent.panelDeepCopy.rootTable = _.cloneDeep(panelComponent.rootTable);
           }
           panelComponent.display_v.disablePreview = false;
