@@ -179,10 +179,18 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
   // mouseout ("seriesLabel: null") just re-applies the normal formula rather than a hardcoded value.
   private readonly DIM_FACTOR = 0.15;
 
+  /** Hover micro-animation duration (highlight/grow) - instant instead of just skipped-on-first-
+   * render when chartAnimation is off. Called from highlightSeries/attachVertexHandlers, which
+   * run outside draw()'s own scope, so it re-reads inject directly rather than closing over a
+   * local computed there. */
+  private hoverMs(ms: number = 150): number {
+    return (this.inject.chartAnimation ?? true) ? ms : 0;
+  }
+
   /** Highlights one series (its polygon + own vertices) across the whole chart, dimming the rest - null restores everyone to normal. */
   private highlightSeries(seriesLabel: string | null): void {
     this.svg.select('g.radar-series-fill-group').selectAll('path.radar-series-fill')
-      .interrupt('highlight').transition('highlight').duration(150)
+      .interrupt('highlight').transition('highlight').duration(this.hoverMs())
       .attr('fill-opacity', (s: RadarSeries) => {
         const base = opacityFraction(s.opacity);
         return (seriesLabel === null || s.label === seriesLabel) ? base : base * this.DIM_FACTOR;
@@ -190,7 +198,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
       .attr('stroke-opacity', (s: RadarSeries) => (seriesLabel === null || s.label === seriesLabel) ? 1 : this.DIM_FACTOR);
 
     this.svg.select('g.radar-vertex-group').selectAll('circle.radar-vertex')
-      .interrupt('highlight').transition('highlight').duration(150)
+      .interrupt('highlight').transition('highlight').duration(this.hoverMs())
       .style('opacity', (d: any) => (seriesLabel === null || d.series.label === seriesLabel) ? 1 : this.DIM_FACTOR);
   }
 
@@ -214,7 +222,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
       .on('mouseover', (event: any, d: any) => {
         const target = event.currentTarget;
         d3.select(target)
-          .interrupt('grow').transition('grow').duration(150)
+          .interrupt('grow').transition('grow').duration(this.hoverMs())
           .attr('r', 6)
           .attr('fill', darkenHex(d.series.color, 40));
         this.highlightSeries(d.series.label);
@@ -234,7 +242,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
       .on('mousemove', (event: any) => this.tooltipService.move(event))
       .on('mouseout', (event: any, d: any) => {
         d3.select(event.currentTarget)
-          .interrupt('grow').transition('grow').duration(150)
+          .interrupt('grow').transition('grow').duration(this.hoverMs())
           .attr('r', 4)
           .attr('fill', d.series.color);
         this.highlightSeries(null);
@@ -382,8 +390,14 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
     const pathSel = fillGroup.selectAll('path.radar-series-fill')
       .data(visibleSeries, (s: any) => s.label);
 
+    // chartAnimation off collapses every morph/exit transition below to 0ms instead of
+    // restructuring the continuous interpolation itself, since resize/legend-toggle redraws
+    // reuse this same code path (see the comment further down where this also drives the
+    // series' own grow/shrink morph).
+    const animDuration = (this.inject.chartAnimation ?? true) ? (this.hasRendered ? 500 : 800) : 0;
+
     pathSel.exit()
-      .transition().duration(500)
+      .transition().duration(animDuration)
       .attrTween('d', (s: RadarSeries) => {
         const start = s._current || s.points.map(() => 0);
         const interpolators = start.map((r0: number) => d3.interpolateNumber(r0, 0));
@@ -411,9 +425,6 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
     // No first-render/resize/legend-toggle special-casing (unlike bar's fade+rebuild approach) -
     // every draw() interpolates from wherever each series' _current radii last were. This is what
     // lets hiding a dominant series smoothly rescale the remaining ones instead of snapping.
-    // chartAnimation off collapses every one of these to a 0ms transition instead of restructuring
-    // the continuous morph itself, since resize/legend-toggle redraws reuse the same code path.
-    const animDuration = (this.inject.chartAnimation ?? true) ? (this.hasRendered ? 500 : 800) : 0;
     mergedPath.transition().duration(animDuration)
       .attrTween('d', (s: RadarSeries) => {
         const start = s._current || s.points.map(() => 0);
@@ -441,7 +452,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
       .data(vertexData, (d: any) => d.key);
 
     vertexSel.exit()
-      .transition().duration(300)
+      .transition().duration(animDuration)
       .style('opacity', 0)
       .remove();
 

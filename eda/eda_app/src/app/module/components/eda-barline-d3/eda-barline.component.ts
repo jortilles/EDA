@@ -128,11 +128,12 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Exit animation: draw() only ever grows things IN - without this, the outgoing state would
     // just vanish instantly the moment draw() clears the SVG, instead of visibly leaving first.
-    const EXIT_DURATION_MS = 200;
+    // Skipped entirely when chartAnimation is off, same as the entrance/hover ones.
+    const EXIT_DURATION_MS = (this.inject.chartAnimation ?? true) ? 200 : 0;
     const currentShapes = this.svg.selectAll(
       '.eda-barline-bars path, .eda-barline-labels text, .eda-barline-lines path, .eda-barline-point-dot, .eda-barline-point-hit'
     );
-    if (!currentShapes.empty()) {
+    if (!currentShapes.empty() && EXIT_DURATION_MS > 0) {
       currentShapes.transition().duration(EXIT_DURATION_MS).style('opacity', 0);
       setTimeout(() => this.draw(), EXIT_DURATION_MS);
     } else {
@@ -330,6 +331,9 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const ENTRANCE_MS = compact ? 600 : 1500;
     const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+    // Hover micro-animations (darken, widen, dot grow) - separate from the entrance sweep above,
+    // should be instant rather than just skipped-on-first-render when chartAnimation is off.
+    const HOVER_MS = (this.inject.chartAnimation ?? true) ? 150 : 0;
     const singleBarSeries = visibleBarSeries.length === 1;
     const showLabelsOn = (this.inject.showLabels || this.inject.showLabelsPercent) && !compact;
     // Bars grow left to right, one category at a time (bar i's own growth finishes exactly when
@@ -398,18 +402,18 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
           .on('mouseover', (event: any, d: any) => {
             const target = event.currentTarget;
             d3.select(target).attr('fill', series.color)
-              .interrupt('color').transition('color').duration(150)
+              .interrupt('color').transition('color').duration(HOVER_MS)
               .attr('fill', darkenHex(series.color, 40));
-            d3.select(target).interrupt('widen').transition('widen').duration(150).attr('d', hoverD(d));
+            d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', hoverD(d));
             this.tooltipService.show(event, this.tooltipHtml(series.label, d.cat, d.value, series.color), 'eda-barline-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
           })
           .on('mousemove', (event: any) => this.tooltipService.move(event, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true))
           .on('mouseout', (event: any, d: any) => {
             const target = event.currentTarget;
-            d3.select(target).interrupt('color').transition('color').duration(150)
+            d3.select(target).interrupt('color').transition('color').duration(HOVER_MS)
               .attr('fill', series.color)
               .on('end', () => d3.select(target).attr('fill', this.barFill(defs, series.color)));
-            d3.select(target).interrupt('widen').transition('widen').duration(150).attr('d', finalD(d));
+            d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', finalD(d));
             this.tooltipService.hide();
           })
           .on('click', (event: any, d: any) => this.emitClick(d.catIdx, series.label, d.value));
@@ -528,7 +532,7 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
       dotSel
         .on('mouseover', (event: any, d: LinePoint) => {
           d3.select(event.currentTarget).select('.eda-barline-point-dot')
-            .interrupt('grow').transition('grow').duration(150)
+            .interrupt('grow').transition('grow').duration(HOVER_MS)
             .attr('r', 6)
             .style('fill', darkenHex(series.color, 40));
           this.tooltipService.show(event, this.tooltipHtml(series.label, this.categories[d.catIndex], d.value as number, series.color), 'eda-barline-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
@@ -536,7 +540,7 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
         .on('mousemove', (event: any) => this.tooltipService.move(event, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true))
         .on('mouseout', (event: any) => {
           d3.select(event.currentTarget).select('.eda-barline-point-dot')
-            .interrupt('grow').transition('grow').duration(150)
+            .interrupt('grow').transition('grow').duration(HOVER_MS)
             .attr('r', showDots ? 3.5 : 0)
             .style('fill', series.color);
           this.tooltipService.hide();

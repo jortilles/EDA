@@ -103,6 +103,9 @@ draw() {
   // Initial cleanup of other charts
   this.svg.selectAll('*').remove();
   const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+  // Hover micro-animations (label scale, highlight fade) - separate from the entrance fade
+  // above, should be instant rather than just skipped-on-first-render when chartAnimation is off.
+  const HOVER_MS = (this.inject.chartAnimation ?? true) ? 150 : 0;
 
   /** Variables */
   const width = this.svgContainer.nativeElement.clientWidth - 20;
@@ -356,11 +359,11 @@ draw() {
 
   const clearHover = () => {
     if (hoveredIndex === -1) return;
-    d3.select(`#${this.id}_label_${data[hoveredIndex].step}`).transition().duration(150)
+    d3.select(`#${this.id}_label_${data[hoveredIndex].step}`).transition().duration(HOVER_MS)
       .style('font-size', `${labelFontSize}px`)
       .style('font-weight', 'normal');
-    highlightTop.transition().duration(150).attr('fill-opacity', 0);
-    highlightBottom.transition().duration(150).attr('fill-opacity', 0);
+    highlightTop.transition().duration(HOVER_MS).attr('fill-opacity', 0);
+    highlightBottom.transition().duration(HOVER_MS).attr('fill-opacity', 0);
     hoveredIndex = -1;
   };
 
@@ -375,18 +378,18 @@ draw() {
       const i = stepIndexAt(mx);
       if (i !== hoveredIndex) {
         if (hoveredIndex !== -1) {
-          d3.select(`#${this.id}_label_${data[hoveredIndex].step}`).transition().duration(150)
+          d3.select(`#${this.id}_label_${data[hoveredIndex].step}`).transition().duration(HOVER_MS)
             .style('font-size', `${labelFontSize}px`)
             .style('font-weight', 'normal');
         }
         hoveredIndex = i;
         const [x0, x1] = zoneBounds(i);
         highlightClipRect.attr('x', x0).attr('width', x1 - x0);
-        d3.select(`#${this.id}_label_${data[i].step}`).transition().duration(150)
+        d3.select(`#${this.id}_label_${data[i].step}`).transition().duration(HOVER_MS)
           .style('font-size', `${labelFontSize + 2}px`)
           .style('font-weight', 'bold');
-        highlightTop.transition().duration(150).attr('fill-opacity', 0.25);
-        highlightBottom.transition().duration(150).attr('fill-opacity', 0.25);
+        highlightTop.transition().duration(HOVER_MS).attr('fill-opacity', 0.25);
+        highlightBottom.transition().duration(HOVER_MS).attr('fill-opacity', 0.25);
 
         const d = data[i];
         const ratio = data.length > 1 ? d.step / (data.length - 1) : 0;

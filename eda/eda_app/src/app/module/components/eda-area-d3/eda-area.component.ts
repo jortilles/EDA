@@ -23,6 +23,10 @@ interface AreaSeries {
 }
 
 const MAX_CATEGORY_CHARS = 8;
+// D3TooltipService's own defaults sit the tooltip right up against the cursor/point - pin its
+// BOTTOM-left corner 20px to the right and 20px above instead, matching eda-bar-d3/eda-barline-d3.
+const TOOLTIP_OFFSET_X = 20;
+const TOOLTIP_OFFSET_Y = -20;
 
 @Component({
   standalone: true,
@@ -108,7 +112,17 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.hiddenSeriesIndexes.has(s.originalIndex)) this.hiddenSeriesIndexes.delete(s.originalIndex);
     else this.hiddenSeriesIndexes.add(s.originalIndex);
     this.legendItems[legendIdx].hidden = this.hiddenSeriesIndexes.has(s.originalIndex);
-    this.draw();
+    // Replay the entrance sweep on every legend toggle, not just the very first draw - same
+    // fade-out-then-redraw pattern as eda-bar-d3. Skipped entirely when chartAnimation is off.
+    this.hasRendered = false;
+    const EXIT_MS = (this.inject.chartAnimation ?? true) ? 200 : 0;
+    const currentContent = this.svg.selectAll('.eda-area-fill-group, .eda-area-points, .eda-area-labels');
+    if (!currentContent.empty() && EXIT_MS > 0) {
+      currentContent.transition().duration(EXIT_MS).style('opacity', 0);
+      setTimeout(() => this.draw(), EXIT_MS);
+    } else {
+      this.draw();
+    }
   }
 
   /** A trend series is visible only when its own real source series is (and isn't itself hidden). */
@@ -300,6 +314,9 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const ENTRANCE_MS = compact ? 600 : 3000;
     const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+    // Hover micro-animation (dot grow) - separate from the entrance sweep above, should be
+    // instant rather than just skipped-on-first-render when chartAnimation is off.
+    const HOVER_MS = (this.inject.chartAnimation ?? true) ? 150 : 0;
 
     // Real (non-derived) series first, so the trend overlay paints on top of its source.
     const drawOrder = [...visibleSeries.filter(s => !s.isTrend), ...visibleSeries.filter(s => s.isTrend)];
@@ -447,7 +464,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       dotSel
         .on('mouseover', (event: any, d: any) => {
           d3.select(event.currentTarget).select('.eda-area-point-dot')
-            .interrupt('grow').transition('grow').duration(150)
+            .interrupt('grow').transition('grow').duration(HOVER_MS)
             .attr('r', 4.5)
             .style('fill', darkenHex(series.color, 40));
 
@@ -459,12 +476,12 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
           let text = `<div class="eda-area-tooltip-title">${title}</div>` +
             `<div class="eda-area-tooltip-row">${swatch}${seriesPrefix}${formatDeNumber(d.point.value)}</div>`;
           if (linkedDashboard) text += `<h6>${$localize`:@@linkedTo:Vinculado con`} ${linkedDashboard.dashboardName}</h6>`;
-          this.tooltipService.show(event, text, 'eda-area-tooltip');
+          this.tooltipService.show(event, text, 'eda-area-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
         })
-        .on('mousemove', (event: any) => this.tooltipService.move(event))
+        .on('mousemove', (event: any) => this.tooltipService.move(event, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true))
         .on('mouseout', (event: any) => {
           d3.select(event.currentTarget).select('.eda-area-point-dot')
-            .interrupt('grow').transition('grow').duration(150)
+            .interrupt('grow').transition('grow').duration(HOVER_MS)
             .attr('r', baseRadius)
             .style('fill', series.color);
           this.tooltipService.hide();

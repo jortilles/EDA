@@ -160,6 +160,9 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     });
 
     const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+    // Hover micro-animation (node label grow) - separate from the entrance sweep above, should
+    // be instant rather than just skipped-on-first-render when chartAnimation is off.
+    const HOVER_MS = (this.inject.chartAnimation ?? true) ? 150 : 0;
     const LINK_DURATION = 700;
     const columnX0s = Array.from(new Set((links as any[]).map(d => d.source.x0))).sort((a: number, b: number) => a - b);
     const columnLevel = (d: any) => columnX0s.indexOf(d.source.x0);
@@ -229,7 +232,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
         // (already bold by default here, so only the size grows).
         d3.selectAll(`#${this.id}`).selectAll('text')
           .filter((t: any) => data.names.includes(t.name))
-          .interrupt('grow').transition('grow').duration(150)
+          .interrupt('grow').transition('grow').duration(HOVER_MS)
           .style('font-size', `${(12 + this.styleProviderService.panelFontSize.source['_value'] * 2) * 1.3}px`);
 
         const metricLabel = this.inject.dataDescription.numericColumns[0].name;
@@ -251,7 +254,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
         this.hideLinks();
 
         d3.selectAll(`#${this.id}`).selectAll('text')
-          .interrupt('grow').transition('grow').duration(150)
+          .interrupt('grow').transition('grow').duration(HOVER_MS)
           .style('font-size', `${12 + this.styleProviderService.panelFontSize.source['_value'] * 2}px`);
 
         this.tooltipService.hide();

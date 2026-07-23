@@ -23,6 +23,10 @@ interface LineSeries {
 }
 
 const MAX_CATEGORY_CHARS = 8;
+// D3TooltipService's own defaults sit the tooltip right up against the cursor/point - pin its
+// BOTTOM-left corner 20px to the right and 20px above instead, matching eda-bar-d3/eda-barline-d3.
+const TOOLTIP_OFFSET_X = 20;
+const TOOLTIP_OFFSET_Y = -20;
 
 @Component({
   standalone: true,
@@ -115,7 +119,17 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.hiddenSeriesIndexes.has(s.originalIndex)) this.hiddenSeriesIndexes.delete(s.originalIndex);
     else this.hiddenSeriesIndexes.add(s.originalIndex);
     this.legendItems[legendIdx].hidden = this.hiddenSeriesIndexes.has(s.originalIndex);
-    this.draw();
+    // Replay the entrance sweep on every legend toggle, not just the very first draw - same
+    // fade-out-then-redraw pattern as eda-bar-d3. Skipped entirely when chartAnimation is off.
+    this.hasRendered = false;
+    const EXIT_MS = (this.inject.chartAnimation ?? true) ? 200 : 0;
+    const currentContent = this.svg.selectAll('.eda-line-series, .eda-line-points, .eda-line-labels');
+    if (!currentContent.empty() && EXIT_MS > 0) {
+      currentContent.transition().duration(EXIT_MS).style('opacity', 0);
+      setTimeout(() => this.draw(), EXIT_MS);
+    } else {
+      this.draw();
+    }
   }
 
   /** A trend/prediction series is visible only when its own real source series is (and isn't itself hidden). */
@@ -290,6 +304,10 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const ENTRANCE_MS = compact ? 600 : 3000;
     const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+    // Hover micro-animations (dot grow, column highlight) - separate from the entrance sweep
+    // above, should be instant rather than just skipped-on-first-render when chartAnimation is off.
+    const chartAnimOn = this.inject.chartAnimation ?? true;
+    const hoverMs = (ms: number) => chartAnimOn ? ms : 0;
 
     // Real (non-derived) series first, so trend/prediction overlays paint on top of their source.
     const drawOrder = [...visibleSeries.filter(s => !s.isTrend && !s.isPrediction), ...visibleSeries.filter(s => s.isTrend || s.isPrediction)];
@@ -434,7 +452,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         .on('mouseover', (event: any, d: any) => {
           const hitCircle = d3.select(event.currentTarget).select('.eda-line-point-hit');
           d3.select(event.currentTarget).select('.eda-line-point-dot')
-            .interrupt('grow').transition('grow').duration(150)
+            .interrupt('grow').transition('grow').duration(hoverMs(150))
             .attr('r', 6)
             .style('fill', darkenHex(series.color, 40));
 
@@ -446,12 +464,12 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
           let text = `<div class="eda-line-tooltip-title">${title}</div>` +
             `<div class="eda-line-tooltip-row">${swatch}${seriesPrefix}${formatDeNumber(d.point.value)}</div>`;
           if (linkedDashboard) text += `<h6>${$localize`:@@linkedTo:Vinculado con`} ${linkedDashboard.dashboardName}</h6>`;
-          this.tooltipService.show(event, text, 'eda-line-tooltip');
+          this.tooltipService.show(event, text, 'eda-line-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
         })
-        .on('mousemove', (event: any) => this.tooltipService.move(event))
+        .on('mousemove', (event: any) => this.tooltipService.move(event, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true))
         .on('mouseout', (event: any, d: any) => {
           d3.select(event.currentTarget).select('.eda-line-point-dot')
-            .interrupt('grow').transition('grow').duration(150)
+            .interrupt('grow').transition('grow').duration(hoverMs(150))
             .attr('r', baseRadius)
             .style('fill', series.isPrediction ? this.panelBackgroundColor : series.color);
           this.tooltipService.hide();
@@ -488,18 +506,18 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
 
             pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
               .filter((d: any) => d.point.catIndex === catIdx)
-              .interrupt('colGrow').transition('colGrow').duration(100).attr('r', 5);
+              .interrupt('colGrow').transition('colGrow').duration(hoverMs(100)).attr('r', 5);
 
             const title = `${this.inject.categoryFieldName ? this.inject.categoryFieldName + ' : ' : ''}${cat}`;
             const rowsHtml = rows.map(r =>
               `<div class="eda-line-tooltip-row"><span class="eda-line-tooltip-swatch" style="background-color:${r.s.color};"></span><strong>${r.s.label}</strong> : ${formatDeNumber(r.p.value as number)}</div>`
             ).join('');
-            this.tooltipService.show(event, `<div class="eda-line-tooltip-title">${title}</div>${rowsHtml}`, 'eda-line-tooltip');
+            this.tooltipService.show(event, `<div class="eda-line-tooltip-title">${title}</div>${rowsHtml}`, 'eda-line-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
           })
           .on('mouseout', () => {
             pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
               .filter((d: any) => d.point.catIndex === catIdx)
-              .interrupt('colGrow').transition('colGrow').duration(100)
+              .interrupt('colGrow').transition('colGrow').duration(hoverMs(100))
               .attr('r', (d: any) => (d.series.isPrediction || (this.inject.showPointLines ?? false)) ? (d.series.isPrediction ? 3 : 3.5) : 0);
             this.tooltipService.hide();
           });

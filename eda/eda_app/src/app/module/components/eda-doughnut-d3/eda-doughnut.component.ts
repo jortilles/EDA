@@ -121,6 +121,13 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
     ], { cx: 0, cy: 0, r: outerRadius });
   }
 
+  /** Hover micro-animation duration - instant instead of just skipped-on-first-render when
+   * chartAnimation is off. attachInteractionHandlers runs outside draw()'s own scope, so it
+   * re-reads inject directly rather than closing over a local computed there. */
+  private hoverMs(ms: number = 150): number {
+    return (this.inject.chartAnimation ?? true) ? ms : 0;
+  }
+
   private attachInteractionHandlers(selection: any, seriesLabel: string, linkedDashboard: any, total: number): void {
     // Base fill is always the radial gradient (set on enter / see draw()). Hover only ever swaps
     // in a flat, darker version of the slice's ORIGINAL color computed from `d.data.color`
@@ -154,16 +161,16 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
         // is visually seamless, and now the transition below only ever animates flat color -> flat color.
         d3.select(target).attr('fill', d.data.color);
         d3.select(target)
-          .interrupt('color').transition('color').duration(150)
+          .interrupt('color').transition('color').duration(this.hoverMs())
           .attr('fill', darkenHex(d.data.color, 60));
         d3.select(target)
-          .interrupt('grow').transition('grow').duration(150)
+          .interrupt('grow').transition('grow').duration(this.hoverMs())
           .attr('d', this.currentHoverArcGen(d));
 
         if (this.currentLabelsContainer) {
           this.currentLabelsContainer.selectAll('g.doughnut-label')
             .filter((ld: any) => ld.data.label === d.data.label)
-            .interrupt('labelScale').transition('labelScale').duration(150)
+            .interrupt('labelScale').transition('labelScale').duration(this.hoverMs())
             .attr('transform', `translate(${this.currentHoverArcGen.centroid(d)}) scale(1.25)`);
         }
 
@@ -191,19 +198,19 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
         // (both real colors, interpolates smoothly), then swap in the gradient url in one
         // instant, un-transitioned step only once the color transition has actually finished.
         d3.select(target)
-          .interrupt('color').transition('color').duration(150)
+          .interrupt('color').transition('color').duration(this.hoverMs())
           .attr('fill', d.data.color)
           .on('end', () => {
             d3.select(target).attr('fill', this.baseFill(d.data.label, d.data.color));
           });
         d3.select(target)
-          .interrupt('grow').transition('grow').duration(150)
+          .interrupt('grow').transition('grow').duration(this.hoverMs())
           .attr('d', this.currentArcGen(d));
 
         if (this.currentLabelsContainer) {
           this.currentLabelsContainer.selectAll('g.doughnut-label')
             .filter((ld: any) => ld.data.label === d.data.label)
-            .interrupt('labelScale').transition('labelScale').duration(150)
+            .interrupt('labelScale').transition('labelScale').duration(this.hoverMs())
             .attr('transform', `translate(${this.currentArcGen.centroid(d)}) scale(1)`);
         }
         this.tooltipService.hide();
@@ -260,9 +267,15 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
     const path = g.selectAll('path.doughnut-arc')
       .data(arcs, (d: any) => String(d.data.label));
 
+    // Drives every morph/exit transition below (entrance sweep aside, which has its own
+    // hasRendered-gated animateEntrance) - collapses them all to 0ms when chartAnimation is off,
+    // including the legend-toggle-driven morph further down which previously ignored it.
+    const chartAnimOn = this.inject.chartAnimation ?? true;
+    const morphMs = chartAnimOn ? 500 : 0;
+
     // EXIT: slice hidden from the legend - shrink it back to zero width, then remove
     path.exit()
-      .transition().duration(500)
+      .transition().duration(morphMs)
       .attrTween('d', (d: any) => {
         const current = d.data._current || { startAngle: d.startAngle, endAngle: d.endAngle };
         const startInterpolate = d3.interpolate(current.startAngle, current.startAngle);
@@ -292,7 +305,7 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
     // slider drags - only the innerRadius/strokeWidth pairing changes, not the slice keys.
     merged.attr('stroke-width', strokeWidth);
 
-    const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+    const animateEntrance = !this.hasRendered && chartAnimOn;
     if (!this.hasRendered && !animateEntrance) {
       // Entrance animation disabled: jump straight to the final state, no transition.
       merged.attr('d', (d: any) => {
@@ -326,7 +339,7 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
       // pie datum `d`, since `d.data` is the same slice object we stash `_current` onto below;
       // passing `d` in would make `_current` hold a reference back to its own slice, and the next
       // toggle's interpolateObject would then recurse into that cycle forever (stack overflow).
-      merged.transition().duration(500)
+      merged.transition().duration(morphMs)
         .attrTween('d', (d: any) => {
           const current = d.data._current || { startAngle: d.startAngle, endAngle: d.startAngle };
           const startInterpolate = d3.interpolate(current.startAngle, d.startAngle);

@@ -130,6 +130,13 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.tweenArcGen({ startAngle, endAngle, radius } as any);
   }
 
+  /** Hover micro-animation duration - instant instead of just skipped-on-first-render when
+   * chartAnimation is off. attachInteractionHandlers runs outside draw()'s own scope, so it
+   * re-reads inject directly rather than closing over a local computed there. */
+  private hoverMs(ms: number = 150): number {
+    return (this.inject.chartAnimation ?? true) ? ms : 0;
+  }
+
   private attachInteractionHandlers(selection: any, seriesLabel: string, linkedDashboard: any, total: number): void {
     selection
       .on('click', (event: any, d: any) => {
@@ -150,16 +157,16 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
         const target = event.currentTarget;
         d3.select(target).attr('fill', d.data.color);
         d3.select(target)
-          .interrupt('color').transition('color').duration(150)
+          .interrupt('color').transition('color').duration(this.hoverMs())
           .attr('fill', darkenHex(d.data.color, 60));
         d3.select(target)
-          .interrupt('grow').transition('grow').duration(150)
+          .interrupt('grow').transition('grow').duration(this.hoverMs())
           .attr('d', this.currentHoverArcGen(d));
 
         if (this.currentLabelsContainer) {
           this.currentLabelsContainer.selectAll('g.polar-area-label')
             .filter((ld: any) => ld.data.label === d.data.label)
-            .interrupt('labelScale').transition('labelScale').duration(150)
+            .interrupt('labelScale').transition('labelScale').duration(this.hoverMs())
             .attr('transform', `translate(${this.currentHoverArcGen.centroid(d)}) scale(1.25)`);
         }
 
@@ -184,19 +191,19 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       .on('mouseout', (event: any, d: any) => {
         const target = event.currentTarget;
         d3.select(target)
-          .interrupt('color').transition('color').duration(150)
+          .interrupt('color').transition('color').duration(this.hoverMs())
           .attr('fill', d.data.color)
           .on('end', () => {
             d3.select(target).attr('fill', this.baseFill(d.data.label, d.data.color));
           });
         d3.select(target)
-          .interrupt('grow').transition('grow').duration(150)
+          .interrupt('grow').transition('grow').duration(this.hoverMs())
           .attr('d', this.currentArcGen(d));
 
         if (this.currentLabelsContainer) {
           this.currentLabelsContainer.selectAll('g.polar-area-label')
             .filter((ld: any) => ld.data.label === d.data.label)
-            .interrupt('labelScale').transition('labelScale').duration(150)
+            .interrupt('labelScale').transition('labelScale').duration(this.hoverMs())
             .attr('transform', `translate(${this.currentArcGen.centroid(d)}) scale(1)`);
         }
         this.tooltipService.hide();
@@ -321,9 +328,15 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     const path = g.selectAll('path.polar-area-arc')
       .data(arcs, (d: any) => String(d.data.label));
 
+    // Drives every morph/exit transition below (entrance sweep aside, which has its own
+    // hasRendered-gated animateEntrance) - collapses them all to 0ms when chartAnimation is off,
+    // including the legend-toggle-driven morph further down which previously ignored it.
+    const chartAnimOn = this.inject.chartAnimation ?? true;
+    const morphMs = chartAnimOn ? 500 : 0;
+
     // EXIT: slice hidden from the legend - collapse its radius and angle, then remove
     path.exit()
-      .transition().duration(500)
+      .transition().duration(morphMs)
       .attrTween('d', (d: any) => {
         const current = d.data._current || { startAngle: d.startAngle, endAngle: d.endAngle, radius: radiusScale(d.data.value) };
         const startI = d3.interpolate(current.startAngle, current.startAngle);
@@ -357,7 +370,7 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Equal-angle slots mean the angles themselves only shift when the number of visible
     // slices changes (legend toggle) - the radius is what animates on first render.
-    const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+    const animateEntrance = !this.hasRendered && chartAnimOn;
     if (!this.hasRendered && !animateEntrance) {
       // Entrance animation disabled: jump straight to the final state, no transition.
       merged.attr('d', (d: any) => {
@@ -367,7 +380,7 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       this.hasRendered = true;
     } else {
-      merged.transition().duration(this.hasRendered ? 500 : 800)
+      merged.transition().duration(chartAnimOn ? (this.hasRendered ? 500 : 800) : 0)
         .attrTween('d', (d: any) => {
           const current = d.data._current || { startAngle: d.startAngle, endAngle: d.endAngle, radius: 0 };
           const startI = d3.interpolate(current.startAngle, d.startAngle);
