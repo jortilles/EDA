@@ -1643,6 +1643,7 @@ public tableNodeExpand(event: any): void {
             if (response.showLabelsPercent !== undefined) configPatch.showLabelsPercent = response.showLabelsPercent;
             if (response.showGridLines !== undefined) configPatch.showGridLines = response.showGridLines;
             if (response.innerRadiusPercent !== undefined) configPatch.innerRadiusPercent = response.innerRadiusPercent;
+            if (response.chartAnimation !== undefined) configPatch.chartAnimation = response.chartAnimation;
 
             this.applyDialogChartConfig(event, configPatch, 'categoryChartController');
         } else {

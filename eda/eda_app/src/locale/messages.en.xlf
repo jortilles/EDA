@@ -6849,6 +6849,14 @@ OR<ph id="5"/>
   <source>Configuración de la alerta KPI por email</source>
   <target>KPI alert email configuration</target>
 </trans-unit>
+<trans-unit id="enablePanelAnimationsButton">
+  <source>Activar animaciones</source>
+  <target>Enable animations</target>
+</trans-unit>
+<trans-unit id="disablePanelAnimationsButton">
+  <source>Desactivar animaciones</source>
+  <target>Disable animations</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

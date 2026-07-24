@@ -7124,6 +7124,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Configuración de la alerta KPI por email</source>
         <target>Configuration de l'alerte KPI par email</target>
       </trans-unit>
+      <trans-unit id="enablePanelAnimationsButton">
+        <source>Activar animaciones</source>
+        <target>Activer les animations</target>
+      </trans-unit>
+      <trans-unit id="disablePanelAnimationsButton">
+        <source>Desactivar animaciones</source>
+        <target>Disable animations</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

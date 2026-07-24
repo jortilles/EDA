@@ -7156,6 +7156,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Configuración de la alerta KPI por email</source>
         <target>Configuració de l'alerta KPI per email</target>
       </trans-unit>
+      <trans-unit id="enablePanelAnimationsButton">
+        <source>Activar animaciones</source>
+        <target>Activar animacions</target>
+      </trans-unit>
+      <trans-unit id="disablePanelAnimationsButton">
+        <source>Desactivar animaciones</source>
+        <target>Desactivar animacions</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
