@@ -6765,6 +6765,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Configuración de la alerta KPI por email</source>
         <target>Konfiguracja alertu KPI e-mail</target>
       </trans-unit>
+      <trans-unit id="enablePanelAnimationsButton">
+        <source>Activar animaciones</source>
+        <target>Włącz animacje</target>
+      </trans-unit>
+      <trans-unit id="disablePanelAnimationsButton">
+        <source>Desactivar animaciones</source>
+        <target>Wyłącz animacje</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

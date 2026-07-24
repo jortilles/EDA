@@ -137,10 +137,10 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     // Exit animation: draw() only ever grows bars IN (see animateEntrance below) - without this,
     // the outgoing state would just vanish instantly the moment draw() clears the SVG, instead of
     // visibly leaving first. Fade the current bars out, then let draw() clear and rebuild once
-    // that's done.
-    const EXIT_DURATION_MS = 200;
+    // that's done. Skipped entirely when chartAnimation is off, same as the entrance/hover ones.
+    const EXIT_DURATION_MS = (this.inject.chartAnimation ?? true) ? 200 : 0;
     const currentBars = this.svg.selectAll('.eda-bar-bars path, .eda-bar-bars rect');
-    if (!currentBars.empty()) {
+    if (!currentBars.empty() && EXIT_DURATION_MS > 0) {
       currentBars.transition().duration(EXIT_DURATION_MS).style('opacity', 0);
       setTimeout(() => this.draw(), EXIT_DURATION_MS);
     } else {
@@ -563,6 +563,15 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     // so the whole sequence always finishes in ENTRANCE_TOTAL_MS regardless of category count.
     const ENTRANCE_TOTAL_MS = compact ? 600 : 2000;
     const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+    // Hover micro-animations (darken, widen, label grow) are separate from the entrance sweep
+    // above - they should be instant, not just skipped-on-first-render, whenever chartAnimation
+    // is off.
+    const HOVER_MS = (this.inject.chartAnimation ?? true) ? 150 : 0;
+    // Size/position hover feedback (widen, neighbor nudge, label grow) is skipped entirely (not
+    // just instant) when chartAnimation is off - the user's complaint was specifically that bars
+    // still visibly got wider even at 0ms. Color darken is left unaffected, still the one hover
+    // cue left when animation is off.
+    const chartAnimOn = this.inject.chartAnimation ?? true;
     const perCatDelay = ENTRANCE_TOTAL_MS / Math.max(visibleCategories.length, 1);
     const singleSeries = visibleSeries.length === 1;
 
@@ -599,7 +608,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       barsGroup.selectAll(`.eda-bar-series-${si}`).filter((dd: any) => (stacked ? dd.data.cat : dd.cat) === slot.cat));
     const slotLabels = (slot: BarSlot) => slot.sIdxs.map(si =>
       labelsGroup.selectAll(`.eda-bar-label-${si}`).filter((dd: any) => (stacked ? dd.data.cat : dd.cat) === slot.cat));
-    const NEIGHBOR_SHIFT_MS = 150;
+    const NEIGHBOR_SHIFT_MS = HOVER_MS;
     // Shifts along the category axis - horizontally (translate(d,0)) for vertical bars, vertically
     // (translate(0,d)) for horizontal ones - so "before"/"after" the hovered slot always nudges
     // towards/away from the previous/next category regardless of orientation.
@@ -770,15 +779,17 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             // a url(#gradient) reference to a flat color (renders blank for the duration), so
             // swap in the flat base color first, instantly, then transition flat -> flat.
             d3.select(target).attr('fill', hex)
-              .interrupt('color').transition('color').duration(150)
+              .interrupt('color').transition('color').duration(HOVER_MS)
               .attr('fill', darkenHex(hex, 40));
-            d3.select(target).attr('stroke', hex).attr('stroke-width', 1.5);
-            d3.select(target).interrupt('widen').transition('widen').duration(150).attr('d', hoverD(d));
-            nudgeNeighbors(d.data.cat, sIdx, hoverExtra, true);
-            if (labelSel) {
-              labelSel.filter((ld: any) => ld === d)
-                .interrupt('labelGrow').transition('labelGrow').duration(150)
-                .style('font-size', '14px');
+            if (chartAnimOn) {
+              d3.select(target).attr('stroke', hex).attr('stroke-width', 1.5);
+              d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', hoverD(d));
+              nudgeNeighbors(d.data.cat, sIdx, hoverExtra, true);
+              if (labelSel) {
+                labelSel.filter((ld: any) => ld === d)
+                  .interrupt('labelGrow').transition('labelGrow').duration(HOVER_MS)
+                  .style('font-size', '14px');
+              }
             }
 
             const catIdx = this.categories.indexOf(d.data.cat);
@@ -791,18 +802,20 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             const target = event.currentTarget;
             const hex = this.barColor(series, this.categories.indexOf(d.data.cat));
             d3.select(target)
-              .interrupt('color').transition('color').duration(150)
+              .interrupt('color').transition('color').duration(HOVER_MS)
               .attr('fill', hex)
               .on('end', () => {
                 d3.select(target).attr('fill', this.barFill(defs, series, this.categories.indexOf(d.data.cat), horizontal));
               });
-            d3.select(target).interrupt('widen').transition('widen').duration(150).attr('d', finalD(d));
-            nudgeNeighbors(d.data.cat, sIdx, hoverExtra, false);
-            d3.select(target).attr('stroke', null).attr('stroke-width', null);
-            if (labelSel) {
-              labelSel.filter((ld: any) => ld === d)
-                .interrupt('labelGrow').transition('labelGrow').duration(150)
-                .style('font-size', '11px');
+            if (chartAnimOn) {
+              d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', finalD(d));
+              nudgeNeighbors(d.data.cat, sIdx, hoverExtra, false);
+              d3.select(target).attr('stroke', null).attr('stroke-width', null);
+              if (labelSel) {
+                labelSel.filter((ld: any) => ld === d)
+                  .interrupt('labelGrow').transition('labelGrow').duration(HOVER_MS)
+                  .style('font-size', '11px');
+              }
             }
             this.tooltipService.hide();
           });
@@ -975,15 +988,17 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             // a url(#gradient) reference to a flat color (renders blank for the duration), so
             // swap in the flat base color first, instantly, then transition flat -> flat.
             d3.select(target).attr('fill', hex)
-              .interrupt('color').transition('color').duration(150)
+              .interrupt('color').transition('color').duration(HOVER_MS)
               .attr('fill', darkenHex(hex, 40));
-            d3.select(target).attr('stroke', hex).attr('stroke-width', 1.5);
-            d3.select(target).interrupt('widen').transition('widen').duration(150).attr('d', hoverD(d));
-            nudgeNeighbors(d.cat, sIdx, hoverExtra, true);
-            if (labelSel) {
-              labelSel.filter((ld: any) => ld === d)
-                .interrupt('labelGrow').transition('labelGrow').duration(150)
-                .style('font-size', '14px');
+            if (chartAnimOn) {
+              d3.select(target).attr('stroke', hex).attr('stroke-width', 1.5);
+              d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', hoverD(d));
+              nudgeNeighbors(d.cat, sIdx, hoverExtra, true);
+              if (labelSel) {
+                labelSel.filter((ld: any) => ld === d)
+                  .interrupt('labelGrow').transition('labelGrow').duration(HOVER_MS)
+                  .style('font-size', '14px');
+              }
             }
 
             const percentage = this.percentOfSeries(series, d.catIdx);
@@ -994,18 +1009,20 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             const target = event.currentTarget;
             const hex = this.barColor(series, d.catIdx);
             d3.select(target)
-              .interrupt('color').transition('color').duration(150)
+              .interrupt('color').transition('color').duration(HOVER_MS)
               .attr('fill', hex)
               .on('end', () => {
                 d3.select(target).attr('fill', this.barFill(defs, series, d.catIdx, horizontal));
               });
-            d3.select(target).interrupt('widen').transition('widen').duration(150).attr('d', finalD(d));
-            nudgeNeighbors(d.cat, sIdx, hoverExtra, false);
-            d3.select(target).attr('stroke', null).attr('stroke-width', null);
-            if (labelSel) {
-              labelSel.filter((ld: any) => ld === d)
-                .interrupt('labelGrow').transition('labelGrow').duration(150)
-                .style('font-size', '11px');
+            if (chartAnimOn) {
+              d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', finalD(d));
+              nudgeNeighbors(d.cat, sIdx, hoverExtra, false);
+              d3.select(target).attr('stroke', null).attr('stroke-width', null);
+              if (labelSel) {
+                labelSel.filter((ld: any) => ld === d)
+                  .interrupt('labelGrow').transition('labelGrow').duration(HOVER_MS)
+                  .style('font-size', '11px');
+              }
             }
             this.tooltipService.hide();
           });

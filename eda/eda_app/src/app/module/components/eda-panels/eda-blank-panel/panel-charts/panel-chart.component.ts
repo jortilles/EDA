@@ -2138,6 +2138,24 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
+    /** Dashboard-wide "activar/desactivar todas las animaciones" override (dashboard-sidebar.component.ts's
+     * panelAnimationsButton()) - KPI configs (with or without a mini chart) nest chartAnimation
+     * under edaChart, every other D3 chart type keeps it top-level. Re-renders via changeChartType()
+     * (the same unconditional clear+recreate every render*() already uses on real data changes),
+     * NOT updateComponent() - that one's updateD3Colors()/updateD3ChartColors() helpers silently
+     * no-op whenever a panel has no assignedColors, since they were built only for "recolor after
+     * palette change", not for a generic forced re-render. */
+    public setChartAnimation(enabled: boolean): void {
+        const config = this.props.config?.getConfig();
+        if (!config) return;
+        if (config.edaChart) {
+            config.edaChart.chartAnimation = enabled;
+        } else {
+            config.chartAnimation = enabled;
+        }
+        this.changeChartType();
+    }
+
     /**
      * Initializes table
      * @param type 

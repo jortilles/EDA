@@ -86,6 +86,12 @@ export class EdaScatter implements AfterViewInit {
     // Initial cleanup of other charts
     this.svg.selectAll('*').remove();
     const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+    // Hover micro-animations (point grow, color darken) - separate from the entrance fly-in
+    // above, should be instant rather than just skipped-on-first-render when chartAnimation is off.
+    const HOVER_MS = (this.inject.chartAnimation ?? true) ? 150 : 0;
+    // Point radius growth on hover is skipped entirely (not just instant) when chartAnimation is
+    // off - color darken is left unaffected, still the hover cue left when animation is off.
+    const chartAnimOn = this.inject.chartAnimation ?? true;
     
     const svg = this.svg;
     const width = this.svgContainer.nativeElement.clientWidth - 20;
@@ -207,11 +213,14 @@ export class EdaScatter implements AfterViewInit {
         const hex = this.pointColor(data);
         const target = d3.select(d.currentTarget);
 
-        // Grow the point outward and swap the gradient url for its own flat base color first,
-        // instantly (no transition), then transition flat -> flat - same approach as eda-doughnut-d3.
-        target.interrupt('grow').transition('grow').duration(150).attr('r', data.radius + 4);
+        // Grow the point outward (skipped when chartAnimation is off) and swap the gradient url
+        // for its own flat base color first, instantly (no transition), then transition flat ->
+        // flat - same approach as eda-doughnut-d3.
+        if (chartAnimOn) {
+          target.interrupt('grow').transition('grow').duration(HOVER_MS).attr('r', data.radius + 4);
+        }
         target.attr('fill', hex);
-        target.interrupt('color').transition('color').duration(150).attr('fill', darkenHex(hex, 30));
+        target.interrupt('color').transition('color').duration(HOVER_MS).attr('fill', darkenHex(hex, 30));
 
         const swatch = `<span class="eda-scatter-tooltip-swatch" style="background-color:${hex};"></span>`;
 
@@ -239,8 +248,10 @@ export class EdaScatter implements AfterViewInit {
         .on('mouseout', (d, data) => {
           const hex = this.pointColor(data);
           const target = d3.select(d.currentTarget);
-          target.interrupt('grow').transition('grow').duration(150).attr('r', data.radius + 1);
-          target.interrupt('color').transition('color').duration(150)
+          if (chartAnimOn) {
+            target.interrupt('grow').transition('grow').duration(HOVER_MS).attr('r', data.radius + 1);
+          }
+          target.interrupt('color').transition('color').duration(HOVER_MS)
             .attr('fill', hex)
             .on('end', () => target.attr('fill', this.pointFill(defs, hex)));
           this.tooltipService.hide();

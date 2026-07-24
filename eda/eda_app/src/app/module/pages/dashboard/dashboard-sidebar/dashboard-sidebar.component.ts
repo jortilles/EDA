@@ -95,6 +95,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
   refreshTime: number = null;
   clickFiltersEnabled: boolean = true;
   clickPanelLockButton: boolean = true;
+  clickPanelAnimationsButton: boolean = true;
   onlyIcanEdit: boolean = true; // Only I can edit, but I can save as
   isReadOnly: boolean = false; // this is a read-only dashboard
   isEditable: boolean = false; // can edit the dashboard
@@ -119,6 +120,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.clickFiltersEnabled = this.dashboard.dashboard.config.clickFiltersEnabled ?? true;
     this.onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ?? true;
     this.clickPanelLockButton = this.dashboard.dashboard.config.panelLockEnabled ?? true;
+    this.clickPanelAnimationsButton = this.dashboard.dashboard.config.panelAnimationsEnabled ?? true;
     this.isReadOnly = this.isReadOnlyCheck();
     this.isEditable = this.isEditableCheck();
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
@@ -420,6 +422,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
     this.dashboard.dashboard.config.onlyIcanEdit = this.onlyIcanEdit;
     this.dashboard.dashboard.config.panelLockEnabled = this.clickPanelLockButton;
+    this.dashboard.dashboard.config.panelAnimationsEnabled = this.clickPanelAnimationsButton;
     // Update the author
     this.dashboard.dashboard.config.author =  this.dashboard.dashboard.config.author?this.dashboard.dashboard.config.author:JSON.parse(localStorage.getItem('user')).name;
     // Save dashboard
@@ -1053,6 +1056,28 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.dashboard.gridsterOptions.api?.optionsChanged();
     this.dashboard.dashboard.config.panelLockEnabled = this.clickPanelLockButton;
     this.dashboardService.setNotSaved(true);
+  }
+
+  panelAnimationsButton() {
+    this.clickPanelAnimationsButton = !this.clickPanelAnimationsButton;
+    this.dashboard.dashboard.config.panelAnimationsEnabled = this.clickPanelAnimationsButton;
+    this.dashboardService.setNotSaved(true);
+
+    // Overwrites each panel's own individually saved chartAnimation setting, same as
+    // panelLockButton() overwrites dragEnabled/resizeEnabled regardless of any prior per-panel value.
+    // Does NOT call dashboard.refreshPanels() afterwards (unlike saveStyles()) - that re-runs each
+    // panel's query from the backend and then nudges it with the assignedColors-gated
+    // updateComponent(), which would silently undo/ignore the direct re-render setChartAnimation()
+    // just did below via changeChartType().
+    this.dashboard.edaPanels.forEach(panel => {
+      if (panel.panelChart) {
+        try {
+          panel.panelChart.setChartAnimation(this.clickPanelAnimationsButton);
+        } catch (error) {
+          console.error(`Error al actualizar la animación del panel:`, error);
+        }
+      }
+    });
   }
 
   toggleEdit() {
