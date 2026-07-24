@@ -58,6 +58,21 @@ export class DashboardAdvancedOptionsDialog {
   /** embedded form committed by clicking a row; persists until closed/applied */
   public activeEmbedId: string | null = null;
 
+  /** groups the user has explicitly collapsed; absence from this set means expanded (the default) */
+  private collapsedGroups = new Set<string>();
+
+  public isGroupExpanded(groupId: string): boolean {
+    return !this.collapsedGroups.has(groupId);
+  }
+
+  public toggleGroup(groupId: string): void {
+    if (this.collapsedGroups.has(groupId)) {
+      this.collapsedGroups.delete(groupId);
+    } else {
+      this.collapsedGroups.add(groupId);
+    }
+  }
+
   public selectEmbed(embedId: string): void {
     this.activeEmbedId = embedId;
   }

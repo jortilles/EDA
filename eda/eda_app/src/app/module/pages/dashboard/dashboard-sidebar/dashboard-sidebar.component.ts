@@ -109,9 +109,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
   editingTitle: boolean = false;
   editableTitle: string = '';
 
-  // Placeholder only: not wired to any real behaviour yet (POC for the advanced options dialog)
-  animationsEnabledPlaceholder: boolean = false;
-
   sidebarItems: any[] = [];
 
   ngOnInit(): void {
@@ -859,8 +856,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.isAdvancedOptionsDialogVisible = false;
   }
 
-  // Builds the grouped content for the "Opciones avanzadas" dialog (proof of concept:
-  // "Activar animaciones" is a placeholder switch with no behaviour behind it yet)
+  // Builds the grouped content for the "Opciones avanzadas" dialog
   public advancedOptionsGroups(): AdvancedOptionGroup[] {
     const canEdit = this.isEditable && !this.isReadOnly;
     const groups: AdvancedOptionGroup[] = [
@@ -878,11 +874,13 @@ export class DashboardSidebarComponent implements AfterViewInit {
           },
           {
             id: 'toggleAnimations',
-            label: $localize`:@@advancedOptionsToggleAnimations:Activar animaciones`,
-            icon: 'pi pi-star',
+            label: this.clickPanelAnimationsButton
+              ? $localize`:@@disablePanelAnimationsButton:Desactivar animaciones`
+              : $localize`:@@enablePanelAnimationsButton:Activar animaciones`,
+            icon: this.clickPanelAnimationsButton ? 'pi pi-bolt' : 'pi pi-ban',
             type: 'toggle',
-            value: this.animationsEnabledPlaceholder,
-            command: () => { this.animationsEnabledPlaceholder = !this.animationsEnabledPlaceholder; }
+            value: this.clickPanelAnimationsButton,
+            command: () => this.panelAnimationsButton()
           },
           {
             id: 'enablePanelLock',
