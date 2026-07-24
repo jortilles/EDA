@@ -425,6 +425,8 @@ export class UserController {
 
 
     static async provideFakeToken(){
+        // 30 min: this token is generated once per mailing batch and reused for every
+        // dashboard/recipient combination, each involving a Playwright render + PDF export.
         let token = await jwt.sign({ name:'fakeuser' }, SEED, { expiresIn: 60 });
         return token;
     }

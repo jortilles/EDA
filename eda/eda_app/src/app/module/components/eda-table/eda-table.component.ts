@@ -10,7 +10,6 @@ import { registerLocaleData } from '@angular/common';
 import es from '@angular/common/locales/es';
 import * as _ from 'lodash';
 import { StyleService } from '@eda/services/service.index';
-import { EdaColumnChartOptions } from './eda-columns/eda-column-chart-options';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -20,9 +19,9 @@ import { ButtonModule } from 'primeng/button';          // if you have buttons i
 import { InputTextModule } from 'primeng/inputtext';    // if using input filters
 
 // tests
-import { TooltipModule } from 'primeng/tooltip'; 
+import { TooltipModule } from 'primeng/tooltip';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { ChartModule } from 'primeng/chart';
+import { EdaLineComponent } from '@eda/components/eda-line-d3/eda-line.component';
 import { EdaContextMenuComponent } from '@eda/shared/components/shared-components.index';
 import { DialogModule } from 'primeng/dialog';  // <--- import PrimeNG module
 
@@ -35,13 +34,13 @@ import { DialogModule } from 'primeng/dialog';  // <--- import PrimeNG module
     imports: [
         CommonModule,
         FormsModule,
-        TableModule,      
-        PaginatorModule, 
+        TableModule,
+        PaginatorModule,
         ButtonModule,
         InputTextModule,
         TooltipModule,
         MultiSelectModule,
-        ChartModule,
+        EdaLineComponent,
         EdaContextMenuComponent,
         DialogModule,
     ]
@@ -52,7 +51,6 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
     @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
     data: any;
-    chartOptions: any;
 
     public lodash: any = _;
     public colors = {};
@@ -66,8 +64,6 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
         private alertService: AlertService
     ) {
         registerLocaleData(es);
-        /** Define the chart properties inside the table */
-        this.chartOptions = EdaColumnChartOptions;
     }
     ngOnInit(): void {
         if(this?.inject?.styles && !this.inject.pivot){

@@ -45,24 +45,31 @@ export class MailDashboardsController {
 
       let authToken: string | null = null;
       let authUser: object | null = null;
+      let loginFailureDetail: string | null = null;
 
       loginPage.on('response', async (response: any) => {
+        if (!response.url().includes('/admin/user/fake-login/')) return;
         try {
           const contentType = response.headers()['content-type'] || '';
-          if (!contentType.includes('application/json')) return;
+          if (!contentType.includes('application/json')) {
+            loginFailureDetail = `status ${response.status()}, content-type: ${contentType}`;
+            return;
+          }
           const body = await response.json();
           if (body?.token && body?.user?._id) {
             authToken = body.token;
             authUser = body.user;
+          } else {
+            loginFailureDetail = `status ${response.status()}, body: ${JSON.stringify(body)}`;
           }
-        } catch (_) { /* ignore non-JSON responses */ }
+        } catch (err: any) { loginFailureDetail = `error reading response: ${err.message}`; }
       });
 
       await loginPage.goto(loginUrl, { waitUntil: 'networkidle' });
       await loginContext.close();
 
       if (!authToken || !authUser) {
-        throw new Error(`[Dashboard] No se pudo obtener token para ${userMail}`);
+        throw new Error(`[Dashboard] No se pudo obtener token para ${userMail}${loginFailureDetail ? ` (${loginFailureDetail})` : ''}`);
       }
       console.log(`[Dashboard] Token obtenido para ${userMail}`);
 
@@ -78,8 +85,11 @@ export class MailDashboardsController {
       const page = await dashboardContext.newPage();
       await page.setViewportSize({ width: 1380, height: 900 });
 
+      // The root index.html does a client-side locale redirect (e.g. "/" -> "/es/") that
+      // breaks hash-based deep links, so navigate straight to the locale-prefixed URL.
+      const locale = serverConfig.locale || 'es';
       const baseURL = serverConfig.server_baseURL.replace(/\/?$/, '/');
-      const dashboardUrl = `${baseURL}#/dashboard/${dashboard}`;
+      const dashboardUrl = `${baseURL}${locale}/#/dashboard/${dashboard}`;
       console.log(`[Dashboard] Navegando a: ${dashboardUrl}`);
 
       await page.goto(dashboardUrl, { waitUntil: 'networkidle', timeout: 60000 });
@@ -156,7 +166,7 @@ export class MailDashboardsController {
       console.log(`[Dashboard] PDF generado: ${filename}`);
 
       // 7. Send the email with the generated PDF attached
-      const link = `${baseURL}#/dashboard/${dashboard}`;
+      const link = dashboardUrl;
       MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail);
       console.log(`[Dashboard] Email enviado a ${userMail}`);
 

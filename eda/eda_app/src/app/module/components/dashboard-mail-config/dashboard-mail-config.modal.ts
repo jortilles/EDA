@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, } from "@angular/forms";
 import { AlertService, UserService } from "@eda/services/service.index";
+import { DateUtils } from "@eda/services/utils/date-utils.service";
 import { SharedModule } from "@eda/shared/shared.module";
 import { MultiSelectModule } from "primeng/multiselect";
 import { CalendarModule } from 'primeng/calendar';
@@ -40,38 +41,66 @@ export class DashboardMailConfigModal {
   public currentAlert = null;
   public users: any;
   public selectedUsers: any = [];
-  public enabled: boolean = false;
+  public otherRecipients: string = '';
+  public enabled: boolean = true;
 
-  constructor(private alertService: AlertService, private userService: UserService) { }
+  constructor(private alertService: AlertService, private userService: UserService, private dateUtils: DateUtils) { }
 
   ngOnInit(): void {
     this.userService.getUsers().subscribe(
-      res => this.users = res.map(user => ({ label: user.name, value: user })),
+      res => this.users = res.map(user => ({ label: user.name || user.email, value: user })),
       err => console.log(err)
     );
 
     const sendViaMailConfig = this.dashboard.dashboard.config?.sendViaMailConfig;
     if (sendViaMailConfig?.enabled) {
       this.setConfig();
+    } else {
+      this.hours = this.dateUtils.roundToNextHalfHour(new Date());
+    }
+  }
+
+  /** Snaps a manually typed time to the nearest :00 or :30 once the user leaves the field */
+  onHoursBlur(): void {
+    if (this.hours) {
+      this.hours = this.dateUtils.roundToNearestHalfHour(this.hours);
     }
   }
 
   setConfig() {
     const config = this.dashboard.dashboard.config.sendViaMailConfig;
-    this.hours = `${config.hours || '00'}:${config.minutes || '00'}`;
+    /** Stored hours/minutes are UTC; convert to a Date so the picker shows the equivalent local time */
+    const utcHours = new Date();
+    utcHours.setUTCHours(parseInt(config.hours, 10) || 0, parseInt(config.minutes, 10) || 0, 0, 0);
+    this.hours = utcHours;
     this.units = config.units;
     this.quantity = config.quantity;
     this.selectedUsers = config.users;
+    this.otherRecipients = config.otherRecipients || '';
     this.mailMessage = config.mailMessage;
     this.enabled = config.enabled;
   }
 
+  /** Emails typed by hand in the "Otros destinatarios" input, space-separated */
+  public parseOtherRecipients(): string[] {
+    return this.otherRecipients
+      .split(/\s+/)
+      .map(email => email.trim())
+      .filter(email => email.length > 0);
+  }
+
+  /** All recipients (registered users + manually typed emails), deduplicated, for the dialog summary */
+  public get allRecipientEmails(): string[] {
+    const registered = (this.selectedUsers || []).map((u: any) => u.email).filter(Boolean);
+    const manual = this.parseOtherRecipients();
+    return Array.from(new Set([...registered, ...manual]));
+  }
+
   save() {
 
-    const hours = this.hours && typeof this.hours === 'string' ? this.hours.slice(0, 2) :
-      this.hours ? this.fillWithZeros(this.hours.getHours()) : null;
-    const minutes = this.hours && typeof this.hours === 'string' ? this.hours.slice(3, 5) :
-      this.hours ? this.fillWithZeros(this.hours.getMinutes()) : null;
+    /** Store hours/minutes in UTC so the schedule check on the backend is timezone-independent */
+    const hours = this.hours ? this.dateUtils.fillWithZeros(this.hours.getUTCHours()) : null;
+    const minutes = this.hours ? this.dateUtils.fillWithZeros(this.hours.getUTCMinutes()) : null;
 
     const response = {
       units: this.units,
@@ -79,17 +108,13 @@ export class DashboardMailConfigModal {
       hours: hours,
       minutes: minutes,
       users: this.selectedUsers,
+      otherRecipients: this.otherRecipients,
       mailMessage: this.mailMessage,
       lastUpdated: new Date().toISOString(),
       enabled: this.enabled,
       dashboard: this.dashboard
     };
     this.apply.emit(response);
-  }
-
-  fillWithZeros(n: number) {
-    if (n < 10) return `0${n}`
-    else return `${n}`;
   }
 
   public onApply() {

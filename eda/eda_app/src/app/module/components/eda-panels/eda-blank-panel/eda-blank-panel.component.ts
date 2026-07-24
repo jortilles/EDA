@@ -22,7 +22,6 @@ import { PanelChart } from './panel-charts/panel-chart';
 import { PanelOptions } from './panel-utils/panel-menu-options';
 import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
-import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
 import { KpiDeviationConfig } from './panel-charts/chart-configuration-models/kpi-deviation-config';
 import { DynamicTextConfig } from './panel-charts/chart-configuration-models/dynamicText-config';
@@ -38,7 +37,6 @@ import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
 import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent} from '@eda/shared/components/shared-components.index';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
-import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import { PanelChartComponent } from './panel-charts/panel-chart.component';
 import { DragDropComponent } from '@eda/components/drag-drop/drag-drop.component';
 import { ColumnDialogComponent } from '@eda/components/component.index';
@@ -62,7 +60,7 @@ import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-
 import { TableUtils } from './panel-utils/tables-utils';
 import { QueryUtils } from './panel-utils/query-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
-import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
+import { ChartsConfigUtils, CUSTOM_CHART_CONFIG_FIELDS, readCustomFields } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
 import { NavigationUtils } from './panel-utils/navigation-utils';
 
@@ -75,19 +73,15 @@ import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { MapEditDialogComponent } from '@eda/components/component.index';
 import { MapCoordDialogComponent } from '@eda/components/component.index';
 import { ChartDialogComponent } from '@eda/components/component.index';
-import { BubblechartDialog } from '@eda/components/component.index';
 import { TreeTableDialogComponent } from '@eda/components/component.index';
-import { SunburstDialogComponent } from '@eda/components/component.index';
-import { ScatterPlotDialog } from '@eda/components/component.index';    
-import { TreeMapDialog } from '@eda/components/component.index';
-import { FunnelDialog } from '@eda/components/component.index';
 import { KnobDialogComponent } from '@eda/components/component.index';
-import { SankeyDialog } from '@eda/components/component.index';
 import { dynamicTextDialogComponent } from '@eda/components/component.index';
 import { TableDialogComponent } from '@eda/components/component.index';
 import { TableGradientDialogComponent } from '@eda/components/component.index';
 import { KpiEditDialogComponent } from '@eda/components/component.index';
 
+import { CategoryChartDialogComponent } from '@eda/components/component.index';
+import { CategoryChartType, getChartCategoryValues } from './panel-charts/chart-category-values.util';
 export interface IPanelAction {
     code: string;
     data: any;
@@ -101,10 +95,9 @@ interface ChatMessage {
 }
 
 const DIALOGS_COMPONENTS = [
-    ChartDialogComponent,BubblechartDialog, MapCoordDialogComponent, MapEditDialogComponent,
-    TreeTableDialogComponent, SunburstDialogComponent, TreeMapDialog, ScatterPlotDialog,
-    FunnelDialog, KnobDialogComponent, SankeyDialog, dynamicTextDialogComponent, TableDialogComponent,
-    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent
+    ChartDialogComponent, MapCoordDialogComponent, MapEditDialogComponent,
+    TreeTableDialogComponent, KnobDialogComponent, dynamicTextDialogComponent, TableDialogComponent,
+    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent, CategoryChartDialogComponent
 ];
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule, OverlayPanelModule];
@@ -127,7 +120,6 @@ export class EdaBlankPanelComponent implements OnInit {
     /** Reference to the dashboard root element (used for image capture during Excel export) */
     public elRef = inject(ElementRef);
 
-    @ViewChild('edaChart', { static: false }) edaChart: EdaChartComponent;
     @ViewChild('PanelChartComponent', { static: false }) panelChart: PanelChartComponent;
     @ViewChild('panelChartComponentPreview', { static: false }) panelChartPreview: PanelChartComponent;
     @ViewChild('op', { static: false }) op: any;
@@ -157,14 +149,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public mapCoordController: EdaDialogController;
     public kpiController: EdaDialogController;
     public dynamicTextController: EdaDialogController;
-    public sankeyController: EdaDialogController;
-    public treeMapController: EdaDialogController;
-    public funnelController:EdaDialogController;
-    public bubblechartController:EdaDialogController;
+    public categoryChartController: EdaDialogController;
     public linkDashboardController: EdaDialogController;
-    public scatterPlotController: EdaDialogController;
     public knobController: EdaDialogController;
-    public sunburstController: EdaDialogController;
     public treeTableController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
@@ -562,6 +549,16 @@ public tableNodeExpand(event: any): void {
         this.dashboardService.setNotSaved(true);
     }
 
+    isClickFiltersEnabled(): boolean {
+        return (this.panel as any).clickFiltersEnabled ?? true;
+    }
+
+    toggleClickFilters(): void {
+        const panel = this.panel as any;
+        panel.clickFiltersEnabled = !this.isClickFiltersEnabled();
+        this.dashboardService.setNotSaved(true);
+    }
+
     public showWhatIfSection(): boolean {
         return this.currentQuery.some((query: any) => query.whatif_column);
     }
@@ -871,9 +868,9 @@ public tableNodeExpand(event: any): void {
     public setChartProperties(config?: any) {
         config = config || this.panelChart?.getCurrentConfig();
 
-        if (config 
-            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid', 'radar'].includes(config.chartType) 
-            && config.chartType === this.graficos.chartType ) {
+        if (config
+            && ['bar', 'line', 'area', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid', 'radar'].includes(config.chartType)
+            && config.edaChart === this.graficos.edaChart ) {
             this.graficos = config;
         }
     }
@@ -882,9 +879,7 @@ public tableNodeExpand(event: any): void {
      * Chart click event
     */
     public onChartClick(event: any): void {
-        const config = this.panelChart.getCurrentConfig();
-        if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(config?.chartType) ||   //NG2 CHARTS
-            ['treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
+        if (['doughnut', 'polarArea', 'bar', 'radar', 'line', 'area', 'treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
             'geoJsonMap'.includes(this.panelChart.props.chartType) || //Leaflet 
             ['table', 'crosstable', 'treetable'].includes(this.panelChart.props.chartType)) // tables
         {
@@ -972,27 +967,23 @@ public tableNodeExpand(event: any): void {
         if (!_.isEqual(this.display_v.chart, 'no_data') && allow && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
-            // Preserve assignedColors, coloredBarsConfig, showUniqueColors, and uniqueBarColors before merging.
-            const savedAssignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
-            const savedColoredBarsConfig = config && config.getConfig() ? config.getConfig()['coloredBarsConfig'] : null;
-            const savedShowUniqueColors = config && config.getConfig() ? config.getConfig()['showUniqueColors'] : null;
-            const savedUniqueBarColors = config && config.getConfig() ? config.getConfig()['uniqueBarColors'] : null;
+            // Preserve every custom field (same list setConfig() uses to save them) before
+            // merging - setVoidChartConfig() builds a fresh blank config without them, and
+            // _.merge() isn't trusted to carry them over correctly either.
+            const savedCustomFields: Record<string, any> = {};
+            CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+                savedCustomFields[field.name] = config && config.getConfig() ? config.getConfig()[field.name] : null;
+            });
 
             _.merge(_config, config||{});
 
-            // Restore assignedColors after merging.
-            if (savedAssignedColors) {
-                _config.getConfig()['assignedColors'] = savedAssignedColors;
-            }
-            // Restore coloredBarsConfig after merging.
-            if (savedColoredBarsConfig) {
-                _config.getConfig()['coloredBarsConfig'] = savedColoredBarsConfig;
-            }
-            // Restore showUniqueColors and uniqueBarColors after merging.
-            if (savedShowUniqueColors != null) {
-                _config.getConfig()['showUniqueColors'] = savedShowUniqueColors;
-                _config.getConfig()['uniqueBarColors'] = savedUniqueBarColors ?? [];
-            }
+            // Restore every custom field after merging.
+            CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+                const saved = savedCustomFields[field.name];
+                if (saved != null) {
+                    _config.getConfig()[field.name] = saved;
+                }
+            });
 
             // Ensure that showPredictionLines is propagated to _config (keep the prediction line when switching between chart types).
             if (['line', 'area'].includes(type) && this.graficos.showPredictionLines) {
@@ -1529,49 +1520,11 @@ public tableNodeExpand(event: any): void {
      * @param event 
      * @param properties properties to set
      */
- public onCloseChartProperties(event, properties): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            if (properties) {
-                this.graficos = {};
-                this.graficos = _.cloneDeep(properties);
-            if(properties.edaChart !== 'histogram'){
-                // assignedColors is updated by changing the color based on its label.
-                this.graficos.assignedColors.forEach((e) => {
-                if (this.graficos.chartLabels.includes(e.value)) {
-                        let indexColor = this.graficos.chartLabels.findIndex(element => element === e.value)
-                        const candidateColor = this.graficos.chartColors[0].backgroundColor[indexColor];
-                        // Solo sobreescribir si es un array de colores (doughnut/polarArea), no un string de color único
-                        if (candidateColor?.length > 1) {
-                            e.color = candidateColor;
-                        }
-                        // For area/radar/line charts, preserve the original hex color from assignedColors.
-                }
-            });
-            }else{
-                this.graficos.assignedColors = [];
-                this.graficos.chartLabels.forEach(element => {
-                    this.graficos.assignedColors.push({value: element, color: this.graficos.chartColors[0].backgroundColor})
-                });
-                properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
-            }
-        
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend, coloredBarsConfig: this.graficos.coloredBarsConfig, showUniqueColors: this.graficos.showUniqueColors, uniqueBarColors: this.graficos.uniqueBarColors, showGridLines: this.graficos.showGridLines };
-                const layout =
-                    new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
-                    this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
-                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend, this.graficos.showGridLines ?? true));
-                if (this.graficos.coloredBarsConfig) {
-                    (layout.getConfig() as any)['coloredBarsConfig'] = this.graficos.coloredBarsConfig;
-                }
-                (layout.getConfig() as any)['showUniqueColors'] = this.graficos.showUniqueColors ?? false;
-                (layout.getConfig() as any)['uniqueBarColors'] = this.graficos.uniqueBarColors ?? [];
-                (layout.getConfig() as any)['showGridLines'] = this.graficos.showGridLines ?? true;
-                this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
-            }
-            //not saved alert message
-        this.dashboardService.setNotSaved(true);
-    }
-    this.chartController = undefined;
+ public onCloseChartProperties(event, response): void {
+        // response is already the small typed patch chart-dialog.component.ts's saveChartConfig()
+        // builds (assignedColors + this family's own fields) - no more Chart.js-shaped chartColors/
+        // chartDataset to reconcile, so no per-type recolor step is needed here.
+        this.applyDialogChartConfig(event, readCustomFields(response, CUSTOM_CHART_CONFIG_FIELDS), 'chartController');
 }
 
 
@@ -1647,46 +1600,54 @@ public tableNodeExpand(event: any): void {
         this.mapCoordController = undefined;
     }
 
-    public onCloseSankeyProperties(event, response): void {
+    /** Shared tail for every onClose*Properties handler: merges into the existing config (not a wholesale replace), re-renders, clears the controller. */
+    private applyDialogChartConfig(event: EdaDialogCloseEvent, configPatch: any, controllerField: 'categoryChartController' | 'chartController'): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-
-            // We iterate over all assignedColors we have.
-            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                // Label values present in the chart.
-                let chartValues = this.panelChart.componentRef.instance.data.values.map(item => item.find(value => typeof value === 'string'));
-                // If any chart labels match those in assignedColors, they will be replaced.
-                if (chartValues.includes(e.value)) {
-                    let indexColor = chartValues.findIndex(element => element === e.value)
-                    e.color = response.colors[indexColor]
-                }
-            });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                ...configPatch
+            };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService.setNotSaved(true);
-
         }
-        this.sankeyController = undefined;
+        (this as any)[controllerField] = undefined;
     }
 
-    public onCloseTreeMapProperties(event, response): void {
+    /** Matches bubblechart/scatter/treeMap/sunburst/parallelSets' positional `colors` array back onto assignedColors by chart value. */
+    private recolorLegacyAssignedColors(chartValues: (string | number)[], response: any): any[] {
+        const instance = this.panelChart.componentRef.instance;
+        instance.assignedColors.forEach((e: any) => {
+            if (chartValues.includes(e.value)) {
+                const indexColor = chartValues.findIndex((v: string | number) => v === e.value);
+                e.color = response.colors[indexColor];
+            }
+        });
+        return instance.assignedColors;
+    }
+
+    private static readonly RECOLOR_CHART_TYPES: CategoryChartType[] = ['treeMap', 'bubblechart', 'scatterPlot', 'parallelSets', 'sunburst'];
+
+    public onCloseCategoryChartProperties(event, response, chartType: CategoryChartType): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            //  We iterate over all assignedColors we have.
-            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                // Label values in the chart.
-                let chartValues = this.panelChart.componentRef.instance.data.children.map(item => item.name);
-                // If any chart labels match those in assignedColors, they will be replaced.
-                if (chartValues.includes(e.value)) {
-                    let indexColor = chartValues.findIndex(element => element === e.value)
-                    e.color = response.colors[indexColor]
-                }
-            });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
-            const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService.setNotSaved(true);
+            let assignedColors = response.assignedColors;
+            if (EdaBlankPanelComponent.RECOLOR_CHART_TYPES.includes(chartType)) {
+                const chartValues = getChartCategoryValues(chartType, this.panelChart.componentRef.instance);
+                assignedColors = this.recolorLegacyAssignedColors(chartValues, response);
+            }
+
+            const configPatch: any = { colors: response.colors, assignedColors };
+            if (response.useGradient !== undefined) configPatch.useGradient = response.useGradient;
+            if (response.chartLegend !== undefined) configPatch.chartLegend = response.chartLegend;
+            if (response.showLabels !== undefined) configPatch.showLabels = response.showLabels;
+            if (response.showLabelsPercent !== undefined) configPatch.showLabelsPercent = response.showLabelsPercent;
+            if (response.showGridLines !== undefined) configPatch.showGridLines = response.showGridLines;
+            if (response.innerRadiusPercent !== undefined) configPatch.innerRadiusPercent = response.innerRadiusPercent;
+
+            this.applyDialogChartConfig(event, configPatch, 'categoryChartController');
+        } else {
+            this.categoryChartController = undefined;
         }
-        this.treeMapController = undefined;
     }
 
     public onCloseTreeTableProperties(event, response) {
@@ -1701,134 +1662,6 @@ public tableNodeExpand(event: any): void {
 
     }
 
-    public onCloseFunnelProperties(event, response): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            // Do not overwrite the entire config; only update what is necessary.
-            this.panel.content.query.output.config = {
-                ...this.panel.content.query.output.config, // Keep the existing config.
-                assignedColors: response.assignedColors // Add assignedColors
-            };
-            
-            const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService.setNotSaved(true);
-        }
-        this.funnelController = undefined;
-    }
-
-    public onCloseBubblechartProperties(event, response): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            // We iterate over all assignedColors we have.
-            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                // Label values in the chart.
-                let chartValues = this.panelChart.componentRef.instance.data.children.map(item => item.name);
-                // If any chart labels match those in assignedColors, they will be replaced.
-                if (chartValues.includes(e.value)) {
-                    let indexColor = chartValues.findIndex(element => element === e.value)
-                    e.color = response.colors[indexColor]
-                }
-            });
-            
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
-            const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService.setNotSaved(true);
-        }
-        this.bubblechartController = undefined;
-    }
-
-    public onCloseScatterProperties(event, response): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            // We iterate over all assignedColors we have.
-            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                // Label values in the chart.
-                let chartValues = this.panelChart.componentRef.instance.data.map(item => item.label);
-                // If any chart labels match those in assignedColors, they will be replaced.
-                if (chartValues.includes(e.value)) {
-                    let indexColor = chartValues.findIndex(element => element === e.value)
-                    e.color = response.colors[indexColor]
-                }
-            });
-
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
-            const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-
-            this.dashboardService.setNotSaved(true);
-
-        }
-        this.scatterPlotController = undefined;
-    }
-
-    public onCloseSunburstProperties(event: any, response: any): void {
-        const chartInstance = this.panelChart?.componentRef?.instance;
-        const dataDescription = chartInstance?.inject?.dataDescription;
-        const otherColumns = dataDescription?.otherColumns;
-    
-        // Main validation to proceed.
-        if (otherColumns && Array.isArray(otherColumns) && otherColumns.length > 1) {
-            if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                // We extract string values from the data.
-                let chartValues: string[] = Array.from(
-                    new Set(
-                        chartInstance.data.map((item: any[]) => {
-                            const found = item.find(value => typeof value === 'string');
-                            return found ? found.split("|")[0] : "";
-                        })
-                    )
-                );  
-    
-                chartInstance.assignedColors.forEach((assignedColor: any) => {    
-                    // We check whether any chart value matches the assigned color value.
-                    const indexColor = chartValues.findIndex(value => value === assignedColor.value);
-                    if (indexColor >= 0 && response.colors && response.colors[indexColor]) {
-                        assignedColor.color = response.colors[indexColor];
-                    }
-                });
-    
-                // We assign the new colors to the config.
-                this.panel.content.query.output.config = {
-                    colors: response.colors,
-                    assignedColors: chartInstance.assignedColors
-                };
-    
-                const config = new ChartConfig(this.panel.content.query.output.config);
-    
-                this.renderChart(
-                    this.currentQuery,
-                    this.chartLabels,
-                    this.chartData,
-                    this.graficos.chartType,
-                    this.graficos.edaChart,
-                    config
-                );
-    
-                // We indicate that there are unsaved changes.
-                this.dashboardService.setNotSaved(true);
-            }
-        
-        } else {
-                if(!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                    // We iterate over all assignedColors we have.
-                    // Values of labels in the chart.
-                    let chartValues = this.panelChart.componentRef.instance.data.map(item => item.find(value => typeof value === 'string'));
-                    this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                        // If any chart labels match those in assignedColors, they will be replaced.
-                        if (chartValues.some(value => value.includes(e.value))) {
-                            let indexColor = chartValues.findIndex(element => element === e.value)
-                            e.color = response.colors[indexColor]
-                        }
-                    });
-                    this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
-                    const config = new ChartConfig(this.panel.content.query.output.config);
-                    this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-
-                    this.dashboardService.setNotSaved(true);
-                }  
-            } 
-            // Close the dialog.
-            this.sunburstController = undefined;
-    }
     public onCloseKnobProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
@@ -1898,25 +1731,19 @@ public tableNodeExpand(event: any): void {
             prefixImage: response.prefixImage || '',
         };
 
-        let layout: any;
         if (response.edaChart) {
-            this.panel.content.query.output.config.colors = response.edaChart.chartColors;
             this.panel.content.query.output.config.chartType = response.chartType;
             this.panel.content.query.output.config.chartSubType = response.chartSubType;
-
-            layout = new ChartJsConfig(
-                response.edaChart.chartColors,
-                response.edaChart.chartType,
-                response.edaChart.addTrend,
-                response.edaChart.addComparative,
-                response.edaChart.showLabels,
-                response.edaChart.showLabelsPercent,
-                response.edaChart.numberOfColumns,
-                response.assignedColors,  //  Pass assignedColors from the response, not from edaChart.
-                response.edaChart.showPointLines,
-                response.edaChart.showPredictionLines,
-            );
         }
+
+        // graphOptions is only present for kpibar/kpiline/kpiarea (see kpi-dialog.component.ts's
+        // showGraphTab) - the compact mini-chart's own bar/line/area options tab.
+        const graphOptions = response.graphOptions;
+        const layout: any = graphOptions ? {
+            chartType: response.chartSubType,
+            assignedColors: response.assignedColors,
+            ...graphOptions,
+        } : undefined;
 
         const config = new ChartConfig(
             new KpiConfig({

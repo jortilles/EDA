@@ -574,20 +574,6 @@
           <context context-type="linenumber">54,56</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="showUniqueColors" datatype="html">
-        <source>Activar Colores Únicos</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
-          <context context-type="linenumber">201,203</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="chartUniqueColorsOption" datatype="html">
-        <source>Asigna un color único a cada barra o elemento</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
-          <context context-type="linenumber">212</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="chartUniqueColorsOptionDescription" datatype="html">
         <source>Cada elemento tendrá un color diferente</source>
         <context-group purpose="location">
@@ -5313,6 +5299,20 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/utils/chart-utils.service.ts</context>
           <context context-type="linenumber">1152</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="secondAxis" datatype="html">
+        <source>Segundo Eje</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
+          <context context-type="linenumber">310</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="secondAxisDescription" datatype="html">
+        <source>Muestra un eje independiente a la derecha para las líneas, separado del eje de las barras</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
+          <context context-type="linenumber">323</context>
         </context-group>
       </trans-unit>
       <trans-unit id="selectFuenteDatos" datatype="html">

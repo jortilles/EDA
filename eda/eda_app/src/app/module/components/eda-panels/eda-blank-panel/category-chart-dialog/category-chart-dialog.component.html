@@ -1,0 +1,144 @@
+<eda-dialog2 width="80vw" height="80vh" [header]="title" (apply)="saveChartConfig()" (close)="closeChartConfig()">
+  <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[70vh]">
+    <!-- Chart Preview -->
+    <div class="flex-1 flex justify-center border-b md:border-b-0 md:border-r bg-slate-50">
+      <div class="relative p-3 pb-6 h-full w-full content-end">
+        @if (display) {
+          <panel-chart #PanelChartComponent [props]="panelChartConfig" class="h-[95%] w-full block"></panel-chart>
+        }
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="flex-1 h-[95%] overflow-y-auto pl-6">
+      <div class="space-y-6 p-4 pt-0 mb-6 bg-slate-50 rounded-md">
+          <div class="space-y-4">
+            <span class="text-lg font-semibold" i18n="@@chartDisplayOptionsTitle">Opciones de visualización</span>
+
+            <div class="space-y-4 text-base gap-3 flex flex-col">
+              <div class="flex items-center justify-between">
+                <label i18n="@@chartAnimation" class="font-medium">Animar Gráfico</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" [(ngModel)]="chartAnimation" class="sr-only peer" (ngModelChange)="setChartAnimation()">
+                  <div
+                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                  </div>
+                </label>
+              </div>
+
+              @for (key of spec.toggles; track key) {
+                <div class="flex items-center justify-between">
+                  @switch (key) {
+                    @case ('chartLegend') {
+                      <label i18n="@@showLegend" class="font-medium">Mostrar Leyenda</label>
+                    }
+                    @case ('showLabels') {
+                      <label i18n="@@showLabels" class="font-medium">Mostrar Etiquetas</label>
+                    }
+                    @case ('showLabelsPercent') {
+                      <label i18n="@@showLabelsPercent" class="font-medium">Etiquetas en Porcentaje</label>
+                    }
+                    @case ('showGridLines') {
+                      <label i18n="@@showGridLines" class="font-medium">Mostrar Líneas Guía</label>
+                    }
+                  }
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" [(ngModel)]="toggleState[key]" class="sr-only peer" (ngModelChange)="onToggleChanged()">
+                    <div
+                      class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                    </div>
+                  </label>
+                </div>
+              }
+
+              @if (spec.hasInnerRadius) {
+                <div class="flex items-center justify-between">
+                  <label i18n="@@innerRadius" class="font-medium">Radio interno</label>
+                  <div class="flex items-center gap-3">
+                    <input type="range" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="setInnerRadius()" class="w-56 accent-[var(--corporate-primary)]">
+                    <input type="number" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="setInnerRadius()" class="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+      <!-- Colors -->
+      <div class="space-y-6 p-4 pt-0 bg-slate-50 rounded-md">
+        <div class="space-y-4">
+          <span class="text-lg font-semibold" i18n="@@colorsChartH6">Colores</span>
+
+          @if (spec.hasUseGradient) {
+            <div class="flex items-center justify-between">
+              <label i18n="@@useGradient" class="font-medium">Usar degradado</label>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="useGradient" class="sr-only peer" (ngModelChange)="setUseGradient()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                </div>
+              </label>
+            </div>
+          }
+
+          <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+          <div class="flex items-stretch gap-2 mb-4">
+            <p-dropdown
+              [(ngModel)]="selectedPalette"
+              [options]="allPalettes"
+              optionLabel="name"
+              i18n-placeholder="@@selectPalette"
+              placeholder="-- Seleccione una paleta --"
+              (ngModelChange)="onPaletteSelected()"
+              [style]="{'width':'180px'}"
+              appendTo="body">
+            </p-dropdown>
+            @if (selectedPalette) {
+              <div class="flex rounded overflow-hidden" style="width: 80px;">
+                @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                  <div class="flex-1" [style.background-color]="color"></div>
+                }
+              </div>
+            }
+          </div>
+
+          @switch (spec.colorEditorShape) {
+            @case ('category-list') {
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @for (color of assignedColors; track color.value; let idx = $index) {
+                  <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                    <span class="font-medium">{{ color.value }}</span>
+                    <div class="flex items-center gap-2">
+                      <input [(ngModel)]="assignedColors[idx].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                      <p-colorPicker [(ngModel)]="assignedColors[idx].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+            @case ('start-end') {
+              @if (assignedColors.length >= 2) {
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                    <span class="font-medium" i18n="@@Initial">Inicio</span>
+                    <div class="flex items-center gap-2">
+                      <input [(ngModel)]="assignedColors[0].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                      <p-colorPicker [(ngModel)]="assignedColors[0].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                    <span class="font-medium" i18n="@@Final">Final</span>
+                    <div class="flex items-center gap-2">
+                      <input [(ngModel)]="assignedColors[1].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                      <p-colorPicker [(ngModel)]="assignedColors[1].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
+                    </div>
+                  </div>
+                </div>
+              }
+            }
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</eda-dialog2>

@@ -6,11 +6,9 @@
 
 
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
-import { ChartJsConfig } from '../../module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-js-config';
 import { ChartConfig } from '../../module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-config';
 import { Column } from './../../shared/models/dashboard-models/column.model';
 import { Injectable } from '@angular/core';
-import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
 import { KpiConfig } from '@eda/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/kpi-config';
@@ -48,6 +46,8 @@ export interface FormatDates {
 export interface AssignedColor {
     value: string | number;
     color: string;
+    /** 0-100, only meaningful for area/radar's translucent fill. */
+    opacity?: number;
 }
 
 
@@ -452,7 +452,8 @@ export class ChartUtilsService {
             }
 
             //Column count not received, setting default column count
-            if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
+            // typeof guard: isNaN(false) is false, so a stray boolean sentinel would otherwise pass and zero out num_cols.
+            if(typeof numberOfColumns === 'number' && !isNaN(numberOfColumns)){
                 num_cols=numberOfColumns;
             }
 
@@ -467,7 +468,7 @@ export class ChartUtilsService {
                 grupos =   this.generateGruposOneForHistogram( num_cols,min );
             }
             else{
-                if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
+                if(typeof numberOfColumns === 'number' && !isNaN(numberOfColumns)){
                     num_cols=numberOfColumns;
                 }
                 new_data = this.generateNewDataRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max , salto);
@@ -481,7 +482,8 @@ export class ChartUtilsService {
             _output[0]=grupos;
             _output[1] = [{
                 data: new_data,
-                label:  this.histoGramRangesTxt + ' - '  + dataDescription.numericColumns[0].name
+                // renderBar() already rewrites this name into a full description - no need to prefix histoGramRangesTxt too.
+                label: dataDescription.numericColumns[0].name
             }];
 
             output =  _output;
@@ -501,31 +503,18 @@ export class ChartUtilsService {
      * @returns grupos
      */
     private generateGruposRangeForHistogram( num_cols,min,max, salto , esEntero , minimumFractionDigits ):any[] {
-        let mi_salto =  0;
+        // Always produce exactly num_cols labels - the old early-exit dropped bins once the rounded-up salto overshot max.
         let mi_min = min;
         let grupos = [];
         for(let i=0; i<num_cols; i++){
-            mi_salto =  min+((salto*i)+salto)  ;
-            if( mi_salto < max){
-                if(esEntero){
-                    grupos.push(mi_min+" - "+( mi_salto -1));
-                }else{
-                    grupos.push(mi_min.toFixed( minimumFractionDigits ) +" - "+ (mi_salto-0.1).toFixed( minimumFractionDigits ));
-                }
+            const isLast = i === num_cols - 1;
+            const mi_salto = isLast ? max : min+((salto*i)+salto);
+            if(esEntero){
+                grupos.push(mi_min+" - "+(isLast ? mi_salto : mi_salto-1));
             }else{
-                if(Number.isInteger(mi_min)){
-                    grupos.push(mi_min+" - "+max);
-                }else{
-                    grupos.push( mi_min.toFixed(minimumFractionDigits)+" - "+max.toFixed( minimumFractionDigits ));
-                }
-                // Exit the loop
-                i = i+num_cols;
+                grupos.push(mi_min.toFixed( minimumFractionDigits ) +" - "+ (isLast ? mi_salto : mi_salto-0.1).toFixed( minimumFractionDigits ));
             }
-
-
-
-           mi_min = mi_salto;
-
+            mi_min = mi_salto;
         }
 
         return grupos;
@@ -536,22 +525,19 @@ export class ChartUtilsService {
 
 
     private   generateNewDataRangeForHistogram(allNumbers,distinctNumbers, num_cols,min,max, salto ):any[] {
-        let mi_salto =  0;
+        // Always produce exactly num_cols bins - see generateGruposRangeForHistogram.
         let mi_min = min;
         let new_data = [];
 
         for(let i=0; i<num_cols; i++){
-            mi_salto =   min+((salto*i)+salto)   ;
+            const isLast = i === num_cols - 1;
+            const mi_salto = isLast ? max : min+((salto*i)+salto);
             let grupo = [];
 
             for( let j=0; j < allNumbers.length; j++){
-               if(  ( allNumbers[j] >= mi_min && allNumbers[j] < mi_salto)   &&
-               ( mi_salto <  max )
-               ){
-                    grupo.push(allNumbers[j]);
-               }else  if(
-                        ( allNumbers[j] >= mi_min && allNumbers[j] <= mi_salto)   &&
-                        ( mi_salto >=  max )
+               if( isLast
+                   ? ( allNumbers[j] >= mi_min && allNumbers[j] <= mi_salto )
+                   : ( allNumbers[j] >= mi_min && allNumbers[j] < mi_salto )
                ){
                     grupo.push(allNumbers[j]);
                }
@@ -560,10 +546,6 @@ export class ChartUtilsService {
 
            new_data.push( grupo.length);
            mi_min = mi_salto;
-           if( mi_min >= max){
-            // Exit
-            i = num_cols;
-           }
 
         }
 
@@ -590,9 +572,10 @@ export class ChartUtilsService {
 
 
     private  generateGruposOneForHistogram(num_cols,min ):any[] {
+        // Must match generateNewDataOneForHistogram's bins (min+i) - the old loop only worked when min===1.
         let grupos = [];
-        for(let i=min; i<=num_cols; i++){
-            grupos.push(i);
+        for(let i=0; i<num_cols; i++){
+            grupos.push(min+i);
         }
 
         return grupos;

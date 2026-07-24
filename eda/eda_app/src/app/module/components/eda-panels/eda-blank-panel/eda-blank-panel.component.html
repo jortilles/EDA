@@ -53,7 +53,7 @@
 
           <!-- Atributos -->
           <div class="mb-3">
-            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenAtrH6">Resumen de atributos</h4>
+            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenAtrH6Hover">¿Qué estoy viendo?</h4>
             @if (currentQuery.length === 0) {
               <span class="text-sm text-gray-400 italic" i18n="@@noAttributes">Sin atributos</span>
             }
@@ -517,15 +517,18 @@
                         <!-- Query container -->
                         @if(display_v.showQueryContainer) {
                           <div class="fixed inset-0 z-40" (click)="display_v.showQueryContainer = false"></div>
-                          <div id="query-container" class="absolute top-full left-0 mt-2 w-[42vw] bg-white z-50 shadow-xl rounded-xl border border-gray-200 flex flex-col overflow-hidden">
-                            <!-- Header -->
-                            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50">
+                          <div id="query-container" cdkDrag cdkDragBoundary="body"
+                            class="absolute top-full left-0 mt-2 bg-white z-50 shadow-xl rounded-xl border border-gray-200 flex flex-col resize overflow-auto"
+                            style="width:42vw; height:38vh; min-width:320px; min-height:220px; max-width:90vw; max-height:80vh;">
+                            <!-- Header (drag handle) -->
+                            <div cdkDragHandle class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50 shrink-0 cursor-move">
                               <div class="flex items-center gap-2">
                                 <i class="pi pi-code text-[var(--corporate-primary)] text-base"></i>
                                 <span class="text-base font-semibold text-gray-700" i18n="@@yourQuerySQL">Mi consulta SQL</span>
                               </div>
                               <button
                                 (click)="display_v.showQueryContainer = false"
+                                (mousedown)="$event.stopPropagation()"
                                 class="flex items-center justify-center w-6 h-6 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors"
                               >
                                 <i class="pi pi-times text-xs"></i>
@@ -538,14 +541,13 @@
                               </div>
                             }
                             @if(!display_v.minispinnerSQL) {
-                              <div class="flex flex-col gap-3 p-4">
+                              <div class="flex flex-col gap-3 p-4 flex-1 min-h-0">
                                 <textarea
-                                  class="w-full h-[22vh] p-3 border border-gray-200 rounded-lg resize-none text-base font-mono bg-gray-50 focus:outline-none focus:border-[var(--corporate-primary)] leading-relaxed"
+                                  class="w-full flex-1 min-h-0 p-3 border border-gray-200 rounded-lg resize-none text-base font-mono bg-gray-50 focus:outline-none focus:border-[var(--corporate-primary)] leading-relaxed"
                                   [(ngModel)]="queryFromServer"
                                   pInputTextarea
-                                  autoResize="autoResize"
                                 ></textarea>
-                                <div class="flex justify-end gap-2">
+                                <div class="flex justify-end gap-2 shrink-0">
                                   <button
                                     type="button"
                                     (click)="display_v.showQueryContainer = false"
@@ -1287,28 +1289,12 @@
   <app-cumsum-alert-dialog [controller]="cumsumAlertController"></app-cumsum-alert-dialog>
 }
 
-@if(sankeyController){
-  <app-sankey-dialog [controller]="sankeyController"></app-sankey-dialog>
-}
-
-@if(bubblechartController){
-  <app-bubblechart-dialog [controller]="bubblechartController"></app-bubblechart-dialog>
-}
-
-@if(treeMapController){
-  <app-tree-map-dialog [controller]="treeMapController"></app-tree-map-dialog>
+@if(categoryChartController){
+  <app-category-chart-dialog [controller]="categoryChartController"></app-category-chart-dialog>
 }
 
 @if(treeTableController){
   <app-tree-table-dialog [controller]="treeTableController"></app-tree-table-dialog>
-}
-
-@if(funnelController){
-  <app-funnel-dialog [controller]="funnelController"></app-funnel-dialog>
-}
-
-@if(scatterPlotController){
-  <app-scatter-plot-dialog [controller]="scatterPlotController"></app-scatter-plot-dialog>
 }
 
 @if(linkDashboardController){
@@ -1317,10 +1303,6 @@
 
 @if(knobController){
   <knob-dialog [controller]="knobController"> </knob-dialog>
-}
-
-@if(sunburstController){
-  <sunburst-dialog [controller]="sunburstController"> </sunburst-dialog>
 }
 
 @if(contextMenu){

@@ -564,7 +564,7 @@ export class PgBuilderService extends QueryBuilderService {
 
             }else{
               //Si es una vista
-              joinString.push(` ${myJoin} join ${t} on  "${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+              joinString.push(` ${myJoin} join ${t} on  "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
             }
             
           }
@@ -593,7 +593,7 @@ export class PgBuilderService extends QueryBuilderService {
               //Si tienes que hacer columnas calculadas hazlas en la vista ;)
               let join = ` ${myJoin} join  ${t}  on`;
               joinColumns[0].forEach((_, x) => {
-                join += `  "${e[j]}"."${joinColumns[1][x]}" =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
+                join += `  "${e[j]}"."${joinColumns[1][x]}" =  "${e[i]}"."${joinColumns[0][x]}" and`
               });
               join = join.slice(0, join.length - 'and'.length);
               joinString.push(join);

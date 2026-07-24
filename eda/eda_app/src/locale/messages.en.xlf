@@ -350,10 +350,14 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>
                                     Attribute summary
 </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-<context context-type="linenumber">137</context>
-</context-group>
+</trans-unit>
+<trans-unit id="resumenAtrH6Hover" datatype="html">
+<source>
+¿Qué estoy viendo?
+</source>
+<target>
+What am I seeing?
+</target>
 </trans-unit>
 <trans-unit id="resumenFiltrosPanelH6" datatype="html">
 <source>
@@ -2634,6 +2638,16 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Linked to   </target>
 </trans-unit>
 
+<trans-unit id="secondAxis">
+<source> Segundo Eje  </source>
+<target>Second Axis</target>
+</trans-unit>
+
+<trans-unit id="secondAxisDescription">
+<source> Muestra un eje independiente a la derecha para las líneas, separado del eje de las barras </source>
+<target>Shows an independent axis on the right for the lines, separate from the bars' axis</target>
+</trans-unit>
+
 <trans-unit id="DataModelHeader">
 <source> Configurar nueva fuente de datos  </source>
 <target> New datasource  </target>
@@ -2877,6 +2891,34 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <trans-unit id="addtrend">
 <source>Tendencia</source>
 <target>Trend</target>
+</trans-unit>
+<trans-unit id="kpiGrafico">
+<source>Gráfico</source>
+<target>Chart</target>
+</trans-unit>
+<trans-unit id="opacityLabel">
+<source>Opacidad</source>
+<target>Opacity</target>
+</trans-unit>
+<trans-unit id="labelColorOption">
+<source>Color de las etiquetas</source>
+<target>Label color</target>
+</trans-unit>
+<trans-unit id="labelColorSeries">
+<source>Propio</source>
+<target>Series</target>
+</trans-unit>
+<trans-unit id="labelColorBlack">
+<source>Negro</source>
+<target>Black</target>
+</trans-unit>
+<trans-unit id="labelColorWhite">
+<source>Blanco</source>
+<target>White</target>
+</trans-unit>
+<trans-unit id="labelColorCustom">
+<source>Personalizado</source>
+<target>Custom</target>
 </trans-unit>
 <trans-unit id="removetrend">
 <source>Quitar tendencia</source>
@@ -3450,10 +3492,6 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Show Tags in Percent</target>
 </trans-unit>
 
-<trans-unit id="showUniqueColors">
-<source>Activar Colores Únicos</source>
-<target>Activate Unique Colors</target>
-</trans-unit>
 
 <trans-unit id="showPointLines">
 <source>Mostrar Puntos en Líneas</source>
@@ -4448,6 +4486,26 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Show Legend</target>
 </trans-unit>
 
+<trans-unit id="internRadius">
+  <source>Radio Interno</source>
+  <target>Intern Radius</target>
+</trans-unit>
+
+<trans-unit id="useGradient">
+  <source>Usar Gradiente</source>
+  <target>Use Gradient</target>
+</trans-unit>
+
+<trans-unit id="useRoundedBars">
+  <source>Redondear barras</source>
+  <target>Round bars</target>
+</trans-unit>
+
+<trans-unit id="chartRoundedBarsOptionDescription">
+<source>Redondea la punta de las barras</source>
+<target>Rounds the tip of the bars</target>
+</trans-unit>
+
 <trans-unit id="chartLegendOptionDescription">
 <source>Muestra la leyenda del gráfico</source>
 <target>Show chart legend</target>
@@ -4461,6 +4519,16 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="chartGridLinesOptionDescription">
 <source>Muestra u oculta las líneas guía del gráfico</source>
 <target>Show or hide chart grid lines</target>
+</trans-unit>
+
+<trans-unit id="chartAnimation">
+<source>Animar Gráfico</source>
+<target>Animate Chart</target>
+</trans-unit>
+
+<trans-unit id="chartAnimationOptionDescription">
+<source>Anima la aparición de los datos al cargar el gráfico</source>
+<target>Animates the appearance of data when the chart loads</target>
 </trans-unit>
 
 <trans-unit id="histogramColum">
@@ -4488,9 +4556,9 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Displays the percentage value of each segment</target>
 </trans-unit>
 
-<trans-unit id="chartUniqueColorsOption">
-<source>Asigna un color único a cada barra o elemento</source>
-<target>Assigns a unique color to each bar or element</target>
+<trans-unit id="uniqueColorsTab">
+<source> Colores Únicos </source>
+<target> Unique Colors </target>
 </trans-unit>
 
 <trans-unit id="chartUniqueColorsOptionDescription">
@@ -6110,6 +6178,10 @@ OR<ph id="5"/>
   <source>Muestra la predicción de la serie</source>
   <target>Show the series prediction</target>
 </trans-unit>
+<trans-unit id="colorsTab">
+  <source> Colores </source>
+  <target> Colors </target>
+</trans-unit>
 <trans-unit id="gradientTab">
   <source>Colores por intervalo</source>
   <target>Colors by interval</target>
@@ -6756,6 +6828,26 @@ OR<ph id="5"/>
 <trans-unit id="aiGeneratingDashboard">
   <source>Generando dashboard con IA...</source>
   <target>Generating dashboard with AI...</target>
+</trans-unit>
+<trans-unit id="otherRecipients">
+  <source>Otros destinatarios:</source>
+  <target>Other recipients:</target>
+</trans-unit>
+<trans-unit id="otherRecipientsHint">
+  <source>(separados por un espacio)</source>
+  <target>(separated by a space)</target>
+</trans-unit>
+<trans-unit id="otherRecipientsPlaceholder">
+  <source>correo1@dominio.com correo2@dominio.com</source>
+  <target>email1@domain.com email2@domain.com</target>
+</trans-unit>
+<trans-unit id="sendToSummary">
+  <source>Enviar a:</source>
+  <target>Send to:</target>
+</trans-unit>
+<trans-unit id="kpiMailConfigTitle">
+  <source>Configuración de la alerta KPI por email</source>
+  <target>KPI alert email configuration</target>
 </trans-unit>
 </body>
 </file>

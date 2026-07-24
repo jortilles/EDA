@@ -32,7 +32,7 @@ export class SchedulerFunctions {
 
     const nextSend = new Date(lastUpdated);
     nextSend.setDate(nextSend.getDate() + quantity);
-    nextSend.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    nextSend.setUTCHours(parseInt(hours), parseInt(minutes), 0, 0);
 
     return now >= nextSend;
   }

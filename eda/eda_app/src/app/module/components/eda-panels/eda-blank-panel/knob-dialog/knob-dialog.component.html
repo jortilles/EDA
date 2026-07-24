@@ -41,9 +41,9 @@
               <p class="text-xs text-slate-400" i18n="@@knobSemaphoreDesc">Rojo → amarillo → verde según el valor</p>
             </div>
             <button type="button" role="switch" [attr.aria-checked]="semaphoreColor"
-              (click)="semaphoreColor = !semaphoreColor"
+              (click)="toggleSemaphoreColor()"
               class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              [ngClass]="semaphoreColor ? 'bg-corporate-primary' : 'bg-gray-200'">
+              [ngClass]="semaphoreColor ? 'bg-[var(--corporate-primary)]' : 'bg-gray-200'">
               <span class="pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform"
                 [ngClass]="semaphoreColor ? 'translate-x-5' : 'translate-x-0.5'">
               </span>

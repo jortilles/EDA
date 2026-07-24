@@ -4,7 +4,7 @@ import { CommonModule, getLocaleMonthNames, FormStyle, TranslationWidth } from '
 import { FormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { EdaKpiTrend, TrendPeriodGroup } from './eda-kpi-trend';
-import { EdaChartComponent } from '../eda-chart/eda-chart.component';
+import { EdaBarlineComponent } from '../eda-barline-d3/eda-barline.component';
 import { StyleProviderService } from '@eda/services/service.index';
 
 @Component({
@@ -12,11 +12,11 @@ import { StyleProviderService } from '@eda/services/service.index';
     selector: 'eda-kpi-trend',
     templateUrl: './eda-kpi-trend.component.html',
     styleUrls: ['./eda-kpi-trend.component.css'],
-    imports: [CommonModule, FormsModule, DropdownModule, EdaChartComponent]
+    imports: [CommonModule, FormsModule, DropdownModule, EdaBarlineComponent]
 })
 export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     @Input() inject: EdaKpiTrend;
-    @ViewChild('edaTrendChart') edaTrendChart: EdaChartComponent;
+    @ViewChild('edaTrendChart') edaTrendChart: EdaBarlineComponent;
     @ViewChild('kpiLeft') kpiLeftRef: ElementRef;
 
     @HostBinding('style.display') readonly hostDisplay = 'block';
@@ -128,18 +128,16 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
         this.displayVsPercent = result.vsPercent;
         this.displayPreviousLabel = compGroup?.label || '';
 
-        const c0 = this.displayCurrentColor;
-        const c1 = this.displayPreviousColor;
         const compLabel = this.displayComparisonLabel;
 
+        // Color resolved natively by eda-barline-d3 from assignedColors (carried over via the
+        // ...this.inject.edaChart spread below) - no backgroundColor/borderColor to bake here.
         const newDatasets: any[] = [{
             label: this.inject.header,
             data: result.currentSeries,
             type: 'bar',
             borderRadius: 2,
             order: 2,
-            backgroundColor: c0,
-            borderColor: c0,
             datalabels: { display: false }
         }];
         if (compGroup) {
@@ -153,8 +151,6 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
                 fill: false,
                 tension: 0.3,
                 order: 1,
-                backgroundColor: c1,
-                borderColor: c1,
                 datalabels: { display: false }
             });
         }
@@ -162,8 +158,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
         this.edaChartInject = {
             ...this.inject.edaChart,
             chartLabels: result.labels,
-            chartDataset: newDatasets,
-            chartColors: newDatasets.map(d => ({ backgroundColor: d.backgroundColor, borderColor: d.borderColor }))
+            chartDataset: newDatasets
         };
     }
 
@@ -257,6 +252,15 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
     public updateChart(): void {
         if (this.inject?.edaChart) {
             this.edaChartInject = { ...this.inject.edaChart };
+
+            // Keep the legend chip colors (above the mini-chart) in sync with whatever the dialog
+            // just wrote into assignedColors - otherwise they'd stay stuck on their old value.
+            const assigned: any[] = this.edaChartInject.assignedColors || [];
+            const current = assigned.find((c: any) => c.value === this.inject.header);
+            const previous = assigned.find((c: any) => c.value === this.displayComparisonLabel);
+            if (current?.color) this.displayCurrentColor = current.color;
+            if (previous?.color) this.displayPreviousColor = previous.color;
+
             this.cdr.detectChanges();
             if (this.edaTrendChart) {
                 this.edaTrendChart.updateChart();

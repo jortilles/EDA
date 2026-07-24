@@ -661,7 +661,8 @@ export class DashboardSidebarComponent implements AfterViewInit {
       minutes: sendViaMailConfig.minutes,
       quantity: sendViaMailConfig.quantity,
       units: sendViaMailConfig.units,
-      users: sendViaMailConfig.users
+      users: sendViaMailConfig.users,
+      otherRecipients: sendViaMailConfig.otherRecipients
     };
 
     // Assign data to config and persist to DB
@@ -1018,7 +1019,15 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
     // Toggle the state
     this.clickFiltersEnabled = !this.clickFiltersEnabled;
-    this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;    // Update label and icon based on state
+    this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
+
+    // Dashboard-level setting overrides each panel's local setting, regardless of its previous value
+    for (const panel of this.dashboard.panels) {
+      (panel as any).clickFiltersEnabled = this.clickFiltersEnabled;
+    }
+    this.dashboardService.setNotSaved(true);
+
+    // Update label and icon based on state
     clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
     clickItem.icon = this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban";
 

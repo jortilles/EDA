@@ -1,13 +1,14 @@
 
-import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import * as d3 from 'd3';
 import { TreeMap } from "./eda-treeMap";
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
 
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 @Component({
   standalone: true,
@@ -15,7 +16,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: "./eda-treemap.component.html",
   styleUrls: ["./eda-treemap.component.css"],
   encapsulation: ViewEncapsulation.Emulated,
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
 })
 export class EdaTreeMap implements AfterViewInit {
   @Input() inject: TreeMap;
@@ -23,7 +24,6 @@ export class EdaTreeMap implements AfterViewInit {
   @ViewChild("svgContainer", { static: false }) svgContainer: ElementRef;
 
   public update: boolean;
-  div = null;
   id: string;
   svg: any;
   resizeObserver!: ResizeObserver;
@@ -35,12 +35,22 @@ export class EdaTreeMap implements AfterViewInit {
   metricIndex: number;
   width: number;
   heigth: number;
-  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService) {
+  private valuesTree: any[];
+  private colorsTree: any[];
+  private colorScale: any;
+
+  chartLegend: boolean;
+  legendItems: { label: string; color: string; hidden: boolean }[] = [];
+  private hiddenIndexes: Set<number> = new Set();
+  private hasRendered = false;
+
+  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService) {
     this.update = true;
   }
 
   ngOnInit(): void {
     this.id = `treeMap_${this.inject.id}`;
+    this.chartLegend = this.inject.chartLegend ?? true;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
@@ -49,47 +59,29 @@ export class EdaTreeMap implements AfterViewInit {
     this.assignedColors = this.inject.assignedColors;
     // Check this if necessary
     //this.assignedColors.forEach((element, index) => {if(element.value === undefined) element.value = this.firstColLabels[index]}); // Line for when the value is numeric.
+    this.legendItems = this.firstColLabels.map((label, i) => ({
+      label: String(label),
+      color: this.assignedColors[i]?.color || '#cccccc',
+      hidden: this.hiddenIndexes.has(i)
+    }));
   }
 
   ngOnDestroy(): void {
-    // Delete container
-    if (this.div)
-      this.div.remove();
-    // Delete resize observer
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
+    teardownD3Chart(this.tooltipService, this.resizeObserver);
   }
 
-
-  ngAfterViewInit() {
-  const container = this.svgContainer.nativeElement as HTMLElement;
-
-  // Create SVG
-    if (!this.svg)
-     this.svg = d3.select(container).append('svg'); 
-
-  // ResizeObserver to resize the chart
-  this.resizeObserver = new ResizeObserver(entries => {
-    const { width: w, height: h } = entries[0].contentRect;
-    if (w > 0 && h > 0) {
-      this.svg
-        .attr('width', w)
-        .attr('height', h);
-      this.draw();
-    }
-  });
-  this.resizeObserver.observe(container);
-
-  // First draw
-  const w = container.clientWidth;
-  const h = container.clientHeight;
-  if (w > 0 && h > 0) {
-    this.svg
-      .attr('width', w)
-      .attr('height', h);
+  toggleLegend(index: number): void {
+    if (this.hiddenIndexes.has(index)) this.hiddenIndexes.delete(index);
+    else this.hiddenIndexes.add(index);
+    this.legendItems[index].hidden = this.hiddenIndexes.has(index);
     this.draw();
   }
-}
+
+  ngAfterViewInit() {
+    const container = this.svgContainer.nativeElement as HTMLElement;
+    if (!this.svg) this.svg = d3.select(container).append('svg');
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw(), { skipFirstCallback: true });
+  }
 
 
   private getToolTipData = (data) => {
@@ -107,7 +99,7 @@ export class EdaTreeMap implements AfterViewInit {
     )}`;
 
     const thirdRow = this.inject.linkedDashboard
-      ? `Linked to ${this.inject.linkedDashboard.dashboardName}`
+      ? `${$localize`:@@linkedTo:Vinculado con`} ${this.inject.linkedDashboard.dashboardName}`
       : "";
 
     const maxLength = dataUtils.maxLengthElement([
@@ -133,6 +125,27 @@ export class EdaTreeMap implements AfterViewInit {
       .substring(1);
   }
 
+  private leafColor(node: any): string {
+    let d = node;
+    while (d.depth > 1) d = d.parent;
+    if (typeof d.data.name === 'number') d.data.name = d.data.name.toString();
+    const idx = this.valuesTree.findIndex((item) => d.data.name.includes(item));
+    return idx === -1 ? this.colorScale(d.data.name) : this.colorsTree[idx];
+  }
+
+  private gradientId(colorHex: string): string {
+    return `treemap-grad-${this.id}-${sanitizeId(colorHex)}`;
+  }
+
+  /** Linear gradient (rects aren't round), base color at the bottom, lighter at the top - same convention as eda-bar-d3. */
+  private cellFill(defs: any, hex: string): string {
+    if (!(this.inject.useGradient ?? true)) return hex;
+    return ensureLinearGradient(defs, this.gradientId(hex), [
+      { offset: '0%', color: hex },
+      { offset: '100%', color: lightenHex(hex, 30) }
+    ]);
+  }
+
   draw() {
     // Initial deletion of other charts
     this.svg.selectAll('*').remove();
@@ -144,6 +157,9 @@ export class EdaTreeMap implements AfterViewInit {
     const colorsTree = this.assignedColors[0]?.color ? this.assignedColors.map(item => item.color) : this.colors;
     // D3 color sorting function
     const color = d3.scaleOrdinal(this.firstColLabels,  colorsTree);
+    this.valuesTree = valuesTree;
+    this.colorsTree = colorsTree;
+    this.colorScale = color;
     
     const treemap = (data) =>
       d3
@@ -158,9 +174,20 @@ export class EdaTreeMap implements AfterViewInit {
           .sort((a, b) => b.value - a.value)
       );
 
-    const root = treemap(this.data);
+    // Categories hidden from the legend are excluded before building the hierarchy - matched by
+    // name rather than index, since this.data.children's order isn't guaranteed to line up 1:1
+    // with firstColLabels (formatData() drops rows containing any null before building the tree).
+    const hiddenLabels = new Set(Array.from(this.hiddenIndexes).map(i => String(this.firstColLabels[i])));
+    const visibleData = hiddenLabels.size > 0
+      ? { ...this.data, children: (this.data.children || []).filter((c: any) => !hiddenLabels.has(String(c.name))) }
+      : this.data;
+    const root = treemap(visibleData);
 
     const svg = this.svg;
+    const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+
+    let defs = svg.select('defs');
+    if (defs.empty()) defs = svg.append('defs');
 
     const leaf = svg
       .selectAll("g")
@@ -173,18 +200,11 @@ export class EdaTreeMap implements AfterViewInit {
     // leaf.append("title")
     //   .text(d => `${d.ancestors().reverse().map(d => d.data.name).join("/")}\n${d.value}`);
 
-    leaf
+    const rects = leaf
       .append("rect")
       .attr("id", (d) => (d.leafUid = this.randomID()))
-      .attr("fill", (d) => {
-        // Here the treemap color is set
-        while (d.depth > 1) d = d.parent;
-        // We return ONLY the assignedColors color that matches the data and assignedColors colors
-        if(typeof d.data.name === 'number')
-          d.data.name = d.data.name.toString(); 
-         return  valuesTree.findIndex((item) => d.data.name.includes(item)) === -1 ? color(d.data.name) : colorsTree[valuesTree.findIndex((item) => d.data.name.includes(item))];
-      })
-      .attr("fill-opacity", 0.6)
+      .attr("fill", (d) => this.cellFill(defs, this.leafColor(d)))
+      .attr("fill-opacity", animateEntrance ? 0 : 0.6)
       .attr("width", (d) => d.x1 - d.x0)
       .attr("height", (d) => d.y1 - d.y0)
       .on("click", (mouseevent, data) => {
@@ -205,43 +225,58 @@ export class EdaTreeMap implements AfterViewInit {
         }
       })
       .on("mouseover", (d, data) => {
-        const tooltipData = this.getToolTipData(data);
+        const hex = this.leafColor(data);
+        // Swap the gradient url for its own flat base color first, instantly (no transition) -
+        // a url(#gradient) reference can't be interpolated against a flat color - then transition
+        // flat -> flat, same approach as eda-doughnut-d3/eda-bar-d3.
+        const target = d3.select(d.currentTarget);
+        target.attr('fill', hex);
+        target.interrupt('color').transition('color').duration(150).attr('fill', darkenHex(hex, 30));
+        target.interrupt('opacity').transition('opacity').duration(150).attr('fill-opacity', 1);
 
-        let text = `${tooltipData.firstRow} <br/> ${tooltipData.secondRow}`;
+        // Grow and bold this cell's own label - same hover treatment as eda-bubblechart.
+        d3.select(d.currentTarget.parentNode).selectAll('tspan')
+          .interrupt('grow').transition('grow').duration(150)
+          .style('font-size', `${(12 + this.styleProviderService.panelFontSize.source['_value'] * 2) * 1.3}px`)
+          .style('font-weight', 'bold');
+
+        const tooltipData = this.getToolTipData(data);
+        const swatch = `<span class="eda-treemap-tooltip-swatch" style="background-color:${hex};"></span>`;
+
+        let text = `<div class="eda-treemap-tooltip-title">${tooltipData.firstRow}</div>` +
+          `<div class="eda-treemap-tooltip-row">${swatch}${tooltipData.secondRow}</div>`;
         text = this.inject.linkedDashboard
-          ? text + `<br/> <h6>  ${tooltipData.thirdRow} </h6>`
+          ? text + `<h6>${tooltipData.thirdRow}</h6>`
           : text;
 
-        this.div = d3
-          .select("app-root")
-          .append("div")
-          .attr("class", "d3tooltip")
-          .style("opacity", 0);
-
-        
-        this.div.transition().duration(200).style("opacity", 0.9);
-        this.div
-          .html(text)
-          .style("left", d.pageX - 81 + "px")
-          .style("top", d.pageY - 49 + "px")
-          .style("width", `${tooltipData.width}px`)
-          .style("height", 'auto');
+        this.tooltipService.show(d, text, 'eda-treemap-tooltip');
       })
-      .on("mouseout", (d) => {
-        this.div.remove();
+      .on("mouseout", (d, data) => {
+        const hex = this.leafColor(data);
+        const target = d3.select(d.currentTarget);
+        target.interrupt('color').transition('color').duration(150)
+          .attr('fill', hex)
+          .on('end', () => target.attr('fill', this.cellFill(defs, hex)));
+        target.interrupt('opacity').transition('opacity').duration(150).attr('fill-opacity', 0.6);
+
+        d3.select(d.currentTarget.parentNode).selectAll('tspan')
+          .interrupt('grow').transition('grow').duration(150)
+          .style('font-size', `${12 + this.styleProviderService.panelFontSize.source['_value'] * 2}px`)
+          .style('font-weight', null);
+
+        this.tooltipService.hide();
       })
-      .on("mousemove", (d, data) => {
-        const linked = this.inject.linkedDashboard ? 0 : 10;
-        const tooltipData = this.getToolTipData(data);
-
-        this.div
-
-          .style("top", d.pageY - 70 + linked + "px")
-          .style("left", d.pageX - tooltipData.width / 2 + "px");
+      .on("mousemove", (d) => {
+        this.tooltipService.move(d);
       });
+
+    if (animateEntrance) {
+      rects.transition().delay((d: any, i: number) => i * 20).duration(300).attr('fill-opacity', 0.6);
+    }
 
     leaf
       .append("text")
+      .style("opacity", animateEntrance ? 0 : 1)
       .selectAll("tspan")
       .data((d) => {
         let value =
@@ -273,6 +308,12 @@ export class EdaTreeMap implements AfterViewInit {
           i === nodes.length - 1 ? 0.7 : null
       )
       .text((d) => d);
+
+    if (animateEntrance) {
+      leaf.select('text').transition().delay((d: any, i: number) => i * 20).duration(300).style('opacity', 1);
+    }
+
+    this.hasRendered = true;
   }
 
   formatData(data) {
