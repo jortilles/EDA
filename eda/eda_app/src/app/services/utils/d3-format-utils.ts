@@ -21,3 +21,12 @@ export function formatValueLabel(value: number, percentage: number, showValue: b
   if (showPercent) return formatDePercent(percentage);
   return '';
 }
+
+/** Data label text color: 'black'/'white' fixed, a user-picked hex for 'custom', or 'series' to
+ * match whatever it's representing (the passed-in seriesColor) - defaults to black when unset. */
+export function resolveLabelColor(labelColorMode: string | undefined, labelCustomColor: string | undefined, seriesColor?: string): string {
+  if (labelColorMode === 'series') return seriesColor || '#000000';
+  if (labelColorMode === 'white') return '#ffffff';
+  if (labelColorMode === 'custom') return labelCustomColor || '#000000';
+  return '#000000';
+}

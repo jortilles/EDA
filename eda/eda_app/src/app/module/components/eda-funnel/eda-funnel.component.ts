@@ -44,6 +44,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
   chartLegend: boolean;
   legendItems: { label: string; color: string; hidden: boolean }[] = [];
   private hiddenStepIndexes: Set<number> = new Set();
+  private hasRendered = false;
 
   constructor( private styleProviderService : StyleProviderService, private chartUtils : ChartUtilsService, private tooltipService: D3TooltipService) {
   }
@@ -88,7 +89,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
   ngAfterViewInit() {
     const container = this.svgContainer.nativeElement as HTMLElement;
     if (!this.svg) this.svg = d3.select(container).append('svg');
-    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw(), { skipFirstCallback: true });
   }
 
   ngOnDestroy() {
@@ -101,6 +102,14 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
 draw() {
   // Initial cleanup of other charts
   this.svg.selectAll('*').remove();
+  const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+  // Hover micro-animations (label scale, highlight fade) - separate from the entrance fade
+  // above, should be instant rather than just skipped-on-first-render when chartAnimation is off.
+  const HOVER_MS = (this.inject.chartAnimation ?? true) ? 150 : 0;
+  // Label font-size/weight growth on hover is skipped entirely (not just instant) when
+  // chartAnimation is off - the area-shading highlight is left unaffected, still the hover cue
+  // left when animation is off.
+  const chartAnimOn = this.inject.chartAnimation ?? true;
 
   /** Variables */
   const width = this.svgContainer.nativeElement.clientWidth - 20;
@@ -214,7 +223,10 @@ draw() {
     .attr('offset', function (d) { return d.offset; })
     .attr('stop-color', function (d) { return d.color; });
 
-  const areaGroup = svg.append('g').style('cursor', 'pointer');
+  const areaGroup = svg.append('g').style('cursor', 'pointer').style('opacity', animateEntrance ? 0 : 1);
+  if (animateEntrance) {
+    areaGroup.transition().duration(500).style('opacity', 1);
+  }
 
   areaGroup.append('path')
     .datum(data2)
@@ -351,11 +363,13 @@ draw() {
 
   const clearHover = () => {
     if (hoveredIndex === -1) return;
-    d3.select(`#${this.id}_label_${data[hoveredIndex].step}`).transition().duration(150)
-      .style('font-size', `${labelFontSize}px`)
-      .style('font-weight', 'normal');
-    highlightTop.transition().duration(150).attr('fill-opacity', 0);
-    highlightBottom.transition().duration(150).attr('fill-opacity', 0);
+    if (chartAnimOn) {
+      d3.select(`#${this.id}_label_${data[hoveredIndex].step}`).transition().duration(HOVER_MS)
+        .style('font-size', `${labelFontSize}px`)
+        .style('font-weight', 'normal');
+    }
+    highlightTop.transition().duration(HOVER_MS).attr('fill-opacity', 0);
+    highlightBottom.transition().duration(HOVER_MS).attr('fill-opacity', 0);
     hoveredIndex = -1;
   };
 
@@ -369,19 +383,21 @@ draw() {
       const [mx] = (d3 as any).pointer(event, svg.node());
       const i = stepIndexAt(mx);
       if (i !== hoveredIndex) {
-        if (hoveredIndex !== -1) {
-          d3.select(`#${this.id}_label_${data[hoveredIndex].step}`).transition().duration(150)
+        if (chartAnimOn && hoveredIndex !== -1) {
+          d3.select(`#${this.id}_label_${data[hoveredIndex].step}`).transition().duration(HOVER_MS)
             .style('font-size', `${labelFontSize}px`)
             .style('font-weight', 'normal');
         }
         hoveredIndex = i;
         const [x0, x1] = zoneBounds(i);
         highlightClipRect.attr('x', x0).attr('width', x1 - x0);
-        d3.select(`#${this.id}_label_${data[i].step}`).transition().duration(150)
-          .style('font-size', `${labelFontSize + 2}px`)
-          .style('font-weight', 'bold');
-        highlightTop.transition().duration(150).attr('fill-opacity', 0.25);
-        highlightBottom.transition().duration(150).attr('fill-opacity', 0.25);
+        if (chartAnimOn) {
+          d3.select(`#${this.id}_label_${data[i].step}`).transition().duration(HOVER_MS)
+            .style('font-size', `${labelFontSize + 2}px`)
+            .style('font-weight', 'bold');
+        }
+        highlightTop.transition().duration(HOVER_MS).attr('fill-opacity', 0.25);
+        highlightBottom.transition().duration(HOVER_MS).attr('fill-opacity', 0.25);
 
         const d = data[i];
         const ratio = data.length > 1 ? d.step / (data.length - 1) : 0;
@@ -420,5 +436,7 @@ draw() {
         this.onClick.emit({label, filterBy });
       }
     });
+
+  this.hasRendered = true;
 }
 }

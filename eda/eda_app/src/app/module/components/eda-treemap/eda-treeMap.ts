@@ -10,4 +10,5 @@ export class TreeMap {
   assignedColors: any[];
   useGradient?: boolean;
   chartLegend?: boolean;
+  chartAnimation?: boolean;
 }

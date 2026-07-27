@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaRadar } from './eda-radar';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureRadialGradient, formatValueLabel, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, formatAxisValue, ensureRadialGradient, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, opacityFraction } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface RadarPoint {
@@ -14,9 +14,9 @@ interface RadarPoint {
 interface RadarSeries {
   label: string;
   color: string;
-  // 0-100, from assignedColors[i].opacity (the dialog's "Opacidad" slider, same field the
-  // still-Chart.js area chart already uses via hexToRgba) - controls the fill's translucency,
-  // which matters more here than on non-overlapping charts since radar's series polygons overlap.
+  // 0-100, from assignedColors[i].opacity (the dialog's "Opacidad" slider) - controls the fill's
+  // translucency, which matters more here than on non-overlapping charts since radar's series
+  // polygons overlap.
   opacity: number;
   originalIndex: number;
   points: RadarPoint[];
@@ -72,22 +72,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     const container = this.svgContainer.nativeElement as HTMLElement;
     if (!this.svg) this.svg = d3.select(container).append('svg');
-    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
-  }
-
-  // During a LIVE color-dialog edit (before the user hits Confirm/Save), chart-dialog.component.ts's
-  // applyColorsToChart() re-bakes the new opacity straight into chartDataset[i].backgroundColor
-  // (as an rgba(...) string) but does NOT touch inject.assignedColors[i].opacity - that only gets
-  // synced on final save. Reading opacity from assignedColors alone meant the "Opacidad" slider
-  // visibly had no effect until the dialog was confirmed. Parsing the alpha the dialog already
-  // wrote into backgroundColor is what's actually live during preview.
-  private extractOpacity(ds: any, fallback: number): number {
-    const bg = ds?.backgroundColor;
-    if (typeof bg === 'string') {
-      const match = bg.match(/rgba?\([^)]*,\s*([\d.]+)\s*\)/);
-      if (match) return Math.round(parseFloat(match[1]) * 100);
-    }
-    return fallback;
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw(), { skipFirstCallback: true });
   }
 
   private buildSeries(): void {
@@ -97,8 +82,8 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
     const datasets = this.inject.chartDataset || [];
     this.series = datasets.map((ds: any, sIdx: number) => {
       const assigned = assignedByLabel.get(ds.label);
-      const color = ds.borderColor || assigned?.color || '#4472c4';
-      const opacity = this.extractOpacity(ds, assigned?.opacity ?? 100);
+      const color = assigned?.color || ds.borderColor || '#4472c4';
+      const opacity = assigned?.opacity ?? 100;
       const values: number[] = (ds.data || []).map((v: any) => Number(v) || 0);
       return {
         label: ds.label || '',
@@ -151,8 +136,8 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
     return lineGen(pts);
   }
 
-  private gradientId(label: string): string {
-    return `radar-grad-${this.id}-${sanitizeId(label)}`;
+  private gradientId(index: number): string {
+    return `radar-grad-${this.id}-${index}`;
   }
 
   // Centered at the shared chart origin (0,0) - unlike polarArea's per-slice gradient, every
@@ -161,7 +146,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
   // stop-color) keeps the fill translucent even at the "solid" end, so overlapping series stay
   // legible regardless of gradient vs flat fill.
   private ensureGradient(defs: any, series: RadarSeries, maxRadius: number): string {
-    return ensureRadialGradient(defs, this.gradientId(series.label), [
+    return ensureRadialGradient(defs, this.gradientId(series.originalIndex), [
       { offset: '0%', color: series.color, opacity: 0.5 },
       { offset: '100%', color: lightenHex(series.color, GRADIENT_LIGHTEN_AMOUNT), opacity: 0.15 }
     ], { cx: 0, cy: 0, r: Math.max(maxRadius, 1) });
@@ -194,18 +179,33 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
   // mouseout ("seriesLabel: null") just re-applies the normal formula rather than a hardcoded value.
   private readonly DIM_FACTOR = 0.15;
 
+  /** Hover micro-animation duration (highlight/grow) - instant instead of just skipped-on-first-
+   * render when chartAnimation is off. Called from highlightSeries/attachVertexHandlers, which
+   * run outside draw()'s own scope, so it re-reads inject directly rather than closing over a
+   * local computed there. */
+  private hoverMs(ms: number = 150): number {
+    return (this.inject.chartAnimation ?? true) ? ms : 0;
+  }
+
+  /** Vertex radius growth on hover is skipped entirely (not just instant) when chartAnimation is
+   * off - color darken/series dimming are left unaffected, still the hover cues left when
+   * animation is off. */
+  private chartAnimOn(): boolean {
+    return this.inject.chartAnimation ?? true;
+  }
+
   /** Highlights one series (its polygon + own vertices) across the whole chart, dimming the rest - null restores everyone to normal. */
   private highlightSeries(seriesLabel: string | null): void {
     this.svg.select('g.radar-series-fill-group').selectAll('path.radar-series-fill')
-      .interrupt('highlight').transition('highlight').duration(150)
+      .interrupt('highlight').transition('highlight').duration(this.hoverMs())
       .attr('fill-opacity', (s: RadarSeries) => {
-        const base = (s.opacity ?? 100) / 100;
+        const base = opacityFraction(s.opacity);
         return (seriesLabel === null || s.label === seriesLabel) ? base : base * this.DIM_FACTOR;
       })
       .attr('stroke-opacity', (s: RadarSeries) => (seriesLabel === null || s.label === seriesLabel) ? 1 : this.DIM_FACTOR);
 
     this.svg.select('g.radar-vertex-group').selectAll('circle.radar-vertex')
-      .interrupt('highlight').transition('highlight').duration(150)
+      .interrupt('highlight').transition('highlight').duration(this.hoverMs())
       .style('opacity', (d: any) => (seriesLabel === null || d.series.label === seriesLabel) ? 1 : this.DIM_FACTOR);
   }
 
@@ -229,9 +229,11 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
       .on('mouseover', (event: any, d: any) => {
         const target = event.currentTarget;
         d3.select(target)
-          .interrupt('grow').transition('grow').duration(150)
-          .attr('r', 6)
+          .interrupt('color').transition('color').duration(this.hoverMs())
           .attr('fill', darkenHex(d.series.color, 40));
+        if (this.chartAnimOn()) {
+          d3.select(target).interrupt('grow').transition('grow').duration(this.hoverMs()).attr('r', 6);
+        }
         this.highlightSeries(d.series.label);
 
         const category = this.categories[d.point.catIndex];
@@ -248,10 +250,13 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .on('mousemove', (event: any) => this.tooltipService.move(event))
       .on('mouseout', (event: any, d: any) => {
-        d3.select(event.currentTarget)
-          .interrupt('grow').transition('grow').duration(150)
-          .attr('r', 4)
+        const target = event.currentTarget;
+        d3.select(target)
+          .interrupt('color').transition('color').duration(this.hoverMs())
           .attr('fill', d.series.color);
+        if (this.chartAnimOn()) {
+          d3.select(target).interrupt('grow').transition('grow').duration(this.hoverMs()).attr('r', 4);
+        }
         this.highlightSeries(null);
         this.tooltipService.hide();
       });
@@ -397,8 +402,14 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
     const pathSel = fillGroup.selectAll('path.radar-series-fill')
       .data(visibleSeries, (s: any) => s.label);
 
+    // chartAnimation off collapses every morph/exit transition below to 0ms instead of
+    // restructuring the continuous interpolation itself, since resize/legend-toggle redraws
+    // reuse this same code path (see the comment further down where this also drives the
+    // series' own grow/shrink morph).
+    const animDuration = (this.inject.chartAnimation ?? true) ? (this.hasRendered ? 500 : 800) : 0;
+
     pathSel.exit()
-      .transition().duration(500)
+      .transition().duration(animDuration)
       .attrTween('d', (s: RadarSeries) => {
         const start = s._current || s.points.map(() => 0);
         const interpolators = start.map((r0: number) => d3.interpolateNumber(r0, 0));
@@ -419,14 +430,14 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
     const mergedPath = enterPath.merge(pathSel);
     mergedPath
       .attr('fill', (s: RadarSeries) => this.baseFill(s, maxRadius, defs))
-      .attr('fill-opacity', (s: RadarSeries) => (s.opacity ?? 100) / 100)
+      .attr('fill-opacity', (s: RadarSeries) => opacityFraction(s.opacity))
       .attr('stroke', (s: RadarSeries) => s.color)
       .attr('stroke-width', 2);
 
     // No first-render/resize/legend-toggle special-casing (unlike bar's fade+rebuild approach) -
     // every draw() interpolates from wherever each series' _current radii last were. This is what
     // lets hiding a dominant series smoothly rescale the remaining ones instead of snapping.
-    mergedPath.transition().duration(this.hasRendered ? 500 : 800)
+    mergedPath.transition().duration(animDuration)
       .attrTween('d', (s: RadarSeries) => {
         const start = s._current || s.points.map(() => 0);
         const end = s.points.map((p: RadarPoint) => radiusScale(p.value));
@@ -453,7 +464,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
       .data(vertexData, (d: any) => d.key);
 
     vertexSel.exit()
-      .transition().duration(300)
+      .transition().duration(animDuration)
       .style('opacity', 0)
       .remove();
 
@@ -472,7 +483,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
       .attr('stroke-width', 2)
       .style('opacity', 1);
 
-    mergedVertex.transition().duration(this.hasRendered ? 500 : 800)
+    mergedVertex.transition().duration(animDuration)
       .attr('cx', (d: any) => this.xFor(this.angleFor(d.point.catIndex, n), radiusScale(d.point.value)))
       .attr('cy', (d: any) => this.yFor(this.angleFor(d.point.catIndex, n), radiusScale(d.point.value)));
 
@@ -498,7 +509,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
             .style('font-family', this.fontFamily)
             .style('font-size', '10px')
             .style('font-weight', 'bold')
-            .style('fill', s.color)
+            .style('fill', resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, s.color))
             .style('paint-order', 'stroke')
             .attr('stroke', this.panelBackgroundColor)
             .attr('stroke-width', 3)

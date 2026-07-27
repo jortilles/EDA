@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaLineD3 } from './eda-line';
-import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface LinePoint {
@@ -23,6 +23,10 @@ interface LineSeries {
 }
 
 const MAX_CATEGORY_CHARS = 8;
+// D3TooltipService's own defaults sit the tooltip right up against the cursor/point - pin its
+// BOTTOM-left corner 20px to the right and 20px above instead, matching eda-bar-d3/eda-barline-d3.
+const TOOLTIP_OFFSET_X = 20;
+const TOOLTIP_OFFSET_Y = -20;
 
 @Component({
   standalone: true,
@@ -55,7 +59,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.id = `line_${this.inject.id}`;
-    this.chartLegend = (this.inject.compact ? false : this.inject.chartLegend) ?? true;
+    this.chartLegend = this.inject.chartLegend ?? !(this.inject.compact ?? false);
     this.styleProviderService.panelFontFamily.subscribe(v => this.fontFamily = v).unsubscribe();
     this.styleProviderService.panelColor.subscribe(v => this.panelBackgroundColor = v || '#ffffff').unsubscribe();
     this.buildSeries();
@@ -78,7 +82,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** Called by the shared chart-dialog.component.ts (unconditionally, no `?.`) on every live color edit. */
   updateChart(): void {
-    this.chartLegend = (this.inject.compact ? false : this.inject.chartLegend) ?? true;
+    this.chartLegend = this.inject.chartLegend ?? !(this.inject.compact ?? false);
     this.hiddenSeriesIndexes.clear();
     this.buildSeries();
     this.draw();
@@ -87,32 +91,45 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
   private buildSeries(): void {
     const labels: string[] = this.inject.chartLabels || [];
     this.categories = labels.map(l => String(l));
+    const assignedByLabel = new Map((this.inject.assignedColors || []).map((c: any) => [c.value, c]));
     const datasets = this.inject.chartDataset || [];
-    this.series = datasets.map((ds: any, i: number) => ({
-      label: ds.label || '',
-      color: ds.borderColor || ds.backgroundColor || '#4472c4',
-      originalIndex: i,
-      isTrend: !!ds.isTrend,
-      isPrediction: !!ds.isPrediction,
-      sourceLabel: ds.sourceLabel,
-      points: (ds.data || []).map((v: any, catIdx: number) => ({ catIndex: catIdx, value: v === null || v === undefined ? null : Number(v) }))
-    }));
+    this.series = datasets.map((ds: any, i: number) => {
+      // Trend/prediction rows are independently editable by their own label - only fall back to
+      // their source series' color if they don't have their own assignedColors entry yet.
+      const assigned = assignedByLabel.get(ds.label)
+        || ((ds.isTrend || ds.isPrediction) ? assignedByLabel.get(ds.sourceLabel) : undefined);
+      return {
+        label: ds.label || '',
+        color: assigned?.color || ds.borderColor || ds.backgroundColor || '#4472c4',
+        originalIndex: i,
+        isTrend: !!ds.isTrend,
+        isPrediction: !!ds.isPrediction,
+        sourceLabel: ds.sourceLabel,
+        points: (ds.data || []).map((v: any, catIdx: number) => ({ catIndex: catIdx, value: v === null || v === undefined ? null : Number(v) }))
+      };
+    });
 
-    // Trend/prediction lines are derived from a real series (same color) and would be a confusing,
-    // redundant legend swatch - only real series get their own entry.
     this.legendItems = this.series
-      .filter(s => !s.isTrend && !s.isPrediction)
       .map(s => ({ label: s.label, color: s.color, hidden: this.hiddenSeriesIndexes.has(s.originalIndex) }));
   }
 
   toggleLegend(legendIdx: number): void {
-    const realSeries = this.series.filter(s => !s.isTrend && !s.isPrediction);
-    const s = realSeries[legendIdx];
+    const s = this.series[legendIdx];
     if (!s) return;
     if (this.hiddenSeriesIndexes.has(s.originalIndex)) this.hiddenSeriesIndexes.delete(s.originalIndex);
     else this.hiddenSeriesIndexes.add(s.originalIndex);
     this.legendItems[legendIdx].hidden = this.hiddenSeriesIndexes.has(s.originalIndex);
-    this.draw();
+    // Replay the entrance sweep on every legend toggle, not just the very first draw - same
+    // fade-out-then-redraw pattern as eda-bar-d3. Skipped entirely when chartAnimation is off.
+    this.hasRendered = false;
+    const EXIT_MS = (this.inject.chartAnimation ?? true) ? 200 : 0;
+    const currentContent = this.svg.selectAll('.eda-line-series, .eda-line-points, .eda-line-labels');
+    if (!currentContent.empty() && EXIT_MS > 0) {
+      currentContent.transition().duration(EXIT_MS).style('opacity', 0);
+      setTimeout(() => this.draw(), EXIT_MS);
+    } else {
+      this.draw();
+    }
   }
 
   /** A trend/prediction series is visible only when its own real source series is (and isn't itself hidden). */
@@ -157,6 +174,10 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     return total !== 0 ? (value / total) * 100 : 0;
   }
 
+  private formatLabel(series: LineSeries, catIndex: number, value: number): string {
+    return formatValueLabel(value, this.percentOfSeries(series, catIndex), this.inject.showLabels, this.inject.showLabelsPercent);
+  }
+
   draw(): void {
     const container = this.svgContainer.nativeElement as HTMLElement;
     const width = container.clientWidth;
@@ -185,14 +206,22 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const tickCount = computeYTickCount(height);
 
+    // Grid lines follow showGridLines independently of compact. Value axis LABELS follow the same
+    // field but only in compact mode - a full-size chart always shows them regardless of
+    // showGridLines (that field has only ever toggled the lines there), matching prior behavior.
+    const showGridLinesOn = this.inject.showGridLines ?? !compact;
+    const showValueAxis = !compact || this.inject.showGridLines === true;
+
     let leftMargin = 8;
-    if (!compact) {
+    if (showValueAxis) {
       const probeScale = d3.scaleLinear().domain([valueMin, valueMax]).nice();
       const tickLabels = probeScale.ticks(tickCount).map(v => formatAxisValue(v));
       leftMargin = Math.min(Math.max(measureMaxLabelWidth(tickLabels, 11, this.fontFamily) + 16, 40), width * 0.3);
     }
+    const showCompactCategoryAxis = compact && this.inject.showGridLines === true;
+    const showCompactLabels = compact && (this.inject.showLabels || this.inject.showLabelsPercent);
     const margin = compact
-      ? { top: 4, right: 4, bottom: 4, left: 4 }
+      ? { top: showCompactLabels ? 20 : 4, right: 4, bottom: showCompactCategoryAxis ? 18 : 4, left: showValueAxis ? leftMargin : 4 }
       : { top: 16, right: 20, bottom: 50, left: leftMargin };
     const innerWidth = Math.max(width - margin.left - margin.right, 10);
     const innerHeight = Math.max(height - margin.top - margin.bottom, 10);
@@ -204,19 +233,25 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     const valueScale = d3.scaleLinear().domain([valueMin, valueMax]).nice().range([innerHeight, 0]);
     const xFor = (catIdx: number) => (categoryScale(axisCategories[catIdx]) ?? 0) + categoryScale.bandwidth() / 2;
 
-    if (!compact) {
-      if (this.inject.showGridLines ?? true) {
-        g.append('g')
-          .attr('class', 'eda-line-grid')
-          .call(d3.axisLeft(valueScale).ticks(tickCount).tickSize(-innerWidth).tickFormat(() => '' as any));
-      }
+    if (showGridLinesOn) {
+      g.append('g')
+        .attr('class', 'eda-line-grid')
+        .call(d3.axisLeft(valueScale).ticks(tickCount).tickSize(-innerWidth).tickFormat(() => '' as any));
+    }
 
-      const categoryAxis = d3.axisBottom(categoryScale).tickFormat((d: string) => this.truncate(d));
+    if (showValueAxis) {
       const valueAxis = d3.axisLeft(valueScale).ticks(tickCount).tickFormat((v: any) => formatAxisValue(v));
+      g.append('g').attr('class', 'eda-line-axis').call(valueAxis as any);
+      g.selectAll('.eda-line-axis text').style('font-family', this.fontFamily).style('font-size', '11px').style('font-weight', 500).style('fill', '#000000');
+    }
+
+    if (!compact) {
+      const categoryAxis = d3.axisBottom(categoryScale).tickFormat((d: string) => this.truncate(d));
 
       const catAxisG = g.append('g').attr('class', 'eda-line-axis')
         .attr('transform', `translate(0,${innerHeight})`).call(categoryAxis as any);
-      catAxisG.selectAll('text').style('text-anchor', 'end').attr('dx', '-0.5em').attr('dy', '0.4em').attr('transform', 'rotate(-30)');
+      catAxisG.selectAll('text').style('text-anchor', 'end').attr('dx', '-0.5em').attr('dy', '0.4em').attr('transform', 'rotate(-30)')
+        .style('font-family', this.fontFamily).style('font-size', '11px').style('font-weight', 500).style('fill', '#000000');
 
       const angle = Math.PI / 6;
       const footprints = axisCategories.map(c => measureTextWidth(this.truncate(c), 11, this.fontFamily) * Math.cos(angle) + 11 * Math.sin(angle));
@@ -229,9 +264,24 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         return 'none';
       });
+    } else if (showCompactCategoryAxis) {
+      // Compact mode has no room for the full diagonal collision-avoidance axis above - cap to at
+      // most 3 evenly-spaced labels (first/middle/last), horizontal instead of rotated.
+      const categoryAxis = d3.axisBottom(categoryScale).tickFormat((d: string) => this.truncate(d));
+      const catAxisG = g.append('g').attr('class', 'eda-line-axis')
+        .attr('transform', `translate(0,${innerHeight})`).call(categoryAxis as any);
+      catAxisG.selectAll('text').style('text-anchor', 'middle')
+        .style('font-family', this.fontFamily).style('font-size', '10px').style('font-weight', 500).style('fill', '#000000');
 
-      g.append('g').attr('class', 'eda-line-axis').call(valueAxis as any);
-      g.selectAll('.eda-line-axis text').style('font-family', this.fontFamily).style('font-size', '11px').style('font-weight', 500).style('fill', '#000000');
+      // At 1/4, 1/2 and 3/4 rather than first/middle/last - the very edge categories sit right at
+      // the plot boundary, where a centered label's text overflows past the SVG edge and clips.
+      const n = axisCategories.length;
+      const keepIdx = n <= 3 ? new Set(axisCategories.map((_, i) => i)) : new Set([
+        Math.round((n - 1) * 2 / 8),
+        Math.round((n - 1) * 4 / 8),
+        Math.round((n - 1) * 6 / 8)
+      ]);
+      catAxisG.selectAll('.tick').style('display', (_: any, i: number) => keepIdx.has(i) ? null : 'none');
     }
 
     const lineGen: any = d3.line<LinePoint>()
@@ -250,10 +300,14 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     const pointsGroup = g.append('g').attr('class', 'eda-line-points');
     const labelsGroup = g.append('g').attr('class', 'eda-line-labels').style('pointer-events', 'none');
     const hoverGroup = g.append('g').attr('class', 'eda-line-hover-cols');
-    const showLabelsOn = (this.inject.showLabels || this.inject.showLabelsPercent) && !compact;
+    const showLabelsOn = this.inject.showLabels || this.inject.showLabelsPercent;
 
     const ENTRANCE_MS = compact ? 600 : 3000;
     const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+    // Hover micro-animations (dot grow, column highlight) - separate from the entrance sweep
+    // above, should be instant rather than just skipped-on-first-render when chartAnimation is off.
+    const chartAnimOn = this.inject.chartAnimation ?? true;
+    const hoverMs = (ms: number) => chartAnimOn ? ms : 0;
 
     // Real (non-derived) series first, so trend/prediction overlays paint on top of their source.
     const drawOrder = [...visibleSeries.filter(s => !s.isTrend && !s.isPrediction), ...visibleSeries.filter(s => s.isTrend || s.isPrediction)];
@@ -297,8 +351,26 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
           });
       }
 
-      // Trend lines are purely decorative - no points, no hover, no click, no tooltip.
-      if (series.isTrend) return;
+      // Trend lines are purely decorative - no points, no hover, no click, no tooltip - but do get
+      // a label per point same as eda-area-d3's trend, since that's the value being pointed at.
+      if (series.isTrend) {
+        if (showLabelsOn) {
+          const trendVertexData = series.points.filter(p => p.value !== null).map(p => ({ series, point: p }));
+          labelsGroup.selectAll(null)
+            .data(trendVertexData)
+            .enter()
+            .append('text')
+            .attr('text-anchor', 'middle')
+            .style('font-size', '11px')
+            .style('font-weight', 'bold')
+            .style('font-family', this.fontFamily)
+            .style('fill', resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, series.color))
+            .attr('x', (d: any) => xFor(d.point.catIndex))
+            .attr('y', (d: any) => valueScale(d.point.value) - 10)
+            .text((d: any) => this.formatLabel(series, d.point.catIndex, d.point.value));
+        }
+        return;
+      }
 
       const showDots = series.isPrediction || (this.inject.showPointLines ?? false);
       const baseRadius = showDots ? (series.isPrediction ? 3 : 3.5) : 0;
@@ -361,10 +433,10 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
           .style('font-size', '11px')
           .style('font-weight', 'bold')
           .style('font-family', this.fontFamily)
-          .style('fill', series.color)
+          .style('fill', resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, series.color))
           .attr('x', (d: any) => xFor(d.catIndex))
           .attr('y', (d: any) => valueScale(d.value as number) - 10)
-          .text((d: any) => formatValueLabel(d.value as number, this.percentOfSeries(series, d.catIndex), this.inject.showLabels, this.inject.showLabelsPercent))
+          .text((d: any) => this.formatLabel(series, d.catIndex, d.value as number))
           .style('opacity', animateEntrance ? 0 : 1);
 
         if (animateEntrance) {
@@ -379,10 +451,14 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
       dotSel
         .on('mouseover', (event: any, d: any) => {
           const hitCircle = d3.select(event.currentTarget).select('.eda-line-point-hit');
-          d3.select(event.currentTarget).select('.eda-line-point-dot')
-            .interrupt('grow').transition('grow').duration(150)
-            .attr('r', 6)
+          const dot = d3.select(event.currentTarget).select('.eda-line-point-dot');
+          dot.interrupt('color').transition('color').duration(hoverMs(150))
             .style('fill', darkenHex(series.color, 40));
+          // Size growth is skipped entirely (not just instant) when chartAnimation is off - only
+          // the color darken above still gives some hover feedback in that case.
+          if (chartAnimOn) {
+            dot.interrupt('grow').transition('grow').duration(hoverMs(150)).attr('r', 6);
+          }
 
           const category = this.categories[d.point.catIndex];
           const title = `${this.inject.categoryFieldName ? this.inject.categoryFieldName + ' : ' : ''}${category}`;
@@ -392,14 +468,16 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
           let text = `<div class="eda-line-tooltip-title">${title}</div>` +
             `<div class="eda-line-tooltip-row">${swatch}${seriesPrefix}${formatDeNumber(d.point.value)}</div>`;
           if (linkedDashboard) text += `<h6>${$localize`:@@linkedTo:Vinculado con`} ${linkedDashboard.dashboardName}</h6>`;
-          this.tooltipService.show(event, text, 'eda-line-tooltip');
+          this.tooltipService.show(event, text, 'eda-line-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
         })
-        .on('mousemove', (event: any) => this.tooltipService.move(event))
+        .on('mousemove', (event: any) => this.tooltipService.move(event, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true))
         .on('mouseout', (event: any, d: any) => {
-          d3.select(event.currentTarget).select('.eda-line-point-dot')
-            .interrupt('grow').transition('grow').duration(150)
-            .attr('r', baseRadius)
+          const dot = d3.select(event.currentTarget).select('.eda-line-point-dot');
+          dot.interrupt('color').transition('color').duration(hoverMs(150))
             .style('fill', series.isPrediction ? this.panelBackgroundColor : series.color);
+          if (chartAnimOn) {
+            dot.interrupt('grow').transition('grow').duration(hoverMs(150)).attr('r', baseRadius);
+          }
           this.tooltipService.hide();
         })
         .on('click', (event: any, d: any) => {
@@ -432,21 +510,25 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
               .filter(r => r.p && r.p.value !== null);
             if (rows.length === 0) return;
 
-            pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
-              .filter((d: any) => d.point.catIndex === catIdx)
-              .interrupt('colGrow').transition('colGrow').duration(100).attr('r', 5);
+            if (chartAnimOn) {
+              pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
+                .filter((d: any) => d.point.catIndex === catIdx)
+                .interrupt('colGrow').transition('colGrow').duration(hoverMs(100)).attr('r', 5);
+            }
 
             const title = `${this.inject.categoryFieldName ? this.inject.categoryFieldName + ' : ' : ''}${cat}`;
             const rowsHtml = rows.map(r =>
               `<div class="eda-line-tooltip-row"><span class="eda-line-tooltip-swatch" style="background-color:${r.s.color};"></span><strong>${r.s.label}</strong> : ${formatDeNumber(r.p.value as number)}</div>`
             ).join('');
-            this.tooltipService.show(event, `<div class="eda-line-tooltip-title">${title}</div>${rowsHtml}`, 'eda-line-tooltip');
+            this.tooltipService.show(event, `<div class="eda-line-tooltip-title">${title}</div>${rowsHtml}`, 'eda-line-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
           })
           .on('mouseout', () => {
-            pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
-              .filter((d: any) => d.point.catIndex === catIdx)
-              .interrupt('colGrow').transition('colGrow').duration(100)
-              .attr('r', (d: any) => (d.series.isPrediction || (this.inject.showPointLines ?? false)) ? (d.series.isPrediction ? 3 : 3.5) : 0);
+            if (chartAnimOn) {
+              pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
+                .filter((d: any) => d.point.catIndex === catIdx)
+                .interrupt('colGrow').transition('colGrow').duration(hoverMs(100))
+                .attr('r', (d: any) => (d.series.isPrediction || (this.inject.showPointLines ?? false)) ? (d.series.isPrediction ? 3 : 3.5) : 0);
+            }
             this.tooltipService.hide();
           });
       });

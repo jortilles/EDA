@@ -11,6 +11,7 @@ import { EdaColumnNumber } from './eda-columns/eda-column-number';
 import { EdaColumnPercentage } from './eda-columns/eda-column-percentage';
 import { EventEmitter } from '@angular/core';
 import { EdaColumnChart } from './eda-columns/eda-column-chart';
+import { EdaLineD3 } from '@eda/components/eda-line-d3/eda-line';
 import { ToastModule } from 'primeng/toast';
 import { values } from 'd3';
 
@@ -467,17 +468,18 @@ export class EdaTable {
                 });
                 Object.entries(totals).forEach((pair: any) => {
 
-                    let data = {
-                        labels: new Array(pair[1].length).fill(0),
-                        datasets: [
-                            {
-                                data: pair[1],
-                                fill: false,
-                                borderColor: '#4bc0c0'
-                            }
-                        ]
-                    }
-                    row[pair[0]] = data;
+                    const sparkline = new EdaLineD3();
+                    sparkline.id = `sparkline_${_.uniqueId()}`;
+                    sparkline.chartType = 'line';
+                    sparkline.edaChart = 'line';
+                    sparkline.chartLabels = new Array(pair[1].length).fill('');
+                    sparkline.chartDataset = [{ label: '', data: pair[1] }];
+                    sparkline.assignedColors = [{ value: '', color: '#4bc0c0' }];
+                    sparkline.chartLegend = false;
+                    sparkline.showGridLines = false;
+                    sparkline.showPointLines = false;
+                    sparkline.compact = true;
+                    row[pair[0]] = sparkline;
                 });
             });
         }

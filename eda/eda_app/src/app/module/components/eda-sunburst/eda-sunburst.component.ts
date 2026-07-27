@@ -35,6 +35,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   chartLegend: boolean;
   legendItems: { label: string; color: string; hidden: boolean }[] = [];
   private hiddenIndexes: Set<number> = new Set();
+  private hasRendered = false;
 
   constructor(private chartUtilService: ChartUtilsService, private styleProviderService: StyleProviderService) { }
 
@@ -66,7 +67,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     const container = this.svgContainer.nativeElement as HTMLElement;
     if (!this.svg) this.svg = d3.select(container).append('svg');
-    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw());
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw(), { skipFirstCallback: true });
   }
 
   ngOnDestroy(): void {
@@ -100,7 +101,8 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   draw() {
     // Clear SVG before redrawing (prevents accumulation)
     this.svg.selectAll('*').remove();
-    
+    const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+
     const svg = this.svg;
     const width = this.svgContainer.nativeElement.clientWidth - 40;
     let radius = width / 2;
@@ -211,11 +213,14 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
 
         return this.arcFill(defs, hex, opacity);
       })
-      
-      
+
+
       .attr('d', arc)
-    
-      
+      .style('opacity', animateEntrance ? 0 : 1)
+
+    if (animateEntrance) {
+      path.transition().delay((d: any, i: number) => i * 15).duration(300).style('opacity', 1);
+    }
 
     svg
       .append('g')
@@ -309,6 +314,8 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
         this.onClick.emit({ label, filterBy });
       }
     })
+
+    this.hasRendered = true;
   }
 
   formatData (data, dataDescription) {

@@ -9,4 +9,5 @@ export class EdaD3 {
   assignedColors: any[];
   useGradient?: boolean;
   chartLegend?: boolean;
+  chartAnimation?: boolean;
 }

@@ -51,26 +51,15 @@ export const PanelOptions = {
               close: (event, response) => panelComponent.onCloseChartProperties(event, response)
             });
 
-          } else if (panelComponent.graficos.chartType === 'doughnut') {
+          } else if (['doughnut', 'polarArea', 'sunburst', 'treeMap', 'scatterPlot', 'bubblechart', 'parallelSets', 'funnel'].includes(panelComponent.graficos.chartType)) {
             panelComponent.contextMenu.hideContextMenu();
-            panelComponent.doughnutController = new EdaDialogController({
+            panelComponent.categoryChartController = new EdaDialogController({
               params: {
                 panelID: _.get(panelComponent.panel, 'id'),
-                chart: panelComponent.graficos,
-                panelChart: panelComponent.panelChartConfig
+                panelChart: panelComponent.panelChartConfig,
+                chartType: panelComponent.graficos.chartType
               },
-              close: (event, response) => panelComponent.onCloseDoughnutProperties(event, response)
-            });
-
-          } else if (panelComponent.graficos.chartType === 'polarArea') {
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.polarAreaController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                chart: panelComponent.graficos,
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => panelComponent.onClosePolarAreaProperties(event, response)
+              close: (event, response) => panelComponent.onCloseCategoryChartProperties(event, response, panelComponent.graficos.chartType)
             });
 
           } else if (['table', 'crosstable'].includes(panelComponent.graficos.chartType)) {
@@ -141,29 +130,6 @@ export const PanelOptions = {
               close: (event, response) => { panelComponent.onClosedynamicTextProperties(event, response) }
             });
 
-          } 
-          else if (panelComponent.graficos.chartType === 'parallelSets') {
-
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.sankeyController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseSankeyProperties(event, response) }
-            });
-
-          } 
-          else if(panelComponent.graficos.chartType === 'treeMap'){
-
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.treeMapController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseTreeMapProperties(event, response) }
-            });
           }
           else if(panelComponent.graficos.chartType === 'treetable') {
             panelComponent.contextMenu.hideContextMenu();
@@ -180,51 +146,6 @@ export const PanelOptions = {
 
           }
 
-          else if (panelComponent.graficos.chartType === 'funnel') {
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.funnelController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseFunnelProperties(event, response) }
-            });
-
-          }
-          else if (panelComponent.graficos.chartType === 'bubblechart') {
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.bubblechartController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseBubblechartProperties(event, response) }
-            });
-
-          }
-
-          else if(panelComponent.graficos.chartType === 'scatterPlot'){
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.scatterPlotController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseScatterProperties(event, response) }
-            });
-
-          }
-          else if(panelComponent.graficos.chartType === 'sunburst'){
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.sunburstController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseSunburstProperties(event, response) }
-            });
-
-          }
           else if(panelComponent.graficos.chartType === 'knob'){
 
             panelComponent.contextMenu.hideContextMenu();

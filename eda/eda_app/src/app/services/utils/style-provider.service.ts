@@ -123,6 +123,12 @@ export class StyleProviderService {
 	constructor() {
 	}
 
+	/** Color por índice de la paleta actual, con fallback a la paleta por defecto. */
+	public getPaletteColor(index: number): string {
+		const palette = this.ActualChartPalette?.['paleta'] || this.DEFAULT_PALETTE_COLOR?.['paleta'] || [];
+		return palette.length ? palette[index % palette.length] : '#000000';
+	}
+
 	public setDefaultBackgroundColor() {
 		this._pageBackground.next(DEFAULT_HOME_BACKGROUND_COLOR);
 	}
