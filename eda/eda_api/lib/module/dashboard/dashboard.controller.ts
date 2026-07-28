@@ -1370,7 +1370,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         let notAllowedColumns = []
         for (let c = 0; c < req.body.query.fields.length; c++) {
           if (
-            uniquesForbiddenTables.includes(req.body.query.fields[c].table_id)
+            uniquesForbiddenTables.includes(req.body.query.fields[c].table_id.split('.')[0])
           ) {
             notAllowedColumns.push(req.body.query.fields[c])
           } else {
@@ -1401,7 +1401,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
       // console.log('myQuery: ', myQuery);
 
-      if (myQuery.fields.length == 0) {
+       if (myQuery.fields.length < req.body.query.fields.length ) { //Not allowed to see all the data. If you have one forbidden column you cannot see the query. It will breack the chart
         console.log('you cannot see any data');
         return res.status(200).json([['noDataAllowed'], [[]]]);
       }
