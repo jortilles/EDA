@@ -1644,6 +1644,8 @@ public tableNodeExpand(event: any): void {
             if (response.showGridLines !== undefined) configPatch.showGridLines = response.showGridLines;
             if (response.innerRadiusPercent !== undefined) configPatch.innerRadiusPercent = response.innerRadiusPercent;
             if (response.chartAnimation !== undefined) configPatch.chartAnimation = response.chartAnimation;
+            if (response.labelColorMode !== undefined) configPatch.labelColorMode = response.labelColorMode;
+            if (response.labelCustomColor !== undefined) configPatch.labelCustomColor = response.labelCustomColor;
 
             this.applyDialogChartConfig(event, configPatch, 'categoryChartController');
         } else {
