@@ -369,7 +369,7 @@ export class HomePage implements OnInit, OnDestroy {
       const cfg = db.config;
       if (title      && !cfg.title?.toUpperCase().includes(title.toUpperCase())) return false;
       if (author     && !cfg.author?.toLowerCase().startsWith(author.toLowerCase())) return false;
-      if (datasource && !cfg.ds?.type?.toLowerCase().includes(datasource.toLowerCase())) return false;
+      if (datasource && !cfg.ds?.name?.toLowerCase().includes(datasource.toLowerCase())) return false;
       if (tag        && !this.normTagArr(cfg).some(t => t.toLowerCase().includes(tag.toLowerCase()))) return false;
       if (createdFrom  && new Date(cfg.createdAt) < new Date(createdFrom)) return false;
       if (createdTo    && new Date(cfg.createdAt) > new Date(createdTo + 'T23:59:59')) return false;
@@ -580,7 +580,7 @@ export class HomePage implements OnInit, OnDestroy {
     const filterFn = (reports: any[]) => reports.filter(db => {
       const cfg = db.config;
       if (author     && !cfg.author?.toLowerCase().includes(author.toLowerCase())) return false;
-      if (datasource && !cfg.ds?.type?.toLowerCase().includes(datasource.toLowerCase())) return false;
+      if (datasource && !cfg.ds?.name?.toLowerCase().includes(datasource.toLowerCase())) return false;
       if (hasTags    && !this.advancedTags.some(t => {
         if (t === $localize`:@@NoTag:Sin Etiqueta`) {
           const tag = cfg.tag;

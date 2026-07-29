@@ -6649,8 +6649,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Source de données</target>
       </trans-unit>
       <trans-unit id="datasourceFilterPlaceholder" datatype="html">
-        <source>postgres, mysql...</source>
-        <target>postgres, mysql...</target>
+        <source>Nombre del datasource...</source>
+        <target>Nom de la source de données...</target>
       </trans-unit>
       <trans-unit id="createdFilterLabel" datatype="html">
         <source>Creado en</source>

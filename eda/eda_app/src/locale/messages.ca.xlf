@@ -6681,8 +6681,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Datasource</target>
       </trans-unit>
       <trans-unit id="datasourceFilterPlaceholder" datatype="html">
-        <source>postgres, mysql...</source>
-        <target>postgres, mysql...</target>
+        <source>Nombre del datasource...</source>
+        <target>Nom del datasource...</target>
       </trans-unit>
       <trans-unit id="createdFilterLabel" datatype="html">
         <source>Creado en</source>

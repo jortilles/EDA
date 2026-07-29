@@ -6374,8 +6374,8 @@ OR<ph id="5"/>
   <target>Datasource</target>
 </trans-unit>
 <trans-unit id="datasourceFilterPlaceholder" datatype="html">
-  <source>postgres, mysql...</source>
-  <target>postgres, mysql...</target>
+  <source>Nombre del datasource...</source>
+  <target>Datasource name...</target>
 </trans-unit>
 <trans-unit id="createdFilterLabel" datatype="html">
   <source>Creado en</source>

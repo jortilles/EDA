@@ -41,12 +41,12 @@
                     class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
                     i18n-placeholder="@@authorFilterPlaceholder" placeholder="Autor...">
                 </div>
-                <!-- Datasource type -->
+                <!-- Datasource name -->
                 <div class="space-y-1">
                   <label class="text-xs font-medium text-muted-foreground" i18n="@@datasourceFilterLabel">Datasource</label>
                   <input type="text" [(ngModel)]="advancedFilters.datasource" (ngModelChange)="applyAdvancedFilters()"
                     class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
-                    i18n-placeholder="@@datasourceFilterPlaceholder" placeholder="postgres, mysql...">
+                    i18n-placeholder="@@datasourceFilterPlaceholder" placeholder="Nombre del datasource...">
                 </div>
                 
                 <!-- Created at -->
