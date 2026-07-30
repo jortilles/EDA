@@ -218,6 +218,5 @@ export const  AGG_TYPES  = [
 /** Feature flags variables  */ 
 export const SHOW_LOCK_IN_PANEL_HEADER: boolean = true; // true → lock button visible in panel header | false → lock in context menu
 export const ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: boolean = false; // true → public visibility option shown in dashboard creation/edit UIs | false → hidden
-export const SHOW_LOCK_IN_PANEL_HEADER: boolean = false; // true → lock button visible in panel header | false → lock in context menu
 export const SHOW_HIDDEN_FIELDS_BUTTON: boolean = false; // true → Show the hidden fields button | false → Don't show the hidden fields button
 export const SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY: boolean = false; // true → only admins see the button | false → all users see it
