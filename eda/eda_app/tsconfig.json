@@ -25,7 +25,8 @@
       "lib": ["es2022", "dom"],
       "useDefineForClassFields": false,
       "strict": false,
-      "strictPropertyInitialization": false
+      "strictPropertyInitialization": false,
+      "skipLibCheck": true
     },
     "angularCompilerOptions": {
       "strictTemplates": true,
@@ -37,4 +38,3 @@
       "i18nOutFormat": "xlf" // ✅ Especifica el formato de exportación de i18n (por defecto es "xlf")
     }
 }
-  

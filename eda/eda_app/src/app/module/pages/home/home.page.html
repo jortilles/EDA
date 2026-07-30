@@ -116,10 +116,10 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Public Reports -->
         <ng-container
-          *ngTemplateOutlet="reportsTemplate; context: { reports: sharedReports, title: publicTitle, colKey: 'shared' }"></ng-container>
+          *ngTemplateOutlet="reportsTemplate; context: { reports: publicReports, title: publicTitle, colKey: 'open' }"></ng-container>
         <!-- Commons -->
         <ng-container
-          *ngTemplateOutlet="reportsTemplate; context: { reports: publicReports, title: commonTitle, colKey: 'public' }"></ng-container>
+          *ngTemplateOutlet="reportsTemplate; context: { reports: commonReports, title: commonTitle, colKey: 'common' }"></ng-container>
         <!-- Groups -->
         <ng-container
           *ngTemplateOutlet="reportsTemplate; context: { reports: roleReports, title: groupTitle, colKey: 'group' }"></ng-container>
@@ -204,11 +204,11 @@
       </div>
       <div class="text-sm text-muted-foreground text-center">
         @if (report.config?.modifiedAt) {
-        <span>{{report.config.modifiedAt}}</span>
+        <span>{{report.config.modifiedAt | date:'yyyy-MM-dd'}}</span>
         }
       </div>
       <div class="flex items-center justify-end">
-        @if(report.config.visible=='shared' || report.config.visible=='open' ){
+        @if(report.config.visible=='open'){
           <button class="btn-card-action rounded-md p-1 cursor-pointer" (click)="copyReport(report)"
             title="Copiar enlace público" i18n-title="@@copyPublicLinkTooltip">
             <eda-icon name="link" size="sm" class="mr-1"></eda-icon>

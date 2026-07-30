@@ -52,7 +52,7 @@ export class AlertsManagementComponent implements OnInit {
 
   private initDashboards(): void {
     this.dashboardService.getDashboards().subscribe(data => {
-      let dashboards = [].concat.apply([], [data.dashboards, data.group, data.publics, data.shared]);
+      let dashboards = [].concat.apply([], [data.private, data.group, data.open, data.common]);
 
       dashboards.forEach(dashboard => {
 

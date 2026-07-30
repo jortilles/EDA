@@ -20,7 +20,9 @@ export class DashboardController {
 
 
   /**
-   * Retrieves all dashboards available to the current user, classifying them as private, group, public, and shared.
+   * Retrieves all dashboards available to the current user, classifying them as private, group, open, and common.
+   * Nomenclatura unificada: los 4 valores válidos de config.visible y de esta respuesta son
+   * siempre 'open' | 'common' | 'group' | 'private'. Nada de 'public'/'shared'/'dashboards' aquí.
    * @param req Express Request with user information
    * @param res Express Response to send the result
    * @param next NextFunction for error handling
@@ -28,23 +30,23 @@ export class DashboardController {
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
       const dataSources = await DataSource.find(  {},  'ds.metadata ds.connection.type' ).exec();
-      let  privates, group, publics, shared = [];
+      let privateDashboards, group, openDashboards, commonDashboards = [];
       const groups = await Group.find({ users: { $in: req.user._id } }).exec();
       const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
       const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
 
 
       if (isAdmin) {
-        [publics, privates, group, shared] = await DashboardController.getAllDashboardToAdmin(req, dataSources)
+        [openDashboards, privateDashboards, group, commonDashboards] = await DashboardController.getAllDashboardToAdmin(req, dataSources)
       } else {
-        privates = await DashboardController.getPrivateDashboards(req, dataSources)
+        privateDashboards = await DashboardController.getPrivateDashboards(req, dataSources)
         group = await DashboardController.getGroupsDashboards(req, dataSources)
-        shared = await DashboardController.getSharedDashboards(req, dataSources)
-        publics = await DashboardController.getPublicsDashboards(req, dataSources)
+        commonDashboards = await DashboardController.getCommonDashboards(req, dataSources)
+        openDashboards = await DashboardController.getOpenDashboards(req, dataSources, isAdmin)
       }
 
       // Modificación de fecha y adición de autor si no lo tiene (informes viejos)
-      await setDasboardsAuthorDate([publics, shared, group, privates]);
+      await setDasboardsAuthorDate([openDashboards, commonDashboards, group, privateDashboards]);
 
 
       // Asegurarse de que la información del grupo esté incluida para dashboards de tipo "group"
@@ -52,10 +54,10 @@ export class DashboardController {
 
       return res.status(200).json({
         ok: true,
-        dashboards: privates,
+        private: privateDashboards,
         group,
-        publics,
-        shared,
+        open: openDashboards,
+        common: commonDashboards,
         isAdmin,
         isDataSourceCreator,
       });
@@ -84,55 +86,57 @@ export class DashboardController {
    */
   static async getPrivateDashboards(req: Request, dss:any) {
     try {
-      const dashboards = await DashboardController.findAllDashboardsWithMeta({ user: req.user._id })
-      const privates = []
+      // Sin 'visible' (undefined/null/'') es el valor legacy que normalizeVisibility trata como
+      // 'private' por defecto — se incluye en la query para no perder dashboards antiguos sin ese campo.
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({
+        user: req.user._id,
+        $or: [{ 'config.visible': 'private' }, { 'config.visible': null }, { 'config.visible': '' }]
+      })
+      const privateDashboards = []
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
 
-        if (dashboard.config.visible === 'private') {
         const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() );
          if( ds ){
               // Obtain the name of the data source
                dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
               dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
               if (this.iCanSeeTheDashboard(req, ds) == true) {
-                privates.push(dashboard);
+                privateDashboards.push(dashboard);
               }
           }else{
            // console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
           }
-
-        }
       }
 
       let tags: Array<any> = req.qs.tags;
 
       if (_.isEmpty(tags)) {
-        return privates;
+        return privateDashboards;
 
       } else {
         tags = req.qs.tags.split(',');
-        const privatesTags = []
+        const privateDashboardsTags = []
         tags.forEach(tag => {
-          privates.forEach(dbs => {
+          privateDashboards.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
               dbs.config.tag.forEach(t => {
                 if (t === tag) {
-                  privatesTags.push(dbs)
+                  privateDashboardsTags.push(dbs)
                 }
               })
             }
           }
           )
         })
-        return privatesTags;
+        return privateDashboardsTags;
       }
 
 
     } catch (err) {
       console.log(err);
-      throw new HttpException(400, 'Error loading privates dashboards')
+      throw new HttpException(400, 'Error loading private dashboards')
     }
   }
   /**
@@ -212,114 +216,117 @@ export class DashboardController {
 
 
   /**
-   * Retrieves the public dashboards the user has access to, filtering by tags if specified.
+   * Retrieves the "open" (público) dashboards the user has access to, filtering by tags if specified.
    * @param req Express Request with user information and possible tags
    * @param dss List of available datasources
-   * @returns List of public dashboards
+   * @returns List of open dashboards
    */
-  static async getPublicsDashboards(req: Request, dss: any[]) {
+  static async getOpenDashboards(req: Request, dss: any[], isAdmin: boolean = false) {
     try {
-      const dashboards = await DashboardController.findAllDashboardsWithMeta();
-      const publics = []
+      if (!isAdmin && !eda_api_config.custom_behaviour.ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS) {
+        return [];
+      }
+      // 'shared' es el valor legacy que normalizeVisibility traduce a 'open' — se incluye en la
+      // query para no perder dashboards antiguos aún no migrados.
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({ 'config.visible': { $in: ['open', 'shared'] } });
+      const openDashboards = []
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
-        if (dashboard.config.visible === 'open') {
-          const ds = dss.find(e => e._id == dashboard.config.ds._id);
-          if( ds ){
-              dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
-              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
-              if (this.iCanSeeTheDashboard(req, ds) == true) {
-                 publics.push(dashboard);
-              }else{
-                 //console.log('No puedo ver el informe ' + dashboard            )
-              }
-          }else{
-            console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
-          }
+        const ds = dss.find(e => e._id == dashboard.config.ds._id);
+        if( ds ){
+            dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+            dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
+            if (this.iCanSeeTheDashboard(req, ds) == true) {
+               openDashboards.push(dashboard);
+            }else{
+               //console.log('No puedo ver el informe ' + dashboard            )
+            }
+        }else{
+          console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
         }
       }
 
       let tags: Array<any> = req.qs.tags;
 
       if (_.isEmpty(tags)) {
-        return publics;
+        return openDashboards;
 
       } else {
         tags = req.qs.tags.split(',');
-        const publicsTags = []
+        const openDashboardsTags = []
         tags.forEach(tag => {
-          publics.forEach(dbs => {
+          openDashboards.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
               dbs.config.tag.forEach(t => {
                 if (t === tag) {
-                  publicsTags.push(dbs)
+                  openDashboardsTags.push(dbs)
                 }
               })
             }
           }
           )
         })
-        return publicsTags;
+        return openDashboardsTags;
       }
 
     } catch (err) {
       console.log(err);
-      throw new HttpException(400, 'Error loading public dashboards')
+      throw new HttpException(400, 'Error loading open dashboards')
     }
   }
   /**
-   * Retrieves the shared dashboards, filtering by tags if specified.
+   * Retrieves the "common" (común) dashboards, filtering by tags if specified.
    * @param req Express Request with possible tags
-   * @returns List of shared dashboards
+   * @returns List of common dashboards
    */
-  static async getSharedDashboards(req: Request, dss:any) {
+  static async getCommonDashboards(req: Request, dss:any) {
     try {
-      const dashboards = await DashboardController.findAllDashboardsWithMeta()
-      const shared = []
+      // 'public' es el valor legacy que normalizeVisibility traduce a 'common' — se incluye en la
+      // query para no perder dashboards antiguos aún no migrados.
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({ 'config.visible': { $in: ['common', 'public'] } })
+      const commonDashboards = []
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
-        if (dashboard.config.visible === 'common') {
-          const ds = dss.find( e=> e._id.toString() == dashboard.config.ds?._id?.toString() );
-          if( ds ){
-              // Obtain the name of the data source
-              dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
-              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
-              if (this.iCanSeeTheDashboard(req, ds) == true) {
-                shared.push(dashboard);
-              }
-          }else{
-            console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
-          }
+        const ds = dss.find( e=> e._id.toString() == dashboard.config.ds?._id?.toString() );
+        if( ds ){
+            // Obtain the name of the data source
+            dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+            dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
+            if (this.iCanSeeTheDashboard(req, ds) == true) {
+              commonDashboards.push(dashboard);
+            }
+        }else{
+          console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
         }
       }
 
       let tags: Array<any> = req.qs.tags;
 
       if (_.isEmpty(tags)) {
-        return shared;
+        return commonDashboards;
 
       } else {
         tags = req.qs.tags.split(',');
-        const sharedTags = []
+        const commonDashboardsTags = []
         tags.forEach(tag => {
-          shared.forEach(dbs => {
+          commonDashboards.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
               dbs.config.tag.forEach(t => {
                 if (t === tag) {
-                  sharedTags.push(dbs)
+                  commonDashboardsTags.push(dbs)
                 }
               })
             }
           }
           )
         })
-        return sharedTags;
+        return commonDashboardsTags;
       }
     } catch (err) {
       console.log(err);
-      throw new HttpException(400, 'Error loading shared dashboards')
+      throw new HttpException(400, 'Error loading common dashboards')
     }
   }
 
@@ -331,7 +338,7 @@ export class DashboardController {
     private static async findAllDashboardsWithMeta(filter: Record<string, any> = {}) {
     return Dashboard.find(
       filter,
-      'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user group'
+      'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group'
     ).populate('user', 'name').exec();
   }
 
@@ -412,12 +419,12 @@ export class DashboardController {
     try {
       //si no lleva filtro, pasamos directamente a recuperarlos todos
       const dashboards = JSON.stringify(filter) !== '{}' ?
-        await Dashboard.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user group config.external').exec() :
-        await Dashboard.find({}, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user group config.external').exec();
-      const publics = [];
-      const privates = [];
-      const groups = [];
-      const shared = [];
+        await Dashboard.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external').populate('user', 'name').exec() :
+        await Dashboard.find({}, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.active config.ds user group config.external').populate('user', 'name').exec();
+      const openDashboards = [];
+      const privateDashboards = [];
+      const groupDashboards = [];
+      const commonDashboards = [];
 
 
 
@@ -439,17 +446,17 @@ export class DashboardController {
 
         switch (dashboard.config.visible) {
           case 'open':
-            publics.push(dashboard)
+            openDashboards.push(dashboard)
             break
           case 'private':
-            privates.push(dashboard)
+            privateDashboards.push(dashboard)
             break
           case 'group':
             dashboard.group = await Group.find({ _id: dashboard.group }).exec()
-            groups.push(dashboard)
+            groupDashboards.push(dashboard)
             break
           case 'common':
-            shared.push(dashboard)
+            commonDashboards.push(dashboard)
             break
         }
       }
@@ -458,54 +465,54 @@ export class DashboardController {
       let tags: Array<any> = req.qs.tags;
 
       if (_.isEmpty(tags)) {
-        return [publics, privates, groups, shared];
+        return [openDashboards, privateDashboards, groupDashboards, commonDashboards];
       } else {
         tags = req.qs.tags.split(',');
-        const publicsTags = []
-        const privatesTags = []
-        const groupsTags = []
-        const sharedTags = []
+        const openDashboardsTags = []
+        const privateDashboardsTags = []
+        const groupDashboardsTags = []
+        const commonDashboardsTags = []
 
         tags.forEach(tag => {
-          publics.forEach(dbs => {
+          openDashboards.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
               dbs.config.tag.forEach(t => {
                 if (t === tag) {
-                  publicsTags.push(dbs)
+                  openDashboardsTags.push(dbs)
                 }
               })
             }
           })
-          privates.forEach(dbs => {
+          privateDashboards.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
               dbs.config.tag.forEach(t => {
                 if (t === tag) {
-                  privatesTags.push(dbs)
+                  privateDashboardsTags.push(dbs)
                 }
               })
             }
           })
-          groups.forEach(dbs => {
+          groupDashboards.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
               dbs.config.tag.forEach(t => {
                 if (t === tag) {
-                  groupsTags.push(dbs)
+                  groupDashboardsTags.push(dbs)
                 }
               })
             }
           })
-          shared.forEach(dbs => {
+          commonDashboards.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
               dbs.config.tag.forEach(t => {
                 if (t === tag) {
-                  sharedTags.push(dbs)
+                  commonDashboardsTags.push(dbs)
                 }
               })
             }
           })
         })
 
-        return [publicsTags, privatesTags, groupsTags, sharedTags];
+        return [openDashboardsTags, privateDashboardsTags, groupDashboardsTags, commonDashboardsTags];
       }
 
 
@@ -546,6 +553,10 @@ export class DashboardController {
 
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
+
+        if (DashboardController.isPublicVisibility(dashboard.config.visible) && !DashboardController.canManagePublicDashboards(req)) {
+          return next(new HttpException(403, 'Only an administrator can view public dashboards'));
+        }
 
         await DashboardController.initDashboardPanels(dashboard);
 
@@ -681,7 +692,9 @@ export class DashboardController {
     try {
       const dashboard = await Dashboard.findById(req.params.id, 'config.visible').exec();
       if (!dashboard) return next(new HttpException(404, 'Dashboard not found'));
-      const isAccessible = dashboard.config.visible === 'open' || dashboard.config.visible === 'shared';
+      // Normalize legacy visibility values before comparing (raw legacy 'shared' means today's 'open')
+      DashboardController.normalizeVisibility(dashboard);
+      const isAccessible = dashboard.config.visible === 'open';
       return res.status(200).json({ isAccessible });
     } catch (err) {
       console.log(err);
@@ -692,7 +705,14 @@ export class DashboardController {
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body
+
+      if (DashboardController.isPublicVisibility(body.config?.visible) && !DashboardController.canManagePublicDashboards(req)) {
+        return next(new HttpException(403, 'Only an administrator can create public dashboards'));
+      }
+
       body.config.author = req.user.name;
+      body.config.createdAt = new Date().toISOString();
+      body.config.modifiedAt = new Date().toISOString();
       const dashboard: IDashboard = new Dashboard({
         config: body.config,
         user: req.user._id
@@ -724,6 +744,15 @@ export class DashboardController {
           return next(
             new HttpException(400, 'Dashboard not exist with this id')
           )
+        }
+
+        if (!DashboardController.canManagePublicDashboards(req)) {
+          if (DashboardController.isPublicVisibility(body.config?.visible)) {
+            return next(new HttpException(403, 'Only an administrator can make a dashboard public'));
+          }
+          if (DashboardController.isPublicVisibility(dashboard.config.visible)) {
+            return next(new HttpException(403, 'You do not have permission to modify a public dashboard'));
+          }
         }
 
         dashboard.config = body.config
@@ -790,6 +819,16 @@ export class DashboardController {
         };
       }
 
+      if (!DashboardController.canManagePublicDashboards(req)) {
+        if (key === 'config.visible' && DashboardController.isPublicVisibility(newValue)) {
+          return next(new HttpException(403, 'Only an administrator can make a dashboard public'));
+        }
+        const current = await Dashboard.findById(id, 'config.visible').exec();
+        if (DashboardController.isPublicVisibility(current?.config?.visible)) {
+          return next(new HttpException(403, 'You do not have permission to modify a public dashboard'));
+        }
+      }
+
       const dashboard = await Dashboard.findByIdAndUpdate(
         id,
         { $set: updateObj },
@@ -818,6 +857,13 @@ export class DashboardController {
 
   static async delete(req: Request, res: Response, next: NextFunction) {
     try {
+      if (!DashboardController.canManagePublicDashboards(req)) {
+        const current = await Dashboard.findById(req.params.id, 'config.visible').exec();
+        if (DashboardController.isPublicVisibility(current?.config?.visible)) {
+          return next(new HttpException(403, 'You do not have permission to delete a public dashboard'));
+        }
+      }
+
       const dashboard = await Dashboard.findByIdAndDelete(req.params.id);
 
       if (!dashboard) {
@@ -2258,6 +2304,10 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         return next(new HttpException(404, 'Dashboard not found'));
       }
 
+      if (DashboardController.isPublicVisibility(originalDashboard.config.visible) && !DashboardController.canManagePublicDashboards(req)) {
+        return next(new HttpException(403, 'You do not have permission to clone a public dashboard'));
+      }
+
       const dashboards = await Dashboard.find({},
         'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
       ).populate('user', 'name').exec()
@@ -2345,6 +2395,24 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     } else if (dashboard.config.visible === 'shared') {
       dashboard.config.visible = 'open';
     }
+  }
+
+  /**
+   * "open" y su alias legacy "shared" son las visibilidades públicas.
+   * @param visible Valor de config.visible a comprobar
+   */
+  private static isPublicVisibility(visible: any): boolean {
+    return ['open', 'shared'].includes(visible);
+  }
+
+  /**
+   * Un admin siempre puede gestionar dashboards públicos; un no-admin solo si
+   * custom_behaviour.ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS está activado.
+   * @param req Express Request con la información del usuario
+   */
+  private static canManagePublicDashboards(req: Request): boolean {
+    const isAdmin = req.user.role.includes('135792467811111111111110');
+    return isAdmin || !!eda_api_config.custom_behaviour?.ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS;
   }
 
 }

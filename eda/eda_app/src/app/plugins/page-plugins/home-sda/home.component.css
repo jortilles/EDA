@@ -1,0 +1,163 @@
+/* ---- Corporate utility classes (component-scoped, mirrors home.page.css) ---- */
+.text-corporate-primary { color: var(--corporate-primary); }
+.btn-corporate-gradient {
+  background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient));
+}
+
+/* ---- Active-filter warning style (distinct from the corporate/primary action color) ---- */
+.text-corporate-warning {
+  color: #FFC107;
+  transition: color 0.2s ease;
+}
+.text-corporate-warning:hover { color: #E0A800; }
+.btn-corporate-warning {
+  background: #FFC107;
+  transition: background-color 0.2s ease;
+}
+.btn-corporate-warning:hover {
+  background: #E0A800;
+}
+
+/* ---- Filter dropdown counter badge ---- */
+.filter-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.1rem;
+  height: 1.1rem;
+  padding: 0 0.3rem;
+  border-radius: 9999px;
+  background-color: #FFC107;
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+/* ---- Result count indicator ---- */
+#count-indicator {
+  display: inline-block;
+  width: 9ch;
+  white-space: nowrap;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Report table ---- */
+#report-table th { position: relative; cursor: pointer; }
+#report-table th:hover { background-color: hsl(var(--muted)); }
+#report-table th.cursor-pointer::after {
+  content: "▲";
+  font-weight: 900;
+  margin-left: 4px;
+  opacity: 0.3;
+  color: var(--corporate-primary);
+}
+#report-table th.sort-asc::after { opacity: 1; }
+#report-table th.sort-desc::after { content: "▼"; opacity: 1; }
+#report-table td:first-child:hover { text-decoration: underline; font-weight: 600; }
+#report-table td { color: hsl(var(--foreground)); font-size: 0.95rem; font-weight: 500; }
+
+/* ---- Report type column: dot, label and edit button in one horizontal row ---- */
+.type-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.type-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.type-label {
+  flex-shrink: 0;
+}
+
+/* ---- Inline type editor (p-dropdown) ---- */
+.type-edit-container ::ng-deep .p-dropdown-label {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+.type-edit-container ::ng-deep .p-dropdown-trigger {
+  width: 1.75rem;
+}
+
+/* Type editor's overlay panel (appendTo="body") */
+::ng-deep .type-edit-panel .p-dropdown-item {
+  padding: 0.35rem 0.75rem;
+}
+
+/* Locks the "Tipo" column width */
+#report-table .type-container {
+  width: 240px;
+}
+
+/* ---- Title / inline editing ---- */
+.dashboard-title-container { position: relative; display: inline-block; }
+.report-name:hover { text-decoration: underline; }
+.edit-icon, .edit-type-icon {
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+#report-table tr:hover .edit-icon,
+#report-table tr:hover .edit-type-icon,
+.report-card:hover .edit-icon,
+.report-card:hover .edit-type-icon {
+  opacity: 0.5;
+}
+[contenteditable]:focus {
+  outline: none;
+  background-color: hsl(var(--muted));
+  border-radius: 0.25rem;
+  padding: 1px 3px;
+}
+
+/* ---- Tags / groups labels ---- */
+.tag-label, .group-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  margin: 1px;
+  padding: 2px 6px;
+  border-radius: 0.25rem;
+  color: #000;
+}
+.tag-label { background-color: #b4bc32; }
+.group-label { background-color: #ffd971; }
+
+/* ---- Card view ---- */
+.report-card { border-left-width: 6px; transition: box-shadow 0.2s, transform 0.15s; }
+.report-card:hover { box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+.report-card:active { transform: scale(0.99); }
+.card-border-open    { border-left-color: #b4bc32; }
+.card-border-common  { border-left-color: #add8e7; }
+.card-border-group   { border-left-color: #ffd971; }
+.card-border-private  { border-left-color: #ee4e36; }
+
+.datasource-name {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  color: hsl(var(--muted-foreground));
+  border: 1px solid hsl(var(--border));
+  border-top: none;
+  border-right: none;
+  border-radius: 0 0 0 0.375rem;
+}
+
+/* ---- Newly cloned highlight ---- */
+@keyframes shake-highlight {
+  0%, 100% { transform: translateX(0); opacity: 1; }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-15px); }
+  20%, 40%, 60%, 80% { transform: translateX(15px); }
+  50% { opacity: 0.7; }
+}
+.newly-cloned { animation: shake-highlight 5s ease-in-out; }

@@ -69,9 +69,9 @@ export class DataSourceConnectionDetailPage implements OnInit {
     { label: 'Excel', value: 'excel', port: 27017 },
     { label: 'Csv', value: 'csv', port: 27017 },
     { label: 'DuckDB (CSV)', value: 'duckdb' },
-    { label: 'Odoo', value: 'odoo', port: null },
-    { label: 'Google Analytics 4', value: 'googleanalytics', port: null },
-    { label: 'Holded', value: 'holded', port: null },
+    // Los tipos de plugin (Odoo, Google Analytics 4, Holded, ...) se agregan solos
+    // desde el plugin.meta.ts de cada carpeta en datasource-plugins.
+    ...DATASOURCE_PLUGINS.map((p) => ({ label: p.label, value: p.type, port: p.port })),
   ];
 
   public sidOptions: any[] = [

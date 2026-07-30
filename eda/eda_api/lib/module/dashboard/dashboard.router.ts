@@ -32,7 +32,7 @@ const router = express.Router();
  *     tags:
  *       - Dashboard Routes
  */
-router.get('', authGuard,  DashboardController.getDashboards);
+router.get('', authGuard, DashboardController.getDashboards);
 
 router.post('/clean-refresh', authGuard, DashboardController.cleanDashboardCache);
 
