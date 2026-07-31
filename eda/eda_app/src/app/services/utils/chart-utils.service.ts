@@ -753,8 +753,8 @@ export class ChartUtilsService {
         }
 
 
-        // sunbrust two or more value columns and one numeric
-        if(  dataDescription.totalColumns > 2 && dataDescription.otherColumns.length >= 1 && dataDescription.numericColumns.length === 1  ) {
+        // sunburst: one numeric value + at least one categorical column 
+        if (dataDescription.totalColumns >= 2 && dataDescription.otherColumns.length >= 1 && dataDescription.numericColumns.length === 1) {
             notAllowed.splice(notAllowed.indexOf('sunburst'), 1);
         }
 
