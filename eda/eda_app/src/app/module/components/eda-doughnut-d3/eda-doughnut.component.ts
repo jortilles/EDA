@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaDoughnutD3 } from './eda-doughnut';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, formatValueLabel, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface DoughnutSlice {
@@ -392,7 +392,10 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
           .style('font-size', '12px')
           .style('font-weight', 'bold')
           .style('font-family', this.fontFamily)
-          .style('fill', 'white')
+          // The pill's own background is already the slice's color (see the rect insert below),
+          // so "series" mode here means "the legible default" (white) rather than the slice color
+          // itself, which would make the text invisible against its own badge.
+          .style('fill', resolveLabelColor(this.inject.labelColorMode, this.inject.labelCustomColor, 'white'))
           .text(formatValueLabel(d.data.value, percentage, this.inject.showLabels, this.inject.showLabelsPercent));
         const bbox = (textEl.node() as SVGTextElement).getBBox();
         const paddingX = 8, paddingY = 4;

@@ -1250,6 +1250,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.innerRadiusPercent = cfg.innerRadiusPercent ?? 50;
         inject.useGradient = cfg.useGradient ?? true;
         inject.chartAnimation = cfg.chartAnimation ?? true;
+        inject.labelColorMode = cfg.labelColorMode ?? 'series';
+        inject.labelCustomColor = cfg.labelCustomColor;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaDoughnut);
@@ -1327,6 +1329,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.useGradient = cfg.useGradient ?? true;
         inject.chartAnimation = cfg.chartAnimation ?? true;
+        inject.labelColorMode = cfg.labelColorMode ?? 'series';
+        inject.labelCustomColor = cfg.labelCustomColor;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaPolarAreaComponent);
