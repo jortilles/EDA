@@ -26,6 +26,7 @@ export class KnobDialogComponent implements OnInit {
     public label: string;
     public display: boolean = false;
     public semaphoreColor: boolean = false;
+    public chartAnimation: boolean = true;
     public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
     constructor(private styleProviderService: StyleProviderService) {}
@@ -57,6 +58,7 @@ export class KnobDialogComponent implements OnInit {
                 this.min = limits[0];
                 this.max = limits[1];
                 this.semaphoreColor = !!this.myPanelChartComponent.componentRef.instance.inject?.semaphoreColor;
+                this.chartAnimation = this.myPanelChartComponent.componentRef.instance.inject?.chartAnimation ?? true;
 
                 // Load assignedColors
                 this.loadChartColors(this.label, currentColor);
@@ -111,18 +113,26 @@ export class KnobDialogComponent implements OnInit {
         this.myPanelChartComponent.changeChartType();
     }
 
+    toggleChartAnimation(): void {
+        this.chartAnimation = !this.chartAnimation;
+        const cfg = this.panelChartConfig.config.getConfig();
+        cfg['chartAnimation'] = this.chartAnimation;
+        this.myPanelChartComponent.changeChartType();
+    }
+
     saveChartConfig() {
         // Apply final colors
         this.applyColorToChart();
-        
+
         // Save assignedColors in config
         this.panelChartConfig.config.getConfig()['assignedColors'] = [...this.assignedColors];
-        
+
         // Save limits
         const properties = {
             limits: [this.min, this.max],
             assignedColors: this.assignedColors,
-            semaphoreColor: this.semaphoreColor
+            semaphoreColor: this.semaphoreColor,
+            chartAnimation: this.chartAnimation
         };
         
         this.styleProviderService.palKnob = false;

@@ -388,6 +388,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.assignedColors = this.props.config['config']['assignedColors'] ? this.props.config['config']['assignedColors'] : null;
         chartConfig.limits = this.props.config['config']['limits'] ? this.props.config['config']['limits'] : null;
         chartConfig.semaphoreColor = !!this.props.config['config']['semaphoreColor'];
+        chartConfig.chartAnimation = this.props.config['config']['chartAnimation'] ?? true;
         this.createEdaKnobComponent(chartConfig)
     }
 
@@ -1249,6 +1250,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.innerRadiusPercent = cfg.innerRadiusPercent ?? 50;
         inject.useGradient = cfg.useGradient ?? true;
         inject.chartAnimation = cfg.chartAnimation ?? true;
+        inject.labelColorMode = cfg.labelColorMode ?? 'series';
+        inject.labelCustomColor = cfg.labelCustomColor;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaDoughnut);
@@ -1326,6 +1329,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.useGradient = cfg.useGradient ?? true;
         inject.chartAnimation = cfg.chartAnimation ?? true;
+        inject.labelColorMode = cfg.labelColorMode ?? 'series';
+        inject.labelCustomColor = cfg.labelCustomColor;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaPolarAreaComponent);

@@ -178,13 +178,18 @@ export const ChartsConfigUtils = {
         assignedColors: inst ? inst.assignedColors : [],
         useGradient: inst ? inst.inject?.useGradient ?? true : true,
         chartLegend: inst ? inst.chartLegend ?? true : true,
+        // Without this, every requery (initEdaQuery/initSqlQuery call setConfig() on every
+        // filter change/refresh/reload) silently dropped chartAnimation back to its default,
+        // undoing both the per-panel dialog checkbox and the dashboard-wide animations toggle.
+        chartAnimation: inst ? inst.inject?.chartAnimation ?? true : (ebp.panelChart.props.config?.getConfig()?.['chartAnimation'] ?? true),
       }
     } else if (ebp.panelChart.props.chartType === 'knob') {
 
       config = {
         assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : ebp.panelChart.props.config.getConfig()['assignedColors'],
         limits: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.limits : ebp.panelChart.props.config.getConfig()['limits'],
-        semaphoreColor: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject?.semaphoreColor : ebp.panelChart.props.config.getConfig()['semaphoreColor']
+        semaphoreColor: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject?.semaphoreColor : ebp.panelChart.props.config.getConfig()['semaphoreColor'],
+        chartAnimation: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject?.chartAnimation ?? true : ebp.panelChart.props.config.getConfig()['chartAnimation'] ?? true
       };
     } else {
       // Bar/line/area/radar/doughnut/polarArea family - a mix of D3 (doughnut, polarArea, the
