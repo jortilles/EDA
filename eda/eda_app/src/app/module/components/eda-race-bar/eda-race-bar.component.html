@@ -1,7 +1,7 @@
 <div class="eda-race-bar-wrapper">
   @if (!noData) {
     <div class="eda-race-bar-header">
-      <button type="button" class="eda-race-bar-play-btn" (click)="togglePlay()" [attr.aria-label]="playing ? 'Pausa' : 'Reproducir'">
+      <button type="button" class="eda-race-bar-play-btn" (click)="togglePlay()" [attr.aria-label]="playPauseAriaLabel">
         <span class="material-icons">{{ playing ? 'pause' : (finished ? 'replay' : 'play_arrow') }}</span>
       </button>
     </div>
@@ -13,7 +13,7 @@
       <div class="eda-race-bar-timeline">
         <span class="eda-race-bar-timeline-edge">{{ firstPeriodLabel }}</span>
         <input type="range" class="eda-race-bar-timeline-input" min="0" [max]="frameCount - 1" step="1"
-          [value]="scrubPosition" (input)="onScrub($event)" [attr.aria-label]="'Timeline'">
+          [value]="scrubPosition" (input)="onScrub($event)" [attr.aria-label]="timelineAriaLabel">
         <span class="eda-race-bar-timeline-edge">{{ lastPeriodLabel }}</span>
       </div>
     }

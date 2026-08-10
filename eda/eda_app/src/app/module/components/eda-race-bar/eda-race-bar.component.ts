@@ -1,10 +1,27 @@
-import { Component, AfterViewInit, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, OnDestroy, Inject, LOCALE_ID } from '@angular/core';
+import { Component, AfterViewInit, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, OnDestroy } from '@angular/core';
 import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
-import { CommonModule, getLocaleMonthNames, FormStyle, TranslationWidth } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { RaceBar } from './eda-race-bar';
 import { StyleProviderService, lightenHex, sanitizeId, ensureLinearGradient, formatAxisValue, formatDeNumber, initD3ResizeObserver, teardownD3Chart, measureMaxLabelWidth } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
+
+// Own translated month abbreviations, not Angular's getLocaleMonthNames(LOCALE_ID) - this app never
+// actually provides a LOCALE_ID (see main.ts), so that always resolves to Angular's 'en-US' default
+// regardless of which language the rest of the UI is showing, which is why the ticker read "Jan"
+// instead of "Ene". These go through the same $localize/messages.xlf pipeline as every other
+// user-facing string in the app instead.
+const MONTH_LABELS: string[] = [
+  $localize`:@@raceBarMonthJan:Ene`, $localize`:@@raceBarMonthFeb:Feb`, $localize`:@@raceBarMonthMar:Mar`,
+  $localize`:@@raceBarMonthApr:Abr`, $localize`:@@raceBarMonthMay:May`, $localize`:@@raceBarMonthJun:Jun`,
+  $localize`:@@raceBarMonthJul:Jul`, $localize`:@@raceBarMonthAug:Ago`, $localize`:@@raceBarMonthSep:Sep`,
+  $localize`:@@raceBarMonthOct:Oct`, $localize`:@@raceBarMonthNov:Nov`, $localize`:@@raceBarMonthDec:Dic`,
+];
+const QUARTER_PREFIX = $localize`:@@raceBarQuarterPrefix:T`;
+const WEEK_PREFIX = $localize`:@@raceBarWeekPrefix:Sem`;
+const PLAY_ARIA_LABEL = $localize`:@@raceBarPlayAria:Reproducir`;
+const PAUSE_ARIA_LABEL = $localize`:@@raceBarPauseAria:Pausa`;
+const TIMELINE_ARIA_LABEL = $localize`:@@raceBarTimelineAria:Línea de tiempo`;
 
 /** One tick of the race - one real, actually-queried data point at the date column's own declared
  * granularity (year/quarter/month/week/day/...). Exactly one of these is shown per tick - no
@@ -38,7 +55,7 @@ const MAX_TOPN_COUNT = 30;
 // ticks and what they're labeled as - deliberately no auto-coarsening (e.g. month -> quarter) to
 // keep the total race under some duration cap, even for a long range: a 'month' column always plays
 // one tick per month and always reads "Ene 2020", never silently reinterpreted as a quarter.
-const FRAME_DURATION_MS = 3500;
+const FRAME_DURATION_MS = 6000;
 
 @Component({
   standalone: true,
@@ -103,7 +120,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   private catLabelsG: any;
   private valueLabelsG: any;
 
-  constructor(private styleProviderService: StyleProviderService, @Inject(LOCALE_ID) private locale: string) { }
+  constructor(private styleProviderService: StyleProviderService) { }
 
   ngOnInit(): void {
     this.id = `raceBar_${this.inject.id}`;
@@ -155,6 +172,14 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   get frameCount(): number {
     return this.frames.length;
+  }
+
+  get playPauseAriaLabel(): string {
+    return this.playing ? PAUSE_ARIA_LABEL : PLAY_ARIA_LABEL;
+  }
+
+  get timelineAriaLabel(): string {
+    return TIMELINE_ARIA_LABEL;
   }
 
   get firstPeriodLabel(): string {
@@ -252,13 +277,9 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /** Localized month name (matches eda-kpi-trend's own _periodLabel convention) - abbreviated,
-   * capitalized, without the trailing "." some locales add (e.g. "Ene" not "ene."). */
+  /** Translated month abbreviation - see MONTH_LABELS. */
   private monthLabel(monthIndex0: number): string {
-    const months = getLocaleMonthNames(this.locale, FormStyle.Standalone, TranslationWidth.Abbreviated);
-    const raw = months[((monthIndex0 % 12) + 12) % 12];
-    if (!raw) return String(monthIndex0 + 1);
-    return raw.charAt(0).toUpperCase() + raw.slice(1).replace(/\.$/, '');
+    return MONTH_LABELS[((monthIndex0 % 12) + 12) % 12];
   }
 
   /** ISO week number of `date` (assumed already normalized to a Monday by parseKeyToDate's 'week' case, but computed generically here regardless). */
@@ -275,9 +296,9 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   private formatDateForDisplay(date: Date): string {
     switch (this.dateFormat) {
       case 'year': return String(date.getUTCFullYear());
-      case 'quarter': return `T${Math.floor(date.getUTCMonth() / 3) + 1} ${date.getUTCFullYear()}`;
+      case 'quarter': return `${QUARTER_PREFIX}${Math.floor(date.getUTCMonth() / 3) + 1} ${date.getUTCFullYear()}`;
       case 'month': return `${this.monthLabel(date.getUTCMonth())} ${date.getUTCFullYear()}`;
-      case 'week': return `Sem ${this.isoWeekNumber(date)} · ${date.getUTCFullYear()}`;
+      case 'week': return `${WEEK_PREFIX} ${this.isoWeekNumber(date)} · ${date.getUTCFullYear()}`;
       case 'day':
       case 'No':
       case undefined:
@@ -471,12 +492,18 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     const catLabels = this.catLabelsG.selectAll('text.eda-race-bar-cat-label')
       .data(entries, (d: RaceBarDatum) => d.category);
 
-    catLabels.exit().transition().duration(duration).ease(d3.easeLinear).attr('y', yMid).style('opacity', 0).remove();
+    // Exit/enter both target offscreenY (matching the bars), not yMid - yMid(d) reads d.rank, and
+    // an exiting element's `d` is still its OLD (pre-this-frame) rank, so it would just fade in
+    // place at its old row instead of sliding down with its bar; an entering element's `d` IS
+    // already the new rank, but starting it there too meant it popped in at rest while its own bar
+    // was still sliding up from offscreen to reach it - both looked "detached" from the bar.
+    const offscreenMid = offscreenY + rowHeight / 2;
+    catLabels.exit().transition().duration(duration).ease(d3.easeLinear).attr('y', offscreenMid).style('opacity', 0).remove();
 
     const catEnter = catLabels.enter().append('text')
       .attr('class', 'eda-race-bar-cat-label')
       .attr('x', 8)
-      .attr('y', yMid)
+      .attr('y', offscreenMid)
       .style('opacity', 0)
       .style('font-family', this.fontFamily)
       .style('pointer-events', 'none')
@@ -486,23 +513,29 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
       .text((d: RaceBarDatum) => d.category)
       .transition().duration(duration).ease(d3.easeLinear)
       .attr('y', yMid)
-      .style('opacity', 1);
+      // A 0-width bar has nothing to sit its name on - the label would just float on its own with
+      // no bar behind it, so it fades out right along with the bar rather than staying visible.
+      .style('opacity', (d: RaceBarDatum) => d.value === 0 ? 0 : 1);
 
     const valueLabels = this.valueLabelsG.selectAll('text.eda-race-bar-value-label')
       .data(entries, (d: RaceBarDatum) => d.category);
 
-    valueLabels.exit().transition().duration(duration).ease(d3.easeLinear).attr('y', yMid).style('opacity', 0).remove();
+    valueLabels.exit().transition().duration(duration).ease(d3.easeLinear).attr('y', offscreenMid).style('opacity', 0).remove();
 
     const valEnter = valueLabels.enter().append('text')
       .attr('class', 'eda-race-bar-value-label')
-      .attr('x', (d: RaceBarDatum) => Math.max(xScale(d.value), 0) + 8)
-      .attr('y', yMid)
+      // Starts at the bar's own start (x=0 -> +8) and value 0 - same as the bar itself starting at
+      // width=0 - so a brand-new entrant's number counts up and slides out to its final spot
+      // together with the bar growing into it, instead of sitting there pre-filled at the final
+      // value/position the instant it appears (only y and opacity were animating before).
+      .attr('x', 8)
+      .attr('y', offscreenMid)
       .style('opacity', 0)
       .style('font-family', this.fontFamily)
       .style('fill', this.fontColor)
       .style('pointer-events', 'none')
-      .each(function (d: RaceBarDatum) { (this as any).__value = d.value; })
-      .text((d: RaceBarDatum) => formatDeNumber(Math.round(d.value)));
+      .each(function (d: RaceBarDatum) { (this as any).__value = 0; })
+      .text(formatDeNumber(0));
 
     valEnter.merge(valueLabels)
       .transition().duration(duration).ease(d3.easeLinear)
