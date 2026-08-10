@@ -1,0 +1,108 @@
+.eda-race-bar-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.eda-race-bar-wrapper .svg-container {
+  position: relative;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.eda-race-bar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 6px 4px;
+  flex: 0 0 auto;
+}
+
+.eda-race-bar-play-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--corporate-primary, #4472c4);
+  color: #ffffff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.eda-race-bar-play-btn .material-icons {
+  font-size: 16px;
+  line-height: 16px;
+}
+
+/* Large, translucent "ticker" date readout bottom-right of the chart area - same convention as
+   the reference bar-chart-race (observablehq.com/@d3/bar-chart-race): the one piece of text big
+   enough to read at a glance while the bars are mid-race. Plain HTML/CSS, not SVG text, so its
+   size/weight are trivial to tune and it composes correctly with the panel's own font settings. */
+.eda-race-bar-ticker {
+  position: absolute;
+  right: 12px;
+  bottom: 6px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.35;
+  pointer-events: none;
+  line-height: 1;
+}
+
+.eda-race-bar-timeline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 10px 6px;
+  flex: 0 0 auto;
+}
+
+.eda-race-bar-timeline-edge {
+  font-size: 11px;
+  opacity: 0.55;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.eda-race-bar-timeline-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  accent-color: var(--corporate-primary, #4472c4);
+  cursor: pointer;
+}
+
+.eda-race-bar-no-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 12px;
+  opacity: 0.6;
+  font-size: 13px;
+}
+
+/* Axes/bars/labels are appended by D3 directly into the nested <svg> it creates at runtime,
+   outside Angular's template compiler, so they never get the [_ngcontent] attribute -
+   ::ng-deep is required to style them from this component's own stylesheet. */
+::ng-deep .eda-race-bar-axis path {
+  display: none;
+}
+
+::ng-deep .eda-race-bar-cat-label {
+  font-size: 12px;
+  font-weight: 600;
+  fill: #ffffff;
+  dominant-baseline: middle;
+}
+
+::ng-deep .eda-race-bar-value-label {
+  font-size: 12px;
+  font-weight: 600;
+  dominant-baseline: middle;
+}

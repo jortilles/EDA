@@ -15,6 +15,7 @@ import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatte
 import { SunburstConfig } from '../panel-charts/chart-configuration-models/sunburst-config';
 import { BubblechartConfig } from '../panel-charts/chart-configuration-models/bubblechart.config';
 import { TreeTableConfig } from '../panel-charts/chart-configuration-models/treeTable-config';
+import { RaceBarConfig } from '../panel-charts/chart-configuration-models/race-bar-config';
 
 // Custom per-chart config fields that live outside the small set of "core" ones (chartType,
 // query, colors...). Every place that saves, reloads, or applies this config (setConfig() here,
@@ -172,7 +173,7 @@ export const ChartsConfigUtils = {
         assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || [],
         modifiedFontPoints: inst?.inject?.modifiedFontPoints || 0,
       };
-    } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunburst"].includes(ebp.panelChart.props.chartType)) {
+    } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunburst", "raceBar"].includes(ebp.panelChart.props.chartType)) {
       const inst = ebp.panelChart.componentRef?.instance;
       config = {
         assignedColors: inst ? inst.assignedColors : [],
@@ -182,6 +183,10 @@ export const ChartsConfigUtils = {
         // filter change/refresh/reload) silently dropped chartAnimation back to its default,
         // undoing both the per-panel dialog checkbox and the dashboard-wide animations toggle.
         chartAnimation: inst ? inst.inject?.chartAnimation ?? true : (ebp.panelChart.props.config?.getConfig()?.['chartAnimation'] ?? true),
+      }
+      if (ebp.panelChart.props.chartType === 'raceBar') {
+        config.topNCount = inst ? inst.inject?.topNCount ?? null : (ebp.panelChart.props.config?.getConfig()?.['topNCount'] ?? null);
+        config.showTimeline = inst ? inst.inject?.showTimeline ?? false : (ebp.panelChart.props.config?.getConfig()?.['showTimeline'] ?? false);
       }
     } else if (ebp.panelChart.props.chartType === 'knob') {
 
@@ -229,6 +234,8 @@ export const ChartsConfigUtils = {
             return new KnobConfig(null, null);
         } else if (type === 'sunburst') {
             return new SunburstConfig([]);
+        } else if (type === 'raceBar') {
+            return new RaceBarConfig([]);
         } else if (type === 'kpi') {
             return new KpiConfig();
         } else if (['kpibar', 'kpiline', 'kpiarea'].includes(type)) {

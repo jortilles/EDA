@@ -1,0 +1,567 @@
+import { Component, AfterViewInit, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, OnDestroy, Inject, LOCALE_ID } from '@angular/core';
+import * as d3 from 'd3';
+import { FormsModule } from '@angular/forms';
+import { CommonModule, getLocaleMonthNames, FormStyle, TranslationWidth } from '@angular/common';
+import { RaceBar } from './eda-race-bar';
+import { StyleProviderService, lightenHex, sanitizeId, ensureLinearGradient, formatAxisValue, formatDeNumber, initD3ResizeObserver, teardownD3Chart, measureMaxLabelWidth } from '@eda/services/service.index';
+import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
+
+/** One tick of the race - one real, actually-queried data point at the date column's own declared
+ * granularity (year/quarter/month/week/day/...). Exactly one of these is shown per tick - no
+ * interpolated sub-steps in between, so a 3-year monthly query plays exactly 36 ticks, a 2-week
+ * daily one plays exactly 14, etc. */
+interface RaceFrame {
+  key: string;
+  label: string;
+  values: Map<string, number>;
+}
+
+interface RaceBarDatum {
+  category: string;
+  value: number;
+  rank: number;
+}
+
+const GRADIENT_LIGHTEN_AMOUNT = 60;
+// Row height budget used to derive how many bars fit the panel (computeTopN) - not a hard pixel
+// size, since rowHeight itself is always innerHeight / topN (fills whatever space is available).
+const MIN_ROW_HEIGHT_PX = 28;
+const MIN_BARS = 4;
+const MAX_BARS = 15;
+// Hard ceiling on an explicit inject.topNCount (chart properties dialog caps its own input lower,
+// at 20) - just a backstop against a stray/corrupt saved value turning into an unreadable wall of bars.
+const MAX_TOPN_COUNT = 30;
+// Time to animate from one tick (real data point) to the next - fixed, not data-dependent, so
+// every race reads at the same, deliberately slow pace regardless of how many periods it has.
+// D3's own eased transition is what makes each step flow smoothly - no sub-frame interpolation.
+// The date column's own format (this.dateFormat) is the ONLY thing that decides both the number of
+// ticks and what they're labeled as - deliberately no auto-coarsening (e.g. month -> quarter) to
+// keep the total race under some duration cap, even for a long range: a 'month' column always plays
+// one tick per month and always reads "Ene 2020", never silently reinterpreted as a quarter.
+const FRAME_DURATION_MS = 3500;
+
+@Component({
+  standalone: true,
+  selector: 'eda-race-bar',
+  templateUrl: './eda-race-bar.component.html',
+  styleUrls: ['./eda-race-bar.component.css'],
+  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
+})
+export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Input() inject: RaceBar;
+  @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
+
+  id: string;
+  svg: any;
+  resizeObserver!: ResizeObserver;
+
+  chartLegend: boolean;
+  legendItems: { label: string; color: string; hidden: boolean }[] = [];
+  playing = false;
+  finished = false;
+  periodLabel = '';
+  tickerFontSizePx = 20;
+  /** True when the query didn't yield a single valid (date, category, value) row - e.g. every date cell was empty. */
+  noData = false;
+  /** The authoritative, always-integer current tick - public (unlike the rest of the internal frame
+   * bookkeeping below) purely because the template's timeline max/labels need to read it. */
+  currentFrameIndex = 0;
+  /** What the timeline scrubber's own `value` is actually bound to - same as currentFrameIndex most
+   * of the time, except mid-playback-tick, where animateScrub() glides it as a float from the
+   * previous index to the new one over the same duration as the bars/labels, so the scrubber reads
+   * as continuous motion instead of jumping the instant each tick lands. A manual drag (onScrub)
+   * never goes through this - it sets both indices to the same integer immediately, on purpose. */
+  scrubPosition = 0;
+
+  private frames: RaceFrame[] = [];
+  /** The date column's own declared granularity ('year'|'quarter'|'month'|'week'|'day'|...) - drives
+   * both how a raw row value is parsed back into a real Date and how it's re-displayed (parseKeyToDate/formatDateForDisplay). */
+  private dateFormat = 'day';
+  private colorByCategory: Map<string, string> = new Map();
+  /** Ordered, de-duplicated category values (rows' original order) - public so getChartCategoryValues()
+   * (chart-category-values.util.ts) can seed/re-match the color dialog's rows the same way every
+   * other D3 chart type exposes its own categories. */
+  allCategories: string[] = [];
+  /** Mirrors inject.assignedColors by reference - eda-blank-panel.component.ts's
+   * recolorLegacyAssignedColors() mutates this array in place on every "apply palette". */
+  assignedColors: any[] = [];
+  private hiddenCategories: Set<string> = new Set();
+  private timer: any = null;
+  private scrubAnimFrame: number | null = null;
+  private fontFamily = 'inherit';
+  private fontColor = '#000000';
+  private hasRendered = false;
+
+  // Persistent skeleton, (re)built once per draw() (initial mount / resize) - renderFrame() only
+  // ever joins data onto these, never recreates them, so the enter/update/exit transitions between
+  // frames have something stable to animate from.
+  private defs: any;
+  private rootG: any;
+  private axisG: any;
+  private barsG: any;
+  private catLabelsG: any;
+  private valueLabelsG: any;
+
+  constructor(private styleProviderService: StyleProviderService, @Inject(LOCALE_ID) private locale: string) { }
+
+  ngOnInit(): void {
+    this.id = `raceBar_${this.inject.id}`;
+    this.chartLegend = this.inject.chartLegend ?? true;
+    this.styleProviderService.panelFontFamily.subscribe(v => this.fontFamily = v).unsubscribe();
+    this.styleProviderService.panelFontColor.subscribe(v => this.fontColor = v).unsubscribe();
+    this.assignedColors = this.inject.assignedColors;
+    this.colorByCategory = new Map((this.assignedColors || []).map((c: any) => [String(c.value), c.color]));
+    this.buildFrames();
+    this.noData = this.frames.length === 0;
+    this.legendItems = this.allCategories.map(cat => ({
+      label: cat,
+      color: this.colorByCategory.get(cat) || '#cccccc',
+      hidden: this.hiddenCategories.has(cat)
+    }));
+  }
+
+  ngAfterViewInit(): void {
+    const container = this.svgContainer.nativeElement as HTMLElement;
+    if (!this.svg) this.svg = d3.select(container).append('svg');
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw(), { skipFirstCallback: true });
+  }
+
+  ngOnDestroy(): void {
+    this.pause();
+    teardownD3Chart(undefined, this.resizeObserver);
+  }
+
+  /** Called by the shared category-chart-dialog.component.ts on every live color/toggle edit. */
+  updateChart(): void {
+    this.chartLegend = this.inject.chartLegend ?? true;
+    this.assignedColors = this.inject.assignedColors;
+    this.colorByCategory = new Map((this.assignedColors || []).map((c: any) => [String(c.value), c.color]));
+    this.legendItems = this.allCategories.map((cat, i) => ({
+      label: cat,
+      color: this.colorByCategory.get(cat) || '#cccccc',
+      hidden: this.legendItems[i]?.hidden ?? false
+    }));
+    this.draw();
+  }
+
+  toggleLegend(index: number): void {
+    const category = this.allCategories[index];
+    if (this.hiddenCategories.has(category)) this.hiddenCategories.delete(category);
+    else this.hiddenCategories.add(category);
+    this.legendItems[index].hidden = this.hiddenCategories.has(category);
+    this.renderFrame(this.currentFrameIndex, false);
+  }
+
+  get frameCount(): number {
+    return this.frames.length;
+  }
+
+  get firstPeriodLabel(): string {
+    return this.frames[0]?.label ?? '';
+  }
+
+  get lastPeriodLabel(): string {
+    return this.frames[this.frames.length - 1]?.label ?? '';
+  }
+
+  /** The timeline scrubber's own (input, not change) handler - fires continuously while dragging,
+   * same as clicking straight to a point. Always pauses and jumps there instantly (animate=false) -
+   * a manual scrub is the user directly picking a moment, not a step play() would ease into. */
+  onScrub(event: Event): void {
+    const index = Number((event.target as HTMLInputElement).value);
+    this.pause();
+    this.finished = index >= this.frames.length - 1;
+    this.renderFrame(index, false);
+  }
+
+  /** Glides scrubPosition from `from` to `to` over `duration` ms via requestAnimationFrame - the
+   * timeline's own equivalent of the D3 transitions the bars/labels already use, so it reads as
+   * one continuous motion in step with them instead of snapping the moment each tick lands. */
+  private animateScrub(from: number, to: number, duration: number): void {
+    this.cancelScrubAnimation();
+    if (duration <= 0) { this.scrubPosition = to; return; }
+    const start = performance.now();
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      this.scrubPosition = from + (to - from) * t;
+      this.scrubAnimFrame = t < 1 ? requestAnimationFrame(step) : null;
+    };
+    this.scrubAnimFrame = requestAnimationFrame(step);
+  }
+
+  private cancelScrubAnimation(): void {
+    if (this.scrubAnimFrame != null) {
+      cancelAnimationFrame(this.scrubAnimFrame);
+      this.scrubAnimFrame = null;
+    }
+  }
+
+  /** Sorts date keys chronologically using the column's own declared granularity (parseKeyToDate) -
+   * falls back to the old generic numeric/Date.parse/lexicographic chain for a format parseKeyToDate
+   * doesn't recognize, so an unusual/custom format still sorts sanely instead of throwing. */
+  private compareDateKeys(a: string, b: string): number {
+    const da = this.parseKeyToDate(a), db = this.parseKeyToDate(b);
+    if (da && db) return da.getTime() - db.getTime();
+    const na = Number(a), nb = Number(b);
+    if (a !== '' && b !== '' && !isNaN(na) && !isNaN(nb)) return na - nb;
+    const pa = Date.parse(a), pb = Date.parse(b);
+    if (!isNaN(pa) && !isNaN(pb)) return pa - pb;
+    return a < b ? -1 : a > b ? 1 : 0;
+  }
+
+  /** Parses a raw date-column value back into a real Date, according to the column's own `format`
+   * (this.dateFormat) - the backend already truncates the value to that granularity at the SQL
+   * level (to_char/DATE_FORMAT/...), so e.g. a 'week' column's raw value is "2020-03" (ISO year-week),
+   * not a full date - see the per-format cases below. Returns null when the value doesn't match the
+   * shape the format implies (caller falls back to treating the key as an opaque, non-interpolatable label). */
+  private parseKeyToDate(key: string): Date | null {
+    switch (this.dateFormat) {
+      case 'year': {
+        const y = Number(key);
+        return key !== '' && !isNaN(y) ? new Date(Date.UTC(y, 0, 1)) : null;
+      }
+      case 'quarter': {
+        const m = /^(\d{4})-Q(\d)$/.exec(key);
+        return m ? new Date(Date.UTC(Number(m[1]), (Number(m[2]) - 1) * 3, 1)) : null;
+      }
+      case 'month': {
+        const m = /^(\d{4})-(\d{2})$/.exec(key);
+        return m ? new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, 1)) : null;
+      }
+      case 'week': {
+        // ISO year-week (to_char 'IYYY-IW') - approximated as that ISO week's Monday.
+        const m = /^(\d{4})-(\d{2})$/.exec(key);
+        if (!m) return null;
+        const isoYear = Number(m[1]), isoWeek = Number(m[2]);
+        const simple = new Date(Date.UTC(isoYear, 0, 1 + (isoWeek - 1) * 7));
+        const dayOfWeek = simple.getUTCDay() || 7; // Mon=1..Sun=7
+        simple.setUTCDate(simple.getUTCDate() - dayOfWeek + 1);
+        return simple;
+      }
+      case 'day':
+      case 'No':
+      case undefined:
+      default: {
+        // day / unset / day_hour / day_hour_minute / timestamp all share the same "YYYY-MM-DD[...]"
+        // prefix (to_char's default branch is day-level too) - Date.parse handles all of them once
+        // the space before a time-of-day part is swapped for the 'T' ISO requires.
+        const t = Date.parse(key.replace(' ', 'T'));
+        return isNaN(t) ? null : new Date(t);
+      }
+    }
+  }
+
+  /** Localized month name (matches eda-kpi-trend's own _periodLabel convention) - abbreviated,
+   * capitalized, without the trailing "." some locales add (e.g. "Ene" not "ene."). */
+  private monthLabel(monthIndex0: number): string {
+    const months = getLocaleMonthNames(this.locale, FormStyle.Standalone, TranslationWidth.Abbreviated);
+    const raw = months[((monthIndex0 % 12) + 12) % 12];
+    if (!raw) return String(monthIndex0 + 1);
+    return raw.charAt(0).toUpperCase() + raw.slice(1).replace(/\.$/, '');
+  }
+
+  /** ISO week number of `date` (assumed already normalized to a Monday by parseKeyToDate's 'week' case, but computed generically here regardless). */
+  private isoWeekNumber(date: Date): number {
+    const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  }
+
+  /** Renders `date` as a display label matching the column's own declared granularity (this.dateFormat) -
+   * so the ticker only ever shows as much precision as the data actually has (a 'year' column never
+   * shows a month/day, a 'month' column never shows a day, etc). */
+  private formatDateForDisplay(date: Date): string {
+    switch (this.dateFormat) {
+      case 'year': return String(date.getUTCFullYear());
+      case 'quarter': return `T${Math.floor(date.getUTCMonth() / 3) + 1} ${date.getUTCFullYear()}`;
+      case 'month': return `${this.monthLabel(date.getUTCMonth())} ${date.getUTCFullYear()}`;
+      case 'week': return `Sem ${this.isoWeekNumber(date)} · ${date.getUTCFullYear()}`;
+      case 'day':
+      case 'No':
+      case undefined:
+      default: return `${date.getUTCDate()} ${this.monthLabel(date.getUTCMonth())} ${date.getUTCFullYear()}`;
+    }
+  }
+
+  /** Formats a raw date-column value for display, according to this.dateFormat - falls back to the
+   * raw value itself when it doesn't parse (an unrecognized/custom format), so it's always shown as
+   * *something* rather than silently disappearing. */
+  private formatPeriodLabel(key: string): string {
+    const date = this.parseKeyToDate(key);
+    return date ? this.formatDateForDisplay(date) : key;
+  }
+
+  private buildFrames(): void {
+    const query = this.inject.dataDescription.query;
+    const dateCol = (query || []).find((c: any) => c.column_type === 'date');
+    const dateIndex = dateCol ? query.indexOf(dateCol) : -1;
+    this.dateFormat = dateCol?.format || 'day';
+    const numericIndex = this.inject.dataDescription.numericColumns[0]?.index;
+    const categoryCol = this.inject.dataDescription.otherColumns.find((c: any) => c.index !== dateIndex);
+    const categoryIndex = categoryCol ? categoryCol.index : this.inject.dataDescription.otherColumns[0]?.index;
+
+    const byDate = new Map<string, Map<string, number>>();
+    const categories: string[] = [];
+    const seenCategories = new Set<string>();
+
+    (this.inject.data.values || []).forEach((row: any[]) => {
+      if (dateIndex < 0 || row[dateIndex] == null || row[dateIndex] === '') return;
+      if (categoryIndex == null || row[categoryIndex] == null || row[categoryIndex] === '') return;
+      const dateKey = String(row[dateIndex]).trim();
+      const category = String(row[categoryIndex]);
+      const value = Number(row[numericIndex]) || 0;
+      if (!seenCategories.has(category)) { seenCategories.add(category); categories.push(category); }
+      if (!byDate.has(dateKey)) byDate.set(dateKey, new Map());
+      const catMap = byDate.get(dateKey);
+      catMap.set(category, (catMap.get(category) || 0) + value);
+    });
+
+    this.allCategories = categories;
+    const sortedKeys = [...byDate.keys()].sort((a, b) => this.compareDateKeys(a, b));
+    this.frames = sortedKeys.map(key => ({ key, label: this.formatPeriodLabel(key), values: byDate.get(key) }));
+  }
+
+  /** Bar count: the user's own explicit choice (inject.topNCount, from the chart properties dialog)
+   * wins outright when set - they asked for a top 5/10/whatever, the panel just has to fit it.
+   * Otherwise falls back to however many rows the panel's own height comfortably fits. */
+  private computeTopN(innerHeight: number): number {
+    if (this.inject.topNCount && this.inject.topNCount > 0) {
+      return Math.max(1, Math.min(this.inject.topNCount, MAX_TOPN_COUNT, this.allCategories.length || 1));
+    }
+    const n = Math.floor(innerHeight / MIN_ROW_HEIGHT_PX);
+    return Math.max(MIN_BARS, Math.min(MAX_BARS, n || MIN_BARS));
+  }
+
+  /** Whoever's actually biggest THIS frame - always recomputed per frame (not a cast fixed at some
+   * earlier point), so a category can enter the visible top N as it rises and drop back out as it
+   * falls, same as any reference bar chart race. Every category still gets a `?? 0` (not just
+   * whoever has a row this exact period) so a gap in the data doesn't wrongly exclude it. */
+  private rankedEntries(frame: RaceFrame, topN: number): RaceBarDatum[] {
+    const all = this.allCategories
+      .filter(category => !this.hiddenCategories.has(category))
+      .map(category => ({ category, value: frame.values.get(category) ?? 0 }));
+    all.sort((a, b) => b.value - a.value);
+    return all.slice(0, topN).map((d, i) => ({ category: d.category, value: d.value, rank: i }));
+  }
+
+  private gradientId(hex: string): string {
+    return `race-grad-${this.id}-${sanitizeId(hex)}`;
+  }
+
+  private barFill(category: string): string {
+    const hex = this.colorByCategory.get(category) || '#4472c4';
+    if (!(this.inject.useGradient ?? true)) return hex;
+    return ensureLinearGradient(this.defs, this.gradientId(hex), [
+      { offset: '0%', color: hex },
+      { offset: '100%', color: lightenHex(hex, GRADIENT_LIGHTEN_AMOUNT) }
+    ], { x1: '0%', y1: '0%', x2: '100%', y2: '0%' });
+  }
+
+  private emitClick(d: RaceBarDatum): void {
+    if (this.inject.linkedDashboard) {
+      const props = this.inject.linkedDashboard;
+      const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) +
+        `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${d.category}`;
+      window.open(url, '_blank');
+    } else {
+      this.onClick.emit({ label: d.category, filterBy: d.category, value: d.value });
+    }
+  }
+
+  /** (Re)builds the static skeleton - called on mount and on every resize. Never called mid-race by the play timer, which only ever calls renderFrame() on the skeleton already in place. */
+  draw(): void {
+    const container = this.svgContainer.nativeElement as HTMLElement;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    if (width <= 0 || height <= 0 || !this.frames.length) return;
+
+    this.svg.selectAll('*').remove();
+    this.defs = this.svg.append('defs');
+    this.rootG = this.svg.append('g');
+    this.axisG = this.rootG.append('g').attr('class', 'eda-race-bar-axis');
+    this.barsG = this.rootG.append('g').attr('class', 'eda-race-bar-bars');
+    this.valueLabelsG = this.rootG.append('g').attr('class', 'eda-race-bar-value-labels');
+    this.catLabelsG = this.rootG.append('g').attr('class', 'eda-race-bar-cat-labels');
+
+    this.renderFrame(this.currentFrameIndex, false);
+
+    if (!this.hasRendered) {
+      this.hasRendered = true;
+      if (this.inject.chartAnimation ?? true) this.play();
+    }
+  }
+
+  /** Joins `entries` onto the persistent skeleton groups and transitions to them - `animate=false` (initial draw / resize / legend toggle) jumps straight to the final state instead of tweening. */
+  private renderFrame(index: number, animate: boolean): void {
+    const container = this.svgContainer?.nativeElement as HTMLElement;
+    if (!container || !this.rootG) return;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    if (width <= 0 || height <= 0 || !this.frames.length) return;
+
+    const frame = this.frames[index];
+    this.periodLabel = frame.label;
+    this.tickerFontSizePx = Math.max(14, Math.min(32, height * 0.12));
+
+    // top/bottom/left are fixed; right depends on how wide THIS frame's own value labels are (the
+    // leading bar's value sits right at/near the value-axis max, so a fixed margin clips it the
+    // moment the number gets wide - see measureMaxLabelWidth, same pattern eda-bar-d3 uses for its
+    // value axis' own left margin).
+    const marginTop = 10, marginBottom = 4, marginLeft = 8;
+    const innerHeightProbe = Math.max(height - marginTop - marginBottom, 10);
+    const topN = this.computeTopN(innerHeightProbe);
+    const entries = this.rankedEntries(frame, topN);
+    const duration = animate ? FRAME_DURATION_MS : 0;
+
+    const valueLabelTexts = entries.map((d: RaceBarDatum) => formatDeNumber(Math.round(d.value)));
+    const maxValueLabelWidth = measureMaxLabelWidth(valueLabelTexts, 12, this.fontFamily);
+    const margin = { top: marginTop, right: Math.max(24, maxValueLabelWidth + 16), bottom: marginBottom, left: marginLeft };
+    const innerWidth = Math.max(width - margin.left - margin.right, 10);
+    const innerHeight = innerHeightProbe;
+
+    this.rootG.attr('transform', `translate(${margin.left},${margin.top})`);
+
+    const maxValue = Math.max(1, d3.max(entries, (d: RaceBarDatum) => d.value) || 1);
+    const xScale = d3.scaleLinear().domain([0, maxValue]).nice().range([0, innerWidth]);
+    const rowHeight = innerHeight / topN;
+    const barHeight = Math.max(rowHeight * 0.7, 6);
+    const yPos = (d: RaceBarDatum) => d.rank * rowHeight + (rowHeight - barHeight) / 2;
+    const yMid = (d: RaceBarDatum) => d.rank * rowHeight + rowHeight / 2;
+    const offscreenY = topN * rowHeight;
+
+    const axis = d3.axisTop(xScale)
+      .ticks(Math.max(2, Math.floor(innerWidth / 120)))
+      .tickSize(-innerHeight)
+      .tickFormat((v: any) => formatAxisValue(v));
+    this.axisG.transition().duration(duration).ease(d3.easeLinear).call(axis);
+    this.axisG.select('.domain').remove();
+    this.axisG.selectAll('line').style('stroke', this.fontColor).style('opacity', 0.12);
+    this.axisG.selectAll('text').style('font-family', this.fontFamily).style('font-size', '10px').style('fill', this.fontColor).style('opacity', 0.7);
+
+    const bars = this.barsG.selectAll('rect.eda-race-bar-bar')
+      .data(entries, (d: RaceBarDatum) => d.category);
+
+    bars.exit()
+      .transition().duration(duration).ease(d3.easeLinear)
+      .attr('y', offscreenY + (rowHeight - barHeight) / 2)
+      .style('opacity', 0)
+      .remove();
+
+    const barsEnter = bars.enter().append('rect')
+      .attr('class', 'eda-race-bar-bar')
+      .attr('rx', 3).attr('ry', 3)
+      .attr('x', 0)
+      .attr('y', offscreenY + (rowHeight - barHeight) / 2)
+      .attr('height', barHeight)
+      .attr('width', 0)
+      .style('opacity', 0)
+      .style('cursor', 'pointer')
+      .on('click', (event: any, d: RaceBarDatum) => this.emitClick(d));
+
+    barsEnter.merge(bars)
+      .attr('fill', (d: RaceBarDatum) => this.barFill(d.category))
+      .attr('height', barHeight)
+      .transition().duration(duration).ease(d3.easeLinear)
+      .attr('y', yPos)
+      .attr('width', (d: RaceBarDatum) => Math.max(xScale(d.value), 0))
+      .style('opacity', 1);
+
+    const catLabels = this.catLabelsG.selectAll('text.eda-race-bar-cat-label')
+      .data(entries, (d: RaceBarDatum) => d.category);
+
+    catLabels.exit().transition().duration(duration).ease(d3.easeLinear).attr('y', yMid).style('opacity', 0).remove();
+
+    const catEnter = catLabels.enter().append('text')
+      .attr('class', 'eda-race-bar-cat-label')
+      .attr('x', 8)
+      .attr('y', yMid)
+      .style('opacity', 0)
+      .style('font-family', this.fontFamily)
+      .style('pointer-events', 'none')
+      .text((d: RaceBarDatum) => d.category);
+
+    catEnter.merge(catLabels)
+      .text((d: RaceBarDatum) => d.category)
+      .transition().duration(duration).ease(d3.easeLinear)
+      .attr('y', yMid)
+      .style('opacity', 1);
+
+    const valueLabels = this.valueLabelsG.selectAll('text.eda-race-bar-value-label')
+      .data(entries, (d: RaceBarDatum) => d.category);
+
+    valueLabels.exit().transition().duration(duration).ease(d3.easeLinear).attr('y', yMid).style('opacity', 0).remove();
+
+    const valEnter = valueLabels.enter().append('text')
+      .attr('class', 'eda-race-bar-value-label')
+      .attr('x', (d: RaceBarDatum) => Math.max(xScale(d.value), 0) + 8)
+      .attr('y', yMid)
+      .style('opacity', 0)
+      .style('font-family', this.fontFamily)
+      .style('fill', this.fontColor)
+      .style('pointer-events', 'none')
+      .each(function (d: RaceBarDatum) { (this as any).__value = d.value; })
+      .text((d: RaceBarDatum) => formatDeNumber(Math.round(d.value)));
+
+    valEnter.merge(valueLabels)
+      .transition().duration(duration).ease(d3.easeLinear)
+      .attr('x', (d: RaceBarDatum) => Math.max(xScale(d.value), 0) + 8)
+      .attr('y', yMid)
+      .style('opacity', 1)
+      .tween('text', function (d: RaceBarDatum) {
+        const node = this as any;
+        const prev = node.__value ?? d.value;
+        const interpolate = d3.interpolateNumber(prev, d.value);
+        node.__value = d.value;
+        return (t: number) => d3.select(node).text(formatDeNumber(Math.round(interpolate(t))));
+      });
+
+    if (animate) {
+      this.animateScrub(this.currentFrameIndex, index, duration);
+    } else {
+      this.cancelScrubAnimation();
+      this.scrubPosition = index;
+    }
+    this.currentFrameIndex = index;
+  }
+
+  play(): void {
+    if (this.playing || this.frames.length <= 1) return;
+    if (this.currentFrameIndex >= this.frames.length - 1) {
+      this.currentFrameIndex = 0;
+      this.renderFrame(0, false);
+    }
+    this.playing = true;
+    this.finished = false;
+    this.scheduleNext();
+  }
+
+  private scheduleNext(): void {
+    this.timer = setTimeout(() => {
+      const nextIndex = this.currentFrameIndex + 1;
+      this.renderFrame(nextIndex, true);
+      if (nextIndex >= this.frames.length - 1) {
+        this.playing = false;
+        this.finished = true;
+        this.timer = null;
+        return;
+      }
+      this.scheduleNext();
+    }, FRAME_DURATION_MS);
+  }
+
+  pause(): void {
+    this.playing = false;
+    if (this.timer) { clearTimeout(this.timer); this.timer = null; }
+    // Stop the scrubber mid-glide too, snapped forward to the tick already committed (renderFrame
+    // updates currentFrameIndex synchronously, well before its own bar/label transitions finish).
+    this.cancelScrubAnimation();
+    this.scrubPosition = this.currentFrameIndex;
+  }
+
+  togglePlay(): void {
+    if (this.playing) this.pause();
+    else this.play();
+  }
+}

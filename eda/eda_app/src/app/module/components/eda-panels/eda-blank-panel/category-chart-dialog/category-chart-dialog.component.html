@@ -41,6 +41,9 @@
                     @case ('showGridLines') {
                       <label i18n="@@showGridLines" class="font-medium">Mostrar Líneas Guía</label>
                     }
+                    @case ('showTimeline') {
+                      <label i18n="@@raceBarShowTimeline" class="font-medium">Mostrar línea de tiempo</label>
+                    }
                   }
                   <label class="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" [(ngModel)]="toggleState[key]" class="sr-only peer" (ngModelChange)="onToggleChanged()">
@@ -81,6 +84,16 @@
                   <div class="flex items-center gap-3">
                     <input type="range" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="setInnerRadius()" class="w-56 accent-[var(--corporate-primary)]">
                     <input type="number" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="setInnerRadius()" class="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                  </div>
+                </div>
+              }
+
+              @if (spec.hasTopNCount) {
+                <div class="flex items-center justify-between">
+                  <label i18n="@@raceBarTopN" class="font-medium">Barras a mostrar (Top N)</label>
+                  <div class="flex items-center gap-3">
+                    <input type="range" min="3" max="20" [(ngModel)]="topNCount" (input)="setTopNCount()" class="w-56 accent-[var(--corporate-primary)]">
+                    <input type="number" min="3" max="20" [(ngModel)]="topNCount" (input)="setTopNCount()" class="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm">
                   </div>
                 </div>
               }

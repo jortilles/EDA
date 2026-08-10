@@ -85,6 +85,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes14:ScatterPlot`, value: 'scatterPlot', subValue: 'scatterPlot', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes16:Funnel`, value: 'funnel', subValue: 'funnel', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypesBubblechart:Bubblechart`, value: 'bubblechart', subValue: 'bubblechart', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
+        { label: $localize`:@@chartTypesRaceBar:Barras en carrera`, value: 'raceBar', subValue: 'raceBar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypesRadar:Radar`, value: 'radar', subValue: 'radar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
@@ -637,7 +638,7 @@ export class ChartUtilsService {
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'kpiline', 'area', 'kpiarea', 'bar', 'kpibar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
-                'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst', 'kpitrend', 'kpideviation'
+                'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst', 'kpitrend', 'kpideviation', 'raceBar'
             ];
 
         //table (at least one column)
@@ -776,6 +777,13 @@ export class ChartUtilsService {
         if ((dataDescription.numericColumns.length === 2 && dataDescription.otherColumns.length === 0)
             || (dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length === 1)) {
             notAllowed.splice(notAllowed.indexOf('kpideviation'), 1);
+        }
+
+        // raceBar: exactly 1 date + 1 categorical + 1 numeric column
+        const dateColForRace = query.find((c: any) => c.column_type === 'date');
+        if (dataDescription.totalColumns === 3 && dataDescription.numericColumns.length === 1
+            && dataDescription.otherColumns.length === 2 && dateColForRace) {
+            notAllowed.splice(notAllowed.indexOf('raceBar'), 1);
         }
 
         return notAllowed;
