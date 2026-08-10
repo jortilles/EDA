@@ -219,7 +219,7 @@ export const EbpUtils = {
         description = 'linear_scale';
         break;
       case 'raceBar':
-        description = 'moving';
+        description = 'rocket_launch';
         break;
     }
 
