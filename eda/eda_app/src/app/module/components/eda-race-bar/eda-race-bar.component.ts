@@ -6,11 +6,7 @@ import { RaceBar } from './eda-race-bar';
 import { StyleProviderService, lightenHex, sanitizeId, ensureLinearGradient, formatAxisValue, formatDeNumber, initD3ResizeObserver, teardownD3Chart, measureMaxLabelWidth } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
-// Own translated month abbreviations, not Angular's getLocaleMonthNames(LOCALE_ID) - this app never
-// actually provides a LOCALE_ID (see main.ts), so that always resolves to Angular's 'en-US' default
-// regardless of which language the rest of the UI is showing, which is why the ticker read "Jan"
-// instead of "Ene". These go through the same $localize/messages.xlf pipeline as every other
-// user-facing string in the app instead.
+// Own translations, not getLocaleMonthNames(LOCALE_ID) - the app never provides a LOCALE_ID, so that always falls back to 'en-US'.
 const MONTH_LABELS: string[] = [
   $localize`:@@raceBarMonthJan:Ene`, $localize`:@@raceBarMonthFeb:Feb`, $localize`:@@raceBarMonthMar:Mar`,
   $localize`:@@raceBarMonthApr:Abr`, $localize`:@@raceBarMonthMay:May`, $localize`:@@raceBarMonthJun:Jun`,
@@ -23,10 +19,7 @@ const PLAY_ARIA_LABEL = $localize`:@@raceBarPlayAria:Reproducir`;
 const PAUSE_ARIA_LABEL = $localize`:@@raceBarPauseAria:Pausa`;
 const TIMELINE_ARIA_LABEL = $localize`:@@raceBarTimelineAria:Línea de tiempo`;
 
-/** One tick of the race - one real, actually-queried data point at the date column's own declared
- * granularity (year/quarter/month/week/day/...). Exactly one of these is shown per tick - no
- * interpolated sub-steps in between, so a 3-year monthly query plays exactly 36 ticks, a 2-week
- * daily one plays exactly 14, etc. */
+/** One tick = one real queried data point at the date column's own granularity - no interpolated sub-steps. */
 interface RaceFrame {
   key: string;
   label: string;
@@ -40,24 +33,15 @@ interface RaceBarDatum {
 }
 
 const GRADIENT_LIGHTEN_AMOUNT = 60;
-// Row height budget used to derive how many bars fit the panel (computeTopN) - not a hard pixel
-// size, since rowHeight itself is always innerHeight / topN (fills whatever space is available).
+// Budget for computeTopN, not a hard pixel size - rowHeight is always innerHeight / topN.
 const MIN_ROW_HEIGHT_PX = 28;
 const MIN_BARS = 4;
 const MAX_BARS = 15;
-// Hard ceiling on an explicit inject.topNCount (chart properties dialog caps its own input lower,
-// at 20) - just a backstop against a stray/corrupt saved value turning into an unreadable wall of bars.
+// Backstop against a stray/corrupt saved topNCount - the dialog itself caps its input at 20.
 const MAX_TOPN_COUNT = 30;
-// Default time to animate from one tick (real data point) to the next, when inject.transitionMs
-// isn't set (chart properties dialog) - fixed, not data-dependent, so every race reads at the same
-// pace regardless of how many periods it has. D3's own eased transition is what makes each step
-// flow smoothly - no sub-frame interpolation. This is also why the race appears to "take a while to
-// start": play()'s very first tick is scheduled the exact same way as every other one, waiting one
-// full duration before it fires - a lower transitionMs speeds up that wait too, not just playback.
-// The date column's own format (this.dateFormat) is the ONLY thing that decides both the number of
-// ticks and what they're labeled as - deliberately no auto-coarsening (e.g. month -> quarter) to
-// keep the total race under some duration cap, even for a long range: a 'month' column always plays
-// one tick per month and always reads "Ene 2020", never silently reinterpreted as a quarter.
+// How fast a bar's ROW settles, independent of transitionMs (which paces its WIDTH/value).
+const RANK_TRANSITION_MS = 500;
+// Fallback when inject.transitionMs isn't set - the date column's own format, not this, decides tick count/labels.
 const DEFAULT_FRAME_DURATION_MS = 6000;
 
 @Component({
@@ -82,40 +66,31 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   finished = false;
   periodLabel = '';
   tickerFontSizePx = 20;
-  /** True when the query didn't yield a single valid (date, category, value) row - e.g. every date cell was empty. */
+  /** True when the query didn't yield a single valid (date, category, value) row. */
   noData = false;
-  /** The authoritative, always-integer current tick - public (unlike the rest of the internal frame
-   * bookkeeping below) purely because the template's timeline max/labels need to read it. */
+  /** Authoritative, always-integer current tick - public because the template reads it directly. */
   currentFrameIndex = 0;
-  /** What the timeline scrubber's own `value` is actually bound to - same as currentFrameIndex most
-   * of the time, except mid-playback-tick, where animateScrub() glides it as a float from the
-   * previous index to the new one over the same duration as the bars/labels, so the scrubber reads
-   * as continuous motion instead of jumping the instant each tick lands. A manual drag (onScrub)
-   * never goes through this - it sets both indices to the same integer immediately, on purpose. */
+  /** Timeline scrubber's bound value - glides smoothly during playback (animateScrub), snaps instantly on manual drag (onScrub). */
   scrubPosition = 0;
 
   private frames: RaceFrame[] = [];
-  /** The date column's own declared granularity ('year'|'quarter'|'month'|'week'|'day'|...) - drives
-   * both how a raw row value is parsed back into a real Date and how it's re-displayed (parseKeyToDate/formatDateForDisplay). */
+  /** Date column's declared granularity - drives parseKeyToDate/formatDateForDisplay. */
   private dateFormat = 'day';
   private colorByCategory: Map<string, string> = new Map();
-  /** Ordered, de-duplicated category values (rows' original order) - public so getChartCategoryValues()
-   * (chart-category-values.util.ts) can seed/re-match the color dialog's rows the same way every
-   * other D3 chart type exposes its own categories. */
+  /** Ordered, de-duplicated category values - public so getChartCategoryValues() can seed the color dialog. */
   allCategories: string[] = [];
-  /** Mirrors inject.assignedColors by reference - eda-blank-panel.component.ts's
-   * recolorLegacyAssignedColors() mutates this array in place on every "apply palette". */
+  /** Mirrors inject.assignedColors by reference - mutated in place by eda-blank-panel's recolorLegacyAssignedColors(). */
   assignedColors: any[] = [];
   private hiddenCategories: Set<string> = new Set();
+  /** Row eases toward its live-computed rank instead of snapping - carries the in-progress glide across tween frames/ticks. */
+  private displayedRankByCategory: Map<string, number> = new Map();
   private timer: any = null;
   private scrubAnimFrame: number | null = null;
   private fontFamily = 'inherit';
   private fontColor = '#000000';
   private hasRendered = false;
 
-  // Persistent skeleton, (re)built once per draw() (initial mount / resize) - renderFrame() only
-  // ever joins data onto these, never recreates them, so the enter/update/exit transitions between
-  // frames have something stable to animate from.
+  // Persistent skeleton (built by draw()) - renderFrame() only ever joins data onto these.
   private defs: any;
   private rootG: any;
   private axisG: any;
@@ -197,9 +172,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.frames[this.frames.length - 1]?.label ?? '';
   }
 
-  /** The timeline scrubber's own (input, not change) handler - fires continuously while dragging,
-   * same as clicking straight to a point. Always pauses and jumps there instantly (animate=false) -
-   * a manual scrub is the user directly picking a moment, not a step play() would ease into. */
+  /** Fires while dragging - always pauses and jumps instantly (animate=false). */
   onScrub(event: Event): void {
     const index = Number((event.target as HTMLInputElement).value);
     this.pause();
@@ -207,9 +180,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.renderFrame(index, false);
   }
 
-  /** Glides scrubPosition from `from` to `to` over `duration` ms via requestAnimationFrame - the
-   * timeline's own equivalent of the D3 transitions the bars/labels already use, so it reads as
-   * one continuous motion in step with them instead of snapping the moment each tick lands. */
+  /** Glides scrubPosition from `from` to `to` over `duration` ms so it reads as continuous motion. */
   private animateScrub(from: number, to: number, duration: number): void {
     this.cancelScrubAnimation();
     if (duration <= 0) { this.scrubPosition = to; return; }
@@ -229,9 +200,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /** Sorts date keys chronologically using the column's own declared granularity (parseKeyToDate) -
-   * falls back to the old generic numeric/Date.parse/lexicographic chain for a format parseKeyToDate
-   * doesn't recognize, so an unusual/custom format still sorts sanely instead of throwing. */
+  /** Sorts date keys chronologically via parseKeyToDate, falling back to numeric/Date.parse/lexicographic. */
   private compareDateKeys(a: string, b: string): number {
     const da = this.parseKeyToDate(a), db = this.parseKeyToDate(b);
     if (da && db) return da.getTime() - db.getTime();
@@ -242,11 +211,8 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     return a < b ? -1 : a > b ? 1 : 0;
   }
 
-  /** Parses a raw date-column value back into a real Date, according to the column's own `format`
-   * (this.dateFormat) - the backend already truncates the value to that granularity at the SQL
-   * level (to_char/DATE_FORMAT/...), so e.g. a 'week' column's raw value is "2020-03" (ISO year-week),
-   * not a full date - see the per-format cases below. Returns null when the value doesn't match the
-   * shape the format implies (caller falls back to treating the key as an opaque, non-interpolatable label). */
+  /** Parses a raw date-column value per its declared format (this.dateFormat), already truncated to that
+   * granularity by the backend (to_char/DATE_FORMAT/...); returns null if it doesn't match the expected shape. */
   private parseKeyToDate(key: string): Date | null {
     switch (this.dateFormat) {
       case 'year': {
@@ -262,7 +228,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
         return m ? new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, 1)) : null;
       }
       case 'week': {
-        // ISO year-week (to_char 'IYYY-IW') - approximated as that ISO week's Monday.
+        // ISO year-week (to_char 'IYYY-IW'), approximated as that week's Monday.
         const m = /^(\d{4})-(\d{2})$/.exec(key);
         if (!m) return null;
         const isoYear = Number(m[1]), isoWeek = Number(m[2]);
@@ -275,21 +241,17 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'No':
       case undefined:
       default: {
-        // day / unset / day_hour / day_hour_minute / timestamp all share the same "YYYY-MM-DD[...]"
-        // prefix (to_char's default branch is day-level too) - Date.parse handles all of them once
-        // the space before a time-of-day part is swapped for the 'T' ISO requires.
         const t = Date.parse(key.replace(' ', 'T'));
         return isNaN(t) ? null : new Date(t);
       }
     }
   }
 
-  /** Translated month abbreviation - see MONTH_LABELS. */
   private monthLabel(monthIndex0: number): string {
     return MONTH_LABELS[((monthIndex0 % 12) + 12) % 12];
   }
 
-  /** ISO week number of `date` (assumed already normalized to a Monday by parseKeyToDate's 'week' case, but computed generically here regardless). */
+  /** ISO week number of `date`. */
   private isoWeekNumber(date: Date): number {
     const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
     d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
@@ -297,9 +259,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
   }
 
-  /** Renders `date` as a display label matching the column's own declared granularity (this.dateFormat) -
-   * so the ticker only ever shows as much precision as the data actually has (a 'year' column never
-   * shows a month/day, a 'month' column never shows a day, etc). */
+  /** Renders `date` at the column's own granularity (this.dateFormat). */
   private formatDateForDisplay(date: Date): string {
     switch (this.dateFormat) {
       case 'year': return String(date.getUTCFullYear());
@@ -313,9 +273,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /** Formats a raw date-column value for display, according to this.dateFormat - falls back to the
-   * raw value itself when it doesn't parse (an unrecognized/custom format), so it's always shown as
-   * *something* rather than silently disappearing. */
+  /** Formats a raw date value for display; falls back to the raw value if it doesn't parse. */
   private formatPeriodLabel(key: string): string {
     const date = this.parseKeyToDate(key);
     return date ? this.formatDateForDisplay(date) : key;
@@ -351,9 +309,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.frames = sortedKeys.map(key => ({ key, label: this.formatPeriodLabel(key), values: byDate.get(key) }));
   }
 
-  /** Bar count: the user's own explicit choice (inject.topNCount, from the chart properties dialog)
-   * wins outright when set - they asked for a top 5/10/whatever, the panel just has to fit it.
-   * Otherwise falls back to however many rows the panel's own height comfortably fits. */
+  /** inject.topNCount wins when set; otherwise falls back to however many rows the panel's height fits. */
   private computeTopN(innerHeight: number): number {
     if (this.inject.topNCount && this.inject.topNCount > 0) {
       return Math.max(1, Math.min(this.inject.topNCount, MAX_TOPN_COUNT, this.allCategories.length || 1));
@@ -362,10 +318,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     return Math.max(MIN_BARS, Math.min(MAX_BARS, n || MIN_BARS));
   }
 
-  /** Whoever's actually biggest THIS frame - always recomputed per frame (not a cast fixed at some
-   * earlier point), so a category can enter the visible top N as it rises and drop back out as it
-   * falls, same as any reference bar chart race. Every category still gets a `?? 0` (not just
-   * whoever has a row this exact period) so a gap in the data doesn't wrongly exclude it. */
+  /** Recomputed fresh per frame so a category can enter/leave the visible top N as its value moves. */
   private rankedEntries(frame: RaceFrame, topN: number): RaceBarDatum[] {
     const all = this.allCategories
       .filter(category => !this.hiddenCategories.has(category))
@@ -433,15 +386,14 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.periodLabel = frame.label;
     this.tickerFontSizePx = Math.max(14, Math.min(32, height * 0.12));
 
-    // top/bottom/left are fixed; right depends on how wide THIS frame's own value labels are (the
-    // leading bar's value sits right at/near the value-axis max, so a fixed margin clips it the
-    // moment the number gets wide - see measureMaxLabelWidth, same pattern eda-bar-d3 uses for its
-    // value axis' own left margin).
+    // right depends on THIS frame's widest value label, so a big number doesn't get clipped.
     const marginTop = 10, marginBottom = 4, marginLeft = 8;
     const innerHeightProbe = Math.max(height - marginTop - marginBottom, 10);
     const topN = this.computeTopN(innerHeightProbe);
     const entries = this.rankedEntries(frame, topN);
     const duration = animate ? this.frameDurationMs : 0;
+    const oldFrame = this.frames[this.currentFrameIndex];
+    const oldValuesByCategory = oldFrame ? oldFrame.values : new Map<string, number>();
 
     const valueLabelTexts = entries.map((d: RaceBarDatum) => formatDeNumber(Math.round(d.value)));
     const maxValueLabelWidth = measureMaxLabelWidth(valueLabelTexts, 12, this.fontFamily);
@@ -451,12 +403,13 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.rootG.attr('transform', `translate(${margin.left},${margin.top})`);
 
-    const maxValue = Math.max(1, d3.max(entries, (d: RaceBarDatum) => d.value) || 1);
+    // Covers both the target value and the value a bar's animating down from, so a shrinking bar never renders wider than the plot area.
+    const maxValue = Math.max(1, ...entries.map((d: RaceBarDatum) => Math.max(d.value, oldValuesByCategory.get(d.category) ?? 0)));
     const xScale = d3.scaleLinear().domain([0, maxValue]).nice().range([0, innerWidth]);
     const rowHeight = innerHeight / topN;
     const barHeight = Math.max(rowHeight * 0.7, 6);
-    const yPos = (d: RaceBarDatum) => d.rank * rowHeight + (rowHeight - barHeight) / 2;
-    const yMid = (d: RaceBarDatum) => d.rank * rowHeight + rowHeight / 2;
+    const yForRank = (rank: number) => rank * rowHeight + (rowHeight - barHeight) / 2;
+    const yMidForRank = (rank: number) => rank * rowHeight + rowHeight / 2;
     const offscreenY = topN * rowHeight;
 
     const axis = d3.axisTop(xScale)
@@ -468,11 +421,17 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.axisG.selectAll('line').style('stroke', this.fontColor).style('opacity', 0.12);
     this.axisG.selectAll('text').style('font-family', this.fontFamily).style('font-size', '10px').style('fill', this.fontColor).style('opacity', 0.7);
 
+    // Target row is re-derived every tick from live interpolated values (crosses exactly on overtake);
+    // the on-screen row eases toward it instead of snapping - see displayedRankByCategory below.
+    const rankMs = Math.min(RANK_TRANSITION_MS, duration);
+
     const bars = this.barsG.selectAll('rect.eda-race-bar-bar')
       .data(entries, (d: RaceBarDatum) => d.category);
+    const survivingCategories = new Set(bars.data().map((d: RaceBarDatum) => d.category));
 
     bars.exit()
-      .transition().duration(duration).ease(d3.easeLinear)
+      .each((d: RaceBarDatum) => this.displayedRankByCategory.delete(d.category))
+      .transition().duration(rankMs).ease(d3.easeLinear)
       .attr('y', offscreenY + (rowHeight - barHeight) / 2)
       .style('opacity', 0)
       .remove();
@@ -484,28 +443,22 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
       .attr('y', offscreenY + (rowHeight - barHeight) / 2)
       .attr('height', barHeight)
       .attr('width', 0)
-      .style('opacity', 0)
+      .style('opacity', 1)
       .style('cursor', 'pointer')
       .on('click', (event: any, d: RaceBarDatum) => this.emitClick(d));
 
-    barsEnter.merge(bars)
+    const barsMerged = barsEnter.merge(bars)
       .attr('fill', (d: RaceBarDatum) => this.barFill(d.category))
-      .attr('height', barHeight)
-      .transition().duration(duration).ease(d3.easeLinear)
-      .attr('y', yPos)
-      .attr('width', (d: RaceBarDatum) => Math.max(xScale(d.value), 0))
-      .style('opacity', 1);
+      .attr('height', barHeight);
+    // Cancels a still-running exit transition on a category that re-entered topN before it finished.
+    barsMerged.interrupt();
 
     const catLabels = this.catLabelsG.selectAll('text.eda-race-bar-cat-label')
       .data(entries, (d: RaceBarDatum) => d.category);
 
-    // Exit/enter both target offscreenY (matching the bars), not yMid - yMid(d) reads d.rank, and
-    // an exiting element's `d` is still its OLD (pre-this-frame) rank, so it would just fade in
-    // place at its old row instead of sliding down with its bar; an entering element's `d` IS
-    // already the new rank, but starting it there too meant it popped in at rest while its own bar
-    // was still sliding up from offscreen to reach it - both looked "detached" from the bar.
+    // Exit/enter both target offscreenY, not the row formula, which would read a stale/premature rank.
     const offscreenMid = offscreenY + rowHeight / 2;
-    catLabels.exit().transition().duration(duration).ease(d3.easeLinear).attr('y', offscreenMid).style('opacity', 0).remove();
+    catLabels.exit().transition().duration(rankMs).ease(d3.easeLinear).attr('y', offscreenMid).style('opacity', 0).remove();
 
     const catEnter = catLabels.enter().append('text')
       .attr('class', 'eda-race-bar-cat-label')
@@ -516,45 +469,76 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
       .style('pointer-events', 'none')
       .text((d: RaceBarDatum) => d.category);
 
-    catEnter.merge(catLabels)
-      .text((d: RaceBarDatum) => d.category)
-      .transition().duration(duration).ease(d3.easeLinear)
-      .attr('y', yMid)
-      // A 0-width bar has nothing to sit its name on - the label would just float on its own with
-      // no bar behind it, so it fades out right along with the bar rather than staying visible.
+    const catMerged = catEnter.merge(catLabels).text((d: RaceBarDatum) => d.category);
+    catMerged.interrupt();
+    // A 0-width bar has no name to sit on, so opacity rides the short clock instead of the live value.
+    catMerged.transition('fade').duration(rankMs).ease(d3.easeLinear)
       .style('opacity', (d: RaceBarDatum) => d.value === 0 ? 0 : 1);
 
     const valueLabels = this.valueLabelsG.selectAll('text.eda-race-bar-value-label')
       .data(entries, (d: RaceBarDatum) => d.category);
 
-    valueLabels.exit().transition().duration(duration).ease(d3.easeLinear).attr('y', offscreenMid).style('opacity', 0).remove();
+    valueLabels.exit().transition().duration(rankMs).ease(d3.easeLinear).attr('y', offscreenMid).style('opacity', 0).remove();
 
     const valEnter = valueLabels.enter().append('text')
       .attr('class', 'eda-race-bar-value-label')
-      // Starts at the bar's own start (x=0 -> +8) and value 0 - same as the bar itself starting at
-      // width=0 - so a brand-new entrant's number counts up and slides out to its final spot
-      // together with the bar growing into it, instead of sitting there pre-filled at the final
-      // value/position the instant it appears (only y and opacity were animating before).
+      // Starts at value 0 like the bar itself, so a new entrant's number counts up together with its bar.
       .attr('x', 8)
       .attr('y', offscreenMid)
       .style('opacity', 0)
       .style('font-family', this.fontFamily)
       .style('fill', this.fontColor)
       .style('pointer-events', 'none')
-      .each(function (d: RaceBarDatum) { (this as any).__value = 0; })
       .text(formatDeNumber(0));
 
-    valEnter.merge(valueLabels)
-      .transition().duration(duration).ease(d3.easeLinear)
-      .attr('x', (d: RaceBarDatum) => Math.max(xScale(d.value), 0) + 8)
-      .attr('y', yMid)
-      .style('opacity', 1)
-      .tween('text', function (d: RaceBarDatum) {
-        const node = this as any;
-        const prev = node.__value ?? d.value;
-        const interpolate = d3.interpolateNumber(prev, d.value);
-        node.__value = d.value;
-        return (t: number) => d3.select(node).text(formatDeNumber(Math.round(interpolate(t))));
+    const valMerged = valEnter.merge(valueLabels);
+    valMerged.interrupt();
+    valMerged.transition('fade').duration(rankMs).ease(d3.easeLinear).style('opacity', 1);
+
+    // Shared clock per category: value interpolates old->new; row order is re-sorted from it every tick.
+    const valueAt = new Map<string, (t: number) => number>();
+    entries.forEach((d: RaceBarDatum) => {
+      const startValue = survivingCategories.has(d.category) ? (oldValuesByCategory.get(d.category) ?? 0) : 0;
+      valueAt.set(d.category, d3.interpolateNumber(startValue, d.value));
+      // New categories start their glide one row below the last visible slot, like the bar itself.
+      if (!this.displayedRankByCategory.has(d.category)) this.displayedRankByCategory.set(d.category, topN);
+    });
+
+    this.rootG.transition('race').duration(duration).ease(d3.easeLinear)
+      .tween('race', () => {
+        let lastElapsedMs = 0;
+        return (t: number) => {
+          const elapsedMs = t * duration;
+          // Real elapsed ms, not just t's fraction, so catch-up speed stays consistent regardless of transitionMs.
+          const dtMs = Math.max(0, elapsedMs - lastElapsedMs);
+          lastElapsedMs = elapsedMs;
+          const catchUp = duration <= 0 ? 1 : Math.min(1, dtMs / RANK_TRANSITION_MS);
+
+          const live = entries.map((d: RaceBarDatum) => ({ category: d.category, value: valueAt.get(d.category)!(t) }));
+          live.sort((a, b) => b.value - a.value);
+          const targetRank = new Map<string, number>();
+          const liveValue = new Map<string, number>();
+          live.forEach((d, i) => { targetRank.set(d.category, i); liveValue.set(d.category, d.value); });
+
+          const rowOf = new Map<string, number>();
+          entries.forEach((d: RaceBarDatum) => {
+            const target = targetRank.get(d.category) ?? d.rank;
+            const prevRow = this.displayedRankByCategory.get(d.category) ?? target;
+            const nextRow = t >= 1 ? target : prevRow + (target - prevRow) * catchUp;
+            this.displayedRankByCategory.set(d.category, nextRow);
+            rowOf.set(d.category, nextRow);
+          });
+          const valueOf = (d: RaceBarDatum) => liveValue.get(d.category) ?? d.value;
+
+          barsMerged
+            .attr('y', (d: RaceBarDatum) => yForRank(rowOf.get(d.category) ?? d.rank))
+            .attr('width', (d: RaceBarDatum) => Math.max(xScale(valueOf(d)), 0));
+          catMerged.attr('y', (d: RaceBarDatum) => yMidForRank(rowOf.get(d.category) ?? d.rank));
+          valMerged
+            .attr('y', (d: RaceBarDatum) => yMidForRank(rowOf.get(d.category) ?? d.rank))
+            .attr('x', (d: RaceBarDatum) => Math.max(xScale(valueOf(d)), 0) + 8)
+            .each(function (d: RaceBarDatum) { (this as any).textContent = formatDeNumber(Math.round(valueOf(d))); });
+        };
       });
 
     if (animate) {
@@ -594,8 +578,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   pause(): void {
     this.playing = false;
     if (this.timer) { clearTimeout(this.timer); this.timer = null; }
-    // Stop the scrubber mid-glide too, snapped forward to the tick already committed (renderFrame
-    // updates currentFrameIndex synchronously, well before its own bar/label transitions finish).
+    // Snap the scrubber forward too - currentFrameIndex is already committed even if the transition isn't done.
     this.cancelScrubAnimation();
     this.scrubPosition = this.currentFrameIndex;
   }
