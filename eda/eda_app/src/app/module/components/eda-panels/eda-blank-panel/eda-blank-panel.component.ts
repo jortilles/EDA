@@ -1648,6 +1648,7 @@ public tableNodeExpand(event: any): void {
             if (response.labelCustomColor !== undefined) configPatch.labelCustomColor = response.labelCustomColor;
             if (response.topNCount !== undefined) configPatch.topNCount = response.topNCount;
             if (response.showTimeline !== undefined) configPatch.showTimeline = response.showTimeline;
+            if (response.transitionMs !== undefined) configPatch.transitionMs = response.transitionMs;
 
             this.applyDialogChartConfig(event, configPatch, 'categoryChartController');
         } else {

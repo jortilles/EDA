@@ -1958,6 +1958,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
         inject.topNCount = this.props.config.getConfig()['topNCount'] ?? null;
         inject.showTimeline = this.props.config.getConfig()['showTimeline'] ?? false;
+        inject.transitionMs = this.props.config.getConfig()['transitionMs'] ?? null;
         this.createLegacyD3Component(inject, EdaRaceBarComponent);
     }
 

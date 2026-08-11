@@ -95,6 +95,14 @@
                   <input type="number" min="3" max="20" [(ngModel)]="topNCount" (input)="setTopNCount()" class="w-20 shrink-0 rounded-md border border-input bg-background px-3 py-2 text-sm">
                 </div>
               }
+
+              @if (spec.hasTransitionMs) {
+                <div class="flex items-center gap-3">
+                  <label i18n="@@raceBarTransitionMs" class="font-medium shrink-0">Duración de la transición (ms)</label>
+                  <input type="range" min="250" max="10000" step="250" [(ngModel)]="transitionMs" (input)="setTransitionMs()" class="flex-1 min-w-0 accent-[var(--corporate-primary)]">
+                  <input type="number" min="250" max="10000" step="250" [(ngModel)]="transitionMs" (input)="setTransitionMs()" class="w-20 shrink-0 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                </div>
+              }
             </div>
           </div>
         </div>

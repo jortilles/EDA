@@ -18,4 +18,8 @@ export class RaceBar {
   /** Shows a scrubber below the chart - one tick per real period, drag/click to jump straight to
    * it (pausing playback there). Off by default. */
   showTimeline?: boolean;
+  /** How long each tick's transition takes, in ms - also how long the race waits before its very
+   * first tick, since play() schedules that one the same way as every other. Unset/0 falls back
+   * to the component's own default. */
+  transitionMs?: number;
 }

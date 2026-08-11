@@ -187,6 +187,7 @@ export const ChartsConfigUtils = {
       if (ebp.panelChart.props.chartType === 'raceBar') {
         config.topNCount = inst ? inst.inject?.topNCount ?? null : (ebp.panelChart.props.config?.getConfig()?.['topNCount'] ?? null);
         config.showTimeline = inst ? inst.inject?.showTimeline ?? false : (ebp.panelChart.props.config?.getConfig()?.['showTimeline'] ?? false);
+        config.transitionMs = inst ? inst.inject?.transitionMs ?? null : (ebp.panelChart.props.config?.getConfig()?.['transitionMs'] ?? null);
       }
     } else if (ebp.panelChart.props.chartType === 'knob') {
 

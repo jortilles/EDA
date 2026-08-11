@@ -48,14 +48,17 @@ const MAX_BARS = 15;
 // Hard ceiling on an explicit inject.topNCount (chart properties dialog caps its own input lower,
 // at 20) - just a backstop against a stray/corrupt saved value turning into an unreadable wall of bars.
 const MAX_TOPN_COUNT = 30;
-// Time to animate from one tick (real data point) to the next - fixed, not data-dependent, so
-// every race reads at the same, deliberately slow pace regardless of how many periods it has.
-// D3's own eased transition is what makes each step flow smoothly - no sub-frame interpolation.
+// Default time to animate from one tick (real data point) to the next, when inject.transitionMs
+// isn't set (chart properties dialog) - fixed, not data-dependent, so every race reads at the same
+// pace regardless of how many periods it has. D3's own eased transition is what makes each step
+// flow smoothly - no sub-frame interpolation. This is also why the race appears to "take a while to
+// start": play()'s very first tick is scheduled the exact same way as every other one, waiting one
+// full duration before it fires - a lower transitionMs speeds up that wait too, not just playback.
 // The date column's own format (this.dateFormat) is the ONLY thing that decides both the number of
 // ticks and what they're labeled as - deliberately no auto-coarsening (e.g. month -> quarter) to
 // keep the total race under some duration cap, even for a long range: a 'month' column always plays
 // one tick per month and always reads "Ene 2020", never silently reinterpreted as a quarter.
-const FRAME_DURATION_MS = 6000;
+const DEFAULT_FRAME_DURATION_MS = 6000;
 
 @Component({
   standalone: true,
@@ -172,6 +175,10 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   get frameCount(): number {
     return this.frames.length;
+  }
+
+  private get frameDurationMs(): number {
+    return this.inject.transitionMs && this.inject.transitionMs > 0 ? this.inject.transitionMs : DEFAULT_FRAME_DURATION_MS;
   }
 
   get playPauseAriaLabel(): string {
@@ -434,7 +441,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     const innerHeightProbe = Math.max(height - marginTop - marginBottom, 10);
     const topN = this.computeTopN(innerHeightProbe);
     const entries = this.rankedEntries(frame, topN);
-    const duration = animate ? FRAME_DURATION_MS : 0;
+    const duration = animate ? this.frameDurationMs : 0;
 
     const valueLabelTexts = entries.map((d: RaceBarDatum) => formatDeNumber(Math.round(d.value)));
     const maxValueLabelWidth = measureMaxLabelWidth(valueLabelTexts, 12, this.fontFamily);
@@ -581,7 +588,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
       this.scheduleNext();
-    }, FRAME_DURATION_MS);
+    }, this.frameDurationMs);
   }
 
   pause(): void {
