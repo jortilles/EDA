@@ -33,9 +33,12 @@ import { EdaFunnelComponent } from '@eda/components/eda-funnel/eda-funnel.compon
 import { EdaBubblechartComponent } from '@eda/components/eda-d3-bubblechart/eda-bubblechart.component';
 import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.component';
 import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
+import { EdaRaceBarComponent } from '@eda/components/eda-race-bar/eda-race-bar.component';
+import { RaceBar } from '@eda/components/eda-race-bar/eda-race-bar';
 import { ScatterPlot } from '@eda/components/eda-scatter/eda-scatter';
 import { TreeMapConfig } from './chart-configuration-models/treeMap-config';
 import { SunburstConfig } from './chart-configuration-models/sunburst-config';
+import { RaceBarConfig } from './chart-configuration-models/race-bar-config';
 import { SankeyConfig } from './chart-configuration-models/sankey-config';
 import { ScatterConfig } from './chart-configuration-models/scatter-config';
 import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';
@@ -247,6 +250,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
         if (type === 'sunburst') {
             this.renderSunburst();
+        }
+        if (type === 'raceBar') {
+            this.renderRaceBar();
         }
         if (type === 'treetable') {
             this.renderTreetable();
@@ -1932,6 +1938,30 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.createLegacyD3Component(inject, EdaSunburstComponent);
     }
 
+    private renderRaceBar() {
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        let inject: RaceBar = new RaceBar;
+        inject.id = this.randomID();
+        inject.size = this.props.size;
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+        const dateIndex = this.props.query.findIndex((c: any) => c.column_type === 'date');
+        const categoryCol = dataDescription.otherColumns.find((c: any) => c.index !== dateIndex);
+        const categoryIndex = categoryCol ? categoryCol.index : dataDescription.otherColumns[0]?.index;
+        const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
+        inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
+        inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
+        // Off by default (unlike every other D3 category chart) - every bar already carries its own
+        // category name, so a separate legend is just duplicated, space-eating chart junk here.
+        inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? false;
+        inject.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
+        inject.topNCount = this.props.config.getConfig()['topNCount'] ?? null;
+        inject.showTimeline = this.props.config.getConfig()['showTimeline'] ?? false;
+        inject.transitionMs = this.props.config.getConfig()['transitionMs'] ?? null;
+        this.createLegacyD3Component(inject, EdaRaceBarComponent);
+    }
+
     private renderTreetable() {
         const inject = this.props;
         this.createLegacyD3Component(inject, EdaTreeTable);
@@ -2137,6 +2167,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 this.props.config.setConfig(new BubblechartConfig(colors));
                 Object.assign(this.props.config.getConfig(), previousConfig);
                 this.renderBubblechart();
+                break;
+            case 'raceBar':
+                this.props.config.setConfig(new RaceBarConfig(colors));
+                Object.assign(this.props.config.getConfig(), previousConfig);
+                this.renderRaceBar();
                 break;
             default:
                 break;

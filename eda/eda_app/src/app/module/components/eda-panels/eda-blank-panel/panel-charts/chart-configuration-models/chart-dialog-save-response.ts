@@ -10,4 +10,7 @@ export interface ChartDialogSaveResponseBase {
   chartAnimation?: boolean;
   labelColorMode?: string;
   labelCustomColor?: string;
+  topNCount?: number;
+  showTimeline?: boolean;
+  transitionMs?: number;
 }

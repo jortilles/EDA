@@ -12,7 +12,7 @@ import { ChartDialogSaveResponseBase } from '../panel-charts/chart-configuration
 import { CategoryChartType, getChartCategoryValues, getSankeyRowLabels } from '../panel-charts/chart-category-values.util';
 
 type ColorEditorShape = 'category-list' | 'start-end';
-type ToggleKey = 'chartLegend' | 'showLabels' | 'showLabelsPercent' | 'showGridLines';
+type ToggleKey = 'chartLegend' | 'showLabels' | 'showLabelsPercent' | 'showGridLines' | 'showTimeline';
 
 interface ChartTypeSpec {
   chartType: CategoryChartType;
@@ -20,24 +20,31 @@ interface ChartTypeSpec {
   toggles: ToggleKey[];
   hasInnerRadius: boolean;
   hasUseGradient: boolean;
+  /** raceBar only - how many bars to show at once (recomputed every frame from whoever's currently
+   * biggest), instead of just however many the panel's height fits. */
+  hasTopNCount: boolean;
+  /** raceBar only - how long each tick's transition takes, in ms. */
+  hasTransitionMs: boolean;
 }
 
 const TOGGLE_DEFAULTS: Record<ToggleKey, boolean> = {
   chartLegend: true,
   showGridLines: true,
   showLabels: false,
-  showLabelsPercent: false
+  showLabelsPercent: false,
+  showTimeline: false
 };
 
 const CHART_TYPE_SPECS: Record<CategoryChartType, ChartTypeSpec> = {
-  doughnut:     { chartType: 'doughnut',     colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: true,  toggles: ['chartLegend', 'showLabels', 'showLabelsPercent'] },
-  polarArea:    { chartType: 'polarArea',    colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, toggles: ['chartLegend', 'showGridLines', 'showLabels', 'showLabelsPercent'] },
-  sunburst:     { chartType: 'sunburst',     colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, toggles: ['chartLegend'] },
-  treeMap:      { chartType: 'treeMap',      colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, toggles: ['chartLegend'] },
-  scatterPlot:  { chartType: 'scatterPlot',  colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, toggles: ['chartLegend'] },
-  bubblechart:  { chartType: 'bubblechart',  colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, toggles: ['chartLegend'] },
-  parallelSets: { chartType: 'parallelSets', colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, toggles: ['chartLegend'] },
-  funnel:       { chartType: 'funnel',       colorEditorShape: 'start-end',     hasUseGradient: false, hasInnerRadius: false, toggles: ['chartLegend'] },
+  doughnut:     { chartType: 'doughnut',     colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: true,  hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend', 'showLabels', 'showLabelsPercent'] },
+  polarArea:    { chartType: 'polarArea',    colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend', 'showGridLines', 'showLabels', 'showLabelsPercent'] },
+  sunburst:     { chartType: 'sunburst',     colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend'] },
+  treeMap:      { chartType: 'treeMap',      colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend'] },
+  scatterPlot:  { chartType: 'scatterPlot',  colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend'] },
+  bubblechart:  { chartType: 'bubblechart',  colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend'] },
+  parallelSets: { chartType: 'parallelSets', colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend'] },
+  funnel:       { chartType: 'funnel',       colorEditorShape: 'start-end',     hasUseGradient: false, hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend'] },
+  raceBar:      { chartType: 'raceBar',      colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: true,  hasTransitionMs: true,  toggles: ['chartLegend', 'showTimeline'] },
 };
 
 @Component({
@@ -64,6 +71,8 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
   public chartAnimation = true;
   public labelColorMode = 'series';
   public labelCustomColor = '#000000';
+  public topNCount = 10;
+  public transitionMs = 6000;
 
   private original: {
     assignedColors: { value: string | number; color: string }[];
@@ -73,6 +82,8 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
     chartAnimation: boolean;
     labelColorMode: string;
     labelCustomColor: string;
+    topNCount: number;
+    transitionMs: number;
   };
 
   public selectedPalette: { name: string; paleta: string[] } | null = null;
@@ -109,6 +120,8 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
         this.chartAnimation = config['chartAnimation'] ?? true;
         this.labelColorMode = config['labelColorMode'] || 'series';
         this.labelCustomColor = config['labelCustomColor'] || '#000000';
+        this.topNCount = config['topNCount'] ?? 10;
+        this.transitionMs = config['transitionMs'] ?? 6000;
 
         this.original = {
           assignedColors: this.assignedColors.map(c => ({ ...c })),
@@ -117,7 +130,9 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
           useGradient: this.useGradient,
           chartAnimation: this.chartAnimation,
           labelColorMode: this.labelColorMode,
-          labelCustomColor: this.labelCustomColor
+          labelCustomColor: this.labelCustomColor,
+          topNCount: this.topNCount,
+          transitionMs: this.transitionMs
         };
       }, 0);
     }
@@ -144,6 +159,14 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
   }
 
   setChartAnimation(): void {
+    this.syncChart();
+  }
+
+  setTopNCount(): void {
+    this.syncChart();
+  }
+
+  setTransitionMs(): void {
     this.syncChart();
   }
 
@@ -193,7 +216,10 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
       response.labelCustomColor = this.labelCustomColor;
     }
     if (this.spec.toggles.includes('showGridLines')) response.showGridLines = this.toggleState['showGridLines'];
+    if (this.spec.toggles.includes('showTimeline')) response.showTimeline = this.toggleState['showTimeline'];
     if (this.spec.hasInnerRadius) response.innerRadiusPercent = this.innerRadiusPercent;
+    if (this.spec.hasTopNCount) response.topNCount = this.topNCount;
+    if (this.spec.hasTransitionMs) response.transitionMs = this.transitionMs;
 
     this.onClose(EdaDialogCloseEvent.UPDATE, response);
   }
@@ -206,6 +232,8 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
     this.chartAnimation = this.original.chartAnimation;
     this.labelColorMode = this.original.labelColorMode;
     this.labelCustomColor = this.original.labelCustomColor;
+    this.topNCount = this.original.topNCount;
+    this.transitionMs = this.original.transitionMs;
 
     this.syncChart();
     this.onClose(EdaDialogCloseEvent.NONE);
@@ -220,6 +248,8 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
     }
     if (this.spec.hasUseGradient) config['useGradient'] = this.useGradient;
     if (this.spec.hasInnerRadius) config['innerRadiusPercent'] = this.innerRadiusPercent;
+    if (this.spec.hasTopNCount) config['topNCount'] = this.topNCount;
+    if (this.spec.hasTransitionMs) config['transitionMs'] = this.transitionMs;
     config['chartAnimation'] = this.chartAnimation;
     if (this.spec.toggles.includes('showLabels') || this.spec.toggles.includes('showLabelsPercent')) {
       config['labelColorMode'] = this.labelColorMode;

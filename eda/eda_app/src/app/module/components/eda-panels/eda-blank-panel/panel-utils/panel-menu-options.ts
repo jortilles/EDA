@@ -51,7 +51,7 @@ export const PanelOptions = {
               close: (event, response) => panelComponent.onCloseChartProperties(event, response)
             });
 
-          } else if (['doughnut', 'polarArea', 'sunburst', 'treeMap', 'scatterPlot', 'bubblechart', 'parallelSets', 'funnel'].includes(panelComponent.graficos.chartType)) {
+          } else if (['doughnut', 'polarArea', 'sunburst', 'treeMap', 'scatterPlot', 'bubblechart', 'parallelSets', 'funnel', 'raceBar'].includes(panelComponent.graficos.chartType)) {
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.categoryChartController = new EdaDialogController({
               params: {
