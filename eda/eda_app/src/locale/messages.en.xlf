@@ -2892,6 +2892,34 @@ What am I seeing?
 <source>Tendencia</source>
 <target>Trend</target>
 </trans-unit>
+<trans-unit id="kpiGrafico">
+<source>Gráfico</source>
+<target>Chart</target>
+</trans-unit>
+<trans-unit id="opacityLabel">
+<source>Opacidad</source>
+<target>Opacity</target>
+</trans-unit>
+<trans-unit id="labelColorOption">
+<source>Color de las etiquetas</source>
+<target>Label color</target>
+</trans-unit>
+<trans-unit id="labelColorSeries">
+<source>Propio</source>
+<target>Series</target>
+</trans-unit>
+<trans-unit id="labelColorBlack">
+<source>Negro</source>
+<target>Black</target>
+</trans-unit>
+<trans-unit id="labelColorWhite">
+<source>Blanco</source>
+<target>White</target>
+</trans-unit>
+<trans-unit id="labelColorCustom">
+<source>Personalizado</source>
+<target>Custom</target>
+</trans-unit>
 <trans-unit id="removetrend">
 <source>Quitar tendencia</source>
 <target>Delete trend</target>
@@ -6346,8 +6374,8 @@ OR<ph id="5"/>
   <target>Datasource</target>
 </trans-unit>
 <trans-unit id="datasourceFilterPlaceholder" datatype="html">
-  <source>postgres, mysql...</source>
-  <target>postgres, mysql...</target>
+  <source>Nombre del datasource...</source>
+  <target>Datasource name...</target>
 </trans-unit>
 <trans-unit id="createdFilterLabel" datatype="html">
   <source>Creado en</source>
@@ -6796,6 +6824,14 @@ OR<ph id="5"/>
 <trans-unit id="kpiMailConfigTitle">
   <source>Configuración de la alerta KPI por email</source>
   <target>KPI alert email configuration</target>
+</trans-unit>
+<trans-unit id="enablePanelAnimationsButton">
+  <source>Activar animaciones</source>
+  <target>Enable animations</target>
+</trans-unit>
+<trans-unit id="disablePanelAnimationsButton">
+  <source>Desactivar animaciones</source>
+  <target>Disable animations</target>
 </trans-unit>
 </body>
 </file>

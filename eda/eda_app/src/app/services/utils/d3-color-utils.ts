@@ -18,6 +18,11 @@ export function darkenHex(hex: string, amount: number): string {
   return shiftHex(hex, -amount);
 }
 
+/** Converts a 0-100 opacity (assignedColors' own unit) to the 0-1 fraction SVG fill-opacity/stop-opacity want. */
+export function opacityFraction(opacity: number | undefined, fallback: number = 100): number {
+  return (opacity ?? fallback) / 100;
+}
+
 /** Sanitizes a string for use as (part of) an SVG element id, e.g. a per-slice/per-bar gradient id. */
 export function sanitizeId(value: string): string {
   return String(value).replace(/[^a-zA-Z0-9_-]/g, '_');

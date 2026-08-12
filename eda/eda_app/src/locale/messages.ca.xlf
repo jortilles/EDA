@@ -3176,6 +3176,34 @@ Qué estic veient?
     <source>Tendencia</source>
     <target>Tendència</target>
   </trans-unit>
+  <trans-unit id="kpiGrafico">
+    <source>Gráfico</source>
+    <target>Gràfic</target>
+  </trans-unit>
+  <trans-unit id="opacityLabel">
+    <source>Opacidad</source>
+    <target>Opacitat</target>
+  </trans-unit>
+  <trans-unit id="labelColorOption">
+    <source>Color de las etiquetas</source>
+    <target>Color de les etiquetes</target>
+  </trans-unit>
+  <trans-unit id="labelColorSeries">
+    <source>Propio</source>
+    <target>Propi</target>
+  </trans-unit>
+  <trans-unit id="labelColorBlack">
+    <source>Negro</source>
+    <target>Negre</target>
+  </trans-unit>
+  <trans-unit id="labelColorWhite">
+    <source>Blanco</source>
+    <target>Blanc</target>
+  </trans-unit>
+  <trans-unit id="labelColorCustom">
+    <source>Personalizado</source>
+    <target>Personalitzat</target>
+  </trans-unit>
 
   <trans-unit id="removetrend">
     <source>Quitar tendencia</source>
@@ -6653,8 +6681,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Datasource</target>
       </trans-unit>
       <trans-unit id="datasourceFilterPlaceholder" datatype="html">
-        <source>postgres, mysql...</source>
-        <target>postgres, mysql...</target>
+        <source>Nombre del datasource...</source>
+        <target>Nom del datasource...</target>
       </trans-unit>
       <trans-unit id="createdFilterLabel" datatype="html">
         <source>Creado en</source>
@@ -7103,6 +7131,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="kpiMailConfigTitle">
         <source>Configuración de la alerta KPI por email</source>
         <target>Configuració de l'alerta KPI per email</target>
+      </trans-unit>
+      <trans-unit id="enablePanelAnimationsButton">
+        <source>Activar animaciones</source>
+        <target>Activar animacions</target>
+      </trans-unit>
+      <trans-unit id="disablePanelAnimationsButton">
+        <source>Desactivar animaciones</source>
+        <target>Desactivar animacions</target>
       </trans-unit>
     </body>
   </file>

@@ -36,7 +36,6 @@ import { TreeModule } from 'primeng/tree';
 import { TieredMenuModule } from 'primeng/tieredmenu';
 import { VirtualScrollerModule } from 'primeng/virtualscroller';
 import { ToastModule } from 'primeng/toast';
-import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
 import { AccordionModule } from 'primeng/accordion';
 import { TooltipModule } from 'primeng/tooltip';
@@ -72,7 +71,6 @@ import { TreeSelectModule } from 'primeng/treeselect';
         CardModule,
         ToastModule,
         MessagesModule,
-        ChartModule,
         PanelModule,
         TabViewModule,
         ColorPickerModule,

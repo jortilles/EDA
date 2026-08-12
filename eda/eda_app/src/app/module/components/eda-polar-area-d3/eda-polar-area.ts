@@ -17,4 +17,6 @@ export class EdaPolarArea {
   linkedDashboard: LinkedDashboardProps;
   /** Grow-out-from-center entrance animation on first render. On by default. */
   chartAnimation?: boolean;
+  labelColorMode?: string;
+  labelCustomColor?: string;
 }

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { UserService } from "@eda/services/service.index";
+import { DateUtils } from "@eda/services/utils/date-utils.service";
 import { MultiSelectModule } from "primeng/multiselect";
 import { CalendarModule } from "primeng/calendar";
 import { InputSwitchModule } from "primeng/inputswitch";
@@ -30,18 +31,23 @@ export class KpiMailConfigModal implements OnInit {
   public otherRecipients: string = '';
   public enabled: boolean = false;
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private dateUtils: DateUtils) {}
 
   ngOnInit(): void {
     const mailing = this.alert?.mailing;
 
     if (mailing?.enabled) {
-      this.hours = `${mailing.hours || '00'}:${mailing.minutes || '00'}`;
+      /** Stored hours/minutes are UTC; convert to a Date so the picker shows the equivalent local time */
+      const utcHours = new Date();
+      utcHours.setUTCHours(parseInt(mailing.hours, 10) || 0, parseInt(mailing.minutes, 10) || 0, 0, 0);
+      this.hours = utcHours;
       this.units = mailing.units;
       this.quantity = mailing.quantity;
       this.mailMessage = mailing.mailMessage || '';
       this.otherRecipients = mailing.otherRecipients || '';
       this.enabled = mailing.enabled;
+    } else {
+      this.hours = this.dateUtils.roundToNextHalfHour(new Date());
     }
 
     this.userService.getUsers().subscribe(
@@ -72,10 +78,9 @@ export class KpiMailConfigModal implements OnInit {
   }
 
   save() {
-    const hours = this.hours && typeof this.hours === 'string' ? this.hours.slice(0, 2) :
-      this.hours ? this.fillWithZeros(this.hours.getHours()) : null;
-    const minutes = this.hours && typeof this.hours === 'string' ? this.hours.slice(3, 5) :
-      this.hours ? this.fillWithZeros(this.hours.getMinutes()) : null;
+    /** Store hours/minutes in UTC so the schedule check on the backend is timezone-independent */
+    const hours = this.hours ? this.dateUtils.fillWithZeros(this.hours.getUTCHours()) : null;
+    const minutes = this.hours ? this.dateUtils.fillWithZeros(this.hours.getUTCMinutes()) : null;
 
     this.apply.emit({
       units: this.units,
@@ -97,7 +102,10 @@ export class KpiMailConfigModal implements OnInit {
   onApply() { this.save(); }
   onClose() { this.close.emit(); }
 
-  fillWithZeros(n: number) {
-    return n < 10 ? `0${n}` : `${n}`;
+  /** Snaps a manually typed time to the nearest :00 or :30 once the user leaves the field */
+  onHoursBlur(): void {
+    if (this.hours) {
+      this.hours = this.dateUtils.roundToNearestHalfHour(this.hours);
+    }
   }
 }

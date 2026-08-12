@@ -8,4 +8,5 @@ export class EdaFunnel {
   assignedColors: any[];
   useGradient?: boolean;
   chartLegend?: boolean;
+  chartAnimation?: boolean;
 }

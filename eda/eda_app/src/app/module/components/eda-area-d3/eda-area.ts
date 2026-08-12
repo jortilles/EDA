@@ -13,7 +13,11 @@ export class EdaAreaD3 {
   chartLegend: boolean;
   showLabels: boolean;
   showLabelsPercent: boolean;
+  /** Data label text color: 'black' | 'white' | 'custom' (uses labelCustomColor). Defaults to black. */
+  labelColorMode?: string;
+  labelCustomColor?: string;
   showGridLines: boolean;
+  showPointLines: boolean;
   useGradient: boolean;
   linkedDashboard: LinkedDashboardProps;
   /** KPI mini-chart mode: no axes, no grid, no legend, shorter entrance. */

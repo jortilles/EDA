@@ -30,6 +30,19 @@
                 </div>
               </div>
             </div>
+
+            <!-- Animation toggle -->
+            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+              <p class="font-medium" i18n="@@chartAnimation">Animar Gráfico</p>
+              <button type="button" role="switch" [attr.aria-checked]="chartAnimation"
+                (click)="toggleChartAnimation()"
+                class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                [ngClass]="chartAnimation ? 'bg-[var(--corporate-primary)]' : 'bg-gray-200'">
+                <span class="pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform"
+                  [ngClass]="chartAnimation ? 'translate-x-5' : 'translate-x-0.5'">
+                </span>
+              </button>
+            </div>
           </div>
 
           <h1 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h1>

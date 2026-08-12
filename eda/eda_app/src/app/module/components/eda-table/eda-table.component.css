@@ -7,10 +7,22 @@
 }
 
 .trend-col{
-  background-color: #f2f8f634 !important; 
+  background-color: #f2f8f634 !important;
   color: #004d4b !important;
   text-align: center;
   font-weight: normal;
+}
+
+/* eda-line-d3 sizes itself via ResizeObserver, not aspect-ratio like the old <p-chart> did - needs an explicit height. */
+.eda-table-sparkline {
+  width: 90%;
+  height: 30px;
+  margin: 0 auto;
+}
+.eda-table-sparkline eda-line-d3 {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .sub-total-row {
@@ -130,8 +142,24 @@ th{
 }
 /* Apply style to the paginator container */
 .eda-table ::ng-deep .p-paginator{
-    background-color: inherit; 
+    background-color: inherit;
     color: inherit;
+}
+
+/* Mirror the width of the "N registros" block with an invisible spacer on the
+   other side, so the pagination controls stay centered on the full paginator
+   width. Both stay in normal flex flow (no position:absolute) so they shrink
+   and wrap to their own line instead of overlapping when space is tight. */
+.eda-table ::ng-deep .p-paginator::before {
+    content: "";
+    flex: 1 1 auto;
+}
+
+.eda-table ::ng-deep .p-paginator-right-content {
+    flex: 1 1 auto;
+    margin-left: 0;
+    display: flex;
+    justify-content: flex-end;
 }
 
 /* Apply style to the paginator dropdown container */

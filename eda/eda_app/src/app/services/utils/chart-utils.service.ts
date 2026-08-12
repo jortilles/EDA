@@ -6,7 +6,6 @@
 
 
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
-import { ChartJsConfig } from '../../module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-js-config';
 import { ChartConfig } from '../../module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-config';
 import { Column } from './../../shared/models/dashboard-models/column.model';
 import { Injectable } from '@angular/core';
@@ -47,6 +46,8 @@ export interface FormatDates {
 export interface AssignedColor {
     value: string | number;
     color: string;
+    /** 0-100, only meaningful for area/radar's translucent fill. */
+    opacity?: number;
 }
 
 
@@ -752,8 +753,8 @@ export class ChartUtilsService {
         }
 
 
-        // sunbrust two or more value columns and one numeric
-        if(  dataDescription.totalColumns > 2 && dataDescription.otherColumns.length >= 1 && dataDescription.numericColumns.length === 1  ) {
+        // sunburst: one numeric value + at least one categorical column 
+        if (dataDescription.totalColumns >= 2 && dataDescription.otherColumns.length >= 1 && dataDescription.numericColumns.length === 1) {
             notAllowed.splice(notAllowed.indexOf('sunburst'), 1);
         }
 

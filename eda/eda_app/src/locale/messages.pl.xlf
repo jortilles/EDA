@@ -2795,6 +2795,34 @@ Co widzę?
     <source>Tendencia</source>
     <target>Tendencja</target>
   </trans-unit>
+  <trans-unit id="kpiGrafico">
+    <source>Gráfico</source>
+    <target>Wykres</target>
+  </trans-unit>
+  <trans-unit id="opacityLabel">
+    <source>Opacidad</source>
+    <target>Nieprzezroczystość</target>
+  </trans-unit>
+  <trans-unit id="labelColorOption">
+    <source>Color de las etiquetas</source>
+    <target>Kolor etykiet</target>
+  </trans-unit>
+  <trans-unit id="labelColorSeries">
+    <source>Propio</source>
+    <target>Własny</target>
+  </trans-unit>
+  <trans-unit id="labelColorBlack">
+    <source>Negro</source>
+    <target>Czarny</target>
+  </trans-unit>
+  <trans-unit id="labelColorWhite">
+    <source>Blanco</source>
+    <target>Biały</target>
+  </trans-unit>
+  <trans-unit id="labelColorCustom">
+    <source>Personalizado</source>
+    <target>Niestandardowy</target>
+  </trans-unit>
   <trans-unit id="removetrend">
     <source>Quitar tendencia</source>
     <target>Usuń trend</target>
@@ -6286,8 +6314,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Źródło danych</target>
       </trans-unit>
       <trans-unit id="datasourceFilterPlaceholder" datatype="html">
-        <source>postgres, mysql...</source>
-        <target>postgres, mysql...</target>
+        <source>Nombre del datasource...</source>
+        <target>Nazwa źródła danych...</target>
       </trans-unit>
       <trans-unit id="createdFilterLabel" datatype="html">
         <source>Creado en</source>
@@ -6736,6 +6764,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="kpiMailConfigTitle">
         <source>Configuración de la alerta KPI por email</source>
         <target>Konfiguracja alertu KPI e-mail</target>
+      </trans-unit>
+      <trans-unit id="enablePanelAnimationsButton">
+        <source>Activar animaciones</source>
+        <target>Włącz animacje</target>
+      </trans-unit>
+      <trans-unit id="disablePanelAnimationsButton">
+        <source>Desactivar animaciones</source>
+        <target>Wyłącz animacje</target>
       </trans-unit>
 </body>
 </file>

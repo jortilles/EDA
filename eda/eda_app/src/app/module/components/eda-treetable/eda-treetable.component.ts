@@ -111,20 +111,18 @@ export class EdaTreeTable implements OnInit {
 
     // Root is the table structure:
     const root: TreeNode[] = [];
-    let  rootFound:boolean = false;
     // Shape and link the node list to build the treeNode
     Object.values(nodesMap).forEach(node => {
       const id = node.key;
 
       // Find the row for this node in queryvalue and get the ParentID
       const parentKey = values.find(r => String(r[1]) === id)?.[0];
-      const parentString = parentKey.toString();
+      const parentString = String(parentKey); // parentKey may arrive as a string (e.g. cached/DECIMAL values), so compare as strings
 
-      if (parentKey === FATHER_ID && !rootFound) { // its parent is 0 or none ==> root
+      if (parentString === String(FATHER_ID)) { // its parent is FATHER_ID ==> root
         root.push(node);
-        rootFound = true;
-      } else if (parentString && nodesMap[parentString]) { // has a parent and is in the list ==> child
-        nodesMap[parentKey].children.push(node);
+      } else if (nodesMap[parentString]) { // has a parent and is in the list ==> child
+        nodesMap[parentString].children.push(node);
       } else { /* has a parent but is not in the list ==> orphan */}
     });
     return root;
