@@ -774,6 +774,15 @@ export class DashboardPage implements OnInit {
   // DYNAMIC FILTER FUNCTIONS
   // DYNAMIC FILTER FUNCTIONS
 
+  /**
+   * Dynamic filters (click-to-filter) only take effect on panels running in EDA mode (see modeEDA check in onPanelAction).
+   * The related UI (sidebar toggle, panel "Filtros dinámicos" option) should only be shown when the dashboard
+   * actually has at least one EDA panel — if every panel is SQL or TREE, clicking never creates a dynamic filter.
+   */
+  public dynamicFiltersAvailable(): boolean {
+    return this.panels.some((p: any) => normalizeQueryMode(p.content?.query?.query?.queryMode) === 'EDA');
+  }
+
    // Handles the case when a filter already exists
   private async handleExistingFilter(existingFilter: any, data: any, table: any, column: any): Promise<void> {
     const filterName = existingFilter.column?.label || existingFilter.selectedColumn?.display_name?.default ||"default";
