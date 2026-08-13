@@ -926,6 +926,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
   public async exportDashboardAsExcel(): Promise<void> {
     this.hidePopover();
     this.spinner.on();
+    await this._waitForPaint();
     try {
       const panelDataList = await this._collectPanelData();
       await this.fileUtils.exportDashboardToExcel(panelDataList, this.dashboard.title);
@@ -939,6 +940,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
   public async exportDashboardAsWord(): Promise<void> {
     this.hidePopover();
     this.spinner.on();
+    await this._waitForPaint();
     try {
       const panelDataList = await this._collectPanelData();
       await this.fileUtils.exportDashboardToWord(panelDataList, this.dashboard.title);
@@ -950,67 +952,70 @@ export class DashboardSidebarComponent implements AfterViewInit {
   }
 
   /**
-   * Iterates over all panels and returns their content ready for export.
-   * For charts, temporarily hides the panel header before capturing
-   * the image to avoid the title appearing duplicated.
+   * Iterates over all panels and returns their content ready for export. Chart/KPI panels are
+   * captured in parallel batches (same approach as _captureDashboardCanvas) instead of one at a
+   * time - table panels just read already-in-memory data and don't need this.
    */
   private async _collectPanelData(): Promise<DashboardPanelExport[]> {
+    const panels = (this.dashboard.edaPanels?.toArray() ?? []).filter(p => p.panel?.content);
     const panelDataList: DashboardPanelExport[] = [];
 
-    for (const panelComp of this.dashboard.edaPanels?.toArray() ?? []) {
-      if (!panelComp.panel?.content) continue;
-
-      const chartType = panelComp.panelChart?.props?.chartType ?? '';
-      const title     = panelComp.panel.title ?? '';
-      const gridPos   = {
-        gridX:    panelComp.panel.x    ?? 0,
-        gridY:    panelComp.panel.y    ?? 0,
-        gridCols: panelComp.panel.cols ?? 20,
-        gridRows: panelComp.panel.rows ?? 10,
-      };
-
-      if (['table', 'crosstable'].includes(chartType)) {
-        const tableInstance = panelComp.panelChart?.currentConfig;
-        if (tableInstance) {
-          panelDataList.push({ title, type: chartType as 'table' | 'crosstable', tableData: tableInstance, ...gridPos });
-        }
-      } else if (['kpi', 'kpibar', 'kpiline', 'kpiarea'].includes(chartType)) {
-        const inject = panelComp.panelChart?.componentRef?.instance?.inject;
-        if (inject) {
-          const kpiData = {
-            value:              inject.value,
-            sufix:              inject.sufix              || '',
-            kpiColor:           inject.kpiColor           || '',
-            modifiedFontPoints: inject.modifiedFontPoints || 0,
-          };
-          if (chartType === 'kpi') {
-            // Pure KPI: text only
-            panelDataList.push({ title, type: 'kpi', kpiData, ...gridPos });
-          } else {
-            // KPI with chart: hide the number to capture only the chart
-            const kpiComp   = panelComp.panelChart?.componentRef?.instance;
-            const kpiNumEl  = kpiComp?.kpiContainer?.nativeElement as HTMLElement | undefined;
-            if (kpiNumEl) kpiNumEl.style.visibility = 'hidden';
-            const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
-            if (kpiNumEl) kpiNumEl.style.visibility = '';
-            panelDataList.push({
-              title,
-              type: 'kpi',
-              kpiData,
-              imageBase64:  captured.imageBase64,
-              imageWidth:   captured.imageWidth,
-              imageHeight:  captured.imageHeight,
-              ...gridPos,
-            });
-          }
-        }
-      } else {
-        const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
-        panelDataList.push({ ...captured, title, ...gridPos });
-      }
+    const BATCH_SIZE = 4;
+    for (let i = 0; i < panels.length; i += BATCH_SIZE) {
+      const batch = panels.slice(i, i + BATCH_SIZE);
+      const results = await Promise.all(batch.map(panelComp => this._buildPanelExportData(panelComp)));
+      results.forEach(r => { if (r) panelDataList.push(r); });
     }
 
     return panelDataList;
+  }
+
+  private async _buildPanelExportData(panelComp: any): Promise<DashboardPanelExport | null> {
+    const chartType = panelComp.panelChart?.props?.chartType ?? '';
+    const title     = panelComp.panel.title ?? '';
+    const gridPos   = {
+      gridX:    panelComp.panel.x    ?? 0,
+      gridY:    panelComp.panel.y    ?? 0,
+      gridCols: panelComp.panel.cols ?? 20,
+      gridRows: panelComp.panel.rows ?? 10,
+    };
+
+    if (['table', 'crosstable'].includes(chartType)) {
+      const tableInstance = panelComp.panelChart?.currentConfig;
+      return tableInstance ? { title, type: chartType as 'table' | 'crosstable', tableData: tableInstance, ...gridPos } : null;
+    }
+
+    if (['kpi', 'kpibar', 'kpiline', 'kpiarea'].includes(chartType)) {
+      const inject = panelComp.panelChart?.componentRef?.instance?.inject;
+      if (!inject) return null;
+
+      const kpiData = {
+        value:              inject.value,
+        sufix:              inject.sufix              || '',
+        kpiColor:           inject.kpiColor           || '',
+        modifiedFontPoints: inject.modifiedFontPoints || 0,
+      };
+      if (chartType === 'kpi') return { title, type: 'kpi', kpiData, ...gridPos };
+
+      // KPI with chart: hide the number so the capture only shows the chart
+      const kpiComp   = panelComp.panelChart?.componentRef?.instance;
+      const kpiNumEl  = kpiComp?.kpiContainer?.nativeElement as HTMLElement | undefined;
+      if (kpiNumEl) kpiNumEl.style.visibility = 'hidden';
+      const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
+      if (kpiNumEl) kpiNumEl.style.visibility = '';
+      return {
+        title,
+        type: 'kpi',
+        kpiData,
+        imageBase64:  captured.imageBase64,
+        imageWidth:   captured.imageWidth,
+        imageHeight:  captured.imageHeight,
+        ...gridPos,
+      };
+    }
+
+    const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
+    return { ...captured, title, ...gridPos };
   }
 
   /**
