@@ -107,6 +107,43 @@ router.post('/save', authGuard, roleGuard, MailController.saveCredentials);
 
 /**
  * @openapi
+ * /mail/test-send:
+ *   post:
+ *     description: Sends an immediate test email using the saved SMTP configuration, to preview a KPI alert or dashboard mailing setup before saving it.
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             to:
+ *               type: array
+ *               items:
+ *                 type: string
+ *               description: Recipient email address(es)
+ *             subject:
+ *               type: string
+ *               description: Email subject
+ *             message:
+ *               type: string
+ *               description: Email body
+ *     responses:
+ *       200:
+ *         description: Test email sent successfully.
+ *       400:
+ *         description: No recipients provided.
+ *       401:
+ *         description: Unauthorized - authentication required.
+ *       501:
+ *         description: SMTP connection or send error.
+ *     tags:
+ *       - Mail Routes
+ */
+router.post('/test-send', authGuard, MailController.testSend);
+
+/**
+ * @openapi
  * /mail/send-now:
  *   post:
  *     description: Immediately sends a dashboard report via email. Requires admin role.
