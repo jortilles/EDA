@@ -185,9 +185,15 @@ export const ChartsConfigUtils = {
         chartAnimation: inst ? inst.inject?.chartAnimation ?? true : (ebp.panelChart.props.config?.getConfig()?.['chartAnimation'] ?? true),
       }
       if (ebp.panelChart.props.chartType === 'raceBar') {
-        config.topNCount = inst ? inst.inject?.topNCount ?? null : (ebp.panelChart.props.config?.getConfig()?.['topNCount'] ?? null);
-        config.showTimeline = inst ? inst.inject?.showTimeline ?? false : (ebp.panelChart.props.config?.getConfig()?.['showTimeline'] ?? false);
-        config.transitionMs = inst ? inst.inject?.transitionMs ?? null : (ebp.panelChart.props.config?.getConfig()?.['transitionMs'] ?? null);
+        // Same trap as chartAnimation above: inst.inject only reflects whatever renderRaceBar() last
+        // ran with, which is populated asynchronously (requestAnimationFrame in ngOnChanges) - reading
+        // it here on every requery/savePanel can race ahead of a dialog save and silently reset these
+        // back to their defaults. The already-saved config is authoritative; inst.inject is only a
+        // fallback for when there's no saved value yet (component freshly mounted, nothing saved).
+        const savedConfig = ebp.panelChart.props.config?.getConfig();
+        config.topNCount = savedConfig?.['topNCount'] ?? inst?.inject?.topNCount ?? null;
+        config.showTimeline = savedConfig?.['showTimeline'] ?? inst?.inject?.showTimeline ?? false;
+        config.transitionMs = savedConfig?.['transitionMs'] ?? inst?.inject?.transitionMs ?? null;
       }
     } else if (ebp.panelChart.props.chartType === 'knob') {
 
