@@ -42,7 +42,8 @@ const MAX_TOPN_COUNT = 30;
 // How fast a bar's ROW settles, independent of transitionMs (which paces its WIDTH/value).
 const RANK_TRANSITION_MS = 500;
 // Fallback when inject.transitionMs isn't set - the date column's own format, not this, decides tick count/labels.
-const DEFAULT_FRAME_DURATION_MS = 6000;
+// Exported so category-chart-dialog.component.ts's transitionMs default/fallback can't drift out of sync with it.
+export const DEFAULT_FRAME_DURATION_MS = 3000;
 
 @Component({
   standalone: true,
