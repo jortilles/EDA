@@ -29,10 +29,11 @@
 
         <!-- Header -->
         <ng-template pTemplate="header" let-columns>
-            <tr class="header-invisible" style="visibility: collapse!important" >
+            <!-- visibility:collapse broke dashboard export capture, so this sizing row is hidden via zero height/visibility instead -->
+            <tr class="header-invisible" style="visibility: hidden; height: 0; line-height: 0; font-size: 0; padding: 0; border: none;">
                 <ng-container *ngFor="let col of inject.cols">
                     @if(col.visible === true){
-                        <th [width]="col.width"></th>
+                        <th [width]="col.width" style="height: 0; line-height: 0; font-size: 0; padding: 0; border: none;"></th>
                     }
                 </ng-container>
             </tr>

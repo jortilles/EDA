@@ -10,6 +10,7 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
 import { ChartDialogSaveResponseBase } from '../panel-charts/chart-configuration-models/chart-dialog-save-response';
 import { CategoryChartType, getChartCategoryValues, getSankeyRowLabels } from '../panel-charts/chart-category-values.util';
+import { DEFAULT_FRAME_DURATION_MS } from '@eda/components/eda-race-bar/eda-race-bar.component';
 
 type ColorEditorShape = 'category-list' | 'start-end';
 type ToggleKey = 'chartLegend' | 'showLabels' | 'showLabelsPercent' | 'showGridLines' | 'showTimeline';
@@ -72,7 +73,7 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
   public labelColorMode = 'series';
   public labelCustomColor = '#000000';
   public topNCount = 10;
-  public transitionMs = 6000;
+  public transitionMs = DEFAULT_FRAME_DURATION_MS;
 
   private original: {
     assignedColors: { value: string | number; color: string }[];
@@ -121,7 +122,7 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
         this.labelColorMode = config['labelColorMode'] || 'series';
         this.labelCustomColor = config['labelCustomColor'] || '#000000';
         this.topNCount = config['topNCount'] ?? 10;
-        this.transitionMs = config['transitionMs'] ?? 6000;
+        this.transitionMs = config['transitionMs'] ?? DEFAULT_FRAME_DURATION_MS;
 
         this.original = {
           assignedColors: this.assignedColors.map(c => ({ ...c })),
