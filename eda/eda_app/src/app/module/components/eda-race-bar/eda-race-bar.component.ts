@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, AfterViewInit, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, OnDestroy, NgZone } from '@angular/core';
 import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -99,7 +99,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   private catLabelsG: any;
   private valueLabelsG: any;
 
-  constructor(private styleProviderService: StyleProviderService) { }
+  constructor(private styleProviderService: StyleProviderService, private ngZone: NgZone) { }
 
   ngOnInit(): void {
     this.id = `raceBar_${this.inject.id}`;
@@ -185,13 +185,23 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   private animateScrub(from: number, to: number, duration: number): void {
     this.cancelScrubAnimation();
     if (duration <= 0) { this.scrubPosition = to; return; }
-    const start = performance.now();
-    const step = (now: number) => {
-      const t = Math.min(1, (now - start) / duration);
-      this.scrubPosition = from + (to - from) * t;
-      this.scrubAnimFrame = t < 1 ? requestAnimationFrame(step) : null;
-    };
-    this.scrubAnimFrame = requestAnimationFrame(step);
+    // Runs outside Angular so this rAF loop (ticking for the whole `duration`, only relevant when
+    // showTimeline is on) doesn't force a change-detection pass 60x/sec - the scrubber only needs to
+    // look smooth, not update every single frame, so the flush back into Angular is throttled too.
+    this.ngZone.runOutsideAngular(() => {
+      const start = performance.now();
+      let lastFlushAt = 0;
+      const step = (now: number) => {
+        const t = Math.min(1, (now - start) / duration);
+        const value = from + (to - from) * t;
+        if (now - lastFlushAt >= 50 || t >= 1) {
+          lastFlushAt = now;
+          this.ngZone.run(() => { this.scrubPosition = value; });
+        }
+        this.scrubAnimFrame = t < 1 ? requestAnimationFrame(step) : null;
+      };
+      this.scrubAnimFrame = requestAnimationFrame(step);
+    });
   }
 
   private cancelScrubAnimation(): void {
@@ -341,15 +351,20 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     ], { x1: '0%', y1: '0%', x2: '100%', y2: '0%' });
   }
 
+  /** The bar's click listener is registered from inside renderFrame()'s runOutsideAngular block (so
+   * it doesn't inherit the animation's zone-less context), so this always re-enters explicitly -
+   * onClick.emit() needs to run inside Angular for the parent's change detection to pick it up. */
   private emitClick(d: RaceBarDatum): void {
-    if (this.inject.linkedDashboard) {
-      const props = this.inject.linkedDashboard;
-      const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) +
-        `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${d.category}`;
-      window.open(url, '_blank');
-    } else {
-      this.onClick.emit({ label: d.category, filterBy: d.category, value: d.value });
-    }
+    this.ngZone.run(() => {
+      if (this.inject.linkedDashboard) {
+        const props = this.inject.linkedDashboard;
+        const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) +
+          `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${d.category}`;
+        window.open(url, '_blank');
+      } else {
+        this.onClick.emit({ label: d.category, filterBy: d.category, value: d.value });
+      }
+    });
   }
 
   /** (Re)builds the static skeleton - called on mount and on every resize. Never called mid-race by the play timer, which only ever calls renderFrame() on the skeleton already in place. */
@@ -413,134 +428,140 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     const yMidForRank = (rank: number) => rank * rowHeight + rowHeight / 2;
     const offscreenY = topN * rowHeight;
 
-    const axis = d3.axisTop(xScale)
-      .ticks(Math.max(2, Math.floor(innerWidth / 120)))
-      .tickSize(-innerHeight)
-      .tickFormat((v: any) => formatAxisValue(v));
-    this.axisG.transition().duration(duration).ease(d3.easeLinear).call(axis);
-    this.axisG.select('.domain').remove();
-    this.axisG.selectAll('line').style('stroke', this.fontColor).style('opacity', 0.12);
-    this.axisG.selectAll('text').style('font-family', this.fontFamily).style('font-size', '10px').style('fill', this.fontColor).style('opacity', 0.7);
+    // D3's own transitions/tweens schedule their own requestAnimationFrame loop that keeps firing
+    // for the whole `duration`/`rankMs` - none of it touches Angular-bound state (the bars/labels are
+    // plain DOM nodes), so running it inside the zone would otherwise force a full app-wide change
+    // detection pass on every animation frame for as long as this transition plays.
+    this.ngZone.runOutsideAngular(() => {
+      const axis = d3.axisTop(xScale)
+        .ticks(Math.max(2, Math.floor(innerWidth / 120)))
+        .tickSize(-innerHeight)
+        .tickFormat((v: any) => formatAxisValue(v));
+      this.axisG.transition().duration(duration).ease(d3.easeLinear).call(axis);
+      this.axisG.select('.domain').remove();
+      this.axisG.selectAll('line').style('stroke', this.fontColor).style('opacity', 0.12);
+      this.axisG.selectAll('text').style('font-family', this.fontFamily).style('font-size', '10px').style('fill', this.fontColor).style('opacity', 0.7);
 
-    // Target row is re-derived every tick from live interpolated values (crosses exactly on overtake);
-    // the on-screen row eases toward it instead of snapping - see displayedRankByCategory below.
-    const rankMs = Math.min(RANK_TRANSITION_MS, duration);
+      // Target row is re-derived every tick from live interpolated values (crosses exactly on overtake);
+      // the on-screen row eases toward it instead of snapping - see displayedRankByCategory below.
+      const rankMs = Math.min(RANK_TRANSITION_MS, duration);
 
-    const bars = this.barsG.selectAll('rect.eda-race-bar-bar')
-      .data(entries, (d: RaceBarDatum) => d.category);
-    const survivingCategories = new Set(bars.data().map((d: RaceBarDatum) => d.category));
+      const bars = this.barsG.selectAll('rect.eda-race-bar-bar')
+        .data(entries, (d: RaceBarDatum) => d.category);
+      const survivingCategories = new Set(bars.data().map((d: RaceBarDatum) => d.category));
 
-    bars.exit()
-      .each((d: RaceBarDatum) => this.displayedRankByCategory.delete(d.category))
-      .transition().duration(rankMs).ease(d3.easeLinear)
-      .attr('y', offscreenY + (rowHeight - barHeight) / 2)
-      .style('opacity', 0)
-      .remove();
+      bars.exit()
+        .each((d: RaceBarDatum) => this.displayedRankByCategory.delete(d.category))
+        .transition().duration(rankMs).ease(d3.easeLinear)
+        .attr('y', offscreenY + (rowHeight - barHeight) / 2)
+        .style('opacity', 0)
+        .remove();
 
-    const barsEnter = bars.enter().append('rect')
-      .attr('class', 'eda-race-bar-bar')
-      .attr('rx', 3).attr('ry', 3)
-      .attr('x', 0)
-      .attr('y', offscreenY + (rowHeight - barHeight) / 2)
-      .attr('height', barHeight)
-      .attr('width', 0)
-      .style('opacity', 1)
-      .style('cursor', 'pointer')
-      .on('click', (event: any, d: RaceBarDatum) => this.emitClick(d));
+      const barsEnter = bars.enter().append('rect')
+        .attr('class', 'eda-race-bar-bar')
+        .attr('rx', 3).attr('ry', 3)
+        .attr('x', 0)
+        .attr('y', offscreenY + (rowHeight - barHeight) / 2)
+        .attr('height', barHeight)
+        .attr('width', 0)
+        .style('opacity', 1)
+        .style('cursor', 'pointer')
+        .on('click', (event: any, d: RaceBarDatum) => this.emitClick(d));
 
-    const barsMerged = barsEnter.merge(bars)
-      .attr('fill', (d: RaceBarDatum) => this.barFill(d.category))
-      .attr('height', barHeight);
-    // Cancels a still-running exit transition on a category that re-entered topN before it finished.
-    barsMerged.interrupt();
+      const barsMerged = barsEnter.merge(bars)
+        .attr('fill', (d: RaceBarDatum) => this.barFill(d.category))
+        .attr('height', barHeight);
+      // Cancels a still-running exit transition on a category that re-entered topN before it finished.
+      barsMerged.interrupt();
 
-    const catLabels = this.catLabelsG.selectAll('text.eda-race-bar-cat-label')
-      .data(entries, (d: RaceBarDatum) => d.category);
+      const catLabels = this.catLabelsG.selectAll('text.eda-race-bar-cat-label')
+        .data(entries, (d: RaceBarDatum) => d.category);
 
-    // Exit/enter both target offscreenY, not the row formula, which would read a stale/premature rank.
-    const offscreenMid = offscreenY + rowHeight / 2;
-    catLabels.exit().transition().duration(rankMs).ease(d3.easeLinear).attr('y', offscreenMid).style('opacity', 0).remove();
+      // Exit/enter both target offscreenY, not the row formula, which would read a stale/premature rank.
+      const offscreenMid = offscreenY + rowHeight / 2;
+      catLabels.exit().transition().duration(rankMs).ease(d3.easeLinear).attr('y', offscreenMid).style('opacity', 0).remove();
 
-    const catEnter = catLabels.enter().append('text')
-      .attr('class', 'eda-race-bar-cat-label')
-      .attr('x', 8)
-      .attr('y', offscreenMid)
-      .style('opacity', 0)
-      .style('font-family', this.fontFamily)
-      .style('pointer-events', 'none')
-      .text((d: RaceBarDatum) => d.category);
+      const catEnter = catLabels.enter().append('text')
+        .attr('class', 'eda-race-bar-cat-label')
+        .attr('x', 8)
+        .attr('y', offscreenMid)
+        .style('opacity', 0)
+        .style('font-family', this.fontFamily)
+        .style('pointer-events', 'none')
+        .text((d: RaceBarDatum) => d.category);
 
-    const catMerged = catEnter.merge(catLabels).text((d: RaceBarDatum) => d.category);
-    catMerged.interrupt();
-    // A 0-width bar has no name to sit on, so opacity rides the short clock instead of the live value.
-    catMerged.transition('fade').duration(rankMs).ease(d3.easeLinear)
-      .style('opacity', (d: RaceBarDatum) => d.value === 0 ? 0 : 1);
+      const catMerged = catEnter.merge(catLabels).text((d: RaceBarDatum) => d.category);
+      catMerged.interrupt();
+      // A 0-width bar has no name to sit on, so opacity rides the short clock instead of the live value.
+      catMerged.transition('fade').duration(rankMs).ease(d3.easeLinear)
+        .style('opacity', (d: RaceBarDatum) => d.value === 0 ? 0 : 1);
 
-    const valueLabels = this.valueLabelsG.selectAll('text.eda-race-bar-value-label')
-      .data(entries, (d: RaceBarDatum) => d.category);
+      const valueLabels = this.valueLabelsG.selectAll('text.eda-race-bar-value-label')
+        .data(entries, (d: RaceBarDatum) => d.category);
 
-    valueLabels.exit().transition().duration(rankMs).ease(d3.easeLinear).attr('y', offscreenMid).style('opacity', 0).remove();
+      valueLabels.exit().transition().duration(rankMs).ease(d3.easeLinear).attr('y', offscreenMid).style('opacity', 0).remove();
 
-    const valEnter = valueLabels.enter().append('text')
-      .attr('class', 'eda-race-bar-value-label')
-      // Starts at value 0 like the bar itself, so a new entrant's number counts up together with its bar.
-      .attr('x', 8)
-      .attr('y', offscreenMid)
-      .style('opacity', 0)
-      .style('font-family', this.fontFamily)
-      .style('fill', this.fontColor)
-      .style('pointer-events', 'none')
-      .text(formatDeNumber(0));
+      const valEnter = valueLabels.enter().append('text')
+        .attr('class', 'eda-race-bar-value-label')
+        // Starts at value 0 like the bar itself, so a new entrant's number counts up together with its bar.
+        .attr('x', 8)
+        .attr('y', offscreenMid)
+        .style('opacity', 0)
+        .style('font-family', this.fontFamily)
+        .style('fill', this.fontColor)
+        .style('pointer-events', 'none')
+        .text(formatDeNumber(0));
 
-    const valMerged = valEnter.merge(valueLabels);
-    valMerged.interrupt();
-    valMerged.transition('fade').duration(rankMs).ease(d3.easeLinear).style('opacity', 1);
+      const valMerged = valEnter.merge(valueLabels);
+      valMerged.interrupt();
+      valMerged.transition('fade').duration(rankMs).ease(d3.easeLinear).style('opacity', 1);
 
-    // Shared clock per category: value interpolates old->new; row order is re-sorted from it every tick.
-    const valueAt = new Map<string, (t: number) => number>();
-    entries.forEach((d: RaceBarDatum) => {
-      const startValue = survivingCategories.has(d.category) ? (oldValuesByCategory.get(d.category) ?? 0) : 0;
-      valueAt.set(d.category, d3.interpolateNumber(startValue, d.value));
-      // New categories start their glide one row below the last visible slot, like the bar itself.
-      if (!this.displayedRankByCategory.has(d.category)) this.displayedRankByCategory.set(d.category, topN);
-    });
-
-    this.rootG.transition('race').duration(duration).ease(d3.easeLinear)
-      .tween('race', () => {
-        let lastElapsedMs = 0;
-        return (t: number) => {
-          const elapsedMs = t * duration;
-          // Real elapsed ms, not just t's fraction, so catch-up speed stays consistent regardless of transitionMs.
-          const dtMs = Math.max(0, elapsedMs - lastElapsedMs);
-          lastElapsedMs = elapsedMs;
-          const catchUp = duration <= 0 ? 1 : Math.min(1, dtMs / RANK_TRANSITION_MS);
-
-          const live = entries.map((d: RaceBarDatum) => ({ category: d.category, value: valueAt.get(d.category)!(t) }));
-          live.sort((a, b) => b.value - a.value);
-          const targetRank = new Map<string, number>();
-          const liveValue = new Map<string, number>();
-          live.forEach((d, i) => { targetRank.set(d.category, i); liveValue.set(d.category, d.value); });
-
-          const rowOf = new Map<string, number>();
-          entries.forEach((d: RaceBarDatum) => {
-            const target = targetRank.get(d.category) ?? d.rank;
-            const prevRow = this.displayedRankByCategory.get(d.category) ?? target;
-            const nextRow = t >= 1 ? target : prevRow + (target - prevRow) * catchUp;
-            this.displayedRankByCategory.set(d.category, nextRow);
-            rowOf.set(d.category, nextRow);
-          });
-          const valueOf = (d: RaceBarDatum) => liveValue.get(d.category) ?? d.value;
-
-          barsMerged
-            .attr('y', (d: RaceBarDatum) => yForRank(rowOf.get(d.category) ?? d.rank))
-            .attr('width', (d: RaceBarDatum) => Math.max(xScale(valueOf(d)), 0));
-          catMerged.attr('y', (d: RaceBarDatum) => yMidForRank(rowOf.get(d.category) ?? d.rank));
-          valMerged
-            .attr('y', (d: RaceBarDatum) => yMidForRank(rowOf.get(d.category) ?? d.rank))
-            .attr('x', (d: RaceBarDatum) => Math.max(xScale(valueOf(d)), 0) + 8)
-            .each(function (d: RaceBarDatum) { (this as any).textContent = formatDeNumber(Math.round(valueOf(d))); });
-        };
+      // Shared clock per category: value interpolates old->new; row order is re-sorted from it every tick.
+      const valueAt = new Map<string, (t: number) => number>();
+      entries.forEach((d: RaceBarDatum) => {
+        const startValue = survivingCategories.has(d.category) ? (oldValuesByCategory.get(d.category) ?? 0) : 0;
+        valueAt.set(d.category, d3.interpolateNumber(startValue, d.value));
+        // New categories start their glide one row below the last visible slot, like the bar itself.
+        if (!this.displayedRankByCategory.has(d.category)) this.displayedRankByCategory.set(d.category, topN);
       });
+
+      this.rootG.transition('race').duration(duration).ease(d3.easeLinear)
+        .tween('race', () => {
+          let lastElapsedMs = 0;
+          return (t: number) => {
+            const elapsedMs = t * duration;
+            // Real elapsed ms, not just t's fraction, so catch-up speed stays consistent regardless of transitionMs.
+            const dtMs = Math.max(0, elapsedMs - lastElapsedMs);
+            lastElapsedMs = elapsedMs;
+            const catchUp = duration <= 0 ? 1 : Math.min(1, dtMs / RANK_TRANSITION_MS);
+
+            const live = entries.map((d: RaceBarDatum) => ({ category: d.category, value: valueAt.get(d.category)!(t) }));
+            live.sort((a, b) => b.value - a.value);
+            const targetRank = new Map<string, number>();
+            const liveValue = new Map<string, number>();
+            live.forEach((d, i) => { targetRank.set(d.category, i); liveValue.set(d.category, d.value); });
+
+            const rowOf = new Map<string, number>();
+            entries.forEach((d: RaceBarDatum) => {
+              const target = targetRank.get(d.category) ?? d.rank;
+              const prevRow = this.displayedRankByCategory.get(d.category) ?? target;
+              const nextRow = t >= 1 ? target : prevRow + (target - prevRow) * catchUp;
+              this.displayedRankByCategory.set(d.category, nextRow);
+              rowOf.set(d.category, nextRow);
+            });
+            const valueOf = (d: RaceBarDatum) => liveValue.get(d.category) ?? d.value;
+
+            barsMerged
+              .attr('y', (d: RaceBarDatum) => yForRank(rowOf.get(d.category) ?? d.rank))
+              .attr('width', (d: RaceBarDatum) => Math.max(xScale(valueOf(d)), 0));
+            catMerged.attr('y', (d: RaceBarDatum) => yMidForRank(rowOf.get(d.category) ?? d.rank));
+            valMerged
+              .attr('y', (d: RaceBarDatum) => yMidForRank(rowOf.get(d.category) ?? d.rank))
+              .attr('x', (d: RaceBarDatum) => Math.max(xScale(valueOf(d)), 0) + 8)
+              .each(function (d: RaceBarDatum) { (this as any).textContent = formatDeNumber(Math.round(valueOf(d))); });
+          };
+        });
+    });
 
     if (animate) {
       this.animateScrub(this.currentFrameIndex, index, duration);
@@ -559,21 +580,24 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.playing = true;
     this.finished = false;
+    this.advanceFrame();
+  }
+
+  /** Renders the next frame right away, then hands off to the delayed loop for the frames after it. */
+  private advanceFrame(): void {
+    const nextIndex = this.currentFrameIndex + 1;
+    this.renderFrame(nextIndex, true);
+    if (nextIndex >= this.frames.length - 1) {
+      this.playing = false;
+      this.finished = true;
+      this.timer = null;
+      return;
+    }
     this.scheduleNext();
   }
 
   private scheduleNext(): void {
-    this.timer = setTimeout(() => {
-      const nextIndex = this.currentFrameIndex + 1;
-      this.renderFrame(nextIndex, true);
-      if (nextIndex >= this.frames.length - 1) {
-        this.playing = false;
-        this.finished = true;
-        this.timer = null;
-        return;
-      }
-      this.scheduleNext();
-    }, this.frameDurationMs);
+    this.timer = setTimeout(() => this.advanceFrame(), this.frameDurationMs);
   }
 
   pause(): void {
