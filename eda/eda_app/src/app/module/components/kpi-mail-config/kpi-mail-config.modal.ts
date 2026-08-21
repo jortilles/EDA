@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { UserService } from "@eda/services/service.index";
+import { lastValueFrom } from "rxjs";
+import { AlertService, MailService, UserService } from "@eda/services/service.index";
 import { DateUtils } from "@eda/services/utils/date-utils.service";
 import { MultiSelectModule } from "primeng/multiselect";
 import { CalendarModule } from "primeng/calendar";
@@ -30,8 +31,9 @@ export class KpiMailConfigModal implements OnInit {
   public selectedUsers: any[] = [];
   public otherRecipients: string = '';
   public enabled: boolean = false;
+  public isTesting = signal<boolean>(false);
 
-  constructor(private userService: UserService, private dateUtils: DateUtils) {}
+  constructor(private userService: UserService, private dateUtils: DateUtils, private mailService: MailService, private alertService: AlertService) {}
 
   ngOnInit(): void {
     const mailing = this.alert?.mailing;
@@ -97,6 +99,26 @@ export class KpiMailConfigModal implements OnInit {
 
   disableApply(): boolean {
     return !this.quantity || !this.units || this.allRecipientEmails.length === 0 || !this.mailMessage;
+  }
+
+  disableTest(): boolean {
+    return this.isTesting() || this.allRecipientEmails.length === 0 || !this.mailMessage;
+  }
+
+  async sendTest() {
+    this.isTesting.set(true);
+    try {
+      await lastValueFrom(this.mailService.testSend({
+        to: this.allRecipientEmails,
+        subject: 'EDA - Prueba de alerta KPI',
+        message: this.mailMessage
+      }));
+      this.alertService.addSuccess($localize`:@@testMailSent:Correo de prueba enviado correctamente`);
+    } catch (err: any) {
+      this.alertService.addError(err);
+    } finally {
+      this.isTesting.set(false);
+    }
   }
 
   onApply() { this.save(); }

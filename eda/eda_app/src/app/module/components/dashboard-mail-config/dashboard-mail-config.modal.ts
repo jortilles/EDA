@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output, signal } from "@angular/core";
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, } from "@angular/forms";
-import { AlertService, UserService } from "@eda/services/service.index";
+import { lastValueFrom } from "rxjs";
+import { AlertService, MailService, UserService } from "@eda/services/service.index";
 import { DateUtils } from "@eda/services/utils/date-utils.service";
 import { SharedModule } from "@eda/shared/shared.module";
 import { MultiSelectModule } from "primeng/multiselect";
@@ -43,8 +44,9 @@ export class DashboardMailConfigModal {
   public selectedUsers: any = [];
   public otherRecipients: string = '';
   public enabled: boolean = true;
+  public isTesting = signal<boolean>(false);
 
-  constructor(private alertService: AlertService, private userService: UserService, private dateUtils: DateUtils) { }
+  constructor(private alertService: AlertService, private userService: UserService, private dateUtils: DateUtils, private mailService: MailService) { }
 
   ngOnInit(): void {
     this.userService.getUsers().subscribe(
@@ -124,6 +126,26 @@ export class DashboardMailConfigModal {
 
   public disableApply(): boolean {
     return false;
+  }
+
+  disableTest(): boolean {
+    return this.isTesting() || this.allRecipientEmails.length === 0 || !this.mailMessage;
+  }
+
+  async sendTest() {
+    this.isTesting.set(true);
+    try {
+      await lastValueFrom(this.mailService.testSend({
+        to: this.allRecipientEmails,
+        subject: 'EDA - Prueba de envío de informe',
+        message: this.mailMessage
+      }));
+      this.alertService.addSuccess($localize`:@@testMailSent:Correo de prueba enviado correctamente`);
+    } catch (err: any) {
+      this.alertService.addError(err);
+    } finally {
+      this.isTesting.set(false);
+    }
   }
 
   public onClose(): void {
