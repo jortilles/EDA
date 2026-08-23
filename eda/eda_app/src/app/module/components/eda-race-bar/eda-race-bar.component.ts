@@ -33,7 +33,7 @@ interface RaceBarDatum {
 }
 
 const GRADIENT_LIGHTEN_AMOUNT = 60;
-// Budget for computeTopN, not a hard pixel size - rowHeight is always innerHeight / topN.
+// Budget for computeTopN, not a hard pixel size - rowHeight is innerHeight / however many rows are actually shown.
 const MIN_ROW_HEIGHT_PX = 28;
 const MIN_BARS = 4;
 const MAX_BARS = 15;
@@ -422,11 +422,14 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     // Covers both the target value and the value a bar's animating down from, so a shrinking bar never renders wider than the plot area.
     const maxValue = Math.max(1, ...entries.map((d: RaceBarDatum) => Math.max(d.value, oldValuesByCategory.get(d.category) ?? 0)));
     const xScale = d3.scaleLinear().domain([0, maxValue]).nice().range([0, innerWidth]);
-    const rowHeight = innerHeight / topN;
+    // topN is the slot budget, but a frame (or hiddenCategories) can leave fewer bars than that -
+    // size rows off however many are actually shown so they fill the available height instead of leaving gaps.
+    const visibleRows = entries.length || 1;
+    const rowHeight = innerHeight / visibleRows;
     const barHeight = Math.max(rowHeight * 0.7, 6);
     const yForRank = (rank: number) => rank * rowHeight + (rowHeight - barHeight) / 2;
     const yMidForRank = (rank: number) => rank * rowHeight + rowHeight / 2;
-    const offscreenY = topN * rowHeight;
+    const offscreenY = visibleRows * rowHeight;
 
     // D3's own transitions/tweens schedule their own requestAnimationFrame loop that keeps firing
     // for the whole `duration`/`rankMs` - none of it touches Angular-bound state (the bars/labels are
@@ -522,7 +525,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
         const startValue = survivingCategories.has(d.category) ? (oldValuesByCategory.get(d.category) ?? 0) : 0;
         valueAt.set(d.category, d3.interpolateNumber(startValue, d.value));
         // New categories start their glide one row below the last visible slot, like the bar itself.
-        if (!this.displayedRankByCategory.has(d.category)) this.displayedRankByCategory.set(d.category, topN);
+        if (!this.displayedRankByCategory.has(d.category)) this.displayedRankByCategory.set(d.category, visibleRows);
       });
 
       this.rootG.transition('race').duration(duration).ease(d3.easeLinear)
