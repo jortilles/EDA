@@ -276,6 +276,10 @@ export class HomePage implements OnInit, OnDestroy {
     return report.user === this.userService.user?._id|| this.userService.isAdmin;
   }
 
+  public get canManageDatasources(): boolean {
+    return this.userService.isAdmin || this.userService.isDataSourceCreator;
+  }
+
   public filterByTags() {
     const tags = sessionStorage.getItem('activeTags') || '[]';
     if (tags.includes($localize`:@@AllTags:Todos`) || tags.includes(this.allTagsFlatValue) || tags === '[]') {
