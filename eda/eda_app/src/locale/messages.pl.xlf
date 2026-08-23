@@ -6773,6 +6773,58 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Desactivar animaciones</source>
         <target>Wyłącz animacje</target>
       </trans-unit>
+      <trans-unit id="aboutResourcesTitle">
+        <source>Recursos</source>
+        <target>Zasoby</target>
+      </trans-unit>
+      <trans-unit id="gettingStartedTitle">
+        <source>Primeros pasos</source>
+        <target>Pierwsze kroki</target>
+      </trans-unit>
+      <trans-unit id="gettingStartedSubtitle">
+        <source>Todo lo que necesitas para crear tu primer informe en edalitics.</source>
+        <target>Wszystko, czego potrzebujesz, aby stworzyć swój pierwszy raport w edalitics.</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Title">
+        <source>Conecta tus datos</source>
+        <target>Połącz swoje dane</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Desc">
+        <source>Conecta una fuente de datos y define tu modelo de datos.</source>
+        <target>Połącz źródło danych i zdefiniuj swój model danych.</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Cta">
+        <source>Crear fuente de datos</source>
+        <target>Utwórz źródło danych</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Hint">
+        <source>Pide a un administrador que conecte una fuente de datos.</source>
+        <target>Poproś administratora o połączenie źródła danych.</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Title">
+        <source>Crea tu primer informe</source>
+        <target>Utwórz swój pierwszy raport</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Desc">
+        <source>Diseña un dashboard interactivo a partir de tu modelo de datos.</source>
+        <target>Zaprojektuj interaktywny pulpit na podstawie swojego modelu danych.</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Cta">
+        <source>Crear informe</source>
+        <target>Utwórz raport</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Title">
+        <source>Explora y aprende</source>
+        <target>Odkrywaj i ucz się</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Desc">
+        <source>Tutoriales, documentación y comunidad para sacar el máximo partido a edalitics.</source>
+        <target>Samouczki, dokumentacja i społeczność, aby w pełni wykorzystać możliwości edalitics.</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Cta">
+        <source>Ver recursos</source>
+        <target>Zobacz zasoby</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
