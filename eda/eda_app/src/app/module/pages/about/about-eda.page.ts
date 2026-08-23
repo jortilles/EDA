@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
+import { version } from '../../../../../package.json';
 
 @Component({
   selector: 'app-info-page',
@@ -13,6 +14,8 @@ export class AboutEdaPage {
   private _sanitizer = inject(DomSanitizer);
   // Tab state
   activeTab: 'datamodel' | 'report' = 'datamodel';
+
+  public readonly version: string = version;
 
   public readonly datamodel: string = "https://www.youtube.com/embed/Px709s0ftiI";
   public readonly report: string = "https://www.youtube.com/embed/RFznLe9kxHU";

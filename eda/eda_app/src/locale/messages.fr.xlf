@@ -3987,17 +3987,17 @@ Que suis-je en train de voir ?
 <trans-unit id="firstAboutParagraphSpan" datatype="html">
   <source>  
                 <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar 
-                informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar
+                informes gráficos e interactivos de forma sencilla. Edalitics es una aplicación que se puede instalar
                 en tus propios servidores o se puede difrutar en su versión SaaS 
                 <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>. 
-                Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
+                Edalitics permite disfrutar de toda la potencia de Edalitics sin tener que preocuparte de instalaciones, 
                 configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.  </source>
   <target>
                 <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> Il s'agit d'une application web open source qui vous permet de réaliser
-                 générez facilement des rapports graphiques et interactifs. EDA est une application installable.
+                 générez facilement des rapports graphiques et interactifs. Edalitics est une application installable.
                  sur vos propres serveurs ou vous pouvez en profiter dans sa version SaaS
                  <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>.
-                 Edalitics vous permet de profiter pleinement de la puissance d'EDA sans vous soucier des installations,
+                 Edalitics vous permet de profiter pleinement de la puissance d'Edalitics sans vous soucier des installations,
                  configurations, mises à jour, etc. Vous connectez vos sources de données et c'est tout. </target>
   <context-group purpose="location">
     <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -4008,14 +4008,14 @@ Que suis-je en train de voir ?
 
 <trans-unit id="secondAboutParagraph" datatype="html">
   <source>
-                 EDA ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
+                 Edalitics ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
                 Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
-                funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
+                funcionalidades o carácteristicas. Jortilles financia el desarrollo de edalitics mediante las suscripciones a Edalitics
                 y el soporte empresarial que ofrece a sus clientes.  </source>
   <target>
-                EDA a été développé par <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
+                Edalitics a été développé par <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
                  Si vous avez besoin d'aide pour votre entreprise, n'hésitez pas à nous contacter. De même, si vous souhaitez demander de nouvelles
-                 fonctionnalités. Jortilles finance le développement d'EDA grâce aux abonnements à Edalitics
+                 fonctionnalités. Jortilles finance le développement d'edalitics grâce aux abonnements à Edalitics
                  et au soutien commercial qu'elle offre à ses clients. </target>
   <context-group purpose="location">
     <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -4025,10 +4025,10 @@ Que suis-je en train de voir ?
 
 <trans-unit id="thirdAboutParagraph" datatype="html">
   <source>
-   El código fuente de EDA está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+   El código fuente de Edalitics está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
   </source>
   <target>
-   Le code source EDA est disponible à l'adresse suivante <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+   Le code source Edalitics est disponible à l'adresse suivante <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
   </target>
   <context-group purpose="location">
     <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -4038,10 +4038,10 @@ Que suis-je en train de voir ?
 
 <trans-unit id="fourthAboutParagraph" datatype="html">
   <source>
-   La documentación de EDA está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
+   La documentación de Edalitics está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
   </source>
   <target>
-  La documentation EDA est disponible à l'adresse suivante <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Ce lien</a>
+  La documentation Edalitics est disponible à l'adresse suivante <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Ce lien</a>
   </target>
 </trans-unit>
 
@@ -4939,8 +4939,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 </trans-unit>
 
 <trans-unit id="aboutEdaP1">
-  <source>Una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla.</source>
-  <target>Une application web open source qui vous permet de créer facilement des rapports graphiques et interactifs.</target>
+ <source>Analítica de datos sin complicaciones.</source>
+  <target>Analyse de données simple.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaH1">
@@ -4949,8 +4949,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 </trans-unit>
 
 <trans-unit id="aboutEdaP2">
-  <source>EDA es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
-  <target>EDA est une application qui peut être installée sur vos propres serveurs ou utilisée dans sa version SaaS Edalitics.</target>
+  <source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
+  <target>Edalitics est une application qui peut être installée sur vos propres serveurs ou utilisée dans sa version SaaS Edalitics.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA1">
@@ -4964,8 +4964,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 </trans-unit>
 
 <trans-unit id="aboutEdaP3">
-  <source>Accede a nuestra documentación completa para aprender a sacar el máximo provecho de EDA.</source>
-  <target>Accédez à notre documentation complète pour découvrir comment tirer le meilleur parti de l'EDA.</target>
+  <source>Accede a nuestra documentación completa para aprender a sacar el máximo provecho de Edalitics.</source>
+  <target>Accédez à notre documentation complète pour découvrir comment tirer le meilleur parti de l'Edalitics.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA2">
@@ -4989,8 +4989,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 </trans-unit>
 
 <trans-unit id="aboutEdaP5">
-  <source>Aprende a usar EDA con nuestros tutoriales paso a paso.</source>
-  <target>Apprenez à utiliser EDA grâce à nos tutoriels étape par étape.</target>
+  <source>Aprende a usar edalitics con nuestros tutoriales paso a paso.</source>
+  <target>Apprenez à utiliser edalitics grâce à nos tutoriels étape par étape.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaB1">
@@ -5004,8 +5004,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 </trans-unit>
 
 <trans-unit id="aboutEdaH4">
-  <source>¿Quieres probar EDA en el cloud?</source>
-  <target>Souhaitez-vous essayer l'EDA dans le cloud ?</target>
+  <source>¿Quieres probar edalitics en el cloud?</source>
+  <target>Souhaitez-vous essayer l'edalitics dans le cloud ?</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP6">
@@ -5024,8 +5024,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 </trans-unit>
 
 <trans-unit id="aboutEdaA5">
-  <source>EDA ha sido desarrollado por</source>
-  <target>EDA a été développé par</target>
+  <source>Edalitics ha sido desarrollado por</source>
+  <target>Edalitics a été développé par</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP7">
@@ -6841,8 +6841,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>CONTEXT</target>
       </trans-unit>
       <trans-unit id="aiEDAApp" datatype="html">
-        <source>EDA APP URL</source>
-        <target>EDA APP URL</target>
+        <source>Edalitics APP URL</source>
+        <target>Edalitics APP URL</target>
       </trans-unit>
       <trans-unit id="aiMCPURL" datatype="html">
         <source>MCP URL</source>
