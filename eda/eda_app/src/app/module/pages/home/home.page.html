@@ -113,7 +113,7 @@
   <!-- Dashboards (scrollable) -->
   <div class="flex-1 overflow-y-auto">
     <div class="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
-      @if (reportsLoaded() && allDashboards.length === 0 && canManageDatasources) {
+      @if (reportsLoaded() && allDashboards.length < 3 && canManageDatasources) {
         <div class="mb-6">
           <eda-getting-started></eda-getting-started>
         </div>
