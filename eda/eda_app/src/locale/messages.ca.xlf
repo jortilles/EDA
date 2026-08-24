@@ -5014,8 +5014,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP2">
-  <source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
-  <target>Edalitics és una aplicació que es pot instal·lar als teus propis servidors o gaudir a la seva versió SaaS Edalitics.</target>
+  <source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión <a href="https://www.edalitics.com" target="_blank"   class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</source>
+  <target>Edalitics és una aplicació que es pot instal·lar als teus propis servidors o gaudir a la seva versió <a href="https://www.edalitics.com" target="_blank"   class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA1">
