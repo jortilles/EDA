@@ -5667,6 +5667,85 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
           <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="aboutResourcesTitle" datatype="html">
+        <source>Recursos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/pages/about/about-eda.page.html</context>
+        </context-group>
+      </trans-unit>
+
+      <trans-unit id="gettingStartedTitle" datatype="html">
+        <source>Primeros pasos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/getting-started/getting-started.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="gettingStartedSubtitle" datatype="html">
+        <source>Todo lo que necesitas para crear tu primer informe en edalitics.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/getting-started/getting-started.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="gsStep1Title" datatype="html">
+        <source>Conecta tus datos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/getting-started/getting-started.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="gsStep1Desc" datatype="html">
+        <source>Conecta una fuente de datos y define tu modelo de datos.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/getting-started/getting-started.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="gsStep1Cta" datatype="html">
+        <source>Crear fuente de datos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/getting-started/getting-started.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="gsStep1Hint" datatype="html">
+        <source>Pide a un administrador que conecte una fuente de datos.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/getting-started/getting-started.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="gsStep2Title" datatype="html">
+        <source>Crea tu primer informe</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/getting-started/getting-started.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="gsStep2Desc" datatype="html">
+        <source>Diseña un dashboard interactivo a partir de tu modelo de datos.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/getting-started/getting-started.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="gsStep2Cta" datatype="html">
+        <source>Crear informe</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/getting-started/getting-started.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="gsStep3Title" datatype="html">
+        <source>Explora y aprende</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/getting-started/getting-started.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="gsStep3Desc" datatype="html">
+        <source>Tutoriales, documentación y comunidad para sacar el máximo partido a edalitics.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/getting-started/getting-started.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="gsStep3Cta" datatype="html">
+        <source>Ver recursos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/components/getting-started/getting-started.component.html</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>

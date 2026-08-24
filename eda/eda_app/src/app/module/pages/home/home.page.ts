@@ -17,11 +17,12 @@ import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/date
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ChatbotComponent } from '@eda/components/chatbot/chatbot.component';
+import { GettingStartedComponent } from '@eda/shared/components/getting-started/getting-started.component';
 
 @Component({
   selector: 'app-v2-home-page',
   standalone: true,
-  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule, EdaDatePickerComponent, DropdownModule, MultiSelectModule, ChatbotComponent],
+  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule, EdaDatePickerComponent, DropdownModule, MultiSelectModule, ChatbotComponent, GettingStartedComponent],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.css']
 })
@@ -32,6 +33,7 @@ export class HomePage implements OnInit, OnDestroy {
   private router = inject(Router);
 
   allDashboards: any[] = [];
+  reportsLoaded = signal(false);
   publicReports: any[] = [];
   privateReports: any[] = [];
   roleReports: any[] = [];
@@ -144,6 +146,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.handleSorting();
     this.loadReportTags();
     this.setIsObserver();
+    this.reportsLoaded.set(true);
   }
 
   private async loadReportTags() {
@@ -274,6 +277,10 @@ export class HomePage implements OnInit, OnDestroy {
   public canEditReport(report: any): boolean {
     if (!report.onlyIcanEdit) return true;
     return report.user === this.userService.user?._id|| this.userService.isAdmin;
+  }
+
+  public get canManageDatasources(): boolean {
+    return this.userService.isAdmin || this.userService.isDataSourceCreator;
   }
 
   public filterByTags() {

@@ -113,6 +113,11 @@
   <!-- Dashboards (scrollable) -->
   <div class="flex-1 overflow-y-auto">
     <div class="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      @if (reportsLoaded() && allDashboards.length === 0 && canManageDatasources) {
+        <div class="mb-6">
+          <eda-getting-started></eda-getting-started>
+        </div>
+      }
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Public Reports -->
         <ng-container

@@ -1,0 +1,121 @@
+<div class="getting-started gs-tinted rounded-lg border shadow-sm p-6">
+  <div class="mb-6">
+    <h2 class="text-2xl font-semibold" i18n="@@gettingStartedTitle">Primeros pasos</h2>
+    <p class="text-sm text-gray-600 dark:text-gray-300" i18n="@@gettingStartedSubtitle">
+      Todo lo que necesitas para crear tu primer informe en edalitics.
+    </p>
+  </div>
+
+  <div class="grid gap-6 md:grid-cols-3">
+
+    <!-- Step 1: connect data -->
+    <div class="flex flex-col gap-3">
+      <span class="badge-fused">
+        <span class="num-chip">1</span>
+        <eda-icon name="circle-stack" size="default" class="text-white" />
+      </span>
+      <h3 class="text-base font-semibold" i18n="@@gsStep1Title">Conecta tus datos</h3>
+      <p class="text-sm text-gray-600 dark:text-gray-300 flex-1" i18n="@@gsStep1Desc">
+        Conecta una fuente de datos y define tu modelo de datos.
+      </p>
+      @if (canCreateDatasource) {
+        <a routerLink="/admin/data-source/new" class="step-cta">
+          <span i18n="@@gsStep1Cta">Crear fuente de datos</span>
+        </a>
+      } @else {
+        <p class="text-xs text-gray-500 dark:text-gray-400 italic" i18n="@@gsStep1Hint">
+          Pide a un administrador que conecte una fuente de datos.
+        </p>
+      }
+    </div>
+
+    <!-- Step 2: create report -->
+    <div class="flex flex-col gap-3">
+      <span class="badge-fused">
+        <span class="num-chip">2</span>
+        <eda-icon name="clipboard-document-list" size="default" class="text-white" />
+      </span>
+      <h3 class="text-base font-semibold" i18n="@@gsStep2Title">Crea tu primer informe</h3>
+      <p class="text-sm text-gray-600 dark:text-gray-300 flex-1" i18n="@@gsStep2Desc">
+        Diseña un dashboard interactivo a partir de tu modelo de datos.
+      </p>
+      @if (canCreateReport) {
+        <button type="button" class="step-cta" (click)="onCreateDashboard()">
+          <span i18n="@@gsStep2Cta">Crear informe</span>
+        </button>
+      }
+    </div>
+
+    <!-- Step 3: explore resources -->
+    <div class="flex flex-col gap-3">
+      <span class="badge-fused">
+        <span class="num-chip">3</span>
+        <eda-icon name="sparkles-ai" size="default" class="text-white" />
+      </span>
+      <h3 class="text-base font-semibold" i18n="@@gsStep3Title">Explora y aprende</h3>
+      <p class="text-sm text-gray-600 dark:text-gray-300 flex-1" i18n="@@gsStep3Desc">
+        Tutoriales, documentación y comunidad para sacar el máximo partido a edalitics.
+      </p>
+      <button type="button" class="step-cta" (click)="goToResources()">
+        <span i18n="@@gsStep3Cta">Ver recursos</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<div class="grid gap-6 md:grid-cols-2 mt-6" id="video-tutorials">
+  <!-- Video Tutorials Section -->
+  <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+    <div class="p-6">
+      <h2 class="text-2xl font-semibold flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-6 w-6 text-[#00BFB3]">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="10 8 16 12 10 16 10 8"></polygon>
+        </svg>
+        <span i18n="@@aboutEdaB1">Crear Modelo de Datos</span>
+      </h2>
+      <p class="text-sm text-gray-600" i18n="@@aboutEdaP5">
+        Aprende a usar edalitics con nuestros tutoriales paso a paso.
+      </p>
+    </div>
+    <div class="p-6 pt-0">
+      <div class="aspect-video">
+        <iframe
+          class="w-full h-full rounded-lg"
+          [src]="datamodelSafe"
+          title="Como crear un modelo de datos en edalitics"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Video Tutorials Section -->
+  <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+    <div class="p-6">
+      <h2 class="text-2xl font-semibold flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-6 w-6 text-[#00BFB3]">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="10 8 16 12 10 16 10 8"></polygon>
+        </svg>
+        <span i18n="@@aboutEdaB2">Crear un informe</span>
+      </h2>
+      <p class="text-sm text-gray-600" i18n="@@aboutEdaP5">
+        Aprende a usar edalitics con nuestros tutoriales paso a paso.
+      </p>
+    </div>
+    <div class="p-6 pt-0">
+      <div class="aspect-video">
+        <iframe
+          class="w-full h-full rounded-lg"
+          [src]="reportSafe"
+          title="Como crear un informe en edalitics"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
+    </div>
+  </div>
+</div>
