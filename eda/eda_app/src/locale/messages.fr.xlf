@@ -4949,8 +4949,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 </trans-unit>
 
 <trans-unit id="aboutEdaP2">
-  <source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
-  <target>Edalitics est une application qui peut être installée sur vos propres serveurs ou utilisée dans sa version SaaS Edalitics.</target>
+  <source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión <a href="https://www.edalitics.com" target="_blank" rel="noopener noreferrer" class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</source>
+  <target>Edalitics est une application qui peut être installée sur vos propres serveurs ou utilisée dans sa version <a href="https://www.edalitics.com" target="_blank" rel="noopener noreferrer" class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA1">

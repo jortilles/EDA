@@ -4583,8 +4583,8 @@ Once configured you can invoke it whenever you want from the button.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP2">
-<source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
-<target>Edalitics is an application that can be installed on your own servers or enjoyed in its SaaS version, Edalitics.</target>
+<source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión <a href="https://www.edalitics.com" target="_blank" rel="noopener noreferrer" class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</source>
+<target>Edalitics is an application that can be installed on your own servers or enjoyed in its <a href="https://www.edalitics.com" target="_blank" rel="noopener noreferrer" class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a> version.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA1">
