@@ -1,6 +1,6 @@
-export type CustomDbMessageLang = 'es' | 'ca' | 'en' | 'fr' | 'pl' | 'gl';
+export type DbMessageLang = 'es' | 'ca' | 'en' | 'fr' | 'pl' | 'gl';
 
-export type CustomDbMessageKey =
+export type DbMessageKey =
   | 'unknownColumn'
   | 'unknownTable'
   | 'accessDenied'
@@ -11,7 +11,7 @@ export type CustomDbMessageKey =
   | 'generic'
   | 'fallback';
 
-const CUSTOM_DB_ERROR_MESSAGES: Record<CustomDbMessageKey, Record<CustomDbMessageLang, (value?: string) => string>> = {
+const DB_ERROR_MESSAGES: Record<DbMessageKey, Record<DbMessageLang, (value?: string) => string>> = {
   unknownColumn: {
     es: (value?: string) => `El campo '${value || '?'}' está incluido en el informe pero no existe en la base de datos.`,
     en: (value?: string) => `The field '${value || '?'}' is included in the report but not exists in the database.`,
@@ -86,12 +86,12 @@ const CUSTOM_DB_ERROR_MESSAGES: Record<CustomDbMessageKey, Record<CustomDbMessag
   },
 };
 
-export function resolveCustomDbLang(lang?: string | false): CustomDbMessageLang {
+export function resolveDbLang(lang?: string | false): DbMessageLang {
   return typeof lang === 'string' && ['es', 'ca', 'en', 'fr', 'pl', 'gl'].includes(lang)
-    ? (lang as CustomDbMessageLang)
+    ? (lang as DbMessageLang)
     : 'en';
 }
 
-export function getCustomDbErrorMessage(key: CustomDbMessageKey, lang: CustomDbMessageLang, value?: string): string {
-  return CUSTOM_DB_ERROR_MESSAGES[key][lang](value);
+export function getDbErrorMessage(key: DbMessageKey, lang: DbMessageLang, value?: string): string {
+  return DB_ERROR_MESSAGES[key][lang](value);
 }
