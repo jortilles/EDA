@@ -12,10 +12,22 @@
 
   </div>
 
+  <!-- Getting started -->
+  <div class="w-full mb-12">
+    <eda-getting-started></eda-getting-started>
+  </div>
+
+  <!-- Resources -->
+  <div id="recursos" class="w-full mt-16 scroll-mt-6">
+  <div class="flex items-center gap-3 mb-6">
+    <span class="text-xs font-bold uppercase tracking-widest text-gray-600" i18n="@@aboutResourcesTitle">Recursos</span>
+    <span class="flex-1 h-px bg-gray-200"></span>
+  </div>
+
   <!-- Main Features -->
   <div class="grid gap-6 md:grid-cols-3 mb-12">
     <!-- GitHub Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
       <div class="p-6">
         <h3 class="text-xl font-semibold flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -47,7 +59,7 @@
     </div>
 
     <!-- Documentation Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
       <div class="p-6">
         <h3 class="text-xl font-semibold flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -78,7 +90,7 @@
     </div>
 
     <!-- Community Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
       <div class="p-6">
         <h3 class="text-xl font-semibold flex items-center justify-center" >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-5 w-5 text-[#00BFB3]">
@@ -113,123 +125,12 @@
     </div>
   </div>
 
-  <div class="grid gap-6 md:grid-cols-2">
-
-  
-  <!-- Video Tutorials Section -->
-  <div class="min-h-[480px] bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-    <div class="p-6">
-      <h2 class="text-2xl font-semibold flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-6 w-6 text-[#00BFB3]">
-          <circle cx="12" cy="12" r="10"></circle>
-          <polygon points="10 8 16 12 10 16 10 8"></polygon>
-        </svg>
-        <span i18n="@@aboutEdaH5">Tutoriales en video</span>
-      </h2>
-      <p class="text-sm text-gray-600" i18n="@@aboutEdaP5">
-        Aprende a usar edalitics con nuestros tutoriales paso a paso.
-      </p>
-    </div>
-    <div class="p-6 pt-0">
-      <!-- Tabs -->
-      <div class="w-full">
-        <div class="border-b border-gray-200">
-          <div class="flex -mb-px space-x-1" role="tablist">
-            <button 
-              (click)="activeTab = 'datamodel'" 
-              [class.bg-[#00BFB3]]="activeTab === 'datamodel'"
-              [class.text-white]="activeTab === 'datamodel'"
-              [class.border-[#00BFB3]]="activeTab === 'datamodel'"
-              [class.border-transparent]="activeTab !== 'datamodel'"
-              class="flex-1 px-4 py-2 text-sm font-medium rounded-t-md border-b-2 focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:ring-offset-2"
-              role="tab"
-              i18n="@@aboutEdaB1"
-            >
-              Crear Modelo de Datos
-            </button>
-            <button 
-              (click)="activeTab = 'report'" 
-              [class.bg-[#00BFB3]]="activeTab === 'report'"
-              [class.text-white]="activeTab === 'report'"
-              [class.border-[#00BFB3]]="activeTab === 'report'"
-              [class.border-transparent]="activeTab !== 'report'"
-              class="flex-1 px-4 py-2 text-sm font-medium rounded-t-md border-b-2 focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:ring-offset-2"
-              role="tab"
-              i18n="@@aboutEdaB2"
-            >
-              Crear Informe
-            </button>
-          </div>
-        </div>
-        
-        <!-- Tab Content -->
-        <div class="mt-6">
-          @if (activeTab === 'datamodel') {
-            <div class="aspect-video">
-              <iframe
-                class="w-full h-full rounded-lg"
-                [src]="datamodelSafe"
-                title="Como crear un modelo de datos en edalitics"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
-          }
-          
-          @if (activeTab === 'report') {
-            <div class="aspect-video">
-              <iframe
-                class="w-full h-full rounded-lg"
-                [src]="reportSafe"
-                title="Como crear un informe en edalitics"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
-          }
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Try EDA Section -->
-  <div class="bg-[#00BFB3] text-white rounded-lg shadow-sm">
-    <div class="p-6">
-      <h2 class="text-2xl font-semibold" i18n="@@aboutEdaH4">¿Quieres probar edalitics en el cloud?</h2>
-      <p class="text-white" i18n="@@aboutEdaP6">
-        Edalitics te permitirá estar siempre a la última sin preocuparte por nada.
-      </p>
-      <a 
-        href="https://www.edalitics.com/precios/" 
-        target="_blank" 
-        class="mt-4 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-[#00BFB3] hover:bg-gray-100 h-11 px-5 py-2 w-full sm:w-auto"
-      >
-      <span i18n="@@aboutEdaA4">Prueba Edalitics Gratis</span>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 h-4 w-4">
-          <path d="M5 12h14"></path>
-          <path d="m12 5 7 7-7 7"></path>
-        </svg>
-      </a>
-    </div>
-    <div class="p-6 pt-0">
-      <div class="aspect-video mb-6">
-        <iframe
-          class="w-full h-full rounded-lg"
-          [src]="edaliticsPlansSafe"
-          title="Edalitics Plans"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
-      </div>
-    </div>
-  </div>
-  </div>
+  </div><!-- end #recursos -->
 
   <!-- Footer -->
-  <div class="mt-12 text-center text-sm text-gray-600">
+  <div class="mt-12 text-center text-base text-gray-600">
     <p>
-      <span i18n="@@aboutEdaA4">Edalitics ha sido desarrollado por</span>
+      <span i18n="@@aboutEdaA5">Edalitics ha sido desarrollado por</span>
       
       <a
         href="https://www.jortilles.com/"

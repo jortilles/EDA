@@ -7108,6 +7108,58 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Desactivar animaciones</source>
         <target>Disable animations</target>
       </trans-unit>
+      <trans-unit id="aboutResourcesTitle">
+        <source>Recursos</source>
+        <target>Ressources</target>
+      </trans-unit>
+      <trans-unit id="gettingStartedTitle">
+        <source>Primeros pasos</source>
+        <target>Premiers pas</target>
+      </trans-unit>
+      <trans-unit id="gettingStartedSubtitle">
+        <source>Todo lo que necesitas para crear tu primer informe en edalitics.</source>
+        <target>Tout ce dont vous avez besoin pour créer votre premier rapport dans edalitics.</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Title">
+        <source>Conecta tus datos</source>
+        <target>Connectez vos données</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Desc">
+        <source>Conecta una fuente de datos y define tu modelo de datos.</source>
+        <target>Connectez une source de données et définissez votre modèle de données.</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Cta">
+        <source>Crear fuente de datos</source>
+        <target>Créer une source de données</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Hint">
+        <source>Pide a un administrador que conecte una fuente de datos.</source>
+        <target>Demandez à un administrateur de connecter une source de données.</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Title">
+        <source>Crea tu primer informe</source>
+        <target>Créez votre premier rapport</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Desc">
+        <source>Diseña un dashboard interactivo a partir de tu modelo de datos.</source>
+        <target>Concevez un tableau de bord interactif à partir de votre modèle de données.</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Cta">
+        <source>Crear informe</source>
+        <target>Créer un rapport</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Title">
+        <source>Explora y aprende</source>
+        <target>Explorez et apprenez</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Desc">
+        <source>Tutoriales, documentación y comunidad para sacar el máximo partido a edalitics.</source>
+        <target>Tutoriels, documentation et communauté pour tirer le meilleur parti d'edalitics.</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Cta">
+        <source>Ver recursos</source>
+        <target>Voir les ressources</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

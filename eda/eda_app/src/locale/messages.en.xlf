@@ -6833,6 +6833,58 @@ OR<ph id="5"/>
   <source>Desactivar animaciones</source>
   <target>Disable animations</target>
 </trans-unit>
+<trans-unit id="aboutResourcesTitle">
+  <source>Recursos</source>
+  <target>Resources</target>
+</trans-unit>
+<trans-unit id="gettingStartedTitle">
+  <source>Primeros pasos</source>
+  <target>Getting started</target>
+</trans-unit>
+<trans-unit id="gettingStartedSubtitle">
+  <source>Todo lo que necesitas para crear tu primer informe en edalitics.</source>
+  <target>Everything you need to create your first report in edalitics.</target>
+</trans-unit>
+<trans-unit id="gsStep1Title">
+  <source>Conecta tus datos</source>
+  <target>Connect your data</target>
+</trans-unit>
+<trans-unit id="gsStep1Desc">
+  <source>Conecta una fuente de datos y define tu modelo de datos.</source>
+  <target>Connect a data source and define your data model.</target>
+</trans-unit>
+<trans-unit id="gsStep1Cta">
+  <source>Crear fuente de datos</source>
+  <target>Create data source</target>
+</trans-unit>
+<trans-unit id="gsStep1Hint">
+  <source>Pide a un administrador que conecte una fuente de datos.</source>
+  <target>Ask an administrator to connect a data source.</target>
+</trans-unit>
+<trans-unit id="gsStep2Title">
+  <source>Crea tu primer informe</source>
+  <target>Create your first report</target>
+</trans-unit>
+<trans-unit id="gsStep2Desc">
+  <source>Diseña un dashboard interactivo a partir de tu modelo de datos.</source>
+  <target>Design an interactive dashboard from your data model.</target>
+</trans-unit>
+<trans-unit id="gsStep2Cta">
+  <source>Crear informe</source>
+  <target>Create report</target>
+</trans-unit>
+<trans-unit id="gsStep3Title">
+  <source>Explora y aprende</source>
+  <target>Explore and learn</target>
+</trans-unit>
+<trans-unit id="gsStep3Desc">
+  <source>Tutoriales, documentación y comunidad para sacar el máximo partido a edalitics.</source>
+  <target>Tutorials, documentation and community to get the most out of edalitics.</target>
+</trans-unit>
+<trans-unit id="gsStep3Cta">
+  <source>Ver recursos</source>
+  <target>View resources</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
