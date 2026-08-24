@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RaceBar } from './eda-race-bar';
-import { StyleProviderService, lightenHex, sanitizeId, ensureLinearGradient, formatAxisValue, formatDeNumber, initD3ResizeObserver, teardownD3Chart, measureMaxLabelWidth } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, sanitizeId, ensureLinearGradient, formatAxisValue, formatDeNumber, initD3ResizeObserver, teardownD3Chart, measureMaxLabelWidth } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 // Own translations, not getLocaleMonthNames(LOCALE_ID) - the app never provides a LOCALE_ID, so that always falls back to 'en-US'.
@@ -41,6 +41,10 @@ const MAX_BARS = 15;
 const MAX_TOPN_COUNT = 30;
 // How fast a bar's ROW settles, independent of transitionMs (which paces its WIDTH/value).
 const RANK_TRANSITION_MS = 500;
+// Same convention as eda-bar.component.ts - D3TooltipService's own defaults sit the tooltip
+// right up against the cursor, so pin it up and to the right instead.
+const TOOLTIP_OFFSET_X = 20;
+const TOOLTIP_OFFSET_Y = -20;
 // Fallback when inject.transitionMs isn't set - the date column's own format, not this, decides tick count/labels.
 // Exported so category-chart-dialog.component.ts's transitionMs default/fallback can't drift out of sync with it.
 export const DEFAULT_FRAME_DURATION_MS = 3000;
@@ -85,6 +89,12 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   private hiddenCategories: Set<string> = new Set();
   /** Row eases toward its live-computed rank instead of snapping - carries the in-progress glide across tween frames/ticks. */
   private displayedRankByCategory: Map<string, number> = new Map();
+  /** Current mid-animation value per category, refreshed every tween tick - lets a hover tooltip read
+   * the value the bar is visually showing right now instead of the frame's (not-yet-reached) target. */
+  private liveValueByCategory: Map<string, number> = new Map();
+  private categoryFieldName: string | undefined;
+  private valueFieldName: string | undefined;
+  private categoryColumnName: string | undefined;
   private timer: any = null;
   private scrubAnimFrame: number | null = null;
   private fontFamily = 'inherit';
@@ -99,7 +109,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   private catLabelsG: any;
   private valueLabelsG: any;
 
-  constructor(private styleProviderService: StyleProviderService, private ngZone: NgZone) { }
+  constructor(private styleProviderService: StyleProviderService, private tooltipService: D3TooltipService, private ngZone: NgZone) { }
 
   ngOnInit(): void {
     this.id = `raceBar_${this.inject.id}`;
@@ -125,7 +135,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.pause();
-    teardownD3Chart(undefined, this.resizeObserver);
+    teardownD3Chart(this.tooltipService, this.resizeObserver);
   }
 
   /** Called by the shared category-chart-dialog.component.ts on every live color/toggle edit. */
@@ -298,6 +308,11 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     const numericIndex = this.inject.dataDescription.numericColumns[0]?.index;
     const categoryCol = this.inject.dataDescription.otherColumns.find((c: any) => c.index !== dateIndex);
     const categoryIndex = categoryCol ? categoryCol.index : this.inject.dataDescription.otherColumns[0]?.index;
+    this.categoryFieldName = (categoryCol || this.inject.dataDescription.otherColumns[0])?.name;
+    this.valueFieldName = this.inject.dataDescription.numericColumns[0]?.name;
+    // The raw column_name, not the pretty display name above - dashboard.page.ts's
+    // getCorrectColumnFiltered() matches click-to-filter events against query[].column_name.
+    this.categoryColumnName = query[categoryIndex]?.column_name;
 
     const byDate = new Map<string, Map<string, number>>();
     const categories: string[] = [];
@@ -351,6 +366,19 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     ], { x1: '0%', y1: '0%', x2: '100%', y2: '0%' });
   }
 
+  /** Same title/row/swatch markup as eda-bar.component.ts's tooltipHtml() - reuses its CSS classes
+   * so a hover looks identical to a normal bar chart's. Value comes from liveValueByCategory, the
+   * bar's current mid-animation value, not the (not-yet-reached) frame target. */
+  private tooltipHtml(category: string, hex: string): string {
+    const swatch = `<span class="eda-bar-tooltip-swatch" style="background-color:${hex};"></span>`;
+    const linkedDashboard = this.inject.linkedDashboard;
+    const linkedRow = linkedDashboard ? `<h6>${$localize`:@@linkedTo:Vinculado con`} ${linkedDashboard.dashboardName}</h6>` : '';
+    const title = `<div class="eda-bar-tooltip-title">${this.categoryFieldName ? this.categoryFieldName + ' : ' : ''}${category}</div>`;
+    const value = this.liveValueByCategory.get(category) ?? 0;
+    const seriesPrefix = `<strong>${this.valueFieldName || category}</strong> : `;
+    return title + `<div class="eda-bar-tooltip-row">${swatch}${seriesPrefix}${formatDeNumber(Math.round(value))}</div>${linkedRow}`;
+  }
+
   /** The bar's click listener is registered from inside renderFrame()'s runOutsideAngular block (so
    * it doesn't inherit the animation's zone-less context), so this always re-enters explicitly -
    * onClick.emit() needs to run inside Angular for the parent's change detection to pick it up. */
@@ -362,7 +390,10 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
           `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${d.category}`;
         window.open(url, '_blank');
       } else {
-        this.onClick.emit({ label: d.category, filterBy: d.category, value: d.value });
+        // filterBy is the category column's own name (like every other D3 chart's onClick), not the
+        // clicked value - dashboard.page.ts's getCorrectColumnFiltered() matches it against
+        // query[].column_name to resolve which column the global filter applies to.
+        this.onClick.emit({ label: d.category, filterBy: this.categoryColumnName, value: d.value });
       }
     });
   }
@@ -397,6 +428,10 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     const width = container.clientWidth;
     const height = container.clientHeight;
     if (width <= 0 || height <= 0 || !this.frames.length) return;
+
+    // A hovered bar can leave topN (or the whole SVG can get rebuilt by draw()) without ever
+    // firing its own mouseout, which would otherwise leave a stale tooltip stuck on screen.
+    this.tooltipService.hide();
 
     const frame = this.frames[index];
     this.periodLabel = frame.label;
@@ -466,7 +501,13 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
         .attr('width', 0)
         .style('opacity', 1)
         .style('cursor', 'pointer')
-        .on('click', (event: any, d: RaceBarDatum) => this.emitClick(d));
+        .on('click', (event: any, d: RaceBarDatum) => this.emitClick(d))
+        .on('mouseover', (event: any, d: RaceBarDatum) => {
+          const hex = this.colorByCategory.get(d.category) || '#4472c4';
+          this.tooltipService.show(event, this.tooltipHtml(d.category, hex), 'eda-bar-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
+        })
+        .on('mousemove', (event: any) => this.tooltipService.move(event, TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true))
+        .on('mouseout', () => this.tooltipService.hide());
 
       const barsMerged = barsEnter.merge(bars)
         .attr('fill', (d: RaceBarDatum) => this.barFill(d.category))
@@ -550,6 +591,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
               rowOf.set(d.category, nextRow);
             });
             const valueOf = (d: RaceBarDatum) => liveValue.get(d.category) ?? d.value;
+            this.liveValueByCategory = liveValue;
 
             barsMerged
               .attr('y', (d: RaceBarDatum) => yForRank(rowOf.get(d.category) ?? d.rank))

@@ -106,3 +106,41 @@
   font-weight: 600;
   dominant-baseline: middle;
 }
+
+/* Same markup/classes as eda-bar.component.ts's tooltip (eda-bar.component.css) - duplicated here
+   so a hover on a race-bar looks identical without depending on that component's styles being
+   loaded in the bundle. */
+::ng-deep .eda-bar-tooltip {
+  position: absolute;
+  text-align: left;
+  cursor: pointer;
+  padding: 8px 10px;
+  font: 12px;
+  color: #ffffff;
+  background: #010913ea;
+  border: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+::ng-deep .eda-bar-tooltip-title {
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+::ng-deep .eda-bar-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+::ng-deep .eda-bar-tooltip-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
