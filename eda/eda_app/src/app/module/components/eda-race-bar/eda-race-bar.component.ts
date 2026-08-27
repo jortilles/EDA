@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RaceBar } from './eda-race-bar';
-import { StyleProviderService, D3TooltipService, lightenHex, sanitizeId, ensureLinearGradient, formatAxisValue, formatDeNumber, initD3ResizeObserver, teardownD3Chart, measureMaxLabelWidth } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, sanitizeId, ensureLinearGradient, formatAxisValue, formatDeNumber, initD3ResizeObserver, teardownD3Chart, measureMaxLabelWidth, measureTextWidth } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 // Own translations, not getLocaleMonthNames(LOCALE_ID) - the app never provides a LOCALE_ID, so that always falls back to 'en-US'.
@@ -18,6 +18,9 @@ const WEEK_PREFIX = $localize`:@@raceBarWeekPrefix:Sem`;
 const PLAY_ARIA_LABEL = $localize`:@@raceBarPlayAria:Reproducir`;
 const PAUSE_ARIA_LABEL = $localize`:@@raceBarPauseAria:Pausa`;
 const TIMELINE_ARIA_LABEL = $localize`:@@raceBarTimelineAria:Línea de tiempo`;
+const PREV_ARIA_LABEL = $localize`:@@raceBarPrevAria:Periodo anterior`;
+const NEXT_ARIA_LABEL = $localize`:@@raceBarNextAria:Periodo siguiente`;
+const SPEED_ARIA_LABEL = $localize`:@@raceBarSpeedAria:Velocidad de reproducción`;
 
 /** One tick = one real queried data point at the date column's own granularity - no interpolated sub-steps. */
 interface RaceFrame {
@@ -39,8 +42,10 @@ const MIN_BARS = 4;
 const MAX_BARS = 15;
 // Backstop against a stray/corrupt saved topNCount - the dialog itself caps its input at 20.
 const MAX_TOPN_COUNT = 30;
-// How fast a bar's ROW settles, independent of transitionMs (which paces its WIDTH/value).
-const RANK_TRANSITION_MS = 500;
+// How long an exiting bar/label takes to slide off/fade out once it drops out of the topN.
+const EXIT_FADE_MS = 500;
+// How fast the on-screen row catches up to its live-computed target rank (displayedRankByCategory).
+const ROW_CATCHUP_MS = 500;
 // Same convention as eda-bar.component.ts - D3TooltipService's own defaults sit the tooltip
 // right up against the cursor, so pin it up and to the right instead.
 const TOOLTIP_OFFSET_X = 20;
@@ -48,6 +53,9 @@ const TOOLTIP_OFFSET_Y = -20;
 // Fallback when inject.transitionMs isn't set - the date column's own format, not this, decides tick count/labels.
 // Exported so category-chart-dialog.component.ts's transitionMs default/fallback can't drift out of sync with it.
 export const DEFAULT_FRAME_DURATION_MS = 3000;
+// End-user playback speed cycle (the speed button below) - a multiplier on top of the admin's own
+// transitionMs, not a replacement for it.
+const SPEED_STEPS = [1, 2, 4];
 
 @Component({
   standalone: true,
@@ -69,6 +77,9 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   legendItems: { label: string; color: string; hidden: boolean }[] = [];
   playing = false;
   finished = false;
+  /** Multiplies the pace of every future tick (scheduling + transition duration) - cycles via
+   * cycleSpeed(). Doesn't touch transitionMs itself, so pausing/reopening the panel resets it back to 1x. */
+  speedMultiplier = 1;
   periodLabel = '';
   tickerFontSizePx = 20;
   /** True when the query didn't yield a single valid (date, category, value) row. */
@@ -167,6 +178,16 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.inject.transitionMs && this.inject.transitionMs > 0 ? this.inject.transitionMs : DEFAULT_FRAME_DURATION_MS;
   }
 
+  private get effectiveFrameDurationMs(): number {
+    return this.frameDurationMs / this.speedMultiplier;
+  }
+
+  /** Cycles 1x -> 2x -> 4x -> 1x - only future ticks are affected, the one already animating keeps its own pace. */
+  cycleSpeed(): void {
+    const next = SPEED_STEPS[(SPEED_STEPS.indexOf(this.speedMultiplier) + 1) % SPEED_STEPS.length];
+    this.speedMultiplier = next;
+  }
+
   get playPauseAriaLabel(): string {
     return this.playing ? PAUSE_ARIA_LABEL : PLAY_ARIA_LABEL;
   }
@@ -175,12 +196,34 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     return TIMELINE_ARIA_LABEL;
   }
 
+  get prevAriaLabel(): string {
+    return PREV_ARIA_LABEL;
+  }
+
+  get nextAriaLabel(): string {
+    return NEXT_ARIA_LABEL;
+  }
+
+  get speedAriaLabel(): string {
+    return SPEED_ARIA_LABEL;
+  }
+
   get firstPeriodLabel(): string {
     return this.frames[0]?.label ?? '';
   }
 
   get lastPeriodLabel(): string {
     return this.frames[this.frames.length - 1]?.label ?? '';
+  }
+
+  /** Manual one-tick step (prev/next buttons) - pauses autoplay and animates just that one tick,
+   * same pacing as autoplay would, instead of a scrub's instant jump. */
+  stepFrame(delta: number): void {
+    const target = Math.min(this.frames.length - 1, Math.max(0, this.currentFrameIndex + delta));
+    if (target === this.currentFrameIndex) return;
+    this.pause();
+    this.finished = target >= this.frames.length - 1;
+    this.renderFrame(target, true);
   }
 
   /** Fires while dragging - always pauses and jumps instantly (animate=false). */
@@ -344,13 +387,30 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     return Math.max(MIN_BARS, Math.min(MAX_BARS, n || MIN_BARS));
   }
 
-  /** Recomputed fresh per frame so a category can enter/leave the visible top N as its value moves. */
+  /** Recomputed fresh per frame so a category can enter/leave the visible top N as its value moves.
+   * Categories at or below 0 this frame (no row that period, genuinely 0, or negative - this chart
+   * assumes non-negative metrics, same convention as any reference bar chart race) are dropped
+   * rather than padded/shown as a 0-width bar - topN is a ceiling on how many bars show, not a floor. */
   private rankedEntries(frame: RaceFrame, topN: number): RaceBarDatum[] {
     const all = this.allCategories
       .filter(category => !this.hiddenCategories.has(category))
-      .map(category => ({ category, value: frame.values.get(category) ?? 0 }));
+      .map(category => ({ category, value: frame.values.get(category) ?? 0 }))
+      .filter(d => d.value > 0);
     all.sort((a, b) => b.value - a.value);
     return all.slice(0, topN).map((d, i) => ({ category: d.category, value: d.value, rank: i }));
+  }
+
+  /** Shortens `text` with an ellipsis until it fits `maxWidthPx` at the category label's own font/size,
+   * so a long name never runs into the value label next to it on a short bar. */
+  private truncateLabel(text: string, maxWidthPx: number): string {
+    if (maxWidthPx <= 0) return '';
+    if (measureTextWidth(text, 12, this.fontFamily) <= maxWidthPx) return text;
+    let lo = 0, hi = text.length;
+    while (lo < hi) {
+      const mid = Math.ceil((lo + hi) / 2);
+      if (measureTextWidth(text.slice(0, mid) + '…', 12, this.fontFamily) <= maxWidthPx) lo = mid; else hi = mid - 1;
+    }
+    return lo > 0 ? text.slice(0, lo) + '…' : '';
   }
 
   private gradientId(hex: string): string {
@@ -405,6 +465,9 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     const height = container.clientHeight;
     if (width <= 0 || height <= 0 || !this.frames.length) return;
 
+    // Otherwise a still-running 'race' tween from before the rebuild keeps ticking - harmlessly,
+    // since its nodes are gone - for the rest of its own duration instead of stopping right away.
+    this.rootG?.interrupt('race');
     this.svg.selectAll('*').remove();
     this.defs = this.svg.append('defs');
     this.rootG = this.svg.append('g');
@@ -442,7 +505,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     const innerHeightProbe = Math.max(height - marginTop - marginBottom, 10);
     const topN = this.computeTopN(innerHeightProbe);
     const entries = this.rankedEntries(frame, topN);
-    const duration = animate ? this.frameDurationMs : 0;
+    const duration = animate ? this.effectiveFrameDurationMs : 0;
     const oldFrame = this.frames[this.currentFrameIndex];
     const oldValuesByCategory = oldFrame ? oldFrame.values : new Map<string, number>();
 
@@ -482,7 +545,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Target row is re-derived every tick from live interpolated values (crosses exactly on overtake);
       // the on-screen row eases toward it instead of snapping - see displayedRankByCategory below.
-      const rankMs = Math.min(RANK_TRANSITION_MS, duration);
+      const rankMs = Math.min(EXIT_FADE_MS, duration);
 
       const bars = this.barsG.selectAll('rect.eda-race-bar-bar')
         .data(entries, (d: RaceBarDatum) => d.category);
@@ -534,11 +597,12 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
         .style('pointer-events', 'none')
         .text((d: RaceBarDatum) => d.category);
 
+      // Text (rank number + name) is set live inside the tween below, from the same instantaneous
+      // targetRank the row itself races toward - not from d.rank, which is only this TICK's eventual
+      // rank and would leave the number stuck mid-crossing instead of flipping the moment it happens.
       const catMerged = catEnter.merge(catLabels).text((d: RaceBarDatum) => d.category);
       catMerged.interrupt();
-      // A 0-width bar has no name to sit on, so opacity rides the short clock instead of the live value.
-      catMerged.transition('fade').duration(rankMs).ease(d3.easeLinear)
-        .style('opacity', (d: RaceBarDatum) => d.value === 0 ? 0 : 1);
+      catMerged.transition('fade').duration(rankMs).ease(d3.easeLinear).style('opacity', 1);
 
       const valueLabels = this.valueLabelsG.selectAll('text.eda-race-bar-value-label')
         .data(entries, (d: RaceBarDatum) => d.category);
@@ -577,7 +641,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
             // Real elapsed ms, not just t's fraction, so catch-up speed stays consistent regardless of transitionMs.
             const dtMs = Math.max(0, elapsedMs - lastElapsedMs);
             lastElapsedMs = elapsedMs;
-            const catchUp = duration <= 0 ? 1 : Math.min(1, dtMs / RANK_TRANSITION_MS);
+            const catchUp = duration <= 0 ? 1 : Math.min(1, dtMs / ROW_CATCHUP_MS);
 
             const live = entries.map((d: RaceBarDatum) => ({ category: d.category, value: valueAt.get(d.category)!(t) }));
             live.sort((a, b) => b.value - a.value);
@@ -586,12 +650,19 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
             live.forEach((d, i) => { targetRank.set(d.category, i); liveValue.set(d.category, d.value); });
 
             const rowOf = new Map<string, number>();
+            const catTextOf = new Map<string, string>();
             entries.forEach((d: RaceBarDatum) => {
               const target = targetRank.get(d.category) ?? d.rank;
               const prevRow = this.displayedRankByCategory.get(d.category) ?? target;
               const nextRow = t >= 1 ? target : prevRow + (target - prevRow) * catchUp;
               this.displayedRankByCategory.set(d.category, nextRow);
               rowOf.set(d.category, nextRow);
+              // The number reflects the instantaneous crossing (target), not the eased row it's still
+              // sliding toward - it flips the moment the values cross, same tick, while the row glides after it.
+              const value = liveValue.get(d.category) ?? d.value;
+              const prefix = `${target + 1}. `;
+              const available = Math.max(0, xScale(value) - 12 - measureTextWidth(prefix, 12, this.fontFamily));
+              catTextOf.set(d.category, prefix + this.truncateLabel(d.category, available));
             });
             const valueOf = (d: RaceBarDatum) => liveValue.get(d.category) ?? d.value;
             this.liveValueByCategory = liveValue;
@@ -599,7 +670,9 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
             barsMerged
               .attr('y', (d: RaceBarDatum) => yForRank(rowOf.get(d.category) ?? d.rank))
               .attr('width', (d: RaceBarDatum) => Math.max(xScale(valueOf(d)), 0));
-            catMerged.attr('y', (d: RaceBarDatum) => yMidForRank(rowOf.get(d.category) ?? d.rank));
+            catMerged
+              .attr('y', (d: RaceBarDatum) => yMidForRank(rowOf.get(d.category) ?? d.rank))
+              .each(function (d: RaceBarDatum) { (this as any).textContent = catTextOf.get(d.category) ?? d.category; });
             valMerged
               .attr('y', (d: RaceBarDatum) => yMidForRank(rowOf.get(d.category) ?? d.rank))
               .attr('x', (d: RaceBarDatum) => Math.max(xScale(valueOf(d)), 0) + 8)
@@ -642,7 +715,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private scheduleNext(): void {
-    this.timer = setTimeout(() => this.advanceFrame(), this.frameDurationMs);
+    this.timer = setTimeout(() => this.advanceFrame(), this.effectiveFrameDurationMs);
   }
 
   pause(): void {
