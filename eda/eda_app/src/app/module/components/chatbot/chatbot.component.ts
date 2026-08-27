@@ -1,22 +1,24 @@
 import { Component, inject, OnInit, AfterViewChecked, signal, ViewChild, ElementRef, NgZone, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { NgChartsModule } from 'ng2-charts';
-import { ChartData, ChartOptions } from 'chart.js';
+import { EdaBarD3Component } from '@eda/components/eda-bar-d3/eda-bar.component';
+import { EdaBarD3 } from '@eda/components/eda-bar-d3/eda-bar';
 import { Subscription } from 'rxjs';
 import { IaChatService, ChatMessage, ChatOption, BarChart } from '@eda/services/api/ia-chat.service';
 import type { ChatEvent } from '@eda/services/api/ia-chat.service';
+import { DashboardService } from '@eda/services/api/dashboard.service';
 import { CORPORATE_COLORS } from '@eda/configs/index';
 
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, NgChartsModule],
+  imports: [CommonModule, EdaBarD3Component],
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.css']
 })
 export class ChatbotComponent implements OnInit, AfterViewChecked {
   private iaChatService = inject(IaChatService);
+  private dashboardService = inject(DashboardService);
   private sanitizer = inject(DomSanitizer);
   private zone = inject(NgZone);
   private cdr = inject(ChangeDetectorRef);
@@ -31,18 +33,19 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   chatStatusMessage = signal('');
   chatHistory: ChatMessage[] = [];
   streamingIndex = signal(-1);
+  generatingMsgIndex = signal(-1);
   isAtBottom = signal(true);
   copiedIndex = signal(-1);
 
+  private pendingAutoGenerate: ChatOption | null = null;
   private tokenQueue: string[] = [];
   private typewriterInterval: any = null;
   private finalResponse: string | null = null;
   private chatSubscription: Subscription | null = null;
 
-  private readonly chartPalette = ['b3', '99', '80', '70', '60'];
   private readonly chartExtraColors = ['#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
-  private chartDataCache = new WeakMap<BarChart, ChartData<'bar'>>();
-  private chartOptsCache = new WeakMap<BarChart, ChartOptions<'bar'>>();
+  private chartInjectCache = new WeakMap<BarChart, EdaBarD3>();
+  private chartInjectId = 0;
 
   private readonly statusLabels: Record<string, string> = {
     connecting: $localize`:@@chatStatusConnecting:Conectando con las fuentes de datos...`,
@@ -55,7 +58,8 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   private shouldScrollChat = false;
   private chatInputListenerAdded = false;
 
-  public chatSuggestion2: string = $localize`:@@chatSuggestion2:¿Qué datasources hay?`;
+  public chatSuggestion2: string = $localize`:@@chatSuggestion2:¿Qué fuentes de datos hay?`;
+  public chatSuggestion4: string = $localize`:@@chatSuggestion4:¿Qué informes tengo disponibles?`;
   readonly chatFallbackYes: string = $localize`:@@chatFallbackYes:Sí`;
   readonly chatFallbackSearchIn: string = $localize`:@@chatFallbackSearchIn:Buscar en...`;
   readonly chatFallbackSearchInPrefix: string = $localize`:@@chatFallbackSearchInPrefix:Buscar en: `;
@@ -85,38 +89,30 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  buildChartData(chart: BarChart): ChartData<'bar'> {
-    if (this.chartDataCache.has(chart)) return this.chartDataCache.get(chart)!;
+  buildBarD3Inject(chart: BarChart): EdaBarD3 {
+    if (this.chartInjectCache.has(chart)) return this.chartInjectCache.get(chart)!;
     const primary = CORPORATE_COLORS.primary;
-    const result: ChartData<'bar'> = {
-      labels: chart.labels,
-      datasets: chart.datasets.map((ds, i) => {
-        const base = i === 0 ? primary : (this.chartExtraColors[i - 1] ?? this.chartExtraColors[this.chartExtraColors.length - 1]);
-        const alpha = this.chartPalette[i] ?? 'b3';
-        return { label: ds.label, data: ds.values, backgroundColor: base + alpha, borderColor: base, borderWidth: 1, borderRadius: 4 };
-      }),
-    };
-    this.chartDataCache.set(chart, result);
-    return result;
-  }
 
-  buildChartOptions(chart: BarChart): ChartOptions<'bar'> {
-    if (this.chartOptsCache.has(chart)) return this.chartOptsCache.get(chart)!;
-    const result: ChartOptions<'bar'> = {
-      responsive: true,
-      maintainAspectRatio: true,
-      animation: { duration: 400 },
-      plugins: {
-        legend: { display: chart.datasets.length > 1, labels: { font: { size: 10 }, boxWidth: 12 } },
-        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('es-ES')}` } },
-      },
-      scales: {
-        x: { ticks: { font: { size: 9 }, maxRotation: 35 } },
-        y: { beginAtZero: true, ticks: { font: { size: 9 } } },
-      },
-    };
-    this.chartOptsCache.set(chart, result);
-    return result;
+    const inject = new EdaBarD3();
+    inject.id = `chatbot_${this.chartInjectId++}`;
+    inject.chartType = 'bar';
+    inject.edaChart = 'bar';
+    inject.chartLabels = chart.labels;
+    inject.categoryFieldName = chart.labelKey;
+    inject.chartDataset = chart.datasets.map(ds => ({ label: ds.label, data: ds.values }));
+    inject.assignedColors = chart.datasets.map((ds, i) => ({
+      value: ds.label,
+      color: i === 0 ? primary : (this.chartExtraColors[i - 1] ?? this.chartExtraColors[this.chartExtraColors.length - 1])
+    }));
+    inject.chartLegend = chart.datasets.length > 1;
+    inject.showLabels = false;
+    inject.showLabelsPercent = false;
+    inject.showGridLines = true;
+    inject.useGradient = true;
+    inject.useRoundedBars = true;
+
+    this.chartInjectCache.set(chart, inject);
+    return inject;
   }
 
   onMessagesScroll(): void {
@@ -244,6 +240,41 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     this.chatSubscription = this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
   }
 
+  private async autoGenerateDashboard(option: ChatOption): Promise<void> {
+    const title = option.proposed_title?.trim() || option.label;
+    this.chatHistory.push({ role: 'assistant', content: '' });
+    const genIdx = this.chatHistory.length - 1;
+    this.generatingMsgIndex.set(genIdx);
+    this.shouldScrollChat = true;
+    this.cdr.detectChanges();
+    try {
+      const result: any = await this.iaChatService.generateDashboard({
+        datasource_id: option.datasource_id!,
+        description: option.description || title,
+        title,
+        visible: 'private',
+      }).toPromise();
+      const dashboardId = result?.dashboard?._id?.toString() ?? '';
+      const panelCount = result?.dashboard?.config?.panel?.length ?? 0;
+      const baseHref = window.location.href.split('#')[0].replace(/\/$/, '') + '/';
+      const dashboardUrl = dashboardId ? `${baseHref}#/dashboard/${dashboardId}` : '';
+      const panelText = panelCount > 0 ? ` con ${panelCount} paneles` : '';
+      this.chatHistory[genIdx].content = dashboardUrl
+        ? `Dashboard **${title}** creado${panelText}. [Abrir dashboard](${dashboardUrl})`
+        : `Dashboard **${title}** creado${panelText}.`;
+      this.dashboardService.dashboardCreated$.next();
+      if (dashboardUrl) window.open(dashboardUrl, '_blank');
+    } catch (err: any) {
+      const msg = err?.error?.response ?? err?.error?.message ?? err?.message ?? err?.text ?? 'Error desconocido';
+      this.chatHistory[genIdx].content = `No se pudo generar el dashboard: ${msg}`;
+    } finally {
+      this.generatingMsgIndex.set(-1);
+      this.shouldScrollChat = true;
+      this.cdr.detectChanges();
+      setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+    }
+  }
+
   private resetTypewriter(): void {
     if (this.typewriterInterval) {
       clearInterval(this.typewriterInterval);
@@ -270,7 +301,13 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
         this.chatLoading.set(false);
         this.shouldScrollChat = true;
         this.cdr.detectChanges();
-        setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+        if (this.pendingAutoGenerate) {
+          const opt = this.pendingAutoGenerate;
+          this.pendingAutoGenerate = null;
+          setTimeout(() => this.autoGenerateDashboard(opt), 200);
+        } else {
+          setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+        }
       }
     }, 35);
   }
@@ -294,15 +331,28 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
           this.startTypewriter(botIndex);
         } else if (event.type === 'response') {
           this.chatStatusMessage.set('');
+          const confirmOpt = (event.options ?? []).find((o: ChatOption) => o.type === 'generate_confirm');
+          const filteredOptions = (event.options ?? []).filter((o: ChatOption) => o.type !== 'generate_confirm');
           if (botIndex < 0) {
-            this.chatHistory.push({ role: 'assistant', content: event.response, options: event.options ?? [], chart: event.chart });
+            this.chatHistory.push({ role: 'assistant', content: event.response, options: filteredOptions, chart: event.chart });
             this.chatLoading.set(false);
             this.shouldScrollChat = true;
-            setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+            if (confirmOpt) {
+              setTimeout(() => this.autoGenerateDashboard(confirmOpt), 300);
+            } else {
+              setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+            }
           } else {
-            this.chatHistory[botIndex].options = event.options ?? [];
+            this.chatHistory[botIndex].options = filteredOptions;
             this.chatHistory[botIndex].chart = event.chart;
             this.finalResponse = event.response;
+            if (confirmOpt) {
+              if (this.typewriterInterval) {
+                this.pendingAutoGenerate = confirmOpt;
+              } else {
+                setTimeout(() => this.autoGenerateDashboard(confirmOpt), 300);
+              }
+            }
             if (!this.typewriterInterval) {
               this.chatHistory[botIndex].content = event.response;
               this.finalResponse = null;
@@ -310,7 +360,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
               this.chatLoading.set(false);
               this.shouldScrollChat = true;
               this.cdr.detectChanges();
-              setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+              if (!confirmOpt) setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
             }
           }
         }
@@ -324,6 +374,13 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
         setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
       },
     };
+  }
+
+  private fixLocaleInUrl(url: string): string {
+    const knownLocales = ['es', 'ca', 'en', 'pl', 'fr'];
+    const currentLocale = window.location.pathname.split('/').filter(Boolean).find(s => knownLocales.includes(s));
+    if (!currentLocale) return url;
+    return url.replace(new RegExp(`/(${knownLocales.join('|')})/#/`), `/${currentLocale}/#/`);
   }
 
   renderMarkdown(text: string): SafeHtml {
@@ -347,7 +404,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     const linkBlocks: string[] = [];
     html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, url) => {
       const idx = linkBlocks.push(
-        `<a href="${url}" target="_blank" rel="noopener noreferrer" class="chat-link">${label}</a>`
+        `<a href="${this.fixLocaleInUrl(url)}" target="_blank" rel="noopener noreferrer" class="chat-link">${label}</a>`
       ) - 1;
       return `\x00LINK${idx}\x00`;
     });
@@ -383,7 +440,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     html = html.replace(/(https?:\/\/[^\s<>")\]\n\x00]+)/g, (_, url) => {
       const display = url.length > 55 ? url.substring(0, 52) + '…' : url;
       const idx = linkBlocks.push(
-        `<a href="${url}" target="_blank" rel="noopener noreferrer" class="chat-link">${esc(display)}</a>`
+        `<a href="${this.fixLocaleInUrl(url)}" target="_blank" rel="noopener noreferrer" class="chat-link">${esc(display)}</a>`
       ) - 1;
       return `\x00LINK${idx}\x00`;
     });

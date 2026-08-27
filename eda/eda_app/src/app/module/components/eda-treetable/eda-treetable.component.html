@@ -27,11 +27,11 @@
           @for(col of leafs; track $index){
           <td class="tt-cell-top" (click)="handleClick(rowData[col.field], col.field)">
 
-            <!-- Solo en la primera columna mostramos el toggler -->
+            <!-- We only show the toggler in the first column -->
             @if($index === 0){
             <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
             }
-            <!-- Mostrar header opcional -->
+            <!-- Optional header display -->
             @if(showField){
             <strong>{{ col.header }} - </strong>
             }

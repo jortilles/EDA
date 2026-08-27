@@ -1,11 +1,9 @@
 
 import { PanelChartComponent } from './../panel-charts/panel-chart.component';
 import { Component, Input, ViewChild } from '@angular/core';
-import { PointStyle } from 'chart.js';
-import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
-import { StyleProviderService, ChartUtilsService, AlertService, SpinnerService } from '@eda/services/service.index';
+import { StyleProviderService, ChartUtilsService, AlertService, SpinnerService, DashboardService } from '@eda/services/service.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 import { CommonModule } from '@angular/common';
@@ -13,7 +11,6 @@ import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
-import { TabViewModule } from 'primeng/tabview';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../prediction-dialog/prediction-dialog.component';
 import Swal from 'sweetalert2';
@@ -23,7 +20,7 @@ import Swal from 'sweetalert2';
     selector: 'app-chart-dialog',
     templateUrl: './chart-dialog.component.html',
     styleUrls: ['./chart-dialog.component.css'],
-    imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, PredictionDialogComponent, TabViewModule, InputNumberModule, DropdownModule]
+    imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, PredictionDialogComponent, InputNumberModule, DropdownModule]
 })
 
 export class ChartDialogComponent {
@@ -33,8 +30,7 @@ export class ChartDialogComponent {
 
     public dialog: EdaDialog;
     public activeTabIndex: number = 0;
-    public chart: EdaChart;
-    public oldChart: EdaChart;
+    public chart: any;
     public addTrend: boolean;
     public addComparative: boolean;
     public numberOfColumns: number;
@@ -45,11 +41,17 @@ export class ChartDialogComponent {
     public display: boolean = false;
     public showLabels: boolean = false;
     public showLabelsPercent: boolean = false;
+    public labelColorMode: string = 'series';
+    public labelCustomColor: string = '#000000';
     public showUniqueColors: boolean = false;
     public showPointLines: boolean = false;
+    public secondAxis: boolean = false;
     public showPredictionLines: boolean = false;
     public chartLegend: boolean = true;
     public showGridLines: boolean = true;
+    public useGradient: boolean = true;
+    public useRoundedBars: boolean = true;
+    public chartAnimation: boolean = true;
     public showPredictionDialog: boolean = false;
     public predictionMethod: string = 'Arima';
     public selectedPalette: { name: string; paleta: any } | null = null;
@@ -74,19 +76,25 @@ export class ChartDialogComponent {
     public columnsTooltip = $localize`:@@columnsTooltip:Elige cuantas columnas quieres mostrar`
     public tooltipBlockedByComparative = $localize`:@@tooltipBlockedByComparative:Bloqueado porque comparativa está activa`
     public tooltipBlockedByTrendOrPrediction = $localize`:@@tooltipBlockedByTrendOrPrediction:Bloqueado porque tendencia o predicción está activa`
-    
-    // Guardar los valores originales de los labels
+
+    // Save the original label values
     private originalLabelValues: {
         addTrend: boolean;
         showLabels: boolean;
         showLabelsPercent: boolean;
+        labelColorMode: string;
+        labelCustomColor: string;
         showUniqueColors: boolean;
         showPointLines: boolean;
+        secondAxis: boolean;
         showPredictionLines: boolean;
         numberOfColumns: number;
         addComparative: boolean;
         chartLegend: boolean;
         showGridLines: boolean;
+        useGradient: boolean;
+        useRoundedBars: boolean;
+        chartAnimation: boolean;
     };
 
     public drops = {
@@ -105,7 +113,8 @@ export class ChartDialogComponent {
 
     constructor(private chartUtils: ChartUtilsService, private stylesProviderService: StyleProviderService,
         private alertService: AlertService,
-        private spinnerService: SpinnerService
+        private spinnerService: SpinnerService,
+        private dashboardService: DashboardService
     ) {
         this.drops.pointStyles = [
             { label: 'Puntos', value: 'circle' },
@@ -137,30 +146,46 @@ export class ChartDialogComponent {
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
         this.showLabelsPercent = this.controller.params.config.config.getConfig()['showLabelsPercent'] || false;
+        this.labelColorMode = this.controller.params.config.config.getConfig()['labelColorMode'] || 'series';
+        this.labelCustomColor = this.controller.params.config.config.getConfig()['labelCustomColor'] || '#000000';
         this.showUniqueColors = this.controller.params.config.config.getConfig()['showUniqueColors'] || false;
         this.showPointLines = this.controller.params.config.config.getConfig()['showPointLines'] || false;
+        this.secondAxis = this.controller.params.config.config.getConfig()['secondAxis'] || false;
         this.showPredictionLines = this.controller.params.config.config.getConfig()['showPredictionLines'] || false;
-        this.predictionMethod = this.controller.params.config.config.getConfig()['predictionMethod'] || 'Arima'; // Valor iniciado en el dropdown
-        this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] || false;
+        this.predictionMethod = this.controller.params.config.config.getConfig()['predictionMethod'] || 'Arima'; // Initial value in the dropdown
+        // NOT `|| false` - numberOfColumns is a number (or unset), and transformDataQuery's own
+        // "was it actually provided" check is `!isNaN(numberOfColumns) && numberOfColumns !== null`,
+        // which treats `false` as a valid override (isNaN(false) is false, coerced to 0) - that
+        // silently zeroed out every histogram bin count on the very next dialog option change,
+        // since every setter round-trips this same field back into the shared config.
+        this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] ?? undefined;
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
         this.chartLegend = this.controller.params.config.config.getConfig()['chartLegend'] ?? true;
         this.showGridLines = this.controller.params.config.config.getConfig()['showGridLines'] ?? true;
+        this.useGradient = this.controller.params.config.config.getConfig()['useGradient'] ?? true;
+        this.useRoundedBars = this.controller.params.config.config.getConfig()['useRoundedBars'] ?? true;
+        this.chartAnimation = this.controller.params.config.config.getConfig()['chartAnimation'] ?? true;
 
-        // NUEVO: Guardar valores originales de labels
+        // NEW: Save original label values
         this.originalLabelValues = {
             addTrend: this.addTrend,
             showLabels: this.showLabels,
             showLabelsPercent: this.showLabelsPercent,
+            labelColorMode: this.labelColorMode,
+            labelCustomColor: this.labelCustomColor,
             showUniqueColors: this.showUniqueColors,
             showPointLines: this.showPointLines,
+            secondAxis: this.secondAxis,
             showPredictionLines: this.showPredictionLines,
             numberOfColumns: this.numberOfColumns,
             addComparative: this.addComparative,
             chartLegend: this.chartLegend,
-            showGridLines: this.showGridLines
+            showGridLines: this.showGridLines,
+            useGradient: this.useGradient,
+            useRoundedBars: this.useRoundedBars,
+            chartAnimation: this.chartAnimation
         };
 
-        this.oldChart = _.cloneDeep(this.controller.params.chart);
         this.chart = this.controller.params.chart;
         this.showTrend = this.chart.chartType === 'line';
         this.showNumberOfColumns = this.controller.params.chart.edaChart === 'histogram';
@@ -178,9 +203,12 @@ export class ChartDialogComponent {
             this.colorBelow = coloredBarsConfig.colorBelow ?? '#44bb44';
             this.coloredBarsActive = coloredBarsConfig.active ?? false;
             if (this.coloredBarsActive) {
-                this.activeTabIndex = 1;
+                this.activeTabIndex = this.intervalTabIndex;
                 this.applyColorsToChart();
             }
+        }
+        if (!this.coloredBarsActive && this.showUniqueColors && this.showUniqueColorsTab) {
+            this.activeTabIndex = 1;
         }
         this.display = true;
     }
@@ -190,12 +218,12 @@ export class ChartDialogComponent {
     }
 
     loadChartColors() {
-        // Recuperar assignedColors guardados en config
+        // Retrieve assignedColors saved in config
         const existingColors = this.controller.params.config.config.getConfig()['assignedColors'] || [];
-        // Obtener los labels según el tipo de chart
+        // Get labels based on the chart type
         const labels = this.getChartLabels();
 
-        // Crear assignedColors mapeando labels a colores
+        // Create assignedColors by mapping labels to colors
         if (this.chart['edaChart'] === 'histogram') {
             this.assignedColors = labels.map((label, index) => {
                 const match = existingColors.find(c => c.value === label);
@@ -205,20 +233,23 @@ export class ChartDialogComponent {
                 };
             });
         } else {
-            // Obtener los labels según el tipo de chart
-            const labels = this.getChartLabels();
-            // Crear assignedColors mapeando labels a colores
             this.assignedColors = labels.map((label, index) => {
                 const match = existingColors.find(c => c.value === label);
+                // Trend/prediction rows default to their source series' color (and, for area, a
+                // lighter 25% default opacity) instead of the next palette slot - still fully
+                // editable afterwards like any other row.
+                const ds: any = this.chart.chartDataset?.find((d: any) => d.label === label);
+                const isDerived = !!(ds?.isTrend || ds?.isPrediction);
+                const sourceColor = isDerived ? existingColors.find(c => c.value === ds.sourceLabel)?.color : undefined;
                 return {
                     value: label,
-                    color: match?.color || this.getDefaultColor(index),
-                    opacity: match?.opacity ?? 100
+                    color: match?.color || sourceColor || this.getDefaultColor(index),
+                    opacity: match?.opacity ?? (isDerived ? 25 : 100)
                 };
             });
         }
-        
-        // Cargar uniqueBarColors desde chartLabels (para barras) — ANTES de applyColorsToChart
+
+        // Load uniqueBarColors from chartLabels (for bars) before applyColorsToChart
         const savedUniqueColors = this.controller.params.config.config.getConfig()['uniqueBarColors'] || [];
         const barLabels: string[] = this.chart.chartLabels || [];
         this.uniqueBarColors = barLabels.map((label, index) => {
@@ -226,22 +257,21 @@ export class ChartDialogComponent {
             return { value: label, color: match?.color || this.getDefaultColor(index) };
         });
 
-        // Aplicar los colores al chart
+        // Apply colors to the chart
         this.applyColorsToChart();
 
-        // Guardar preview para cancelar
+        // Save the preview for cancellation
         this.originalAssignedColors = _.cloneDeep(this.assignedColors);
         this.originalUniqueBarColors = _.cloneDeep(this.uniqueBarColors);
     }
 
     loadChartTypeProperties() {
-        const type: any = this.chart.chartType;
+        // edaChart, not chartType - chartType is always literally 'bar' for every bar subtype,
+        // so switching on it here meant the 'horizontalBar' case below could never be reached.
+        const type: any = this.chart['edaChart'];
         switch (type) {
-
             case 'bar':
-                if (_.startsWith(this.chart.chartType, 'bar')) {
-                    this.direction = { label: 'Vertical', value: 'bar' };
-                }
+                this.direction = { label: 'Vertical', value: 'bar' };
                 break;
             case 'horizontalBar':
                 this.direction = { label: 'Horizontal', value: 'horizontalBar' };
@@ -251,140 +281,116 @@ export class ChartDialogComponent {
                     key.value === _.get(this.chart.chartOptions, 'elements.point.pointStyle')
                 );
                 break;
-            case 'doughnut':
-            case 'polarArea':
-                break;
         }
     }
 
-    // Obtener labels según tipo de chart
+    // Get labels for this dialog's chart family (doughnut/polarArea moved to category-chart-dialog).
     private getChartLabels(): string[] {
-        const type = this.chart['edaChart'];
-        
-        switch (type) {
-            case 'doughnut':
-            case 'polarArea':
-                return this.chart.chartLabels || [];
-                
-            default:
-                return this.chart.chartDataset?.map(d => d.label) || [];
-        }
+        return this.chart.chartDataset?.map(d => d.label) || [];
     }
 
 
-    // METODOS QUE ACTUALIZAN LA CONFIGURACION DEL GRAFICO
+    // Methods that update the chart configuration
 
-    SetNumberOfColumns() {
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;
-        let config: any = c.getConfig();
-        config.showLabels = this.showLabels;
-        config.showLabelsPercent = this.showLabelsPercent;
-        config.showUniqueColors = this.showUniqueColors;
-        config.showPointLines = this.showPointLines;
-        config.showPredictionLines = this.showPredictionLines;
-        config.numberOfColumns = this.numberOfColumns;
+    /** Flags the dashboard as having unsaved changes - called by every live-editing entry point
+     * below, not just the final "Guardar" button (which already goes through eda-blank-panel's
+     * onCloseChartProperties -> setNotSaved(true) on its own). */
+    private markUnsaved(): void {
+        this.dashboardService.setNotSaved(true);
+    }
 
-        properties.config = c;
-        /**Update chart */
+    /** Single place every live setter funnels through: writes this dialog's whole field set into
+     * the shared config, avoiding the old pattern of repeating the same field list per setter. */
+    private buildCustomFieldsPatch(): any {
+        return {
+            addTrend: this.addTrend,
+            addComparative: this.addComparative,
+            showLabels: this.showLabels,
+            showLabelsPercent: this.showLabelsPercent,
+            showPointLines: this.showPointLines,
+            secondAxis: this.secondAxis,
+            showPredictionLines: this.showPredictionLines,
+            numberOfColumns: this.numberOfColumns,
+            assignedColors: [...this.assignedColors],
+            chartLegend: this.chartLegend,
+            labelColorMode: this.labelColorMode,
+            labelCustomColor: this.labelCustomColor,
+            coloredBarsConfig: {
+                thresholdHigh: this.thresholdHigh,
+                thresholdLow: this.thresholdLow,
+                colorAbove: this.colorAbove,
+                colorBetween: this.colorBetween,
+                colorBelow: this.colorBelow,
+                active: this.coloredBarsActive
+            },
+            showUniqueColors: this.showUniqueColors,
+            uniqueBarColors: [...this.uniqueBarColors],
+            showGridLines: this.showGridLines,
+            useGradient: this.useGradient,
+            useRoundedBars: this.useRoundedBars,
+            chartAnimation: this.chartAnimation
+        };
+    }
+
+    private syncCustomFields(): void {
+        Object.assign(this.controller.params.config.config.getConfig(), this.buildCustomFieldsPatch());
+    }
+
+    private refreshPreview(): void {
+        this.markUnsaved();
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
             this.load();
+            this.syncAssignedColorsWithChart();
         });
+    }
+
+    // Toggles like Tendencia/Comparativa add or remove a dataset (and its label) on the fly - keeps
+    // assignedColors' row list matching the chart's current labels immediately, without waiting for
+    // a dialog close/reopen. Existing rows (and their colors/opacity) are preserved untouched.
+    private syncAssignedColorsWithChart(): void {
+        const labels = this.getChartLabels();
+        const existingByLabel = new Map(this.assignedColors.map(c => [c.value, c]));
+        this.assignedColors = labels.map((label, index) => {
+            const existing = existingByLabel.get(label);
+            if (existing) return existing;
+            const ds: any = this.chart.chartDataset?.find((d: any) => d.label === label);
+            const isDerived = !!(ds?.isTrend || ds?.isPrediction);
+            const sourceColor = isDerived ? existingByLabel.get(ds.sourceLabel)?.color : undefined;
+            return {
+                value: label,
+                color: sourceColor || this.getDefaultColor(index),
+                opacity: isDerived ? 25 : 100
+            };
+        });
+        this.applyColorsToChart();
+    }
+
+    SetNumberOfColumns() {
+        this.syncCustomFields();
+        this.refreshPreview();
     }
 
     checkTrend() {
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;
-        let config: any = c.getConfig();
-        config.addTrend = this.addTrend;
-        config.numberOfColumns = this.numberOfColumns;
-
-        properties.config = c;
-        /**Update chart */
-        this.panelChartConfig = new PanelChart(this.panelChartConfig);
-        setTimeout(_ => {
-            this.chart = this.panelChartComponent.componentRef.instance.inject;
-            this.load();
-        });
+        this.syncCustomFields();
+        this.refreshPreview();
     }
 
     setComparative() {
-
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;
-        let config: any = c.getConfig();
-        config.addComparative = this.addComparative;
-        config.numberOfColumns = this.numberOfColumns;
-        config.showLabels = this.showLabels;
-        config.showLabelsPercent = this.showLabelsPercent;
-        config.showUniqueColors = this.showUniqueColors;
-        config.showPointLines = this.showPointLines;
-        config.showPredictionLines = this.showPredictionLines;
-
-        properties.config = c;
-        /**Update chart */
-        this.panelChartConfig = new PanelChart(this.panelChartConfig);
-        setTimeout(_ => {
-            this.chart = this.panelChartComponent.componentRef.instance.inject;
-            this.load();
-        });
-
+        this.syncCustomFields();
+        this.refreshPreview();
     }
-
 
     setShowLablesPercent() {
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;
-        let config: any = c.getConfig();
-        config.showLabels = this.showLabels;
-        config.showLabelsPercent = this.showLabelsPercent;
-        config.showUniqueColors = this.showUniqueColors;
-        config.showPointLines = this.showPointLines;
-        config.showPredictionLines = this.showPredictionLines;
-        config.numberOfColumns = this.numberOfColumns;
-
-        properties.config = c;
-        /**Update chart */
-        this.panelChartConfig = new PanelChart(this.panelChartConfig);
-        setTimeout(_ => {
-            this.chart = this.panelChartComponent.componentRef.instance.inject;
-            this.load();
-        });
-
-    }
-
-    setShowUniqueColors() {
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;
-        let config: any = c.getConfig();
-        config.showLabels = this.showLabels;
-        config.showLabelsPercent = this.showLabelsPercent;
-        config.showUniqueColors = this.showUniqueColors;
-        config.showPointLines = this.showPointLines;
-        config.showPredictionLines = this.showPredictionLines;
-        config.numberOfColumns = this.numberOfColumns;
-        config.uniqueBarColors = [...this.uniqueBarColors];
-        this.activeTabIndex = 0;
-        this.coloredBarsActive = false;
-
-        properties.config = c;
-        /**Update chart */
-        this.panelChartConfig = new PanelChart(this.panelChartConfig);
-        setTimeout(_ => {
-            this.chart = this.panelChartComponent.componentRef.instance.inject;
-            this.load();
-            this.applyColorsToChart();
-            this.updateChartView();
-        });
-
+        this.syncCustomFields();
+        this.refreshPreview();
     }
 
     allowCoparative(params) {
 
         let monthformat = false;
-        const haveDate = params.config.query.filter(field => field.column_type === 'date').length > 0 //there is a date
+        const haveDate = params.config.query.filter(field => field.column_type === 'date').length > 0 // there is a date
         if (haveDate) {
             monthformat = ['month', 'week','day'].includes(params.config.query.filter(field => field.column_type === 'date')[0].format);
         }
@@ -405,88 +411,53 @@ export class ChartDialogComponent {
 
 
     setShowLables() {
+        this.syncCustomFields();
+        this.refreshPreview();
+    }
 
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;
-        let config: any = c.getConfig();
-        config.showLabels = this.showLabels;
-        config.showLabelsPercent = this.showLabelsPercent;
-        config.showUniqueColors = this.showUniqueColors;
-        config.showPointLines = this.showPointLines;
-        config.showPredictionLines = this.showPredictionLines;
-        config.numberOfColumns = this.numberOfColumns;
+    setLabelColor() {
+        this.syncCustomFields();
+        this.refreshPreview();
+    }
 
-        properties.config = c;
-        /**Update chart */
-        this.panelChartConfig = new PanelChart(this.panelChartConfig);
-        setTimeout(_ => {
-            this.chart = this.panelChartComponent.componentRef.instance.inject;
-            this.load();
-        });
-
+    labelColorButtonClass(mode: string): Record<string, boolean> {
+        const active = this.labelColorMode === mode;
+        return {
+            'bg-[var(--corporate-primary)] text-white': active
+        };
     }
 
     setChartLegend() {
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;
-        let config: any = c.getConfig();
-        config.chartLegend = this.chartLegend;
-        config.showLabels = this.showLabels;
-        config.showLabelsPercent = this.showLabelsPercent;
-        config.showUniqueColors = this.showUniqueColors;
-        config.showPointLines = this.showPointLines;
-        config.showPredictionLines = this.showPredictionLines;
-        config.numberOfColumns = this.numberOfColumns;
-        
-        properties.config = c;
-        /**Update chart */
-        this.panelChartConfig = new PanelChart(this.panelChartConfig);
-        setTimeout(_ => {
-            this.chart = this.panelChartComponent.componentRef.instance.inject;
-            this.load();
-        });
+        this.syncCustomFields();
+        this.refreshPreview();
     }
 
     setShowGridLines() {
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;
-        let config: any = c.getConfig();
-        config.showGridLines = this.showGridLines;
-
-        properties.config = c;
-        this.panelChartConfig = new PanelChart(this.panelChartConfig);
-        setTimeout(_ => {
-            this.chart = this.panelChartComponent.componentRef.instance.inject;
-            this.load();
-        });
+        this.syncCustomFields();
+        this.refreshPreview();
     }
 
     setShowLines() {
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;
-        let config: any = c.getConfig();
-        config.showLabels = this.showLabels;
-        config.showLabelsPercent = this.showLabelsPercent;
-        config.showUniqueColors = this.showUniqueColors;
-        config.showPointLines = this.showPointLines;
-        config.showPredictionLines = this.showPredictionLines;
-        config.numberOfColumns = this.numberOfColumns;
+        this.syncCustomFields();
+        this.refreshPreview();
+    }
 
-        properties.config = c;
-        /**Update chart */
-        this.panelChartConfig = new PanelChart(this.panelChartConfig);
-        setTimeout(_ => {
-            this.chart = this.panelChartComponent.componentRef.instance.inject;
-            this.load();
-        });
+    setSecondAxis() {
+        this.syncCustomFields();
+        this.refreshPreview();
+    }
+
+    setChartAnimation() {
+        this.syncCustomFields();
+        this.refreshPreview();
     }
 
     setPredictionLines() {
         if (this.showPredictionLines) {
-            // Toggle ON -> abrir dialog de configuración de predicción
+            // Toggle ON -> open the prediction configuration dialog
             this.showPredictionDialog = true;
         } else {
-            // Toggle OFF -> confirmar con Swal antes de quitar la predicción
+            // Toggle OFF -> confirm with Swal before removing the prediction
             Swal.fire({
                 title: $localize`:@@RemovePredictionTitle:¿Quieres quitar la predicción?`,
                 text: $localize`:@@RemovePredictionText:Se quitará la predicción y se ejecutará la consulta del gráfico.`,
@@ -504,14 +475,14 @@ export class ChartDialogComponent {
                 if (result.isConfirmed) {
                     await this.applyPrediction('None');
                 } else {
-                    // Canceló -> volver el switch a ON
+                    // Canceled -> switch back to ON
                     this.showPredictionLines = true;
                 }
             });
         }
     }
 
-    // Devuelve las tablas visibles del modelo de datos del panel.
+    // Returns the visible tables from the panel data model.
     get modelTables(): any[] {
         const panelID = this.controller.params.panelId;
         const dashboardPanel = this.dashboard?.edaPanels?.toArray().find(cmp => cmp.panel.id === panelID);
@@ -519,7 +490,7 @@ export class ChartDialogComponent {
         return dashboardPanel.dataSource.model.tables.filter(t => t.visible !== false);
     }
 
-    /** Devuelve las columnas numéricas del query actual para el selector de columna objetivo de TensorFlow */
+    /** Returns the numeric columns from the current query for the TensorFlow target column selector */
     get queryNumericColumns(): QueryColumn[] {
         const queryFields: any[] = this.controller?.params?.config?.query;
         if (!queryFields) return [];
@@ -536,24 +507,15 @@ export class ChartDialogComponent {
         this.showPredictionDialog = false;
         this.predictionMethod = predictionConfig.method;
 
-        // Mostrar spinner mientras se ejecuta la predicción
+        // Show the spinner while the prediction runs
         this.spinnerService.on();
 
-        // Actualizar config del chart
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;
-        let config: any = c.getConfig();
-        config.showLabels = this.showLabels;
-        config.showLabelsPercent = this.showLabelsPercent;
-        config.showUniqueColors = this.showUniqueColors;
-        config.showPointLines = this.showPointLines;
-        config.numberOfColumns = this.numberOfColumns;
-        config.showPredictionLines = this.showPredictionLines;
-
-        properties.config = c;
+        // Update the chart config
+        this.syncCustomFields();
+        this.controller.params.config.config.getConfig()['predictionMethod'] = this.predictionMethod;
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
 
-        // Setear predicción y configuración en la query del panel
+        // Set prediction and configuration in the panel query
         const panelID = this.controller.params.panelId;
         const dashboardPanel = this.dashboard?.edaPanels?.toArray().find(cmp => cmp.panel.id === panelID);
         if (!dashboardPanel) {
@@ -568,7 +530,7 @@ export class ChartDialogComponent {
             tensorflowParams: predictionConfig.tensorflowParams,
         };
 
-        // Ejecutar query y guardar config
+        // Run the query and save the config
         try {
             await dashboardPanel.runQueryFromDashboard(true);
         } finally {
@@ -577,28 +539,18 @@ export class ChartDialogComponent {
         this.saveChartConfig();
     }
 
-    /** El usuario canceló el diálogo: cierra y vuelve el toggle a OFF */
+    /** The user canceled the dialog: close it and switch the toggle back to OFF */
     cancelPrediction() {
         this.showPredictionDialog = false;
         this.showPredictionLines = false;
     }
 
     /**
-     * Actualiza la config del chart, escribe el tipo en la query del panel
-     * y relanza la query.
+     * Updates the chart config, writes the type to the panel query,
+     * and reruns the query.
      */
     private async applyPrediction(type: string) {
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;
-        let config: any = c.getConfig();
-        config.showLabels = this.showLabels;
-        config.showLabelsPercent = this.showLabelsPercent;
-        config.showUniqueColors = this.showUniqueColors;
-        config.showPointLines = this.showPointLines;
-        config.numberOfColumns = this.numberOfColumns;
-        config.showPredictionLines = this.showPredictionLines;
-
-        properties.config = c;
+        this.syncCustomFields();
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
 
         const panelID = this.controller.params.panelId;
@@ -611,120 +563,46 @@ export class ChartDialogComponent {
     }
 
 
-    // METODOS QUE GESTIONAN LOS COLORES DEL GRAFICO
+    // Chart color management methods
 
-    // Obtener color por defecto según índice
+    // Get default color by index
     private getDefaultColor(index: number): string {
         const palette = this.stylesProviderService.ActualChartPalette?.['paleta'];
         return palette[index % palette.length];
     }
 
-    // Aplicar assignedColors al chart según su tipo
+    // Keeps the live D3 components' native color source (assignedColors, plus categoryColorOverrides
+    // for bar's per-category threshold/unique modes) in sync with the dialog's own working state on
+    // every edit - the D3 components resolve color/opacity from these fields directly now, no more
+    // Chart.js-shaped chartColors/chartDataset intermediate to maintain.
     private applyColorsToChart(): void {
         const type = this.chart['edaChart'];
-        
-        switch (type) {
-        case 'doughnut':
-        case 'polarArea':
-            // Actualizar chartColors
-            this.chart.chartColors[0].backgroundColor = this.assignedColors.map(c => c.color);
-            this.chart.chartColors[0].borderColor = this.assignedColors.map(c => c.color);
-            
-            // Actualizar chartDataset 
-            if (this.chart.chartDataset && this.chart.chartDataset[0]) {
-                this.chart.chartDataset[0] = {
-                    ...this.chart.chartDataset[0],
-                    backgroundColor: [...this.chart.chartColors[0].backgroundColor],
-                    borderColor: [...this.chart.chartColors[0].borderColor]
-                };
-            }
-            break;
-                
-            case 'histogram':
-                if (this.assignedColors.length > 0) {
-                    const color = this.assignedColors[0].color;
-                    
-                    this.chart.chartColors = [{
-                        backgroundColor: color,
-                        borderColor: color
-                    }];
-                    
-                    if (this.chart.chartDataset?.[0]) {
-                        this.chart.chartDataset[0] = {
-                            ...this.chart.chartDataset[0],
-                            backgroundColor: color,
-                            borderColor: color
-                        };
-                    }
-                }
-                break;
-                
-            default: {
-                const isBar = (this.chart.chartType as string) === 'bar' || (this.chart.chartType as string) === 'horizontalBar';
+        const isBar = type === 'bar' || type === 'horizontalBar';
 
-                // Colores por intervalo
-                const hasThresholds = this.thresholdHigh !== null || this.thresholdLow !== null;
-                if (isBar && this.coloredBarsActive && hasThresholds && this.chart.chartDataset?.[0]?.data) {
-                    // Si los umbrales no son correctos no haremos cambios
-                    if(!this.thresholdsValid) break;
-                    // Per-bar coloring based on thresholds
-                    const bothThresholds = this.thresholdHigh !== null && this.thresholdLow !== null;
-                    const dataset = this.chart.chartDataset[0];
-                    const assignedColor = this.assignedColors.find(c => c.value === dataset.label)?.color || this.getDefaultColor(0);
-                    const colors = (dataset.data as number[]).map(value => {
-                        if (this.thresholdHigh !== null && value > this.thresholdHigh) return this.colorAbove;
-                        if (this.thresholdLow !== null && value < this.thresholdLow) return this.colorBelow;
-                        return bothThresholds ? this.colorBetween : assignedColor;
-                    });
-                    this.chart.chartDataset[0] = {
-                        ...this.chart.chartDataset[0],
-                        backgroundColor: colors,
-                        borderColor: colors
-                    };
-                    this.chart.chartColors = [{ backgroundColor: colors, borderColor: colors }];
-                    break;
-                }
+        this.chart.assignedColors = [...this.assignedColors];
 
-                // Colores únicos por barra (un color por label/categoría)
-                if (isBar && this.showUniqueColors && this.uniqueBarColors.length > 0 && this.chart.chartDataset?.[0]?.data) {
-                    const colors = (this.chart.chartDataset[0].data as number[]).map((_, idx) =>
-                        this.uniqueBarColors[idx]?.color || this.getDefaultColor(idx)
-                    );
-                    this.chart.chartDataset[0] = { ...this.chart.chartDataset[0], backgroundColor: colors, borderColor: colors };
-                    this.chart.chartColors = [{ backgroundColor: colors, borderColor: colors }];
-                    break;
-                }
-
-                // Normal: one color per dataset
-                const edaChart = this.chart['edaChart'];
-                const isAreaOrRadar = ['area', 'kpiarea', 'radar'].includes(edaChart);
-                if (this.chart.chartDataset.length > 0 && Array.isArray(this.chart.chartDataset)) {
-                    this.chart.chartDataset = this.chart.chartDataset.map((dataset) => {
-                        const colorConfig = this.assignedColors.find(c => c.value === dataset.label);
-                        if (colorConfig) {
-                            const fillColor = isAreaOrRadar ? this.chartUtils.hexToRgba(colorConfig.color, colorConfig.opacity ?? 100) : colorConfig.color;
-                            return {
-                                ...dataset,
-                                backgroundColor: fillColor,
-                                borderColor: colorConfig.color,
-                                pointBackgroundColor: colorConfig.color,
-                            };
-                        }
-                        return dataset;
-                    });
-                }
-
-                this.chart.chartColors = this.assignedColors.map(c => ({
-                    backgroundColor: isAreaOrRadar ? this.chartUtils.hexToRgba(c.color, c.opacity ?? 100) : c.color,
-                    borderColor: c.color,
-                    pointBackgroundColor: c.color,
-                }));
-                break;
-            }
+        const hasThresholds = this.thresholdHigh !== null || this.thresholdLow !== null;
+        if (isBar && this.coloredBarsActive && hasThresholds && this.thresholdsValid && this.chart.chartDataset?.[0]?.data) {
+            const bothThresholds = this.thresholdHigh !== null && this.thresholdLow !== null;
+            const dataset = this.chart.chartDataset[0];
+            const baseColor = this.assignedColors.find(c => c.value === dataset.label)?.color || this.getDefaultColor(0);
+            this.chart.categoryColorOverrides = (this.chart.chartLabels || []).map((label: string, idx: number) => {
+                const value = dataset.data[idx];
+                let color = baseColor;
+                if (this.thresholdHigh !== null && value > this.thresholdHigh) color = this.colorAbove;
+                else if (this.thresholdLow !== null && value < this.thresholdLow) color = this.colorBelow;
+                else if (bothThresholds) color = this.colorBetween;
+                return { value: label, color };
+            });
+        } else if (isBar && this.showUniqueColors && this.uniqueBarColors.length > 0) {
+            this.chart.categoryColorOverrides = [...this.uniqueBarColors];
+        } else {
+            this.chart.categoryColorOverrides = undefined;
         }
     }
 
     handleUniqueColorInput(): void {
+        this.markUnsaved();
         this.applyColorsToChart();
         this.controller.params.config.config.getConfig()['uniqueBarColors'] = [...this.uniqueBarColors];
         if (this.panelChartComponent?.componentRef?.instance) {
@@ -735,18 +613,25 @@ export class ChartDialogComponent {
         this.updateChartView();
     }
 
-    // Método simplificado para cambios de color
+    // Simplified method for color changes
     handleInputColor(): void {
-        // Aplicar assignedColors al chart
+        this.markUnsaved();
+        // Apply assignedColors to the chart
         this.applyColorsToChart();
 
-        // Re-renderizar
+        // Re-render
         if (this.panelChartComponent?.componentRef?.instance) {
             this.panelChartComponent.componentRef.instance.inject = this.chart;
             this.panelChartComponent.componentRef.instance.updateChart();
         }
         this.updateChartView();
 
+    }
+
+    stepOpacity(idx: number, delta: number): void {
+        const current = this.assignedColors[idx].opacity ?? 100;
+        this.assignedColors[idx].opacity = Math.min(100, Math.max(0, current + delta));
+        this.handleInputColor();
     }
 
     private updateChartView(): void {
@@ -756,62 +641,30 @@ export class ChartDialogComponent {
         }
 
         const chartInstance = this.panelChartComponent.componentRef.instance;
-        const type = this.chart['edaChart'];
-        
 
-        // Actualizar inject y forzar detección de cambios
+        // Update inject and force change detection
         chartInstance.inject = { ...this.chart };
-        
-        //  Actualizar directamente el chart de Chart.js
-        if (chartInstance.edaChart?.chart) {
-            const chartJs = chartInstance.edaChart.chart;
-            
-            switch (type) {
-                case 'doughnut':
-                case 'polarArea':
-                    // Para doughnut/polarArea, actualizar el dataset
-                    if (chartJs.data.datasets[0]) {
-                        chartJs.data.datasets[0].backgroundColor = this.chart.chartColors[0].backgroundColor;
-                        chartJs.data.datasets[0].borderColor = this.chart.chartColors[0].borderColor;
-                    }
-                    break;
-                    
-                default:
-                    // Para otros charts, actualizar cada dataset
-                    this.chart.chartDataset.forEach((dataset, index) => {
-                        if (chartJs.data.datasets[index]) {
-                            chartJs.data.datasets[index].backgroundColor = dataset.backgroundColor;
-                            chartJs.data.datasets[index].borderColor = dataset.borderColor;
-                            (chartJs.data.datasets[index] as any).pointBackgroundColor = (dataset as any).pointBackgroundColor;
-                        }
-                    });
-                    break;
-            }
-            
-            // Forzar actualización
-            chartJs.update(); 
-        }
-        
-        // Llamar al método updateChart del componente
+
+        // Call the component's cheap partial-update method (no full destroy+recreate).
         if (chartInstance.updateChart) {
             chartInstance.updateChart();
         }
     }
 
 
-    // Aplicar paleta
+    // Apply palette
     onPaletteSelected(): void {
         if (!this.selectedPalette) return;
         const palette = this.selectedPalette.paleta;
 
-        // Siempre actualizar assignedColors
+        // Always update assignedColors
         this.assignedColors = this.assignedColors.map((item, index) => ({
             value: item.value,
             color: palette[index % palette.length]
         }));
 
         if (this.showUniqueColors) {
-            // También actualizar uniqueBarColors y aplicar esos colores
+            // Also update uniqueBarColors and apply those colors
             this.uniqueBarColors = this.uniqueBarColors.map((item, index) => ({
                 value: item.value,
                 color: palette[index % palette.length]
@@ -822,7 +675,7 @@ export class ChartDialogComponent {
         }
     }
 
-    // METODOS DE CONTROL DE BARRAS SEMAFORICAS
+    // Traffic-light bar control methods
     get thresholdsValid(): boolean {
         if (!this.coloredBarsActive) return true;
         if (this.thresholdHigh === null || this.thresholdLow === null) return true;
@@ -838,113 +691,105 @@ export class ChartDialogComponent {
     }
 
     applyColoredBars(): void {
-        this.controller.params.config.config.getConfig()['coloredBarsConfig'] = {
-            thresholdHigh: this.thresholdHigh,
-            thresholdLow: this.thresholdLow,
-            colorAbove: this.colorAbove,
-            colorBetween: this.colorBetween,
-            colorBelow: this.colorBelow,
-            active: this.coloredBarsActive
-        };
+        this.syncCustomFields();
         this.handleInputColor();
     }
 
-    onTabChange(event: any): void {
-
-        if (!['bar', 'horizontalBar'].includes(this.chart.chartType as string)) return;
-        this.coloredBarsActive = event.index === 1;
+    applyUseGradient(): void {
+        this.syncCustomFields();
+        this.chart['useGradient'] = this.useGradient;
         this.handleInputColor();
+    }
+
+    applyUseRoundedBars(): void {
+        this.syncCustomFields();
+        this.chart['useRoundedBars'] = this.useRoundedBars;
+        this.handleInputColor();
+    }
+
+    // Unique colors only make sense for a single-series bar/horizontalBar chart - when true, the
+    // colors tab bar grows a third "Colores Únicos" tab between "Colores" and "Colores por intervalo".
+    get showUniqueColorsTab(): boolean {
+        return ['bar', 'horizontalBar'].includes(this.chart?.['edaChart'] as string) && this.queryNumericColumns.length === 1;
+    }
+
+    // "Colores por intervalo" is always the last tab, whether or not the unique-colors tab is present.
+    get intervalTabIndex(): number {
+        return this.showUniqueColorsTab ? 2 : 1;
+    }
+
+    setActiveTab(index: number): void {
+        this.markUnsaved();
+        this.activeTabIndex = index;
+        // edaChart, not chartType - chartType is always literally 'bar' for every bar subtype.
+        if (!['bar', 'horizontalBar'].includes(this.chart['edaChart'] as string)) return;
+        // Which coloring mode is active is now purely a function of which tab is selected - there's
+        // no separate on/off switch inside the "Colores Únicos" tab, being on it IS "activated".
+        this.coloredBarsActive = index === this.intervalTabIndex;
+        this.showUniqueColors = this.showUniqueColorsTab && index === 1;
+
+        this.syncCustomFields();
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(() => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.load();
+            this.applyColorsToChart();
+            this.updateChartView();
+        });
+    }
+
+    tabButtonClass(index: number): Record<string, boolean> {
+        const active = this.activeTabIndex === index;
+        return {
+            'bg-[var(--corporate-primary)] text-white border-[var(--corporate-primary)]': active,
+            'border-transparent hover:bg-gray-200/40': !active
+        };
     }
 
     get isAreaOrRadarChart(): boolean {
         return ['area', 'kpiarea', 'radar'].includes(this.panelChartConfig?.edaChart);
     }
 
-    // METODOS DE GUARDAR/CANCELAR CONFIGURACION
+    // Save/cancel configuration methods
 
     saveChartConfig() {
-        // Aplicar colores finales
+        // Apply final colors to the live preview
         this.applyColorsToChart();
-        
-        // Guardar assignedColors en config y chart
-        this.chart['assignedColors'] = [...this.assignedColors];
-        this.controller.params.config.config.getConfig()['assignedColors'] = [...this.assignedColors];
-        this.chart['uniqueBarColors'] = [...this.uniqueBarColors];
-        this.controller.params.config.config.getConfig()['uniqueBarColors'] = [...this.uniqueBarColors];
+        this.syncCustomFields();
 
-        // Guardar otras opciones
-        this.chart.addTrend = this.addTrend;
-        this.chart.addComparative = this.addComparative;
-        this.chart.showLabels = this.showLabels;
-        this.chart.showLabelsPercent = this.showLabelsPercent;
-        this.chart.showUniqueColors = this.showUniqueColors;
-        this.chart.showPointLines = this.showPointLines;
-        this.chart.showPredictionLines = this.showPredictionLines;
-        this.chart.numberOfColumns = this.numberOfColumns;
-        this.chart.chartLegend = this.chartLegend;
-        this.chart['showGridLines'] = this.showGridLines;
-
-        // Guardar en config también (para persistencia)
-        this.controller.params.config.config.getConfig()['addTrend'] = this.addTrend;
-        this.controller.params.config.config.getConfig()['showLabels'] = this.showLabels;
-        this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.showLabelsPercent;
-        this.controller.params.config.config.getConfig()['showUniqueColors'] = this.showUniqueColors;
-        this.controller.params.config.config.getConfig()['showPointLines'] = this.showPointLines;
-        this.controller.params.config.config.getConfig()['showPredictionLines'] = this.showPredictionLines;
-        this.controller.params.config.config.getConfig()['predictionMethod'] = this.predictionMethod;
-        this.controller.params.config.config.getConfig()['numberOfColumns'] = this.numberOfColumns;
-        this.controller.params.config.config.getConfig()['addComparative'] = this.addComparative;
-        this.controller.params.config.config.getConfig()['chartLegend'] = this.chartLegend;
-        this.controller.params.config.config.getConfig()['showGridLines'] = this.showGridLines;
-
-        // Guardar config de colored bars
-        const coloredBarsConfig = {
-            thresholdHigh: this.thresholdHigh,
-            thresholdLow: this.thresholdLow,
-            colorAbove: this.colorAbove,
-            colorBetween: this.colorBetween,
-            colorBelow: this.colorBelow,
-            active: this.coloredBarsActive
-        };
-        this.controller.params.config.config.getConfig()['coloredBarsConfig'] = coloredBarsConfig;
-        this.chart['coloredBarsConfig'] = coloredBarsConfig;
-
-        this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
+        // Small typed response - assignedColors + this family's own fields, no Chart.js shape.
+        this.onClose(EdaDialogCloseEvent.UPDATE, this.buildCustomFieldsPatch());
     }
 
     resetChartConfig() {
-        // Restaurar valores originales de labels
+        // Restore original label values
         this.addTrend = this.originalLabelValues.addTrend;
         this.showLabels = this.originalLabelValues.showLabels;
         this.showLabelsPercent = this.originalLabelValues.showLabelsPercent;
+        this.labelColorMode = this.originalLabelValues.labelColorMode;
+        this.labelCustomColor = this.originalLabelValues.labelCustomColor;
         this.showUniqueColors = this.originalLabelValues.showUniqueColors;
         this.showPointLines = this.originalLabelValues.showPointLines;
+        this.secondAxis = this.originalLabelValues.secondAxis;
         this.showPredictionLines = this.originalLabelValues.showPredictionLines;
         this.numberOfColumns = this.originalLabelValues.numberOfColumns;
         this.addComparative = this.originalLabelValues.addComparative;
         this.chartLegend = this.originalLabelValues.chartLegend;
         this.showGridLines = this.originalLabelValues.showGridLines;
+        this.useGradient = this.originalLabelValues.useGradient;
+        this.useRoundedBars = this.originalLabelValues.useRoundedBars;
+        this.chartAnimation = this.originalLabelValues.chartAnimation;
+        this.assignedColors = _.cloneDeep(this.originalAssignedColors);
+        this.uniqueBarColors = _.cloneDeep(this.originalUniqueBarColors);
 
-        // Restaurar en config
-        this.controller.params.config.config.getConfig()['addTrend'] = this.originalLabelValues.addTrend;
-        this.controller.params.config.config.getConfig()['showLabels'] = this.originalLabelValues.showLabels;
-        this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.originalLabelValues.showLabelsPercent;
-        this.controller.params.config.config.getConfig()['showUniqueColors'] = this.originalLabelValues.showUniqueColors;
-        this.controller.params.config.config.getConfig()['showPointLines'] = this.originalLabelValues.showPointLines;
-        this.controller.params.config.config.getConfig()['showPredictionLines'] = this.originalLabelValues.showPredictionLines;
-        this.controller.params.config.config.getConfig()['numberOfColumns'] = this.originalLabelValues.numberOfColumns;
-        this.controller.params.config.config.getConfig()['addComparative'] = this.originalLabelValues.addComparative;
-        this.controller.params.config.config.getConfig()['chartLegend'] = this.originalLabelValues.chartLegend;
-        this.controller.params.config.config.getConfig()['showGridLines'] = this.originalLabelValues.showGridLines;
-        this.controller.params.config.config.getConfig()['assignedColors'] = this.assignedColors = _.cloneDeep(this.originalAssignedColors);
-        this.controller.params.config.config.getConfig()['uniqueBarColors'] = this.uniqueBarColors = _.cloneDeep(this.originalUniqueBarColors);
+        this.syncCustomFields();
     }
 
     closeChartConfig() {
-        // Restaurar colores originales
+        // Restore original colors
         this.resetChartConfig();
         this.applyColorsToChart();
-        this.onClose(EdaDialogCloseEvent.NONE, this.oldChart);
+        this.onClose(EdaDialogCloseEvent.NONE);
     }
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {

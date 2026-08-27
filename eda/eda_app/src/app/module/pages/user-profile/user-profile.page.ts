@@ -117,7 +117,7 @@ private saveUser() {
 
     if (file) {
       this.isUploading.set(true)
-      // Simular carga
+      // Simulate loading
       setTimeout(() => {
         this.profileImage.set(URL.createObjectURL(file))
         this.imageTemp = 'success';

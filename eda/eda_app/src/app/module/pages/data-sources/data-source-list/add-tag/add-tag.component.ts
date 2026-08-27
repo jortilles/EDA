@@ -78,18 +78,18 @@ export class AddTagComponent implements OnInit {
 
 
   addItem() {
-    //Declaramos el new tag como string, quitando los espacios vacíos
+    // Declare the new tag as a string, trimming whitespace
     const newTagLabel: string = this.newTag.trim();
 
-    //Si está vacío o ya existe no lo ponemos...
+    // If empty or already exists, do not add it
     if (newTagLabel === "") { this.alertService.addWarning(this.emptyString); return; }
     if (this.tagExists(newTagLabel)) { this.alertService.addWarning(this.existentString); return; }
 
-    //Creamos el objeto y lo pusheamos en las opciones
+    // Create the object and push it into the options
     const newTagOption: TagOption = { label: newTagLabel, value: this.tags.length };
     this.tags.push(newTagOption);
 
-    //En la variable de los seleccionados también
+    // Also add it to the selected tags variable
     let updatedTagIndexes = this.selectedTags;
     this.selectedTags = [...updatedTagIndexes, newTagOption.value];
     this.newTag = '';
@@ -101,18 +101,18 @@ export class AddTagComponent implements OnInit {
   }
 
   saveTags() {
-    //Guardar los tags directamente del selector como array de strings
+    // Save tags directly from the selector as a string array
     this.close.emit(this.tagsToStringArray(this.selectedTags));
   }
 
-  //Transformar de string array a opciones 
+  // Transform from string array to options
   private tagsArrayToOptions(tagArray: string[]): TagOption[] {
     return tagArray.map((tag, index) => {
       return { label: tag, value: index };
     });
   }
 
-  //Transformar de number array a string array 
+  // Transform from number array to string array
   private tagsToStringArray(tagIndexes: number[]): string[] {
     return this.tags
       .filter(tag => tagIndexes.includes(tag.value) && tag.label)

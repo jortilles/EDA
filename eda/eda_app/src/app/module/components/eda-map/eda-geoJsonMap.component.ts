@@ -41,7 +41,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   private dataIndex: number;
   private serverMap: any = null;
 
-  // Usar assignedColors en lugar de color individual
+  // Use assignedColors instead of an individual color
   public assignedColors: Array<{ value: string, color: string }> = [];
 
   public logarithmicScale: boolean;
@@ -79,11 +79,11 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
       this.mapUtilsService.initShapes(this.serverMap["mapID"]);
     }
 
-    // CARGAR assignedColors del inject
+    // Load assignedColors from inject
     if (this.inject.assignedColors && Array.isArray(this.inject.assignedColors) && this.inject.assignedColors.length > 0) {
       this.assignedColors = this.inject.assignedColors;
     } else {
-      // Crear colores por defecto
+      // Create default colors
       this.assignedColors = [
         { value: 'Color', color: this.paletaActual[0] }
       ];
@@ -308,7 +308,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   private getColor = (groups: Array<number>, value: number) => {
     if (!value) return "#eef0f3";
 
-    // Obtener el color base de assignedColors
+    // Get the base color from assignedColors
     const baseColor = this.assignedColors[0]?.color || this.paletaActual[0];
     let group = [value, ...groups].sort((a, b) => a - b).indexOf(value);
     let shade = group === 0 ? 80 : group === 1 ? 40 : group === 2 ? 0 : group == 3 ? -40 : -80;
@@ -340,7 +340,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     return groups;
   };
 
-  // Método público para actualizar colores desde el dialog
+  // Public method to update colors from the dialog
   public updateMapColors = (colors: string[]) => {
       this.assignedColors = [
         { value: 'Color', color: colors[0] }
@@ -349,7 +349,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   };
 
   public reStyleGeoJsonLayer = (color: string) => {
-    // Mantener compatibilidad con código legacy
+    // Keep compatibility with legacy code
     this.assignedColors[0].color = color;
     this.reRenderMap();
   };

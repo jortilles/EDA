@@ -122,12 +122,12 @@ export class ModelPermissionDialogComponent implements OnInit {
     this.type = type;
   }
 
-  // Métodos para manejar usuarios
+  // User management methods
   toggleUserSelector() {
     this.isUserSelectorOpen.update((open) => !open)
   }
 
-  // Métodos para manejar grupos
+  // Group management methods
   toggleGroupSelector() {
     this.isGroupSelectorOpen.update((open) => !open)
   }

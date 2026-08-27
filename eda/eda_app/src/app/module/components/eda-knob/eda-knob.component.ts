@@ -35,12 +35,12 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.paleta = this.styleProviderService.ActualChartPalette;
 
-    // Obtener color desde assignedColors
+    // Get the color from assignedColors
     this.assignedColors = this.inject.assignedColors;
     if (this.assignedColors && this.assignedColors.length > 0) {
       this.color = this.assignedColors[0]['color'];
     } else {
-      // Si no hay assignedColors, usar paleta por defecto
+      // If there are no assignedColors, use the default palette
       this.color = this.paleta?.['paleta']?.[0] || '#0cb7bd';
     }
     
@@ -61,10 +61,10 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Subimos dos niveles para encontrar el contenedor
+    // Move up two levels to find the container
     const realParent = this.parentDiv.nativeElement.parentElement.parentElement as HTMLElement;
 
-    // Crear ResizeObserver para redimensionar el chart
+    // Create a ResizeObserver to resize the chart
     this.resizeObserver = new ResizeObserver(entries => {
       const { width: w, height: h } = entries[0].contentRect;
       if (w > 0 && h > 0) {
@@ -94,14 +94,14 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
     const color = this.styleProviderService.panelFontColor.source['_value'];
     const fontFamily = this.styleProviderService.panelFontFamily.source['_value'];
 
-    // Texto central del knob
+    // Knob center text
     const centerText = parent?.querySelector('.p-knob-text');
     if (centerText) {
       centerText.style.setProperty('color', color, 'important');
       centerText.style.setProperty('font-family', fontFamily, 'important');
     }
 
-    // Todos los textos dentro de SVGs (min y max)
+    // All text elements inside SVGs (min and max)
     const svgTexts = parent?.querySelectorAll('svg text');
     svgTexts?.forEach(el => {
       el.setAttribute('fill', color);
@@ -137,7 +137,7 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
 
   private computeSemaphoreColor(value: number, min: number, max: number): string {
     const ratio = Math.max(0, Math.min(1, (value - min) / (max - min || 1)));
-    const hue = Math.round(ratio * 120); // 0° = rojo, 60° = amarillo, 120° = verde
+    const hue = Math.round(ratio * 120); // 0 deg = red, 60 deg = yellow, 120 deg = green
     return `hsl(${hue}, 85%, 42%)`;
   }
 

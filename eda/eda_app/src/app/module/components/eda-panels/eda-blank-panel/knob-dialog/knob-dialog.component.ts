@@ -26,6 +26,7 @@ export class KnobDialogComponent implements OnInit {
     public label: string;
     public display: boolean = false;
     public semaphoreColor: boolean = false;
+    public chartAnimation: boolean = true;
     public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
     constructor(private styleProviderService: StyleProviderService) {}
@@ -36,13 +37,13 @@ export class KnobDialogComponent implements OnInit {
     }
 
     ngAfterViewChecked(): void {
-        // Solo actualizar si los colores aún son los valores por defecto
+        // Update only if the colors are still the default values
         if (this.assignedColors[0].color === '#000000' && this.myPanelChartComponent?.componentRef) {
 
             setTimeout(() => {
                 const chartAssignedColors = this.myPanelChartComponent.props.config.getConfig()['assignedColors'] || [];
 
-                /* Actualizar con los colores reales del chart */
+                /* Update with the actual chart colors */
                 if (chartAssignedColors.length >= 1) {
                     this.assignedColors = [
                         { value: 'Color', color: chartAssignedColors[0]?.color }
@@ -57,8 +58,9 @@ export class KnobDialogComponent implements OnInit {
                 this.min = limits[0];
                 this.max = limits[1];
                 this.semaphoreColor = !!this.myPanelChartComponent.componentRef.instance.inject?.semaphoreColor;
+                this.chartAnimation = this.myPanelChartComponent.componentRef.instance.inject?.chartAnimation ?? true;
 
-                // Cargar assignedColors
+                // Load assignedColors
                 this.loadChartColors(this.label, currentColor);
             }, 100);
         }
@@ -67,16 +69,16 @@ export class KnobDialogComponent implements OnInit {
     loadChartColors(label: string, currentColor: string) {
         const existingColors = this.panelChartConfig.config.getConfig()['assignedColors'] || [];
         
-        // Crear assignedColors con el formato estándar
+        // Create assignedColors with the standard format
         this.assignedColors = [{
             value: label,
             color: existingColors[0]?.color || currentColor
         }];
         
-        // Guardar copia para cancelar
+        // Save a copy for cancellation
         this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
         
-        // Aplicar color al componente
+        // Apply color to the component
         this.applyColorToChart();
     }
 
@@ -92,18 +94,45 @@ export class KnobDialogComponent implements OnInit {
         }
     }
 
+    /**
+     * The toggle previously only flipped the local flag that decides which settings section shows
+     * (manual color picker vs. the semaphore gradient strip) - it never reached the actual chart,
+     * so the live preview kept showing whatever mode it was in when the dialog opened. Persisting
+     * into config and forcing changeChartType() re-runs panel-chart.component.ts's renderKnob()
+     * (the same path saveChartConfig() eventually takes), so the preview and the saved result can
+     * never disagree - and syncing assignedColors/limits alongside semaphoreColor here (not just
+     * on final save) keeps any in-progress manual color edit from being lost if the user flips
+     * back to normal mode before saving.
+     */
+    toggleSemaphoreColor(): void {
+        this.semaphoreColor = !this.semaphoreColor;
+        const cfg = this.panelChartConfig.config.getConfig();
+        cfg['semaphoreColor'] = this.semaphoreColor;
+        cfg['assignedColors'] = [...this.assignedColors];
+        cfg['limits'] = [this.min, this.max];
+        this.myPanelChartComponent.changeChartType();
+    }
+
+    toggleChartAnimation(): void {
+        this.chartAnimation = !this.chartAnimation;
+        const cfg = this.panelChartConfig.config.getConfig();
+        cfg['chartAnimation'] = this.chartAnimation;
+        this.myPanelChartComponent.changeChartType();
+    }
+
     saveChartConfig() {
-        // Aplicar colores finales
+        // Apply final colors
         this.applyColorToChart();
-        
-        // Guardar assignedColors en config
+
+        // Save assignedColors in config
         this.panelChartConfig.config.getConfig()['assignedColors'] = [...this.assignedColors];
-        
-        // Guardar límites
+
+        // Save limits
         const properties = {
             limits: [this.min, this.max],
             assignedColors: this.assignedColors,
-            semaphoreColor: this.semaphoreColor
+            semaphoreColor: this.semaphoreColor,
+            chartAnimation: this.chartAnimation
         };
         
         this.styleProviderService.palKnob = false;

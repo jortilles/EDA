@@ -2,7 +2,7 @@
 
     <div class="relative flex-shrink-0 bg-white" style="width: 40px; z-index: 30;">
 
-        <!-- Tab (icono 3 barras) -->
+        <!-- Tab (3-bar icon) -->
         <div class="absolute top-0 left-0 w-10 h-12 flex flex-col items-center justify-center gap-1 cursor-pointer"
              style="z-index: 10;"
              (mouseenter)="openSidebar()" (mouseleave)="closeSidebar()">
@@ -11,16 +11,16 @@
             <span class="block w-5 h-0.5 bg-black rounded"></span>
         </div>
 
-        <!-- Panel: overlay absoluto que sale desde left:0, encima del tab y del iframe -->
+        <!-- Panel: absolute overlay sliding from left:0, above the tab and the iframe -->
         <div class="absolute top-0 left-0 h-full flex flex-col shadow-2xl transition-transform duration-300"
              [style.min-width]="sidebarWidth" [style.width]="sidebarWidth" style="z-index: 20;"
              [style.transform]="sidebarOpen ? 'translateX(0)' : 'translateX(-100%)'"
              (mouseenter)="openSidebar()" (mouseleave)="closeSidebar()">
 
-            <!-- Contenido editable (incluye el fondo) -->
+            <!-- Editable content (includes background) -->
             <div class="flex-1 overflow-hidden relative" [style.background-color]="sidebarBgColor">
                 <div [innerHTML]="safeSidebarHtml" class="h-full pt-6"></div>
-                                <!-- Botón anclar -->
+                                <!-- Pin button -->
                 <button class="absolute top-2 left-2 p-1 rounded cursor-pointer transition-all duration-200"
                         [style.background-color]="isPinned ? 'rgba(255,255,255,0.25)' : 'transparent'"
                         [style.opacity]="isPinned ? '1' : '0.5'"
@@ -49,7 +49,7 @@
                 }
             </div>
 
-            <!-- Footer fijo: no editable -->
+            <!-- Fixed footer: not editable -->
             <div [style.background-color]="sidebarBgColor" class="relative">
 
                 <span i18n="@@hechoCon" class="pt-4 pb-2 pl-[10%] block text-white font-bold"> HECHO CON </span>
@@ -61,7 +61,7 @@
         </div>
     </div>
 
-    <!-- Spacer: empuja el iframe cuando el sidebar abre (total = 16vw, menos los 40px fijos de la barra) -->
+    <!-- Spacer: pushes the iframe when the sidebar opens (total = 16vw, minus the fixed 40px bar) -->
     <div class="flex-shrink-0"
          [style.width]="sidebarOpen ? 'calc(' + sidebarWidth + ' - 40px)' : '0px'"
          [style.min-width]="sidebarOpen ? 'calc(' + sidebarWidth + ' - 40px)' : '0px'"
@@ -103,10 +103,10 @@
 
         <div content class="flex flex-col" style="height: calc(80vh - 130px)">
 
-            <!-- Columnas: HTML + preview -->
+            <!-- Columns: HTML + preview -->
             <div class="flex flex-1 overflow-hidden">
 
-                <!-- Columna izquierda: HTML editable -->
+                <!-- Left column: editable HTML -->
                 <div class="flex-1 flex flex-col p-4 border-r">
                     <h4 class="text-xs text-gray-500 mb-2 font-semibold">HTML del sidebar</h4>
                     <textarea
@@ -117,12 +117,12 @@
                     </textarea>
                 </div>
 
-                <!-- Columna derecha: preview en vivo -->
+                <!-- Right column: live preview -->
                 <div class="w-[16vw] p-4 pt-10 shrink-0 flex flex-col overflow-hidden">
                     <div class="flex-1 overflow-auto">
                         <div [innerHTML]="safeEditingHtml" class="h-full"></div>
                     </div>
-                    <!-- Footer no editable -->
+                    <!-- Non-editable footer -->
                     <div [style.background-color]="previewBgColor">
                         <span i18n="@@hechoCon" class="pt-3 pb-1 pl-[10%] block text-white text-xs font-bold">HECHO CON</span>
                         <div class="pb-3 flex justify-center">
@@ -133,7 +133,7 @@
 
             </div>
 
-            <!-- Sección inferior: dashboard inicial -->
+            <!-- Bottom section: initial dashboard -->
             <div class="border-t px-4 py-3 flex items-center gap-4 bg-gray-50 flex-shrink-0">
                 <label class="text-xs font-semibold text-gray-600 whitespace-nowrap" i18n="@@initialDashboardLabel">
                     Dashboard inicial:
@@ -154,3 +154,5 @@
         </div>
     </eda-dialog2>
 }
+
+

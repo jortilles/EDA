@@ -112,11 +112,11 @@ export class UserListPage implements OnInit {
   handleEditUser(user: User) {
     this.selectedUser = user;
     this.selectedUserApply = { ...user };
-    // Comprovar si podemos coger roles
+    // Check if we can retrieve roles
     if (typeof this.selectedUserApply.role === 'string') {
       this.selectedUserApply.role = this.selectedUser.role.split(',');
     }
-    // Si los roles estan vacios quitar todo valor
+    // If roles are empty, remove all values
     if (this.selectedUserApply.role[0] === '') {
       this.selectedUserApply.role = '';
     }
@@ -125,20 +125,20 @@ export class UserListPage implements OnInit {
   }
 
   handleCreateUser() {
-    // REVISAR QUE PASA CON LAS INICIALES DE USER cache
+    // Check what happens with cached user initials
     this.selectedUser = { name: '', email: '', password: '', isnew: true };
     this.selectedUserApply = { name: '', email: '', password: '', isnew: true };
     this.showUserDetail = true;
   }
 
   handleDeleteUser(userId: string) {
-    // Control de no borrar el propio usuario
+    // Prevent deleting the current user
     if (userId === this.userService.getUserObject()._id) {
       Swal.fire($localize`:@@cantDeleteUser:No se puede borrar el usuario`, $localize`:@@cantSelfDelete:No se puede borrar a si mismo`, 'error');
       return;
     }
 
-    // Confirmación del borrado de usuario
+    // User deletion confirmation
     let title = $localize`:@@DeleteUserMessage:Estás a punto de borrar el usuario `
     Swal.fire({
       title: $localize`:@@Sure:¿Estás seguro?`,
@@ -163,7 +163,7 @@ export class UserListPage implements OnInit {
 
   onApplyUserDetail() {
     this.showUserDetail = false;
-    if (this.selectedUser.isnew) { //Estamos creando usuario
+    if (this.selectedUser.isnew) { // Creating user
 
       let roleIds = (this.selectedUserApply?.role ?? [])
         .map(name => this.groups.find(group => group.name === name)?._id)
@@ -173,7 +173,7 @@ export class UserListPage implements OnInit {
         name: this.selectedUserApply.name,
         email: this.selectedUserApply.email,
         password: this.selectedUserApply.password,
-        ...(roleIds.length ? { role: roleIds } : {}) // solo incluye role si hay 
+        ...(roleIds.length ? { role: roleIds } : {}) // Only include role if it exists
       };
 
       this.userService.createUser(user).subscribe(
@@ -186,7 +186,7 @@ export class UserListPage implements OnInit {
       );
     }
 
-    else { //Estamos modificando usuario
+    else { // Editing user
       let userToModify = this.users.find(user => user._id === this.selectedUser._id);
       this.selectedUser = this.selectedUserApply;
 

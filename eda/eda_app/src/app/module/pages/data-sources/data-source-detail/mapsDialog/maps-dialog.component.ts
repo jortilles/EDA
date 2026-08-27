@@ -29,7 +29,7 @@ export class MapDialogComponent implements OnInit {
   public linkedColumns: any[] = [];
   public serverMaps: any[] = [];
   public center: any[];
-  public isFileLoaded: boolean = false; // Se ha añadido geojson
+  public isFileLoaded: boolean = false; // GeoJSON has been added
 
   activeTab: 'step1' | 'step2' | 'available' = 'step1';
   selectedMap = "customers - Country"
@@ -111,7 +111,7 @@ export class MapDialogComponent implements OnInit {
 
   saveMap() {
     let newMap = false;
-    //If map uploaded push to current maps (loaded - eventualy deleted + new)
+    // If map uploaded push to current maps (loaded - eventualy deleted + new)
     if (this.fileUploader.currentFile && this.mapForm.value.dataModelField && this.mapForm.value) {
       newMap = true;
       this.serverMaps.push(
@@ -150,7 +150,7 @@ export class MapDialogComponent implements OnInit {
     this.close.emit(response);
   }
 
-  // Metodos que controlan las flags
+  // Methods that control the flags
   setActiveTab(tab: 'step1' | 'available'): void {
     this.activeTab = tab;
   }
@@ -161,8 +161,8 @@ export class MapDialogComponent implements OnInit {
   get canGoNext(): boolean {
     return this.isFileLoaded && this.mapForm.value.mapName !== '' && this.mapForm.value.dataModelField !== '';
   }
-  // El botón de confirmación se habilita si estamos en la pestaña de mapas disponibles 
-  // o si estamos en la pestaña de creación y se han vinculado columnas
+  // The confirm button is enabled if we are on the available maps tab 
+  // Or if we are on the creation tab and columns have been linked
   get canConfirm(): boolean {
     return this.activeTab === 'available' || (this.activeTab === 'step2' && this.linkedColumns.length > 0);
   }

@@ -64,11 +64,30 @@ export class DuckDBConnection extends AbstractConnection {
     private async runQuery(conn: any, query: string): Promise<any[]> {
         const reader = await conn.runAndReadAll(query);
         const rows: any[] = reader.getRowObjects();
-        // @duckdb/node-api returns BIGINT columns as JS BigInt which JSON.stringify rejects.
-        // Parse through a replacer so the conversion is fully contained within this layer.
+        // @duckdb/node-api returns BIGINT as JS BigInt (rejected by JSON.stringify) and
+        // DECIMAL columns as DuckDBDecimalValue objects. Convert both here so callers
+        // always receive plain JSON-serialisable values with proper decimal precision.
         return JSON.parse(
-            JSON.stringify(rows, (_key, val) => typeof val === 'bigint' ? Number(val) : val)
+            JSON.stringify(rows, (_key, val) => {
+                if (typeof val === 'bigint') return Number(val);
+                // DuckDBDecimalValue: { value: bigint, scale: number, width: number }
+                if (val !== null && typeof val === 'object' && typeof val.scale === 'number' && typeof val.value === 'bigint') {
+                    return this.formatDecimal(val as { value: bigint; scale: number });
+                }
+                return val;
+            })
         );
+    }
+
+    private formatDecimal(val: { value: bigint; scale: number }): number {
+        if (val.scale === 0) return Number(val.value);
+        const isNeg = val.value < 0n;
+        const abs = isNeg ? -val.value : val.value;
+        const scaleFactor = 10n ** BigInt(val.scale);
+        const intPart = Number(abs / scaleFactor);
+        const fracPart = Number(abs % scaleFactor) / Math.pow(10, val.scale);
+        const result = intPart + fracPart;
+        return isNeg ? -result : result;
     }
 
     async tryConnection(): Promise<any> {

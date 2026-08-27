@@ -24,7 +24,7 @@ export const coreRoutes: Routes = [
         canActivate: [LoginGuardGuard],
         loadChildren: () => import('../../module/pages/pages.module').then(m => m.PagesModule)
     },
-    // Rutas internas v2 protegidas por el guard
+    // Internal v2 routes protected by the guard
     {
         path: '',
         canActivate: [LoginGuardGuard],

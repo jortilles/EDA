@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { AlertService, UserService, SpinnerService } from './services/service.index';
 import { Router, RouterModule } from '@angular/router';
-import { CORPORATE_COLORS, DEFAULT_HOME_BACKGROUND_COLOR } from './config/personalitzacio/customizables';
+import { CORPORATE_COLORS, DEFAULT_HOME_BACKGROUND_COLOR } from './config/customizable/customizable_default';
 
 import { PrimeNGConfig } from 'primeng/api';
 

@@ -14,12 +14,12 @@
     <!-- Settings -->
     <div class="flex-[1] min-w-[260px] overflow-y-auto p-6 space-y-5">
 
-      <!-- TOTALES -->
+      <!-- TOTALS -->
       <div class="space-y-3">
         <span class="text-lg font-semibold" i18n="@@addTotals">Totales</span>
 
         @if (chartType !== 'table') {
-          <!-- Totales de fila (solo crosstab) -->
+          <!-- Row totals (crosstab only) -->
           <div class="flex items-center justify-between" [class.opacity-50]="trend">
             <label class="text-base font-medium text-gray-700" i18n="@@addRowTotals">Totales de fila</label>
             <label class="relative inline-flex items-center cursor-pointer">
@@ -28,7 +28,7 @@
             </label>
           </div>
 
-          <!-- Tendencia (solo crosstab) -->
+          <!-- Trend (crosstab only) -->
           <div class="flex items-center justify-between" [class.opacity-50]="row_totals">
             <label class="text-base font-medium text-gray-700" i18n="@@addtrend">Tendencia</label>
             <label class="relative inline-flex items-center cursor-pointer">
@@ -38,7 +38,7 @@
           </div>
         }
 
-        <!-- Totales de columna -->
+        <!-- Column totals -->
         <div class="flex items-center justify-between" [class.opacity-50]="onlyPercentages">
           <label class="text-base font-medium text-gray-700" i18n="@@addColTotals">Totales de columna</label>
           <label class="relative inline-flex items-center cursor-pointer">
@@ -47,7 +47,7 @@
           </label>
         </div>
 
-        <!-- Subtotales de columna -->
+        <!-- Column subtotals -->
         <div class="flex items-center justify-between" [class.opacity-50]="onlyPercentages">
           <label class="text-base font-medium text-gray-700" i18n="@@addColSubtotals">Subtotales de columna</label>
           <label class="relative inline-flex items-center cursor-pointer">
@@ -59,7 +59,7 @@
 
       <div class="border-t border-gray-100"></div>
 
-      <!-- PORCENTAJES -->
+      <!-- PERCENTAGES -->
       <div class="space-y-3">
         <span class="text-lg font-semibold" i18n="@@addPercentages">Porcentajes</span>
         <div class="flex w-full rounded-lg border border-gray-200 overflow-hidden text-sm font-medium">
@@ -87,7 +87,7 @@
       @if (cols.length > 0 && !onlyPercentages) {
         <div class="border-t border-gray-100"></div>
 
-        <!-- CÓDIGO DE COLOR -->
+        <!-- COLOR CODE -->
         <div class="space-y-2">
           <span class="text-lg font-semibold" i18n="@@addStyles">Código de color</span>
           <div class="flex flex-col gap-2">
@@ -105,7 +105,7 @@
 
       <div class="border-t border-gray-100"></div>
 
-      <!-- COLORES DE TABLA -->
+      <!-- TABLE COLORS -->
       <div class="space-y-3">
         <span class="text-lg font-semibold" i18n="@@tableColors">Colores de tabla</span>
 
@@ -139,7 +139,7 @@
       @if (chartType === 'table') {
         <div class="border-t border-gray-100"></div>
 
-        <!-- TABLA: repeticiones, negativos, predicción -->
+        <!-- TABLE: repetitions, negatives, prediction -->
         <div class="space-y-3">
           <span class="text-lg font-semibold" i18n="@@seeRepetitions">Opciones</span>
 
@@ -172,7 +172,7 @@
       @if (chartType !== 'table') {
         <div class="border-t border-gray-100"></div>
 
-        <!-- CROSSTAB: ordenación -->
+        <!-- CROSSTAB: sorting -->
         <div class="space-y-3">
           <span class="text-lg font-semibold" i18n="@@addCrossSorting">Ordenación</span>
           <div class="flex flex-col gap-2">

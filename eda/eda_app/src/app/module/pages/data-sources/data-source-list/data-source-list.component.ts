@@ -74,7 +74,7 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
         this.dataModelService.currentTreeData.subscribe(
             (data) => {
                 this.treeData = data;
-                // Recuperamos el tipo de conexión para mostrarlo en el título
+                // We retrieve the connection type to display it in the title
                 this.connectionType = this.dataModelService.getConnectionType();
             },
             (err) => this.alertService.addError(err)

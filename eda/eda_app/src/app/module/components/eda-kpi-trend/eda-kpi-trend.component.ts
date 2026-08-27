@@ -1,10 +1,10 @@
-import { Component, OnInit, OnChanges, SimpleChanges, Input, HostBinding,
+import { Component, OnInit, OnChanges, OnDestroy, SimpleChanges, Input, HostBinding,
          ChangeDetectorRef, AfterViewInit, ViewChild, ElementRef, Self, Inject, LOCALE_ID } from '@angular/core';
 import { CommonModule, getLocaleMonthNames, FormStyle, TranslationWidth } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { EdaKpiTrend, TrendPeriodGroup } from './eda-kpi-trend';
-import { EdaChartComponent } from '../eda-chart/eda-chart.component';
+import { EdaBarlineComponent } from '../eda-barline-d3/eda-barline.component';
 import { StyleProviderService } from '@eda/services/service.index';
 
 @Component({
@@ -12,11 +12,11 @@ import { StyleProviderService } from '@eda/services/service.index';
     selector: 'eda-kpi-trend',
     templateUrl: './eda-kpi-trend.component.html',
     styleUrls: ['./eda-kpi-trend.component.css'],
-    imports: [CommonModule, FormsModule, DropdownModule, EdaChartComponent]
+    imports: [CommonModule, FormsModule, DropdownModule, EdaBarlineComponent]
 })
-export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
+export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     @Input() inject: EdaKpiTrend;
-    @ViewChild('edaTrendChart') edaTrendChart: EdaChartComponent;
+    @ViewChild('edaTrendChart') edaTrendChart: EdaBarlineComponent;
     @ViewChild('kpiLeft') kpiLeftRef: ElementRef;
 
     @HostBinding('style.display') readonly hostDisplay = 'block';
@@ -24,7 +24,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     @HostBinding('style.width') readonly hostWidth = '100%';
     @HostBinding('style.height') readonly hostHeight = '100%';
 
-    // ── Propiedades locales: el template NUNCA accede a inject.X directamente ──
+    // ── Local properties: the template NEVER accesses inject.X directly ──
     displayKpiValue: number = 0;
     displaySpyValue: number | null = null;
     displayVsPercent: number | null = null;
@@ -39,7 +39,11 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     edaChartInject: any = null;
     selectedComparisonKey: string = '';
 
-    // Estilo KPI
+    // Layout
+    isPortrait: boolean = false;
+    private _resizeObs: ResizeObserver | null = null;
+
+    // KPI Style
     color: string = '#67757c';
     family: string = 'inherit';
     modifiedFontPoints: number = 0;
@@ -65,10 +69,23 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
+        const host = this.hostRef.nativeElement as HTMLElement;
+        this._resizeObs = new ResizeObserver(() => {
+            const portrait = host.offsetHeight > host.offsetWidth ;
+            if (portrait !== this.isPortrait) {
+                this.isPortrait = portrait;
+                this.cdr.detectChanges();
+            }
+        });
+        this._resizeObs.observe(host);
         this.cdr.detectChanges();
     }
 
-    /** Sincroniza todas las propiedades locales desde inject */
+    ngOnDestroy(): void {
+        this._resizeObs?.disconnect();
+    }
+
+    /** Synchronizes all local properties from inject */
     private _syncFromInject(): void {
         if (!this.inject) return;
 
@@ -93,7 +110,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
             || '';
     }
 
-    /** Llamado cuando el usuario cambia el dropdown */
+    /** Called when the user changes the dropdown */
     onComparisonChange(): void {
         const groups: TrendPeriodGroup[] = this.inject?.periodGroups;
         if (!groups) return;
@@ -111,18 +128,16 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
         this.displayVsPercent = result.vsPercent;
         this.displayPreviousLabel = compGroup?.label || '';
 
-        const c0 = this.displayCurrentColor;
-        const c1 = this.displayPreviousColor;
         const compLabel = this.displayComparisonLabel;
 
+        // Color resolved natively by eda-barline-d3 from assignedColors (carried over via the
+        // ...this.inject.edaChart spread below) - no backgroundColor/borderColor to bake here.
         const newDatasets: any[] = [{
             label: this.inject.header,
             data: result.currentSeries,
             type: 'bar',
             borderRadius: 2,
             order: 2,
-            backgroundColor: c0,
-            borderColor: c0,
             datalabels: { display: false }
         }];
         if (compGroup) {
@@ -136,8 +151,6 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
                 fill: false,
                 tension: 0.3,
                 order: 1,
-                backgroundColor: c1,
-                borderColor: c1,
                 datalabels: { display: false }
             });
         }
@@ -145,8 +158,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
         this.edaChartInject = {
             ...this.inject.edaChart,
             chartLabels: result.labels,
-            chartDataset: newDatasets,
-            chartColors: newDatasets.map(d => ({ backgroundColor: d.backgroundColor, borderColor: d.borderColor }))
+            chartDataset: newDatasets
         };
     }
 
@@ -211,11 +223,13 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
         try {
             const host = this.hostRef.nativeElement as HTMLElement;
             const panelH = host.offsetHeight || 120;
+            const panelW = host.offsetWidth || 200;
             const colEl = this.kpiLeftRef?.nativeElement as HTMLElement | undefined;
-            const colW = (colEl?.offsetWidth || host.offsetWidth * 0.4) - 16;
+            const colW = (colEl?.offsetWidth || (this.isPortrait ? panelW : panelW * 0.4)) - 16;
+            const kpiAreaH = this.isPortrait ? panelH * 0.3 : panelH;
             const text = this.formatValue(this.displayKpiValue) + this.displaySufix;
             const charCount = Math.max(text.length, 1);
-            let size = Math.min(panelH * 0.22, colW / charCount * 1.6);
+            let size = Math.min(kpiAreaH * 0.22, colW / charCount * 1.6);
             size = Math.max(12, Math.min(size, 34));
             size = Math.max(8, size + (this.inject?.modifiedFontPoints ?? this.modifiedFontPoints));
             return size.toFixed(0) + 'px';
@@ -238,6 +252,15 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     public updateChart(): void {
         if (this.inject?.edaChart) {
             this.edaChartInject = { ...this.inject.edaChart };
+
+            // Keep the legend chip colors (above the mini-chart) in sync with whatever the dialog
+            // just wrote into assignedColors - otherwise they'd stay stuck on their old value.
+            const assigned: any[] = this.edaChartInject.assignedColors || [];
+            const current = assigned.find((c: any) => c.value === this.inject.header);
+            const previous = assigned.find((c: any) => c.value === this.displayComparisonLabel);
+            if (current?.color) this.displayCurrentColor = current.color;
+            if (previous?.color) this.displayPreviousColor = previous.color;
+
             this.cdr.detectChanges();
             if (this.edaTrendChart) {
                 this.edaTrendChart.updateChart();

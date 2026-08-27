@@ -4,11 +4,10 @@ import { Component, Input } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { AlertService, DashboardService } from '@eda/services/service.index';
 import { ChangeDetectorRef } from '@angular/core';
-import { InputSwitchModule } from 'primeng/inputswitch';
 import { ChipModule } from 'primeng/chip';
 import * as _ from 'lodash';
 import { DropdownModule } from 'primeng/dropdown';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
@@ -49,8 +48,8 @@ export class LinkDashboardsComponent {
   public oldLinked: any = null;
   public unLinkString: string = $localize`:@@unlink:Desvincular del informe: `
   public noValidColumn: string = $localize`:@@NoValidCol:No hay columnas válidas`
-  
-  public title : string;  
+
+  public title : string;
   public loading = false;
   public display: boolean = false;
   constructor(
@@ -64,7 +63,7 @@ export class LinkDashboardsComponent {
     this.title = $localize`:@@DashboardLink:Vincular con un informe`;
     this.display = true;
     this.oldLinked = this.controller.params.linkedDashboard ? this.controller.params.linkedDashboard.dashboardName : null;
-    this.noLink = this.oldLinked ? false : true;
+    this.noLink = false;
 
     if ((this.controller.params.charttype === 'parallelSets') && !this.controller.params.modeSQL) {
 
@@ -80,8 +79,11 @@ export class LinkDashboardsComponent {
           return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
         });
 
-      if (this.columns.length > 1) this.column = this.columns[1].colname;
-      else this.column = this.columns[0].colname;
+      const treeMapCol = this.columns.length > 1 ? this.columns[1] : this.columns[0];
+      if (treeMapCol) {
+        this.column = treeMapCol.colname;
+        this.initDashboards(treeMapCol);
+      }
 
     }
 
@@ -119,7 +121,7 @@ export class LinkDashboardsComponent {
     try {
       if (!this.noLink) {
         const dashboard_name = this.dasboards.filter(d => d['value'] === this.selectedDashboard)[0].label;
-        //Get index -> only non numeric
+        // Get index -> only non-numeric
         const colIndex = this.controller.params.query
           .map((col: any, i: number) => { return { i: i, name: col.column_name } })
           .filter(col => col.name === this.sourceColumn)[0].i;
@@ -134,7 +136,6 @@ export class LinkDashboardsComponent {
       }
     } catch (error) {
       console.error('Error en saveChartConfig:', error);
-      // Si ocurre cualquier error, hacemos lo mismo que el else
       this.onClose(EdaDialogCloseEvent.NONE, null);
     }
   }
@@ -143,7 +144,7 @@ export class LinkDashboardsComponent {
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  
+
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     this.display = false;
     return this.controller.close(event, response);
@@ -168,19 +169,18 @@ export class LinkDashboardsComponent {
     const tempFilters: any[] = [];
 
     try {
-      // Obtener lista general de dashboards
       this.loading = true;
       const dashboardInfo = await this.dashboardService.getDashboards().toPromise();
       const dashboards = []
         .concat(dashboardInfo.dashboards, dashboardInfo.group, dashboardInfo.publics, dashboardInfo.shared)
         .filter(d => d._id !== this.controller.params.dashboard_id);
 
-      // Llamadas en paralelo para cargar los dashboards mas rapido
+      // Parallel calls to load dashboards faster
       const results = await Promise.allSettled(
         dashboards.map(d => this.dashboardService.getDashboard(d._id).toPromise())
       );
 
-      // Procesar resultados
+      // Process results
       for (let i = 0; i < results.length; i++) {
         const res = results[i];
         const d = dashboards[i];
@@ -210,9 +210,6 @@ export class LinkDashboardsComponent {
               if (filterColumn.column_name === column.col && filter.selectedTable.table_name === column.table) {
                 disable = false;
               }
-            }
-            else {
-              console.log('NO SE HA IMPLEMENTADO TODAVÍA INFORMES VINCULADOS CON EL MODO ARBOL.');
             }
           }
 

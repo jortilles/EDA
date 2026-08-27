@@ -5,7 +5,7 @@ import { AlertService, DataSourceService, QueryBuilderService, QueryParams, Spin
 import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule, FormsModule} from '@angular/forms';
 import { SelectItem } from 'primeng/api';
 import { EditColumnPanel } from '@eda/models/data-source-model/data-source-models';
-import { aggTypes } from 'app/config/aggretation-types';
+import { AGG_TYPES } from '@eda/configs/customizable/customizable_default';
 import { AGG_COMPUTED } from '../aggregationConstants';
 
 
@@ -24,7 +24,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
   public title = $localize`:@@addCalculatedColTitle:Añadir columna calculada a la tabla `;
 
   // Aggregation Types
-  public aggTypes: SelectItem[] = aggTypes;
+  public aggTypes: SelectItem[] = AGG_TYPES;
 
   // Table Name
   public tableName = "";

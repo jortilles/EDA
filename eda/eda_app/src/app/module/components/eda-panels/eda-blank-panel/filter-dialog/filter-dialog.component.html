@@ -7,7 +7,7 @@
           <h4 class="section-title" i18n="@@filtrarH4">Filtrar</h4>
         <div class="grid grid-cols-[42.5%_42.5%_15%] gap-3 items-start">
 
-          <!-- Tipo y ámbito de filtro + switch -->
+          <!-- Filter type and scope + switch -->
           <div class="flex flex-col gap-3 w-full">
             <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
               [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"
@@ -36,7 +36,7 @@
             </div>
           </div>
 
-          <!-- Valores de los filtros -->
+          <!-- Filter values -->
           <div class="flex flex-col w-full gap-3">
             @if (!!display.calendar && !filter.switch) {
               <eda-date-picker
@@ -94,7 +94,7 @@
             }
           </div>
 
-          <!-- Botón añadir filtro -->
+          <!-- Add filter button -->
           <div>
             <button class="addFilter-button" (click)="addFilter()" [disabled]="display.filterButton">
               <i class="fa fa-plus mr-1"></i>
@@ -105,7 +105,7 @@
         </div>
       </div>
 
-      <!-- Lista de filtros activos -->
+      <!-- Active filters list -->
       @if (filter.forDisplay.length > 0) {
         <div class="section-card pt-3">
           <h5 class="section-title" i18n="@@filters">Filtros activos</h5>

@@ -11,7 +11,7 @@ export class EdaMap {
   draggable?: boolean;
   logarithmicScale?: boolean;
   groups?: number[];
-  assignedColors?: Array<{value: string, color: string}>; // ← AÑADIR ESTO
+  assignedColors?: Array<{value: string, color: string}>; // ADD THIS
   color:string;
   initialColor:string;
   finalColor:string;

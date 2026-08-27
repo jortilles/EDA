@@ -1,5 +1,5 @@
-<eda-dialog2 [display]="display" i18n-header="@@newDashboardtitle" header="CREA UN NUEVO INFORME" width="45vw" height="62vh" (close)="onClose()"
-  (apply)="createNewDashboard()" [disableApply]="form.invalid">
+<eda-dialog2 [display]="display" i18n-header="@@newDashboardtitle" header="CREA UN NUEVO INFORME" width="45vw" height="72vh" (close)="onClose()"
+  (apply)="createNewDashboard()" [disableApply]="form.invalid || aiLoading">
   <div content>
     <form [formGroup]="form" class="form-horizontal form-material" (ngSubmit)="createNewDashboard()">
       <div class="grid">
@@ -25,6 +25,22 @@
               i18n-defaultLabel="@@multiSelectDefaultLabel" defaultLabel="Selecciona un grupo *" appendTo="body"
               [style]="{'width': '100%'}">
             </p-multiSelect>
+          </div>
+        }
+
+        <div class="mt-6">
+          <textarea formControlName="aiDescription" rows="4"
+            class="input-corporate w-full py-2.5 px-2 border rounded-md"
+            style="resize: vertical; font-family: inherit; font-size: inherit;"
+            i18n-placeholder="@@aiDashboardDescription"
+            placeholder="(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.">
+          </textarea>
+        </div>
+
+        @if (aiLoading) {
+          <div class="mt-4 flex items-center gap-2" style="color: var(--corporate-primary);">
+            <i class="pi pi-spin pi-spinner"></i>
+            <span i18n="@@aiGeneratingDashboard">Generando dashboard con IA...</span>
           </div>
         }
       </div>

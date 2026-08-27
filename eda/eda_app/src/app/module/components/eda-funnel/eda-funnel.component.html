@@ -1,3 +1,8 @@
-<div  style="height: 100%;" #edad3container class="svg-container">
-  <svg #svgContainer class="svg-content" [id]="id" width="100%" height="100%"></svg>
+<div class="eda-funnel-wrapper">
+  <div #edad3container class="svg-container">
+    <svg #svgContainer class="svg-content" [id]="id" width="100%" height="100%"></svg>
+  </div>
+  @if (chartLegend) {
+    <eda-chart-legend [items]="legendItems" (toggle)="toggleLegend($event)"></eda-chart-legend>
+  }
 </div>

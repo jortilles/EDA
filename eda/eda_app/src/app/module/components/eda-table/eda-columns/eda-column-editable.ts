@@ -11,6 +11,6 @@ export class EdaColumnEditable extends EdaColumn {
         this.type = 'EdaColumnEditable';
         this.sortable = false;
         this.width = '40px';
-        this.field = '#'; // Si no dóna error amb el filtre global de taula 
+        this.field = '#'; // If it doesn't produce an error with the table's global filter.
     }
 }

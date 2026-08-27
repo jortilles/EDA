@@ -20,7 +20,7 @@ export class ExcelFormatterService extends ApiService {
      * @param filePath The path to the Excel file.
      */
     async readExcelToJson(file: File): Promise<any[] | null> {
-        // Solo aceptar archivos xls/xlsx
+        // Only accept xls/xlsx files
         const ext = file.name.toLowerCase();
         if (!ext.endsWith('.xls') && !ext.endsWith('.xlsx')) return null;
 
@@ -38,7 +38,7 @@ export class ExcelFormatterService extends ApiService {
                     const workbook = new ExcelJS.Workbook();
                     await workbook.xlsx.load(arrayBuffer as ArrayBuffer);
 
-                    // Tomar la primera hoja
+                    // Take the first sheet
                     const worksheet = workbook.worksheets[0];
                     if (!worksheet) {
                         resolve([]);
@@ -47,11 +47,11 @@ export class ExcelFormatterService extends ApiService {
 
                     const jsonData: any[] = [];
 
-                    // Iterar cada fila
+                    // Iterate each row
                     worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
                         const rowData: any = {};
                         row.eachCell((cell, colNumber) => {
-                            // Usar la primera fila como headers
+                            // Use the first row as headers
                             if (rowNumber === 1) {
                                 rowData[colNumber] = cell.text;
                             } else {
@@ -59,7 +59,7 @@ export class ExcelFormatterService extends ApiService {
                                 rowData[header] = cell.text;
                             }
                         });
-                        // Ignorar la fila de headers en jsonData
+                        // Skip the headers row in jsonData
                         if (rowNumber !== 1) {
                             jsonData.push(rowData);
                         }

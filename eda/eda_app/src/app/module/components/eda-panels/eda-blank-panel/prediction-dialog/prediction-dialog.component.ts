@@ -1,11 +1,10 @@
-
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { EdaDialog2Component } from '@eda/shared/components/eda-dialogs/eda-dialog2/eda-dialog2.component';
 
-/** Columna numérica del query actual disponible para seleccionar como objetivo de predicción */
+/** Numeric column from the current query available to select as prediction target */
 export interface QueryColumn {
     column_name: string;
     table_id: string;
@@ -13,8 +12,7 @@ export interface QueryColumn {
 }
 
 /**
- * Objeto de configuración que se emite al confirmar y que viaja
- * hasta el backend dentro de query.predictionConfig
+ * Configuration object emitted on confirm and sent to backend within query.predictionConfig
  */
 export interface PredictionConfig {
     method: string;
@@ -33,13 +31,13 @@ export interface PredictionConfig {
 export class PredictionDialogComponent {
 
     @Input() visible: boolean = false;
-    /** Método activo en el panel (viene de chart-dialog para pre-seleccionarlo) */
+    /** Active method in the panel (comes from chart-dialog to pre-select it) */
     @Input() predictionMethod;
-    /** Columnas numéricas del query actual para elegir cuál predecir */
+    /** Numeric columns from the current query to choose which one to predict */
     @Input() set queryColumns(cols: QueryColumn[]) {
         this._queryColumns = cols ?? [];
         if (!this._queryColumns.length) { this.targetColumn = null; return; }
-        // Solo actualizar si la selección actual ya no está en la nueva lista
+        // Only update if the current selection is no longer in the new list
         const stillValid = this.targetColumn
             ? this._queryColumns.some(c => c.column_name === this.targetColumn!.column_name && c.table_id === this.targetColumn!.table_id)
             : false;
@@ -49,7 +47,7 @@ export class PredictionDialogComponent {
     private _queryColumns: QueryColumn[] = [];
 
     @Output() visibleChange = new EventEmitter<boolean>();
-    /** Emite el PredictionConfig al confirmar → lo recoge chart-dialog.confirmPrediction() */
+    /** Emits the PredictionConfig on confirm → picked up by chart-dialog.confirmPrediction() */
     @Output() confirm = new EventEmitter<PredictionConfig>();
     @Output() cancel = new EventEmitter<void>();
 
@@ -59,15 +57,15 @@ export class PredictionDialogComponent {
     ];
 
     public selectedMethod: string = 'None';
-    // Parámetros básicos
+    // Basic parameters
     public steps: number = 3;
     public advancedConfig: boolean = false;
 
-    // Parámetros avanzados de cada método (solo se envían si advancedConfig = true)
+    // Advanced parameters for each method (only sent if advancedConfig = true)
     public arimaParams = { p: 1, d: 1, q: 1 };
     public tensorflowParams = { epochs: 50, lookback: 10, learningRate: 0.001 };
 
-    /** Columna objetivo para TensorFlow (la que se predice; las demás serán referencias automáticas) */
+    /** Target column for TensorFlow (the one being predicted; the others will be automatic reference variables) */
     public targetColumn: QueryColumn | null = null;
 
     get isValid(): boolean {
@@ -87,8 +85,8 @@ export class PredictionDialogComponent {
     }
 
     /**
-     * Construye el PredictionConfig y lo emite hacia chart-dialog.
-     * Solo incluye arimaParams o tensorflowParams si están activos.
+     * Builds the PredictionConfig and emits it to chart-dialog.
+     * Includes arimaParams or tensorflowParams only if they are active.
      */
     onConfirm() {
         const config: PredictionConfig = {
@@ -96,18 +94,18 @@ export class PredictionDialogComponent {
             steps: this.steps,
         };
 
-        // Columna objetivo — común a ambos métodos
+        // Target column — common to both methods
         if (this.targetColumn) {
             config.targetColumn = { column_name: this.targetColumn.column_name, table_id: this.targetColumn.table_id };
         }
 
         if (this.selectedMethod === 'Arima') {
-            // Parámetros manuales p/d/q solo si el usuario activó la config avanzada
+            // Manual p/d/q parameters only if the user enabled advanced config
             if (this.advancedConfig) {
                 config.arimaParams = { ...this.arimaParams };
             }
         } else if (this.selectedMethod === 'Tensorflow') {
-            // Incluir epochs/lookback/learningRate si hay config avanzada
+            // Include epochs/lookback/learningRate if advanced config is enabled
             if (this.advancedConfig) {
                 config.tensorflowParams = { ...this.tensorflowParams };
             }

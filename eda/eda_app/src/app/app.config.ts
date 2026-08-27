@@ -11,7 +11,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(
       coreRoutes,
-      withHashLocation(), // Activar navegación basada en hash
+      withHashLocation(), // Enable hash-based navigation
     ),
     provideHttpClient(),
     provideAnimations(),

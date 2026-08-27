@@ -17,11 +17,12 @@ import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/date
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ChatbotComponent } from '@eda/components/chatbot/chatbot.component';
+import { GettingStartedComponent } from '@eda/shared/components/getting-started/getting-started.component';
 
 @Component({
   selector: 'app-v2-home-page',
   standalone: true,
-  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule, EdaDatePickerComponent, DropdownModule, MultiSelectModule, ChatbotComponent],
+  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule, EdaDatePickerComponent, DropdownModule, MultiSelectModule, ChatbotComponent, GettingStartedComponent],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.css']
 })
@@ -32,6 +33,7 @@ export class HomePage implements OnInit, OnDestroy {
   private router = inject(Router);
 
   allDashboards: any[] = [];
+  reportsLoaded = signal(false);
   publicReports: any[] = [];
   privateReports: any[] = [];
   roleReports: any[] = [];
@@ -56,6 +58,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   showAdvancedFilter = signal(false);
   private outsideClickSub?: Subscription;
+  private dashboardCreatedSub?: Subscription;
   searchQuery = '';
   advancedFilters = { author: '', datasource: '' };
   advancedTags: string[] = [];
@@ -95,10 +98,12 @@ export class HomePage implements OnInit, OnDestroy {
     this.initTagSelection();
     this.loadReports();
     this.ifAnonymousGetOut();
+    this.dashboardCreatedSub = this.dashboardService.dashboardCreated$.subscribe(() => this.loadReports());
   }
 
   ngOnDestroy(): void {
     this.outsideClickSub?.unsubscribe();
+    this.dashboardCreatedSub?.unsubscribe();
   }
 
   private setIsObserver = async () => {
@@ -141,6 +146,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.handleSorting();
     this.loadReportTags();
     this.setIsObserver();
+    this.reportsLoaded.set(true);
   }
 
   private async loadReportTags() {
@@ -270,7 +276,11 @@ export class HomePage implements OnInit, OnDestroy {
 
   public canEditReport(report: any): boolean {
     if (!report.onlyIcanEdit) return true;
-    return report.config.author === this.userService.user?.name || this.userService.isAdmin;
+    return report.user === this.userService.user?._id|| this.userService.isAdmin;
+  }
+
+  public get canManageDatasources(): boolean {
+    return this.userService.isAdmin || this.userService.isDataSourceCreator;
   }
 
   public filterByTags() {
@@ -366,7 +376,7 @@ export class HomePage implements OnInit, OnDestroy {
       const cfg = db.config;
       if (title      && !cfg.title?.toUpperCase().includes(title.toUpperCase())) return false;
       if (author     && !cfg.author?.toLowerCase().startsWith(author.toLowerCase())) return false;
-      if (datasource && !cfg.ds?.type?.toLowerCase().includes(datasource.toLowerCase())) return false;
+      if (datasource && !cfg.ds?.name?.toLowerCase().includes(datasource.toLowerCase())) return false;
       if (tag        && !this.normTagArr(cfg).some(t => t.toLowerCase().includes(tag.toLowerCase()))) return false;
       if (createdFrom  && new Date(cfg.createdAt) < new Date(createdFrom)) return false;
       if (createdTo    && new Date(cfg.createdAt) > new Date(createdTo + 'T23:59:59')) return false;
@@ -494,48 +504,25 @@ export class HomePage implements OnInit, OnDestroy {
 
   public cloneReport(report: any): void {
     this.dashboardService.cloneDashboard(report._id).subscribe(
-      response => {
+      async response => {
         if (response.ok && response.dashboard) {
-          const clonedReport = _.cloneDeep(report);
-          Object.assign(clonedReport, response.dashboard);
+          const newId = response.dashboard._id;
 
-          clonedReport.type = clonedReport.config.visible;
-          clonedReport.user = this.userService.user.name;
+          await this.loadReports();
 
-          const currentDate = new Date().toISOString().split('T')[0];
-          clonedReport.config.createdAt = currentDate;
-          clonedReport.config.modifiedAt = currentDate;
-
-          clonedReport.config.author = JSON.parse(localStorage.getItem('user')).name;
-
-          const targetArray = this.reportMap[clonedReport.type];
-          if (targetArray) {
-            const originalIndex = targetArray.findIndex(d => d._id === report._id);
-            if (originalIndex !== -1) {
-              targetArray.splice(originalIndex + 1, 0, clonedReport);
-            } else {
-              targetArray.push(clonedReport);
-            }
+          const allReports = [
+            ...this.privateReports, ...this.publicReports,
+            ...this.roleReports,    ...this.sharedReports
+          ];
+          const clonedReport = allReports.find(d => d._id === newId);
+          if (clonedReport) {
+            clonedReport.isNewlyCloned = true;
+            setTimeout(() => {
+              document.getElementById(`dashboard-${newId}`)
+                ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+            setTimeout(() => { clonedReport.isNewlyCloned = false; }, 5000);
           }
-
-          this.handleSorting();
-          this.reapplyFilters();
-
-          clonedReport.isNewlyCloned = true;
-
-          setTimeout(() => {
-            const element = document.getElementById(`dashboard-${clonedReport._id}`);
-            if (element) {
-              element.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-              });
-            }
-          }, 500);
-
-          setTimeout(() => {
-            clonedReport.isNewlyCloned = false;
-          }, 5000);
 
           this.alertService.addSuccess($localize`:@@REPORTCloned:Informe clonado correctamente`);
         } else {
@@ -600,7 +587,7 @@ export class HomePage implements OnInit, OnDestroy {
     const filterFn = (reports: any[]) => reports.filter(db => {
       const cfg = db.config;
       if (author     && !cfg.author?.toLowerCase().includes(author.toLowerCase())) return false;
-      if (datasource && !cfg.ds?.type?.toLowerCase().includes(datasource.toLowerCase())) return false;
+      if (datasource && !cfg.ds?.name?.toLowerCase().includes(datasource.toLowerCase())) return false;
       if (hasTags    && !this.advancedTags.some(t => {
         if (t === $localize`:@@NoTag:Sin Etiqueta`) {
           const tag = cfg.tag;

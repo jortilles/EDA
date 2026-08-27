@@ -1,6 +1,6 @@
 <eda-dialog2 width="50%" height="80%" [header]="header" [overflow]="'visible'" (apply)="saveConfig()" (close)="closeConfig()" (switchredirecction)="switchMode()" [showRedirecction]="true" [isOpeningNewTab]="isOpeningNewTab">
     <div content class="flex flex-col gap-4 p-4">
-        <!-- Filtros de búsqueda -->
+        <!-- Search filters -->
         <div class="grid grid-cols-2 gap-4">
             <div class="border rounded-lg p-3">
                 <label class="block text-sm font-medium text-gray-700 mb-2" i18n="@@filterByPrivacy">
@@ -36,7 +36,7 @@
             </div>
         </div>
 
-        <!-- Dashboards disponibles (resultado del filtro) -->
+        <!-- Available dashboards (filter results) -->
         <div class="border rounded-lg p-3">
             <label class="block text-sm font-medium text-gray-700 mb-2">
                 <i class="pi pi-search mr-2"></i>
@@ -73,7 +73,7 @@
             </div>
         </div>
 
-        <!-- Dashboards seleccionados -->
+        <!-- Selected dashboards -->
         <div class="border rounded-lg p-3">
             <label class="block text-sm font-medium text-gray-700 mb-2">
                 <i class="pi pi-check-circle mr-2"></i>

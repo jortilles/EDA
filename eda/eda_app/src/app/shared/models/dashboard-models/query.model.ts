@@ -32,6 +32,7 @@ export interface Query {
             tensorflowParams?: { epochs: number, lookback: number, learningRate: number },
         },
         sortedFilters?: any[],
+        resultSortingColumns?: any[],
     };
     output: {
         labels: any[],

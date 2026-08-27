@@ -10,6 +10,33 @@ export class DateUtils {
 
     }
 
+    /** Rounds up to the next :00 or :30 mark, matching the mailing check schedule */
+    public roundToNextHalfHour(date: Date): Date {
+        const rounded = new Date(date);
+        const remainder = rounded.getMinutes() % 30;
+        if (remainder !== 0 || rounded.getSeconds() > 0) {
+            rounded.setMinutes(rounded.getMinutes() + (30 - remainder));
+        }
+        rounded.setSeconds(0, 0);
+        return rounded;
+    }
+
+    /** Snaps a manually typed time to the nearest :00 or :30 */
+    public roundToNearestHalfHour(date: Date): Date {
+        const rounded = new Date(date);
+        let nearest = Math.round(rounded.getMinutes() / 30) * 30;
+        if (nearest === 60) {
+            rounded.setHours(rounded.getHours() + 1);
+            nearest = 0;
+        }
+        rounded.setMinutes(nearest, 0, 0);
+        return rounded;
+    }
+
+    public fillWithZeros(n: number): string {
+        return n < 10 ? `0${n}` : `${n}`;
+    }
+
     /**Range dates utils */
 
     public getRange(range: any) {
@@ -89,11 +116,9 @@ export class DateUtils {
     }
 
     /**
-     * Establece el inicio y fin de la semana basado en la fecha actual de acuerdo al ISO 8601 que en todos
-     * los casos considera el lunes como el primer día de la semana. Utiliza la biblioteca moment.js.
+     * Sets the start and end of the week based on the current date according to ISO 8601, which always considers Monday as the first day of the week. Uses the moment.js library.
      *
-     * @return Array<Date> Un arreglo que contiene dos objetos Date, el primero es el inicio de la semana
-     * y el segundo es el fin de la semana.
+     * @return Array<Date> An array containing two Date objects: the first is the start of the week and the second is the end of the week.
      *
     */
     public setWeekStartFull(): Array<Date> {

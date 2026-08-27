@@ -252,10 +252,14 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>
                                     Podsumowanie atrybutów
 </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-<context context-type="linenumber">137</context>
-</context-group>
+</trans-unit>
+<trans-unit id="resumenAtrH6Hover" datatype="html">
+<source>
+¿Qué estoy viendo?
+</source>
+<target>
+Co widzę?
+</target>
 </trans-unit>
 <trans-unit id="resumenFiltrosPanelH6" datatype="html">
 <source>
@@ -2537,6 +2541,16 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Połączono z    </target>
   </trans-unit>
 
+  <trans-unit id="secondAxis">
+    <source> Segundo Eje  </source>
+    <target>Druga oś</target>
+  </trans-unit>
+
+  <trans-unit id="secondAxisDescription">
+    <source> Muestra un eje independiente a la derecha para las líneas, separado del eje de las barras </source>
+    <target>Pokazuje niezależną oś po prawej stronie dla linii, oddzieloną od osi słupków</target>
+  </trans-unit>
+
   <trans-unit id="DataModelHeader">
     <source> Configurar nueva fuente de datos  </source>
     <target> Nowe źródło danych  </target>
@@ -2780,6 +2794,34 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="addtrend">
     <source>Tendencia</source>
     <target>Tendencja</target>
+  </trans-unit>
+  <trans-unit id="kpiGrafico">
+    <source>Gráfico</source>
+    <target>Wykres</target>
+  </trans-unit>
+  <trans-unit id="opacityLabel">
+    <source>Opacidad</source>
+    <target>Nieprzezroczystość</target>
+  </trans-unit>
+  <trans-unit id="labelColorOption">
+    <source>Color de las etiquetas</source>
+    <target>Kolor etykiet</target>
+  </trans-unit>
+  <trans-unit id="labelColorSeries">
+    <source>Propio</source>
+    <target>Własny</target>
+  </trans-unit>
+  <trans-unit id="labelColorBlack">
+    <source>Negro</source>
+    <target>Czarny</target>
+  </trans-unit>
+  <trans-unit id="labelColorWhite">
+    <source>Blanco</source>
+    <target>Biały</target>
+  </trans-unit>
+  <trans-unit id="labelColorCustom">
+    <source>Personalizado</source>
+    <target>Niestandardowy</target>
   </trans-unit>
   <trans-unit id="removetrend">
     <source>Quitar tendencia</source>
@@ -3146,6 +3188,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
     <target>KPI Trend wymaga kolumny daty w formacie miesięcznym i kolumny liczbowej</target>
   </trans-unit>
+  <trans-unit id="chartInfoKpiDeviation">
+    <source>KPI Desviación necesita dos columnas numéricas: valor actual y valor de referencia</source>
+    <target>KPI Odchylenie wymaga dwóch kolumn numerycznych: wartości bieżącej i wartości referencyjnej</target>
+  </trans-unit>
   <trans-unit id="trendTitleYear"><source>Año actual</source><target>Bieżący rok</target></trans-unit>
   <trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Bieżący miesiąc</target></trans-unit>
   <trans-unit id="trendTitleWeek"><source>Semana actual</source><target>Bieżący tydzień</target></trans-unit>
@@ -3332,10 +3378,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Pokaż tagi w procentach</target>
   </trans-unit>
 
-  <trans-unit id="showUniqueColors">
-    <source>Activar Colores Únicos</source>
-    <target>Aktywuj unikalne kolory</target>
-  </trans-unit>
 
    <trans-unit id="showPointLines">
     <source>Mostrar Puntos en Líneas</source>
@@ -3440,7 +3482,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="ChangeDefaultsColors">
     <source>Color del los gráficos</source>
     <target>Kolor wykresy</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="selectPalette">
+    <source>Seleccionar paleta</source>
+    <target>Wybierz paletę</target>
+  </trans-unit>
 
   <trans-unit id="properties">
     <source>Propiedades</source>
@@ -3635,17 +3682,17 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="firstAboutParagraphSpan" datatype="html">
   <source>  
                 <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar 
-                informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar
+                informes gráficos e interactivos de forma sencilla. Edalitics es una aplicación que se puede instalar
                 en tus propios servidores o se puede difrutar en su versión SaaS 
                 <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>. 
-                Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
+                Edalitics permite disfrutar de toda la potencia de Edalitics sin tener que preocuparte de instalaciones, 
                 configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.  </source>
   <target>
                 <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> to aplikacja internetowa typu open source, która umożliwia wykonywanie
-                 graficzne i interaktywne raporty w prosty sposób. EDA to aplikacja, którą można zainstalować
+                 graficzne i interaktywne raporty w prosty sposób. Edalitics to aplikacja, którą można zainstalować
                  na własnych serwerach lub możesz cieszyć się nim w wersji SaaS
                  <a class="stronger-paragraph" href="https://www.edalitics.com">Edalityka</a>.
-                 Edalitics pozwala cieszyć się pełną mocą EDA bez konieczności martwienia się o instalacje,
+                 Edalitics pozwala cieszyć się pełną mocą Edalitics bez konieczności martwienia się o instalacje,
                  ustawienia, aktualizacje itp. Łączysz swoje źródła danych i tyle.  </target>
   <context-group purpose="location">
     <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -3656,14 +3703,14 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="secondAboutParagraph" datatype="html">
   <source>
-                 EDA ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
+                 Edalitics ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
                 Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
-                funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
+                funcionalidades o carácteristicas. Jortilles financia el desarrollo de Edalitics mediante las suscripciones a Edalitics
                 y el soporte empresarial que ofrece a sus clientes.  </source>
   <target>
-                 EDA został opracowany przez <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
+                 Edalitics został opracowany przez <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
                  Jeśli potrzebujesz wsparcia biznesowego, nie wahaj się z nami skontaktować. Podobnie, jeśli chcesz poprosić o nowe
-                 funkcjonalności lub właściwości. Jortilles finansuje rozwój EDA poprzez subskrypcje Edalitics
+                 funkcjonalności lub właściwości. Jortilles finansuje rozwój Edalitics poprzez subskrypcje Edalitics
                  oraz wsparcie biznesowe, jakie oferuje swoim klientom. </target>
   <context-group purpose="location">
     <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -3673,10 +3720,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="thirdAboutParagraph" datatype="html">
   <source>
-   El código fuente de EDA está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+   El código fuente de Edalitics está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
   </source>
   <target>
-   Kod źródłowy EDA jest dostępny na <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+   Kod źródłowy Edalitics jest dostępny na <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
   </target>
   <context-group purpose="location">
     <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -3686,10 +3733,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="fourthAboutParagraph" datatype="html">
   <source>
-   La documentación de EDA está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
+   La documentación de Edalitics está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
   </source>
   <target>
-  Dokumentacja EDA jest dostępna pod <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Ten link</a>
+  Dokumentacja Edalitics jest dostępna pod <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Ten link</a>
   </target>
 </trans-unit>
 
@@ -3825,6 +3872,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="chartTypesKPITrend">
         <source>KPI Tendencia</source>
         <target>KPI Trend</target>
+      </trans-unit>
+      <trans-unit id="chartTypesKPIDeviation">
+        <source>KPI Desviación</source>
+        <target>KPI Odchylenie</target>
       </trans-unit>
 
 
@@ -4298,6 +4349,26 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Pokaż legendę</target>
 </trans-unit>
 
+<trans-unit id="internRadius">
+  <source>Radio Interno</source>
+  <target>Radio wewnętrzne</target>
+</trans-unit>
+
+<trans-unit id="useGradient">
+  <source>Usar Gradiente</source>
+  <target>Zastosuj gradient</target>
+</trans-unit>
+
+<trans-unit id="useRoundedBars">
+  <source>Redondear barras</source>
+  <target>Zaokrąglij słupki</target>
+</trans-unit>
+
+<trans-unit id="chartRoundedBarsOptionDescription">
+  <source>Redondea la punta de las barras</source>
+  <target>Zaokrągla końcówkę słupków</target>
+</trans-unit>
+
 <trans-unit id="chartLegendOptionDescription">
   <source>Muestra la leyenda del gráfico</source>
   <target>Pokaż legendę wykresu</target>
@@ -4311,6 +4382,16 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 <trans-unit id="chartGridLinesOptionDescription">
   <source>Muestra u oculta las líneas guía del gráfico</source>
   <target>Pokaż lub ukryj linie siatki wykresu</target>
+</trans-unit>
+
+<trans-unit id="chartAnimation">
+  <source>Animar Gráfico</source>
+  <target>Animuj wykres</target>
+</trans-unit>
+
+<trans-unit id="chartAnimationOptionDescription">
+  <source>Anima la aparición de los datos al cargar el gráfico</source>
+  <target>Animuje pojawianie się danych podczas ładowania wykresu</target>
 </trans-unit>
 
 <trans-unit id="histogramColum">
@@ -4338,9 +4419,9 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Pokazuje wartość procentową każdego segmentu</target>
 </trans-unit>
 
-<trans-unit id="chartUniqueColorsOption">
-  <source>Asigna un color único a cada barra o elemento</source>
-  <target>Przypisuje unikalny kolor do każdego słupka lub elementu</target>
+<trans-unit id="uniqueColorsTab">
+  <source> Colores Únicos </source>
+  <target> Unikalne kolory </target>
 </trans-unit>
 
 <trans-unit id="chartUniqueColorsOptionDescription">
@@ -4356,8 +4437,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 
 
 <trans-unit id="aboutEdaP1">
-  <source>Una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla.</source>
-  <target>Otwarta aplikacja internetowa umożliwiająca łatwe tworzenie graficznych i interaktywnych raportów.</target>
+  <source>Analítica de datos sin complicaciones.</source>
+  <target>Prosta analiza danych.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaH1">
@@ -4366,8 +4447,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 </trans-unit>
 
 <trans-unit id="aboutEdaP2">
-  <source>EDA es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
-  <target>EDA to aplikacja, którą można zainstalować na własnych serwerach lub użytkować w wersji SaaS Edalitics.</target>
+  <source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión <a href="https://www.edalitics.com" target="_blank" rel="noopener noreferrer" class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</source>
+  <target>Edalitics to aplikacja, którą można zainstalować na własnych serwerach lub użytkować w wersji <a href="https://www.edalitics.com" target="_blank" rel="noopener noreferrer" class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA1">
@@ -4406,7 +4487,7 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 </trans-unit>
 
 <trans-unit id="aboutEdaP5">
-  <source>Aprende a usar EDA con nuestros tutoriales paso a paso.</source>
+  <source>Aprende a usar Edalitics con nuestros tutoriales paso a paso.</source>
   <target>Dowiedz się, jak korzystać z EDA, korzystając z naszych samouczków krok po kroku.</target>
 </trans-unit>
 
@@ -4421,8 +4502,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 </trans-unit>
 
 <trans-unit id="aboutEdaH4">
-  <source>¿Quieres probar EDA en el cloud?</source>
-  <target>Chcesz wypróbować EDA w chmurze?</target>
+  <source>¿Quieres probar Edalitics en el cloud?</source>
+  <target>Chcesz wypróbować Edalitics w chmurze?</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP6">
@@ -4441,8 +4522,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 </trans-unit>
 
 <trans-unit id="aboutEdaA5">
-  <source>EDA ha sido desarrollado por</source>
-  <target>EDA została opracowana przez</target>
+  <source>Edalitics ha sido desarrollado por</source>
+  <target>Edalitics została opracowana przez</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP7">
@@ -4746,6 +4827,21 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 <trans-unit id="numValTrigAlert">
   <source>Valor numérico que activará la alerta</source>
   <target>Wartość liczbowa, która spowoduje wyświetlenie alertu</target>
+</trans-unit>
+
+<trans-unit id="thresholdValuePercent">
+  <source>Valor umbral (%)</source>
+  <target>Wartość progowa (%)</target>
+</trans-unit>
+
+<trans-unit id="deviationPercTrigAlert">
+  <source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
+  <target>% odchylenia, które spowoduje wyświetlenie alertu (np. -10 = gdy odchylenie jest poniżej -10%)</target>
+</trans-unit>
+
+<trans-unit id="whenKpiDeviationIs">
+  <source>Cuando el % es</source>
+  <target>Gdy % wynosi</target>
 </trans-unit>
 
 <trans-unit id="textChangeColor">
@@ -5938,6 +6034,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Muestra la predicción de la serie</source>
         <target>Pokaż prognozę serii</target>
       </trans-unit>
+      <trans-unit id="colorsTab">
+        <source> Colores </source>
+        <target> Kolory </target>
+      </trans-unit>
       <trans-unit id="gradientTab">
         <source>Colores por intervalo</source>
         <target>Kolory według przedziału</target>
@@ -6214,8 +6314,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Źródło danych</target>
       </trans-unit>
       <trans-unit id="datasourceFilterPlaceholder" datatype="html">
-        <source>postgres, mysql...</source>
-        <target>postgres, mysql...</target>
+        <source>Nombre del datasource...</source>
+        <target>Nazwa źródła danych...</target>
       </trans-unit>
       <trans-unit id="createdFilterLabel" datatype="html">
         <source>Creado en</source>
@@ -6314,12 +6414,16 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Jakie dashboardy mam?</target>
       </trans-unit>
       <trans-unit id="chatSuggestion2" datatype="html">
-        <source>¿Qué datasources hay?</source>
-        <target>Jakie datasources są dostępne?</target>
+        <source>¿Qué fuentes de datos hay?</source>
+        <target>Jakie są źródła danych?</target>
       </trans-unit>
       <trans-unit id="chatSuggestion3" datatype="html">
         <source>Estado del servidor</source>
         <target>Stan serwera</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion4" datatype="html">
+        <source>¿Qué informes tengo disponibles?</source>
+        <target>Jakie raporty są dla mnie dostępne?</target>
       </trans-unit>
       <trans-unit id="chatInputPlaceholder" datatype="html">
         <source>Escribe un mensaje...</source>
@@ -6402,8 +6506,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>KONTEKST</target>
       </trans-unit>
       <trans-unit id="aiEDAApp" datatype="html">
-        <source>EDA APP URL</source>
-        <target>EDA APP URL</target>
+        <source>Edalitics APP URL</source>
+        <target>Edalitics APP URL</target>
       </trans-unit>
       <trans-unit id="aiMCPURL" datatype="html">
         <source>MCP URL</source>
@@ -6460,6 +6564,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="navegar" datatype="html">
         <source>Navegar</source>
         <target>Poruszaj się</target>
+      </trans-unit>
+      <trans-unit id="resultSortingText" datatype="html">
+        <source>Ordenar los resultados por:</source>
+        <target>Sortuj wyniki według:</target>
+      </trans-unit>
+      <trans-unit id="draggResultSorting" datatype="html">
+        <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
+        <target>Przeciągnij tutaj atrybuty, według których chcesz sortować</target>
       </trans-unit>
       <trans-unit id="noDuckDbFile">
         <source>Debe cargar un archivo CSV primero</source>
@@ -6576,6 +6688,142 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="ga4AuthRequired">
         <source>Debes autorizar el acceso a Google Analytics primero</source>
         <target>Najpierw musisz autoryzować dostęp do Google Analytics</target>
+      </trans-unit>
+      <trans-unit id="holdedFolderLabel">
+        <source>Nombre de carpeta <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Nazwa folderu <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="holdedApiKeyLabel">
+        <source>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Klucz API Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="holdedInfoMessage">
+        <source>Al confirmar se descargarán las facturas, líneas, contactos, productos y asientos contables de Holded y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos minutos dependiendo del volumen de datos.</source>
+        <target>Po potwierdzeniu faktury, linie, kontakty, produkty i zapisy księgowe zostaną pobrane z Holded i utworzone jako tabele w źródle danych DuckDB. Pobieranie może zająć kilka minut w zależności od ilości danych.</target>
+      </trans-unit>
+      <trans-unit id="holdedCreated">
+        <source>Fuente de datos Holded creada correctamente</source>
+        <target>Źródło danych Holded zostało pomyślnie utworzone</target>
+      </trans-unit>
+      <trans-unit id="multipleSelectionText">
+        <source>Selección múltiple</source>
+        <target>Wielokrotny wybór</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionText">
+        <source>Selección única</source>
+        <target>Jednokrotny wybór</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionDescription">
+        <source>Active esta opción para permitir la selección múltiple.</source>
+        <target>Włącz tę opcję, aby umożliwić wybór wielu wartości.</target>
+      </trans-unit>      
+      <trans-unit id="multipleSelectionDescription">
+        <source>Desactive esta opción para permitir la selección única.</source>
+        <target>Wyłącz tę opcję, aby umożliwić wybór tylko jednej wartości.</target>
+      </trans-unit>
+      <trans-unit id="enablePanelLockButton">
+        <source>Bloquear los paneles</source>
+        <target>Zablokować panele</target>
+      </trans-unit>
+      <trans-unit id="disablePanelLockButton">
+        <source>Desbloquear los paneles</source>
+        <target>Odblokować panele</target>
+      </trans-unit>
+      <trans-unit id="noAttributes">
+        <source>Sin atributos</source>
+        <target>Bez atrybutów</target>
+      </trans-unit>
+      <trans-unit id="noFilters">
+        <source>Sin filtros</source>
+        <target>Bez filtrów</target>
+      </trans-unit>
+      <trans-unit id="aiDashboardDescription">
+        <source>(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.</source>
+        <target>(Opcjonalnie) Opisz panele, które chcesz wygenerować za pomocą AI. Przykład: sprzedaż miesięczna na wykresie słupkowym, top klientów według kwoty, KPI łącznej faktury.</target>
+      </trans-unit>
+      <trans-unit id="aiGeneratingDashboard">
+        <source>Generando dashboard con IA...</source>
+        <target>Generowanie dashboardu za pomocą AI...</target>
+      </trans-unit>
+      <trans-unit id="otherRecipients">
+        <source>Otros destinatarios:</source>
+        <target>Inni odbiorcy:</target>
+      </trans-unit>
+      <trans-unit id="otherRecipientsHint">
+        <source>(separados por un espacio)</source>
+        <target>(oddzielone spacją)</target>
+      </trans-unit>
+      <trans-unit id="otherRecipientsPlaceholder">
+        <source>correo1@dominio.com correo2@dominio.com</source>
+        <target>email1@domena.com email2@domena.com</target>
+      </trans-unit>
+      <trans-unit id="sendToSummary">
+        <source>Enviar a:</source>
+        <target>Wyślij do:</target>
+      </trans-unit>
+      <trans-unit id="kpiMailConfigTitle">
+        <source>Configuración de la alerta KPI por email</source>
+        <target>Konfiguracja alertu KPI e-mail</target>
+      </trans-unit>
+      <trans-unit id="enablePanelAnimationsButton">
+        <source>Activar animaciones</source>
+        <target>Włącz animacje</target>
+      </trans-unit>
+      <trans-unit id="disablePanelAnimationsButton">
+        <source>Desactivar animaciones</source>
+        <target>Wyłącz animacje</target>
+      </trans-unit>
+      <trans-unit id="aboutResourcesTitle">
+        <source>Recursos</source>
+        <target>Zasoby</target>
+      </trans-unit>
+      <trans-unit id="gettingStartedTitle">
+        <source>Primeros pasos</source>
+        <target>Pierwsze kroki</target>
+      </trans-unit>
+      <trans-unit id="gettingStartedSubtitle">
+        <source>Todo lo que necesitas para crear tu primer informe en edalitics.</source>
+        <target>Wszystko, czego potrzebujesz, aby stworzyć swój pierwszy raport w edalitics.</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Title">
+        <source>Conecta tus datos</source>
+        <target>Połącz swoje dane</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Desc">
+        <source>Conecta una fuente de datos y define tu modelo de datos.</source>
+        <target>Połącz źródło danych i zdefiniuj swój model danych.</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Cta">
+        <source>Crear fuente de datos</source>
+        <target>Utwórz źródło danych</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Hint">
+        <source>Pide a un administrador que conecte una fuente de datos.</source>
+        <target>Poproś administratora o połączenie źródła danych.</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Title">
+        <source>Crea tu primer informe</source>
+        <target>Utwórz swój pierwszy raport</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Desc">
+        <source>Diseña un dashboard interactivo a partir de tu modelo de datos.</source>
+        <target>Zaprojektuj interaktywny pulpit na podstawie swojego modelu danych.</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Cta">
+        <source>Crear informe</source>
+        <target>Utwórz raport</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Title">
+        <source>Explora y aprende</source>
+        <target>Odkrywaj i ucz się</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Desc">
+        <source>Tutoriales, documentación y comunidad para sacar el máximo partido a edalitics.</source>
+        <target>Samouczki, dokumentacja i społeczność, aby w pełni wykorzystać możliwości edalitics.</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Cta">
+        <source>Ver recursos</source>
+        <target>Zobacz zasoby</target>
       </trans-unit>
 </body>
 </file>

@@ -2,19 +2,71 @@ import { KnobConfig } from './../panel-charts/chart-configuration-models/knob-co
 import { TreeMapConfig } from './../panel-charts/chart-configuration-models/treeMap-config';
 import { EdaBlankPanelComponent } from '../eda-blank-panel.component';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
-import { ChartJsConfig } from '../panel-charts/chart-configuration-models/chart-js-config';
 import { KpiConfig } from '../panel-charts/chart-configuration-models/kpi-config';
 import { DynamicTextConfig } from '../panel-charts/chart-configuration-models/dynamicText-config';
 import { MapConfig } from '../panel-charts/chart-configuration-models/map-config';
 import { SankeyConfig } from '../panel-charts/chart-configuration-models/sankey-config';
 import { FunnelConfig } from '../panel-charts/chart-configuration-models/funnel.config';
 import { KpiTrendConfig } from '../panel-charts/chart-configuration-models/kpi-trend-config';
+import { KpiDeviationConfig } from '../panel-charts/chart-configuration-models/kpi-deviation-config';
 
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
 import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatter-config';
 import { SunburstConfig } from '../panel-charts/chart-configuration-models/sunburst-config';
 import { BubblechartConfig } from '../panel-charts/chart-configuration-models/bubblechart.config';
 import { TreeTableConfig } from '../panel-charts/chart-configuration-models/treeTable-config';
+import { RaceBarConfig } from '../panel-charts/chart-configuration-models/race-bar-config';
+
+// Custom per-chart config fields that live outside the small set of "core" ones (chartType,
+// query, colors...). Every place that saves, reloads, or applies this config (setConfig() here,
+// changeChartType() and onCloseChartProperties() in eda-blank-panel.component.ts) needs to know
+// this exact list - keeping it in one place is what stops a newly added field (like the
+// innerRadiusPercent/useGradient/coloredBarsConfig ones before it) from silently being dropped
+// in one of the other spots. Applied uniformly regardless of chart type - a field irrelevant to
+// the current type (e.g. innerRadiusPercent on a bar chart) is simply ignored by that chart's
+// renderer, never causes an actual bug.
+export interface CustomChartConfigField {
+  name: string;
+  default: any;
+  // Only a few fields fall back to `default` when the field key itself is missing from an
+  // otherwise-present config object; the rest stay `undefined` in that case. This mirrors the
+  // pre-existing (inconsistent) behavior exactly - not something to silently "fix" as a side
+  // effect of unifying these three call sites.
+  fallbackIfMissing?: boolean;
+}
+
+export const CUSTOM_CHART_CONFIG_FIELDS: CustomChartConfigField[] = [
+  { name: 'addTrend', default: false },
+  { name: 'addComparative', default: false },
+  { name: 'showLabels', default: false },
+  { name: 'showLabelsPercent', default: false },
+  { name: 'labelColorMode', default: 'series', fallbackIfMissing: true },
+  { name: 'labelCustomColor', default: '#000000' },
+  { name: 'showPointLines', default: false },
+  { name: 'secondAxis', default: false },
+  { name: 'showPredictionLines', default: false },
+  { name: 'numberOfColumns', default: null },
+  { name: 'assignedColors', default: [] },
+  { name: 'chartLegend', default: true, fallbackIfMissing: true },
+  { name: 'coloredBarsConfig', default: null },
+  { name: 'showUniqueColors', default: null },
+  { name: 'uniqueBarColors', default: null },
+  { name: 'showGridLines', default: true, fallbackIfMissing: true },
+  { name: 'innerRadiusPercent', default: null },
+  { name: 'useGradient', default: true, fallbackIfMissing: true },
+  { name: 'useRoundedBars', default: true, fallbackIfMissing: true },
+  { name: 'chartAnimation', default: true, fallbackIfMissing: true },
+];
+
+export function readCustomFields(cfg: any, fields: CustomChartConfigField[]): any {
+  const result: any = {};
+  fields.forEach(field => {
+    result[field.name] = cfg
+      ? (field.fallbackIfMissing ? cfg[field.name] ?? field.default : cfg[field.name])
+      : field.default;
+  });
+  return result;
+}
 
 export const ChartsConfigUtils = {
 
@@ -49,6 +101,17 @@ export const ChartsConfigUtils = {
         colorEnabled: ebp.panelChart.componentRef.instance.inject.colorEnabled !== false,
       }
 
+    } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'kpideviation') {
+      const inst = ebp.panelChart.componentRef?.instance;
+      config = {
+        backgroundColor: inst?.inject?.backgroundColor || '',
+        kpiColor: inst?.inject?.kpiColor || '',
+        positiveColor: inst?.inject?.positiveColor || '',
+        negativeColor: inst?.inject?.negativeColor || '',
+        prefixImage: inst?.inject?.prefixImage || '',
+        modifiedFontPoints: inst?.inject?.modifiedFontPoints || 0,
+        alertLimits: inst?.inject?.alertLimits || [],
+      };
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType.includes('kpi')) {
       const kpiChart = ebp.panelChart.componentRef.instance.inject?.edaChart;
 
@@ -64,6 +127,7 @@ export const ChartsConfigUtils = {
       }
 
       if (kpiChart?.hasOwnProperty('edaChart')) {
+        Object.assign(config.edaChart, readCustomFields(kpiChart, CUSTOM_CHART_CONFIG_FIELDS));
         config.edaChart.colors = kpiChart.chartColors;
         config.edaChart.chartType = ebp.panelChart.props.chartType;
         config.edaChart.assignedColors = ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null;  // ambién en edaChart
@@ -109,34 +173,43 @@ export const ChartsConfigUtils = {
         assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || [],
         modifiedFontPoints: inst?.inject?.modifiedFontPoints || 0,
       };
-    } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
+    } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunburst", "raceBar"].includes(ebp.panelChart.props.chartType)) {
+      const inst = ebp.panelChart.componentRef?.instance;
       config = {
-        assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : [],
+        assignedColors: inst ? inst.assignedColors : [],
+        useGradient: inst ? inst.inject?.useGradient ?? true : true,
+        chartLegend: inst ? inst.chartLegend ?? true : true,
+        // Without this, every requery (initEdaQuery/initSqlQuery call setConfig() on every
+        // filter change/refresh/reload) silently dropped chartAnimation back to its default,
+        // undoing both the per-panel dialog checkbox and the dashboard-wide animations toggle.
+        chartAnimation: inst ? inst.inject?.chartAnimation ?? true : (ebp.panelChart.props.config?.getConfig()?.['chartAnimation'] ?? true),
+      }
+      if (ebp.panelChart.props.chartType === 'raceBar') {
+        // Same trap as chartAnimation above: inst.inject only reflects whatever renderRaceBar() last
+        // ran with, which is populated asynchronously (requestAnimationFrame in ngOnChanges) - reading
+        // it here on every requery/savePanel can race ahead of a dialog save and silently reset these
+        // back to their defaults. The already-saved config is authoritative; inst.inject is only a
+        // fallback for when there's no saved value yet (component freshly mounted, nothing saved).
+        const savedConfig = ebp.panelChart.props.config?.getConfig();
+        config.topNCount = savedConfig?.['topNCount'] ?? inst?.inject?.topNCount ?? null;
+        config.showTimeline = savedConfig?.['showTimeline'] ?? inst?.inject?.showTimeline ?? false;
+        config.transitionMs = savedConfig?.['transitionMs'] ?? inst?.inject?.transitionMs ?? null;
       }
     } else if (ebp.panelChart.props.chartType === 'knob') {
 
       config = {
         assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : ebp.panelChart.props.config.getConfig()['assignedColors'],
         limits: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.limits : ebp.panelChart.props.config.getConfig()['limits'],
-        semaphoreColor: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject?.semaphoreColor : ebp.panelChart.props.config.getConfig()['semaphoreColor']
+        semaphoreColor: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject?.semaphoreColor : ebp.panelChart.props.config.getConfig()['semaphoreColor'],
+        chartAnimation: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject?.chartAnimation ?? true : ebp.panelChart.props.config.getConfig()['chartAnimation'] ?? true
       };
     } else {
-      // Chart.js
+      // Bar/line/area/radar/doughnut/polarArea family - a mix of D3 (doughnut, polarArea, the
+      // whole bar family) and still-Chart.js (line/area/radar/barline) renderers, all sharing
+      // the same set of generic visual/behavioral config fields.
       config = {
         chartType: ebp.panelChart.props.chartType,
-        addTrend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addTrend'] : false,
-        addComparative: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addComparative'] : false,
-        showLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabels'] : false,
-        showLabelsPercent: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabelsPercent'] : false,
-        showPointLines: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showPointLines'] : false,
-        showPredictionLines: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showPredictionLines'] : false,
-        numberOfColumns: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['numberOfColumns'] : null,
-        assignedColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['assignedColors'] : [], // o null?
-        chartLegend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['chartLegend'] ?? true : true,
-        coloredBarsConfig: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['coloredBarsConfig'] : null,
-        showUniqueColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showUniqueColors'] : null,
-        uniqueBarColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['uniqueBarColors'] : null,
-        showGridLines: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showGridLines'] ?? true : true
+        ...readCustomFields(ebp.panelChart.props.config?.getConfig(), CUSTOM_CHART_CONFIG_FIELDS),
       };
     }
 
@@ -151,7 +224,7 @@ export const ChartsConfigUtils = {
         if (['table', 'crosstable'].includes(type)) {
           return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false, false ,  []);
         }else if (['bar', 'line', 'area', 'pie', 'doughnut', 'polarArea', 'barline', 'horizontalBar', 'pyramid', 'histogram', 'radar'].includes(type)) {
-            return new ChartJsConfig(null, type, false, false, false, false, null,[], false, false);
+            return { chartType: type, ...readCustomFields(null, CUSTOM_CHART_CONFIG_FIELDS) };
         } else if (type === 'parallelSets') {
             return new SankeyConfig([]);
         } else if (type === 'treeMap') {
@@ -168,22 +241,27 @@ export const ChartsConfigUtils = {
             return new KnobConfig(null, null);
         } else if (type === 'sunburst') {
             return new SunburstConfig([]);
+        } else if (type === 'raceBar') {
+            return new RaceBarConfig([]);
         } else if (type === 'kpi') {
             return new KpiConfig();
         } else if (['kpibar', 'kpiline', 'kpiarea'].includes(type)) {
+            // Unlike a full-size chart, the KPI mini-chart starts compact (no legend/gridlines) -
             return new KpiConfig({
-                edaChart:  new ChartJsConfig(null, type, false, false, false, false, null,[], false, false)
+                edaChart: { chartType: type, ...readCustomFields(null, CUSTOM_CHART_CONFIG_FIELDS), chartLegend: false, showGridLines: false }
             });
         } else if (type === 'dynamicText') {
             return new DynamicTextConfig(null);
         } else if (type === 'kpitrend') {
             return new KpiTrendConfig();
+        } else if (type === 'kpideviation') {
+            return new KpiDeviationConfig();
         }
     },
 
-  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | KnobConfig | FunnelConfig | BubblechartConfig | SunburstConfig | KpiTrendConfig) => {
+  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | any | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | KnobConfig | FunnelConfig | BubblechartConfig | SunburstConfig | KpiTrendConfig) => {
 
-    return new ChartConfig(config);
+    return new ChartConfig(config ?? undefined);
 
   }
 

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
-import {DEFAULT_HOME_BACKGROUND_COLOR, DEFAULT_BACKGROUND_COLOR, DEFAULT_PANEL_COLOR, DEFAULT_FONT_COLOR, DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE, DEFAULT_TITLE_ALIGN,DEFAULT_PANEL_TITLE_ALIGN, DEFAULT_PALETTE_COLOR, ChartsPalettes  } from  "../../config/personalitzacio/customizables";
+import {DEFAULT_HOME_BACKGROUND_COLOR, DEFAULT_BACKGROUND_COLOR, DEFAULT_PANEL_COLOR, DEFAULT_FONT_COLOR, DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE, DEFAULT_TITLE_ALIGN,DEFAULT_PANEL_TITLE_ALIGN, DEFAULT_PALETTE_COLOR, ChartsPalettes  } from  "../../config/customizable/customizable_default";
 
 
 export interface StyleConfig {
@@ -22,6 +22,7 @@ export interface DashboardStyles {
 	filters: StyleConfig;
 	panelTitle: StyleConfig;
 	panelContent: StyleConfig;
+	filterButtonPosition?: string;
 }
 
 
@@ -120,6 +121,12 @@ export class StyleProviderService {
 	public customCss = this._customCss.asObservable();
 
 	constructor() {
+	}
+
+	/** Color por índice de la paleta actual, con fallback a la paleta por defecto. */
+	public getPaletteColor(index: number): string {
+		const palette = this.ActualChartPalette?.['paleta'] || this.DEFAULT_PALETTE_COLOR?.['paleta'] || [];
+		return palette.length ? palette[index % palette.length] : '#000000';
 	}
 
 	public setDefaultBackgroundColor() {

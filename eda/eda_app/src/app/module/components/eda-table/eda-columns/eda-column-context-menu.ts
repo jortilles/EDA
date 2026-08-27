@@ -6,6 +6,6 @@ export class EdaColumnContextMenu extends EdaColumn {
         this.type = 'EdaColumnContextMenu';
         this.sortable = false;
         this.width = '40px';
-        this.field = '#'; // Si no dóna error amb el filtre global de taula
+        this.field = '#'; // If it does not cause an error with the table's global filter.
     }
 }

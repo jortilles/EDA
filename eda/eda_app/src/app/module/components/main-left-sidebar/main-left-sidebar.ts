@@ -37,7 +37,7 @@ export class MainLeftSidebarComponent {
   private route = inject(ActivatedRoute);
   navItems: NavItem[] = [];
 
-  // Control de anonim y eda_RO
+  // Anonymous and eda_RO control
   public isAnonim: boolean;
   public grups: Array<any> = [];
   public isObserver: boolean = false;
@@ -58,7 +58,7 @@ export class MainLeftSidebarComponent {
   }
 
   assignNavItems() {
-    // básicos para todos los users
+    // Basic for all users
     const baseNav: NavItem[] = [
       { path: '/home', icon: 'home' },
       {
@@ -81,7 +81,7 @@ export class MainLeftSidebarComponent {
     ];
 
 
-  // Seccion adicional crear (oculto para EDA_RO)
+  // Additional section creation (hidden for EDA_RO)
   const plusSection: NavItem = {
     icon: 'plus',
     items: [
@@ -116,27 +116,27 @@ export class MainLeftSidebarComponent {
     );
   }
 
-  // Asignamos las secciones al navItems
+  // We assign the sections to navItems
   this.navItems = [
     ...baseNav.slice(0, 1), // home
-    ...(!this.isObserver ? [plusSection] : []), // create menu (oculto para EDA_RO)
-    ...((this.userService.isAdmin || this.userService.isDataSourceCreator) ? [moleculaSection] : []), // gestion
+    ...(!this.isObserver ? [plusSection] : []), // create menu (hidden for EDA_RO)
+    ...((this.userService.isAdmin || this.userService.isDataSourceCreator) ? [moleculaSection] : []), // management
     ...baseNav.slice(1),    // settings, about, logout
   ];
   }
 
   showOverlay(item: NavItem) {
     if (item.hideTimeout) {
-      clearTimeout(item.hideTimeout); // Cancela la ocultación si el usuario vuelve a entrar
+      clearTimeout(item.hideTimeout); // Cancel the hiding if the user logs in again
     }
     item.showOverlay = true;
   }
 
   hideOverlay(item: NavItem) {
-    // Usa un timeout para evitar que el overlay desaparezca instantáneamente
+    // Use a timeout to prevent the overlay from disappearing instantly
     item.hideTimeout = setTimeout(() => {
       item.showOverlay = false;
-    }, 100); // Espera 200ms antes de ocultar
+    }, 100); // Wait 200ms before hiding
   }
 
 menuCommand(item: any, event: MouseEvent) {
@@ -144,7 +144,7 @@ menuCommand(item: any, event: MouseEvent) {
   const urlTree = this.router.createUrlTree([path]);
   const relativeUrl = this.router.serializeUrl(urlTree);
 
-  // Si es clic medio y hay ruta, abrir en nueva pestaña
+  // If it’s a middle click and there is a route, open in a new tab
   if (event.button === 1 && path) {
     event.preventDefault();
     window.open('#/' +  relativeUrl);
@@ -156,11 +156,11 @@ menuCommand(item: any, event: MouseEvent) {
     const user = JSON.parse(localStorage.getItem('user'));
 
     if(user.nameID && user.nameIDFormat && user.sessionIndex) {
-      // LOGOUT A TRAVÉS DE SAML
+      // SAML logout
       this.userService.SAMLlogout();
     } 
     else {
-      // LOGOUT POR DEFAULT
+      // Default logout
       this.userService.logout();
     }
 

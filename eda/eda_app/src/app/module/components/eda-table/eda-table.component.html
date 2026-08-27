@@ -29,10 +29,11 @@
 
         <!-- Header -->
         <ng-template pTemplate="header" let-columns>
-            <tr class="header-invisible" style="visibility: collapse!important" >
+            <!-- visibility:collapse broke dashboard export capture, so this sizing row is hidden via zero height/visibility instead -->
+            <tr class="header-invisible" style="visibility: hidden; height: 0; line-height: 0; font-size: 0; padding: 0; border: none;">
                 <ng-container *ngFor="let col of inject.cols">
                     @if(col.visible === true){
-                        <th [width]="col.width"></th>
+                        <th [width]="col.width" style="height: 0; line-height: 0; font-size: 0; padding: 0; border: none;"></th>
                     }
                 </ng-container>
             </tr>
@@ -244,7 +245,9 @@
                                 </ng-container>
                                 <ng-container *ngSwitchCase="'EdaColumnChart'">
 
-                                    <p-chart type="line" [data]="lodash.get(rowData, col.field)" width="90%" height="20%" [options]="chartOptions"></p-chart>
+                                    <div class="eda-table-sparkline">
+                                        <eda-line-d3 [inject]="lodash.get(rowData, col.field)"></eda-line-d3>
+                                    </div>
 
                                 </ng-container>
                             </ng-container>
@@ -257,7 +260,7 @@
         <ng-template pTemplate="footer" id="totalsFooter" >
             @if(inject.withColSubTotals){
                 <tr>
-                    <td *ngFor="let column of  inject.partialTotalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [class]=column.class>
+                    <td *ngFor="let column of  inject.partialTotalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [ngStyle]="getStyle()" [class]=column.class>
                         {{column.data}}
                     </td>
                 </tr>
@@ -272,16 +275,13 @@
 
         </ng-template>
 
-        <ng-template pTemplate="summary" >
-            <div class="ui-helper-clearfix">
-                @if(table.filteredValue != undefined){
-                    <span i18n="@@registers1" style="margin-top: -0.5em;" class="items-length float-right" [ngStyle]="getStyle()">{{ table.filteredValue.length }} registros</span>
-                }
-                @if(!table.filteredValue && table.value.length){
-                    <span i18n="@@registers2" style="margin-top: -0.5em;" class="items-length float-right" [ngStyle]="getStyle()">{{ table.value.length }} registros</span>
-                }
-                
-            </div>
+        <ng-template pTemplate="paginatorright">
+            @if(table.filteredValue != undefined){
+                <span i18n="@@registers1" class="items-length" [ngStyle]="getStyle()">{{ table.filteredValue.length }} registros</span>
+            }
+            @if(!table.filteredValue && table.value.length){
+                <span i18n="@@registers2" class="items-length" [ngStyle]="getStyle()">{{ table.value.length }} registros</span>
+            }
         </ng-template>
 
     </p-table>

@@ -24,4 +24,3 @@ export const initJobs = ()=> {
   const mailSender = schedule.scheduleJob(mail_config.MAILING_SCHEDULE, () => MailingService.mailingService() );
 
 }
-

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
@@ -8,7 +8,6 @@ import { DashboardPanelExport } from "@eda/services/utils/file-utils.service";
 import { EdaPanel, EdaPanelType, EdaTitlePanel, EdaTabsPanel } from "@eda/models/model.index";
 import { lastValueFrom } from "rxjs";
 import { Router } from "@angular/router";
-import domtoimage from 'dom-to-image';
 import jspdf from 'jspdf';
 import html2canvas from 'html2canvas';
 import Swal from 'sweetalert2';
@@ -19,7 +18,7 @@ import { FocusOnShowDirective } from "@eda/shared/directives/autofocus.directive
 import * as _ from 'lodash';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 
-// Imports del sidebar
+// Sidebar imports
 import { DashboardSaveAsDialog } from "../../../components/dashboard-save-as/dashboard-save-as.dialog";
 import { DashboardEditStyleDialog } from "../../../components/dashboard-edit-style/dashboard-edit-style.dialog";
 import { DashboardCustomActionDialog } from "../../../components/dashboard-custom-action/dashboard-custom-action.dialog";
@@ -66,13 +65,13 @@ const ANGULAR_MODULES = [
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5); /* Fondo oscuro */
-        z-index: 999; /* Debe estar por debajo del overlay panel */
+        background: rgba(0, 0, 0, 0.5); /* Dark background */
+        z-index: 999; /* Must be below the overlay panel */
     }
-      
-    /* Asegurar que el OverlayPanel esté sobre la capa oscura */
+
+    /* Ensure the OverlayPanel is above the dark layer */
     ::ng-deep .p-overlaypanel {
-        z-index: 1000 !important; /* Un z-index mayor que el del overlay-backdrop */
+        z-index: 1000 !important; /* A higher z-index than the overlay-backdrop */
     }
 
     ::ng-deep .p-overlaypanel-content {
@@ -81,7 +80,7 @@ const ANGULAR_MODULES = [
     }
   `
 })
-export class DashboardSidebarComponent {
+export class DashboardSidebarComponent implements AfterViewInit {
   private sidebarService = inject(DashboardSidebarService)
   private dashboardService = inject(DashboardService);
   private fileUtils = inject(FileUtiles);
@@ -97,7 +96,7 @@ export class DashboardSidebarComponent {
 
   public exposedMethods: Record<string, (...args: any[]) => void> = {};
 
-  isPopoverVisible = false; // Controla la visibilidad del overlay
+  isPopoverVisible = false; // Controls overlay visibility
   isSaveAsDialogVisible = false;
   isEditStyleDialogVisible = false;
   isCustomActionDialogVisible = false;
@@ -107,9 +106,11 @@ export class DashboardSidebarComponent {
   inputVisible: boolean = false;
   refreshTime: number = null;
   clickFiltersEnabled: boolean = true;
-  onlyIcanEdit: boolean = true; // Solo yo pueedo editar. pero puedo guardar como
-  isReadOnly: boolean = false; // es un dashbaord de solo lecturas
-  isEditable: boolean = false; // puede editar el dashboard
+  clickPanelLockButton: boolean = true;
+  clickPanelAnimationsButton: boolean = true;
+  onlyIcanEdit: boolean = true; // Only I can edit, but I can save as
+  isReadOnly: boolean = false; // this is a read-only dashboard
+  isEditable: boolean = false; // can edit the dashboard
   mostrarOpciones = false;
   mostrarFiltros = false;
   mostrarDescargas = false;
@@ -127,6 +128,8 @@ export class DashboardSidebarComponent {
     this.refreshTime = this.dashboard.dashboard.config.refreshTime || null;
     this.clickFiltersEnabled = this.dashboard.dashboard.config.clickFiltersEnabled ?? true;
     this.onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ?? true;
+    this.clickPanelLockButton = this.dashboard.dashboard.config.panelLockEnabled ?? true;
+    this.clickPanelAnimationsButton = this.dashboard.dashboard.config.panelAnimationsEnabled ?? true;
     this.isReadOnly = this.isReadOnlyCheck();
     this.isEditable = this.isEditableCheck();
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
@@ -148,6 +151,10 @@ export class DashboardSidebarComponent {
         console.warn(`Method '${method}' is not exposed on DashboardSidebarComponent`);
       }
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.dashboard.gridsterOptions.api?.optionsChanged();
   }
 
   initSidebar() {
@@ -271,9 +278,27 @@ export class DashboardSidebarComponent {
         id: 'enableFilters',
         label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado`
           : $localize`:@@disableFilters:Click en filtros deshabilitado`,
-        icon: this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock",
+        icon: this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban",
         command: () => {
           this.toggleClickFilters();
+        }
+      },
+      {
+        id: 'enablePanelLock',
+        label: this.clickPanelLockButton ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
+          : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
+        icon: this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock",
+        command: () => {
+          this.panelLockButton();
+        }
+      },
+      {
+        id: 'enablePanelAnimations',
+        label: this.clickPanelAnimationsButton ? $localize`:@@disablePanelAnimationsButton:Desactivar animaciones`
+          : $localize`:@@enablePanelAnimationsButton:Activar animaciones`,
+        icon: this.clickPanelAnimationsButton ? "pi pi-bolt" : "pi pi-ban",
+        command: () => {
+          this.panelAnimationsButton();
         }
       },
       {
@@ -378,23 +403,43 @@ export class DashboardSidebarComponent {
 
     if (response) {
       for (const item of response) {
-        this.dashboard.panels.push(item as EdaPanel);
+        const panel = item as EdaPanel;
+        if (this.importedPanelOverlaps(panel)) {
+          panel.x = 0;
+          panel.y = this.getImportBottomY();
+        }
+        this.dashboard.panels.push(panel);
       }
     }
+  }
 
+  private importedPanelOverlaps(panel: EdaPanel): boolean {
+    if (panel.x == null || panel.y == null || !panel.cols || !panel.rows) return true;
+    return this.dashboard.panels.some(existing => {
+      const hOverlap = panel.x < (existing.x + existing.cols) && (panel.x + panel.cols) > existing.x;
+      const vOverlap = panel.y < (existing.y + existing.rows) && (panel.y + panel.rows) > existing.y;
+      return hOverlap && vOverlap;
+    });
+  }
+
+  private getImportBottomY(): number {
+    return this.dashboard.panels.reduce((max, p) => {
+      const bottom = (p.y || 0) + (p.rows || 0);
+      return bottom > max ? bottom : max;
+    }, 0);
   }
 
   public closeDependentFilters(dependentFilterObject: any){
     this.isDependentFiltersVisible = false;
     
-    // Recibe el ordenamiento de children por cada item
+    // Receives the child ordering for each item
     if(Object.keys(dependentFilterObject).length > 0) {
-      this.dashboard.globalFilter.loading = true; // Mostrar spinner mientras se actualizan los filtros
-      // Guardado de la estructura de los filtros dependientes de manera temporal
+      this.dashboard.globalFilter.loading = true; // Show spinner while filters are being updated
+      // Temporarily save the dependent filter structure
       this.dashboard.globalFilter.globalFilters = dependentFilterObject.globalFilters;
       this.dashboard.globalFilter.orderDependentFilters = dependentFilterObject.orderDependentFilters;
-      this.dashboardService._notSaved.next(true); // Marcar dashboard como no guardado
-      // Actualización de los valores de los filtros al realizar una nueva configuración
+      this.dashboardService.setNotSaved(true); // Mark dashboard as unsaved
+      // Update filter values when a new configuration is applied
       this.dashboard.globalFilter.initGlobalFilters(this.dashboard.globalFilter.globalFilters);
     } 
   }
@@ -475,18 +520,22 @@ export class DashboardSidebarComponent {
     this.hidePopover();
 
     this.dashboard.loadDashboard();
-    this.dashboardService._notSaved.next(false);
+    this.dashboardService.setNotSaved(false);
   }
 
   private async saveDashboard() {
-    // Actualizar el refreshTime si es necesario
+    // Update refreshTime if needed
     this.dashboard.dashboard.config.refreshTime = this.refreshTime || null;
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
     this.dashboard.dashboard.config.onlyIcanEdit = this.onlyIcanEdit;
-    // Actualizar el autor 
-    this.dashboard.dashboard.config.author = JSON.parse(localStorage.getItem('user')).name;
-    // Guardar Dashboard
-    await this.dashboard.saveDashboard();
+    this.dashboard.dashboard.config.panelLockEnabled = this.clickPanelLockButton;
+    this.dashboard.dashboard.config.panelAnimationsEnabled = this.clickPanelAnimationsButton;
+    // Update the author
+    this.dashboard.dashboard.config.author =  this.dashboard.dashboard.config.author?this.dashboard.dashboard.config.author:JSON.parse(localStorage.getItem('user')).name;
+    // Save dashboard
+    try {
+      await this.dashboard.saveDashboard();
+    } catch { }
     this.hidePopover();
   }
 
@@ -537,7 +586,7 @@ export class DashboardSidebarComponent {
       this.dashboard.edaPanels.forEach(panel => panel.savePanel());
 
       await lastValueFrom(this.dashboardService.updateDashboard(res.dashboard._id, body));
-      this.dashboardService._notSaved.next(false);
+      this.dashboardService.setNotSaved(false);
       this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
       this.router.navigate(['/dashboard/', res.dashboard._id]).then(() => {
         window.location.reload();
@@ -565,6 +614,7 @@ export class DashboardSidebarComponent {
   public saveStyles(newStyles: any) {
       this.isEditStyleDialogVisible = false;
       this.dashboard.dashboard.config.styles = newStyles;
+      this.dashboardService.setNotSaved(true);
       this.ChartUtilsService.MyPaletteColors = newStyles.palette?.paleta || this.ChartUtilsService.MyPaletteColors;
       this.dashboard.assignStyles();
       
@@ -586,15 +636,23 @@ export class DashboardSidebarComponent {
     this.isVisibleModalVisible = false;
   }
 
-  public saveVisibleModal(privacity: any) {
+  public async saveVisibleModal(privacity: any) {
     this.isVisibleModalVisible = false;
+    const previousVisible = this.dashboard.dashboard.config.visible;
+    const previousGroup = [...(this.dashboard.dashboard.group || [])];
+
     this.dashboard.dashboard.config.visible = privacity.visible;
     if (privacity.visible === 'group')
       this.dashboard.dashboard.group = privacity.group.map(grup => grup._id);
     else
       this.dashboard.dashboard.group = []
 
-    this.dashboard.saveDashboard();
+    try {
+      await this.dashboard.saveDashboard();
+    } catch {
+      this.dashboard.dashboard.config.visible = previousVisible;
+      this.dashboard.dashboard.group = previousGroup;
+    }
   }
 
   public closeMailConfig() {
@@ -602,10 +660,10 @@ export class DashboardSidebarComponent {
   }
 
   public async saveMailConfig(sendViaMailConfig: any) {
-    // Cerrar panel
+    // Close panel
     this.isMailConfigDialogVisible = false;
 
-    // Clonar info del sendViaMailConfig
+    // Clone sendViaMailConfig info
     const configToSave = {
       enabled: sendViaMailConfig.enabled,
       hours: sendViaMailConfig.hours,
@@ -614,10 +672,11 @@ export class DashboardSidebarComponent {
       minutes: sendViaMailConfig.minutes,
       quantity: sendViaMailConfig.quantity,
       units: sendViaMailConfig.units,
-      users: sendViaMailConfig.users
+      users: sendViaMailConfig.users,
+      otherRecipients: sendViaMailConfig.otherRecipients
     };
 
-    // Asignar datos al config y persistir en BD
+    // Assign data to config and persist to DB
     this.dashboard.dashboard.config.sendViaMailConfig = configToSave;
     await this.dashboard.saveDashboard();
 
@@ -626,7 +685,7 @@ export class DashboardSidebarComponent {
 
   public closeTagModal(tags: any[]) {
     this.isTagModalVisible = false;
-    // Normalizar tags a array de strings
+    // Normalize tags to array of strings
     const normalizedTags = tags ? tags.map(tag =>
       typeof tag === 'string' ? tag : tag.value || tag.label
     ) : [];
@@ -652,7 +711,7 @@ export class DashboardSidebarComponent {
         try {
           await lastValueFrom(this.dashboardService.deleteDashboard(dashboardId));
 
-          // La app se direcciona al home EDA
+          // Navigate the app to EDA home
           this.router.navigate(['/home']).then(() => {
             window.location.reload();
           });
@@ -667,63 +726,59 @@ export class DashboardSidebarComponent {
 
 
 
-  public exportAsPDF() {
+  public async exportAsPDF() {
     this.hidePopover();
     this.spinner.on();
+    await this._waitForPaint();
 
     const element = document.getElementById('myDashboard');
-
-    domtoimage.toPng(element, {
-      bgcolor: 'white',
-      height: element.scrollHeight * 2,
-      width: element.scrollWidth * 2,
-      style: {
-        transform: 'scale(2)',
-        transformOrigin: 'top left'
-      }
-    }).then((dataUrl: string) => {
-      const img = new Image();
-      img.src = dataUrl;
-
-      img.onload = () => {
-        const pdf = new jspdf('p', 'pt', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-
-        const imgWidth = img.width;
-        const imgHeight = img.height;
-        const ratio = pageWidth / imgWidth;
-
-        const sliceCanvas = document.createElement('canvas');
-        const ctx = sliceCanvas.getContext('2d')!;
-        sliceCanvas.width = imgWidth;
-        sliceCanvas.height = Math.round(pageHeight / ratio);
-
-        let position = 0;
-        while (position < imgHeight) {
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
-          ctx.drawImage(img, 0, -position, imgWidth, imgHeight);
-
-          pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, pageHeight);
-
-          position += sliceCanvas.height;
-          if (position < imgHeight) pdf.addPage();
-        }
-
-        this.spinner.off();
-        pdf.save(`${this.dashboard.title}.pdf`);
-      };
-    }).catch((error: any) => {
-      console.error('Error exportando como PDF:', error);
+    if (!element) {
+      console.error('No se encontró el elemento "myDashboard" en el DOM');
       this.spinner.off();
-    });
+      return;
+    }
+
+    try {
+      const canvas = await this._captureDashboardCanvas(element, 2);
+
+      const pdf = new jspdf('p', 'pt', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = pageWidth / imgWidth;
+
+      const sliceCanvas = document.createElement('canvas');
+      const ctx = sliceCanvas.getContext('2d')!;
+      sliceCanvas.width = imgWidth;
+      sliceCanvas.height = Math.round(pageHeight / ratio);
+
+      let position = 0;
+      while (position < imgHeight) {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+        ctx.drawImage(canvas, 0, -position, imgWidth, imgHeight);
+
+        pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, pageHeight);
+
+        position += sliceCanvas.height;
+        if (position < imgHeight) pdf.addPage();
+      }
+
+      pdf.save(`${this.dashboard.title}.pdf`);
+    } catch (error) {
+      console.error('Error exportando como PDF:', error);
+    } finally {
+      this.spinner.off();
+    }
   }
 
 
-  public exportAsJPEG() {
+  public async exportAsJPEG() {
     this.hidePopover();
     this.spinner.on();
+    await this._waitForPaint();
 
     const node = document.getElementById('myDashboard');
     if (!node) {
@@ -734,23 +789,144 @@ export class DashboardSidebarComponent {
 
     const title = this.dashboard.title;
 
-    domtoimage.toPng(node, { bgcolor: 'white' })
-      .then((dataUrl: string) => {
-        const link = document.createElement('a');
-        link.download = `${title}.png`;
-        link.href = dataUrl;
-        link.click();
-        this.spinner.off();
-      })
-      .catch((error: any) => {
-        console.error('Error exportando como imagen:', error);
-        this.spinner.off();
-      });
+    try {
+      const canvas = await this._captureDashboardCanvas(node, 2);
+      const link = document.createElement('a');
+      link.download = `${title}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (error) {
+      console.error('Error exportando como imagen:', error);
+    } finally {
+      this.spinner.off();
+    }
+  }
+
+  // Composites the export canvas from a separate html2canvas capture per panel (found via
+  // `gridster-item` so every panel type is included) instead of one dom-to-image pass over the
+  // whole dashboard, which was both unreliable for tall layouts and slow.
+  private async _captureDashboardCanvas(element: HTMLElement, scale: number): Promise<HTMLCanvasElement> {
+    const restore = this._unclipTablesForExport(element);
+
+    try {
+      const dashboardRect = element.getBoundingClientRect();
+
+      type Target = { el: HTMLElement; x: number; y: number; width: number; height: number };
+
+      // Unioned with descendant table rects since an unclipped table can render past its panel's own box.
+      const measure = (el: HTMLElement): Target => {
+        const rect = el.getBoundingClientRect();
+        let left = rect.left, top = rect.top, right = rect.right, bottom = rect.bottom;
+        el.querySelectorAll('eda-table').forEach(t => {
+          const tr = (t as HTMLElement).getBoundingClientRect();
+          left = Math.min(left, tr.left);
+          top = Math.min(top, tr.top);
+          right = Math.max(right, tr.right);
+          bottom = Math.max(bottom, tr.bottom);
+        });
+        return {
+          el,
+          x: left - dashboardRect.left,
+          y: top - dashboardRect.top,
+          width: right - left,
+          height: bottom - top,
+        };
+      };
+
+      const targets: Target[] = [];
+      const headerEl = element.querySelector('.dashboard-export-header') as HTMLElement | null;
+      if (headerEl) targets.push(measure(headerEl));
+      element.querySelectorAll('gridster-item').forEach(item => targets.push(measure(item as HTMLElement)));
+
+      let contentWidth = dashboardRect.width;
+      let contentHeight = dashboardRect.height;
+      for (const t of targets) {
+        contentWidth = Math.max(contentWidth, t.x + t.width);
+        contentHeight = Math.max(contentHeight, t.y + t.height);
+      }
+      contentWidth = Math.ceil(contentWidth);
+      contentHeight = Math.ceil(contentHeight);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.ceil(contentWidth * scale);
+      canvas.height = Math.ceil(contentHeight * scale);
+      const ctx = canvas.getContext('2d')!;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Batched (not all at once) to cap peak memory when a dashboard has many panels.
+      const BATCH_SIZE = 4;
+      for (let i = 0; i < targets.length; i += BATCH_SIZE) {
+        const batch = targets.slice(i, i + BATCH_SIZE);
+        const captures = await Promise.all(batch.map(async target => {
+          if (target.width === 0 || target.height === 0) return null;
+          try {
+            const targetCanvas = await html2canvas(target.el, {
+              backgroundColor: '#ffffff',
+              useCORS: false,
+              allowTaint: true,
+              logging: false,
+              scale,
+              width: target.width,
+              height: target.height,
+              // windowWidth/windowHeight left at default (real window size) - a narrow per-panel
+              // value here would wrongly trigger the dashboard's own mobile CSS breakpoint.
+            });
+            return { targetCanvas, target };
+          } catch (err) {
+            console.warn('[Export] No se pudo capturar un elemento del dashboard:', err);
+            return null;
+          }
+        }));
+
+        for (const capture of captures) {
+          if (!capture) continue;
+          const { targetCanvas, target } = capture;
+          ctx.drawImage(targetCanvas, target.x * scale, target.y * scale, target.width * scale, target.height * scale);
+        }
+      }
+
+      return canvas;
+    } finally {
+      this._restoreAfterExport(restore);
+    }
+  }
+
+  // Lets a just-triggered UI update (the export spinner) actually paint before a long capture blocks the main thread.
+  private _waitForPaint(): Promise<void> {
+    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+  }
+
+  // Temporarily clears overflow clipping (panel wrapper, .p-datatable-wrapper, gridster-item) on
+  // every ancestor of a table so it captures in full instead of at its on-screen scrolled size.
+  private _unclipTablesForExport(root: HTMLElement | null): { el: HTMLElement; overflow: string }[] {
+    const restore: { el: HTMLElement; overflow: string }[] = [];
+    if (!root) return restore;
+    const clipping = ['auto', 'scroll', 'hidden'];
+
+    root.querySelectorAll('eda-table').forEach((tableEl: Element) => {
+      let ancestor = tableEl.parentElement;
+      while (ancestor && ancestor !== root) {
+        const computed = window.getComputedStyle(ancestor);
+        if (clipping.includes(computed.overflowX) || clipping.includes(computed.overflowY)) {
+          restore.push({ el: ancestor, overflow: ancestor.style.overflow });
+          ancestor.style.overflow = 'visible';
+        }
+        ancestor = ancestor.parentElement;
+      }
+    });
+
+    return restore;
+  }
+
+  private _restoreAfterExport(saved: { el: HTMLElement; overflow: string }[]): void {
+    saved.forEach(({ el, overflow }) => { el.style.overflow = overflow; });
   }
 
   public async exportDashboardAsExcel(): Promise<void> {
     this.hidePopover();
     this.spinner.on();
+    await this._waitForPaint();
     try {
       const panelDataList = await this._collectPanelData();
       await this.fileUtils.exportDashboardToExcel(panelDataList, this.dashboard.title);
@@ -764,6 +940,7 @@ export class DashboardSidebarComponent {
   public async exportDashboardAsWord(): Promise<void> {
     this.hidePopover();
     this.spinner.on();
+    await this._waitForPaint();
     try {
       const panelDataList = await this._collectPanelData();
       await this.fileUtils.exportDashboardToWord(panelDataList, this.dashboard.title);
@@ -775,72 +952,75 @@ export class DashboardSidebarComponent {
   }
 
   /**
-   * Recorre todos los paneles y devuelve su contenido listo para exportar.
-   * Para gráficos, oculta temporalmente el header del panel antes de capturar
-   * la imagen para evitar que el título aparezca duplicado.
+   * Iterates over all panels and returns their content ready for export. Chart/KPI panels are
+   * captured in parallel batches (same approach as _captureDashboardCanvas) instead of one at a
+   * time - table panels just read already-in-memory data and don't need this.
    */
   private async _collectPanelData(): Promise<DashboardPanelExport[]> {
+    const panels = (this.dashboard.edaPanels?.toArray() ?? []).filter(p => p.panel?.content);
     const panelDataList: DashboardPanelExport[] = [];
 
-    for (const panelComp of this.dashboard.edaPanels?.toArray() ?? []) {
-      if (!panelComp.panel?.content) continue;
-
-      const chartType = panelComp.panelChart?.props?.chartType ?? '';
-      const title     = panelComp.panel.title ?? '';
-      const gridPos   = {
-        gridX:    panelComp.panel.x    ?? 0,
-        gridY:    panelComp.panel.y    ?? 0,
-        gridCols: panelComp.panel.cols ?? 20,
-        gridRows: panelComp.panel.rows ?? 10,
-      };
-
-      if (['table', 'crosstable'].includes(chartType)) {
-        const tableInstance = panelComp.panelChart?.currentConfig;
-        if (tableInstance) {
-          panelDataList.push({ title, type: chartType as 'table' | 'crosstable', tableData: tableInstance, ...gridPos });
-        }
-      } else if (['kpi', 'kpibar', 'kpiline', 'kpiarea'].includes(chartType)) {
-        const inject = panelComp.panelChart?.componentRef?.instance?.inject;
-        if (inject) {
-          const kpiData = {
-            value:              inject.value,
-            sufix:              inject.sufix              || '',
-            kpiColor:           inject.kpiColor           || '',
-            modifiedFontPoints: inject.modifiedFontPoints || 0,
-          };
-          if (chartType === 'kpi') {
-            // KPI puro: sólo texto
-            panelDataList.push({ title, type: 'kpi', kpiData, ...gridPos });
-          } else {
-            // KPI con gráfico: ocultamos el número para capturar sólo el chart
-            const kpiComp   = panelComp.panelChart?.componentRef?.instance;
-            const kpiNumEl  = kpiComp?.kpiContainer?.nativeElement as HTMLElement | undefined;
-            if (kpiNumEl) kpiNumEl.style.visibility = 'hidden';
-            const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
-            if (kpiNumEl) kpiNumEl.style.visibility = '';
-            panelDataList.push({
-              title,
-              type: 'kpi',
-              kpiData,
-              imageBase64:  captured.imageBase64,
-              imageWidth:   captured.imageWidth,
-              imageHeight:  captured.imageHeight,
-              ...gridPos,
-            });
-          }
-        }
-      } else {
-        const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
-        panelDataList.push({ ...captured, title, ...gridPos });
-      }
+    const BATCH_SIZE = 4;
+    for (let i = 0; i < panels.length; i += BATCH_SIZE) {
+      const batch = panels.slice(i, i + BATCH_SIZE);
+      const results = await Promise.all(batch.map(panelComp => this._buildPanelExportData(panelComp)));
+      results.forEach(r => { if (r) panelDataList.push(r); });
     }
 
     return panelDataList;
   }
 
+  private async _buildPanelExportData(panelComp: any): Promise<DashboardPanelExport | null> {
+    const chartType = panelComp.panelChart?.props?.chartType ?? '';
+    const title     = panelComp.panel.title ?? '';
+    const gridPos   = {
+      gridX:    panelComp.panel.x    ?? 0,
+      gridY:    panelComp.panel.y    ?? 0,
+      gridCols: panelComp.panel.cols ?? 20,
+      gridRows: panelComp.panel.rows ?? 10,
+    };
+
+    if (['table', 'crosstable'].includes(chartType)) {
+      const tableInstance = panelComp.panelChart?.currentConfig;
+      return tableInstance ? { title, type: chartType as 'table' | 'crosstable', tableData: tableInstance, ...gridPos } : null;
+    }
+
+    if (['kpi', 'kpibar', 'kpiline', 'kpiarea'].includes(chartType)) {
+      const inject = panelComp.panelChart?.componentRef?.instance?.inject;
+      if (!inject) return null;
+
+      const kpiData = {
+        value:              inject.value,
+        sufix:              inject.sufix              || '',
+        kpiColor:           inject.kpiColor           || '',
+        modifiedFontPoints: inject.modifiedFontPoints || 0,
+      };
+      if (chartType === 'kpi') return { title, type: 'kpi', kpiData, ...gridPos };
+
+      // KPI with chart: hide the number so the capture only shows the chart
+      const kpiComp   = panelComp.panelChart?.componentRef?.instance;
+      const kpiNumEl  = kpiComp?.kpiContainer?.nativeElement as HTMLElement | undefined;
+      if (kpiNumEl) kpiNumEl.style.visibility = 'hidden';
+      const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
+      if (kpiNumEl) kpiNumEl.style.visibility = '';
+      return {
+        title,
+        type: 'kpi',
+        kpiData,
+        imageBase64:  captured.imageBase64,
+        imageWidth:   captured.imageWidth,
+        imageHeight:  captured.imageHeight,
+        ...gridPos,
+      };
+    }
+
+    const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
+    return { ...captured, title, ...gridPos };
+  }
+
   /**
-   * Captura el área del gráfico como PNG, ocultando previamente el header
-   * (.drag-handler) para que el título del panel no aparezca en la imagen.
+   * Captures the chart area as PNG, previously hiding the header
+   * (.drag-handler) so the panel title does not appear in the image.
    */
   private async _captureChartImage(
     hostEl: HTMLElement | undefined,
@@ -899,7 +1079,7 @@ export class DashboardSidebarComponent {
 
 
 
-  // Metodos de creación de la sidebar
+  // Sidebar creation methods
   public indiceMasOpciones(): number {
     return this.sidebarItems.findIndex(item => item.id === 'moreOptions');
   }
@@ -913,16 +1093,16 @@ export class DashboardSidebarComponent {
   }
 
   public toggleOpciones() {
-    // Cambiar estados de la sidebar
+    // Toggle sidebar states
     this.mostrarOpciones = !this.mostrarOpciones;
   }
 
   public toggleGlobalFilter() {
-    // Abrimos desplegable de filtros
+    // Open filters dropdown
     this.mostrarFiltros = !this.mostrarFiltros;
   }
 
-  // Llamada al filtro especifico via sidebar
+  // Call to specific filter via sidebar
   public handleSpecificFilter(filtro: any) {
     this.hidePopover();
     this.toggleGlobalFilter();
@@ -937,7 +1117,7 @@ export class DashboardSidebarComponent {
   public saveDashboardTitle() {
     if (this.editableTitle?.trim()) {
       this.dashboard.title = this.editableTitle.trim();
-      this.dashboardService._notSaved.next(true);
+      this.dashboardService.setNotSaved(true);
     }
     this.editingTitle = false;
   }
@@ -948,60 +1128,118 @@ export class DashboardSidebarComponent {
 
  public isReadOnlyCheck() {
     const user = localStorage.getItem('user');
-    const userName = JSON.parse(user).name;
-    const imProperty = userName === this.dashboard.dashboard.config.author;
+    const userName = JSON.parse(user)._id;
+    const imProperty = userName === this.dashboard.dashboard.user;
     const isObserver = JSON.parse(user).role.includes('135792467811111111111113');
     const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ? this.dashboard.dashboard.config.onlyIcanEdit: true ;
-    return userName === 'edaanonim' || (!onlyIcanEdit && !imProperty) || isObserver;
+    return userName === '135792467811111111111112' || (!onlyIcanEdit && !imProperty) || isObserver;
   }
 
   public isEditableCheck() {
     const user = localStorage.getItem('user');
-    const userName = JSON.parse(user).name;
+    const userId = JSON.parse(user)._id;
     const userRole = JSON.parse(user).role;
     const isAdmin = userRole.includes('135792467811111111111110');
-    const imProperty = userName === this.dashboard.dashboard.config.author
+    const imProperty = userId === this.dashboard.dashboard.user;
     return (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin );
   }
 
   toggleClickFilters() {
-    // Buscar el objeto una sola vez
+    // Find the item once
     const clickItem = this.sidebarItems.find(item => item.id === 'enableFilters');
 
-    // Alternar el estado
+    // Toggle the state
     this.clickFiltersEnabled = !this.clickFiltersEnabled;
-    this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;    // Actualizar label e icono según estado
+    this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
+
+    // Dashboard-level setting overrides each panel's local setting, regardless of its previous value
+    for (const panel of this.dashboard.panels) {
+      (panel as any).clickFiltersEnabled = this.clickFiltersEnabled;
+    }
+    this.dashboardService.setNotSaved(true);
+
+    // Update label and icon based on state
     clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
-    clickItem.icon = this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock";
+    clickItem.icon = this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban";
 
   }
-  
+
+  panelLockButton() {
+    const lockItem = this.sidebarItems.find(item => item.id === 'enablePanelLock');
+
+    this.clickPanelLockButton = !this.clickPanelLockButton;
+    const locked = !this.clickPanelLockButton;
+
+    for (const panel of this.dashboard.panels) {
+      (panel as any).dragEnabled = !locked;
+      (panel as any).resizeEnabled = !locked;
+    }
+
+    this.dashboard.gridsterOptions.api?.optionsChanged();
+    this.dashboard.dashboard.config.panelLockEnabled = this.clickPanelLockButton;
+    this.dashboardService.setNotSaved(true);
+
+    lockItem.label = this.clickPanelLockButton
+      ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
+      : $localize`:@@disablePanelLockButton:Desbloquear los paneles`;
+    lockItem.icon = this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock";
+  }
+
+  panelAnimationsButton() {
+    const animItem = this.sidebarItems.find(item => item.id === 'enablePanelAnimations');
+
+    this.clickPanelAnimationsButton = !this.clickPanelAnimationsButton;
+    this.dashboard.dashboard.config.panelAnimationsEnabled = this.clickPanelAnimationsButton;
+    this.dashboardService.setNotSaved(true);
+
+    // Overwrites each panel's own individually saved chartAnimation setting, same as
+    // panelLockButton() overwrites dragEnabled/resizeEnabled regardless of any prior per-panel value.
+    // Does NOT call dashboard.refreshPanels() afterwards (unlike saveStyles()) - that re-runs each
+    // panel's query from the backend and then nudges it with the assignedColors-gated
+    // updateComponent(), which would silently undo/ignore the direct re-render setChartAnimation()
+    // just did below via changeChartType().
+    this.dashboard.edaPanels.forEach(panel => {
+      if (panel.panelChart) {
+        try {
+          panel.panelChart.setChartAnimation(this.clickPanelAnimationsButton);
+        } catch (error) {
+          console.error(`Error al actualizar la animación del panel:`, error);
+        }
+      }
+    });
+
+    animItem.label = this.clickPanelAnimationsButton
+      ? $localize`:@@disablePanelAnimationsButton:Desactivar animaciones`
+      : $localize`:@@enablePanelAnimationsButton:Activar animaciones`;
+    animItem.icon = this.clickPanelAnimationsButton ? "pi pi-bolt" : "pi pi-ban";
+  }
+
   toggleEdit() {
-    // Buscar el objeto una sola vez
+    // Find the item once
     const clickItem = this.sidebarItems.find(item => item.id === 'enableEdition');
 
-    // Alternar el estado
+    // Toggle the state
     this.onlyIcanEdit = !this.onlyIcanEdit;
 
-    // Actualizar label e icono según estado
+    // Update label and icon based on state
     clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`;
     clickItem.icon = this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban";
   }
 
   toggleDownload() {
-    // Abrimos desplegable de filtros
+    // Open downloads dropdown
     this.mostrarDescargas = !this.mostrarDescargas;
   }
 
-  // FUNCIONES DE LOS EVENTOS QUE CONTROLAN EL DRAG AND DROP DE LOS FILTROS
-  // FUNCIONALIDAD DRAGDROP
+  // EVENT FUNCTIONS THAT CONTROL FILTER DRAG AND DROP
+  // DRAG AND DROP FUNCTIONALITY
   drop(event: CdkDragDrop<any[]>) {
     moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
   }
 
-  // SORT DE LOS FILTROS 
+  // FILTER SORT
   onDrop(event: CdkDragDrop<any[]>) {
     moveItemInArray(this.dashboard.globalFilter.globalFilters, event.previousIndex, event.currentIndex);
-    this.dashboardService._notSaved.next(true);
+    this.dashboardService.setNotSaved(true);
   }
 }

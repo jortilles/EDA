@@ -3,16 +3,18 @@ import { StyleProviderService } from '@eda/services/service.index';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
-import { EdaChartComponent } from '../eda-chart/eda-chart.component';
+import { EdaBarD3Component } from '../eda-bar-d3/eda-bar.component';
+import { EdaLineComponent } from '../eda-line-d3/eda-line.component';
+import { EdaAreaComponent } from '../eda-area-d3/eda-area.component';
 
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 @Component({
     standalone: true,
     selector: 'eda-kpi',
     templateUrl: './eda-kpi.component.html',
-    imports: [FormsModule, CommonModule, EdaChartComponent]
+    imports: [FormsModule, CommonModule, EdaBarD3Component, EdaLineComponent, EdaAreaComponent]
 })
 
 export class EdaKpiComponent implements OnInit, AfterViewInit {
@@ -26,7 +28,10 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
     @HostBinding('style.background-color') get hostBg() { return this.inject?.backgroundColor || ''; }
     @ViewChild('kpiContainer') kpiContainer: ElementRef;
     @ViewChild('sufixContainer') sufixContainer: ElementRef;
-    @ViewChild('EdaChart', { static: false }) edaChartComponent: EdaChartComponent;
+    // Whichever of eda-bar-d3/eda-line-d3/eda-area-d3 is actually mounted (see eda-kpi.component.html's
+    // @switch on inject.edaChart.edaChart) - only one is ever in the DOM at a time, all three share
+    // the same updateChart() convention, so a loose type is fine here.
+    @ViewChild('EdaChart', { static: false }) edaChartComponent: any;
     sufixClick: boolean = false;
     color: string = this.styleProviderService.panelFontColor.source['_value'];
     family: string = this.styleProviderService.panelFontFamily.source['_value'];
@@ -77,7 +82,7 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
 
     public initDimensions() {
         if (this.kpiContainer) {
-            // Subimos 3 niveles desde el contenedor original
+            // Move up three levels from the original container
             const realContainer = this.kpiContainer.nativeElement
                 ?.parentElement
                 ?.parentElement
@@ -159,19 +164,19 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
 
         textLongitude = this.inject.value.toString().length
 
-        // Comprobaciones
+        // Checks
         let textWidth = textLongitude * resultSize;
-        // Redimensiono en funcion del ancho
+        // Resize based on width
         if ( ( textWidth > this.containerWidth )  && ( sufix.length < 4 ) ) resultSize = (this.containerWidth / textLongitude) * 1.4;
-        // Redimensiono en función del alto
+        // Resize based on height
         if (resultSize > this.containerHeight   && ratio < 0.4  ) resultSize = this.containerHeight;
-        // Última comprobación
+        // Final check
         if (textLongitude * resultSize > this.containerWidth * 1.2   && ratio < 0.4  )  resultSize = resultSize / 1.5;
-        // Si tengo un sufijo y es muy grande compruebo que no me pase
+        // If there is a suffix and it is very large, check that it does not overflow
         if (sufix.length > 4 && this.containerHeight < (resultSize * 4) && this.containerWidth < textWidth) {
             resultSize = resultSize / 1.8;
         }
-        // Si tengo ung gráfico lo hago más pequeño
+        // If there is a chart, make it smaller
         if (this.inject.showChart) {
             resultSize = resultSize / 1.8;
         }

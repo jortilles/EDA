@@ -41,7 +41,7 @@ router.use('/tp', ThirdPartyRouter);
 
 router.use('/assistant', AiRouter);
 
-router.use('/arima', ArimaRouter);  
+router.use('/arima', ArimaRouter);
 
 router.use('/auth', AuthRouter);
 

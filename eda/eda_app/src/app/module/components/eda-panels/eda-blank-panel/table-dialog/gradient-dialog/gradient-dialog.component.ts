@@ -44,7 +44,7 @@ export class TableGradientDialogComponent implements OnInit{
     this.title =  `${$localize`:@@gradientTitle:Código de color para la columna: `} ${this.controller.params.col.header}`;
     if(this.controller.params.style){
       const style = this.controller.params.style;
-      // Recuperamos los valores del dialog dependiendo del style guardado que tenemos
+      // Retrieve dialog values depending on the saved style we have
       if (style.type === 'gradient') {
         this.activeTabIndex = 0;
         this.min = style.min;
@@ -65,14 +65,14 @@ export class TableGradientDialogComponent implements OnInit{
   }
 
   saveGradientConfig(notStyles ?: boolean){
-    // Si no tenemos estilos da igual el tab
+    // If we don't have styles, the tab doesn't matter
     if (this.noStyle || notStyles) {
       this.onClose(EdaDialogCloseEvent.UPDATE, { col: this.controller.params.col.field, noStyle: true });
-      return; //cancelamos la asignación de colores a posterior
+      return; // cancel the later color assignment
     }
-    // Asignamos colores
+    // Assign colors
     if (this.activeTabIndex === 0) {
-      // Gradiente tab
+      // Gradient tab
       const properties = {
         col: this.controller.params.col.field,
         type: 'gradient',
@@ -81,7 +81,7 @@ export class TableGradientDialogComponent implements OnInit{
       };
       this.onClose(EdaDialogCloseEvent.UPDATE, properties);
     } else {
-      // Semaforo tab
+      // Semaphore tab
       const properties = {
         col: this.controller.params.col.field,
         type: 'semaphore',

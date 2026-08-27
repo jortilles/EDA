@@ -73,7 +73,6 @@ export class WhatIfDialogComponent implements OnInit {
     }
 
     public removeWhatIfColumn(whatIfColumn: any): void {
-        //this.currentQuery = this.currentQuery.filter((query: any) => whatIfColumn.table_id != query.table_id && whatIfColumn.display_name.default != query.display_name.default);
         const inx = this.currentQuery.indexOf(whatIfColumn);
 
         if (inx >= 0) {
@@ -88,7 +87,7 @@ export class WhatIfDialogComponent implements OnInit {
     }
 
     public onApplyWhatIfDialog(): void {
-        // Si el formulario está relleno, añadir el campo pendiente antes de cerrar
+        // If the form is filled, add the pending field before closing
         if (this.whatIf.column && this.whatIf.operator && this.whatIf.value && this.whatIf.display_name) {
             this.addWhatIfColumn();
         }

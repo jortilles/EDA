@@ -595,15 +595,19 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="resumenAtrH6" datatype="html">
 <source>
-                                    Resumen de atributos
+Resumen de atributos
 </source>
 <target>
-                                    Resum d'atributs
+Resum d'atributs
 </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-<context context-type="linenumber">137</context>
-</context-group>
+</trans-unit>
+<trans-unit id="resumenAtrH6Hover" datatype="html">
+<source>
+¿Qué estoy viendo?
+</source>
+<target>
+Qué estic veient?
+</target>
 </trans-unit>
 <trans-unit id="resumenFiltrosPanelH6" datatype="html">
 <source>
@@ -2911,6 +2915,16 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Vinculat amb   </target>
   </trans-unit>
 
+  <trans-unit id="secondAxis">
+    <source> Segundo Eje  </source>
+    <target>Segon Eix</target>
+  </trans-unit>
+
+  <trans-unit id="secondAxisDescription">
+    <source> Muestra un eje independiente a la derecha para las líneas, separado del eje de las barras </source>
+    <target>Mostra un eix independent a la dreta per a les línies, separat de l'eix de les barres</target>
+  </trans-unit>
+
   <trans-unit id="DataModelHeader">
     <source> Configurar nueva fuente de datos  </source>
     <target> Configurar nova font de dades  </target>
@@ -3161,6 +3175,34 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="addtrend">
     <source>Tendencia</source>
     <target>Tendència</target>
+  </trans-unit>
+  <trans-unit id="kpiGrafico">
+    <source>Gráfico</source>
+    <target>Gràfic</target>
+  </trans-unit>
+  <trans-unit id="opacityLabel">
+    <source>Opacidad</source>
+    <target>Opacitat</target>
+  </trans-unit>
+  <trans-unit id="labelColorOption">
+    <source>Color de las etiquetas</source>
+    <target>Color de les etiquetes</target>
+  </trans-unit>
+  <trans-unit id="labelColorSeries">
+    <source>Propio</source>
+    <target>Propi</target>
+  </trans-unit>
+  <trans-unit id="labelColorBlack">
+    <source>Negro</source>
+    <target>Negre</target>
+  </trans-unit>
+  <trans-unit id="labelColorWhite">
+    <source>Blanco</source>
+    <target>Blanc</target>
+  </trans-unit>
+  <trans-unit id="labelColorCustom">
+    <source>Personalizado</source>
+    <target>Personalitzat</target>
   </trans-unit>
 
   <trans-unit id="removetrend">
@@ -3486,6 +3528,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
     <target>KPI Tendència necessita una columna de data en format mes i una columna numèrica</target>
   </trans-unit>
+  <trans-unit id="chartInfoKpiDeviation">
+    <source>KPI Desviación necesita dos columnas numéricas: valor actual y valor de referencia</source>
+    <target>KPI Desviació necessita dues columnes numèriques: valor actual i valor de referència</target>
+  </trans-unit>
 
   <trans-unit id="trendTitleYear"><source>Año actual</source><target>Any actual</target></trans-unit>
   <trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Mes actual</target></trans-unit>
@@ -3730,10 +3776,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Mostra Etiquetes en Percentatges</target>
   </trans-unit>
 
-  <trans-unit id="showUniqueColors">
-    <source>Activar Colores Únicos</source>
-    <target>Activa Colors Únics</target>
-  </trans-unit>
 
   <trans-unit id="showPointLines">
     <source>Mostrar Puntos en Líneas</source>
@@ -3837,7 +3879,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="ChangeDefaultsColors">
     <source>Color del los gráficos</source>
     <target>Color dels gràfics</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="selectPalette">
+    <source>Seleccionar paleta</source>
+    <target>Seleccionar paleta</target>
+  </trans-unit>
 
   <trans-unit id="properties">
     <source>Propiedades</source>
@@ -4004,17 +4051,17 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="firstAboutParagraphSpan" datatype="html">
   <source>  
                 <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar 
-                informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar
+                informes gráficos e interactivos de forma sencilla. Edalitics es una aplicación que se puede instalar
                 en tus propios servidores o se puede difrutar en su versión SaaS 
                 <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>. 
-                Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
+                Edalitics permite disfrutar de toda la potencia de Edalitics sin tener que preocuparte de instalaciones, 
                 configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.  </source>
   <target>
                 <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> és una aplicació web de codi lliure que permet realitzar
-                 informes gràfics i interactius de forma senzilla. EDA és una aplicació que es pot instal·lar
+                 informes gràfics i interactius de forma senzilla. Edalitics és una aplicació que es pot instal·lar
                  als teus propis servidors o es pot gaudir en la seva versió SaaS
                  <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>.
-                 Edalitics permet gaudir de tota la potència d'EDA sense haver de preocupar-te d'instal·lacions,
+                 Edalitics permet gaudir de tota la potència d'Edalitics sense haver de preocupar-te d'instal·lacions,
                  configuracions, actualitzacions, etc. Connectes les teves fonts de dades i llest. </target>
   <context-group purpose="location">
     <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -4025,14 +4072,14 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="secondAboutParagraph" datatype="html">
   <source>
-                 EDA ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
+                Edalitics ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
                 Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
-                funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
+                funcionalidades o carácteristicas. Jortilles financia el desarrollo de Edalitics mediante las suscripciones a Edalitics
                 y el soporte empresarial que ofrece a sus clientes.  </source>
   <target>
-                EDA ha estat desenvolupat per <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
+                Edalitics ha estat desenvolupat per <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
                  Si necessiteu suport empresarial, no dubteu a contactar amb nosaltres. Així mateix com si voleu sol·licitar-ne de noves
-                 funcionalitats o característiques. Jortilles finança el desenvolupament d'EDA mitjançant les subscripcions a Edalitics
+                 funcionalitats o característiques. Jortilles finança el desenvolupament d'Edalitics mitjançant les subscripcions a Edalitics
                  i el suport empresarial que ofereix als clients. </target>
   <context-group purpose="location">
     <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -4042,10 +4089,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="thirdAboutParagraph" datatype="html">
   <source>
-   El código fuente de EDA está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+   El código fuente de Edalitics está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
   </source>
   <target>
-   El codi font d'EDA està disponible a <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+   El codi font d'Edalitics està disponible a <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
   </target>
   <context-group purpose="location">
     <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -4055,10 +4102,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="fourthAboutParagraph" datatype="html">
   <source>
-   La documentación de EDA está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
+   La documentación de Edalitics está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
   </source>
   <target>
-  La documentació d'EDA està disponible a <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Aquest Link</a>
+  La documentació d'Edalitics està disponible a <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Aquest Link</a>
   </target>
 </trans-unit>
 
@@ -4111,6 +4158,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
       <trans-unit id="chartTypesKPITrend">
         <source>KPI Tendencia</source>
         <target>KPI Tendència</target>
+      </trans-unit>
+      <trans-unit id="chartTypesKPIDeviation">
+        <source>KPI Desviación</source>
+        <target>KPI Desviació</target>
       </trans-unit>
 
   <trans-unit id="urlEditSaveError">
@@ -4852,6 +4903,26 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Mostra la llegenda</target>
 </trans-unit>
 
+<trans-unit id="internRadius">
+  <source>Radio Interno</source>
+  <target>Radi Intern</target>
+</trans-unit>
+
+<trans-unit id="useGradient">
+  <source>Usar Gradiente</source>
+  <target>Utilitza gradient</target>
+</trans-unit>
+
+<trans-unit id="useRoundedBars">
+  <source>Redondear barras</source>
+  <target>Arrodonir barres</target>
+</trans-unit>
+
+<trans-unit id="chartRoundedBarsOptionDescription">
+  <source>Redondea la punta de las barras</source>
+  <target>Arrodoneix la punta de les barres</target>
+</trans-unit>
+
 <trans-unit id="chartLegendOptionDescription">
   <source>Muestra la leyenda del gráfico</source>
   <target>Mostra la llegenda del gràfic</target>
@@ -4865,6 +4936,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="chartGridLinesOptionDescription">
   <source>Muestra u oculta las líneas guía del gráfico</source>
   <target>Mostra o amaga les línies guia del gràfic</target>
+</trans-unit>
+
+<trans-unit id="chartAnimation">
+  <source>Animar Gráfico</source>
+  <target>Anima el gràfic</target>
+</trans-unit>
+
+<trans-unit id="chartAnimationOptionDescription">
+  <source>Anima la aparición de los datos al cargar el gráfico</source>
+  <target>Anima l'aparició de les dades en carregar el gràfic</target>
 </trans-unit>
 
 <trans-unit id="histogramColum">
@@ -4902,9 +4983,9 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Mostra el valor percentual de cada segment</target>
 </trans-unit>
 
-<trans-unit id="chartUniqueColorsOption">
-  <source>Asigna un color único a cada barra o elemento</source>
-  <target>Assigna un color únic a cada barra o element</target>
+<trans-unit id="uniqueColorsTab">
+  <source> Colores Únicos </source>
+  <target> Colors Únics </target>
 </trans-unit>
 
 <trans-unit id="chartUniqueColorsOptionDescription">
@@ -4923,8 +5004,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP1">
-  <source>Una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla.</source>
-  <target>Una aplicació web de codi lliure que permet fer informes gràfics i interactius de forma senzilla.</target>
+  <source>Analítica de datos sin complicaciones.</source>
+  <target>Analítica de dades sense complicacions.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaH1">
@@ -4933,8 +5014,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP2">
-  <source>EDA es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
-  <target>EDA és una aplicació que es pot instal·lar als teus propis servidors o gaudir a la seva versió SaaS Edalitics.</target>
+  <source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión <a href="https://www.edalitics.com" target="_blank"   class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</source>
+  <target>Edalitics és una aplicació que es pot instal·lar als teus propis servidors o gaudir a la seva versió <a href="https://www.edalitics.com" target="_blank"   class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA1">
@@ -4948,8 +5029,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP3">
-  <source>Accede a nuestra documentación completa para aprender a sacar el máximo provecho de EDA.</source>
-  <target>Accediu a la nostra documentació completa per aprendre a treure el màxim profit d'EDA.</target>
+  <source>Accede a nuestra documentación completa para aprender a sacar el máximo provecho de Edalitics.</source>
+  <target>Accediu a la nostra documentació completa per aprendre a treure el màxim profit d'Edalitics.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA2">
@@ -4973,8 +5054,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP5">
-  <source>Aprende a usar EDA con nuestros tutoriales paso a paso.</source>
-  <target>Aprèn a fer servir EDA amb els nostres tutorials pas a pas.</target>
+  <source>Aprende a usar Edalitics con nuestros tutoriales paso a paso.</source>
+  <target>Aprèn a fer servir Edalitics amb els nostres tutorials pas a pas.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaB1">
@@ -4988,8 +5069,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaH4">
-  <source>¿Quieres probar EDA en el cloud?</source>
-  <target>Vols provar EDA al cloud?</target>
+  <source>¿Quieres probar Edalitics en el cloud?</source>
+  <target>Vols provar Edalitics al cloud?</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP6">
@@ -5008,8 +5089,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA5">
-  <source>EDA ha sido desarrollado por</source>
-  <target>EDA ha estat desenvolupat per</target>
+  <source>Edalitics ha sido desarrollado por</source>
+  <target>Edalitics ha estat desenvolupat per</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP7">
@@ -5316,6 +5397,21 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="numValTrigAlert">
   <source>Valor numérico que activará la alerta</source>
   <target>Valor numèric que activarà l'alerta</target>
+</trans-unit>
+
+<trans-unit id="thresholdValuePercent">
+  <source>Valor umbral (%)</source>
+  <target>Valor llindar (%)</target>
+</trans-unit>
+
+<trans-unit id="deviationPercTrigAlert">
+  <source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
+  <target>% de desviació que activarà l'alerta (ex: -10 = quan la desviació sigui inferior al -10%)</target>
+</trans-unit>
+
+<trans-unit id="whenKpiDeviationIs">
+  <source>Cuando el % es</source>
+  <target>Quan el % és</target>
 </trans-unit>
 
 <trans-unit id="textChangeColor">
@@ -6301,6 +6397,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Muestra la predicción de la serie</source>
         <target>Mostra la predicció de la sèrie</target>
       </trans-unit>
+      <trans-unit id="colorsTab">
+        <source> Colores </source>
+        <target> Colors </target>
+      </trans-unit>
       <trans-unit id="gradientTab">
         <source>Colores por intervalo</source>
         <target>Colors per interval</target>
@@ -6581,8 +6681,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Datasource</target>
       </trans-unit>
       <trans-unit id="datasourceFilterPlaceholder" datatype="html">
-        <source>postgres, mysql...</source>
-        <target>postgres, mysql...</target>
+        <source>Nombre del datasource...</source>
+        <target>Nom del datasource...</target>
       </trans-unit>
       <trans-unit id="createdFilterLabel" datatype="html">
         <source>Creado en</source>
@@ -6681,12 +6781,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Quins dashboards tinc?</target>
       </trans-unit>
       <trans-unit id="chatSuggestion2" datatype="html">
-        <source>¿Qué datasources hay?</source>
-        <target>Quins datasources hi ha?</target>
+        <source>¿Qué fuentes de datos hay?</source>
+        <target>Quines fonts de dades hi ha?</target>
       </trans-unit>
       <trans-unit id="chatSuggestion3" datatype="html">
         <source>Estado del servidor</source>
         <target>Estat del servidor</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion4" datatype="html">
+        <source>¿Qué informes tengo disponibles?</source>
+        <target>Quins informes tinc disponibles?</target>
       </trans-unit>
       <trans-unit id="chatInputPlaceholder" datatype="html">
         <source>Escribe un mensaje...</source>
@@ -6769,8 +6873,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>CONTEXT</target>
       </trans-unit>
       <trans-unit id="aiEDAApp" datatype="html">
-        <source>EDA APP URL</source>
-        <target>EDA APP URL</target>
+        <source>Edalitics APP URL</source>
+        <target>Edalitics APP URL</target>
       </trans-unit>
       <trans-unit id="aiMCPURL" datatype="html">
         <source>MCP URL</source>
@@ -6827,6 +6931,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="navegar" datatype="html">
         <source>Navegar</source>
         <target>Navegar</target>
+      </trans-unit>
+      <trans-unit id="resultSortingText" datatype="html">
+        <source>Ordenar los resultados por:</source>
+        <target>Ordenar els resultats per:</target>
+      </trans-unit>
+      <trans-unit id="draggResultSorting" datatype="html">
+        <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
+        <target>Arrossegueu aquí els atributs pels quals voleu ordenar</target>
       </trans-unit>
       <trans-unit id="noDuckDbFile">
         <source>Debe cargar un archivo CSV primero</source>
@@ -6943,6 +7055,142 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="ga4AuthRequired">
         <source>Debes autorizar el acceso a Google Analytics primero</source>
         <target>Cal autoritzar l'accés a Google Analytics primer</target>
+      </trans-unit>
+      <trans-unit id="holdedFolderLabel">
+        <source>Nombre de carpeta <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Nom de la carpeta <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="holdedApiKeyLabel">
+        <source>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="holdedInfoMessage">
+        <source>Al confirmar se descargarán las facturas, líneas, contactos, productos y asientos contables de Holded y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos minutos dependiendo del volumen de datos.</source>
+        <target>En confirmar es descarregaran les factures, línies, contactes, productes i assentaments comptables de Holded i es crearan com a taules en un datasource DuckDB. La descàrrega pot tardar uns minuts depenent del volum de dades.</target>
+      </trans-unit>
+      <trans-unit id="holdedCreated">
+        <source>Fuente de datos Holded creada correctamente</source>
+        <target>Font de dades Holded creada correctament</target>
+      </trans-unit>
+      <trans-unit id="multipleSelectionText">
+        <source>Selección múltiple</source>
+        <target>Selecció múltiple</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionText">
+        <source>Selección única</source>
+        <target>Selecció única</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionDescription">
+        <source>Active esta opción para permitir la selección múltiple.</source>
+        <target>Activeu aquesta opció per permetre la selecció múltiple.</target>
+      </trans-unit>      
+      <trans-unit id="multipleSelectionDescription">
+        <source>Desactive esta opción para permitir la selección única.</source>
+        <target>Desactiveu aquesta opció per permetre la selecció única.</target>
+      </trans-unit>
+      <trans-unit id="enablePanelLockButton">
+        <source>Bloquear los paneles</source>
+        <target>Bloquejar els panells</target>
+      </trans-unit>
+      <trans-unit id="disablePanelLockButton">
+        <source>Desbloquear los paneles</source>
+        <target>Desbloquejar els panells</target>
+      </trans-unit>
+      <trans-unit id="noAttributes">
+        <source>Sin atributos</source>
+        <target>Sense atributs</target>
+      </trans-unit>
+      <trans-unit id="noFilters">
+        <source>Sin filtros</source>
+        <target>Sense filtres</target>
+      </trans-unit>
+      <trans-unit id="aiDashboardDescription">
+        <source>(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.</source>
+        <target>(Opcional) Descriu els panells que vols generar amb IA. Exemple: vendes per mes en barres, top clients per import, KPI de facturació total.</target>
+      </trans-unit>
+      <trans-unit id="aiGeneratingDashboard">
+        <source>Generando dashboard con IA...</source>
+        <target>Generant dashboard amb IA...</target>
+      </trans-unit>
+      <trans-unit id="otherRecipients">
+        <source>Otros destinatarios:</source>
+        <target>Altres destinataris:</target>
+      </trans-unit>
+      <trans-unit id="otherRecipientsHint">
+        <source>(separados por un espacio)</source>
+        <target>(separats per un espai)</target>
+      </trans-unit>
+      <trans-unit id="otherRecipientsPlaceholder">
+        <source>correo1@dominio.com correo2@dominio.com</source>
+        <target>correu1@domini.com correu2@domini.com</target>
+      </trans-unit>
+      <trans-unit id="sendToSummary">
+        <source>Enviar a:</source>
+        <target>Enviar a:</target>
+      </trans-unit>
+      <trans-unit id="kpiMailConfigTitle">
+        <source>Configuración de la alerta KPI por email</source>
+        <target>Configuració de l'alerta KPI per email</target>
+      </trans-unit>
+      <trans-unit id="enablePanelAnimationsButton">
+        <source>Activar animaciones</source>
+        <target>Activar animacions</target>
+      </trans-unit>
+      <trans-unit id="disablePanelAnimationsButton">
+        <source>Desactivar animaciones</source>
+        <target>Desactivar animacions</target>
+      </trans-unit>
+      <trans-unit id="aboutResourcesTitle">
+        <source>Recursos</source>
+        <target>Recursos</target>
+      </trans-unit>
+      <trans-unit id="gettingStartedTitle">
+        <source>Primeros pasos</source>
+        <target>Primers passos</target>
+      </trans-unit>
+      <trans-unit id="gettingStartedSubtitle">
+        <source>Todo lo que necesitas para crear tu primer informe en edalitics.</source>
+        <target>Tot el que necessites per crear el teu primer informe a edalitics.</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Title">
+        <source>Conecta tus datos</source>
+        <target>Connecta les teves dades</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Desc">
+        <source>Conecta una fuente de datos y define tu modelo de datos.</source>
+        <target>Connecta una font de dades i defineix el teu model de dades.</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Cta">
+        <source>Crear fuente de datos</source>
+        <target>Crear font de dades</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Hint">
+        <source>Pide a un administrador que conecte una fuente de datos.</source>
+        <target>Demana a un administrador que connecti una font de dades.</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Title">
+        <source>Crea tu primer informe</source>
+        <target>Crea el teu primer informe</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Desc">
+        <source>Diseña un dashboard interactivo a partir de tu modelo de datos.</source>
+        <target>Dissenya un dashboard interactiu a partir del teu model de dades.</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Cta">
+        <source>Crear informe</source>
+        <target>Crear informe</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Title">
+        <source>Explora y aprende</source>
+        <target>Explora i aprèn</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Desc">
+        <source>Tutoriales, documentación y comunidad para sacar el máximo partido a edalitics.</source>
+        <target>Tutorials, documentació i comunitat per treure el màxim partit a edalitics.</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Cta">
+        <source>Ver recursos</source>
+        <target>Veure recursos</target>
       </trans-unit>
     </body>
   </file>

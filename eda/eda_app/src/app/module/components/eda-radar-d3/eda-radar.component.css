@@ -1,0 +1,89 @@
+.eda-radar-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.eda-radar-wrapper .svg-container {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* SVG's initial UA style is overflow:hidden on the root element - without this, category labels
+   and hover-grown vertices near/at maxRadius get silently clipped instead of just drawn past the
+   nominal chart bounds. */
+.eda-radar-wrapper .svg-container svg {
+  overflow: visible;
+}
+
+/* Appended by D3 into a nested <svg> at runtime, not by Angular's template compiler - never gets
+   the [_ngcontent] attribute view encapsulation relies on, so these need ::ng-deep too. */
+::ng-deep .radar-grid-ring {
+  stroke: #94a3b8;
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+::ng-deep .radar-grid-spoke {
+  stroke: #94a3b8;
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+::ng-deep .radar-grid-label {
+  font-size: 8px;
+  fill: #90a4ae;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+::ng-deep .radar-category-label {
+  font-size: 11px;
+  fill: var(--panel-font-color, #475569);
+}
+
+::ng-deep .radar-vertex {
+  pointer-events: all;
+}
+
+/* Tooltip appended by D3 to <body> (outside this component's template) - same reasoning as
+   eda-polar-area.component.css. */
+::ng-deep .eda-radar-tooltip {
+  position: absolute;
+  text-align: left;
+  cursor: pointer;
+  padding: 8px 10px;
+  font: 12px;
+  color: #ffffff;
+  background: #010913ea;
+  border: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+::ng-deep .eda-radar-tooltip > h6 {
+  color: white;
+  font-weight: bold;
+}
+
+::ng-deep .eda-radar-tooltip-title {
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+::ng-deep .eda-radar-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+::ng-deep .eda-radar-tooltip-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}

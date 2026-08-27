@@ -40,11 +40,11 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
 
     this.dataIndex = this.inject.query.findIndex((e) => e.column_type === "numeric");
 
-    // Cargar assignedColors
+    // Load assignedColors
     if (this.inject.assignedColors && Array.isArray(this.inject.assignedColors) && this.inject.assignedColors.length >= 2) {
       this.assignedColors = this.inject.assignedColors;
     } else {
-      // Crear colores por defecto
+      // Create default colors
       this.assignedColors = [
         {value: 'start', color: this.paletaActual[this.paletaActual.length - 1]},
         {value: 'end', color: this.paletaActual[0]}

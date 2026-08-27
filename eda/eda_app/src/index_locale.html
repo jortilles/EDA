@@ -4,15 +4,16 @@
 <body>
 <script type="text/javascript">
         var userLang = navigator.language || navigator.userLanguage;
+        var locale = 'en';
         if(userLang.indexOf('es') >=0){
-                window.location.href = window.location.href.replace('/index.html','')+'/es';
+                locale = 'es';
         }else if(userLang === 'ca-ES'){
-                window.location.href = window.location.href.replace('/index.html','')+'/ca';
+                locale = 'ca';
         }else if(userLang.indexOf('pl') >=0){
-                window.location.href = window.location.href.replace('/index.html','')+'/pl';
-        }else{
-                window.location.href = window.location.href.replace('/index.html','')+'/en';
+                locale = 'pl';
         }
+        var base = window.location.href.replace('/index.html','').split('#')[0].replace(/\/$/, '');
+        window.location.href = base + '/' + locale + '/' + window.location.hash;
 </script>
 </body>
 </html>

@@ -1,17 +1,18 @@
-import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, lightenHex, sanitizeId, ensureRadialGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
 import * as d3 from 'd3'
 import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter, OnDestroy} from '@angular/core'
 import { SunBurst } from './eda-sunbrust'
 
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 @Component({
   standalone: true,
-  selector: 'eda-sunburst' /* tag que jo li dono  */,
+  selector: 'eda-sunburst' /* tag assigned to this component */,
   templateUrl: './eda-sunburst.component.html' /** sdf */,
   styleUrls: ['./eda-sunburst.component.css'],
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
 })
 export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   @Input() inject: SunBurst
@@ -29,12 +30,18 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   width: number
   heigth: number
   metricIndex: number
-  resizeObserver!: ResizeObserver; 
-  
+  resizeObserver!: ResizeObserver;
+
+  chartLegend: boolean;
+  legendItems: { label: string; color: string; hidden: boolean }[] = [];
+  private hiddenIndexes: Set<number> = new Set();
+  private hasRendered = false;
+
   constructor(private chartUtilService: ChartUtilsService, private styleProviderService: StyleProviderService) { }
 
   ngOnInit(): void {
     this.id = `sunburst_${this.inject.id}`;
+    this.chartLegend = this.inject.chartLegend ?? true;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     this.data = this.formatData(this.inject.data, this.inject.dataDescription);
     this.labels = this.generateDomain(this.data);
@@ -42,48 +49,65 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
     this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
     this.assignedColors = this.inject.assignedColors;
+
+    this.legendItems = this.firstColLabels.map((label, i) => ({
+      label: String(label),
+      color: this.assignedColors[i]?.color || '#cccccc',
+      hidden: this.hiddenIndexes.has(i)
+    }));
+  }
+
+  toggleLegend(index: number): void {
+    if (this.hiddenIndexes.has(index)) this.hiddenIndexes.delete(index);
+    else this.hiddenIndexes.add(index);
+    this.legendItems[index].hidden = this.hiddenIndexes.has(index);
+    this.draw();
   }
 
   ngAfterViewInit() {
     const container = this.svgContainer.nativeElement as HTMLElement;
-
-    // Crear SVG
-    this.svg = d3.select(container).append('svg');
-
-    this.resizeObserver = new ResizeObserver(entries => {
-      let id = `#${this.id}`;
-      this.svg = d3.select(id);
-      if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
-        this.draw();
-      }
-    });
-    this.resizeObserver.observe(container);
-
-    // Dibujar inicialmente
-    if (this.svg) this.svg.remove();
-    let id = `#${this.id}`;
-    this.svg = d3.select(id);
-    if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
-      this.draw();
-    }
+    if (!this.svg) this.svg = d3.select(container).append('svg');
+    this.resizeObserver = initD3ResizeObserver(container, this.svg, () => this.draw(), { skipFirstCallback: true });
   }
 
   ngOnDestroy(): void {
     if (this.div)
       this.div.remove();
-    if (this.resizeObserver)
-      this.resizeObserver.disconnect();
+    teardownD3Chart(undefined, this.resizeObserver);
+  }
+
+  private gradientId(hex: string, opacity: number): string {
+    return `sunburst-grad-${this.id}-${sanitizeId(hex)}-${Math.round(opacity * 100)}`;
+  }
+
+  /**
+   * Radial gradient, base color at the center, lighter towards the edge - same convention as
+   * eda-doughnut-d3. The per-sibling opacity is baked into the stop colors (rgba) rather than
+   * applied as a separate fill-opacity attribute, since mouseleave resets fill-opacity to 1 for
+   * every arc - baking it into fill is what keeps the sibling shading visible at rest.
+   */
+  private arcFill(defs: any, hex: string, opacity: number): string {
+    const inner = d3.rgb(hex);
+    if (!(this.inject.useGradient ?? true)) {
+      return `rgba(${inner.r}, ${inner.g}, ${inner.b}, ${opacity})`;
+    }
+    const outer = d3.rgb(lightenHex(hex, 30));
+    return ensureRadialGradient(defs, this.gradientId(hex, opacity), [
+      { offset: '0%', color: `rgba(${inner.r}, ${inner.g}, ${inner.b}, ${opacity})` },
+      { offset: '100%', color: `rgba(${outer.r}, ${outer.g}, ${outer.b}, ${opacity})` }
+    ]);
   }
 
   draw() {
-    // Limpiar SVG antes de redibujar (evita acumulación)
+    // Clear SVG before redrawing (prevents accumulation)
     this.svg.selectAll('*').remove();
-    
+    const animateEntrance = !this.hasRendered && (this.inject.chartAnimation ?? true);
+
     const svg = this.svg;
     const width = this.svgContainer.nativeElement.clientWidth - 40;
     let radius = width / 2;
     
-    /** copio els objectes del d3  */
+    /** copy d3 objects */
     let partition = data =>
       d3.partition().size([2 * Math.PI, radius * radius])(
         d3
@@ -92,7 +116,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
           .sort((a, b) => b.value - a.value)
       );
       
-    //Funcion de ordenación de colores de D3
+    // D3 color sorting function
     const valuesSunburst = this.assignedColors.map((item) => item.value);
     const colorsSunburst = this.assignedColors.map(item => item.color);
     const color = d3.scaleOrdinal(this.firstColLabels, colorsSunburst);
@@ -113,8 +137,18 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
       .innerRadius((d: any) => Math.sqrt(d.y0))
       .outerRadius(radius)
 
-    /** comença la mandanga.... */
-    let data = this.buildHierarchy(this.data);
+    let defs = svg.select('defs');
+    if (defs.empty()) defs = svg.append('defs');
+
+    /** main processing starts */
+    // Rows whose top-level category was hidden from the legend are excluded before building the
+    // hierarchy - this.data here is the flat [pathString, value] array from formatData(), so
+    // matching is against the first '|+-+|'-delimited segment of each row's path.
+    const hiddenLabels = new Set(Array.from(this.hiddenIndexes).map(i => String(this.firstColLabels[i])));
+    const visibleFlatData = hiddenLabels.size > 0
+      ? this.data.filter((row: any) => !hiddenLabels.has(String(row[0].split('|+-+|')[0])))
+      : this.data;
+    let data = this.buildHierarchy(visibleFlatData);
     const root = partition(data)
     // Make this into a view, so that the currently hovered sequence is available to the breadcrumb
     const element = svg.node();
@@ -159,31 +193,34 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
       .attr('fill', d => {
         let original = d;
         let opacity = 1;
-        
-        // Subimos al primer nivel para asignar color base
+
+        // Go up to the first level to assign the base color
         while (d.depth > 1) d = d.parent;
-        const rgbColor = d3.rgb(colorsSunburst[valuesSunburst.findIndex(item => d.data.name.includes(item))] || color(d.data.name)); 
-        // Cálculo de opacidad
+        const hex = colorsSunburst[valuesSunburst.findIndex(item => d.data.name.includes(item))] || color(d.data.name);
+        // Opacity calculation
         if (original.depth > 1) {
           const siblings = original.parent.children;
           const index = siblings.indexOf(original);
           const total = siblings?.length;
-      
+
           const minOpacity = 0.25;
           const maxOpacity = 1;
-      
-          // Distribuye linealmente entre min y max, primero más opaco
+
+          // Linearly distribute between min and max, most opaque first
           if (total > 1) { opacity = maxOpacity - (index * (maxOpacity - minOpacity) / (total - 1)); }
-          else { opacity = maxOpacity; } // Solo un hijo
+          else { opacity = maxOpacity; } // Single child
         }
-      
-        return `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, ${opacity})`;
+
+        return this.arcFill(defs, hex, opacity);
       })
-      
-      
+
+
       .attr('d', arc)
-    
-      
+      .style('opacity', animateEntrance ? 0 : 1)
+
+    if (animateEntrance) {
+      path.transition().delay((d: any, i: number) => i * 15).duration(300).style('opacity', 1);
+    }
 
     svg
       .append('g')
@@ -250,7 +287,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
           .attr("pointer-events", "none")
 
           .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
-        // per posar-ho a dalt de tot
+        // bring it to the top
         label.raise();
         
       })
@@ -264,7 +301,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
         window.open(url, "_blank");
       } else {
         const label = data.data.name;
-        // buscar en todas las filas hasta encontrar coincidencia
+        // search all rows until a match is found
         let idx = -1;
         for (const row of this.inject.data.values) {
           const tmpIdx = row.indexOf(label);
@@ -277,6 +314,8 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
         this.onClick.emit({ label, filterBy });
       }
     })
+
+    this.hasRendered = true;
   }
 
   formatData (data, dataDescription) {
@@ -306,7 +345,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   }
 
   generateDomain (data) {
-    // map executa la funció sobre cada element del array. Es a dir sobre cada fila.
+    // map executes the function on each element of the array, i.e. on each row.
 
 
     let foo = data.map(elem => elem.filter(value => typeof value !== 'number'))
@@ -329,7 +368,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
     return ancestors;
   }
 
-  /** copio les funcions del d3 */
+  /** copy d3 functions */
   private buildHierarchy (data) {
     // Helper function that transforms the given data into a hierarchical format.
     const root = { name: 'root', children: [] }

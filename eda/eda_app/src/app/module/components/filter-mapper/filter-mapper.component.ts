@@ -62,7 +62,15 @@ export class FilterMapperComponent {
         const dashboardFilter = this.dashboardFilter.find(f => f.id === connection.targetId);
         if (!dashboardFilter) { return;}
 
-        filter.filter_elements[0].value1 = [...dashboardFilter.selectedItems];
+        const valueToApply = dashboardFilter.selectedItems;
+        const isDate = filter.filter_column_type === 'date';
+        if (isDate) {
+          if (!filter.filter_elements[1]) filter.filter_elements[1] = { value2: [] };
+          filter.filter_elements[0].value1 = valueToApply[0] ? [valueToApply[0]] : [];
+          filter.filter_elements[1].value2 = valueToApply[1] ? [valueToApply[1]] : [];
+        } else {
+          filter.filter_elements[0].value1 = [...valueToApply];
+        }
 
       });
     });

@@ -27,7 +27,7 @@ export class ViewDialogEditionComponent implements OnInit {
   public confirmed: boolean = false;
 
 
-  // Elementos del formulario
+  // Form elements
   public viewName: string;
   public description: string;
   public technical_name: string;
@@ -49,17 +49,17 @@ export class ViewDialogEditionComponent implements OnInit {
       SQLexpression: [this.viewInEdition.query, Validators.required]
     });  
 
-    // Evalúa el estado inicial
+    // Evaluate initial state
     this.ok = !!this.form.get('SQLexpression').value?.trim();
 
-    // Escucha cambios en SQLexpression
+    // Listen to SQL expression changes
     this.form.get('SQLexpression').valueChanges.subscribe(value => {
       this.ok = !!value?.trim();
     });
 
   }
 
-  // Inicializando el Formulario
+  // Initializing the form
   initForm(){
     this.viewName = this.viewInEdition.display_name.default;
     this.description = this.viewInEdition.description.default;
@@ -69,7 +69,7 @@ export class ViewDialogEditionComponent implements OnInit {
 
 
   async checkView() {
-    // Recuperando la query del formulario
+    // Retrieving the form query
     let SQLexpression = this.form.get('SQLexpression').value;
 		this.spinnerService.on();
 		SQLexpression = SQLexpression.replace(';','')
@@ -79,7 +79,7 @@ export class ViewDialogEditionComponent implements OnInit {
 			query: SQLexpression
 		}
 		try {
-      // Verifica si la Query es correcta
+      // Check if the query is correct
 			let res = await this.dashboardService.executeView(body).toPromise();
 
       const columns = [];
@@ -151,10 +151,10 @@ export class ViewDialogEditionComponent implements OnInit {
 	}
 
   viewDialogEditionApply() {
-    // Query editada antes de confirmar
+    // Query edited before confirming
     this.viewInEdition.query = `(${this.SQLexpression}) as ${this.technical_name}`
     this.viewInEdition.columns = _.cloneDeep(this.newColums);
-    // Verificar
+    // Verify
     this.confirmed = false;
     this.display = false;
     this.close.emit(this.viewInEdition);

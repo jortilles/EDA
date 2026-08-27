@@ -10,7 +10,17 @@
       <ng-container *ngTemplateOutlet="kpiValueContainer;"></ng-container>
     </div>
     <div class="absolute bottom-0 left-0 w-full overflow-hidden" style="height: 70%;">
-      <eda-chart #EdaChart [inject]="inject.edaChart" class="h-full w-full"></eda-chart>
+      @switch (inject.edaChart.edaChart) {
+        @case ('bar') {
+          <eda-bar-d3 #EdaChart [inject]="inject.edaChart" class="h-full w-full"></eda-bar-d3>
+        }
+        @case ('line') {
+          <eda-line-d3 #EdaChart [inject]="inject.edaChart" class="h-full w-full"></eda-line-d3>
+        }
+        @case ('area') {
+          <eda-area-d3 #EdaChart [inject]="inject.edaChart" class="h-full w-full"></eda-area-d3>
+        }
+      }
     </div>
   </div>
 }
@@ -20,8 +30,10 @@
          style="max-width: 100%; overflow: hidden;">
         <span [ngStyle]="getStyle()" (click)="setSufix()"
               style="display: block; text-align: center; overflow-wrap: break-word; word-break: break-word;">
-            <img *ngIf="inject.prefixImage" [src]="inject.prefixImage" alt=""
-                 style="height: 1em; width: auto; vertical-align: middle; object-fit: contain; display: inline;" />
+            @if (inject.prefixImage) {
+              <img [src]="inject.prefixImage" alt=""
+                   style="height: 1em; width: auto; vertical-align: middle; object-fit: contain; display: inline;" />
+            }
             {{inject.value | number:'1.0-10':'es' }} {{inject.sufix}}
         </span>
 

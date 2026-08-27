@@ -172,7 +172,7 @@ export class UserService extends ApiService {
             );
     }
 
-    /** Renovar Token */
+    /** Renew Token */
     refreshToken() {
         return this.get( `${this.route}/refresh-token` )
             .pipe(map((res: any) => {
@@ -226,7 +226,7 @@ export class UserService extends ApiService {
         // window.location.href = 'http://localhost:8666/auth/saml/logout';
         window.location.href = `${URL_LOGOUT_SAML}${this.API}${this.authSAML_ORCL}/request-logout?token=${this.token}`;
 
-        // Borramos el Token y el usuario
+        // Clear the Token and the user
         this.user = null;
         this.token = '';
         localStorage.removeItem('token');

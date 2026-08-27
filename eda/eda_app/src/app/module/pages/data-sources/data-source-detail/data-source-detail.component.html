@@ -96,25 +96,6 @@
                   i18n-label='@@viewEdition' label="Edición de la vista"></button>
             </div>
           }
-          <!-- COMENTADO HASTA QUE SE IMPLEMENTE LA FUNCIONALIDAD 
-          <div class="grid gap-2">
-            <label i18n="@@inputTipoTabla"
-              class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Tipo de tabla
-            </label>
-            <div class="flex p-1 rounded-lg w-max bg-gray-200">
-              <button
-                *ngFor="let type of tableTypes"
-                (click)="updateTableType(type.value)"
-                class="min-w-60 px-4 py-2 rounded-lg transition-all text-center font-semibold
-                  ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
-                [ngClass]="{'bg-background text-foreground shadow-sm': tablePanel.table_type === type.value}"
-              >
-                {{ type.label }}
-              </button>
-            </div>
-          </div>
-          -->
         </div>
 
         
@@ -431,7 +412,7 @@
         }
 
         @if (columnPanel.computed_column !== 'no') {
-          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primaryh-10 px-4 py-2"
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
             (click)="editCalculatedField(columnPanel)" i18n="@@editCalculatedField">
             Edición de campo calculado
           </button>

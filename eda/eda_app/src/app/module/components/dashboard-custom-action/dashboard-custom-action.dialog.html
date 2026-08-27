@@ -6,10 +6,10 @@
   >
 
   <div content class="p-6">
-    <!-- S'ha de fer scrollable -->
+    <!-- Must be scrollable -->
 
     <div class="grid grid-flow-row auto-rows-auto gap-6">
-      <!-- Lista de URLs -->
+      <!-- URL list -->
       @if(urls?.length > 0){
           <!-- Position Column -->
           <div class="border rounded-lg">
@@ -57,12 +57,12 @@
           </div>   
       }
 
-      <!-- Configuración -->
+      <!-- Configuration -->
       <div class="grid space-y-8">
         <div class="grid grid-cols-2 gap-4">
           <div class="grid grid-flow-col grid-rows-4 gap-6">
       
-            <!-- Configuración lateral -->
+            <!-- Side configuration -->
             <div class="w-full">
               <label i18n="@@urlString" class="block mb-1">URL:</label>
               <input type="text" [(ngModel)]="urlAdd" class="custom-action-input w-full border px-2 py-2.5 rounded">
@@ -88,7 +88,7 @@
       
           </div>
       
-          <!-- Descripción lateral -->
+          <!-- Side description -->
           <div class="size-full description" i18n="@@resumeTextConfiguration">
             Puedes configurar una acción personalizada que quieras ejecutar.
             Te permite llamar a una URL que haga una acción que quieras invocar.

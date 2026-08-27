@@ -22,7 +22,7 @@ export class MapEditDialogComponent implements OnInit, AfterViewChecked {
 
   public panelChartConfig: PanelChart = new PanelChart();
 
-  // assignedColors para seguir el patrón estándar
+  // assignedColors to follow the standard pattern
   public assignedColors: Array<{ value: string, color: string }> = [{ value: 'Color', color: '#000000' }];
   private originalAssignedColors: Array<{ value: string, color: string }> = [];
 
@@ -51,7 +51,7 @@ export class MapEditDialogComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
-    // Cargar colores cuando el componente esté listo
+    // Load colors when the component is ready
     if (!this.colorsLoaded && this.assignedColors[0].color === '#000000' && this.myPanelChartComponent?.componentRef) {
       setTimeout(() => {
         this.loadColors();
@@ -64,7 +64,7 @@ export class MapEditDialogComponent implements OnInit, AfterViewChecked {
     this.mapUtilsService.mapEditClose();
   }
 
-  // Setup del dialog con sus elementos
+  // Setup of the dialog with its elements
   setupMapDialog() {
     this.zoom = this.controller.params.zoom;
     this.coordinates = this.controller.params.coordinates;
@@ -84,7 +84,7 @@ export class MapEditDialogComponent implements OnInit, AfterViewChecked {
   loadColors(): void {
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
 
-    // Obtener colores del componente del mapa
+    // Get colors from the map component
     if (leafletMap?.assignedColors && leafletMap.assignedColors.length >= 1) {
       this.assignedColors = [
         { value: 'Color', color: leafletMap.assignedColors[0].color },
@@ -93,7 +93,7 @@ export class MapEditDialogComponent implements OnInit, AfterViewChecked {
     this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
   }
 
-  // Configuración switchs dialog
+  // Configuration switches dialog
   nullMouseOptions() {
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
     leafletMap.switchNoMouse(this.draggable);
@@ -111,14 +111,14 @@ export class MapEditDialogComponent implements OnInit, AfterViewChecked {
     leafletMap.changeLegend(this.legendPosition);
   }
 
-  // Metodos de modificacion de de colores  
+  // Methods of modifying colors
   onPaletteSelected() {
     if (!this.selectedPalette) return;
     const palette = this.selectedPalette.paleta;
 
-    // Aplicar primer y último color de la paleta
+    // Apply the first and last color from the palette.
     this.assignedColors = [{ value: 'Color', color: palette[0] }];
-    // Actualizar colores del mapa
+    // Update map colors
     this.handleInputColor();
   }
 
@@ -135,7 +135,7 @@ export class MapEditDialogComponent implements OnInit, AfterViewChecked {
   saveChartConfig() {
       this.onClose(EdaDialogCloseEvent.UPDATE, {
           assignedColors: [...this.assignedColors],
-          color: this.assignedColors[0].color, // Para codigo legacy
+          color: this.assignedColors[0].color, // For legacy code
           logarithmicScale: this.logarithmicScale,
           baseLayer: this.baseLayer,
           legendPosition: this.legendPosition,
@@ -146,7 +146,7 @@ export class MapEditDialogComponent implements OnInit, AfterViewChecked {
   }
 
   closeChartConfig() {
-    // Restaurar colores originales
+    // Restore original colors
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
     if (leafletMap?.updateMapColors) {

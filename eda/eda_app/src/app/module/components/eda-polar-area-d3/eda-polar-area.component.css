@@ -1,0 +1,76 @@
+.eda-polar-area-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.eda-polar-area-wrapper .svg-container {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* SVG's initial UA style is overflow:hidden on the root element - without this, a label pill
+   whose padded box pokes slightly past the outer radius (near a large slice's edge) gets
+   silently clipped away instead of just drawn past the nominal chart bounds. */
+.eda-polar-area-wrapper .svg-container svg {
+  overflow: visible;
+}
+
+/* Like the tooltip below, the grid rings/labels are appended by D3 into a nested <svg>
+   it creates at runtime - not by Angular's template compiler - so they never get the
+   [_ngcontent] attribute Angular's view encapsulation relies on, and need ::ng-deep too. */
+::ng-deep .polar-area-grid-ring {
+  fill: none;
+  stroke: #000000;
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+::ng-deep .polar-area-grid-label {
+  font-size: 8px;
+  fill: #90a4ae;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+/* Tooltip appended by D3 to <body> (outside this component's template, so it needs ::ng-deep
+   to escape view encapsulation) - same reasoning as eda-doughnut.component.css. */
+::ng-deep .eda-polar-area-tooltip {
+  position: absolute;
+  text-align: left;
+  cursor: pointer;
+  padding: 8px 10px;
+  font: 12px;
+  color: #ffffff;
+  background: #010913ea;
+  border: 0;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+::ng-deep .eda-polar-area-tooltip > h6 {
+  color: white;
+  font-weight: bold;
+}
+
+::ng-deep .eda-polar-area-tooltip-title {
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+::ng-deep .eda-polar-area-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+::ng-deep .eda-polar-area-tooltip-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}

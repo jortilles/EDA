@@ -101,7 +101,7 @@ export class ColumnPermissionDialogComponent implements OnInit {
 
         let permissionFilter = {};
 
-        // Determinar el valor basándose en las opciones seleccionadas
+        // Determine the value based on the selected options
         let value;
         let isDynamic = false;
 

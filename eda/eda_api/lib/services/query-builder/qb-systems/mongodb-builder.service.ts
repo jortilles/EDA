@@ -275,17 +275,31 @@ export class MongoDBBuilderService {
         const sortStage: any = {};
         let hasSorting = false;
 
-        // Revisamos cada columna
-        for (const column of fields) {
-            // Si la columna tiene tipo de ordenación y además es diferente de NO
-            if (column.ordenation_type && column.ordenation_type !== 'No') {
-                // Si la columna tiene aggregation_type === 'none', está en _id después del $group
-                // Si tiene agregación, está en el nivel raíz
-                const sortField = column.aggregation_type === 'none' 
-                    ? `_id.${column.column_name}`: column.column_name;
+        const sortingCols: any[] = this.queryTODO.resultSortingColumns ?? [];
 
-                sortStage[sortField] = column.ordenation_type === 'Asc' ? 1 : -1;
+        if (sortingCols.length > 0) {
+            for (const col of sortingCols) {
+                if (!col.ordenation_type || col.ordenation_type === 'No') continue;
+                const matchingField = fields.find(
+                    (f: any) => f.table_id === col.table_id && f.column_name === col.column_name
+                );
+                if (matchingField) {
+                    const sortField = matchingField.aggregation_type === 'none'
+                        ? `_id.${matchingField.column_name}` : matchingField.column_name;
+                    sortStage[sortField] = col.ordenation_type === 'Asc' ? 1 : -1;
+                } else {
+                    sortStage[`_id.${col.column_name}`] = col.ordenation_type === 'Asc' ? 1 : -1;
+                }
                 hasSorting = true;
+            }
+        } else {
+            for (const column of fields) {
+                if (column.ordenation_type && column.ordenation_type !== 'No') {
+                    const sortField = column.aggregation_type === 'none'
+                        ? `_id.${column.column_name}` : column.column_name;
+                    sortStage[sortField] = column.ordenation_type === 'Asc' ? 1 : -1;
+                    hasSorting = true;
+                }
             }
         }
 

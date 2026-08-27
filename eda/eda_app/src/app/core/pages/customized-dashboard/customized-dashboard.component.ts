@@ -87,7 +87,7 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
         this._updateIframeSrc();
       },
       error: () => {
-        // Fallback: intentar recuperar la clave legacy 'customHTML'
+        // Fallback: try to retrieve the legacy key 'customHTML'
         this.customHTMLService.getByKey('customHTML').subscribe({
           next: ({ value }) => {
             this.sidebarHtml = value || this._buildSidebarHtml();
@@ -121,7 +121,7 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
         initialDashboardId: parsed.initialDashboardId || ''
       };
     } catch {
-      // Compatibilidad con la clave antigua 'customHTML' que guardaba HTML plano, eliminar a posterior
+      // Compatibility with the old 'customHTML' key that stored plain HTML, remove later
       return { html: value || this._buildSidebarHtml(), initialDashboardId: '' };
     }
   }
@@ -193,7 +193,7 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
     return '#96adb5';
   }
 
-  // RAW HTML base, modificar aquí
+  // Base RAW HTML, modify here
   private _buildSidebarHtml(): string {
     return `<div class="flex flex-col h-full text-white" style="background-color: #96adb5">
       <div class="flex-1 overflow-auto px-4 py-4">

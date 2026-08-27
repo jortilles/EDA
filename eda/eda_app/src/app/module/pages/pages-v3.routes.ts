@@ -6,7 +6,7 @@ import { RoleGuard } from '@eda/services/guards/role-guard.guard';
 export const pagesV3Routes: Routes = [
   {
     path: '',
-    component: PagesV3Component,  // Wrapper que contiene el layout principal
+    component: PagesV3Component,  // Wrapper containing the main layout
     canActivate: [VerifyTokenGuard],
     children: [
       {

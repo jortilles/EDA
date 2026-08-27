@@ -38,26 +38,26 @@ export class UploadFileComponent implements OnInit {
   onFilesAdded() {
     this.files = new Set();
     const files: { [key: string]: File } = this.file.nativeElement.files;
-    let fileFormat = files[0].name.split('.'); // separa en un arreglo nombre y formato
-    const modifiedFiles: { [key: string]: File } = {}; // copia de files con name y type cambiados
+    let fileFormat = files[0].name.split('.'); // splits into an array of name and format
+    const modifiedFiles: { [key: string]: File } = {}; // copy of files with name and type changed
 
-    // Verificación si el archivo es un json o un geojson, si no es ninguno de los dos nos devolvera error
+    // Check if the file is a json or geojson; if neither, return an error
     if(fileFormat[1] === 'json' || fileFormat[1] === 'geojson'){
       for (const key in files) {
         if (files.hasOwnProperty(key)) {
           const originalFile = files[key];
       
-          // Crear un nuevo archivo con un nuevo nombre y tipo
+          // Create a new file with a new name and type
           const newFile = new File(
-            [originalFile], // El contenido original del archivo
-            `${fileFormat[0]}.json`, // El nuevo nombre que quieras asignar
+            [originalFile], // Original file content
+            `${fileFormat[0]}.json`, // New name to assign
             {
-              type: 'application/json', // El nuevo tipo MIME que quieras asignar
-              lastModified: originalFile.lastModified, // Mantener la fecha de modificación
+              type: 'application/json', // New MIME type to assign
+              lastModified: originalFile.lastModified, // Keep the modification date
             }
           );
-      
-          // Asignar el nuevo archivo al objeto modificado
+
+          // Assign the new file to the modified object
           modifiedFiles[key] = newFile;
         }
       }
@@ -91,7 +91,7 @@ export class UploadFileComponent implements OnInit {
   }
 
 
-  // Métodos para manejar eventos de drag & drop
+  // Methods to handle drag & drop events
   handleDrag(e: DragEvent) {
     e.preventDefault();
     e.stopPropagation();
@@ -141,12 +141,12 @@ export class UploadFileComponent implements OnInit {
       return;
     }
 
-    // Leemos el archivo y verificamos si es valido
+    // Read the file and verify if it is valid
     const fileReader = new FileReader();
     fileReader.onload = () => {
       const geojson = JSON.parse(fileReader.result as string);
 
-      // Validar que el fichero es un GeoJSON con features de tipo Polygon o MultiPolygon
+      // Validate that the file is a GeoJSON with features of type Polygon or MultiPolygon
       const allSupported = geojson?.features?.every((f: any) => ['Polygon', 'MultiPolygon'].includes(f.geometry?.type));
       const isValid = geojson?.type === 'FeatureCollection' && geojson?.features?.length > 0 && allSupported;
 

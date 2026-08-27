@@ -157,7 +157,7 @@ export class ImportPanelDialog implements OnInit {
       const panelFilters = panel.content.query.query.filters || [];
       const dashFilters = this.dashboard.globalFilter.globalFilters;
 
-      // Solo utilizamos los filtros de panel que utilizan tipo de filtro 'in'
+      // We only use panel filters that use filter type 'in'
       this.panelsFilters = panelFilters.filter((f: any) => (f.isGlobal || (f.filter_type === 'in')));
       this.dashboardFilters = dashFilters;
 

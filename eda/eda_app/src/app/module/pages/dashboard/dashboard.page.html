@@ -1,6 +1,6 @@
 <div class="min-h-screen" id="myDashboard">
   <div class="w-full p-3 h-max" [ngStyle]="backgroundColor">
-    <div>
+    <div class="dashboard-export-header">
 
 
       <!-- Header -->
@@ -36,7 +36,7 @@
     </div>
 
 
-    <!-- CONTENIDO DEL DASHBOARD -->
+    <!-- DASHBOARD CONTENT -->
     <div class="relative">
       <div [style.height]="height + 'px'">
         <gridster [options]="gridsterOptions" class="dashboard-grid">

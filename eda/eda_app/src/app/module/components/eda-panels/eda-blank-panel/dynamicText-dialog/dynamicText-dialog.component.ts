@@ -3,7 +3,6 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
-import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { StyleProviderService } from '@eda/services/service.index';
 import { DynamicTextConfig } from '../panel-charts/chart-configuration-models/dynamicText-config';
 import { FormsModule } from '@angular/forms';
@@ -25,7 +24,7 @@ export class dynamicTextDialogComponent implements OnInit {
 
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
-  public chart: EdaChart;
+  public chart: any;
   public value: number;
   public operand: string;
   @Output() color;
@@ -66,7 +65,7 @@ export class dynamicTextDialogComponent implements OnInit {
     const panelChart = this.controller.params.panelChart;
     this.panelChartConfig = panelChart;
     const colorConfig = panelChart?.config?.config;
-    // Función para encontrar el color real sin importar la profundidad
+    // Function to find the actual color regardless of depth
     function getDeepColor(obj: any): string | null {
     while (obj && typeof obj === 'object' && 'color' in obj) {
       obj = obj.color;
@@ -75,7 +74,7 @@ export class dynamicTextDialogComponent implements OnInit {
   }
   const extractedColor = getDeepColor(colorConfig);
 
-  // extractedColor si acabamos de modificar el color del texto manualmente, sino el de estilos
+  // Use extractedColor if the text color was just changed manually; otherwise, use the style color
   this.color = !this.styleProviderService.loadingFromPalette ? extractedColor : this.styleProviderService.panelFontColor.source['_value'];
   this.originalColors = this.color;
   this.modifiedFontPoints = panelChart?.config?.getConfig()?.modifiedFontPoints || 0;

@@ -1,16 +1,42 @@
 import { Router } from 'express';
 import { AbstractConnection } from '../services/connection/abstract-connection';
 
-export interface IEDAPlugin {
-    /** Matches ds.connection.type stored in MongoDB */
+interface IBasePlugin {
+    kind: 'datasource' | 'feature';
     type: string;
-    /** Connection class constructor */
-    connectionClass: new (config: any) => AbstractConnection;
-    /** Optional Express router and its mount path */
     router?: Router;
     routerPath?: string;
-    /** Optional background sync service */
     syncService?: { syncAll: () => Promise<void> };
-    /** node-schedule cron expression for syncService */
     scheduleExpression?: string;
+}
+
+/*************** Interfaces Start ***************/
+
+/** Plugin that provides a database connection (datasources: MySQL, PostgreSQL, GA4, Odoo...) */
+export interface IDatasourcePlugin extends IBasePlugin {
+    kind: 'datasource';
+    connectionClass: new (config: any) => AbstractConnection;
+    /** Download fresh data from the external source into folderPath */
+    downloadData?: (params: Record<string, any>, folderPath: string) => Promise<any>;
+    /** Apply localized display names to the generated data model tables */
+    applyLabels?: (tables: any[], locale: string) => void;
+    /** Resolve a raw locale string (e.g. "es-ES", "en") to the plugin's supported locale */
+    resolveLocale?: (raw?: string) => string;
+    /** Add domain-specific relations between generated data model tables */
+    addRelations?: (tables: any[]) => void;
+}
+
+/** Plugin that adds a feature module (new routes, pages, actions...) without a database connection */
+export interface IFeaturePlugin extends IBasePlugin {
+    kind: 'feature';
+    router: Router;
+    routerPath: string;
+}
+
+/*************** Interfaces End ***************/
+
+export type IEDAPlugin = IDatasourcePlugin | IFeaturePlugin;
+
+export function isDatasourcePlugin(plugin: IEDAPlugin): plugin is IDatasourcePlugin {
+    return plugin.kind === 'datasource';
 }

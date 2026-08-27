@@ -164,7 +164,7 @@ export class EdaTabsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         const urlTree = this.router.createUrlTree(['/dashboard', dashboard.id]);
         let relativeUrl = this.router.serializeUrl(urlTree);
 
-        // Si hay filtros globales con valores seleccionados, los añadimos como query params
+        // If there are global filters with selected values, we add them as query parameters.
         const activeFilters = (this.globalFilters || []).filter(f => f.selectedItems && f.selectedItems.length > 0);
 
         if (activeFilters.length > 0) {
@@ -211,7 +211,7 @@ export class EdaTabsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
                                     this.panel.selectedDashboardIds = response.selectedDashboardIds;
                                     this.panel.openInNewTab = response.isOpeningNewTab;
                                     this.filterDashboards();
-                                    this.dashboardService._notSaved.next(true);
+                                    this.dashboardService.setNotSaved(true);
                                 }
                                 this.editTabsController = null;
                             }
@@ -252,6 +252,17 @@ export class EdaTabsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         });
         return item;
+    }
+
+    public openContextMenu(event: MouseEvent): void {
+        const lockIdx = this.contextMenu.contextMenuItems.findIndex(i =>
+            i.label === $localize`:@@panelOptionsLock:Bloquear panel` ||
+            i.label === $localize`:@@panelOptionsUnlock:Desbloquear panel`
+        );
+        if (lockIdx !== -1) {
+            this.contextMenu.contextMenuItems[lockIdx] = this._buildToggleLockItem();
+        }
+        this.contextMenu.showContextMenu(event);
     }
 
     public removePanel(): void {

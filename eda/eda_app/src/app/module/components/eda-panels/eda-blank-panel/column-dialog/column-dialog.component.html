@@ -27,7 +27,7 @@
         'grid-cols-[1fr_1fr_4fr]': !showFormatDateSection}
       ">
 
-      <!-- Agregaciones + Rangos + Navegable -->
+      <!-- Aggregations + Ranges + Navigation -->
       <div class="flex flex-col gap-3">
 
         <div class="section-card">
@@ -46,7 +46,7 @@
           </div>
         </div>
 
-        <!-- Rangos -->
+        <!-- Ranges -->
         @if (selectedColumn.aggregation_type.length === 7) {
           <div class="section-card">
             <h4 class="section-title flex items-center gap-1.5">
@@ -87,7 +87,7 @@
           </div>
         }
 
-        <!-- Navegable -->
+        <!-- Navigation -->
         @if (selectedColumn.column_type === 'date') {
           <div class="section-card">
             <h4 class="section-title" i18n="@@dateNavLabel">Navegación por fecha</h4>
@@ -122,7 +122,7 @@
 
       </div>
 
-      <!-- Ordenación -->
+      <!-- Sorting -->
       <div class="section-card self-start">
         <h4 class="section-title" i18n="@@ordenacionH4">Ordenación</h4>
         <div class="aggregation-list">
@@ -136,7 +136,7 @@
         </div>
       </div>
 
-      <!-- FormatDate -->
+      <!-- Date Format -->
       @if (showFormatDateSection) {
         <div class="section-card self-start">
           <h4 class="section-title" i18n="@@dateFormatH4">Formato</h4>
@@ -172,14 +172,14 @@
         </div>
       }
 
-      <!-- Filtrar -->
+      <!-- Filtering -->
       <div class="flex flex-col gap-3">
 
         <div class="section-card">
           <h4 class="section-title" i18n="@@filtrarH4">Filtrar</h4>
           <div class="grid grid-cols-[42.5%_42.5%_15%] gap-3 items-start">
 
-            <!-- Tipo y ámbito de filtro + switch -->
+            <!-- Filter type and scope + switch -->
             <div class="flex flex-col gap-3 w-full">
               <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
                 [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"
@@ -210,7 +210,7 @@
               }
             </div>
 
-            <!-- Valores de los filtros -->
+            <!-- Filter values -->
             <div class="flex flex-col w-full gap-3">
               @if (!!display.calendar && !!display.between) {
                 <eda-date-picker #myCalendar class="h-[3.2rem]" (onDatesChanges)="processPickerEvent($event)"></eda-date-picker>
@@ -274,7 +274,7 @@
               }
             </div>
 
-            <!-- Botón añadir filtro -->
+            <!-- Add filter button -->
             <div>
               <button class="addFilter-button" (click)="addFilter()" [disabled]="display.filterButton">
                 <i class="fa fa-plus mr-1"></i>
@@ -285,7 +285,7 @@
           </div>
         </div>
 
-        <!-- Lista de filtros activos -->
+        <!-- Active filters list -->
         @if (filter.forDisplay.length > 0) {
           <div class="section-card pt-3">
             <h5 class="section-title" i18n="@@filters">Filtros activos</h5>

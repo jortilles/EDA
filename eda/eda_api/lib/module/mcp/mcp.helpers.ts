@@ -22,8 +22,9 @@ export function getAnthropicConfig() {
 export function getBaseUrl(): string {
     const { EDA_APP_URL } = getAnthropicConfig();
     if (!EDA_APP_URL) return '';
-    const hasLocale = LOCALES.some(l => EDA_APP_URL.includes(l));
-    return hasLocale ? EDA_APP_URL : `${EDA_APP_URL}/es/#`;
+    const cleanUrl = EDA_APP_URL.replace(/[/#\s]+$/, '');
+    const hasLocale = LOCALES.some(l => cleanUrl.includes(l));
+    return hasLocale ? `${cleanUrl}/#` : `${cleanUrl}/es/#`;
 }
 
 // ============================================================

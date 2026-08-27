@@ -10,8 +10,8 @@ import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { lastValueFrom } from 'rxjs';
 import { NgxCsvParser } from 'ngx-csv-parser';
 import { ChangeDetectorRef } from '@angular/core';
-import { DATASOURCE_PLUGINS } from '../datasource-plugins/datasource-plugin-registry';
-import { PluginFormService } from '../datasource-plugins/plugin-form.service';
+import { DATASOURCE_PLUGINS } from '../../../../plugins/datasource-plugins/datasource-plugin-registry';
+import { PluginFormService } from '../../../../plugins/datasource-plugins/plugin-form.service';
 
 import { DropdownModule } from 'primeng/dropdown';
 
@@ -23,7 +23,8 @@ import { DropdownModule } from 'primeng/dropdown';
   imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, IconComponent, DropdownModule, NgComponentOutlet]
 })
 export class DataSourceConnectionDetailPage implements OnInit {
-  private uploadFileService = inject(UploadFileService);
+  private uploadFileService  = inject(UploadFileService);
+  private pluginFormService  = inject(PluginFormService);
 
   @ViewChild('fileUploader', { static: false }) fileUploader: UploadFileComponent;
   @ViewChild('excelFile', { static: false }) excelFile: ElementRef<HTMLInputElement>;
@@ -64,12 +65,13 @@ export class DataSourceConnectionDetailPage implements OnInit {
     { label: 'SnowFlake', value: 'snowflake', port: null },
     { label: 'ClickHouse', value: 'clickhouse', port: 8123 },
     { label: 'jsonWebService', value: 'jsonwebservice' },
-    { label: 'Mongo', value: 'mongo', port: 27017 },
+
     { label: 'Excel', value: 'excel', port: 27017 },
     { label: 'Csv', value: 'csv', port: 27017 },
     { label: 'DuckDB (CSV)', value: 'duckdb' },
     { label: 'Odoo', value: 'odoo', port: null },
     { label: 'Google Analytics 4', value: 'googleanalytics', port: null },
+    { label: 'Holded', value: 'holded', port: null },
   ];
 
   public sidOptions: any[] = [
@@ -105,10 +107,10 @@ export class DataSourceConnectionDetailPage implements OnInit {
   }
 
   get pluginFormInputs() {
-      return { connectionForm: this.connectionForm };
+      return { connectionForm: this.connectionForm, apiBasePath: this.activePlugin?.apiBasePath ?? '' };
   }
 
-  // variables añadidas ppor el script add-ccsv
+  // Variables added by the add-csv script
   public csvRecords: any;
   public csvHeaders: any;
   public csvColumns: any = [];
@@ -132,7 +134,6 @@ export class DataSourceConnectionDetailPage implements OnInit {
     private ngxCsvParser: NgxCsvParser,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
-    private pluginFormService: PluginFormService,
   ) {
 
 
@@ -208,7 +209,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     this.showPassword = !this.showPassword
   }
 
-  // Helper para marcar todos los campos como tocados (para validación)
+  // Helper to mark all fields as touched (for validation)
   markFormGroupTouched(formGroup: FormGroup): void {
     Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched()
@@ -510,7 +511,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
   }
 
-  // Métodos para manejar eventos de drag & drop
+  // Drag & drop event handling methods
   handleDrag(e: DragEvent) {
     e.preventDefault();
     e.stopPropagation();
@@ -581,11 +582,11 @@ export class DataSourceConnectionDetailPage implements OnInit {
 
     const file = files[0];
 
-    // Obtener el separador del formulario
+    // Get the form delimiter
     const separator = this.connectionForm.get('separator')?.value || ';';
 
     try {
-      // Re-parsear el CSV con el nuevo separador
+      // Re-parse the CSV with the new delimiter
       this.csvRecords = await lastValueFrom(this.ngxCsvParser.parse(file, { header: true, delimiter: separator }));
 
       if (!this.csvRecords || this.csvRecords.length === 0) {
@@ -605,7 +606,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
           } else if (i === 1) {
             row[this.names[i]] = ''; // format
           } else {
-            row[this.names[i]] = ','; // separator decimal por defecto (coma)
+            row[this.names[i]] = ','; // Default decimal separator (comma)
           }
         }
         this.csvColumns.push(row);
@@ -621,7 +622,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     const separator = this.connectionForm.get('separator')?.value || ';';
 
     try {
-      // Parsear con ngxCsvParser para mantener consistencia
+      // Parse with ngxCsvParser to maintain consistency
       this.csvRecords = await lastValueFrom(this.ngxCsvParser.parse(file, { header: true, delimiter: separator }));
 
       if (!this.csvRecords || this.csvRecords.length === 0) {
@@ -643,7 +644,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
           } else if (i === 1) {
             row[this.names[i]] = ''; // format
           } else {
-            row[this.names[i]] = ','; // separator decimal por defecto (coma)
+            row[this.names[i]] = ','; // Default decimal separator (comma)
           }
         }
         this.csvColumns.push(row);
@@ -691,7 +692,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
 
     try {
-      // Obtener el separador del formulario (no sobrescribir si ya existe)
+      // Get the form delimiter (do not overwrite if it already exists)
       const separator = this.connectionForm.get('separator')?.value || ';';
 
       this.csvRecords = await lastValueFrom(this.ngxCsvParser.parse(file, { header: true, delimiter: separator }));
@@ -714,7 +715,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
           } else if (i === 1) {
             row[this.names[i]] = ''; // format
           } else {
-            row[this.names[i]] = ','; // separator decimal por defecto (coma)
+            row[this.names[i]] = ','; // Default decimal separator (comma)
           }
         }
         this.csvColumns.push(row);

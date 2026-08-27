@@ -39,7 +39,7 @@ export class PagesComponent implements OnInit {
         this.route.queryParams.subscribe(params => {
             try{
                     if(params['panelMode'] == 'true'){
-                        this.panelMode =true; // en mode panel es mostra nomel els panells
+                        this.panelMode =true; // In panel mode, only panels are shown
                     }
             }catch(e){
             }
