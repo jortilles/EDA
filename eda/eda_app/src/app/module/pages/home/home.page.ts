@@ -17,11 +17,12 @@ import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/date
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ChatbotComponent } from '@eda/components/chatbot/chatbot.component';
+import { GettingStartedComponent } from '@eda/shared/components/getting-started/getting-started.component';
 
 @Component({
   selector: 'app-v2-home-page',
   standalone: true,
-  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule, EdaDatePickerComponent, DropdownModule, MultiSelectModule, ChatbotComponent],
+  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule, EdaDatePickerComponent, DropdownModule, MultiSelectModule, ChatbotComponent, GettingStartedComponent],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.css']
 })
@@ -32,6 +33,7 @@ export class HomePage implements OnInit, OnDestroy {
   private router = inject(Router);
 
   allDashboards: any[] = [];
+  reportsLoaded = signal(false);
   publicReports: any[] = [];
   privateReports: any[] = [];
   roleReports: any[] = [];
@@ -144,6 +146,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.handleSorting();
     this.loadReportTags();
     this.setIsObserver();
+    this.reportsLoaded.set(true);
   }
 
   private async loadReportTags() {
@@ -276,6 +279,10 @@ export class HomePage implements OnInit, OnDestroy {
     return report.user === this.userService.user?._id|| this.userService.isAdmin;
   }
 
+  public get canManageDatasources(): boolean {
+    return this.userService.isAdmin || this.userService.isDataSourceCreator;
+  }
+
   public filterByTags() {
     const tags = sessionStorage.getItem('activeTags') || '[]';
     if (tags.includes($localize`:@@AllTags:Todos`) || tags.includes(this.allTagsFlatValue) || tags === '[]') {
@@ -369,7 +376,7 @@ export class HomePage implements OnInit, OnDestroy {
       const cfg = db.config;
       if (title      && !cfg.title?.toUpperCase().includes(title.toUpperCase())) return false;
       if (author     && !cfg.author?.toLowerCase().startsWith(author.toLowerCase())) return false;
-      if (datasource && !cfg.ds?.type?.toLowerCase().includes(datasource.toLowerCase())) return false;
+      if (datasource && !cfg.ds?.name?.toLowerCase().includes(datasource.toLowerCase())) return false;
       if (tag        && !this.normTagArr(cfg).some(t => t.toLowerCase().includes(tag.toLowerCase()))) return false;
       if (createdFrom  && new Date(cfg.createdAt) < new Date(createdFrom)) return false;
       if (createdTo    && new Date(cfg.createdAt) > new Date(createdTo + 'T23:59:59')) return false;
@@ -580,7 +587,7 @@ export class HomePage implements OnInit, OnDestroy {
     const filterFn = (reports: any[]) => reports.filter(db => {
       const cfg = db.config;
       if (author     && !cfg.author?.toLowerCase().includes(author.toLowerCase())) return false;
-      if (datasource && !cfg.ds?.type?.toLowerCase().includes(datasource.toLowerCase())) return false;
+      if (datasource && !cfg.ds?.name?.toLowerCase().includes(datasource.toLowerCase())) return false;
       if (hasTags    && !this.advancedTags.some(t => {
         if (t === $localize`:@@NoTag:Sin Etiqueta`) {
           const tag = cfg.tag;

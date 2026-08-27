@@ -41,6 +41,9 @@
                     @case ('showGridLines') {
                       <label i18n="@@showGridLines" class="font-medium">Mostrar Líneas Guía</label>
                     }
+                    @case ('showTimeline') {
+                      <label i18n="@@raceBarShowTimeline" class="font-medium">Mostrar línea de tiempo</label>
+                    }
                   }
                   <label class="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" [(ngModel)]="toggleState[key]" class="sr-only peer" (ngModelChange)="onToggleChanged()">
@@ -51,6 +54,30 @@
                 </div>
               }
 
+              @if (toggleState['showLabels'] || toggleState['showLabelsPercent']) {
+                <div class="flex items-center justify-between">
+                  <label class="font-medium" i18n="@@labelColorOption">Color de las etiquetas</label>
+                  <div class="flex items-center gap-3">
+                    <div class="flex border rounded-md overflow-hidden text-sm">
+                      <button type="button"
+                        class="px-3 py-1.5"
+                        [ngClass]="labelColorButtonClass('series')"
+                        (click)="labelColorMode = 'series'; setLabelColor()" i18n="@@labelColorSeries">Propio</button>
+                      <button type="button"
+                        class="px-3 py-1.5 border-l"
+                        [ngClass]="labelColorButtonClass('custom')"
+                        (click)="labelColorMode = 'custom'; setLabelColor()" i18n="@@labelColorCustom">Personalizado</button>
+                    </div>
+                    @if (labelColorMode === 'custom') {
+                      <div class="flex items-center border rounded-md overflow-hidden">
+                        <input [(ngModel)]="labelCustomColor" (input)="setLabelColor()" class="text-sm text-slate-600 font-mono w-20 px-3 py-1.5 focus:outline-none">
+                        <p-colorPicker [(ngModel)]="labelCustomColor" (onChange)="setLabelColor()" format="hex" appendTo="body" />
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
               @if (spec.hasInnerRadius) {
                 <div class="flex items-center justify-between">
                   <label i18n="@@innerRadius" class="font-medium">Radio interno</label>
@@ -58,6 +85,22 @@
                     <input type="range" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="setInnerRadius()" class="w-56 accent-[var(--corporate-primary)]">
                     <input type="number" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="setInnerRadius()" class="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm">
                   </div>
+                </div>
+              }
+
+              @if (spec.hasTopNCount) {
+                <div class="flex items-center gap-3">
+                  <label i18n="@@raceBarTopN" class="font-medium shrink-0">Barras a mostrar (Top N)</label>
+                  <input type="range" min="3" max="20" [(ngModel)]="topNCount" (input)="setTopNCount()" class="flex-1 min-w-0 accent-[var(--corporate-primary)]">
+                  <input type="number" min="3" max="20" [(ngModel)]="topNCount" (input)="setTopNCount()" class="w-20 shrink-0 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                </div>
+              }
+
+              @if (spec.hasTransitionMs) {
+                <div class="flex items-center gap-3">
+                  <label i18n="@@raceBarTransitionMs" class="font-medium shrink-0">Duración de la transición (ms)</label>
+                  <input type="range" min="250" max="10000" step="250" [(ngModel)]="transitionMs" (input)="setTransitionMs()" class="flex-1 min-w-0 accent-[var(--corporate-primary)]">
+                  <input type="number" min="250" max="10000" step="250" [(ngModel)]="transitionMs" (input)="setTransitionMs()" class="w-20 shrink-0 rounded-md border border-input bg-background px-3 py-2 text-sm">
                 </div>
               }
             </div>

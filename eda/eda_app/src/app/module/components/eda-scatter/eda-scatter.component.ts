@@ -120,8 +120,6 @@ export class EdaScatter implements AfterViewInit {
       .range([height - margin.bottom, margin.top])
 
     const grid = g => g
-      .attr("stroke", this.styleProviderService.panelFontColor.source['_value'])
-      .attr("stroke-opacity", 0.1)
       .call(g => g.append("g")
         .selectAll("line")
         .data(x.ticks())
@@ -167,12 +165,15 @@ export class EdaScatter implements AfterViewInit {
 
     
     svg.append("g")
+      .attr("class", "eda-scatter-axis")
       .call(xAxis);
 
       svg.append("g")
+      .attr("class", "eda-scatter-axis")
       .call(yAxis);
 
     svg.append("g")
+      .attr("class", "eda-scatter-grid")
       .call(grid);
 
     let defs = svg.select('defs');
@@ -278,8 +279,10 @@ export class EdaScatter implements AfterViewInit {
     .attr("r", (d: any) => d.radius + 1)
     .attr("opacity", 1);
     svg.selectAll(".tick text")
-      .attr("stroke", this.styleProviderService.panelFontColor.source['_value'])
-      .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
+      .style("font-family", this.styleProviderService.panelFontFamily.source['_value'])
+      .style("font-size", "11px")
+      .style("font-weight", 500)
+      .style("fill", "#000000");
 
     this.hasRendered = true;
   }

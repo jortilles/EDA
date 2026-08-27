@@ -175,7 +175,8 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private formatLabel(series: LineSeries, catIndex: number, value: number): string {
-    return formatValueLabel(value, this.percentOfSeries(series, catIndex), this.inject.showLabels, this.inject.showLabelsPercent);
+    const roundedValue = series.isTrend ? Math.round(value * 100) / 100 : value;
+    return formatValueLabel(roundedValue, this.percentOfSeries(series, catIndex), this.inject.showLabels, this.inject.showLabelsPercent);
   }
 
   draw(): void {

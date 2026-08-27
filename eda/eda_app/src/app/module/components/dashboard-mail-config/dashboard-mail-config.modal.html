@@ -88,9 +88,20 @@
     </div>
 
     @if (enabled && allRecipientEmails.length > 0) {
-        <div class="mt-4 text-base text-gray-600">
-            <span class="font-semibold" i18n="@@sendToSummary">Enviar a:</span>
-            {{ allRecipientEmails.join(', ') }}
+        <div class="mt-4 flex items-center justify-between gap-4 text-base text-gray-600">
+            <div>
+                <span class="font-semibold" i18n="@@sendToSummary">Enviar a:</span>
+                {{ allRecipientEmails.join(', ') }}
+            </div>
+            <button type="button" (click)="sendTest()" [disabled]="disableTest()"
+                i18n-title="@@testMailButtonTitle" title="Envía este correo ahora mismo para comprobar que la configuración es correcta"
+                class="shrink-0 inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none transition-colors">
+                @if (isTesting()) {
+                    <span i18n="@@testingMail">Enviando...</span>
+                } @else {
+                    <span i18n="@@testMailButton">Probar</span>
+                }
+            </button>
         </div>
     }
 </div>

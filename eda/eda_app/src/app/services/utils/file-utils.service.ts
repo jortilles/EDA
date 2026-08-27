@@ -650,7 +650,8 @@ export class FileUtiles {
     private static readonly W_HEADER_FG = '2E75B6';   // header: blue text
     private static readonly W_TITLE_BG  = 'FFFFFF';   // panel title: white background
     private static readonly W_TITLE_FG  = '2E75B6';   // panel title: blue text
-    private static readonly W_TOTAL_BG  = 'D6E4F0';   // totals row: very light blue
+    private static readonly W_TOTAL_BG    = 'D6E4F0';   // totals row: very light blue
+    private static readonly W_SUBTOTAL_BG = 'E8F2FA';   // subtotals row: even lighter blue
     private static readonly W_DATA_FG   = '000000';   // data: black text
 
     private static readonly W_NO_BORDER = {
@@ -852,6 +853,21 @@ export class FileUtiles {
             }));
         });
 
+        // Subtotals: even lighter blue
+        const partials: any[] = table.partialTotalsRow || [];
+        if (partials.length > 0) {
+            rows.push(new TableRow({
+                children: partials.slice(0, cols.length).map((item: any) => new TableCell({
+                    shading:  { fill: FileUtiles.W_SUBTOTAL_BG, type: ShadingType.SOLID },
+                    width:    { size: colPct, type: WidthType.PERCENTAGE },
+                    children: [new Paragraph({
+                        children:  [new TextRun({ text: item.data ?? '', bold: true, size: 18 })],
+                        alignment: AlignmentType.RIGHT,
+                    })],
+                })),
+            }));
+        }
+
         // Totals: very light blue
         const totals: any[] = table.totalsRow || [];
         if (totals.length > 0) {
@@ -954,6 +970,21 @@ export class FileUtiles {
                 }),
             }));
         });
+
+        // Subtotals: even lighter blue
+        const partials: any[] = table.partialTotalsRow || [];
+        if (partials.length > 0) {
+            rows.push(new TableRow({
+                children: partials.slice(0, cols.length).map((item: any) => new TableCell({
+                    shading:  { fill: FileUtiles.W_SUBTOTAL_BG, type: ShadingType.SOLID },
+                    width:    { size: colPct, type: WidthType.PERCENTAGE },
+                    children: [new Paragraph({
+                        children:  [new TextRun({ text: item.data ?? '', bold: true, size: 18 })],
+                        alignment: AlignmentType.RIGHT,
+                    })],
+                })),
+            }));
+        }
 
         // Totals: very light blue
         const totals: any[] = table.totalsRow || [];

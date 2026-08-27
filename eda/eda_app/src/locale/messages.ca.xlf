@@ -4051,17 +4051,17 @@ Qué estic veient?
 <trans-unit id="firstAboutParagraphSpan" datatype="html">
   <source>  
                 <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar 
-                informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar
+                informes gráficos e interactivos de forma sencilla. Edalitics es una aplicación que se puede instalar
                 en tus propios servidores o se puede difrutar en su versión SaaS 
                 <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>. 
-                Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
+                Edalitics permite disfrutar de toda la potencia de Edalitics sin tener que preocuparte de instalaciones, 
                 configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.  </source>
   <target>
                 <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> és una aplicació web de codi lliure que permet realitzar
-                 informes gràfics i interactius de forma senzilla. EDA és una aplicació que es pot instal·lar
+                 informes gràfics i interactius de forma senzilla. Edalitics és una aplicació que es pot instal·lar
                  als teus propis servidors o es pot gaudir en la seva versió SaaS
                  <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>.
-                 Edalitics permet gaudir de tota la potència d'EDA sense haver de preocupar-te d'instal·lacions,
+                 Edalitics permet gaudir de tota la potència d'Edalitics sense haver de preocupar-te d'instal·lacions,
                  configuracions, actualitzacions, etc. Connectes les teves fonts de dades i llest. </target>
   <context-group purpose="location">
     <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -4072,14 +4072,14 @@ Qué estic veient?
 
 <trans-unit id="secondAboutParagraph" datatype="html">
   <source>
-                 EDA ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
+                Edalitics ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
                 Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
-                funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
+                funcionalidades o carácteristicas. Jortilles financia el desarrollo de Edalitics mediante las suscripciones a Edalitics
                 y el soporte empresarial que ofrece a sus clientes.  </source>
   <target>
-                EDA ha estat desenvolupat per <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
+                Edalitics ha estat desenvolupat per <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
                  Si necessiteu suport empresarial, no dubteu a contactar amb nosaltres. Així mateix com si voleu sol·licitar-ne de noves
-                 funcionalitats o característiques. Jortilles finança el desenvolupament d'EDA mitjançant les subscripcions a Edalitics
+                 funcionalitats o característiques. Jortilles finança el desenvolupament d'Edalitics mitjançant les subscripcions a Edalitics
                  i el suport empresarial que ofereix als clients. </target>
   <context-group purpose="location">
     <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -4089,10 +4089,10 @@ Qué estic veient?
 
 <trans-unit id="thirdAboutParagraph" datatype="html">
   <source>
-   El código fuente de EDA está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+   El código fuente de Edalitics está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
   </source>
   <target>
-   El codi font d'EDA està disponible a <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+   El codi font d'Edalitics està disponible a <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
   </target>
   <context-group purpose="location">
     <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -4102,10 +4102,10 @@ Qué estic veient?
 
 <trans-unit id="fourthAboutParagraph" datatype="html">
   <source>
-   La documentación de EDA está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
+   La documentación de Edalitics está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
   </source>
   <target>
-  La documentació d'EDA està disponible a <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Aquest Link</a>
+  La documentació d'Edalitics està disponible a <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Aquest Link</a>
   </target>
 </trans-unit>
 
@@ -5004,8 +5004,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP1">
-  <source>Una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla.</source>
-  <target>Una aplicació web de codi lliure que permet fer informes gràfics i interactius de forma senzilla.</target>
+  <source>Analítica de datos sin complicaciones.</source>
+  <target>Analítica de dades sense complicacions.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaH1">
@@ -5014,8 +5014,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP2">
-  <source>EDA es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
-  <target>EDA és una aplicació que es pot instal·lar als teus propis servidors o gaudir a la seva versió SaaS Edalitics.</target>
+  <source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión <a href="https://www.edalitics.com" target="_blank"   class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</source>
+  <target>Edalitics és una aplicació que es pot instal·lar als teus propis servidors o gaudir a la seva versió <a href="https://www.edalitics.com" target="_blank"   class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA1">
@@ -5029,8 +5029,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP3">
-  <source>Accede a nuestra documentación completa para aprender a sacar el máximo provecho de EDA.</source>
-  <target>Accediu a la nostra documentació completa per aprendre a treure el màxim profit d'EDA.</target>
+  <source>Accede a nuestra documentación completa para aprender a sacar el máximo provecho de Edalitics.</source>
+  <target>Accediu a la nostra documentació completa per aprendre a treure el màxim profit d'Edalitics.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA2">
@@ -5054,8 +5054,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP5">
-  <source>Aprende a usar EDA con nuestros tutoriales paso a paso.</source>
-  <target>Aprèn a fer servir EDA amb els nostres tutorials pas a pas.</target>
+  <source>Aprende a usar Edalitics con nuestros tutoriales paso a paso.</source>
+  <target>Aprèn a fer servir Edalitics amb els nostres tutorials pas a pas.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaB1">
@@ -5069,8 +5069,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaH4">
-  <source>¿Quieres probar EDA en el cloud?</source>
-  <target>Vols provar EDA al cloud?</target>
+  <source>¿Quieres probar Edalitics en el cloud?</source>
+  <target>Vols provar Edalitics al cloud?</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP6">
@@ -5089,8 +5089,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA5">
-  <source>EDA ha sido desarrollado por</source>
-  <target>EDA ha estat desenvolupat per</target>
+  <source>Edalitics ha sido desarrollado por</source>
+  <target>Edalitics ha estat desenvolupat per</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP7">
@@ -6681,8 +6681,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Datasource</target>
       </trans-unit>
       <trans-unit id="datasourceFilterPlaceholder" datatype="html">
-        <source>postgres, mysql...</source>
-        <target>postgres, mysql...</target>
+        <source>Nombre del datasource...</source>
+        <target>Nom del datasource...</target>
       </trans-unit>
       <trans-unit id="createdFilterLabel" datatype="html">
         <source>Creado en</source>
@@ -6873,8 +6873,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>CONTEXT</target>
       </trans-unit>
       <trans-unit id="aiEDAApp" datatype="html">
-        <source>EDA APP URL</source>
-        <target>EDA APP URL</target>
+        <source>Edalitics APP URL</source>
+        <target>Edalitics APP URL</target>
       </trans-unit>
       <trans-unit id="aiMCPURL" datatype="html">
         <source>MCP URL</source>
@@ -7139,6 +7139,58 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="disablePanelAnimationsButton">
         <source>Desactivar animaciones</source>
         <target>Desactivar animacions</target>
+      </trans-unit>
+      <trans-unit id="aboutResourcesTitle">
+        <source>Recursos</source>
+        <target>Recursos</target>
+      </trans-unit>
+      <trans-unit id="gettingStartedTitle">
+        <source>Primeros pasos</source>
+        <target>Primers passos</target>
+      </trans-unit>
+      <trans-unit id="gettingStartedSubtitle">
+        <source>Todo lo que necesitas para crear tu primer informe en edalitics.</source>
+        <target>Tot el que necessites per crear el teu primer informe a edalitics.</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Title">
+        <source>Conecta tus datos</source>
+        <target>Connecta les teves dades</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Desc">
+        <source>Conecta una fuente de datos y define tu modelo de datos.</source>
+        <target>Connecta una font de dades i defineix el teu model de dades.</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Cta">
+        <source>Crear fuente de datos</source>
+        <target>Crear font de dades</target>
+      </trans-unit>
+      <trans-unit id="gsStep1Hint">
+        <source>Pide a un administrador que conecte una fuente de datos.</source>
+        <target>Demana a un administrador que connecti una font de dades.</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Title">
+        <source>Crea tu primer informe</source>
+        <target>Crea el teu primer informe</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Desc">
+        <source>Diseña un dashboard interactivo a partir de tu modelo de datos.</source>
+        <target>Dissenya un dashboard interactiu a partir del teu model de dades.</target>
+      </trans-unit>
+      <trans-unit id="gsStep2Cta">
+        <source>Crear informe</source>
+        <target>Crear informe</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Title">
+        <source>Explora y aprende</source>
+        <target>Explora i aprèn</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Desc">
+        <source>Tutoriales, documentación y comunidad para sacar el máximo partido a edalitics.</source>
+        <target>Tutorials, documentació i comunitat per treure el màxim partit a edalitics.</target>
+      </trans-unit>
+      <trans-unit id="gsStep3Cta">
+        <source>Ver recursos</source>
+        <target>Veure recursos</target>
       </trans-unit>
     </body>
   </file>

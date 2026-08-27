@@ -142,8 +142,24 @@ th{
 }
 /* Apply style to the paginator container */
 .eda-table ::ng-deep .p-paginator{
-    background-color: inherit; 
+    background-color: inherit;
     color: inherit;
+}
+
+/* Mirror the width of the "N registros" block with an invisible spacer on the
+   other side, so the pagination controls stay centered on the full paginator
+   width. Both stay in normal flex flow (no position:absolute) so they shrink
+   and wrap to their own line instead of overlapping when space is tight. */
+.eda-table ::ng-deep .p-paginator::before {
+    content: "";
+    flex: 1 1 auto;
+}
+
+.eda-table ::ng-deep .p-paginator-right-content {
+    flex: 1 1 auto;
+    margin-left: 0;
+    display: flex;
+    justify-content: flex-end;
 }
 
 /* Apply style to the paginator dropdown container */

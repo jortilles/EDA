@@ -9,6 +9,19 @@
   min-height: 0;
 }
 
+/* Axes/grid are appended by D3 directly into the nested <svg> it creates at runtime, outside
+   Angular's template compiler, so they never get the [_ngcontent] attribute - ::ng-deep is
+   required to style them from this component's own stylesheet. Matches eda-bar/eda-line. */
+::ng-deep .eda-scatter-grid line {
+  stroke: #94a3b8;
+  stroke-opacity: 0.3;
+}
+
+::ng-deep .eda-scatter-axis path,
+::ng-deep .eda-scatter-axis line {
+  stroke: #94a3b8;
+}
+
 /* Tooltip appended by D3TooltipService to <body> (outside this component's template, so it needs
    ::ng-deep to escape view encapsulation). Defined locally rather than relying on the shared
    global `.d3tooltip` class in prime-styles/custom.css, since that stylesheet is never actually

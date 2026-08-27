@@ -41,12 +41,12 @@
                     class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
                     i18n-placeholder="@@authorFilterPlaceholder" placeholder="Autor...">
                 </div>
-                <!-- Datasource type -->
+                <!-- Datasource name -->
                 <div class="space-y-1">
                   <label class="text-xs font-medium text-muted-foreground" i18n="@@datasourceFilterLabel">Datasource</label>
                   <input type="text" [(ngModel)]="advancedFilters.datasource" (ngModelChange)="applyAdvancedFilters()"
                     class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
-                    i18n-placeholder="@@datasourceFilterPlaceholder" placeholder="postgres, mysql...">
+                    i18n-placeholder="@@datasourceFilterPlaceholder" placeholder="Nombre del datasource...">
                 </div>
                 
                 <!-- Created at -->
@@ -113,6 +113,11 @@
   <!-- Dashboards (scrollable) -->
   <div class="flex-1 overflow-y-auto">
     <div class="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      @if (reportsLoaded() && allDashboards.length < 3 && canManageDatasources) {
+        <div class="mb-6">
+          <eda-getting-started></eda-getting-started>
+        </div>
+      }
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Public Reports -->
         <ng-container
