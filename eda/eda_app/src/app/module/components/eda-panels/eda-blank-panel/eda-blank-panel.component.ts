@@ -246,12 +246,18 @@ export class EdaBlankPanelComponent implements OnInit {
     /** Chart Variables */
     public chartTypes: EdaChartType[]; // All posible chartTypes
 
+    // Split so no single group runs disproportionately long once expanded (the original "Barras y
+    // Líneas" bundled 10 types together, which defeated the whole point of grouping) - every
+    // chartTypes subValue must appear in exactly one of these, or it silently vanishes from the
+    // selector entirely (that's what happened to 'raceBar' before this split).
     private static readonly CHART_GROUPS = [
-        { label: 'Tablas',          icon: 'table_chart',  subValues: ['table', 'crosstable', 'treetable', 'tableanalized'] },
-        { label: 'KPI',             icon: 'speed',        subValues: ['kpi', 'kpibar', 'kpiline', 'kpiarea', 'kpitrend', 'kpideviation'] },
-        { label: 'Barras y Líneas', icon: 'bar_chart',    subValues: ['bar', 'histogram', 'stackedbar', 'stackedbar100', 'horizontalBar', 'pyramid', 'line', 'area', 'barline', 'radar'] },
-        { label: 'Circulares',      icon: 'donut_large',  subValues: ['doughnut', 'polarArea', 'sunburst'] },
-        { label: 'Avanzados',       icon: 'scatter_plot', subValues: ['parallelSets', 'treeMap', 'scatterPlot', 'funnel', 'bubblechart', 'coordinatesMap', 'geoJsonMap', 'knob', 'dynamicText'] },
+        { label: 'Tablas',        icon: 'table_chart',  subValues: ['table', 'crosstable', 'treetable', 'tableanalized'] },
+        { label: 'KPI',           icon: 'insights',     subValues: ['kpi', 'kpibar', 'kpiline', 'kpiarea', 'kpitrend', 'kpideviation'] },
+        { label: 'Barras',        icon: 'bar_chart',    subValues: ['bar', 'histogram', 'stackedbar', 'stackedbar100', 'horizontalBar', 'pyramid'] },
+        { label: 'Líneas y área', icon: 'show_chart',   subValues: ['line', 'area', 'barline'] },
+        { label: 'Circulares',    icon: 'donut_large',  subValues: ['doughnut', 'polarArea', 'sunburst', 'radar'] },
+        { label: 'Mapas',         icon: 'map',           subValues: ['coordinatesMap', 'geoJsonMap'] },
+        { label: 'Avanzados',     icon: 'scatter_plot', subValues: ['parallelSets', 'treeMap', 'scatterPlot', 'funnel', 'bubblechart', 'raceBar', 'knob', 'dynamicText'] },
     ];
 
     get groupedChartTypes() {
@@ -262,7 +268,6 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     showChartSelector = false;
-    hoveredGroup: string | null = null;
     lockedGroup: string | null = null;
 
     @HostListener('document:click')
@@ -282,12 +287,9 @@ export class EdaBlankPanelComponent implements OnInit {
         this.showChartSelector = !this.showChartSelector;
     }
 
-    isGroupVisible(label: string): boolean {
-        if (this.hoveredGroup) return this.hoveredGroup === label;
-        return this.lockedGroup === label;
-    }
-
-    lockGroup(label: string, event: MouseEvent): void {
+    /** Click-only, one group open at a time - no hover-preview: leaving the pointer over an item
+     * mid-click used to collapse the very group you were reaching into. */
+    toggleGroup(label: string, event: MouseEvent): void {
         event.stopPropagation();
         this.lockedGroup = this.lockedGroup === label ? null : label;
     }
@@ -295,7 +297,6 @@ export class EdaBlankPanelComponent implements OnInit {
     selectChartFromPanel(ct: EdaChartType): void {
         this.chartForm.patchValue({ chart: ct });
         this.showChartSelector = false;
-        this.hoveredGroup = null;
         this.lockedGroup = null;
         this.changeChartTypeCheck(ct.value, ct.subValue, this.getChartStyles(ct.value));
     }

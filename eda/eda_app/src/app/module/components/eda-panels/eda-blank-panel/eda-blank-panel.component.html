@@ -1174,22 +1174,20 @@
                 @if (showChartSelector) {
                   <div class="chart-acc-panel" (click)="$event.stopPropagation()">
                     @for (group of groupedChartTypes; track group.label) {
-                      <div class="chart-acc-group"
-                           (mouseenter)="hoveredGroup = group.label"
-                           (mouseleave)="hoveredGroup = null">
+                      <div class="chart-acc-group">
 
                         <!-- Header chip corporativo -->
                         <button type="button" class="chart-acc-group-header"
-                                [class.locked]="lockedGroup === group.label"
-                                [class.hovered]="hoveredGroup === group.label"
-                                (click)="lockGroup(group.label, $event)">
+                                [class.open]="lockedGroup === group.label"
+                                (click)="toggleGroup(group.label, $event)">
                           <span class="material-icons chart-acc-group-icon">{{group.icon}}</span>
                           <span class="chart-acc-group-label">{{group.label}}</span>
-                          <span class="material-icons chart-acc-chevron" [class.open]="isGroupVisible(group.label)">expand_more</span>
+                          <span class="chart-acc-group-count">{{group.items.length}}</span>
+                          <span class="material-icons chart-acc-chevron" [class.open]="lockedGroup === group.label">expand_more</span>
                         </button>
 
                         <!-- Items con animación CSS (siempre en DOM) -->
-                        <div class="chart-acc-items" [class.visible]="isGroupVisible(group.label)">
+                        <div class="chart-acc-items" [class.visible]="lockedGroup === group.label">
                           @for (ct of group.items; track ct.subValue) {
                             <div class="chart-acc-item"
                                  [class.chart-acc-item--disabled]="ct.ngIf || ct.tooManyData"

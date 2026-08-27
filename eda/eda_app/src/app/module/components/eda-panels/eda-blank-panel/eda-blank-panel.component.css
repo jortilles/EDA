@@ -850,10 +850,10 @@ span.state-label {
   padding: 10px 12px;
   background: #fff;
   border: 1px solid #ced4da;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   text-align: left;
-  font-size: 14px;
+  font-size: 10.5px;
   color: #495057;
   transition: border-color 0.15s;
   min-height: 42px;
@@ -864,7 +864,7 @@ span.state-label {
 .chart-acc-trigger-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .chart-acc-trigger-placeholder { flex: 1; color: #9ca3af; }
 .chart-acc-trigger-chevron { font-size: 18px; color: #9ca3af; flex-shrink: 0; transition: transform 0.2s; }
-.chart-acc-trigger-chevron.open { transform: rotate(180deg); }
+.chart-acc-trigger-chevron.open { transform: rotate(180deg); color: var(--corporate-primary); }
 
 /* Panel flotante */
 .chart-acc-panel {
@@ -882,79 +882,93 @@ span.state-label {
   padding: 6px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
-/* Grupo */
 .chart-acc-group { display: flex; flex-direction: column; }
 
-/* Header — mismo estilo que los items, fondo gris muy sutil */
+/* Click-only now (no hover-preview) - the open header keeps square bottom corners so it visually
+   welds onto the tinted item band directly beneath it, reading as one piece instead of two. */
 .chart-acc-group-header {
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 7px 14px;
-  background: #f8f9fa;
+  padding: 8px 10px;
+  background: transparent;
   border: none;
-  border-left: 3px solid transparent;
   border-radius: 6px;
   cursor: pointer;
   text-align: left;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.15s;
 }
-.chart-acc-group-header.hovered,
-.chart-acc-group-header:hover {
-  background: rgba(var(--corporate-primary-rgb), 0.06);
-  border-left-color: rgba(var(--corporate-primary-rgb), 0.4);
+.chart-acc-group-header:hover { background: #f3f4f6; }
+.chart-acc-group-header.open {
+  background: rgba(var(--corporate-primary-rgb), 0.09);
+  border-radius: 6px 6px 0 0;
 }
-.chart-acc-group-header.locked {
-  background: rgba(var(--corporate-primary-rgb), 0.08);
-  border-left-color: var(--corporate-primary);
-}
-.chart-acc-group-icon {
-  font-size: 18px;
+.chart-acc-group-icon { font-size: 20px; color: #9ca3af; transition: color 0.15s; }
+.chart-acc-group-header.open .chart-acc-group-icon,
+.chart-acc-group-header:hover .chart-acc-group-icon { color: var(--corporate-primary); }
+.chart-acc-group-label { flex: 1; font-size: 12px; font-weight: 600; color: #374151; }
+.chart-acc-group-header.open .chart-acc-group-label { color: var(--corporate-primary); }
+.chart-acc-group-count {
+  font-size: 11px;
   color: #9ca3af;
-  transition: color 0.15s;
+  background: #f3f4f6;
+  border-radius: 999px;
+  padding: 1px 7px;
+  flex-shrink: 0;
 }
-.chart-acc-group-header.locked .chart-acc-group-icon,
-.chart-acc-group-header.hovered .chart-acc-group-icon { color: var(--corporate-primary); }
-.chart-acc-group-label {
-  flex: 1;
-  font-size: 13px;
-  font-weight: 600;
-  color: #374151;
-  transition: color 0.15s;
-}
-.chart-acc-group-header.locked .chart-acc-group-label,
-.chart-acc-group-header.hovered .chart-acc-group-label { color: var(--corporate-primary); }
-.chart-acc-chevron {
-  font-size: 16px;
-  color: #9ca3af;
-  transition: transform 0.22s ease, color 0.15s;
-}
+.chart-acc-group-header.open .chart-acc-group-count { background: #fff; color: var(--corporate-primary); }
+.chart-acc-chevron { font-size: 18px; color: #9ca3af; transition: transform 0.22s ease, color 0.15s; flex-shrink: 0; }
 .chart-acc-chevron.open { transform: rotate(180deg); color: var(--corporate-primary); }
 
-/* Items colapsables con animación CSS */
+/* Item band: tinted container "welded" to its open header, indented - what actually reads as
+   "these belong to that group", which the flat/undifferentiated list before it lacked. */
 .chart-acc-items {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.28s ease;
+  background: rgba(var(--corporate-primary-rgb), 0.035);
+  border-radius: 0 0 6px 6px;
 }
-.chart-acc-items.visible { max-height: 600px; }
+.chart-acc-items.visible { max-height: 600px; padding-bottom: 4px; }
 
 .chart-acc-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 14px;
+  gap: 6px;
+  padding: 5px 10px 5px 18px;
   cursor: pointer;
-  font-size: 13px;
-  color: #495057;
+  font-size: 10.5px;
+  font-weight: 400;
+  color: #4b5563;
   border-radius: 6px;
+  margin: 0 4px;
+  overflow: hidden;
   transition: background-color 0.12s;
-  margin-top: 1px;
 }
-.chart-acc-item:hover { background-color: rgba(var(--corporate-primary-rgb), 0.07); }
-.chart-acc-item--disabled { cursor: default; opacity: 0.55; }
+/* Deliberately bigger than the 13px label next to it - matching master's default (unstyled,
+   24px) Material Icons glyph, since that size contrast is what actually reads as "small, tidy
+   text": shrinking the icon down closer to the text's own size, as before, made the SAME 13px
+   text look bulkier just by losing that contrast, even though its font-size never changed. */
+.chart-acc-item .material-icons { font-size: 20px; color: #9ca3af; flex-shrink: 0; }
+.chart-acc-item:hover { background-color: rgba(var(--corporate-primary-rgb), 0.1); }
+.chart-acc-item:hover .material-icons:not(.orange-alert):not(.grey-alert) { color: var(--corporate-primary); }
+.chart-acc-item--disabled { cursor: default; opacity: 0.5; }
 .chart-acc-item--disabled:hover { background-color: transparent; }
+/* One line, always - the chart's own NAME never truncates, only the "- No Disponible"/"- Demasiados
+   valores" annotation next to it does (it's the less important part - the tooltip on the row still
+   has the full reason on hover). */
+.chart-acc-item > span:not(.material-icons):not(.edaTooManyData) {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.chart-acc-item .edaTooManyData {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
