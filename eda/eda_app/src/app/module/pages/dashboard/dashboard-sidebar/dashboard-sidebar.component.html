@@ -73,12 +73,15 @@
                   }
                 }
                 @else{
+                  @if (item.id === "save") {
+                    <hr class="my-1.5" />
+                  }
                   <button class="sidebarLabels"
                     (click)="item.command()">
                     <i [class]="item.icon + ' text-gray-600'"></i>
                     <span>{{ item.label }}</span>
                   </button>
-                  @if (item.id === "newTabs") {
+                  @if (item.id === "newTabs" || item.id === "deleteDashboard") {
                     <hr class="my-1.5" />
                   }
                 }
