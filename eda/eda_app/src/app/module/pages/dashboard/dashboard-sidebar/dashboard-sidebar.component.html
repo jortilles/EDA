@@ -1,12 +1,12 @@
 <!-- Overlay Panel (Popover) -->
 <p-overlayPanel #popover (onHide)="hidePopover()">
-  <div class="w-64">
+  <div class="w-60">
     <!-- Gray menu -->
     <div class="bg-gray-100">
       <div class="px-3 pt-3">
         <div class="flex items-center gap-1 min-w-0 h-8">
           @if(!editingTitle) {
-            <h4 class="text-lg font-bold truncate flex-1 min-w-0 leading-8">{{ dashboard.title }}</h4>
+            <h4 class="text-base font-bold truncate flex-1 min-w-0 leading-8">{{ dashboard.title }}</h4>
             @if(!isReadOnly) {
               <button (click)="renameDashboard()" class="shrink-0 rounded-md p-1 cursor-pointer hover:bg-gray-200">
                 <eda-icon class="pointer-events-none" name="pencil"></eda-icon>
@@ -15,7 +15,7 @@
           } @else {
             <input
               autofocusOnShow
-              class="text-lg font-bold flex-1 min-w-0 h-full bg-gray-100 ring-1 ring-[#00bcd4] rounded-md px-2 focus:outline-none"
+              class="text-base font-bold flex-1 min-w-0 h-full bg-gray-100 ring-1 ring-[#00bcd4] rounded-md px-2 focus:outline-none"
               [(ngModel)]="editableTitle"
               (keydown.enter)="saveDashboardTitle()"
               (keydown.escape)="cancelDashboardTitle()"
@@ -25,7 +25,7 @@
         </div>
         <hr class="my-2" />
         <span>
-          <h4 class="text-lg flex items-center">
+          <h4 class="text-sm flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
               class="mr-2 h-4 w-4 text-[var(--corporate-primary)]">
@@ -41,8 +41,8 @@
     </div>
 
     <!-- White menu -->
-    <div class="bg-white px-3 pb-3 pt-2 overflow-y-auto max-h-[80vh] overscroll-contain">
-      <div class="flex flex-col gap-2 text-lg">
+    <div class="bg-white px-3 pb-3 pt-2 overflow-y-auto max-h-[85vh] overscroll-contain">
+      <div class="flex flex-col gap-1 text-sm">
         @for (item of itemsVisibles(); track item.label) {
           @if(!isReadOnly){
             @if(isEditable){
@@ -79,7 +79,7 @@
                     <span>{{ item.label }}</span>
                   </button>
                   @if (item.id === "newTabs") {
-                    <hr class="my-2" />
+                    <hr class="my-1.5" />
                   }
                 }
               }
@@ -96,7 +96,7 @@
               style="transition: transform 0.3s"></i>
           </button>
           @if (mostrarDescargas) {
-            <div class="ml-6 flex flex-col gap-2">
+            <div class="ml-6 flex flex-col gap-1">
               @for (subItem of downloadItem.items; track subItem.label) {
                 <button class="sidebarLabels "
                   (click)="subItem.command()">
@@ -113,7 +113,6 @@
             (click)="openAdvancedOptions()">
             <i class="pi pi-sliders-h text-gray-600"></i>
             <span i18n="@@dashboardSidebarMoreOptions">Más opciones</span>
-            <i class="pi pi-chevron-right ml-auto text-gray-400"></i>
           </button>
         }
       </div>

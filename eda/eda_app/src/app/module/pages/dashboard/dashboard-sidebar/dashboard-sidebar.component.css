@@ -1,14 +1,36 @@
-.sidebarLabels:hover{
-    background-color: rgba(var(--corporate-primary-rgb), 0.25);
-}
-
-.sidebarLabels{
+.sidebarLabels {
     display: flex;
     gap: 0.75rem;
-    padding: 0.5rem;
+    padding: 0.45rem 0.55rem;
     width: 100%;
     text-align: left;
     align-items: center;
     border-radius: 0.5rem;
-    transition: background-color 0.1s ease;
+    font-size: 0.9rem;
+    color: #3a4149;
+    transition: background-color 0.12s ease;
+}
+
+.sidebarLabels:hover {
+    background-color: rgba(var(--corporate-primary-rgb), 0.08);
+}
+
+/* Leading icon rendered as a soft circular badge; trailing chevrons/checks stay bare */
+.sidebarLabels > i:first-child {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.85rem;
+    border-radius: 50%;
+    background: #eef0f3;
+    color: #8a94a0;
+    transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.sidebarLabels:hover > i:first-child {
+    background: rgba(var(--corporate-primary-rgb), 0.16);
+    color: var(--corporate-primary-dark, var(--corporate-primary));
 }

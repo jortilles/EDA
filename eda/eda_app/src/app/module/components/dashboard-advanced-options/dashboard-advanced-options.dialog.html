@@ -2,17 +2,17 @@
   [display]="true"
   header="Opciones avanzadas"
   i18n-header="@@dashboardAdvancedOptionsTitle"
-  width="80vw"
-  height="85vh"
+  width="min(1180px, 88vw)"
+  height="min(780px, 88vh)"
   [showApply]="false"
   [showClose]="!activeEmbedId"
   [overflow]="'hidden'"
   (close)="onClose()">
   <div content class="advanced-canvas flex h-full gap-4 p-4">
-    <!-- Left nav: every category is always expanded -->
-    <div class="advanced-panel w-64 shrink-0 py-2 flex flex-col overflow-y-auto h-full">
+    <!-- Left nav: collapsible categories -->
+    <div class="advanced-panel w-80 shrink-0 py-2 flex flex-col overflow-y-auto h-full">
       @for (group of groups; track group.id) {
-        <button type="button" class="advanced-nav-item advanced-nav-header"
+        <button type="button" class="advanced-nav-header"
           (click)="toggleGroup(group.id)">
           <i [class]="group.icon"></i>
           <span class="flex-1">{{ group.label }}</span>
@@ -43,9 +43,6 @@
                 (click)="item.embed ? selectEmbed(item.embed) : item.command()">
                 <i [class]="item.icon"></i>
                 <span class="flex-1 text-left">{{ item.label }}</span>
-                @if (item.embed) {
-                  <i class="pi pi-chevron-right advanced-row-chevron"></i>
-                }
               </button>
             }
           }
