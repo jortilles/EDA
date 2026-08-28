@@ -1017,6 +1017,9 @@ export class GlobalFilterComponent implements OnInit {
             }
             return item;
         });
+        if (filtro.multipleSelection === false && filtro.selectedItems.length > 1) {
+            filtro.selectedItems = [filtro.selectedItems[filtro.selectedItems.length - 1]];
+        }
         // Update Global filter
         this.setGlobalFilterItems(filtro)
     }
