@@ -668,6 +668,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
       enabled: sendViaMailConfig.enabled,
       hours: sendViaMailConfig.hours,
       lastUpdated: sendViaMailConfig.lastUpdated,
+      mailSubject: sendViaMailConfig.mailSubject,
       mailMessage: sendViaMailConfig.mailMessage,
       minutes: sendViaMailConfig.minutes,
       quantity: sendViaMailConfig.quantity,

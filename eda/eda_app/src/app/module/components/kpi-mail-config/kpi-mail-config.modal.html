@@ -75,14 +75,21 @@
         </div>
       </div>
 
-      <!-- Email content -->
-      <div class="bg-white shadow-lg rounded-2xl p-6 flex flex-col">
-        <h5 i18n="@@SendMailWhat" class="text-lg font-semibold text-gray-800 mb-3">Contenido del mail</h5>
-        <textarea
-          class="kpi-mail-textarea flex-1 w-full border border-gray-300 px-3 py-2.5 rounded-lg shadow-sm resize-none outline-none"
-          rows="6"
-          [(ngModel)]="mailMessage">
-        </textarea>
+      <!-- Subject + content -->
+      <div class="bg-white shadow-lg rounded-2xl p-6 flex flex-col gap-4">
+        <div class="flex flex-col gap-1">
+          <h5 i18n="@@mailSubjectLabel" class="text-lg font-semibold text-gray-800">Asunto del mail</h5>
+          <input id="kpi-mail-subject" type="text" [(ngModel)]="mailSubject"
+            class="kpi-mail-input w-full border border-gray-300 px-3 py-2.5 rounded-lg outline-none">
+        </div>
+        <div class="flex flex-col flex-1 gap-1">
+          <h5 i18n="@@SendMailWhat" class="text-lg font-semibold text-gray-800">Contenido del mail</h5>
+          <textarea
+            class="kpi-mail-textarea flex-1 w-full border border-gray-300 px-3 py-2.5 rounded-lg shadow-sm resize-none outline-none"
+            rows="6"
+            [(ngModel)]="mailMessage">
+          </textarea>
+        </div>
       </div>
 
     </div>

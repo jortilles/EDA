@@ -28,6 +28,7 @@ export class KpiMailConfigModal implements OnInit {
   public hours: any;
   public hoursSTR = $localize`:@@hours:Hora/s`;
   public daysSTR = $localize`:@@days:Día/s`;
+  public mailSubject = '';
   public mailMessage = '';
   public users: any[] = [];
   public selectedUsers: any[] = [];
@@ -47,6 +48,7 @@ export class KpiMailConfigModal implements OnInit {
       this.hours = utcHours;
       this.units = mailing.units;
       this.quantity = mailing.quantity;
+      this.mailSubject = mailing.mailSubject || '';
       this.mailMessage = mailing.mailMessage || '';
       this.otherRecipients = mailing.otherRecipients || '';
       this.enabled = mailing.enabled;
@@ -93,6 +95,7 @@ export class KpiMailConfigModal implements OnInit {
       minutes,
       users: this.selectedUsers.map((u: any) => u.value ?? u),
       otherRecipients: this.otherRecipients,
+      mailSubject: this.mailSubject,
       mailMessage: this.mailMessage,
       lastUpdated: '2000-01-01T00:00:01.000',
       enabled: this.enabled,
@@ -100,11 +103,11 @@ export class KpiMailConfigModal implements OnInit {
   }
 
   disableApply(): boolean {
-    return !this.quantity || !this.units || this.allRecipientEmails.length === 0 || !this.mailMessage;
+    return !this.quantity || !this.units || this.allRecipientEmails.length === 0 || !this.mailSubject || !this.mailMessage;
   }
 
   disableSend(): boolean {
-    return this.isSending() || this.allRecipientEmails.length === 0 || !this.mailMessage;
+    return this.isSending() || this.allRecipientEmails.length === 0 || !this.mailSubject || !this.mailMessage;
   }
 
   async sendNow() {
@@ -116,6 +119,7 @@ export class KpiMailConfigModal implements OnInit {
         operand: this.alert?.operand,
         value: this.alert?.value,
         to: this.allRecipientEmails,
+        subject: this.mailSubject,
         message: this.mailMessage
       }));
       this.alertService.addSuccess($localize`:@@alertSendNowDone:Alerta enviada (si el KPI cumple la condición en este momento)`);

@@ -98,7 +98,7 @@ export class MailingService {
 
         if (shouldUpdate) {
           userMails.forEach((mail: string) => {
-            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, cfg.mailMessage, token, senderEmail)
+            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, cfg.mailMessage, token, senderEmail, cfg.mailSubject)
               .catch((err: any) => console.error(`[MailingService] ERROR enviando dashboard "${dashboard.config.title}" a ${mail}:`, err));
           });
           if (updateTimestamp) {
@@ -147,6 +147,16 @@ export class MailingService {
 
   }
 
+  /** App URL for a dashboard. Tolerates a server_baseURL that already ends in a locale segment
+   * (e.g. ".../ca") so we don't build ".../ca/es/#/...". */
+  static dashboardAppUrl(dashboardId: string): string {
+    const KNOWN_LOCALES = ['es', 'en', 'ca', 'fr', 'pl','gl','eu'];
+    const base = String(mailConfig.server_baseURL || '').replace(/\/+$/, '');
+    const hasLocale = KNOWN_LOCALES.includes(base.split('/').pop() || '');
+    const localePath = hasLocale ? '' : `/${mailConfig.locale || 'es'}`;
+    return `${base}${localePath}/#/dashboard/${dashboardId}`;
+  }
+
 
   /**Chech kpi condition and send mail if condition is true
    * 
@@ -162,11 +172,7 @@ export class MailingService {
       let condition = MailingService.compareValues(result, alert.value.value, alert.value.operand);
       console.log(`[MailingService] alerta KPI | resultado: ${result} | condición: ${result} ${alert.value.operand} ${alert.value.value} = ${condition} | destinatario: ${user.email}`);
 
-      // The root index.html does a client-side locale redirect (e.g. "/" -> "/es/") that
-      // breaks hash-based deep links, so link straight to the locale-prefixed URL.
-      const locale = mailConfig.locale || 'es';
-      const appBase = mailConfig.server_baseURL.replace(/\/?$/, '/');
-      const dashboardLink = `${appBase}${locale}/#/dashboard/${alert.query.dashboard.dashboard_id}`;
+      const dashboardLink = MailingService.dashboardAppUrl(alert.query.dashboard.dashboard_id);
 
       let text = `${alert.value.mailing.mailMessage}\n-------------------------------------------- \n\n` +
         `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${dashboardLink}`
@@ -174,7 +180,7 @@ export class MailingService {
       let mailOptions = {
         from: senderEmail,
         to: user.email,
-        subject: 'Eda Alerts',
+        subject: alert.value.mailing.mailSubject || 'EDA - Alerta KPI',
         text: text
       };
 
@@ -188,11 +194,11 @@ export class MailingService {
   }
 
   /** "Enviar" button: same render + PDF pipeline as the cron, one recipient at a time. */
-  static async sendDashboardNow(dashboardID: string, recipients: string[], message: string, transporter: any, senderEmail: string) {
+  static async sendDashboardNow(dashboardID: string, recipients: string[], subject: string, message: string, transporter: any, senderEmail: string) {
     const token = await UserController.provideFakeToken();
     for (const mail of recipients) {
       try {
-        await MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message || '', token, senderEmail);
+        await MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message || '', token, senderEmail, subject || '');
       } catch (err: any) {
         console.error(`[sendDashboardNow] ERROR enviando "${dashboardID}" a ${mail}:`, err?.message || err);
       }
@@ -201,7 +207,7 @@ export class MailingService {
 
   /** "Enviar" button: reloads the alert from Mongo (never runs a client-supplied query),
    * overriding only recipients and message with the dialog's current values. */
-  static async sendAlertNow(dashboardId: string, panelId: string, operand: string, value: any, recipients: string[], message: string, transporter: any, senderEmail: string) {
+  static async sendAlertNow(dashboardId: string, panelId: string, operand: string, value: any, recipients: string[], subject: string, message: string, transporter: any, senderEmail: string) {
     const dashboard = await Dashboard.findById(dashboardId);
     if (!dashboard) throw new Error('Informe no encontrado');
 
@@ -226,6 +232,7 @@ export class MailingService {
         mailing: {
           ...(limit.mailing || {}),
           users: recipients.map((email: string) => ({ email })),
+          mailSubject: subject || limit.mailing?.mailSubject || '',
           mailMessage: message || limit.mailing?.mailMessage || '',
         },
       },
@@ -236,7 +243,7 @@ export class MailingService {
     MailingService.mailAlertsSending(alert, transporter, senderEmail);
   }
 
-  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string){
+  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string, subject:string = ''){
 
     let text = `${message}\n-------------------------------------------- \n\n`;
     text += link;
@@ -244,7 +251,7 @@ export class MailingService {
     let mailOptions = {
       from: senderEmail,
       to: userMail,
-      subject: 'Eda Dashboard Sending Service',
+      subject: subject || 'EDA - Informe',
       text: text,
       attachments: [{
         filename: filename,

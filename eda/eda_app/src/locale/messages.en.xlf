@@ -3097,6 +3097,10 @@ What am I seeing?
 <source>Alerta enviada (si el KPI cumple la condición en este momento)</source>
 <target>Alert sent (if the KPI meets the condition right now)</target>
 </trans-unit>
+<trans-unit id="mailSubjectLabel">
+<source>Asunto del mail</source>
+<target>Mail subject</target>
+</trans-unit>
 
 <trans-unit id="sendMailHeader">
 <source>Configuración de los envíos por email</source>

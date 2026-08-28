@@ -3009,6 +3009,10 @@ Co widzę?
     <source>Alerta enviada (si el KPI cumple la condición en este momento)</source>
     <target>Alert wysłany (jeśli KPI spełnia warunek w tym momencie)</target>
   </trans-unit>
+  <trans-unit id="mailSubjectLabel">
+    <source>Asunto del mail</source>
+    <target>Temat wiadomości</target>
+  </trans-unit>
 
    <trans-unit id="sendMailHeader">
     <source>Configuración de los envíos por email</source>

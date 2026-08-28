@@ -125,6 +125,9 @@ router.post('/save', authGuard, roleGuard, MailController.saveCredentials);
  *               items:
  *                 type: string
  *               description: Recipient email address(es)
+ *             subject:
+ *               type: string
+ *               description: Email subject
  *             message:
  *               type: string
  *               description: Email body
@@ -168,6 +171,8 @@ router.post('/send-dashboard-now', authGuard, MailController.sendDashboardNow);
  *               type: array
  *               items:
  *                 type: string
+ *             subject:
+ *               type: string
  *             message:
  *               type: string
  *     responses:

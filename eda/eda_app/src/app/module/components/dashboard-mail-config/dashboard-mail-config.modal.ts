@@ -38,6 +38,7 @@ export class DashboardMailConfigModal {
   public hours: any;
   public hoursSTR = $localize`:@@hours:Hora/s`;
   public daysSTR = $localize`:@@days:Día/s`;
+  public mailSubject = '';
   public mailMessage = '';
   public currentAlert = null;
   public users: any;
@@ -79,6 +80,7 @@ export class DashboardMailConfigModal {
     this.quantity = config.quantity;
     this.selectedUsers = config.users;
     this.otherRecipients = config.otherRecipients || '';
+    this.mailSubject = config.mailSubject || '';
     this.mailMessage = config.mailMessage;
     this.enabled = config.enabled;
   }
@@ -111,6 +113,7 @@ export class DashboardMailConfigModal {
       minutes: minutes,
       users: this.selectedUsers,
       otherRecipients: this.otherRecipients,
+      mailSubject: this.mailSubject,
       mailMessage: this.mailMessage,
       lastUpdated: new Date().toISOString(),
       enabled: this.enabled,
@@ -129,7 +132,7 @@ export class DashboardMailConfigModal {
   }
 
   disableSend(): boolean {
-    return this.isSending() || this.allRecipientEmails.length === 0 || !this.mailMessage;
+    return this.isSending() || this.allRecipientEmails.length === 0 || !this.mailSubject || !this.mailMessage;
   }
 
   async sendNow() {
@@ -138,6 +141,7 @@ export class DashboardMailConfigModal {
       await lastValueFrom(this.mailService.sendDashboardNow({
         dashboardId: this.dashboard.dashboardId,
         to: this.allRecipientEmails,
+        subject: this.mailSubject,
         message: this.mailMessage
       }));
       this.alertService.addSuccess($localize`:@@mailSendNowStarted:Envío iniciado. Los informes se están generando y llegarán en unos minutos.`);

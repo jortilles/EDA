@@ -1388,6 +1388,9 @@
       <trans-unit id="alertSendNowDone" datatype="html">
         <source>Alerta enviada (si el KPI cumple la condición en este momento)</source>
       </trans-unit>
+      <trans-unit id="mailSubjectLabel" datatype="html">
+        <source>Asunto del mail</source>
+      </trans-unit>
       <trans-unit id="noMail" datatype="html">
         <source>Sin alertas de correo</source>
         <context-group purpose="location">
