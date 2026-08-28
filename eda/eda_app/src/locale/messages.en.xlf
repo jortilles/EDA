@@ -3073,6 +3073,30 @@ What am I seeing?
 <source>Contenido del mail: </source>
 <target>Mail body:  </target>
 </trans-unit>
+<trans-unit id="sendMailNowButton">
+<source>Enviar</source>
+<target>Send</target>
+</trans-unit>
+<trans-unit id="sendingMailNow">
+<source>Enviando...</source>
+<target>Sending...</target>
+</trans-unit>
+<trans-unit id="sendMailNowButtonTitle">
+<source>Genera y envía el informe ahora mismo a los destinatarios seleccionados, sin esperar a la programación</source>
+<target>Generates and sends the report right now to the selected recipients, without waiting for the schedule</target>
+</trans-unit>
+<trans-unit id="sendAlertNowButtonTitle">
+<source>Evalúa la alerta ahora y, si el KPI cumple la condición, la envía a los destinatarios seleccionados</source>
+<target>Evaluates the alert now and, if the KPI meets the condition, sends it to the selected recipients</target>
+</trans-unit>
+<trans-unit id="mailSendNowStarted">
+<source>Envío iniciado. Los informes se están generando y llegarán en unos minutos.</source>
+<target>Send started. The reports are being generated and will arrive in a few minutes.</target>
+</trans-unit>
+<trans-unit id="alertSendNowDone">
+<source>Alerta enviada (si el KPI cumple la condición en este momento)</source>
+<target>Alert sent (if the KPI meets the condition right now)</target>
+</trans-unit>
 
 <trans-unit id="sendMailHeader">
 <source>Configuración de los envíos por email</source>

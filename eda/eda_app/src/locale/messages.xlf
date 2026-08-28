@@ -1370,6 +1370,24 @@
           <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="sendMailNowButton" datatype="html">
+        <source>Enviar</source>
+      </trans-unit>
+      <trans-unit id="sendingMailNow" datatype="html">
+        <source>Enviando...</source>
+      </trans-unit>
+      <trans-unit id="sendMailNowButtonTitle" datatype="html">
+        <source>Genera y envía el informe ahora mismo a los destinatarios seleccionados, sin esperar a la programación</source>
+      </trans-unit>
+      <trans-unit id="sendAlertNowButtonTitle" datatype="html">
+        <source>Evalúa la alerta ahora y, si el KPI cumple la condición, la envía a los destinatarios seleccionados</source>
+      </trans-unit>
+      <trans-unit id="mailSendNowStarted" datatype="html">
+        <source>Envío iniciado. Los informes se están generando y llegarán en unos minutos.</source>
+      </trans-unit>
+      <trans-unit id="alertSendNowDone" datatype="html">
+        <source>Alerta enviada (si el KPI cumple la condición en este momento)</source>
+      </trans-unit>
       <trans-unit id="noMail" datatype="html">
         <source>Sin alertas de correo</source>
         <context-group purpose="location">

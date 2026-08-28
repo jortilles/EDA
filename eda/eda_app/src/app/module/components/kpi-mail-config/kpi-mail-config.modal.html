@@ -93,13 +93,13 @@
           <span class="font-semibold" i18n="@@sendToSummary">Enviar a:</span>
           {{ allRecipientEmails.join(', ') }}
         </div>
-        <button type="button" (click)="sendTest()" [disabled]="disableTest()"
-          i18n-title="@@testMailButtonTitle" title="Envía este correo ahora mismo para comprobar que la configuración es correcta"
+        <button type="button" (click)="sendNow()" [disabled]="disableSend()"
+          i18n-title="@@sendAlertNowButtonTitle" title="Evalúa la alerta ahora y, si el KPI cumple la condición, la envía a los destinatarios seleccionados"
           class="shrink-0 inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none transition-colors">
-          @if (isTesting()) {
-            <span i18n="@@testingMail">Enviando...</span>
+          @if (isSending()) {
+            <span i18n="@@sendingMailNow">Enviando...</span>
           } @else {
-            <span i18n="@@testMailButton">Probar</span>
+            <span i18n="@@sendMailNowButton">Enviar</span>
           }
         </button>
       </div>

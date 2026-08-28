@@ -18,6 +18,8 @@ import { CommonModule } from "@angular/common";
 })
 export class KpiMailConfigModal implements OnInit {
   @Input() alert: any;
+  @Input() dashboardId: string;
+  @Input() panelId: string;
   @Output() apply: EventEmitter<any> = new EventEmitter<any>();
   @Output() close: EventEmitter<void> = new EventEmitter<void>();
 
@@ -31,7 +33,7 @@ export class KpiMailConfigModal implements OnInit {
   public selectedUsers: any[] = [];
   public otherRecipients: string = '';
   public enabled: boolean = false;
-  public isTesting = signal<boolean>(false);
+  public isSending = signal<boolean>(false);
 
   constructor(private userService: UserService, private dateUtils: DateUtils, private mailService: MailService, private alertService: AlertService) {}
 
@@ -101,23 +103,26 @@ export class KpiMailConfigModal implements OnInit {
     return !this.quantity || !this.units || this.allRecipientEmails.length === 0 || !this.mailMessage;
   }
 
-  disableTest(): boolean {
-    return this.isTesting() || this.allRecipientEmails.length === 0 || !this.mailMessage;
+  disableSend(): boolean {
+    return this.isSending() || this.allRecipientEmails.length === 0 || !this.mailMessage;
   }
 
-  async sendTest() {
-    this.isTesting.set(true);
+  async sendNow() {
+    this.isSending.set(true);
     try {
-      await lastValueFrom(this.mailService.testSend({
+      await lastValueFrom(this.mailService.sendAlertNow({
+        dashboardId: this.dashboardId,
+        panelId: this.panelId,
+        operand: this.alert?.operand,
+        value: this.alert?.value,
         to: this.allRecipientEmails,
-        subject: 'EDA - Prueba de alerta KPI',
         message: this.mailMessage
       }));
-      this.alertService.addSuccess($localize`:@@testMailSent:Correo de prueba enviado correctamente`);
+      this.alertService.addSuccess($localize`:@@alertSendNowDone:Alerta enviada (si el KPI cumple la condición en este momento)`);
     } catch (err: any) {
       this.alertService.addError(err);
     } finally {
-      this.isTesting.set(false);
+      this.isSending.set(false);
     }
   }
 

@@ -107,9 +107,9 @@ router.post('/save', authGuard, roleGuard, MailController.saveCredentials);
 
 /**
  * @openapi
- * /mail/test-send:
+ * /mail/send-dashboard-now:
  *   post:
- *     description: Sends an immediate test email using the saved SMTP configuration, to preview a KPI alert or dashboard mailing setup before saving it.
+ *     description: Renders the given dashboard and mails it (PDF + link) to the provided recipients immediately, in the background, without waiting for the scheduled job. Used by the "Enviar" button in the dashboard mail-config dialog.
  *     parameters:
  *       - name: body
  *         in: body
@@ -117,22 +117,64 @@ router.post('/save', authGuard, roleGuard, MailController.saveCredentials);
  *         schema:
  *           type: object
  *           properties:
+ *             dashboardId:
+ *               type: string
+ *               description: Dashboard to render and send
  *             to:
  *               type: array
  *               items:
  *                 type: string
  *               description: Recipient email address(es)
- *             subject:
- *               type: string
- *               description: Email subject
  *             message:
  *               type: string
  *               description: Email body
  *     responses:
  *       200:
- *         description: Test email sent successfully.
+ *         description: Send started.
  *       400:
- *         description: No recipients provided.
+ *         description: Missing dashboard or recipients.
+ *       401:
+ *         description: Unauthorized - authentication required.
+ *       501:
+ *         description: SMTP connection error.
+ *     tags:
+ *       - Mail Routes
+ */
+router.post('/send-dashboard-now', authGuard, MailController.sendDashboardNow);
+
+/**
+ * @openapi
+ * /mail/send-alert-now:
+ *   post:
+ *     description: Evaluates a KPI alert now and, if its threshold condition holds, mails it to the provided recipients. Used by the "Enviar" button in the KPI mail-config dialog.
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             dashboardId:
+ *               type: string
+ *             panelId:
+ *               type: string
+ *             operand:
+ *               type: string
+ *               description: Alert comparison operand (<, >, =)
+ *             value:
+ *               type: string
+ *               description: Alert threshold value
+ *             to:
+ *               type: array
+ *               items:
+ *                 type: string
+ *             message:
+ *               type: string
+ *     responses:
+ *       200:
+ *         description: Alert sent (or skipped because the condition did not hold).
+ *       400:
+ *         description: Missing alert data or recipients.
  *       401:
  *         description: Unauthorized - authentication required.
  *       501:
@@ -140,7 +182,7 @@ router.post('/save', authGuard, roleGuard, MailController.saveCredentials);
  *     tags:
  *       - Mail Routes
  */
-router.post('/test-send', authGuard, MailController.testSend);
+router.post('/send-alert-now', authGuard, MailController.sendAlertNow);
 
 /**
  * @openapi

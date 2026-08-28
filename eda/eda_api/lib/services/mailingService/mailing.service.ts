@@ -187,6 +187,55 @@ export class MailingService {
     })
   }
 
+  /** "Enviar" button: same render + PDF pipeline as the cron, one recipient at a time. */
+  static async sendDashboardNow(dashboardID: string, recipients: string[], message: string, transporter: any, senderEmail: string) {
+    const token = await UserController.provideFakeToken();
+    for (const mail of recipients) {
+      try {
+        await MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message || '', token, senderEmail);
+      } catch (err: any) {
+        console.error(`[sendDashboardNow] ERROR enviando "${dashboardID}" a ${mail}:`, err?.message || err);
+      }
+    }
+  }
+
+  /** "Enviar" button: reloads the alert from Mongo (never runs a client-supplied query),
+   * overriding only recipients and message with the dialog's current values. */
+  static async sendAlertNow(dashboardId: string, panelId: string, operand: string, value: any, recipients: string[], message: string, transporter: any, senderEmail: string) {
+    const dashboard = await Dashboard.findById(dashboardId);
+    if (!dashboard) throw new Error('Informe no encontrado');
+
+    let limit: any = null;
+    let query: any = null;
+    (dashboard.config.panel || []).forEach((panel: any) => {
+      if (!panel.content || panel.content.chart !== 'kpi') return;
+      if (panelId && panel.id !== panelId) return;
+      (panel.content?.query?.output?.config?.alertLimits || []).forEach((a: any) => {
+        if (a.operand === operand && String(a.value) === String(value)) {
+          limit = a;
+          query = panel.content.query;
+        }
+      });
+    });
+
+    if (!limit) throw new Error('Alerta no encontrada. Guarda el informe antes de enviarla.');
+
+    const alert = {
+      value: {
+        ...limit,
+        mailing: {
+          ...(limit.mailing || {}),
+          users: recipients.map((email: string) => ({ email })),
+          mailMessage: message || limit.mailing?.mailMessage || '',
+        },
+      },
+      dashboard_id: dashboard._id,
+      query,
+    };
+
+    MailingService.mailAlertsSending(alert, transporter, senderEmail);
+  }
+
   static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string){
 
     let text = `${message}\n-------------------------------------------- \n\n`;

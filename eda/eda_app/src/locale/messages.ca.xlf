@@ -3367,6 +3367,30 @@ Qué estic veient?
     <source>Contenido del mail: </source>
     <target>Contingut del mail: </target>
   </trans-unit>
+  <trans-unit id="sendMailNowButton">
+    <source>Enviar</source>
+    <target>Envia</target>
+  </trans-unit>
+  <trans-unit id="sendingMailNow">
+    <source>Enviando...</source>
+    <target>Enviant...</target>
+  </trans-unit>
+  <trans-unit id="sendMailNowButtonTitle">
+    <source>Genera y envía el informe ahora mismo a los destinatarios seleccionados, sin esperar a la programación</source>
+    <target>Genera i envia l'informe ara mateix als destinataris seleccionats, sense esperar la programació</target>
+  </trans-unit>
+  <trans-unit id="sendAlertNowButtonTitle">
+    <source>Evalúa la alerta ahora y, si el KPI cumple la condición, la envía a los destinatarios seleccionados</source>
+    <target>Avalua l'alerta ara i, si el KPI compleix la condició, l'envia als destinataris seleccionats</target>
+  </trans-unit>
+  <trans-unit id="mailSendNowStarted">
+    <source>Envío iniciado. Los informes se están generando y llegarán en unos minutos.</source>
+    <target>Enviament iniciat. Els informes s'estan generant i arribaran d'aquí a uns minuts.</target>
+  </trans-unit>
+  <trans-unit id="alertSendNowDone">
+    <source>Alerta enviada (si el KPI cumple la condición en este momento)</source>
+    <target>Alerta enviada (si el KPI compleix la condició en aquest moment)</target>
+  </trans-unit>
 
   <trans-unit id="sendMailHeader">
     <source>Configuración de los envíos por email</source>

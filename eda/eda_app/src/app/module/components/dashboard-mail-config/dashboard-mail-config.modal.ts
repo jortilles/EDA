@@ -44,7 +44,7 @@ export class DashboardMailConfigModal {
   public selectedUsers: any = [];
   public otherRecipients: string = '';
   public enabled: boolean = true;
-  public isTesting = signal<boolean>(false);
+  public isSending = signal<boolean>(false);
 
   constructor(private alertService: AlertService, private userService: UserService, private dateUtils: DateUtils, private mailService: MailService) { }
 
@@ -128,23 +128,23 @@ export class DashboardMailConfigModal {
     return false;
   }
 
-  disableTest(): boolean {
-    return this.isTesting() || this.allRecipientEmails.length === 0 || !this.mailMessage;
+  disableSend(): boolean {
+    return this.isSending() || this.allRecipientEmails.length === 0 || !this.mailMessage;
   }
 
-  async sendTest() {
-    this.isTesting.set(true);
+  async sendNow() {
+    this.isSending.set(true);
     try {
-      await lastValueFrom(this.mailService.testSend({
+      await lastValueFrom(this.mailService.sendDashboardNow({
+        dashboardId: this.dashboard.dashboardId,
         to: this.allRecipientEmails,
-        subject: 'EDA - Prueba de envío de informe',
         message: this.mailMessage
       }));
-      this.alertService.addSuccess($localize`:@@testMailSent:Correo de prueba enviado correctamente`);
+      this.alertService.addSuccess($localize`:@@mailSendNowStarted:Envío iniciado. Los informes se están generando y llegarán en unos minutos.`);
     } catch (err: any) {
       this.alertService.addError(err);
     } finally {
-      this.isTesting.set(false);
+      this.isSending.set(false);
     }
   }
 

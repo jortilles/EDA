@@ -106,6 +106,7 @@ export const PanelOptions = {
             panelComponent.kpiController = new EdaDialogController({
               params: {
                 panelID: _.get(panelComponent.panel, 'id'),
+                dashboardId: panelComponent.dashboard?.dashboardId,
                 panelChart: panelComponent.panelChartConfig,
                 alertLimits: panelComponent.panelChart.componentRef.instance.alertLimits || [],
                 edaChart: panelComponent.panelChart.componentRef.instance.edaChartComponent?.inject,

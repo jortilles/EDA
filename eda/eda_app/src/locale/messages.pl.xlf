@@ -2985,6 +2985,30 @@ Co widzę?
     <source>Contenido del mail: </source>
     <target>Treść wiadomości:  </target>
   </trans-unit>
+  <trans-unit id="sendMailNowButton">
+    <source>Enviar</source>
+    <target>Wyślij</target>
+  </trans-unit>
+  <trans-unit id="sendingMailNow">
+    <source>Enviando...</source>
+    <target>Wysyłanie...</target>
+  </trans-unit>
+  <trans-unit id="sendMailNowButtonTitle">
+    <source>Genera y envía el informe ahora mismo a los destinatarios seleccionados, sin esperar a la programación</source>
+    <target>Generuje i wysyła raport natychmiast do wybranych odbiorców, bez czekania na harmonogram</target>
+  </trans-unit>
+  <trans-unit id="sendAlertNowButtonTitle">
+    <source>Evalúa la alerta ahora y, si el KPI cumple la condición, la envía a los destinatarios seleccionados</source>
+    <target>Ocenia alert teraz i, jeśli KPI spełnia warunek, wysyła go do wybranych odbiorców</target>
+  </trans-unit>
+  <trans-unit id="mailSendNowStarted">
+    <source>Envío iniciado. Los informes se están generando y llegarán en unos minutos.</source>
+    <target>Wysyłanie rozpoczęte. Raporty są generowane i dotrą za kilka minut.</target>
+  </trans-unit>
+  <trans-unit id="alertSendNowDone">
+    <source>Alerta enviada (si el KPI cumple la condición en este momento)</source>
+    <target>Alert wysłany (jeśli KPI spełnia warunek w tym momencie)</target>
+  </trans-unit>
 
    <trans-unit id="sendMailHeader">
     <source>Configuración de los envíos por email</source>
