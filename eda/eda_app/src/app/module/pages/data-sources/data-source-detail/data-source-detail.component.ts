@@ -33,6 +33,7 @@ import { AddTagComponent } from '../data-source-list/add-tag/add-tag.component';
 import { CalculatedColumnEditDialogComponent } from './calculated-column-edit-dialog/calculated-column-edit-dialog.component';
 import { AddDuckdbTableDialogComponent } from './add-duckdb-table-dialog/add-duckdb-table-dialog.component';
 import { AGG_COMPUTED } from './aggregationConstants';
+import { unwrapViewQuery } from '@eda/services/utils/view-query.util';
 
 // Angular Modules
 const ANGULAR_MODULES = [
@@ -1015,6 +1016,11 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     hideAllRelations() {
         this.relationsHidden = !this.relationsHidden;
         this.dataModelService.hideAllRelations();
+    }
+
+    /** SELECT interno de la vista, sin el `( ... ) as <nombre>` con el que se guarda.*/
+    public viewQueryPreview(): string {
+        return unwrapViewQuery(this.tablePanel?.query);
     }
 
     viewEdition() {
