@@ -3,7 +3,9 @@ import { FormsModule } from "@angular/forms";
 import { lastValueFrom } from "rxjs";
 import { AlertService, MailService, UserService } from "@eda/services/service.index";
 import { DateUtils } from "@eda/services/utils/date-utils.service";
-import { buildKpiVariables, MailKpiVariable } from "@eda/services/utils/mail-variables.util";
+import { buildKpiVariables, MailKpiVariable, renderMailPreview } from "@eda/services/utils/mail-variables.util";
+import { LogoImage, SubLogoImage } from "@eda/configs/customizable/customizable_default";
+import { WEEKDAY_OPTIONS, MONTHLY_ORDINAL_OPTIONS, MONTH_DAY_OPTIONS, toggleInArray } from "@eda/services/utils/mail-schedule.util";
 import { MultiSelectModule } from "primeng/multiselect";
 import { CalendarModule } from "primeng/calendar";
 import { InputSwitchModule } from "primeng/inputswitch";
@@ -37,6 +39,20 @@ export class KpiMailConfigModal implements OnInit {
   public otherRecipients: string = '';
   public enabled: boolean = false;
   public isSending = signal<boolean>(false);
+  /** Dummy toggles, not wired yet */
+  public disabledSwitch = false;
+  public aiAnalysis = false;
+
+  /** Frequency mockup — local only, not persisted or read by the backend yet */
+  public weekdayOptions = WEEKDAY_OPTIONS;
+  public ordinalOptions = MONTHLY_ORDINAL_OPTIONS;
+  public monthDayOptions = MONTH_DAY_OPTIONS;
+  public weekdays: number[] = [];
+  public monthlyMode: 'dom' | 'nth' = 'dom';
+  public monthlyDay: number | 'last' = 1;
+  public monthlyOrdinal: string = 'first';
+  public monthlyWeekday: number = 1;
+  public toggleWeekday(d: number): void { toggleInArray(this.weekdays, d); }
 
   constructor(private userService: UserService, private dateUtils: DateUtils, private mailService: MailService, private alertService: AlertService) {}
 
@@ -88,6 +104,22 @@ export class KpiMailConfigModal implements OnInit {
   /** `${kpiN}` -> KPI panel name, listed in the dialog for use in the subject/body */
   public get kpiVariables(): MailKpiVariable[] {
     return buildKpiVariables(this.kpiPanels);
+  }
+
+  public logoImage = LogoImage;
+  public bannerImage = SubLogoImage;
+
+  public get previewSubject(): string {
+    return renderMailPreview(this.mailSubject, this.kpiVariables);
+  }
+
+  public get previewBody(): string {
+    return renderMailPreview(this.mailMessage, this.kpiVariables);
+  }
+
+  public get previewLink(): string {
+    const locale = window.location.pathname.split('/').filter(Boolean)[0] || 'es';
+    return `${window.location.origin}/${locale}/#/dashboard/${this.dashboardId}`;
   }
 
   save() {

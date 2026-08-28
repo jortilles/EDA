@@ -1394,6 +1394,24 @@
       <trans-unit id="mailVariablesTitle" datatype="html">
         <source>Variables de paneles KPI</source>
       </trans-unit>
+      <trans-unit id="mailPreviewTitle" datatype="html">
+        <source>Vista previa del correo</source>
+      </trans-unit>
+      <trans-unit id="mailPreviewSubjectLabel" datatype="html">
+        <source>Asunto:</source>
+      </trans-unit>
+      <trans-unit id="mailPreviewImagePlaceholder" datatype="html">
+        <source>Vista previa del informe (imagen)</source>
+      </trans-unit>
+      <trans-unit id="mailDisabledOff" datatype="html">
+        <source>Deshabilitar</source>
+      </trans-unit>
+      <trans-unit id="mailDisabledOn" datatype="html">
+        <source>Deshabilitado</source>
+      </trans-unit>
+      <trans-unit id="mailAiAnalysis" datatype="html">
+        <source>Análisis de IA</source>
+      </trans-unit>
       <trans-unit id="noMail" datatype="html">
         <source>Sin alertas de correo</source>
         <context-group purpose="location">

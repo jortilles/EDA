@@ -51,7 +51,8 @@ export class MailingService {
 
         console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${mailing.units} | lastUpdated: ${mailing.lastUpdated} | shouldUpdate: ${shouldUpdate}`);
         if (shouldUpdate) {
-          MailingService.mailAlertsSending(alert, transporter, senderEmail);
+          const alertDashboard = dashboards.find(d => String(d._id) === String(alert.dashboard_id));
+          MailingService.mailAlertsSending(alert, transporter, senderEmail, alertDashboard);
           if (updateTimestamp) {
             alert.value.mailing.lastUpdated = newDate;
             if (!dashboardsToUpdate.map(d => d._id).includes(alert.dashboard_id)) dashboardsToUpdate.push(dashboards.filter(d => d._id === alert.dashboard_id)[0]);
@@ -80,7 +81,7 @@ export class MailingService {
       const token = await UserController.provideFakeToken();
       let dashboardsToUpdate: any[] = [];
 
-      dashboards.forEach(dashboard => {
+      for (const dashboard of dashboards) {
         const cfg = dashboard.config.sendViaMailConfig;
         const registeredMails = (cfg.users || []).map((user: any) => user.email);
         const manualMails = (cfg.otherRecipients || '').split(/\s+/).map((m: string) => m.trim()).filter((m: string) => m.length > 0);
@@ -97,10 +98,12 @@ export class MailingService {
         //  shouldUpdate = true;
 
         if (shouldUpdate) {
-          userMails.forEach((mail: string) => {
-            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, cfg.mailMessage, token, senderEmail, cfg.mailSubject)
+          for (const mail of userMails) {
+            const subject = await MailingService.resolveMailTemplate(cfg.mailSubject || '', dashboard, { email: mail });
+            const message = await MailingService.resolveMailTemplate(cfg.mailMessage || '', dashboard, { email: mail });
+            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message, token, senderEmail, subject)
               .catch((err: any) => console.error(`[MailingService] ERROR enviando dashboard "${dashboard.config.title}" a ${mail}:`, err));
-          });
+          }
           if (updateTimestamp) {
             dashboard.config.sendViaMailConfig.lastUpdated = newDate;
             if (!dashboardsToUpdate.map(d => d._id).includes(dashboardID)) {
@@ -108,7 +111,7 @@ export class MailingService {
             }
           }
         }
-      });
+      }
 
       if (updateTimestamp) {
         dashboardsToUpdate.forEach(d => {
@@ -147,6 +150,39 @@ export class MailingService {
 
   }
 
+  /** Replaces `${pN.title}` / `${pN.value}` tokens in a subject or body. pN is the 1-based position
+   * of a KPI panel among the dashboard's KPI panels (same order as the dialog listing). `.value`
+   * runs that panel's query as `user`, so it respects row-level security. */
+  static async resolveMailTemplate(template: string, dashboard: any, user: any): Promise<string> {
+    if (!template || !template.includes('${p')) return template || '';
+
+    const kpiPanels = (dashboard?.config?.panel || []).filter((p: any) => String(p?.content?.chart || '').startsWith('kpi'));
+    let out = template;
+
+    for (let i = 0; i < kpiPanels.length; i++) {
+      const panel = kpiPanels[i];
+      const base = `p${i + 1}`;
+
+      out = out.split('${' + base + '.title}').join(panel.title ?? '');
+
+      if (out.includes('${' + base + '.value}')) {
+        let val: any = '';
+        try {
+          const q = panel.content.query;
+          val = !q.query.modeSQL
+            ? await MailingService.execQuery(q, user)
+            : await MailingService.execSqlQuery(q, user);
+        } catch { val = ''; }
+        const rendered = (val === null || val === undefined || val === '')
+          ? ''
+          : (Number.isFinite(Number(val)) ? Number(val).toLocaleString('de-DE') : String(val));
+        out = out.split('${' + base + '.value}').join(rendered);
+      }
+    }
+
+    return out;
+  }
+
   /** App URL for a dashboard. Tolerates a server_baseURL that already ends in a locale segment
    * (e.g. ".../ca") so we don't build ".../ca/es/#/...". */
   static dashboardAppUrl(dashboardId: string): string {
@@ -161,7 +197,7 @@ export class MailingService {
   /**Chech kpi condition and send mail if condition is true
    * 
    */
-  static mailAlertsSending(alert, transporter, senderEmail: string) {
+  static mailAlertsSending(alert, transporter, senderEmail: string, dashboard: any = null) {
 
     alert.value.mailing.users.forEach(async user => {
 
@@ -171,34 +207,36 @@ export class MailingService {
 
       let condition = MailingService.compareValues(result, alert.value.value, alert.value.operand);
       console.log(`[MailingService] alerta KPI | resultado: ${result} | condición: ${result} ${alert.value.operand} ${alert.value.value} = ${condition} | destinatario: ${user.email}`);
+      if (!condition) return;
 
       const dashboardLink = MailingService.dashboardAppUrl(alert.query.dashboard.dashboard_id);
+      const subject = await MailingService.resolveMailTemplate(alert.value.mailing.mailSubject || 'EDA - Alerta KPI', dashboard, user);
+      const body = await MailingService.resolveMailTemplate(alert.value.mailing.mailMessage || '', dashboard, user);
+      const fieldName = alert.query.query.fields[0].display_name;
 
-      let text = `${alert.value.mailing.mailMessage}\n-------------------------------------------- \n\n` +
-        `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${dashboardLink}`
+      const text = `${body}\n-------------------------------------------- \n\n${fieldName}: ${result.toLocaleString('de-DE')}\n${dashboardLink}`;
+      const html =
+        `<div style="font-family:Arial,Helvetica,sans-serif;color:#111;font-size:14px;line-height:1.5">` +
+          `<div>${body}</div>` +
+          `<p style="margin:12px 0"><strong>${fieldName}:</strong> ${result.toLocaleString('de-DE')}</p>` +
+          `<p><a href="${dashboardLink}">${dashboardLink}</a></p>` +
+        `</div>`;
 
-      let mailOptions = {
-        from: senderEmail,
-        to: user.email,
-        subject: alert.value.mailing.mailSubject || 'EDA - Alerta KPI',
-        text: text
-      };
-
-
-      if (condition) {
-        transporter.sendMail(mailOptions, function (error: any) {
-          if (error) console.log(error);
-        });
-      }
+      transporter.sendMail({ from: senderEmail, to: user.email, subject, text, html }, function (error: any) {
+        if (error) console.log(error);
+      });
     })
   }
 
   /** "Enviar" button: same render + PDF pipeline as the cron, one recipient at a time. */
   static async sendDashboardNow(dashboardID: string, recipients: string[], subject: string, message: string, transporter: any, senderEmail: string) {
     const token = await UserController.provideFakeToken();
+    const dashboard = await Dashboard.findById(dashboardID);
     for (const mail of recipients) {
       try {
-        await MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message || '', token, senderEmail, subject || '');
+        const resolvedSubject = await MailingService.resolveMailTemplate(subject || '', dashboard, { email: mail });
+        const resolvedMessage = await MailingService.resolveMailTemplate(message || '', dashboard, { email: mail });
+        await MailDashboardsController.sendDashboard(dashboardID, mail, transporter, resolvedMessage, token, senderEmail, resolvedSubject);
       } catch (err: any) {
         console.error(`[sendDashboardNow] ERROR enviando "${dashboardID}" a ${mail}:`, err?.message || err);
       }
@@ -240,17 +278,24 @@ export class MailingService {
       query,
     };
 
-    MailingService.mailAlertsSending(alert, transporter, senderEmail);
+    MailingService.mailAlertsSending(alert, transporter, senderEmail, dashboard);
   }
 
   static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string, subject:string = '', imageBuffer?:Buffer){
 
     const text = `${message}\n-------------------------------------------- \n\n${link}`;
 
+    const imageBlock = imageBuffer
+      ? `<div style="margin:16px 0">` +
+          `<img src="cid:dashboardimg" alt="" width="600" style="width:100%;max-width:600px;height:auto;border:1px solid #ddd;border-radius:4px"/>` +
+          `<div style="font-size:12px;color:#888;margin-top:4px">Vista previa · informe completo en el PDF adjunto</div>` +
+        `</div>`
+      : '';
+
     const html =
       `<div style="font-family:Arial,Helvetica,sans-serif;color:#111;font-size:14px;line-height:1.5">` +
         `<div>${message || ''}</div>` +
-        (imageBuffer ? `<p style="margin:16px 0"><img src="cid:dashboardimg" alt="" style="max-width:100%;height:auto;border:1px solid #ddd"/></p>` : '') +
+        imageBlock +
         `<p><a href="${link}">${link}</a></p>` +
       `</div>`;
 

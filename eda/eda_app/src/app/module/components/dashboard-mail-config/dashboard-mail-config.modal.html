@@ -11,35 +11,71 @@
 
         <!-- Frequency configuration -->
         <div class="bg-white shadow-lg rounded-2xl p-6 space-y-5">
-            <h5 class="text-lg font-semibold text-gray-800 mb-4" i18n="@@SendMailEvery">Enviar mail de alerta cada:</h5>
+            <h5 class="text-lg font-semibold text-gray-800 mb-4" i18n="@@mailFrequencyLabel">Frecuencia de envío</h5>
 
-            <div class="flex flex-col">
-                <input id="quantity" type="number" [(ngModel)]="quantity" 
-                    class="mail-input w-full border border-gray-300 px-3 py-2.5 rounded-lg">
-            </div>
+            <select [(ngModel)]="units" class="mail-input w-full border border-gray-300 px-3 py-2.5 rounded-lg">
+                <option [ngValue]="undefined" disabled i18n="@@mailFreqPick">Selecciona…</option>
+                <option value="hours" i18n="@@mailFreqHours">Cada X horas</option>
+                <option value="days" i18n="@@mailFreqDays">Cada X días</option>
+                <option value="weekly" i18n="@@mailFreqWeekly">Días de la semana</option>
+                <option value="monthly" i18n="@@mailFreqMonthly">Una vez al mes</option>
+            </select>
 
-            <!-- Days radio button -->
-            <label class="flex items-center gap-3 cursor-pointer w-fit">
-                <input type="radio" name="groupname" value="days" [(ngModel)]="units"
-                    class="mail-radio w-5 h-5 border-gray-300">
-                <span class="text-base text-gray-700">{{daysSTR}}</span>
-            </label>
+            @if (units === 'hours' || units === 'days') {
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-600" i18n="@@mailFreqEvery">Cada</span>
+                    <input type="number" min="1" [(ngModel)]="quantity"
+                        class="mail-input w-24 border border-gray-300 px-3 py-2.5 rounded-lg">
+                    <span class="text-gray-600">{{ units === 'hours' ? hoursSTR : daysSTR }}</span>
+                </div>
+            }
 
-            <!-- Time when using days -->
-            <div>
-                @if (units==='days') {
-                <p i18n="@@at" class="mb-2 text-gray-600">A las</p>
-                <p-calendar [timeOnly]="true" [stepMinute]="30" [(ngModel)]="hours" (onBlur)="onHoursBlur()"
-                    class="w-full border border-gray-300 px-3 py-2.5 rounded-lg shadow-sm"></p-calendar>
+            @if (units === 'weekly') {
+                <div class="flex flex-wrap gap-1.5">
+                    @for (d of weekdayOptions; track d.value) {
+                        <button type="button" (click)="toggleWeekday(d.value)"
+                            class="h-9 w-9 rounded-full border text-sm font-medium transition-colors"
+                            [class]="weekdays.includes(d.value) ? 'bg-[var(--corporate-primary,#2563eb)] text-white border-transparent' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'">
+                            {{ d.short }}
+                        </button>
+                    }
+                </div>
+            }
+
+            @if (units === 'monthly') {
+                <select [(ngModel)]="monthlyMode" class="mail-input w-full border border-gray-300 px-3 py-2.5 rounded-lg">
+                    <option value="dom" i18n="@@mailFreqMonthlyDom">El día del mes</option>
+                    <option value="nth" i18n="@@mailFreqMonthlyNth">Un día de la semana</option>
+                </select>
+
+                @if (monthlyMode === 'dom') {
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-600" i18n="@@mailFreqOnDay">El día</span>
+                        <select [(ngModel)]="monthlyDay" class="mail-input border border-gray-300 px-3 py-2.5 rounded-lg">
+                            @for (n of monthDayOptions; track n) { <option [ngValue]="n">{{ n }}</option> }
+                            <option value="last" i18n="@@mailFreqLastDay">Último día</option>
+                        </select>
+                    </div>
+                } @else {
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-gray-600" i18n="@@mailFreqThe">El</span>
+                        <select [(ngModel)]="monthlyOrdinal" class="mail-input border border-gray-300 px-3 py-2.5 rounded-lg">
+                            @for (o of ordinalOptions; track o.value) { <option [ngValue]="o.value">{{ o.label }}</option> }
+                        </select>
+                        <select [(ngModel)]="monthlyWeekday" class="mail-input border border-gray-300 px-3 py-2.5 rounded-lg">
+                            @for (d of weekdayOptions; track d.value) { <option [ngValue]="d.value">{{ d.long }}</option> }
+                        </select>
+                    </div>
                 }
-            </div>
+            }
 
-            <!-- Hours radio button -->
-            <label class="flex items-center gap-3 cursor-pointer w-fit">
-                <input type="radio" name="groupname" value="hours" [(ngModel)]="units"
-                    class="mail-radio w-5 h-5 border-gray-300">
-                <span class="text-base text-gray-700">{{hoursSTR}}</span>
-            </label>
+            @if (units && units !== 'hours') {
+                <div>
+                    <p i18n="@@at" class="mb-2 text-gray-600">A las</p>
+                    <p-calendar [timeOnly]="true" [stepMinute]="30" [(ngModel)]="hours" (onBlur)="onHoursBlur()"
+                        class="w-full border border-gray-300 px-3 py-2.5 rounded-lg shadow-sm"></p-calendar>
+                </div>
+            }
 
 
             <!-- Switch -->
@@ -52,6 +88,20 @@
                 }
                 <p-inputSwitch id="switchCache" class="mt-3" [(ngModel)]="enabled"
                     tooltipPosition="left"></p-inputSwitch>
+            </div>
+
+            <div class="pt-4 border-t border-gray-200">
+                @if (disabledSwitch) {
+                <h6 i18n="@@mailDisabledOn" class="text-gray-600 font-medium">Deshabilitado</h6>
+                } @else {
+                <h6 i18n="@@mailDisabledOff" class="text-gray-600 font-medium">Deshabilitar</h6>
+                }
+                <p-inputSwitch class="mt-3" [(ngModel)]="disabledSwitch" tooltipPosition="left"></p-inputSwitch>
+            </div>
+
+            <div class="pt-4 border-t border-gray-200">
+                <h6 i18n="@@mailAiAnalysis" class="text-gray-600 font-medium">Análisis de IA</h6>
+                <p-inputSwitch class="mt-3" [(ngModel)]="aiAnalysis" tooltipPosition="left"></p-inputSwitch>
             </div>
         </div>
 
@@ -107,6 +157,45 @@
             </ul>
         </div>
     }
+
+    <div class="mt-4 rounded-lg border border-gray-200 bg-white p-4">
+        <h6 i18n="@@mailPreviewTitle" class="text-sm font-semibold text-gray-700 mb-2">Vista previa del correo</h6>
+        <div class="mx-auto max-w-[640px] overflow-hidden rounded-md border border-gray-200 bg-white text-sm text-gray-800">
+
+            <!-- 1 asunto + 2 logo -->
+            <div class="flex items-start gap-3 border-b border-gray-200 px-4 py-3">
+                <div class="min-w-0 flex-1">
+                    <span class="text-gray-400" i18n="@@mailPreviewSubjectLabel">Asunto:</span>
+                    <span class="font-medium text-gray-900 break-words">{{ previewSubject || '—' }}</span>
+                </div>
+                <img [src]="logoImage" alt="" class="h-8 w-auto shrink-0 object-contain">
+            </div>
+
+            <!-- 3 contenido -->
+            <div class="px-4 py-4 [&_*]:max-w-full" [innerHTML]="previewBody"></div>
+
+            <!-- 4 imagen del informe -->
+            <div class="mx-4 mb-4 flex items-center justify-center rounded border border-dashed border-gray-300 bg-gray-50 py-10 text-xs text-gray-400"
+                i18n="@@mailPreviewImagePlaceholder">Vista previa del informe (imagen)</div>
+
+            <!-- 5 link -->
+            <div class="border-t border-gray-200 px-4 py-2 text-xs">
+                <a [href]="previewLink" target="_blank" rel="noopener" class="text-blue-600 underline break-all">{{ previewLink }}</a>
+            </div>
+
+            <!-- 6 pdf adjunto -->
+            <div class="px-4 pt-3">
+                <span class="inline-flex items-center gap-2 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
+                    <span class="font-semibold text-red-500">PDF</span>{{ pdfName }}
+                </span>
+            </div>
+
+            <!-- 7 banner -->
+            <div class="mt-3 border-t border-gray-200 px-4 py-3">
+                <img [src]="bannerImage" alt="" class="mx-auto block max-h-20 w-auto object-contain">
+            </div>
+        </div>
+    </div>
 
     @if (enabled && allRecipientEmails.length > 0) {
         <div class="mt-4 flex items-center justify-between gap-4 text-base text-gray-600">

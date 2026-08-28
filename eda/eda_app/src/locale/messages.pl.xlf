@@ -3017,7 +3017,30 @@ Co widzę?
     <source>Variables de paneles KPI</source>
     <target>Zmienne paneli KPI</target>
   </trans-unit>
-
+  <trans-unit id="mailPreviewTitle">
+    <source>Vista previa del correo</source>
+    <target>Podgląd wiadomości</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewSubjectLabel">
+    <source>Asunto:</source>
+    <target>Temat:</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewImagePlaceholder">
+    <source>Vista previa del informe (imagen)</source>
+    <target>Podgląd raportu (obraz)</target>
+  </trans-unit>
+  <trans-unit id="mailDisabledOff">
+    <source>Deshabilitar</source>
+    <target>Wyłącz</target>
+  </trans-unit>
+  <trans-unit id="mailDisabledOn">
+    <source>Deshabilitado</source>
+    <target>Wyłączone</target>
+  </trans-unit>
+  <trans-unit id="mailAiAnalysis">
+    <source>Análisis de IA</source>
+    <target>Analiza AI</target>
+  </trans-unit>
    <trans-unit id="sendMailHeader">
     <source>Configuración de los envíos por email</source>
     <target>Konfigurowanie wysyłania wiadomości e-mail</target>

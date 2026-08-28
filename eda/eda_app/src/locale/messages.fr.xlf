@@ -3354,7 +3354,30 @@ Que suis-je en train de voir ?
     <source>Variables de paneles KPI</source>
     <target>Variables des panneaux KPI</target>
   </trans-unit>
-
+  <trans-unit id="mailPreviewTitle">
+    <source>Vista previa del correo</source>
+    <target>Aperçu de l'e-mail</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewSubjectLabel">
+    <source>Asunto:</source>
+    <target>Objet :</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewImagePlaceholder">
+    <source>Vista previa del informe (imagen)</source>
+    <target>Aperçu du rapport (image)</target>
+  </trans-unit>
+  <trans-unit id="mailDisabledOff">
+    <source>Deshabilitar</source>
+    <target>Désactiver</target>
+  </trans-unit>
+  <trans-unit id="mailDisabledOn">
+    <source>Deshabilitado</source>
+    <target>Désactivé</target>
+  </trans-unit>
+  <trans-unit id="mailAiAnalysis">
+    <source>Análisis de IA</source>
+    <target>Analyse IA</target>
+  </trans-unit>
   <trans-unit id="sendMailHeader">
     <source>Configuración de los envíos por email</source>
     <target>Paramètres d'envoi d'e-mails</target>

@@ -3399,7 +3399,30 @@ Qué estic veient?
     <source>Variables de paneles KPI</source>
     <target>Variables de panells KPI</target>
   </trans-unit>
-
+  <trans-unit id="mailPreviewTitle">
+    <source>Vista previa del correo</source>
+    <target>Vista prèvia del correu</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewSubjectLabel">
+    <source>Asunto:</source>
+    <target>Assumpte:</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewImagePlaceholder">
+    <source>Vista previa del informe (imagen)</source>
+    <target>Vista prèvia de l'informe (imatge)</target>
+  </trans-unit>
+  <trans-unit id="mailDisabledOff">
+    <source>Deshabilitar</source>
+    <target>Deshabilitar</target>
+  </trans-unit>
+  <trans-unit id="mailDisabledOn">
+    <source>Deshabilitado</source>
+    <target>Deshabilitat</target>
+  </trans-unit>
+  <trans-unit id="mailAiAnalysis">
+    <source>Análisis de IA</source>
+    <target>Anàlisi d'IA</target>
+  </trans-unit>
   <trans-unit id="sendMailHeader">
     <source>Configuración de los envíos por email</source>
     <target>Configuració dels enviaments per email</target>

@@ -164,9 +164,23 @@ export class MailDashboardsController {
 
       console.log(`[Dashboard] PDF generado: ${filename}`);
 
-      // 7. Send the email: PDF attached + the same screenshot inlined in the body
+      // 7. Send the email: full report as the PDF attachment, plus a small preview inlined in the body.
+      // The body image is width-clamped and height-cropped so the recipient doesn't scroll a wall of chart.
+      const INLINE_WIDTH = 640;
+      const INLINE_MAX_HEIGHT = 900;
+      let inlineImage: Buffer;
+      try {
+        const scaled = await sharp(screenshotBuffer).resize({ width: INLINE_WIDTH, withoutEnlargement: true }).jpeg({ quality: 82 }).toBuffer();
+        const meta = await sharp(scaled).metadata();
+        inlineImage = (meta.height || 0) > INLINE_MAX_HEIGHT
+          ? await sharp(scaled).extract({ left: 0, top: 0, width: meta.width || INLINE_WIDTH, height: INLINE_MAX_HEIGHT }).jpeg({ quality: 82 }).toBuffer()
+          : scaled;
+      } catch {
+        inlineImage = screenshotBuffer;
+      }
+
       const link = dashboardUrl;
-      MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail, subject, screenshotBuffer);
+      MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail, subject, inlineImage);
       console.log(`[Dashboard] Email enviado a ${userMail}`);
 
     } catch (err: any) {

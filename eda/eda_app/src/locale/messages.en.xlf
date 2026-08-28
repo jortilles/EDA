@@ -3105,7 +3105,30 @@ What am I seeing?
 <source>Variables de paneles KPI</source>
 <target>KPI panel variables</target>
 </trans-unit>
-
+<trans-unit id="mailPreviewTitle">
+<source>Vista previa del correo</source>
+<target>Email preview</target>
+</trans-unit>
+<trans-unit id="mailPreviewSubjectLabel">
+<source>Asunto:</source>
+<target>Subject:</target>
+</trans-unit>
+<trans-unit id="mailPreviewImagePlaceholder">
+<source>Vista previa del informe (imagen)</source>
+<target>Report preview (image)</target>
+</trans-unit>
+<trans-unit id="mailDisabledOff">
+<source>Deshabilitar</source>
+<target>Disable</target>
+</trans-unit>
+<trans-unit id="mailDisabledOn">
+<source>Deshabilitado</source>
+<target>Disabled</target>
+</trans-unit>
+<trans-unit id="mailAiAnalysis">
+<source>Análisis de IA</source>
+<target>AI analysis</target>
+</trans-unit>
 <trans-unit id="sendMailHeader">
 <source>Configuración de los envíos por email</source>
 <target>Configuration of sending by email</target>
