@@ -191,7 +191,7 @@ export class GlobalFilterComponent implements OnInit {
         for (const filter of this.globalFilters) {
             if (this.getFilterType(filter) === 'date') {
                 this.loadDatesFromFilter(filter)
-            } else {
+            } else if (!filter.isAutocompleted) {
                 tasks.push(this.loadGlobalFiltersData(filter)); // Promise to ensure all data has been loaded
             }
         }
@@ -454,7 +454,7 @@ export class GlobalFilterComponent implements OnInit {
                 // Load Filter dropdowns options
                 if (filter.column?.value?.column_type === 'date' && filter.selectedItems.length > 0) {
                     this.loadDatesFromFilter(filter);
-                } else {
+                } else if (!filter.isAutocompleted) {
                     await this.loadGlobalFiltersData(filter);
                     this.cdr.detectChanges();
                 }
@@ -572,7 +572,7 @@ export class GlobalFilterComponent implements OnInit {
                 // Load Filter dropdwons option s
                 if (this.globalFilter.selectedColumn.column_type === 'date' && this.globalFilter.selectedItems.length > 0) {
                     this.loadDatesFromFilter(this.globalFilter);
-                } else {
+                } else if (!this.globalFilter.isAutocompleted) {
                     await this.loadGlobalFiltersData();
                 }
 
