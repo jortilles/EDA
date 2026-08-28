@@ -964,8 +964,32 @@ export class DashboardPage implements OnInit {
     });
   }
 
-  public onDuplicatePanel(panel: any) {
+  public onDuplicatePanel(event: any) {
+    const panel = event?.panel ?? event;
+    const sourcePanelId = event?.sourcePanelId;
     this.panels.push(panel);
+
+    // A duplicate has content, so ngAfterViewInit's "new empty panel" flow skips it: link its global filters here.
+    const globalFilters = (this.globalFilter?.globalFilters || []).filter((f: any) => f.isGlobal === true);
+    globalFilters.forEach((filter: any) => {
+      if (!Array.isArray(filter.panelList)) filter.panelList = [];
+      const inheritsFilter = filter.applyToAll || filter.panelList.includes(sourcePanelId);
+      if (inheritsFilter && !filter.panelList.includes(panel.id)) {
+        filter.panelList.push(panel.id);
+      }
+    });
+
+    setTimeout(() => {
+      const newEdaPanel = this.edaPanels.find(p => p.panel.id === panel.id);
+      if (newEdaPanel) {
+        globalFilters.forEach((filter: any) => {
+          if (filter.panelList.includes(panel.id)) {
+            newEdaPanel.assertGlobalFilter(this.globalFiltersService.formatFilter(filter));
+          }
+        });
+      }
+    }, 0);
+
     this.dashboardService.setNotSaved(true);
     this.stylesProviderService.loadedPanels++;
   }

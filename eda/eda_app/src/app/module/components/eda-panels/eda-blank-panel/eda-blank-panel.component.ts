@@ -2013,10 +2013,10 @@ public tableNodeExpand(event: any): void {
 
     /** It duplicates a dashboard panel and positions it one step below the original.*/
     public duplicatePanel(): void {
-        let duplicatedPanel =   _.cloneDeep(this.panel, true); 
+        let duplicatedPanel =   _.cloneDeep(this.panel, true);
         duplicatedPanel.id = this.fileUtiles.generateUUID();
         duplicatedPanel.y = duplicatedPanel.y+1;
-        this.duplicate.emit(duplicatedPanel);
+        this.duplicate.emit({ panel: duplicatedPanel, sourcePanelId: this.panel.id });
     }
 
     
