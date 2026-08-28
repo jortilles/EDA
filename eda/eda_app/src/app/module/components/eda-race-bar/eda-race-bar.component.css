@@ -39,6 +39,57 @@
   line-height: 16px;
 }
 
+.eda-race-bar-play-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.eda-race-bar-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--corporate-primary, #4472c4);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.eda-race-bar-icon-btn .material-icons {
+  font-size: 16px;
+  line-height: 16px;
+}
+
+.eda-race-bar-icon-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.eda-race-bar-speed-btn {
+  min-width: 30px;
+  height: 20px;
+  padding: 0 6px;
+  border: 1px solid var(--corporate-primary, #4472c4);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--corporate-primary, #4472c4);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.eda-race-bar-speed-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
 /* Large, translucent "ticker" date readout bottom-right of the chart area - same convention as
    the reference bar-chart-race (observablehq.com/@d3/bar-chart-race): the one piece of text big
    enough to read at a glance while the bars are mid-race. Plain HTML/CSS, not SVG text, so its

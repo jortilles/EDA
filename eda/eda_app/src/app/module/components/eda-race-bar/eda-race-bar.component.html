@@ -1,9 +1,16 @@
 <div class="eda-race-bar-wrapper">
   @if (!noData) {
     <div class="eda-race-bar-header">
-      <button type="button" class="eda-race-bar-play-btn" (click)="togglePlay()" [attr.aria-label]="playPauseAriaLabel">
+      <button type="button" class="eda-race-bar-icon-btn" [disabled]="currentFrameIndex <= 0" (click)="stepFrame(-1)" [attr.aria-label]="prevAriaLabel">
+        <span class="material-icons">skip_previous</span>
+      </button>
+      <button type="button" class="eda-race-bar-play-btn" [disabled]="frameCount <= 1" (click)="togglePlay()" [attr.aria-label]="playPauseAriaLabel">
         <span class="material-icons">{{ playing ? 'pause' : (finished ? 'replay' : 'play_arrow') }}</span>
       </button>
+      <button type="button" class="eda-race-bar-icon-btn" [disabled]="currentFrameIndex >= frameCount - 1" (click)="stepFrame(1)" [attr.aria-label]="nextAriaLabel">
+        <span class="material-icons">skip_next</span>
+      </button>
+      <button type="button" class="eda-race-bar-speed-btn" [disabled]="frameCount <= 1" (click)="cycleSpeed()" [attr.aria-label]="speedAriaLabel">{{ speedMultiplier }}x</button>
     </div>
     <div #edad3container class="svg-container">
       <svg #svgContainer class="svg-content" [id]="id" width="100%" height="100%"></svg>
