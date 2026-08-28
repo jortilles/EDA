@@ -1,0 +1,15 @@
+<div class="server-console-page">
+    <div class="d-flex align-items-center justify-content-end flex-wrap gap-2 mb-3">
+        <div class="d-flex align-items-center">
+            <label for="serverConsoleLive" class="mb-0 mr-2" style="cursor:pointer">{{liveToggleLabel}}</label>
+            <p-inputSwitch [(ngModel)]="liveMode" inputId="serverConsoleLive" (onChange)="onLiveToggle()"></p-inputSwitch>
+        </div>
+    </div>
+
+    <div *ngIf="resetNotice" class="alert alert-warning py-2 px-3 mb-2">{{resetNoticeText}}</div>
+
+    <div #consoleOutput class="server-console-output">
+        <span *ngIf="!loading && !content">{{emptyText}}</span>
+        <span *ngIf="content">{{content}}</span>
+    </div>
+</div>

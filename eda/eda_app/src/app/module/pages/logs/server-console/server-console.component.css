@@ -1,0 +1,21 @@
+.server-console-page {
+    width: 100%;
+}
+
+.server-console-output {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.85rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border: 1px solid #444;
+    border-radius: 4px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 1rem;
+    /* Actual height is set inline by the component (fills the viewport below it, no page-level scroll);
+       this is only the fallback shown for a moment before that JS runs on first paint. */
+    min-height: 300px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}

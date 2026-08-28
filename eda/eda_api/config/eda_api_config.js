@@ -18,6 +18,7 @@ module.exports = applyConfigOverwrite('eda_api_config', {
     maxStatementTime: 900, // time before killing the MySQL query
     log_file: "XXXXXXXXXXXXXXXXXX", // server query log
     error_log_file: "XXXXXXXXXXXXXXXXXX", // server error log
+    log_rotation_schedule: '0 0 * * *', // daily at midnight: archive yesterday's log_file and empty it in place
     custom_behaviour:{
       ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: false, // true -> Non-admin users can manage "open" dashboards.
       USE_RECURSIVE_PERMISSIONS: true, // true -> QueryBuilderService.builder() getRecursivePermissions (EDA, existing behaviour, keep as default). false -> getFlatPermissions (SDA).

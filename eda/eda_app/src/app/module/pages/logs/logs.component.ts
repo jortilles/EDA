@@ -1,45 +1,15 @@
-import { Component, OnInit, inject, signal} from '@angular/core';
-
-// Servicio
-import { LogService } from '@eda/services/service.index';
+import { Component } from '@angular/core';
+import { TabViewModule } from 'primeng/tabview';
+import { AuditLogComponent } from './audit-log/audit-log.component';
+import { ServerConsoleComponent } from './server-console/server-console.component';
 
 @Component({
   standalone: true,
   selector: 'app-logs',
   templateUrl: './logs.component.html',
-  styleUrls: ['./logs.component.css']
+  styleUrls: ['./logs.component.css'],
+  imports: [TabViewModule, AuditLogComponent, ServerConsoleComponent]
 })
-export class LogsComponent implements OnInit {
-  private logService = inject(LogService);
-
-  protected logs_file = '';
-  protected logs_error_file = '';
-
-  logFileBoolean: boolean = false;
-  logErrorFileBoolean: boolean = false;
-  
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
-  logsFile() {
-    // Here I add the service to display logs.
-    this.logService.getLogFile().subscribe((resp: any) => {
-      this.logs_file = resp.content.replace(/(?:\r\n|\r|\n)/g, '<br>');
-        this.logErrorFileBoolean = false;
-        this.logFileBoolean = true;
-      }, (err) => console.log(err));
-    }
-    
-    logsErrorFile() {
-    // Here I add the service to display error logs.
-    this.logService.getLogErrorFile().subscribe((resp: any) => {
-      this.logs_error_file = resp.content.replace(/(?:\r\n|\r|\n)/g, '<br>');
-      this.logFileBoolean = false;
-      this.logErrorFileBoolean = true;
-    }, (err) => console.log(err));
-  }
-
+export class LogsComponent {
+  public activeTabIndex: number = 0;
 }
