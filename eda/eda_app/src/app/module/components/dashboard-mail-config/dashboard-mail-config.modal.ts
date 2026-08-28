@@ -3,6 +3,7 @@ import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, } from "@angular/
 import { lastValueFrom } from "rxjs";
 import { AlertService, MailService, UserService } from "@eda/services/service.index";
 import { DateUtils } from "@eda/services/utils/date-utils.service";
+import { buildKpiVariables, MailKpiVariable } from "@eda/services/utils/mail-variables.util";
 import { SharedModule } from "@eda/shared/shared.module";
 import { MultiSelectModule } from "primeng/multiselect";
 import { CalendarModule } from 'primeng/calendar';
@@ -98,6 +99,11 @@ export class DashboardMailConfigModal {
     const registered = (this.selectedUsers || []).map((u: any) => u.email).filter(Boolean);
     const manual = this.parseOtherRecipients();
     return Array.from(new Set([...registered, ...manual]));
+  }
+
+  /** `${kpiN}` -> KPI panel name, listed in the dialog for use in the subject/body */
+  public get kpiVariables(): MailKpiVariable[] {
+    return buildKpiVariables(this.dashboard?.panels as any[]);
   }
 
   save() {

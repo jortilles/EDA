@@ -26,6 +26,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public mailConfigOpen: boolean = false;
     public dashboardId: string = '';
     public panelId: string = '';
+    public kpiPanels: any[] = [];
 
     public panelChartConfig: PanelChart = new PanelChart();
     
@@ -150,6 +151,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.panelTitle = this.controller.params.panelTitle || '';
         this.dashboardId = this.controller.params.dashboardId || '';
         this.panelId = this.controller.params.panelID || '';
+        this.kpiPanels = this.controller.params.kpiPanels || [];
         this.previewAspectRatio = `${this.panelWidth} / ${this.panelHeight}`;
         const config: any = this.panelChartConfig.config.getConfig();
 

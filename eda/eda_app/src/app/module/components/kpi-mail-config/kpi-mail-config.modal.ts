@@ -3,6 +3,7 @@ import { FormsModule } from "@angular/forms";
 import { lastValueFrom } from "rxjs";
 import { AlertService, MailService, UserService } from "@eda/services/service.index";
 import { DateUtils } from "@eda/services/utils/date-utils.service";
+import { buildKpiVariables, MailKpiVariable } from "@eda/services/utils/mail-variables.util";
 import { MultiSelectModule } from "primeng/multiselect";
 import { CalendarModule } from "primeng/calendar";
 import { InputSwitchModule } from "primeng/inputswitch";
@@ -20,6 +21,7 @@ export class KpiMailConfigModal implements OnInit {
   @Input() alert: any;
   @Input() dashboardId: string;
   @Input() panelId: string;
+  @Input() kpiPanels: any[] = [];
   @Output() apply: EventEmitter<any> = new EventEmitter<any>();
   @Output() close: EventEmitter<void> = new EventEmitter<void>();
 
@@ -81,6 +83,11 @@ export class KpiMailConfigModal implements OnInit {
     const registered = (this.selectedUsers || []).map((u: any) => (u.value ?? u).email).filter(Boolean);
     const manual = this.parseOtherRecipients();
     return Array.from(new Set([...registered, ...manual]));
+  }
+
+  /** `${kpiN}` -> KPI panel name, listed in the dialog for use in the subject/body */
+  public get kpiVariables(): MailKpiVariable[] {
+    return buildKpiVariables(this.kpiPanels);
   }
 
   save() {

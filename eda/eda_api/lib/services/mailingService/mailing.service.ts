@@ -243,21 +243,33 @@ export class MailingService {
     MailingService.mailAlertsSending(alert, transporter, senderEmail);
   }
 
-  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string, subject:string = ''){
+  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string, subject:string = '', imageBuffer?:Buffer){
 
-    let text = `${message}\n-------------------------------------------- \n\n`;
-    text += link;
+    const text = `${message}\n-------------------------------------------- \n\n${link}`;
+
+    const html =
+      `<div style="font-family:Arial,Helvetica,sans-serif;color:#111;font-size:14px;line-height:1.5">` +
+        `<div>${message || ''}</div>` +
+        (imageBuffer ? `<p style="margin:16px 0"><img src="cid:dashboardimg" alt="" style="max-width:100%;height:auto;border:1px solid #ddd"/></p>` : '') +
+        `<p><a href="${link}">${link}</a></p>` +
+      `</div>`;
+
+    const attachments: any[] = [{
+      filename: filename,
+      path: `${filepath}/${filename}`,
+      contentType: 'application/pdf'
+    }];
+    if (imageBuffer) {
+      attachments.push({ filename: 'dashboard.jpg', content: imageBuffer, contentType: 'image/jpeg', cid: 'dashboardimg' });
+    }
 
     let mailOptions = {
       from: senderEmail,
       to: userMail,
       subject: subject || 'EDA - Informe',
       text: text,
-      attachments: [{
-        filename: filename,
-        path: `${filepath}/${filename}`,
-        contentType: 'application/pdf'
-      }],
+      html: html,
+      attachments,
     };
 
     transporter.sendMail(mailOptions, function (error: any) {

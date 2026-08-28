@@ -3395,6 +3395,10 @@ Qué estic veient?
     <source>Asunto del mail</source>
     <target>Assumpte del mail</target>
   </trans-unit>
+  <trans-unit id="mailVariablesTitle">
+    <source>Variables de paneles KPI</source>
+    <target>Variables de panells KPI</target>
+  </trans-unit>
 
   <trans-unit id="sendMailHeader">
     <source>Configuración de los envíos por email</source>

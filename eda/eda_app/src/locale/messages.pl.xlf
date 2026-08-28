@@ -3013,6 +3013,10 @@ Co widzę?
     <source>Asunto del mail</source>
     <target>Temat wiadomości</target>
   </trans-unit>
+  <trans-unit id="mailVariablesTitle">
+    <source>Variables de paneles KPI</source>
+    <target>Zmienne paneli KPI</target>
+  </trans-unit>
 
    <trans-unit id="sendMailHeader">
     <source>Configuración de los envíos por email</source>

@@ -164,9 +164,9 @@ export class MailDashboardsController {
 
       console.log(`[Dashboard] PDF generado: ${filename}`);
 
-      // 7. Send the email with the generated PDF attached
+      // 7. Send the email: PDF attached + the same screenshot inlined in the body
       const link = dashboardUrl;
-      MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail, subject);
+      MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail, subject, screenshotBuffer);
       console.log(`[Dashboard] Email enviado a ${userMail}`);
 
     } catch (err: any) {

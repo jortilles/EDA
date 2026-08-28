@@ -107,6 +107,9 @@ export const PanelOptions = {
               params: {
                 panelID: _.get(panelComponent.panel, 'id'),
                 dashboardId: panelComponent.dashboard?.dashboardId,
+                kpiPanels: (panelComponent.dashboard?.panels || [])
+                  .filter((p: any) => String(p?.content?.chart || '').startsWith('kpi'))
+                  .map((p: any) => ({ id: p.id, title: p.title, chart: p?.content?.chart })),
                 panelChart: panelComponent.panelChartConfig,
                 alertLimits: panelComponent.panelChart.componentRef.instance.alertLimits || [],
                 edaChart: panelComponent.panelChart.componentRef.instance.edaChartComponent?.inject,

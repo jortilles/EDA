@@ -3101,6 +3101,10 @@ What am I seeing?
 <source>Asunto del mail</source>
 <target>Mail subject</target>
 </trans-unit>
+<trans-unit id="mailVariablesTitle">
+<source>Variables de paneles KPI</source>
+<target>KPI panel variables</target>
+</trans-unit>
 
 <trans-unit id="sendMailHeader">
 <source>Configuración de los envíos por email</source>
