@@ -184,8 +184,8 @@ export class MailDashboardsController {
 
       // The email link is the plain dashboard URL — pdfExport is only for the screenshot render.
       const link = MailingService.dashboardAppUrl(dashboard);
-      MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail, subject, inlineImage, aiText);
-      console.log(`[Dashboard] Email enviado a ${userMail}`);
+      await MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail, subject, inlineImage, aiText);
+      console.log(`[Dashboard] Email procesado para ${userMail}`);
 
     } catch (err: any) {
       console.error(`[Dashboard] ERROR en sendDashboard (${dashboard} → ${userMail}): ${err.message}`);
