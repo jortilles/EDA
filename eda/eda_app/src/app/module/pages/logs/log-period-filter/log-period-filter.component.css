@@ -1,0 +1,33 @@
+:host {
+    display: contents;
+}
+
+/* The global stylesheet forces a 1px border on .p-dropdown/.p-multiselect but not on .p-calendar,
+   so the date input renders borderless (Tailwind's preflight zeroes border-width by default) */
+:host ::ng-deep .log-period-filter-calendar .p-inputtext {
+    border-width: 1px !important;
+}
+
+/* Match dropdown and calendar input heights so both filter controls line up */
+:host ::ng-deep .log-period-filter-calendar .p-inputtext,
+:host ::ng-deep .p-dropdown {
+    height: 2.5rem;
+    box-sizing: border-box;
+}
+
+:host ::ng-deep .p-dropdown {
+    display: flex;
+    align-items: center;
+}
+
+/* Keep the calendar popup inside the viewport by anchoring it to the right side of the control */
+:host ::ng-deep .log-period-filter-calendar {
+    position: relative;
+}
+
+:host ::ng-deep .log-period-filter-calendar .p-datepicker,
+:host ::ng-deep .log-period-filter-calendar-panel {
+    left: auto !important;
+    right: 0 !important;
+    transform-origin: top right;
+}

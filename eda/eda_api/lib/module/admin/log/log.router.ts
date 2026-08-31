@@ -77,5 +77,22 @@ router.get('/app-logs', [authGuard, roleGuard], AuditLogController.getAppLogs);
  */
 router.get('/log-tail', [authGuard, roleGuard], LogController.getLogTail);
 
+/**
+ * @openapi
+ * /admin/log/log-history:
+ *   get:
+ *     description: Returns log_file content across a date/startDate/endDate range, combining LogRotationService's dated archives with today's live file. Requires admin authentication.
+ *     responses:
+ *       200:
+ *         description: Combined log content, today's file offset/size, and whether the range reaches today, returned successfully.
+ *       401:
+ *         description: Unauthorized - authentication required.
+ *       403:
+ *         description: Forbidden - admin role required.
+ *     tags:
+ *       - Admin Log Routes
+ */
+router.get('/log-history', [authGuard, roleGuard], LogController.getLogHistory);
+
 
 export default router;

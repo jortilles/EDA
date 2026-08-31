@@ -33,32 +33,11 @@
     background-color: rgba(217, 119, 6, 0.1);
 }
 
-/* The global stylesheet forces a 1px border on .p-dropdown/.p-multiselect but not on .p-calendar,
-   so the date input renders borderless (Tailwind's preflight zeroes border-width by default) */
-:host ::ng-deep .audit-log-calendar .p-inputtext {
-    border-width: 1px !important;
-}
-
-/* Match dropdown and calendar input heights so both filter controls line up */
-:host ::ng-deep .audit-log-calendar .p-inputtext,
-:host ::ng-deep .p-dropdown {
+/* Match the pagination dropdowns' height with the paginator buttons (period/date calendar's own
+   dropdown height is handled by app-log-period-filter's own styles) */
+:host ::ng-deep .paginator-dropdown .p-dropdown {
     height: 2.5rem;
     box-sizing: border-box;
-}
-
-:host ::ng-deep .p-dropdown {
     display: flex;
     align-items: center;
-}
-
-/* Keep the calendar popup inside the viewport by anchoring it to the right side of the control */
-:host ::ng-deep .audit-log-calendar {
-    position: relative;
-}
-
-:host ::ng-deep .audit-log-calendar .p-datepicker,
-:host ::ng-deep .audit-log-calendar-panel {
-    left: auto !important;
-    right: 0 !important;
-    transform-origin: top right;
 }

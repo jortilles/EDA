@@ -5,6 +5,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 import { Subscription, timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { LogService, AlertService } from '@eda/services/service.index';
+import { LogPeriodFilterComponent, LogDateRangeChange } from '../log-period-filter/log-period-filter.component';
 
 const POLL_INTERVAL_MS = 4000;
 
@@ -13,7 +14,7 @@ const POLL_INTERVAL_MS = 4000;
     selector: 'app-server-console',
     templateUrl: './server-console.component.html',
     styleUrls: ['./server-console.component.css'],
-    imports: [CommonModule, FormsModule, InputSwitchModule]
+    imports: [CommonModule, FormsModule, InputSwitchModule, LogPeriodFilterComponent]
 })
 export class ServerConsoleComponent implements AfterViewInit, OnDestroy {
 
@@ -26,6 +27,8 @@ export class ServerConsoleComponent implements AfterViewInit, OnDestroy {
 
     public content: string = '';
     public liveMode: boolean = true;
+    // Live tailing only makes sense while viewing a range that reaches today — a past day is a frozen view
+    public includesToday: boolean = true;
     public resetNotice: boolean = false;
     public loading: boolean = false;
 
@@ -39,9 +42,7 @@ export class ServerConsoleComponent implements AfterViewInit, OnDestroy {
     constructor(
         private logService: LogService,
         private alertService: AlertService
-    ) {
-        this.loadHistorical();
-    }
+    ) { }
 
     ngAfterViewInit(): void {
         const el = this.consoleOutput?.nativeElement;
@@ -75,25 +76,34 @@ export class ServerConsoleComponent implements AfterViewInit, OnDestroy {
     };
 
     onLiveToggle() {
-        if (this.liveMode) {
+        if (this.liveMode && this.includesToday) {
             this.startPolling();
         } else {
+            this.liveMode = false;
             this.stopPolling();
         }
     }
 
-    private loadHistorical() {
+    onDateRangeChange(change: LogDateRangeChange) {
+        this.stopPolling();
+        this.includesToday = change.includesToday;
+        if (!this.includesToday) this.liveMode = false;
+
+        const params: any = change.useExactDate
+            ? { date: change.date }
+            : { startDate: change.startDate, endDate: change.endDate };
+
         this.loading = true;
         this.content = '';
         this.resetNotice = false;
-        this.logService.getLogTail(this.file, 0).subscribe(
+        this.logService.getLogHistory(params).subscribe(
             (resp: any) => {
                 this.content = resp?.content || '';
                 this.offset = resp?.offset || 0;
                 this.loading = false;
                 this.scrollToBottom();
-                // Live mode is on by default, so start tailing as soon as the initial content is in
-                if (this.liveMode) this.startPolling();
+                // Only tail the live file when the selected range actually reaches today
+                if (this.liveMode && this.includesToday) this.startPolling();
             },
             (err) => {
                 this.alertService.addError(err);

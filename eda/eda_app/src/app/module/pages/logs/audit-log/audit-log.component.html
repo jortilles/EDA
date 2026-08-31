@@ -6,19 +6,7 @@
                     <h2 class="text-xl font-semibold" i18n="@@LogsViewer">Visor de logs</h2>
                     <p class="text-gray-500 dark:text-gray-400 text-sm" i18n="@@LogsAuditSubtitle">Registro de auditoría de la aplicación</p>
                 </div>
-                <div class="flex flex-col gap-1">
-                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide" i18n="@@FilterByPeriod">Periodo</label>
-                    <p-dropdown [options]="periods" [(ngModel)]="selectedPeriod" (onChange)="onPeriodChange()"
-                        [autoDisplayFirst]="false" [showClear]="false" [placeholder]="selectPeriodPlaceholder"></p-dropdown>
-                </div>
-                <div class="flex flex-col gap-1">
-                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide" i18n="@@FilterByDate">Fecha</label>
-                    <!-- Restricted to the days where logs may exist (last 10 days) -->
-                    <p-calendar styleClass="audit-log-calendar" [(ngModel)]="selectedDate" (onSelect)="onDateChange()"
-                        dateFormat="yy-mm-dd" [showIcon]="true" [firstDayOfWeek]="firstDayOfWeek"
-                        [locale]="calendarLocale" [minDate]="minSelectableDate" [maxDate]="maxSelectableDate"
-                        [readonlyInput]="true" [panelStyleClass]="'audit-log-calendar-panel'"></p-calendar>
-                </div>
+                <app-log-period-filter (rangeChange)="onDateRangeChange($event)"></app-log-period-filter>
             </div>
 
             <div class="flex items-center flex-wrap gap-4">

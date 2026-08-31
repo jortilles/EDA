@@ -26,4 +26,8 @@ export class LogService extends ApiService{
         return this.getParams(`${this.route}/log-tail`, { file, offset });
     }
 
+    getLogHistory(params: any): Observable<any> {
+        return this.getParams(`${this.route}/log-history`, params);
+    }
+
 }

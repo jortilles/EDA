@@ -1,9 +1,13 @@
 <div class="server-console-page">
-    <div class="d-flex align-items-center justify-content-end flex-wrap gap-2 mb-3">
-        <div class="d-flex align-items-center">
-            <label for="serverConsoleLive" class="mb-0 mr-2" style="cursor:pointer">{{liveToggleLabel}}</label>
-            <p-inputSwitch [(ngModel)]="liveMode" inputId="serverConsoleLive" (onChange)="onLiveToggle()"></p-inputSwitch>
+    <div class="flex flex-nowrap items-end gap-4 mb-3">
+        <div class="flex flex-col gap-1" style="flex-shrink: 0;">
+            <span class="text-xs font-medium text-transparent uppercase tracking-wide select-none">.</span>
+            <div class="flex items-center gap-2" style="height: 2.5rem;">
+                <label for="serverConsoleLive" class="mb-0" [style.cursor]="includesToday ? 'pointer' : 'not-allowed'" [style.opacity]="includesToday ? 1 : 0.5">{{liveToggleLabel}}</label>
+                <p-inputSwitch [(ngModel)]="liveMode" [disabled]="!includesToday" inputId="serverConsoleLive" (onChange)="onLiveToggle()"></p-inputSwitch>
+            </div>
         </div>
+        <app-log-period-filter (rangeChange)="onDateRangeChange($event)"></app-log-period-filter>
     </div>
 
     <div *ngIf="resetNotice" class="alert alert-warning py-2 px-3 mb-2">{{resetNoticeText}}</div>
