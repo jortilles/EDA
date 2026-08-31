@@ -137,35 +137,58 @@ export class MailingService {
     }
   }
 
-  /** AI comment for a dashboard email: runs the KPI panels' queries as `user` and asks the
-   * configured provider for a short analysis. Returns '' on any failure or if AI is off. */
+  /** AI comment for a dashboard email: runs each data panel's query as `user` (KPIs as a single
+   * value, tables/charts as a few rows) and asks the configured provider for a short analysis.
+   * Returns '' on any failure or if AI is off. */
   static async generateAiAnalysis(dashboard: any, user: any): Promise<string> {
     try {
       const aiConfig = require('../../../config/ai.config');
-      if (!aiConfig || aiConfig.AVAILABLE === false) return '';
+      if (!aiConfig || aiConfig.AVAILABLE === false) {
+        console.log('[MailingService] generateAiAnalysis: AI no disponible, se omite');
+        return '';
+      }
 
-      const kpiPanels = (dashboard.config.panel || []).filter((p: any) => String(p?.content?.chart || '').startsWith('kpi'));
-      const lines: string[] = [];
-      for (const panel of kpiPanels) {
+      const panels = (dashboard.config.panel || []).filter((p: any) => p?.content?.query?.model_id);
+      const blocks: string[] = [];
+
+      for (const panel of panels.slice(0, 8)) {
+        const q = panel.content.query;
+        const chart = String(panel?.content?.chart || '');
+        const label = panel.title || 'Panel';
         try {
-          const q = panel.content.query;
-          const val = !q.query.modeSQL
-            ? await MailingService.execQuery(q, user)
-            : await MailingService.execSqlQuery(q, user);
-          if (val !== null && val !== undefined && val !== '') lines.push(`- ${panel.title}: ${val}`);
+          if (chart.startsWith('kpi')) {
+            const val = !q.query?.modeSQL
+              ? await MailingService.execQuery(q, user)
+              : await MailingService.execSqlQuery(q, user);
+            if (val !== null && val !== undefined && val !== '') blocks.push(`${label}: ${val}`);
+          } else {
+            const rows = await MailingService.execQueryRows(q, user, 12);
+            if (!rows.length) continue;
+            const cols = Object.keys(rows[0]);
+            const table = [cols.join(' | ')]
+              .concat(rows.map((r: any) => cols.map(c => String(r[c] ?? '')).join(' | ')))
+              .join('\n');
+            blocks.push(`${label}\n${table}`);
+          }
         } catch { /* skip this panel */ }
       }
-      if (lines.length === 0) return '';
+
+      if (blocks.length === 0) {
+        console.log('[MailingService] generateAiAnalysis: sin datos de paneles, no se genera análisis');
+        return '';
+      }
 
       const { AIProviderFactory } = require('../prompt/providers/ai-provider.factory');
       const provider = AIProviderFactory.create(aiConfig);
       const completion = provider.complete([
         { role: 'system', content: aiConfig.CONTEXT || 'Responde en español, breve y sin inventar datos.' },
-        { role: 'user', content: `Escribe 2-3 frases de análisis en español sobre estos KPIs del informe "${dashboard.config.title}". No inventes datos ni des recomendaciones largas.\n${lines.join('\n')}` },
+        { role: 'user', content: `Analiza los datos del informe "${dashboard.config.title}" y escribe 3-4 frases de análisis en español. No inventes datos ni des recomendaciones largas.\n\n${blocks.join('\n\n')}` },
       ], []);
-      const timeout = new Promise<any>((_, reject) => setTimeout(() => reject(new Error('AI provider timeout (20s)')), 20000));
+      const timeout = new Promise<any>((_, reject) => setTimeout(() => reject(new Error('AI provider timeout (25s)')), 25000));
       const result = await Promise.race([completion, timeout]);
-      return (result?.text || '').trim();
+      const text = (result?.text || '').trim();
+      console.log(`[MailingService] generateAiAnalysis: ${text ? `${text.length} caracteres` : 'respuesta vacía'}`);
+      return text;
     } catch (err: any) {
       console.error('[MailingService] generateAiAnalysis error:', err?.message || err);
       return '';
@@ -451,5 +474,24 @@ export class MailingService {
     }
   }
 
+  /** Like execQuery/execSqlQuery but returns up to `limit` full rows (array of objects) instead of
+   * just the first cell. Used to feed table/chart panel data to the AI analysis. */
+  static async execQueryRows(panelQuery: any, user: any, limit = 15): Promise<any[]> {
+    try {
+      const connection = await ManagerConnectionService.getConnection(panelQuery.model_id);
+      const dataModel = await connection.getDataSource(panelQuery.model_id);
+      const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+      const query = panelQuery?.query?.modeSQL
+        ? connection.BuildSqlQuery(panelQuery.query, dataModelObject, user)
+        : await connection.getQueryBuilded(panelQuery.query, dataModelObject, user);
+
+      connection.client = await connection.getclient();
+      const getResults = await connection.execQuery(query);
+      return Array.isArray(getResults) ? getResults.slice(0, limit) : [];
+    } catch (err) {
+      console.log('[MailingService] execQueryRows error:', (err as any)?.message || err);
+      return [];
+    }
+  }
 
 }

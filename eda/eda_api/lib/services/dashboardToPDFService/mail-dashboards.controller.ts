@@ -151,6 +151,28 @@ export class MailDashboardsController {
       const element = await page.$('#myDashboard');
       if (!element) throw new Error('[Dashboard] Elemento #myDashboard no encontrado en la página');
 
+      // The real page background sits on an ancestor of #myDashboard (or its inner p-3 wrapper),
+      // not on #myDashboard itself, which is transparent -> the screenshot renders that empty grid
+      // area white. Resolve that colour, paint it onto #myDashboard so the screenshot picks it up,
+      // and reuse it for the blank area on the last (partial) PDF page.
+      const bgColor: string = await page.evaluate(() => {
+        const solid = (el: Element | null): string => {
+          if (!el) return '';
+          const c = getComputedStyle(el).backgroundColor;
+          return (c && c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent') ? c : '';
+        };
+        const dash = document.querySelector('#myDashboard') as HTMLElement | null;
+        let raw = solid(dash?.querySelector('[class*="p-3"]') || null);
+        for (let el: Element | null = dash; el && !raw; el = el.parentElement) raw = solid(el);
+        raw = raw || solid(document.body) || 'rgb(255, 255, 255)';
+        if (dash) dash.style.backgroundColor = raw;
+        const m = raw.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+        if (!m) return '#ffffff';
+        const hex = (n: string) => (+n).toString(16).padStart(2, '0');
+        return `#${hex(m[1])}${hex(m[2])}${hex(m[3])}`;
+      });
+      console.log(`[Dashboard] Fondo del dashboard: ${bgColor}`);
+
       const box = await element.boundingBox();
       if (!box) throw new Error('[Dashboard] No se pudo obtener bounding box de #myDashboard');
       const cssWidth  = box.width;
@@ -160,25 +182,6 @@ export class MailDashboardsController {
       // 5. Capture element screenshot at 2x resolution (deviceScaleFactor: 2)
       const screenshotBuffer = await element.screenshot({ type: 'jpeg', quality: 100 });
       console.log(`[Dashboard] Screenshot capturado (${screenshotBuffer.length} bytes)`);
-
-      // Dashboard background colour, so the blank area on the last (partial) PDF page matches it
-      // instead of being white.
-      const bgColor: string = await page.evaluate(() => {
-        const read = (el: Element | null) => {
-          if (!el) return '';
-          const c = getComputedStyle(el).backgroundColor;
-          return (c && c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent') ? c : '';
-        };
-        const raw = read(document.querySelector('#myDashboard [class*="p-3"]'))
-          || read(document.querySelector('#myDashboard'))
-          || read(document.body)
-          || 'rgb(255,255,255)';
-        const m = raw.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
-        if (!m) return '#ffffff';
-        const hex = (n: string) => (+n).toString(16).padStart(2, '0');
-        return `#${hex(m[1])}${hex(m[2])}${hex(m[3])}`;
-      });
-      console.log(`[Dashboard] Fondo del dashboard: ${bgColor}`);
 
       // Physical pixel dimensions (CSS * deviceScaleFactor)
       const physicalWidth  = Math.round(cssWidth  * 2);
