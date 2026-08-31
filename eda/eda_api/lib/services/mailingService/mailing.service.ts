@@ -2,6 +2,8 @@ import { UserController } from './../../module/admin/users/user.controller';
 
 import { ManagerConnectionService } from '../../services/connection/manager-connection.service';
 import Dashboard from '../../module/dashboard/model/dashboard.model';
+import User from '../../module/admin/users/model/user.model';
+import Group from '../../module/admin/groups/model/group.model';
 const mailConfig = require('../../../config/mailing.config')
 let nodemailer = require('nodemailer');
 import { SchedulerFunctions } from './../scheduler/schedulerFunctions';
@@ -99,9 +101,10 @@ export class MailingService {
 
         if (shouldUpdate) {
           for (const mail of userMails) {
-            const subject = await MailingService.resolveMailTemplate(cfg.mailSubject || '', dashboard, { email: mail });
-            const message = await MailingService.resolveMailTemplate(cfg.mailMessage || '', dashboard, { email: mail });
-            const aiText = cfg.aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, { email: mail }) : '';
+            const mailUser = await MailingService.resolveMailUser(mail);
+            const subject = await MailingService.resolveMailTemplate(cfg.mailSubject || '', dashboard, mailUser);
+            const message = await MailingService.resolveMailTemplate(cfg.mailMessage || '', dashboard, mailUser);
+            const aiText = cfg.aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, mailUser) : '';
             MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message, token, senderEmail, subject, aiText)
               .catch((err: any) => console.error(`[MailingService] ERROR enviando dashboard "${dashboard.config.title}" a ${mail}:`, err));
           }
@@ -265,6 +268,24 @@ export class MailingService {
     return `${base}${localePath}/${query}#/dashboard/${dashboardId}`;
   }
 
+  /** Full user object for RLS-aware query execution from an email. The query builder needs
+   * `_id` and `role` (group ids); a bare `{ email }` makes `this.groups` undefined and the
+   * builder throws at `this.groups.includes(...)`. Merges `User.role` with any group whose
+   * `users` list contains this user. */
+  static async resolveMailUser(email: string): Promise<any> {
+    try {
+      const u: any = await User.findOne({ email }, 'name email role');
+      if (!u) return { email, role: [] };
+      const memberGroups: any[] = await Group.find({ users: u._id }, '_id');
+      const roleIds = new Set<string>((u.role || []).map((r: any) => String(r)));
+      memberGroups.forEach(g => roleIds.add(String(g._id)));
+      return { _id: String(u._id), email: u.email, name: u.name, role: Array.from(roleIds) };
+    } catch (err: any) {
+      console.error('[MailingService] resolveMailUser error:', err?.message || err);
+      return { email, role: [] };
+    }
+  }
+
   /** Absolute URL of a frontend static asset (locale-independent, served from the app root). */
   static appAssetUrl(relPath: string): string {
     const KNOWN_LOCALES = ['es', 'en', 'ca', 'fr', 'pl', 'gl', 'eu'];
@@ -279,7 +300,9 @@ export class MailingService {
    */
   static mailAlertsSending(alert, transporter, senderEmail: string, dashboard: any = null) {
 
-    alert.value.mailing.users.forEach(async user => {
+    alert.value.mailing.users.forEach(async (recipient: any) => {
+
+      const user = await MailingService.resolveMailUser(recipient?.email || recipient);
 
       let result = !alert.query.query.modeSQL ?
         await MailingService.execQuery(alert.query, user) :
@@ -315,9 +338,10 @@ export class MailingService {
     console.log(`[sendDashboardNow] informe "${dashboardID}" | destinatarios: ${recipients.length} | aiAnalysis: ${aiAnalysis}`);
     for (const mail of recipients) {
       try {
-        const resolvedSubject = await MailingService.resolveMailTemplate(subject || '', dashboard, { email: mail });
-        const resolvedMessage = await MailingService.resolveMailTemplate(message || '', dashboard, { email: mail });
-        const aiText = aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, { email: mail }) : '';
+        const mailUser = await MailingService.resolveMailUser(mail);
+        const resolvedSubject = await MailingService.resolveMailTemplate(subject || '', dashboard, mailUser);
+        const resolvedMessage = await MailingService.resolveMailTemplate(message || '', dashboard, mailUser);
+        const aiText = aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, mailUser) : '';
         await MailDashboardsController.sendDashboard(dashboardID, mail, transporter, resolvedMessage, token, senderEmail, resolvedSubject, aiText);
       } catch (err: any) {
         console.error(`[sendDashboardNow] ERROR enviando "${dashboardID}" a ${mail}:`, err?.message || err);
