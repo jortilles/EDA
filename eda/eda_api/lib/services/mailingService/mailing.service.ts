@@ -94,8 +94,8 @@ export class MailingService {
         console.log(`[MailingService] dashboard: "${dashboard.config.title}" | ahora: ${now} | units: ${cfg.units} | lastUpdated: ${cfg.lastUpdated} | recipients: ${userMails.join(', ')}`);
         const shouldUpdate = MailingService.shouldSendNow(cfg);
 
-        //  console.log('Forzado del should upddate de los dashboards.....');
-        //  shouldUpdate = true;
+          //console.log('Forzado del should upddate de los dashboards para forzar el envio al inicio.....');
+          //shouldUpdate = true;
 
         if (shouldUpdate) {
           for (const mail of userMails) {
@@ -230,12 +230,12 @@ export class MailingService {
 
   /** App URL for a dashboard. Tolerates a server_baseURL that already ends in a locale segment
    * (e.g. ".../ca") so we don't build ".../ca/es/#/...". */
-  static dashboardAppUrl(dashboardId: string): string {
+  static dashboardAppUrl(dashboardId: string, query = ''): string {
     const KNOWN_LOCALES = ['es', 'en', 'ca', 'fr', 'pl','gl','eu'];
     const base = String(mailConfig.server_baseURL || '').replace(/\/+$/, '');
     const hasLocale = KNOWN_LOCALES.includes(base.split('/').pop() || '');
     const localePath = hasLocale ? '' : `/${mailConfig.locale || 'es'}`;
-    return `${base}${localePath}/#/dashboard/${dashboardId}`;
+    return `${base}${localePath}/${query}#/dashboard/${dashboardId}`;
   }
 
 

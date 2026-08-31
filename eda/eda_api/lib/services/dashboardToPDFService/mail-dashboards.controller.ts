@@ -88,8 +88,10 @@ export class MailDashboardsController {
       await page.setViewportSize({ width: 1380, height: 900 });
 
       // Navigate straight to the locale-prefixed hash URL — the root index.html does a client-side
-      // locale redirect that breaks hash-based deep links.
-      const dashboardUrl = MailingService.dashboardAppUrl(dashboard);
+      // locale redirect that breaks hash-based deep links. The pdfExport query param (read in main.ts,
+      // before the hash so it survives Angular's routing) disables chart entrance animations, otherwise
+      // the screenshot below can be taken mid-transition, leaving panels blank/partial in the PDF.
+      const dashboardUrl = MailingService.dashboardAppUrl(dashboard, '?pdfExport=true');
       console.log(`[Dashboard] Navegando a: ${dashboardUrl}`);
 
       await page.goto(dashboardUrl, { waitUntil: 'networkidle', timeout: 60000 });
@@ -180,7 +182,8 @@ export class MailDashboardsController {
         inlineImage = screenshotBuffer;
       }
 
-      const link = dashboardUrl;
+      // The email link is the plain dashboard URL — pdfExport is only for the screenshot render.
+      const link = MailingService.dashboardAppUrl(dashboard);
       MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail, subject, inlineImage, aiText);
       console.log(`[Dashboard] Email enviado a ${userMail}`);
 
