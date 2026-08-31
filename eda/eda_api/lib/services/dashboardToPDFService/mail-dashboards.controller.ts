@@ -87,6 +87,25 @@ export class MailDashboardsController {
       const page = await dashboardContext.newPage();
       await page.setViewportSize({ width: 1380, height: 900 });
 
+      // Surface what happens inside the headless dashboard (JS errors, failed API calls, warnings)
+      page.on('pageerror', (err: any) => console.error(`[Dashboard][browser:pageerror] ${err?.message || err}`));
+      page.on('console', (msg: any) => {
+        const t = msg.type();
+        if (t === 'error' || t === 'warning') console.log(`[Dashboard][browser:${t}] ${msg.text()}`);
+      });
+      page.on('requestfailed', (req: any) => {
+        const url = req.url();
+        if (/\/(dashboard|datasource|query|execquery)/i.test(url)) {
+          console.warn(`[Dashboard][browser:reqfailed] ${url} -> ${req.failure()?.errorText || '?'}`);
+        }
+      });
+      page.on('response', (res: any) => {
+        const url = res.url();
+        if (res.status() >= 400 && /\/(dashboard|datasource|query|execquery|admin\/user)/i.test(url)) {
+          console.warn(`[Dashboard][browser:http ${res.status()}] ${url}`);
+        }
+      });
+
       // Navigate straight to the locale-prefixed hash URL — the root index.html does a client-side
       // locale redirect that breaks hash-based deep links. The pdfExport query param (read in main.ts,
       // before the hash so it survives Angular's routing) disables chart entrance animations, otherwise
