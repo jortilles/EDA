@@ -26,5 +26,5 @@ export const initJobs = ()=> {
 
 }
 
-console.log('Sending mails at the beggining');
-MailingService.mailingService();
+//console.log('Sending mails at the beggining');
+//MailingService.mailingService();
