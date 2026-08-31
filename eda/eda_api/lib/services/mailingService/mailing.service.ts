@@ -159,10 +159,12 @@ export class MailingService {
 
       const { AIProviderFactory } = require('../prompt/providers/ai-provider.factory');
       const provider = AIProviderFactory.create(aiConfig);
-      const result = await provider.complete([
+      const completion = provider.complete([
         { role: 'system', content: aiConfig.CONTEXT || 'Responde en español, breve y sin inventar datos.' },
         { role: 'user', content: `Escribe 2-3 frases de análisis en español sobre estos KPIs del informe "${dashboard.config.title}". No inventes datos ni des recomendaciones largas.\n${lines.join('\n')}` },
       ], []);
+      const timeout = new Promise<any>((_, reject) => setTimeout(() => reject(new Error('AI provider timeout (20s)')), 20000));
+      const result = await Promise.race([completion, timeout]);
       return (result?.text || '').trim();
     } catch (err: any) {
       console.error('[MailingService] generateAiAnalysis error:', err?.message || err);
@@ -327,7 +329,7 @@ export class MailingService {
     MailingService.mailAlertsSending(alert, transporter, senderEmail, dashboard);
   }
 
-  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string, subject:string = '', imageBuffer?:Buffer, aiText:string = ''){
+  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string, subject:string = '', imageBuffer?:Buffer, aiText:string = ''): Promise<void> {
 
     const text = `${message}\n-------------------------------------------- \n\n${link}`;
 
@@ -371,13 +373,16 @@ export class MailingService {
       attachments,
     };
 
-    transporter.sendMail(mailOptions, function (error: any) {
-      if (error) console.log(error);
-      try {
-        fs.unlinkSync(`${filepath}/${filename}`);
-      } catch (err) {
-        throw err
-      }
+    return new Promise<void>((resolve) => {
+      transporter.sendMail(mailOptions, function (error: any, info: any) {
+        if (error) {
+          console.error(`[MailDashboard] SMTP ERROR -> ${userMail}:`, error?.message || error);
+        } else {
+          console.log(`[MailDashboard] SMTP OK -> ${userMail} (${info?.messageId || info?.response || 'sent'})`);
+        }
+        try { fs.unlinkSync(`${filepath}/${filename}`); } catch { /* temp PDF already gone */ }
+        resolve();
+      });
     });
   }
 
