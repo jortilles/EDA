@@ -20,7 +20,8 @@ export class MailDashboardsController {
     message: string,
     token: string,
     senderEmail: string,
-    subject: string = ''
+    subject: string = '',
+    aiText: string = ''
   ) => {
 
     console.log(`[Dashboard] Iniciando envío | dashboard: ${dashboard} | destinatario: ${userMail}`);
@@ -180,7 +181,7 @@ export class MailDashboardsController {
       }
 
       const link = dashboardUrl;
-      MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail, subject, inlineImage);
+      MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail, subject, inlineImage, aiText);
       console.log(`[Dashboard] Email enviado a ${userMail}`);
 
     } catch (err: any) {

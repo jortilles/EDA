@@ -23,7 +23,7 @@ export class MailService extends ApiService{
     return this.post(`${this.globalDSRoute}/send-now`, {});
   }
 
-  sendDashboardNow(payload: { dashboardId: string; to: string[]; subject?: string; message?: string }): Observable<any> {
+  sendDashboardNow(payload: { dashboardId: string; to: string[]; subject?: string; message?: string; aiAnalysis?: boolean }): Observable<any> {
     return this.post(`${this.globalDSRoute}/send-dashboard-now`, payload);
   }
 

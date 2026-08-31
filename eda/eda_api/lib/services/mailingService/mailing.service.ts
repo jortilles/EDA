@@ -47,7 +47,9 @@ export class MailingService {
         const mailing = alert.value.mailing;
         const shouldUpdate = mailing.units === 'days'
           ? SchedulerFunctions.checkScheduleDays(mailing.quantity, mailing.hours, mailing.minutes, mailing.lastUpdated)
-          : SchedulerFunctions.checkScheduleHours(mailing.quantity, mailing.lastUpdated);
+          : mailing.units === 'hours'
+            ? SchedulerFunctions.checkScheduleHours(mailing.quantity, mailing.lastUpdated)
+            : MailingService.shouldSendNow(mailing);
 
         console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${mailing.units} | lastUpdated: ${mailing.lastUpdated} | shouldUpdate: ${shouldUpdate}`);
         if (shouldUpdate) {
@@ -89,10 +91,8 @@ export class MailingService {
         const dashboardID: string = dashboard._id.toString();
 
         const now = SchedulerFunctions.totLocalISOTime(new Date());
-        console.log(`[MailingService] dashboard: "${dashboard.config.title}" | ahora: ${now} | lastUpdated: ${cfg.lastUpdated} | recipients: ${userMails.join(', ')}`);
-        const shouldUpdate = cfg.units === 'days'
-          ? SchedulerFunctions.checkScheduleDays(cfg.quantity, cfg.hours, cfg.minutes, cfg.lastUpdated)
-          : SchedulerFunctions.checkScheduleHours(cfg.quantity, cfg.lastUpdated);
+        console.log(`[MailingService] dashboard: "${dashboard.config.title}" | ahora: ${now} | units: ${cfg.units} | lastUpdated: ${cfg.lastUpdated} | recipients: ${userMails.join(', ')}`);
+        const shouldUpdate = MailingService.shouldSendNow(cfg);
 
         //  console.log('Forzado del should upddate de los dashboards.....');
         //  shouldUpdate = true;
@@ -101,7 +101,8 @@ export class MailingService {
           for (const mail of userMails) {
             const subject = await MailingService.resolveMailTemplate(cfg.mailSubject || '', dashboard, { email: mail });
             const message = await MailingService.resolveMailTemplate(cfg.mailMessage || '', dashboard, { email: mail });
-            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message, token, senderEmail, subject)
+            const aiText = cfg.aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, { email: mail }) : '';
+            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message, token, senderEmail, subject, aiText)
               .catch((err: any) => console.error(`[MailingService] ERROR enviando dashboard "${dashboard.config.title}" a ${mail}:`, err));
           }
           if (updateTimestamp) {
@@ -123,6 +124,50 @@ export class MailingService {
       throw err;
     }
 
+  }
+
+  /** Decide whether a sendViaMailConfig is due right now, per its `units` rule. */
+  static shouldSendNow(cfg: any): boolean {
+    switch (cfg.units) {
+      case 'hours':   return SchedulerFunctions.checkScheduleHours(cfg.quantity, cfg.lastUpdated);
+      case 'days':    return SchedulerFunctions.checkScheduleDays(cfg.quantity || 1, cfg.hours, cfg.minutes, cfg.lastUpdated);
+      case 'weekly':  return SchedulerFunctions.checkScheduleWeekly(cfg.weekday, cfg.hours, cfg.minutes, cfg.lastUpdated);
+      case 'monthly': return SchedulerFunctions.checkScheduleMonthly(cfg.monthlyMode, cfg.monthlyDay, cfg.monthlyOrdinal, cfg.monthlyWeekday, cfg.hours, cfg.minutes, cfg.lastUpdated);
+      default:        return false;
+    }
+  }
+
+  /** AI comment for a dashboard email: runs the KPI panels' queries as `user` and asks the
+   * configured provider for a short analysis. Returns '' on any failure or if AI is off. */
+  static async generateAiAnalysis(dashboard: any, user: any): Promise<string> {
+    try {
+      const aiConfig = require('../../../config/ai.config');
+      if (!aiConfig || aiConfig.AVAILABLE === false) return '';
+
+      const kpiPanels = (dashboard.config.panel || []).filter((p: any) => String(p?.content?.chart || '').startsWith('kpi'));
+      const lines: string[] = [];
+      for (const panel of kpiPanels) {
+        try {
+          const q = panel.content.query;
+          const val = !q.query.modeSQL
+            ? await MailingService.execQuery(q, user)
+            : await MailingService.execSqlQuery(q, user);
+          if (val !== null && val !== undefined && val !== '') lines.push(`- ${panel.title}: ${val}`);
+        } catch { /* skip this panel */ }
+      }
+      if (lines.length === 0) return '';
+
+      const { AIProviderFactory } = require('../prompt/providers/ai-provider.factory');
+      const provider = AIProviderFactory.create(aiConfig);
+      const result = await provider.complete([
+        { role: 'system', content: aiConfig.CONTEXT || 'Responde en español, breve y sin inventar datos.' },
+        { role: 'user', content: `Escribe 2-3 frases de análisis en español sobre estos KPIs del informe "${dashboard.config.title}". No inventes datos ni des recomendaciones largas.\n${lines.join('\n')}` },
+      ], []);
+      return (result?.text || '').trim();
+    } catch (err: any) {
+      console.error('[MailingService] generateAiAnalysis error:', err?.message || err);
+      return '';
+    }
   }
 
   static getAlerts(dashboards) {
@@ -229,14 +274,15 @@ export class MailingService {
   }
 
   /** "Enviar" button: same render + PDF pipeline as the cron, one recipient at a time. */
-  static async sendDashboardNow(dashboardID: string, recipients: string[], subject: string, message: string, transporter: any, senderEmail: string) {
+  static async sendDashboardNow(dashboardID: string, recipients: string[], subject: string, message: string, transporter: any, senderEmail: string, aiAnalysis = false) {
     const token = await UserController.provideFakeToken();
     const dashboard = await Dashboard.findById(dashboardID);
     for (const mail of recipients) {
       try {
         const resolvedSubject = await MailingService.resolveMailTemplate(subject || '', dashboard, { email: mail });
         const resolvedMessage = await MailingService.resolveMailTemplate(message || '', dashboard, { email: mail });
-        await MailDashboardsController.sendDashboard(dashboardID, mail, transporter, resolvedMessage, token, senderEmail, resolvedSubject);
+        const aiText = aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, { email: mail }) : '';
+        await MailDashboardsController.sendDashboard(dashboardID, mail, transporter, resolvedMessage, token, senderEmail, resolvedSubject, aiText);
       } catch (err: any) {
         console.error(`[sendDashboardNow] ERROR enviando "${dashboardID}" a ${mail}:`, err?.message || err);
       }
@@ -281,9 +327,16 @@ export class MailingService {
     MailingService.mailAlertsSending(alert, transporter, senderEmail, dashboard);
   }
 
-  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string, subject:string = '', imageBuffer?:Buffer){
+  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string, subject:string = '', imageBuffer?:Buffer, aiText:string = ''){
 
     const text = `${message}\n-------------------------------------------- \n\n${link}`;
+
+    const aiBlock = aiText
+      ? `<div style="margin:16px 0;padding:12px 14px;border:1px solid #cdeeeb;background:#f0fbfa;border-radius:8px">` +
+          `<div style="font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#0a7d75">Análisis automático</div>` +
+          `<div style="white-space:pre-wrap;margin-top:4px">${aiText}</div>` +
+        `</div>`
+      : '';
 
     const imageBlock = imageBuffer
       ? `<div style="margin:16px 0">` +
@@ -295,6 +348,7 @@ export class MailingService {
     const html =
       `<div style="font-family:Arial,Helvetica,sans-serif;color:#111;font-size:14px;line-height:1.5">` +
         `<div style="white-space:pre-wrap">${message || ''}</div>` +
+        aiBlock +
         imageBlock +
         `<p><a href="${link}">${link}</a></p>` +
       `</div>`;

@@ -217,10 +217,16 @@ export class DashboardMailConfigModal {
     this.hours = utcHours;
     this.units = config.units;
     this.quantity = config.quantity;
+    this.weekday = config.weekday ?? this.weekday;
+    this.monthlyMode = config.monthlyMode ?? this.monthlyMode;
+    this.monthlyDay = config.monthlyDay ?? this.monthlyDay;
+    this.monthlyOrdinal = config.monthlyOrdinal ?? this.monthlyOrdinal;
+    this.monthlyWeekday = config.monthlyWeekday ?? this.monthlyWeekday;
     this.selectedUsers = config.users;
     this.otherRecipients = config.otherRecipients || '';
     this.mailSubject = config.mailSubject || '';
     this.mailMessage = config.mailMessage;
+    this.aiAnalysis = !!config.aiAnalysis;
     this.enabled = config.enabled;
   }
 
@@ -276,10 +282,16 @@ export class DashboardMailConfigModal {
       quantity: this.quantity,
       hours: hours,
       minutes: minutes,
+      weekday: this.weekday,
+      monthlyMode: this.monthlyMode,
+      monthlyDay: this.monthlyDay,
+      monthlyOrdinal: this.monthlyOrdinal,
+      monthlyWeekday: this.monthlyWeekday,
       users: this.selectedUsers,
       otherRecipients: this.otherRecipients,
       mailSubject: this.mailSubject,
       mailMessage: this.mailMessage,
+      aiAnalysis: this.aiAvailable && this.aiAnalysis,
       lastUpdated: new Date().toISOString(),
       enabled: this.enabled,
       dashboard: this.dashboard
@@ -307,7 +319,8 @@ export class DashboardMailConfigModal {
         dashboardId: this.dashboard.dashboardId,
         to: this.allRecipientEmails,
         subject: this.mailSubject,
-        message: this.mailMessage
+        message: this.mailMessage,
+        aiAnalysis: this.aiAvailable && this.aiAnalysis
       }));
       this.alertService.addSuccess($localize`:@@mailSendNowStarted:Envío iniciado. Los informes se están generando y llegarán en unos minutos.`);
     } catch (err: any) {

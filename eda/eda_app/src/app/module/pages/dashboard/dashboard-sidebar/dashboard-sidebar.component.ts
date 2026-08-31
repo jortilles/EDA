@@ -667,12 +667,18 @@ export class DashboardSidebarComponent implements AfterViewInit {
     const configToSave = {
       enabled: sendViaMailConfig.enabled,
       hours: sendViaMailConfig.hours,
+      minutes: sendViaMailConfig.minutes,
       lastUpdated: sendViaMailConfig.lastUpdated,
+      units: sendViaMailConfig.units,
+      quantity: sendViaMailConfig.quantity,
+      weekday: sendViaMailConfig.weekday,
+      monthlyMode: sendViaMailConfig.monthlyMode,
+      monthlyDay: sendViaMailConfig.monthlyDay,
+      monthlyOrdinal: sendViaMailConfig.monthlyOrdinal,
+      monthlyWeekday: sendViaMailConfig.monthlyWeekday,
       mailSubject: sendViaMailConfig.mailSubject,
       mailMessage: sendViaMailConfig.mailMessage,
-      minutes: sendViaMailConfig.minutes,
-      quantity: sendViaMailConfig.quantity,
-      units: sendViaMailConfig.units,
+      aiAnalysis: sendViaMailConfig.aiAnalysis,
       users: sendViaMailConfig.users,
       otherRecipients: sendViaMailConfig.otherRecipients
     };

@@ -163,14 +163,14 @@ export class MailController {
 
   static async sendDashboardNow(req: Request, res: Response, next: NextFunction) {
     try {
-      const { dashboardId, to, subject, message } = req.body;
+      const { dashboardId, to, subject, message, aiAnalysis } = req.body;
       const recipients = MailController.parseRecipients(to);
       if (!dashboardId) return next(new HttpException(400, 'Falta el identificador del informe'));
       if (recipients.length === 0) return next(new HttpException(400, 'No hay destinatarios configurados'));
 
       const { transporter, senderEmail } = await MailController.openTransporter();
       // Returns before the sends finish — a render per recipient can take minutes.
-      MailingService.sendDashboardNow(dashboardId, recipients, subject, message, transporter, senderEmail)
+      MailingService.sendDashboardNow(dashboardId, recipients, subject, message, transporter, senderEmail, !!aiAnalysis)
         .catch((err: any) => console.error('[sendDashboardNow]', err?.message || err));
       return res.status(200).json({ ok: true });
 
