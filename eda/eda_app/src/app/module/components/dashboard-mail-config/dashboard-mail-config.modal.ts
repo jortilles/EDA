@@ -3,15 +3,16 @@ import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, } from "@angular/
 import { lastValueFrom } from "rxjs";
 import { AlertService, MailService, UserService } from "@eda/services/service.index";
 import { DateUtils } from "@eda/services/utils/date-utils.service";
-import { buildKpiVariables, MailKpiVariable, renderMailPreview } from "@eda/services/utils/mail-variables.util";
+import { buildKpiVariables, MailKpiVariable, renderMailPreview, renderMailPreviewHtml } from "@eda/services/utils/mail-variables.util";
 import { LogoImage, SubLogoImage } from "@eda/configs/customizable/customizable_default";
-import { WEEKDAY_OPTIONS, MONTHLY_ORDINAL_OPTIONS, MONTH_DAY_OPTIONS, toggleInArray } from "@eda/services/utils/mail-schedule.util";
+import { WEEKDAY_OPTIONS, MONTHLY_ORDINAL_OPTIONS, MONTH_DAY_OPTIONS } from "@eda/services/utils/mail-schedule.util";
 import { SharedModule } from "@eda/shared/shared.module";
 import { MultiSelectModule } from "primeng/multiselect";
 import { CalendarModule } from 'primeng/calendar';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { SelectButtonModule } from "primeng/selectbutton";
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { DropdownModule } from 'primeng/dropdown';
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 
 
@@ -23,7 +24,7 @@ import { DashboardPage } from "../../pages/dashboard/dashboard.page";
 @Component({
   selector: 'app-dashboard-mail-config',
   standalone: true,
-  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, FloatLabelModule,CalendarModule,InputSwitchModule,EdaDialog2Component],
+  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, FloatLabelModule,CalendarModule,InputSwitchModule,DropdownModule,EdaDialog2Component],
   templateUrl: './dashboard-mail-config.modal.html',
   styleUrls: ['./dashboard-mail-config.modal.css'],
 })
@@ -52,16 +53,127 @@ export class DashboardMailConfigModal {
   /** Dummy toggle, not wired yet */
   public aiAnalysis = false;
 
+  /** The "análisis con IA" option only shows when the instance has AI configured */
+  public get aiAvailable(): boolean {
+    return !!this.dashboard?.availableChatGpt;
+  }
+
   /** Frequency mockup — local only, not persisted or read by the backend yet */
   public weekdayOptions = WEEKDAY_OPTIONS;
   public ordinalOptions = MONTHLY_ORDINAL_OPTIONS;
   public monthDayOptions = MONTH_DAY_OPTIONS;
-  public weekdays: number[] = [];
+  public weekday: number = 1;
   public monthlyMode: 'dom' | 'nth' = 'dom';
   public monthlyDay: number | 'last' = 1;
   public monthlyOrdinal: string = 'first';
   public monthlyWeekday: number = 1;
-  public toggleWeekday(d: number): void { toggleInArray(this.weekdays, d); }
+
+  public monthlyModeOptions = [
+    { label: 'El día del mes', value: 'dom' },
+    { label: 'Un día de la semana', value: 'nth' },
+  ];
+  public monthDayDropdownOptions = [
+    ...MONTH_DAY_OPTIONS.map(n => ({ label: String(n), value: n as number | string })),
+    { label: 'Último día', value: 'last' },
+  ];
+
+  public setUnits(u: string): void {
+    this.units = u;
+    if (u === 'hours' && !this.quantity) this.quantity = 12;
+  }
+
+  /** class for a segmented frequency button */
+  public seg(u: string): string {
+    return this.units === u
+      ? 'bg-[var(--corporate-primary)] text-white'
+      : 'text-gray-500 hover:bg-white/70';
+  }
+
+  private weekdayLong(v: number): string {
+    return WEEKDAY_OPTIONS.find(o => o.value === v)?.long ?? '';
+  }
+  private ordinalLabel(v: string): string {
+    return MONTHLY_ORDINAL_OPTIONS.find(o => o.value === v)?.label ?? '';
+  }
+
+  public get hoursLabel(): string {
+    const d = this.hours instanceof Date ? this.hours : null;
+    if (!d) return '--:--';
+    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  }
+
+  /** Human-readable recap of the schedule (mockup strings, not localized yet) */
+  public get frequencySummary(): string {
+    const t = this.hoursLabel;
+    switch (this.units) {
+      case 'hours': return this.quantity > 0 ? `cada ${this.quantity} h` : 'cada X horas';
+      case 'days': return `cada día a las ${t}`;
+      case 'weekly': return `cada ${this.weekdayLong(this.weekday).toLowerCase()} a las ${t}`;
+      case 'monthly': {
+        const when = this.monthlyMode === 'dom'
+          ? (this.monthlyDay === 'last' ? 'el último día' : `el día ${this.monthlyDay}`)
+          : `el ${this.ordinalLabel(this.monthlyOrdinal).toLowerCase()} ${this.weekdayLong(this.monthlyWeekday).toLowerCase()}`;
+        return `${when} de cada mes a las ${t}`;
+      }
+      default: return '';
+    }
+  }
+
+  public get footerSummary(): string {
+    if (!this.units) return 'Sin programación configurada';
+    const n = this.allRecipientEmails.length;
+    const dest = n === 1 ? '1 destinatario' : `${n} destinatarios`;
+    return `Se enviará ${this.frequencySummary} a ${dest}`;
+  }
+
+  public get statusLabel(): string {
+    return this.enabled && this.units ? this.footerSummary : 'Sin programación activa';
+  }
+
+  public get previewRecipientsLabel(): string {
+    const list = this.allRecipientEmails;
+    if (list.length === 0) return 'Sin destinatarios';
+    const shown = list.slice(0, 2).join(', ');
+    return list.length > 2 ? `${shown} (+${list.length - 2})` : shown;
+  }
+
+  /** Removable chips for the selected recipients */
+  public get recipientChips(): { label: string; kind: 'user' | 'external' }[] {
+    const users = (this.selectedUsers || []).map((u: any) => ({ label: u.name || u.email, kind: 'user' as const }));
+    const ext = this.parseOtherRecipients().map(e => ({ label: e, kind: 'external' as const }));
+    return [...users, ...ext];
+  }
+
+  public removeChip(chip: { label: string; kind: 'user' | 'external' }): void {
+    if (chip.kind === 'user') {
+      this.selectedUsers = (this.selectedUsers || []).filter((u: any) => (u.name || u.email) !== chip.label);
+    } else {
+      this.otherRecipients = this.parseOtherRecipients().filter(e => e !== chip.label).join(' ');
+    }
+  }
+
+  public async copyToken(token: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(token);
+      this.alertService.addSuccess(`Copiado: ${token}`);
+    } catch {
+      this.alertService.addError('No se pudo copiar');
+    }
+  }
+
+  /** Best-effort current value of a KPI panel (the dashboard is still rendered behind the dialog) */
+  public getPanelCurrentValue(panelId: string): string {
+    try {
+      const arr = (this.dashboard as any)?.edaPanels?.toArray?.() ?? [];
+      const comp = arr.find((p: any) => p?.panel?.id === panelId);
+      const v = comp?.panelChart?.componentRef?.instance?.inject?.value;
+      if (v === undefined || v === null || v === '') return '—';
+      const n = Number(v);
+      return Number.isFinite(n) ? n.toLocaleString('de-DE') : String(v);
+    } catch {
+      return '—';
+    }
+  }
 
   constructor(private alertService: AlertService, private userService: UserService, private dateUtils: DateUtils, private mailService: MailService) { }
 
@@ -75,8 +187,19 @@ export class DashboardMailConfigModal {
     if (sendViaMailConfig?.enabled) {
       this.setConfig();
     } else {
-      this.hours = this.dateUtils.roundToNextHalfHour(new Date());
+      this.units = 'days';
+      const noon = new Date();
+      noon.setHours(12, 0, 0, 0);
+      this.hours = noon;
     }
+  }
+
+  /** "Cada N horas" only accepts positive numbers */
+  public clampQuantity(): void {
+    if (this.quantity != null && this.quantity < 1) this.quantity = 1;
+  }
+  public blockNonPositive(e: KeyboardEvent): void {
+    if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault();
   }
 
   /** Snaps a manually typed time to the nearest :00 or :30 once the user leaves the field */
@@ -123,13 +246,14 @@ export class DashboardMailConfigModal {
 
   public logoImage = LogoImage;
   public bannerImage = SubLogoImage;
+  public noSubjectLabel = $localize`:@@mailNoSubject:Sin asunto`;
 
   public get previewSubject(): string {
-    return renderMailPreview(this.mailSubject, this.kpiVariables);
+    return renderMailPreview(this.mailSubject, this.kpiVariables, id => this.getPanelCurrentValue(id));
   }
 
   public get previewBody(): string {
-    return renderMailPreview(this.mailMessage, this.kpiVariables);
+    return renderMailPreviewHtml(this.mailMessage, this.kpiVariables, id => this.getPanelCurrentValue(id));
   }
 
   public get previewLink(): string {

@@ -217,7 +217,7 @@ export class MailingService {
       const text = `${body}\n-------------------------------------------- \n\n${fieldName}: ${result.toLocaleString('de-DE')}\n${dashboardLink}`;
       const html =
         `<div style="font-family:Arial,Helvetica,sans-serif;color:#111;font-size:14px;line-height:1.5">` +
-          `<div>${body}</div>` +
+          `<div style="white-space:pre-wrap">${body}</div>` +
           `<p style="margin:12px 0"><strong>${fieldName}:</strong> ${result.toLocaleString('de-DE')}</p>` +
           `<p><a href="${dashboardLink}">${dashboardLink}</a></p>` +
         `</div>`;
@@ -294,7 +294,7 @@ export class MailingService {
 
     const html =
       `<div style="font-family:Arial,Helvetica,sans-serif;color:#111;font-size:14px;line-height:1.5">` +
-        `<div>${message || ''}</div>` +
+        `<div style="white-space:pre-wrap">${message || ''}</div>` +
         imageBlock +
         `<p><a href="${link}">${link}</a></p>` +
       `</div>`;

@@ -10,13 +10,43 @@ export interface MailKpiVariable {
   title: string;
 }
 
-/** Client-side preview substitution: `${pN.title}` -> the real title, `${pN.value}` -> a visible
- * placeholder. The real value is only known at send time (per-recipient query), so we don't fake one. */
-export function renderMailPreview(template: string, vars: MailKpiVariable[]): string {
+/** Plain-text preview substitution (for the subject line): `${pN.title}` -> the real title,
+ * `${pN.value}` -> the panel's current value (via `valueOf`) or a placeholder. */
+export function renderMailPreview(
+  template: string,
+  vars: MailKpiVariable[],
+  valueOf?: (panelId: string) => string
+): string {
   let out = template || '';
   for (const v of vars) {
     out = out.split(v.titleToken).join(v.title);
-    out = out.split(v.valueToken).join(`[valor de "${v.title}"]`);
+    out = out.split(v.valueToken).join(valueOf ? valueOf(v.panelId) : `[valor de "${v.title}"]`);
+  }
+  return out;
+}
+
+function escAttr(s: string): string {
+  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/** HTML preview (for the body): keeps the user's HTML untouched but renders each `${pN.title}` /
+ * `${pN.value}` as a green highlight. `${pN.value}` shows the panel's current value (via `valueOf`),
+ * with the descriptive placeholder as tooltip. */
+export function renderMailPreviewHtml(
+  template: string,
+  vars: MailKpiVariable[],
+  valueOf?: (panelId: string) => string
+): string {
+  let out = template || '';
+  for (const v of vars) {
+    const t = escAttr(v.title);
+    out = out.split(v.titleToken).join(
+      `<span class="eda-mail-var" title="título de &quot;${t}&quot;">${t}</span>`
+    );
+    const val = escAttr(valueOf ? valueOf(v.panelId) : v.valueToken);
+    out = out.split(v.valueToken).join(
+      `<span class="eda-mail-var" title="[valor de &quot;${t}&quot;]">${val}</span>`
+    );
   }
   return out;
 }
