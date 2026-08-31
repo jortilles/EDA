@@ -97,15 +97,25 @@ export class MailDashboardsController {
       await page.goto(dashboardUrl, { waitUntil: 'networkidle', timeout: 60000 });
       console.log(`[Dashboard] Página cargada`);
 
-      // 3. Wait for all panel spinners to disappear (max 90 s)
+      // 3a. Wait for the dashboard to actually mount its panels. Without this, the "no spinners"
+      // check below passes instantly while the app still shows "Cargando informe..." (0 panels
+      // rendered -> 0 .spinner-panel), and the screenshot captures the loading screen.
+      await page.waitForFunction(
+        () => (document.querySelectorAll('#myDashboard gridster-item') || []).length > 0,
+        { timeout: 60000, polling: 500 }
+      ).catch(() => console.warn(`[Dashboard] sin paneles montados tras 60s, capturo igual`));
+      console.log(`[Dashboard] Paneles montados`);
+
+      // 3b. Give panels a moment to start their queries, then wait for every panel spinner to clear.
+      await page.waitForTimeout(1500);
       await page.waitForFunction(
         () => document.querySelectorAll('.spinner-panel').length === 0,
         { timeout: 90000, polling: 1000 }
-      );
+      ).catch(() => console.warn(`[Dashboard] spinners no despejados tras 90s, capturo igual`));
       console.log(`[Dashboard] Spinners desaparecidos`);
 
       // Extra pause so charts finish painting (canvas / SVG flush)
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(2500);
 
       // 4. Get the dashboard element dimensions in CSS pixels
       const element = await page.$('#myDashboard');
@@ -120,6 +130,25 @@ export class MailDashboardsController {
       // 5. Capture element screenshot at 2x resolution (deviceScaleFactor: 2)
       const screenshotBuffer = await element.screenshot({ type: 'jpeg', quality: 100 });
       console.log(`[Dashboard] Screenshot capturado (${screenshotBuffer.length} bytes)`);
+
+      // Dashboard background colour, so the blank area on the last (partial) PDF page matches it
+      // instead of being white.
+      const bgColor: string = await page.evaluate(() => {
+        const read = (el: Element | null) => {
+          if (!el) return '';
+          const c = getComputedStyle(el).backgroundColor;
+          return (c && c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent') ? c : '';
+        };
+        const raw = read(document.querySelector('#myDashboard [class*="p-3"]'))
+          || read(document.querySelector('#myDashboard'))
+          || read(document.body)
+          || 'rgb(255,255,255)';
+        const m = raw.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+        if (!m) return '#ffffff';
+        const hex = (n: string) => (+n).toString(16).padStart(2, '0');
+        return `#${hex(m[1])}${hex(m[2])}${hex(m[3])}`;
+      });
+      console.log(`[Dashboard] Fondo del dashboard: ${bgColor}`);
 
       // Physical pixel dimensions (CSS * deviceScaleFactor)
       const physicalWidth  = Math.round(cssWidth  * 2);
@@ -153,7 +182,7 @@ export class MailDashboardsController {
               .toBuffer();
 
             doc.addPage();
-            doc.rect(0, 0, A4_WIDTH_PT, A4_HEIGHT_PT).fill('white');
+            doc.rect(0, 0, A4_WIDTH_PT, A4_HEIGHT_PT).fill(bgColor);
             doc.image(sliceBuffer, 0, 0, { width: A4_WIDTH_PT });
 
             position += sliceHeight;
