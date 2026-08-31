@@ -119,11 +119,22 @@ export class MailDashboardsController {
       // 3a. Wait for the dashboard to actually mount its panels. Without this, the "no spinners"
       // check below passes instantly while the app still shows "Cargando informe..." (0 panels
       // rendered -> 0 .spinner-panel), and the screenshot captures the loading screen.
-      await page.waitForFunction(
+      const panelsMounted = () => page.waitForFunction(
         () => (document.querySelectorAll('#myDashboard gridster-item') || []).length > 0,
-        { timeout: 60000, polling: 500 }
-      ).catch(() => console.warn(`[Dashboard] sin paneles montados tras 60s, capturo igual`));
-      console.log(`[Dashboard] Paneles montados`);
+        { timeout: 45000, polling: 500 }
+      ).then(() => true).catch(() => false);
+
+      let panelsUp = await panelsMounted();
+
+      // Fallback: if the dashboard never mounts, the ?pdfExport=true param may not be handled by
+      // this frontend build — retry once on the plain URL.
+      if (!panelsUp) {
+        const fallbackUrl = MailingService.dashboardAppUrl(dashboard);
+        console.warn(`[Dashboard] no montó con pdfExport, reintento sin el param: ${fallbackUrl}`);
+        await page.goto(fallbackUrl, { waitUntil: 'networkidle', timeout: 60000 });
+        panelsUp = await panelsMounted();
+      }
+      console.log(`[Dashboard] Paneles montados: ${panelsUp}`);
 
       // 3b. Give panels a moment to start their queries, then wait for every panel spinner to clear.
       await page.waitForTimeout(1500);
