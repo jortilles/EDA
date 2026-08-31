@@ -23,4 +23,8 @@ export const initJobs = ()=> {
   /**Check mail sending */
   const mailSender = schedule.scheduleJob(mail_config.MAILING_SCHEDULE, () => MailingService.mailingService() );
 
+
 }
+
+console.log('Sending mails at the beggining');
+MailingService.mailingService();
