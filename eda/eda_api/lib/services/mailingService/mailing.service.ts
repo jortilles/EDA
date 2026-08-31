@@ -263,6 +263,14 @@ export class MailingService {
     return `${base}${localePath}/${query}#/dashboard/${dashboardId}`;
   }
 
+  /** Absolute URL of a frontend static asset (locale-independent, served from the app root). */
+  static appAssetUrl(relPath: string): string {
+    const KNOWN_LOCALES = ['es', 'en', 'ca', 'fr', 'pl', 'gl', 'eu'];
+    let base = String(mailConfig.server_baseURL || '').replace(/\/+$/, '');
+    if (KNOWN_LOCALES.includes(base.split('/').pop() || '')) base = base.replace(/\/[^/]+$/, '');
+    return `${base}/${String(relPath).replace(/^\/+/, '')}`;
+  }
+
 
   /**Chech kpi condition and send mail if condition is true
    * 
@@ -370,12 +378,19 @@ export class MailingService {
         `</div>`
       : '';
 
+    const bannerUrl = MailingService.appAssetUrl('assets/images/logos/logo_500.png');
+    const bannerBlock =
+      `<div style="margin-top:24px;padding-top:16px;border-top:1px solid #eee;text-align:center">` +
+        `<img src="${bannerUrl}" alt="" style="max-height:64px;width:auto"/>` +
+      `</div>`;
+
     const html =
       `<div style="font-family:Arial,Helvetica,sans-serif;color:#111;font-size:14px;line-height:1.5">` +
         `<div style="white-space:pre-wrap">${message || ''}</div>` +
         aiBlock +
         imageBlock +
         `<p><a href="${link}">${link}</a></p>` +
+        bannerBlock +
       `</div>`;
 
     const attachments: any[] = [{
