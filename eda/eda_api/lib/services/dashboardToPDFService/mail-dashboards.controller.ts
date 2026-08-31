@@ -154,8 +154,9 @@ export class MailDashboardsController {
       // The real page background sits on an ancestor of #myDashboard (or its inner p-3 wrapper),
       // not on #myDashboard itself, which is transparent -> the screenshot renders that empty grid
       // area white. Resolve that colour, paint it onto #myDashboard so the screenshot picks it up,
-      // and reuse it for the blank area on the last (partial) PDF page.
-      const bgColor: string = await page.evaluate(() => {
+      // and reuse it for the blank area on the last (partial) PDF page. Also measure where the last
+      // panel ends so we can trim the empty grid tail (gridster reserves rows below the content).
+      const meta: { bgColor: string; contentBottom: number } = await page.evaluate(() => {
         const solid = (el: Element | null): string => {
           if (!el) return '';
           const c = getComputedStyle(el).backgroundColor;
@@ -167,25 +168,49 @@ export class MailDashboardsController {
         raw = raw || solid(document.body) || 'rgb(255, 255, 255)';
         if (dash) dash.style.backgroundColor = raw;
         const m = raw.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
-        if (!m) return '#ffffff';
         const hex = (n: string) => (+n).toString(16).padStart(2, '0');
-        return `#${hex(m[1])}${hex(m[2])}${hex(m[3])}`;
+        const bgColor = m ? `#${hex(m[1])}${hex(m[2])}${hex(m[3])}` : '#ffffff';
+
+        const dashTop = dash?.getBoundingClientRect().top ?? 0;
+        let contentBottom = 0;
+        (dash?.querySelectorAll('gridster-item') || []).forEach((it: Element) => {
+          contentBottom = Math.max(contentBottom, it.getBoundingClientRect().bottom - dashTop);
+        });
+        return { bgColor, contentBottom };
       });
+      const bgColor = meta.bgColor;
       console.log(`[Dashboard] Fondo del dashboard: ${bgColor}`);
 
       const box = await element.boundingBox();
       if (!box) throw new Error('[Dashboard] No se pudo obtener bounding box de #myDashboard');
       const cssWidth  = box.width;
-      const cssHeight = box.height;
-      console.log(`[Dashboard] Dimensiones: ${cssWidth}x${cssHeight} CSS px`);
+      // Trim the empty grid tail: use the last panel's bottom (+ small margin) when it's shorter
+      // than the raw element height, so the PDF/preview don't carry a big blank band.
+      const cssHeight = meta.contentBottom > 0 && meta.contentBottom + 24 < box.height
+        ? Math.ceil(meta.contentBottom + 24)
+        : box.height;
+      console.log(`[Dashboard] Dimensiones: ${cssWidth}x${cssHeight} CSS px (elemento ${box.height})`);
 
-      // 5. Capture element screenshot at 2x resolution (deviceScaleFactor: 2)
-      const screenshotBuffer = await element.screenshot({ type: 'jpeg', quality: 100 });
+      // 5. Capture element screenshot at 2x resolution (deviceScaleFactor: 2), then trim to content
+      const rawScreenshot = await element.screenshot({ type: 'jpeg', quality: 100 });
+      let physicalWidth  = Math.round(cssWidth  * 2);
+      let physicalHeight = Math.round(cssHeight * 2);
+      let screenshotBuffer = rawScreenshot;
+      if (cssHeight < box.height) {
+        try {
+          const m = await sharp(rawScreenshot).metadata();
+          physicalWidth = m.width || physicalWidth;
+          physicalHeight = Math.min(physicalHeight, m.height || physicalHeight);
+          screenshotBuffer = await sharp(rawScreenshot)
+            .extract({ left: 0, top: 0, width: physicalWidth, height: physicalHeight })
+            .jpeg({ quality: 100 }).toBuffer();
+        } catch (e: any) {
+          console.warn(`[Dashboard] no se pudo recortar el screenshot: ${e?.message || e}`);
+          screenshotBuffer = rawScreenshot;
+          physicalHeight = Math.round(box.height * 2);
+        }
+      }
       console.log(`[Dashboard] Screenshot capturado (${screenshotBuffer.length} bytes)`);
-
-      // Physical pixel dimensions (CSS * deviceScaleFactor)
-      const physicalWidth  = Math.round(cssWidth  * 2);
-      const physicalHeight = Math.round(cssHeight * 2);
 
       // 6. Create multi-page A4 PDF
       const ratio             = A4_WIDTH_PT / cssWidth;

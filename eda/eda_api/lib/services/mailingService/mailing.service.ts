@@ -149,6 +149,7 @@ export class MailingService {
       }
 
       const panels = (dashboard.config.panel || []).filter((p: any) => p?.content?.query?.model_id);
+      console.log(`[MailingService] generateAiAnalysis: ${panels.length} paneles con query | usuario: ${user?.email}`);
       const blocks: string[] = [];
 
       for (const panel of panels.slice(0, 8)) {
@@ -170,13 +171,14 @@ export class MailingService {
               .join('\n');
             blocks.push(`${label}\n${table}`);
           }
-        } catch { /* skip this panel */ }
+        } catch (e: any) { console.log(`[MailingService] generateAiAnalysis: panel "${label}" sin datos (${e?.message || e})`); }
       }
 
       if (blocks.length === 0) {
         console.log('[MailingService] generateAiAnalysis: sin datos de paneles, no se genera análisis');
         return '';
       }
+      console.log(`[MailingService] generateAiAnalysis: ${blocks.length} bloques de datos -> llamando al proveedor (${aiConfig.PROVIDER}/${aiConfig.MODEL})`);
 
       const { AIProviderFactory } = require('../prompt/providers/ai-provider.factory');
       const provider = AIProviderFactory.create(aiConfig);
@@ -310,6 +312,7 @@ export class MailingService {
   static async sendDashboardNow(dashboardID: string, recipients: string[], subject: string, message: string, transporter: any, senderEmail: string, aiAnalysis = false) {
     const token = await UserController.provideFakeToken();
     const dashboard = await Dashboard.findById(dashboardID);
+    console.log(`[sendDashboardNow] informe "${dashboardID}" | destinatarios: ${recipients.length} | aiAnalysis: ${aiAnalysis}`);
     for (const mail of recipients) {
       try {
         const resolvedSubject = await MailingService.resolveMailTemplate(subject || '', dashboard, { email: mail });
