@@ -89,12 +89,12 @@ export class MailingService {
 
         const now = SchedulerFunctions.totLocalISOTime(new Date());
         console.log(`[MailingService] dashboard: "${dashboard.config.title}" | ahora: ${now} | lastUpdated: ${cfg.lastUpdated} | recipients: ${userMails.join(', ')}`);
-        const shouldUpdate = cfg.units === 'days'
+        let shouldUpdate = cfg.units === 'days'
           ? SchedulerFunctions.checkScheduleDays(cfg.quantity, cfg.hours, cfg.minutes, cfg.lastUpdated)
           : SchedulerFunctions.checkScheduleHours(cfg.quantity, cfg.lastUpdated);
 
-        //  console.log('Forzado del should upddate de los dashboards.....');
-        //  shouldUpdate = true;
+          console.log('Forzado del should upddate de los dashboards para forzar el envio al inicio.....');
+          shouldUpdate = true;
 
         if (shouldUpdate) {
           userMails.forEach((mail: string) => {
