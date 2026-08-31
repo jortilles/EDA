@@ -87,9 +87,12 @@ export class MailDashboardsController {
 
       // The root index.html does a client-side locale redirect (e.g. "/" -> "/es/") that
       // breaks hash-based deep links, so navigate straight to the locale-prefixed URL.
+      // The pdfExport query param (read in main.ts, before the hash so it survives Angular's
+      // routing) disables chart entrance animations - otherwise the screenshot below can be
+      // taken mid-transition, leaving panels blank/partial in the exported PDF.
       const locale = serverConfig.locale || 'es';
       const baseURL = serverConfig.server_baseURL.replace(/\/?$/, '/');
-      const dashboardUrl = `${baseURL}${locale}/#/dashboard/${dashboard}`;
+      const dashboardUrl = `${baseURL}${locale}/?pdfExport=true#/dashboard/${dashboard}`;
       console.log(`[Dashboard] Navegando a: ${dashboardUrl}`);
 
       await page.goto(dashboardUrl, { waitUntil: 'networkidle', timeout: 60000 });
@@ -166,7 +169,8 @@ export class MailDashboardsController {
       console.log(`[Dashboard] PDF generado: ${filename}`);
 
       // 7. Send the email with the generated PDF attached
-      const link = dashboardUrl;
+      // Strip the pdfExport param used only to disable animations for the screenshot render.
+      const link = `${baseURL}${locale}/#/dashboard/${dashboard}`;
       MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail);
       console.log(`[Dashboard] Email enviado a ${userMail}`);
 

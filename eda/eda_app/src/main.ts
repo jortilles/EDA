@@ -17,6 +17,14 @@ import { MICROSOFT_ID, MICROSOFT_AUTHORITY, MICROSOFT_REDIRECT_URI } from '@eda/
 
 // API configuration
 import { URL_SERVICES } from '../src/app/config/config';
+import { ChartConfig } from './app/module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-config';
+
+// Disable chart entrance animations when the app is loaded headlessly to render a dashboard
+// PDF for email sending (see mail-dashboards.controller.ts), so the export screenshot isn't
+// taken mid-animation.
+if (new URLSearchParams(window.location.search).get('pdfExport') === 'true') {
+  ChartConfig.disableAnimations = true;
+}
 
 // Register locales
 registerLocaleData(localeEs);
