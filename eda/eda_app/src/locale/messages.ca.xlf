@@ -3411,14 +3411,6 @@ Qué estic veient?
     <source>Vista previa del informe (imagen)</source>
     <target>Vista prèvia de l'informe (imatge)</target>
   </trans-unit>
-  <trans-unit id="mailDisabledOff">
-    <source>Deshabilitar</source>
-    <target>Deshabilitar</target>
-  </trans-unit>
-  <trans-unit id="mailDisabledOn">
-    <source>Deshabilitado</source>
-    <target>Deshabilitat</target>
-  </trans-unit>
   <trans-unit id="mailAiAnalysis">
     <source>Análisis de IA</source>
     <target>Anàlisi d'IA</target>

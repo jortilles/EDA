@@ -3029,14 +3029,6 @@ Co widzę?
     <source>Vista previa del informe (imagen)</source>
     <target>Podgląd raportu (obraz)</target>
   </trans-unit>
-  <trans-unit id="mailDisabledOff">
-    <source>Deshabilitar</source>
-    <target>Wyłącz</target>
-  </trans-unit>
-  <trans-unit id="mailDisabledOn">
-    <source>Deshabilitado</source>
-    <target>Wyłączone</target>
-  </trans-unit>
   <trans-unit id="mailAiAnalysis">
     <source>Análisis de IA</source>
     <target>Analiza AI</target>

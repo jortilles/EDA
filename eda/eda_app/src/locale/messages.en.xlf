@@ -3117,14 +3117,6 @@ What am I seeing?
 <source>Vista previa del informe (imagen)</source>
 <target>Report preview (image)</target>
 </trans-unit>
-<trans-unit id="mailDisabledOff">
-<source>Deshabilitar</source>
-<target>Disable</target>
-</trans-unit>
-<trans-unit id="mailDisabledOn">
-<source>Deshabilitado</source>
-<target>Disabled</target>
-</trans-unit>
 <trans-unit id="mailAiAnalysis">
 <source>Análisis de IA</source>
 <target>AI analysis</target>

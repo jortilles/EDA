@@ -91,15 +91,6 @@
             </div>
 
             <div class="pt-4 border-t border-gray-200">
-                @if (disabledSwitch) {
-                <h6 i18n="@@mailDisabledOn" class="text-gray-600 font-medium">Deshabilitado</h6>
-                } @else {
-                <h6 i18n="@@mailDisabledOff" class="text-gray-600 font-medium">Deshabilitar</h6>
-                }
-                <p-inputSwitch class="mt-3" [(ngModel)]="disabledSwitch" tooltipPosition="left"></p-inputSwitch>
-            </div>
-
-            <div class="pt-4 border-t border-gray-200">
                 <h6 i18n="@@mailAiAnalysis" class="text-gray-600 font-medium">Análisis de IA</h6>
                 <p-inputSwitch class="mt-3" [(ngModel)]="aiAnalysis" tooltipPosition="left"></p-inputSwitch>
             </div>

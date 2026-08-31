@@ -49,8 +49,7 @@ export class DashboardMailConfigModal {
   public otherRecipients: string = '';
   public enabled: boolean = true;
   public isSending = signal<boolean>(false);
-  /** Dummy toggles, not wired yet */
-  public disabledSwitch = false;
+  /** Dummy toggle, not wired yet */
   public aiAnalysis = false;
 
   /** Frequency mockup — local only, not persisted or read by the backend yet */
