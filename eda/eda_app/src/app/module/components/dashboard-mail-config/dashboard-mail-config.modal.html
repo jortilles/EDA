@@ -111,7 +111,7 @@
               <div class="flex flex-col gap-1">
                 <label class="text-sm font-medium text-gray-700">
                   <span i18n="@@mailExternalLabel">Direcciones externas</span>
-                  <span class="font-normal text-gray-400" i18n="@@otherRecipientsHint"> (separadas por un espacio)</span>
+                  <span class="ml-1 font-normal text-gray-400" i18n="@@mailExtHint">(separadas por un espacio)</span>
                 </label>
                 <input type="text" [(ngModel)]="otherRecipients"
                   i18n-placeholder="@@otherRecipientsPlaceholder" placeholder="correo1@dominio.com correo2@dominio.com"
@@ -143,7 +143,7 @@
               <span class="text-xs text-gray-400" i18n="@@mailStep3Hint">Escribe el texto. La vista previa de la derecha se actualiza mientras escribes.</span>
             </div>
             <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700" i18n="@@mailSubjectLabel">Asunto</label>
+              <label class="text-sm font-medium text-gray-700" i18n="@@mailSubjectShort">Asunto</label>
               <input type="text" [(ngModel)]="mailSubject" class="mail-input w-full rounded-lg border border-gray-300 px-3 py-2">
             </div>
             <div class="flex flex-col gap-1">
@@ -192,13 +192,13 @@
       <!-- ---------------- RIGHT: preview (scrolls on its own if it grows) ---------------- -->
       <div class="sticky top-3 flex max-h-[calc(86vh-150px)] flex-col gap-3 self-start">
         <div class="shrink-0">
-          <span class="text-base font-semibold text-gray-800" i18n="@@mailPreviewTitle">Vista previa</span>
+          <span class="text-base font-semibold text-gray-800" i18n="@@mailPreviewShort">Vista previa</span>
           <span class="ml-1 text-sm text-gray-400" i18n="@@mailPreviewHint">· tal como lo recibirá el destinatario</span>
         </div>
 
         <div class="min-h-0 flex-1 overflow-y-auto rounded-lg border border-gray-200 bg-white text-sm text-gray-800">
           <div class="border-b border-gray-200 px-4 py-3">
-            <p class="text-[11px] font-semibold uppercase tracking-wide text-gray-400" i18n="@@mailSubjectLabel">Asunto</p>
+            <p class="text-[11px] font-semibold uppercase tracking-wide text-gray-400" i18n="@@mailSubjectShort">Asunto</p>
             <p class="font-semibold text-gray-900 [overflow-wrap:anywhere]">{{ previewSubject || noSubjectLabel }}</p>
             <p class="mt-0.5 text-xs text-gray-400"><span i18n="@@mailForLabel">Para:</span> {{ previewRecipientsLabel }}</p>
           </div>

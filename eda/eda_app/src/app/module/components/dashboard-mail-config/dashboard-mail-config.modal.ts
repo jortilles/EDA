@@ -69,12 +69,12 @@ export class DashboardMailConfigModal {
   public monthlyWeekday: number = 1;
 
   public monthlyModeOptions = [
-    { label: 'El día del mes', value: 'dom' },
-    { label: 'Un día de la semana', value: 'nth' },
+    { label: $localize`:@@mailFreqMonthlyDom:El día del mes`, value: 'dom' },
+    { label: $localize`:@@mailFreqMonthlyNth:Un día de la semana`, value: 'nth' },
   ];
   public monthDayDropdownOptions = [
     ...MONTH_DAY_OPTIONS.map(n => ({ label: String(n), value: n as number | string })),
-    { label: 'Último día', value: 'last' },
+    { label: $localize`:@@mailFreqLastDay:Último día`, value: 'last' },
   ];
 
   public setUnits(u: string): void {

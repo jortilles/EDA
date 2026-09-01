@@ -3367,21 +3367,9 @@ Qué estic veient?
     <source>Contenido del mail: </source>
     <target>Contingut del mail: </target>
   </trans-unit>
-  <trans-unit id="sendMailNowButton">
-    <source>Enviar</source>
-    <target>Envia</target>
-  </trans-unit>
   <trans-unit id="sendingMailNow">
     <source>Enviando...</source>
     <target>Enviant...</target>
-  </trans-unit>
-  <trans-unit id="sendMailNowButtonTitle">
-    <source>Genera y envía el informe ahora mismo a los destinatarios seleccionados, sin esperar a la programación</source>
-    <target>Genera i envia l'informe ara mateix als destinataris seleccionats, sense esperar la programació</target>
-  </trans-unit>
-  <trans-unit id="sendAlertNowButtonTitle">
-    <source>Evalúa la alerta ahora y, si el KPI cumple la condición, la envía a los destinatarios seleccionados</source>
-    <target>Avalua l'alerta ara i, si el KPI compleix la condició, l'envia als destinataris seleccionats</target>
   </trans-unit>
   <trans-unit id="mailSendNowStarted">
     <source>Envío iniciado. Los informes se están generando y llegarán en unos minutos.</source>
@@ -3391,29 +3379,249 @@ Qué estic veient?
     <source>Alerta enviada (si el KPI cumple la condición en este momento)</source>
     <target>Alerta enviada (si el KPI compleix la condició en aquest moment)</target>
   </trans-unit>
-  <trans-unit id="mailSubjectLabel">
-    <source>Asunto del mail</source>
-    <target>Assumpte del mail</target>
+  <trans-unit id="mailDlgTitle">
+    <source>Envío del panel por email</source>
+    <target>Enviament del panell per email</target>
   </trans-unit>
-  <trans-unit id="mailVariablesTitle">
-    <source>Variables de paneles KPI</source>
-    <target>Variables de panells KPI</target>
+  <trans-unit id="mailActiveToggle">
+    <source>Envío de correo</source>
+    <target>Enviament de correu</target>
   </trans-unit>
-  <trans-unit id="mailPreviewTitle">
-    <source>Vista previa del correo</source>
-    <target>Vista prèvia del correu</target>
+  <trans-unit id="mailStep1">
+    <source>¿Cuándo se envía?</source>
+    <target>Quan s'envia?</target>
   </trans-unit>
-  <trans-unit id="mailPreviewSubjectLabel">
-    <source>Asunto:</source>
-    <target>Assumpte:</target>
+  <trans-unit id="mailStep1Hint">
+    <source>El informe se genera y se manda automáticamente en cada repetición.</source>
+    <target>L'informe es genera i s'envia automàticament en cada repetició.</target>
   </trans-unit>
-  <trans-unit id="mailPreviewImagePlaceholder">
-    <source>Vista previa del informe (imagen)</source>
-    <target>Vista prèvia de l'informe (imatge)</target>
+  <trans-unit id="mailAlertStep1Hint">
+    <source>La alerta se comprueba en cada repetición y sólo se envía si el KPI cumple la condición.</source>
+    <target>L'alerta es comprova en cada repetició i només s'envia si el KPI compleix la condició.</target>
   </trans-unit>
-  <trans-unit id="mailAiAnalysis">
-    <source>Análisis de IA</source>
-    <target>Anàlisi d'IA</target>
+  <trans-unit id="mailFreqHourly">
+    <source>Horario</source>
+    <target>Horari</target>
+  </trans-unit>
+  <trans-unit id="mailFreqDaily">
+    <source>Diario</source>
+    <target>Diari</target>
+  </trans-unit>
+  <trans-unit id="mailFreqWeekly2">
+    <source>Semanal</source>
+    <target>Setmanal</target>
+  </trans-unit>
+  <trans-unit id="mailFreqMonthly2">
+    <source>Mensual</source>
+    <target>Mensual</target>
+  </trans-unit>
+  <trans-unit id="mailFreqEvery">
+    <source>Cada</source>
+    <target>Cada</target>
+  </trans-unit>
+  <trans-unit id="mailWeeklyEach">
+    <source>Cada</source>
+    <target>Cada</target>
+  </trans-unit>
+  <trans-unit id="mailWeeklyAt">
+    <source>a las</source>
+    <target>a les</target>
+  </trans-unit>
+  <trans-unit id="mailMonthlyOnDay">
+    <source>el día</source>
+    <target>el dia</target>
+  </trans-unit>
+  <trans-unit id="mailMonthlyThe">
+    <source>el</source>
+    <target>el</target>
+  </trans-unit>
+  <trans-unit id="mailFreqMonthlyDom">
+    <source>El día del mes</source>
+    <target>El dia del mes</target>
+  </trans-unit>
+  <trans-unit id="mailFreqMonthlyNth">
+    <source>Un día de la semana</source>
+    <target>Un dia de la setmana</target>
+  </trans-unit>
+  <trans-unit id="mailFreqLastDay">
+    <source>Último día</source>
+    <target>Últim dia</target>
+  </trans-unit>
+  <trans-unit id="mailStep2">
+    <source>¿A quién?</source>
+    <target>A qui?</target>
+  </trans-unit>
+  <trans-unit id="mailStep2Hint">
+    <source>Usuarios de Edalitics, o cualquier dirección externa.</source>
+    <target>Usuaris d'Edalitics, o qualsevol adreça externa.</target>
+  </trans-unit>
+  <trans-unit id="mailUsersLabel">
+    <source>Usuarios</source>
+    <target>Usuaris</target>
+  </trans-unit>
+  <trans-unit id="mailExternalLabel">
+    <source>Direcciones externas</source>
+    <target>Adreces externes</target>
+  </trans-unit>
+  <trans-unit id="mailExtHint">
+    <source>(separadas por un espacio)</source>
+    <target>(separades per un espai)</target>
+  </trans-unit>
+  <trans-unit id="mailStep3">
+    <source>¿Qué dice el correo?</source>
+    <target>Què diu el correu?</target>
+  </trans-unit>
+  <trans-unit id="mailStep3Hint">
+    <source>Escribe el texto. La vista previa de la derecha se actualiza mientras escribes.</source>
+    <target>Escriu el text. La previsualització de la dreta s'actualitza mentre escrius.</target>
+  </trans-unit>
+  <trans-unit id="mailSubjectShort">
+    <source>Asunto</source>
+    <target>Assumpte</target>
+  </trans-unit>
+  <trans-unit id="mailMessageLabel">
+    <source>Mensaje</source>
+    <target>Missatge</target>
+  </trans-unit>
+  <trans-unit id="mailAiAdd">
+    <source>Añadir análisis con IA</source>
+    <target>Afegir anàlisi amb IA</target>
+  </trans-unit>
+  <trans-unit id="mailAiAddHint">
+    <source>Genera un comentario sobre los datos de cada envío y lo añade debajo de tu mensaje. Cambia en cada correo.</source>
+    <target>Genera un comentari sobre les dades de cada enviament i l'afegeix sota el teu missatge. Canvia en cada correu.</target>
+  </trans-unit>
+  <trans-unit id="mailInsertValueTitle">
+    <source>Insertar un valor del panel</source>
+    <target>Inserir un valor del panell</target>
+  </trans-unit>
+  <trans-unit id="mailInsertValueHint">
+    <source>Copia el código y pégalo en el asunto o en el mensaje. Al enviarse se sustituye por el dato real.</source>
+    <target>Copia el codi i enganxa'l a l'assumpte o al missatge. En enviar-se se substitueix pel valor real.</target>
+  </trans-unit>
+  <trans-unit id="mailCurrentValue">
+    <source>valor actual:</source>
+    <target>valor actual:</target>
+  </trans-unit>
+  <trans-unit id="mailCopyTitleTip">
+    <source>Copiar el nombre del panel</source>
+    <target>Copiar el nom del panell</target>
+  </trans-unit>
+  <trans-unit id="mailCopyValueTip">
+    <source>Copiar el valor del panel</source>
+    <target>Copiar el valor del panell</target>
+  </trans-unit>
+  <trans-unit id="mailCopy">
+    <source>Copiar</source>
+    <target>Copiar</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewShort">
+    <source>Vista previa</source>
+    <target>Previsualització</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewHint">
+    <source>· tal como lo recibirá el destinatario</source>
+    <target>· tal com el rebrà el destinatari</target>
+  </trans-unit>
+  <trans-unit id="mailForLabel">
+    <source>Para:</source>
+    <target>Per a:</target>
+  </trans-unit>
+  <trans-unit id="mailWriteToPreview">
+    <source>Escribe el mensaje para verlo aquí.</source>
+    <target>Escriu el missatge per veure'l aquí.</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewAiTitle">
+    <source>Análisis automático</source>
+    <target>Anàlisi automàtica</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewAiDesc">
+    <source>Aquí se añadirá un resumen del dashboard escrito con IA en cada envío. Consume tokens de tu cuenta.</source>
+    <target>Aquí s'afegirà un resum del tauler escrit amb IA en cada enviament. Consumeix tokens del teu compte.</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewDashImg">
+    <source>imagen del dashboard</source>
+    <target>imatge del tauler</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewKpiLabel">
+    <source>Valor del KPI</source>
+    <target>Valor del KPI</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewKpiValue">
+    <source>valor del KPI en el momento del envío</source>
+    <target>valor del KPI en el moment de l'enviament</target>
+  </trans-unit>
+  <trans-unit id="mailOpenDashboard">
+    <source>Abrir el dashboard en Edalitics →</source>
+    <target>Obrir el tauler a Edalitics →</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestNow">
+    <source>Enviar una copia ahora</source>
+    <target>Enviar una còpia ara</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestHint">
+    <source>Se envía a los destinatarios configurados, sin activar la programación.</source>
+    <target>S'envia als destinataris configurats, sense activar la programació.</target>
+  </trans-unit>
+  <trans-unit id="mailAlertSendTestHint">
+    <source>Se envía a los destinatarios configurados si el KPI cumple la condición ahora, sin activar la programación.</source>
+    <target>S'envia als destinataris configurats si el KPI compleix la condició ara, sense activar la programació.</target>
+  </trans-unit>
+  <trans-unit id="mailSaveSchedule">
+    <source>Guardar programación</source>
+    <target>Desar programació</target>
+  </trans-unit>
+  <trans-unit id="mailNoSubject">
+    <source>Sin asunto</source>
+    <target>Sense assumpte</target>
+  </trans-unit>
+  <trans-unit id="weekdayMonday">
+    <source>Lunes</source>
+    <target>Dilluns</target>
+  </trans-unit>
+  <trans-unit id="weekdayTuesday">
+    <source>Martes</source>
+    <target>Dimarts</target>
+  </trans-unit>
+  <trans-unit id="weekdayWednesday">
+    <source>Miércoles</source>
+    <target>Dimecres</target>
+  </trans-unit>
+  <trans-unit id="weekdayThursday">
+    <source>Jueves</source>
+    <target>Dijous</target>
+  </trans-unit>
+  <trans-unit id="weekdayFriday">
+    <source>Viernes</source>
+    <target>Divendres</target>
+  </trans-unit>
+  <trans-unit id="weekdaySaturday">
+    <source>Sábado</source>
+    <target>Dissabte</target>
+  </trans-unit>
+  <trans-unit id="weekdaySunday">
+    <source>Domingo</source>
+    <target>Diumenge</target>
+  </trans-unit>
+  <trans-unit id="ordinalFirst">
+    <source>Primer</source>
+    <target>Primer</target>
+  </trans-unit>
+  <trans-unit id="ordinalSecond">
+    <source>Segundo</source>
+    <target>Segon</target>
+  </trans-unit>
+  <trans-unit id="ordinalThird">
+    <source>Tercer</source>
+    <target>Tercer</target>
+  </trans-unit>
+  <trans-unit id="ordinalFourth">
+    <source>Cuarto</source>
+    <target>Quart</target>
+  </trans-unit>
+  <trans-unit id="ordinalLast">
+    <source>Último</source>
+    <target>Últim</target>
   </trans-unit>
   <trans-unit id="sendMailHeader">
     <source>Configuración de los envíos por email</source>

@@ -100,12 +100,14 @@ export class MailingService {
           //shouldUpdate = true;
 
         if (shouldUpdate) {
+          const ownerEmail = await MailingService.dashboardOwnerEmail(dashboard);
           for (const mail of userMails) {
-            const mailUser = await MailingService.resolveMailUser(mail);
+            const renderEmail = await MailingService.renderIdentityEmail(mail, ownerEmail);
+            const mailUser = await MailingService.resolveMailUser(renderEmail);
             const subject = await MailingService.resolveMailTemplate(cfg.mailSubject || '', dashboard, mailUser);
             const message = await MailingService.resolveMailTemplate(cfg.mailMessage || '', dashboard, mailUser);
             const aiText = cfg.aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, mailUser) : '';
-            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message, token, senderEmail, subject, aiText)
+            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message, token, senderEmail, subject, aiText, renderEmail)
               .catch((err: any) => console.error(`[MailingService] ERROR enviando dashboard "${dashboard.config.title}" a ${mail}:`, err));
           }
           if (updateTimestamp) {
@@ -146,13 +148,9 @@ export class MailingService {
   static async generateAiAnalysis(dashboard: any, user: any): Promise<string> {
     try {
       const aiConfig = require('../../../config/ai.config');
-      if (!aiConfig || aiConfig.AVAILABLE === false) {
-        console.log('[MailingService] generateAiAnalysis: AI no disponible, se omite');
-        return '';
-      }
+      if (!aiConfig || aiConfig.AVAILABLE === false) return '';
 
       const panels = (dashboard.config.panel || []).filter((p: any) => p?.content?.query?.model_id);
-      console.log(`[MailingService] generateAiAnalysis: ${panels.length} paneles con query | usuario: ${user?.email}`);
       const blocks: string[] = [];
 
       for (const panel of panels.slice(0, 8)) {
@@ -174,14 +172,13 @@ export class MailingService {
               .join('\n');
             blocks.push(`${label}\n${table}`);
           }
-        } catch (e: any) { console.log(`[MailingService] generateAiAnalysis: panel "${label}" sin datos (${e?.message || e})`); }
+        } catch { /* skip this panel */ }
       }
 
       if (blocks.length === 0) {
-        console.log('[MailingService] generateAiAnalysis: sin datos de paneles, no se genera análisis');
+        console.log('[MailingService] generateAiAnalysis: sin datos de paneles');
         return '';
       }
-      console.log(`[MailingService] generateAiAnalysis: ${blocks.length} bloques de datos -> llamando al proveedor (${aiConfig.PROVIDER}/${aiConfig.MODEL})`);
 
       const { AIProviderFactory } = require('../prompt/providers/ai-provider.factory');
       const provider = AIProviderFactory.create(aiConfig);
@@ -191,9 +188,7 @@ export class MailingService {
       ], []);
       const timeout = new Promise<any>((_, reject) => setTimeout(() => reject(new Error('AI provider timeout (25s)')), 25000));
       const result = await Promise.race([completion, timeout]);
-      const text = (result?.text || '').trim();
-      console.log(`[MailingService] generateAiAnalysis: ${text ? `${text.length} caracteres` : 'respuesta vacía'}`);
-      return text;
+      return (result?.text || '').trim();
     } catch (err: any) {
       console.error('[MailingService] generateAiAnalysis error:', err?.message || err);
       return '';
@@ -268,10 +263,9 @@ export class MailingService {
     return `${base}${localePath}/${query}#/dashboard/${dashboardId}`;
   }
 
-  /** Full user object for RLS-aware query execution from an email. The query builder needs
-   * `_id` and `role` (group ids); a bare `{ email }` makes `this.groups` undefined and the
-   * builder throws at `this.groups.includes(...)`. Merges `User.role` with any group whose
-   * `users` list contains this user. */
+  /** Full user object for RLS-aware query execution. The query builder needs `_id` and `role`
+   * (group ids) — a bare `{ email }` throws at `this.groups.includes(...)`. Merges `User.role`
+   * with any group whose `users` list contains this user. */
   static async resolveMailUser(email: string): Promise<any> {
     try {
       const u: any = await User.findOne({ email }, 'name email role');
@@ -286,6 +280,29 @@ export class MailingService {
     }
   }
 
+  /** Email whose identity/permissions the report is rendered with for a given recipient:
+   * the recipient if they're an app user, otherwise `fallbackEmail` (whoever configured or
+   * triggered the send). The email is still delivered to the original recipient. */
+  static async renderIdentityEmail(recipientEmail: string, fallbackEmail: string): Promise<string> {
+    try {
+      if (fallbackEmail && fallbackEmail !== recipientEmail && !(await User.exists({ email: recipientEmail }))) {
+        console.log(`[MailingService] "${recipientEmail}" no es usuario de la app -> se renderiza como "${fallbackEmail}"`);
+        return fallbackEmail;
+      }
+    } catch (err: any) {
+      console.error('[MailingService] renderIdentityEmail error:', err?.message || err);
+    }
+    return recipientEmail;
+  }
+
+  /** Owner email of a dashboard, used as the render fallback for non-app-user recipients. */
+  static async dashboardOwnerEmail(dashboard: any): Promise<string> {
+    try {
+      const owner: any = dashboard?.user ? await User.findById(dashboard.user, 'email') : null;
+      return owner?.email || '';
+    } catch { return ''; }
+  }
+
   /** Absolute URL of a frontend static asset (locale-independent, served from the app root). */
   static appAssetUrl(relPath: string): string {
     const KNOWN_LOCALES = ['es', 'en', 'ca', 'fr', 'pl', 'gl', 'eu'];
@@ -296,53 +313,74 @@ export class MailingService {
 
 
   /**Chech kpi condition and send mail if condition is true
-   * 
+   *
    */
-  static mailAlertsSending(alert, transporter, senderEmail: string, dashboard: any = null) {
+  static async mailAlertsSending(alert, transporter, senderEmail: string, dashboard: any = null, configuredByEmail = '') {
+
+    const fallbackEmail = configuredByEmail || await MailingService.dashboardOwnerEmail(dashboard);
+    const bannerUrl = MailingService.appAssetUrl('assets/images/logos/logo_500.png');
 
     alert.value.mailing.users.forEach(async (recipient: any) => {
 
-      const user = await MailingService.resolveMailUser(recipient?.email || recipient);
+      const recipientEmail = recipient?.email || recipient;
+      const renderEmail = await MailingService.renderIdentityEmail(recipientEmail, fallbackEmail);
+      const user = await MailingService.resolveMailUser(renderEmail);
 
       let result = !alert.query.query.modeSQL ?
         await MailingService.execQuery(alert.query, user) :
         await MailingService.execSqlQuery(alert.query, user);
 
       let condition = MailingService.compareValues(result, alert.value.value, alert.value.operand);
-      console.log(`[MailingService] alerta KPI | resultado: ${result} | condición: ${result} ${alert.value.operand} ${alert.value.value} = ${condition} | destinatario: ${user.email}`);
+      console.log(`[MailingService] alerta KPI | resultado: ${result} | condición: ${result} ${alert.value.operand} ${alert.value.value} = ${condition} | destinatario: ${recipientEmail}`);
       if (!condition) return;
 
       const dashboardLink = MailingService.dashboardAppUrl(alert.query.dashboard.dashboard_id);
       const subject = await MailingService.resolveMailTemplate(alert.value.mailing.mailSubject || 'EDA - Alerta KPI', dashboard, user);
       const body = await MailingService.resolveMailTemplate(alert.value.mailing.mailMessage || '', dashboard, user);
       const fieldName = alert.query.query.fields[0].display_name;
+      const aiText = alert.value.mailing.aiAnalysis && dashboard ? await MailingService.generateAiAnalysis(dashboard, user) : '';
+
+      const aiBlock = aiText
+        ? `<div style="margin:16px 0;padding:12px 14px;border:1px solid #cdeeeb;background:#f0fbfa;border-radius:8px">` +
+            `<div style="font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#0a7d75">Análisis automático</div>` +
+            `<div style="white-space:pre-wrap;margin-top:4px">${aiText}</div>` +
+          `</div>`
+        : '';
 
       const text = `${body}\n-------------------------------------------- \n\n${fieldName}: ${result.toLocaleString('de-DE')}\n${dashboardLink}`;
       const html =
         `<div style="font-family:Arial,Helvetica,sans-serif;color:#111;font-size:14px;line-height:1.5">` +
           `<div style="white-space:pre-wrap">${body}</div>` +
+          aiBlock +
           `<p style="margin:12px 0"><strong>${fieldName}:</strong> ${result.toLocaleString('de-DE')}</p>` +
           `<p><a href="${dashboardLink}">${dashboardLink}</a></p>` +
+          `<div style="margin-top:24px;padding-top:16px;border-top:1px solid #eee;text-align:center">` +
+            `<img src="${bannerUrl}" alt="" style="max-height:64px;width:auto"/>` +
+          `</div>` +
         `</div>`;
 
-      transporter.sendMail({ from: senderEmail, to: user.email, subject, text, html }, function (error: any) {
+      transporter.sendMail({ from: senderEmail, to: recipientEmail, subject, text, html }, function (error: any) {
         if (error) console.log(error);
       });
     })
   }
 
-  /** "Enviar" button: same render + PDF pipeline as the cron, one recipient at a time. */
-  static async sendDashboardNow(dashboardID: string, recipients: string[], subject: string, message: string, transporter: any, senderEmail: string, aiAnalysis = false) {
+  /** "Enviar" button: same render + PDF pipeline as the cron, one recipient at a time.
+   * `configuredByEmail` is the logged-in user who triggered the send — used as the render
+   * identity for recipients that aren't app users. */
+  static async sendDashboardNow(dashboardID: string, recipients: string[], subject: string, message: string, transporter: any, senderEmail: string, aiAnalysis = false, configuredByEmail = '') {
     const token = await UserController.provideFakeToken();
     const dashboard = await Dashboard.findById(dashboardID);
-    console.log(`[sendDashboardNow] informe "${dashboardID}" | destinatarios: ${recipients.length} | aiAnalysis: ${aiAnalysis}`);
+    const fallbackEmail = configuredByEmail || await MailingService.dashboardOwnerEmail(dashboard);
+    console.log(`[sendDashboardNow] informe "${dashboardID}" | destinatarios: ${recipients.length} | aiAnalysis: ${aiAnalysis} | fallback: ${fallbackEmail || '-'}`);
     for (const mail of recipients) {
       try {
-        const mailUser = await MailingService.resolveMailUser(mail);
+        const renderEmail = await MailingService.renderIdentityEmail(mail, fallbackEmail);
+        const mailUser = await MailingService.resolveMailUser(renderEmail);
         const resolvedSubject = await MailingService.resolveMailTemplate(subject || '', dashboard, mailUser);
         const resolvedMessage = await MailingService.resolveMailTemplate(message || '', dashboard, mailUser);
         const aiText = aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, mailUser) : '';
-        await MailDashboardsController.sendDashboard(dashboardID, mail, transporter, resolvedMessage, token, senderEmail, resolvedSubject, aiText);
+        await MailDashboardsController.sendDashboard(dashboardID, mail, transporter, resolvedMessage, token, senderEmail, resolvedSubject, aiText, renderEmail);
       } catch (err: any) {
         console.error(`[sendDashboardNow] ERROR enviando "${dashboardID}" a ${mail}:`, err?.message || err);
       }
@@ -351,7 +389,7 @@ export class MailingService {
 
   /** "Enviar" button: reloads the alert from Mongo (never runs a client-supplied query),
    * overriding only recipients and message with the dialog's current values. */
-  static async sendAlertNow(dashboardId: string, panelId: string, operand: string, value: any, recipients: string[], subject: string, message: string, transporter: any, senderEmail: string) {
+  static async sendAlertNow(dashboardId: string, panelId: string, operand: string, value: any, recipients: string[], subject: string, message: string, transporter: any, senderEmail: string, aiAnalysis = false, configuredByEmail = '') {
     const dashboard = await Dashboard.findById(dashboardId);
     if (!dashboard) throw new Error('Informe no encontrado');
 
@@ -378,13 +416,14 @@ export class MailingService {
           users: recipients.map((email: string) => ({ email })),
           mailSubject: subject || limit.mailing?.mailSubject || '',
           mailMessage: message || limit.mailing?.mailMessage || '',
+          aiAnalysis: aiAnalysis || !!limit.mailing?.aiAnalysis,
         },
       },
       dashboard_id: dashboard._id,
       query,
     };
 
-    MailingService.mailAlertsSending(alert, transporter, senderEmail, dashboard);
+    MailingService.mailAlertsSending(alert, transporter, senderEmail, dashboard, configuredByEmail);
   }
 
   static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string, subject:string = '', imageBuffer?:Buffer, aiText:string = ''): Promise<void> {

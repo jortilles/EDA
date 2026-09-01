@@ -21,10 +21,14 @@ export class MailDashboardsController {
     token: string,
     senderEmail: string,
     subject: string = '',
-    aiText: string = ''
+    aiText: string = '',
+    loginMail: string = ''
   ) => {
 
-    console.log(`[Dashboard] Iniciando envío | dashboard: ${dashboard} | destinatario: ${userMail}`);
+    // Render identity (resolved by the caller): the recipient, or a fallback when they're not
+    // an app user. The email is still delivered to `userMail`.
+    const renderMail = loginMail || userMail;
+    console.log(`[Dashboard] Iniciando envío | dashboard: ${dashboard} | destinatario: ${userMail}${renderMail !== userMail ? ` | render como: ${renderMail}` : ''}`);
 
     let browser: any;
     try {
@@ -40,8 +44,7 @@ export class MailDashboardsController {
 
     try {
       // 1. Obtain a real JWT via fake-login
-      const loginUrl = `${serverConfig.server_apiURL}/admin/user/fake-login/${userMail}/${token}`;
-      console.log(`[Dashboard] Login URL: ${loginUrl}`);
+      const loginUrl = `${serverConfig.server_apiURL}/admin/user/fake-login/${renderMail}/${token}`;
       const loginContext = await browser.newContext();
       const loginPage = await loginContext.newPage();
 
@@ -71,9 +74,9 @@ export class MailDashboardsController {
       await loginContext.close();
 
       if (!authToken || !authUser) {
-        throw new Error(`[Dashboard] No se pudo obtener token para ${userMail}${loginFailureDetail ? ` (${loginFailureDetail})` : ''}`);
+        throw new Error(`[Dashboard] No se pudo obtener token para ${renderMail}${loginFailureDetail ? ` (${loginFailureDetail})` : ''}`);
       }
-      console.log(`[Dashboard] Token obtenido para ${userMail}`);
+      console.log(`[Dashboard] Token obtenido para ${renderMail}`);
 
       // 2. Open dashboard with credentials pre-injected into localStorage
       const dashboardContext = await browser.newContext({ deviceScaleFactor: 2 });
@@ -87,18 +90,8 @@ export class MailDashboardsController {
       const page = await dashboardContext.newPage();
       await page.setViewportSize({ width: 1380, height: 900 });
 
-      // Surface what happens inside the headless dashboard (JS errors, failed API calls, warnings)
+      // Surface render failures inside the headless dashboard (JS crash / failed API call).
       page.on('pageerror', (err: any) => console.error(`[Dashboard][browser:pageerror] ${err?.message || err}`));
-      page.on('console', (msg: any) => {
-        const t = msg.type();
-        if (t === 'error' || t === 'warning') console.log(`[Dashboard][browser:${t}] ${msg.text()}`);
-      });
-      page.on('requestfailed', (req: any) => {
-        const url = req.url();
-        if (/\/(dashboard|datasource|query|execquery)/i.test(url)) {
-          console.warn(`[Dashboard][browser:reqfailed] ${url} -> ${req.failure()?.errorText || '?'}`);
-        }
-      });
       page.on('response', (res: any) => {
         const url = res.url();
         if (res.status() >= 400 && /\/(dashboard|datasource|query|execquery|admin\/user)/i.test(url)) {
@@ -116,9 +109,8 @@ export class MailDashboardsController {
       await page.goto(dashboardUrl, { waitUntil: 'networkidle', timeout: 60000 });
       console.log(`[Dashboard] Página cargada`);
 
-      // 3a. Wait for the dashboard to actually mount its panels. Without this, the "no spinners"
-      // check below passes instantly while the app still shows "Cargando informe..." (0 panels
-      // rendered -> 0 .spinner-panel), and the screenshot captures the loading screen.
+      // 3a. Wait for panels to mount before the "no spinners" check — otherwise it passes
+      // instantly on the "Cargando informe..." screen (0 panels -> 0 spinners).
       const panelsMounted = () => page.waitForFunction(
         () => (document.querySelectorAll('#myDashboard gridster-item') || []).length > 0,
         { timeout: 45000, polling: 500 }
@@ -151,11 +143,9 @@ export class MailDashboardsController {
       const element = await page.$('#myDashboard');
       if (!element) throw new Error('[Dashboard] Elemento #myDashboard no encontrado en la página');
 
-      // The real page background sits on an ancestor of #myDashboard (or its inner p-3 wrapper),
-      // not on #myDashboard itself, which is transparent -> the screenshot renders that empty grid
-      // area white. Resolve that colour, paint it onto #myDashboard so the screenshot picks it up,
-      // and reuse it for the blank area on the last (partial) PDF page. Also measure where the last
-      // panel ends so we can trim the empty grid tail (gridster reserves rows below the content).
+      // #myDashboard is transparent — the real background sits on an ancestor. Resolve it, paint
+      // it onto #myDashboard (so the screenshot isn't white in the empty grid area) and reuse it
+      // for the last PDF page. Also get the last panel's bottom to trim the empty grid tail.
       const meta: { bgColor: string; contentBottom: number } = await page.evaluate(() => {
         const solid = (el: Element | null): string => {
           if (!el) return '';
@@ -179,17 +169,15 @@ export class MailDashboardsController {
         return { bgColor, contentBottom };
       });
       const bgColor = meta.bgColor;
-      console.log(`[Dashboard] Fondo del dashboard: ${bgColor}`);
 
       const box = await element.boundingBox();
       if (!box) throw new Error('[Dashboard] No se pudo obtener bounding box de #myDashboard');
       const cssWidth  = box.width;
-      // Trim the empty grid tail: use the last panel's bottom (+ small margin) when it's shorter
-      // than the raw element height, so the PDF/preview don't carry a big blank band.
+      // Trim the empty grid tail below the last panel so the PDF has no big blank band.
       const cssHeight = meta.contentBottom > 0 && meta.contentBottom + 24 < box.height
         ? Math.ceil(meta.contentBottom + 24)
         : box.height;
-      console.log(`[Dashboard] Dimensiones: ${cssWidth}x${cssHeight} CSS px (elemento ${box.height})`);
+      console.log(`[Dashboard] Dimensiones: ${cssWidth}x${cssHeight} CSS px`);
 
       // 5. Capture element screenshot at 2x resolution (deviceScaleFactor: 2), then trim to content
       const rawScreenshot = await element.screenshot({ type: 'jpeg', quality: 100 });

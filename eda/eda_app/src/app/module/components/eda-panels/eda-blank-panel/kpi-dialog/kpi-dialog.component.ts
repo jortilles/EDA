@@ -370,7 +370,11 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             value: this.value ? this.value : 0,
             operand: this.operand,
             color: this.color,
-            mailing: { units: null, quantity: null, hours: null, minutes: null, users: [], mailSubject: null, mailMessage: null, enabled: false }
+            mailing: {
+                units: null, quantity: null, hours: null, minutes: null,
+                weekday: 1, monthlyMode: 'dom', monthlyDay: 1, monthlyOrdinal: 'first', monthlyWeekday: 1,
+                users: [], otherRecipients: '', mailSubject: null, mailMessage: null, aiAnalysis: false, enabled: false
+            }
         });
     }
 

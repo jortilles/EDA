@@ -2985,21 +2985,9 @@ Co widzę?
     <source>Contenido del mail: </source>
     <target>Treść wiadomości:  </target>
   </trans-unit>
-  <trans-unit id="sendMailNowButton">
-    <source>Enviar</source>
-    <target>Wyślij</target>
-  </trans-unit>
   <trans-unit id="sendingMailNow">
     <source>Enviando...</source>
     <target>Wysyłanie...</target>
-  </trans-unit>
-  <trans-unit id="sendMailNowButtonTitle">
-    <source>Genera y envía el informe ahora mismo a los destinatarios seleccionados, sin esperar a la programación</source>
-    <target>Generuje i wysyła raport natychmiast do wybranych odbiorców, bez czekania na harmonogram</target>
-  </trans-unit>
-  <trans-unit id="sendAlertNowButtonTitle">
-    <source>Evalúa la alerta ahora y, si el KPI cumple la condición, la envía a los destinatarios seleccionados</source>
-    <target>Ocenia alert teraz i, jeśli KPI spełnia warunek, wysyła go do wybranych odbiorców</target>
   </trans-unit>
   <trans-unit id="mailSendNowStarted">
     <source>Envío iniciado. Los informes se están generando y llegarán en unos minutos.</source>
@@ -3009,29 +2997,249 @@ Co widzę?
     <source>Alerta enviada (si el KPI cumple la condición en este momento)</source>
     <target>Alert wysłany (jeśli KPI spełnia warunek w tym momencie)</target>
   </trans-unit>
-  <trans-unit id="mailSubjectLabel">
-    <source>Asunto del mail</source>
-    <target>Temat wiadomości</target>
+  <trans-unit id="mailDlgTitle">
+    <source>Envío del panel por email</source>
+    <target>Wysyłka panelu e-mailem</target>
   </trans-unit>
-  <trans-unit id="mailVariablesTitle">
-    <source>Variables de paneles KPI</source>
-    <target>Zmienne paneli KPI</target>
+  <trans-unit id="mailActiveToggle">
+    <source>Envío de correo</source>
+    <target>Wysyłka e-maili</target>
   </trans-unit>
-  <trans-unit id="mailPreviewTitle">
-    <source>Vista previa del correo</source>
-    <target>Podgląd wiadomości</target>
+  <trans-unit id="mailStep1">
+    <source>¿Cuándo se envía?</source>
+    <target>Kiedy jest wysyłane?</target>
   </trans-unit>
-  <trans-unit id="mailPreviewSubjectLabel">
-    <source>Asunto:</source>
-    <target>Temat:</target>
+  <trans-unit id="mailStep1Hint">
+    <source>El informe se genera y se manda automáticamente en cada repetición.</source>
+    <target>Raport jest generowany i wysyłany automatycznie przy każdym powtórzeniu.</target>
   </trans-unit>
-  <trans-unit id="mailPreviewImagePlaceholder">
-    <source>Vista previa del informe (imagen)</source>
-    <target>Podgląd raportu (obraz)</target>
+  <trans-unit id="mailAlertStep1Hint">
+    <source>La alerta se comprueba en cada repetición y sólo se envía si el KPI cumple la condición.</source>
+    <target>Alert jest sprawdzany przy każdym powtórzeniu i wysyłany tylko wtedy, gdy KPI spełnia warunek.</target>
   </trans-unit>
-  <trans-unit id="mailAiAnalysis">
-    <source>Análisis de IA</source>
-    <target>Analiza AI</target>
+  <trans-unit id="mailFreqHourly">
+    <source>Horario</source>
+    <target>Godzinowo</target>
+  </trans-unit>
+  <trans-unit id="mailFreqDaily">
+    <source>Diario</source>
+    <target>Codziennie</target>
+  </trans-unit>
+  <trans-unit id="mailFreqWeekly2">
+    <source>Semanal</source>
+    <target>Co tydzień</target>
+  </trans-unit>
+  <trans-unit id="mailFreqMonthly2">
+    <source>Mensual</source>
+    <target>Co miesiąc</target>
+  </trans-unit>
+  <trans-unit id="mailFreqEvery">
+    <source>Cada</source>
+    <target>Co</target>
+  </trans-unit>
+  <trans-unit id="mailWeeklyEach">
+    <source>Cada</source>
+    <target>Każdy</target>
+  </trans-unit>
+  <trans-unit id="mailWeeklyAt">
+    <source>a las</source>
+    <target>o</target>
+  </trans-unit>
+  <trans-unit id="mailMonthlyOnDay">
+    <source>el día</source>
+    <target>w dniu</target>
+  </trans-unit>
+  <trans-unit id="mailMonthlyThe">
+    <source>el</source>
+    <target>w</target>
+  </trans-unit>
+  <trans-unit id="mailFreqMonthlyDom">
+    <source>El día del mes</source>
+    <target>Dzień miesiąca</target>
+  </trans-unit>
+  <trans-unit id="mailFreqMonthlyNth">
+    <source>Un día de la semana</source>
+    <target>Dzień tygodnia</target>
+  </trans-unit>
+  <trans-unit id="mailFreqLastDay">
+    <source>Último día</source>
+    <target>Ostatni dzień</target>
+  </trans-unit>
+  <trans-unit id="mailStep2">
+    <source>¿A quién?</source>
+    <target>Do kogo?</target>
+  </trans-unit>
+  <trans-unit id="mailStep2Hint">
+    <source>Usuarios de Edalitics, o cualquier dirección externa.</source>
+    <target>Użytkownicy Edalitics lub dowolny adres zewnętrzny.</target>
+  </trans-unit>
+  <trans-unit id="mailUsersLabel">
+    <source>Usuarios</source>
+    <target>Użytkownicy</target>
+  </trans-unit>
+  <trans-unit id="mailExternalLabel">
+    <source>Direcciones externas</source>
+    <target>Adresy zewnętrzne</target>
+  </trans-unit>
+  <trans-unit id="mailExtHint">
+    <source>(separadas por un espacio)</source>
+    <target>(oddzielone spacją)</target>
+  </trans-unit>
+  <trans-unit id="mailStep3">
+    <source>¿Qué dice el correo?</source>
+    <target>Co zawiera e-mail?</target>
+  </trans-unit>
+  <trans-unit id="mailStep3Hint">
+    <source>Escribe el texto. La vista previa de la derecha se actualiza mientras escribes.</source>
+    <target>Wpisz treść. Podgląd po prawej stronie aktualizuje się na bieżąco.</target>
+  </trans-unit>
+  <trans-unit id="mailSubjectShort">
+    <source>Asunto</source>
+    <target>Temat</target>
+  </trans-unit>
+  <trans-unit id="mailMessageLabel">
+    <source>Mensaje</source>
+    <target>Wiadomość</target>
+  </trans-unit>
+  <trans-unit id="mailAiAdd">
+    <source>Añadir análisis con IA</source>
+    <target>Dodaj analizę AI</target>
+  </trans-unit>
+  <trans-unit id="mailAiAddHint">
+    <source>Genera un comentario sobre los datos de cada envío y lo añade debajo de tu mensaje. Cambia en cada correo.</source>
+    <target>Generuje komentarz do danych każdej wysyłki i dodaje go pod Twoją wiadomością. Zmienia się przy każdym e-mailu.</target>
+  </trans-unit>
+  <trans-unit id="mailInsertValueTitle">
+    <source>Insertar un valor del panel</source>
+    <target>Wstaw wartość panelu</target>
+  </trans-unit>
+  <trans-unit id="mailInsertValueHint">
+    <source>Copia el código y pégalo en el asunto o en el mensaje. Al enviarse se sustituye por el dato real.</source>
+    <target>Skopiuj kod i wklej go w temacie lub wiadomości. Przy wysyłce zostanie zastąpiony rzeczywistą wartością.</target>
+  </trans-unit>
+  <trans-unit id="mailCurrentValue">
+    <source>valor actual:</source>
+    <target>bieżąca wartość:</target>
+  </trans-unit>
+  <trans-unit id="mailCopyTitleTip">
+    <source>Copiar el nombre del panel</source>
+    <target>Kopiuj nazwę panelu</target>
+  </trans-unit>
+  <trans-unit id="mailCopyValueTip">
+    <source>Copiar el valor del panel</source>
+    <target>Kopiuj wartość panelu</target>
+  </trans-unit>
+  <trans-unit id="mailCopy">
+    <source>Copiar</source>
+    <target>Kopiuj</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewShort">
+    <source>Vista previa</source>
+    <target>Podgląd</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewHint">
+    <source>· tal como lo recibirá el destinatario</source>
+    <target>· dokładnie tak, jak otrzyma je odbiorca</target>
+  </trans-unit>
+  <trans-unit id="mailForLabel">
+    <source>Para:</source>
+    <target>Do:</target>
+  </trans-unit>
+  <trans-unit id="mailWriteToPreview">
+    <source>Escribe el mensaje para verlo aquí.</source>
+    <target>Wpisz wiadomość, aby zobaczyć ją tutaj.</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewAiTitle">
+    <source>Análisis automático</source>
+    <target>Analiza automatyczna</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewAiDesc">
+    <source>Aquí se añadirá un resumen del dashboard escrito con IA en cada envío. Consume tokens de tu cuenta.</source>
+    <target>Tutaj przy każdej wysyłce zostanie dodane podsumowanie pulpitu napisane przez AI. Zużywa tokeny z Twojego konta.</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewDashImg">
+    <source>imagen del dashboard</source>
+    <target>obraz pulpitu</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewKpiLabel">
+    <source>Valor del KPI</source>
+    <target>Wartość KPI</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewKpiValue">
+    <source>valor del KPI en el momento del envío</source>
+    <target>wartość KPI w momencie wysyłki</target>
+  </trans-unit>
+  <trans-unit id="mailOpenDashboard">
+    <source>Abrir el dashboard en Edalitics →</source>
+    <target>Otwórz pulpit w Edalitics →</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestNow">
+    <source>Enviar una copia ahora</source>
+    <target>Wyślij kopię teraz</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestHint">
+    <source>Se envía a los destinatarios configurados, sin activar la programación.</source>
+    <target>Wysyłane do skonfigurowanych odbiorców, bez aktywowania harmonogramu.</target>
+  </trans-unit>
+  <trans-unit id="mailAlertSendTestHint">
+    <source>Se envía a los destinatarios configurados si el KPI cumple la condición ahora, sin activar la programación.</source>
+    <target>Wysyłane do skonfigurowanych odbiorców, jeśli KPI spełnia teraz warunek, bez aktywowania harmonogramu.</target>
+  </trans-unit>
+  <trans-unit id="mailSaveSchedule">
+    <source>Guardar programación</source>
+    <target>Zapisz harmonogram</target>
+  </trans-unit>
+  <trans-unit id="mailNoSubject">
+    <source>Sin asunto</source>
+    <target>Bez tematu</target>
+  </trans-unit>
+  <trans-unit id="weekdayMonday">
+    <source>Lunes</source>
+    <target>Poniedziałek</target>
+  </trans-unit>
+  <trans-unit id="weekdayTuesday">
+    <source>Martes</source>
+    <target>Wtorek</target>
+  </trans-unit>
+  <trans-unit id="weekdayWednesday">
+    <source>Miércoles</source>
+    <target>Środa</target>
+  </trans-unit>
+  <trans-unit id="weekdayThursday">
+    <source>Jueves</source>
+    <target>Czwartek</target>
+  </trans-unit>
+  <trans-unit id="weekdayFriday">
+    <source>Viernes</source>
+    <target>Piątek</target>
+  </trans-unit>
+  <trans-unit id="weekdaySaturday">
+    <source>Sábado</source>
+    <target>Sobota</target>
+  </trans-unit>
+  <trans-unit id="weekdaySunday">
+    <source>Domingo</source>
+    <target>Niedziela</target>
+  </trans-unit>
+  <trans-unit id="ordinalFirst">
+    <source>Primer</source>
+    <target>Pierwszy</target>
+  </trans-unit>
+  <trans-unit id="ordinalSecond">
+    <source>Segundo</source>
+    <target>Drugi</target>
+  </trans-unit>
+  <trans-unit id="ordinalThird">
+    <source>Tercer</source>
+    <target>Trzeci</target>
+  </trans-unit>
+  <trans-unit id="ordinalFourth">
+    <source>Cuarto</source>
+    <target>Czwarty</target>
+  </trans-unit>
+  <trans-unit id="ordinalLast">
+    <source>Último</source>
+    <target>Ostatni</target>
   </trans-unit>
    <trans-unit id="sendMailHeader">
     <source>Configuración de los envíos por email</source>

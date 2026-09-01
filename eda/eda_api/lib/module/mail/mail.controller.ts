@@ -169,8 +169,9 @@ export class MailController {
       if (recipients.length === 0) return next(new HttpException(400, 'No hay destinatarios configurados'));
 
       const { transporter, senderEmail } = await MailController.openTransporter();
+      const configuredByEmail = (req as any).user?.email || '';
       // Returns before the sends finish — a render per recipient can take minutes.
-      MailingService.sendDashboardNow(dashboardId, recipients, subject, message, transporter, senderEmail, !!aiAnalysis)
+      MailingService.sendDashboardNow(dashboardId, recipients, subject, message, transporter, senderEmail, !!aiAnalysis, configuredByEmail)
         .catch((err: any) => console.error('[sendDashboardNow]', err?.message || err));
       return res.status(200).json({ ok: true });
 
@@ -181,7 +182,7 @@ export class MailController {
 
   static async sendAlertNow(req: Request, res: Response, next: NextFunction) {
     try {
-      const { dashboardId, panelId, operand, value, to, subject, message } = req.body;
+      const { dashboardId, panelId, operand, value, to, subject, message, aiAnalysis } = req.body;
       const recipients = MailController.parseRecipients(to);
       if (!dashboardId || operand === undefined || value === undefined) {
         return next(new HttpException(400, 'Faltan datos de la alerta'));
@@ -189,7 +190,8 @@ export class MailController {
       if (recipients.length === 0) return next(new HttpException(400, 'No hay destinatarios configurados'));
 
       const { transporter, senderEmail } = await MailController.openTransporter();
-      await MailingService.sendAlertNow(dashboardId, panelId, operand, value, recipients, subject, message, transporter, senderEmail);
+      const configuredByEmail = (req as any).user?.email || '';
+      await MailingService.sendAlertNow(dashboardId, panelId, operand, value, recipients, subject, message, transporter, senderEmail, !!aiAnalysis, configuredByEmail);
       return res.status(200).json({ ok: true });
 
     } catch (err) {
