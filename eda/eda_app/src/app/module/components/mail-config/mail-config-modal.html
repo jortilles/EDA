@@ -5,7 +5,12 @@
   <!-- ===================== HEADER ===================== -->
   <div header class="flex w-full items-center justify-between gap-4 pr-6">
     <div class="min-w-0">
-      <span class="text-lg font-semibold text-gray-800" i18n="@@kpiMailConfigTitle">Configuración de la alerta KPI por email</span>
+      @if (isAlert) {
+        <span class="text-lg font-semibold text-gray-800" i18n="@@kpiMailConfigTitle">Configuración de la alerta KPI por email</span>
+      } @else {
+        <span class="text-lg font-semibold text-gray-800" i18n="@@mailDlgTitle">Envío del panel por email</span>
+        <span class="ml-2 text-gray-400">{{ subtitle }}</span>
+      }
     </div>
     <div class="mail-hdr-switch flex shrink-0 items-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-1 leading-none">
       <p-inputSwitch [(ngModel)]="enabled" class="mail-switch"></p-inputSwitch>
@@ -29,7 +34,11 @@
           <div class="min-w-0 flex-1 space-y-3">
             <div class="flex flex-wrap items-baseline gap-x-2">
               <h5 class="text-base font-semibold text-gray-800" i18n="@@mailStep1">¿Cuándo se envía?</h5>
-              <span class="text-xs text-gray-400" i18n="@@mailAlertStep1Hint">La alerta se comprueba en cada repetición y sólo se envía si el KPI cumple la condición.</span>
+              @if (isAlert) {
+                <span class="text-xs text-gray-400" i18n="@@mailAlertStep1Hint">La alerta se comprueba en cada repetición y sólo se envía si el KPI cumple la condición.</span>
+              } @else {
+                <span class="text-xs text-gray-400" i18n="@@mailStep1Hint">El informe se genera y se manda automáticamente en cada repetición.</span>
+              }
             </div>
 
             <div class="inline-flex gap-1 rounded-lg bg-gray-100 p-1">
@@ -143,11 +152,13 @@
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-sm font-medium text-gray-700" i18n="@@mailSubjectShort">Asunto</label>
-              <input type="text" [(ngModel)]="mailSubject" class="mail-input w-full rounded-lg border border-gray-300 px-3 py-2">
+              <input type="text" [(ngModel)]="mailSubject" [edaMailVarSuggest]="kpiVariables" [edaMailVarSuggestValue]="varValueResolver"
+                class="mail-input w-full rounded-lg border border-gray-300 px-3 py-2">
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-sm font-medium text-gray-700" i18n="@@mailMessageLabel">Mensaje</label>
-              <textarea rows="6" [(ngModel)]="mailMessage" class="mail-textarea w-full resize-y rounded-lg border border-gray-300 px-3 py-2"></textarea>
+              <textarea rows="6" [(ngModel)]="mailMessage" [edaMailVarSuggest]="kpiVariables" [edaMailVarSuggestValue]="varValueResolver"
+                class="mail-textarea w-full resize-y rounded-lg border border-gray-300 px-3 py-2"></textarea>
             </div>
 
             @if (aiAvailable) {
@@ -166,7 +177,12 @@
                 <p class="mb-1 text-xs text-gray-500" i18n="@@mailInsertValueHint">Copia el código y pégalo en el asunto o en el mensaje. Al enviarse se sustituye por el dato real.</p>
                 @for (v of kpiVariables; track v.base) {
                   <div class="border-t border-gray-200 py-2 text-xs first:border-t-0">
-                    <div class="mb-1 font-medium text-gray-800">{{ v.title }}</div>
+                    <div class="mb-1 flex flex-wrap items-center gap-x-3">
+                      <span class="font-medium text-gray-800">{{ v.title }}</span>
+                      @if (!isAlert) {
+                        <span class="text-gray-400"> · <span i18n="@@mailCurrentValue">valor actual:</span> {{ getPanelCurrentValue(v.panelId) }}</span>
+                      }
+                    </div>
                     <div class="flex flex-wrap gap-1.5">
                       <button type="button" (click)="copyToken(v.titleToken)" class="mail-token-btn" i18n-title="@@mailCopy" title="Copiar">
                         <code>{{ v.titleToken }}</code><span i18n="@@mailCopyTitle">Título</span>
@@ -225,13 +241,24 @@
               </div>
             }
 
-            <div class="mt-3 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
-              <span class="font-medium text-gray-800">{{ kpiFieldName || previewKpiLabel }}:</span>
-              <span class="text-gray-400" i18n="@@mailPreviewKpiValue">valor del KPI en el momento del envío</span>
-            </div>
+            @if (isAlert) {
+              <div class="mt-3 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
+                <span class="font-medium text-gray-800">{{ kpiFieldName || previewKpiLabel }}:</span>
+                <span class="text-gray-400" i18n="@@mailPreviewKpiValue">valor del KPI en el momento del envío</span>
+              </div>
+            } @else {
+              <div class="mt-3 flex items-center justify-center rounded border border-dashed border-gray-300 bg-gray-50 py-10 text-xs text-gray-400" i18n="@@mailPreviewDashImg">imagen del dashboard</div>
+            }
+
             <div class="mt-3">
               <a [href]="previewLink" target="_blank" rel="noopener" class="text-sm text-[#0a7d75] hover:underline" i18n="@@mailOpenDashboard">Abrir el dashboard en Edalitics →</a>
             </div>
+
+            @if (!isAlert) {
+              <div class="mt-3 inline-flex items-center gap-2 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
+                <span class="font-semibold text-red-500">PDF</span>{{ pdfName }}
+              </div>
+            }
           </div>
 
           <div class="border-t border-gray-200 px-4 py-3">
@@ -244,7 +271,11 @@
           @if (isSending()) { <span i18n="@@sendingMailNow">Enviando...</span> }
           @else { <span i18n="@@mailSendTestNow">Enviar una copia ahora</span> }
         </button>
-        <p class="shrink-0 text-center text-xs text-gray-400" i18n="@@mailAlertSendTestHint">Se envía a los destinatarios configurados si el KPI cumple la condición ahora, sin activar la programación.</p>
+        @if (isAlert) {
+          <p class="shrink-0 text-center text-xs text-gray-400" i18n="@@mailAlertSendTestHint">Se envía a los destinatarios configurados si el KPI cumple la condición ahora, sin activar la programación.</p>
+        } @else {
+          <p class="shrink-0 text-center text-xs text-gray-400" i18n="@@mailSendTestHint">Se envía a los destinatarios configurados, sin activar la programación.</p>
+        }
       </div>
 
     </div>

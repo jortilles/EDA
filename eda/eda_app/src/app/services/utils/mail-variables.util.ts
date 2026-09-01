@@ -19,6 +19,25 @@ export interface MailKpiVariable {
 }
 
 export type KpiSeriesItem = { label: string; value: number };
+export type MailTokenKind = 'title' | 'value' | 'breakdown' | 'top' | 'bottom' | 'average';
+export interface MailVarToken { token: string; kind: MailTokenKind; label: string; variable: MailKpiVariable; }
+
+/** Every insertable token for a KPI variable, in the order shown in the picker / autocomplete. */
+export function kpiVarTokens(v: MailKpiVariable): MailVarToken[] {
+  const list: MailVarToken[] = [
+    { token: v.titleToken, kind: 'title', label: 'Título', variable: v },
+    { token: v.valueToken, kind: 'value', label: 'Valor', variable: v },
+  ];
+  if (v.hasBreakdown) {
+    list.push(
+      { token: v.breakdownToken, kind: 'breakdown', label: 'Todos', variable: v },
+      { token: v.topToken, kind: 'top', label: 'Máximo', variable: v },
+      { token: v.bottomToken, kind: 'bottom', label: 'Mínimo', variable: v },
+      { token: v.averageToken, kind: 'average', label: 'Media', variable: v },
+    );
+  }
+  return list;
+}
 
 function fmtNum(n: number): string {
   return Number.isFinite(n) ? Number(n).toLocaleString('de-DE') : String(n);
