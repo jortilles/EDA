@@ -91,14 +91,23 @@ export class DashboardMailConfigModal extends MailConfigModalBase implements OnI
       const data = pc?.props?.data ?? pc?.data;
       const labels: string[] = data?.labels ?? [];
       const rows: any[][] = data?.values ?? [];
-      if (!rows.length || labels.length < 1) return [];
-      let numIdx = -1;
-      for (let c = labels.length - 1; c >= 0; c--) {
-        if (rows.every(r => r[c] === null || r[c] === '' || Number.isFinite(Number(r[c])))) { numIdx = c; break; }
+      if (rows.length && labels.length >= 1) {
+        let numIdx = -1;
+        for (let c = labels.length - 1; c >= 0; c--) {
+          if (rows.every(r => r[c] === null || r[c] === '' || Number.isFinite(Number(r[c])))) { numIdx = c; break; }
+        }
+        if (numIdx >= 0) {
+          const labIdx = labels.findIndex((_, i) => i !== numIdx);
+          return rows.map(r => ({ label: labIdx >= 0 ? String(r[labIdx] ?? '') : '', value: Number(r[numIdx]) || 0 }));
+        }
       }
-      if (numIdx < 0) return [];
-      const labIdx = labels.findIndex((_, i) => i !== numIdx);
-      return rows.map(r => ({ label: labIdx >= 0 ? String(r[labIdx] ?? '') : '', value: Number(r[numIdx]) || 0 }));
+
+      // Plain kpi panel: no series, just the headline number.
+      const single = pc?.componentRef?.instance?.inject?.value;
+      if (single !== undefined && single !== null && single !== '' && Number.isFinite(Number(single))) {
+        return [{ label: '', value: Number(single) }];
+      }
+      return [];
     } catch {
       return [];
     }

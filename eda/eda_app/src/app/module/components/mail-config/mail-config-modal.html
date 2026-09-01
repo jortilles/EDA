@@ -157,7 +157,8 @@
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-sm font-medium text-gray-700" i18n="@@mailMessageLabel">Mensaje</label>
-              <textarea rows="6" [(ngModel)]="mailMessage" [edaMailVarSuggest]="kpiVariables" [edaMailVarSuggestValue]="varValueResolver"
+              <textarea rows="7" [(ngModel)]="mailMessage"
+                [edaMailVarSuggest]="kpiVariables" [edaMailVarSuggestValue]="varValueResolver"
                 class="mail-textarea w-full resize-y rounded-lg border border-gray-300 px-3 py-2"></textarea>
             </div>
 

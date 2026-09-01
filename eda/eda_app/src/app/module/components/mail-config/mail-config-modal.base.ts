@@ -7,6 +7,7 @@ import {
   buildKpiVariables, MailKpiVariable, MailTokenKind, formatKpiToken,
   renderMailPreview, renderMailPreviewHtml,
 } from "@eda/services/utils/mail-variables.util";
+import { renderMailLogic, hasMailLogic, buildKpiCtxNode } from "@eda/services/utils/mail-logic.util";
 import { LogoImage, SubLogoImage } from "@eda/configs/customizable/customizable_default";
 import { WEEKDAY_OPTIONS, MONTHLY_ORDINAL_OPTIONS, MONTH_DAY_OPTIONS } from "@eda/services/utils/mail-schedule.util";
 
@@ -239,11 +240,22 @@ export abstract class MailConfigModalBase implements OnInit {
     return formatKpiToken(this.getPanelSeries(v.panelId), kind);
   };
 
+  /** `{ p1: {...}, p2: {...} }` for `""CODE` conditions in the preview, from the live panels. */
+  protected get logicCtx(): Record<string, any> {
+    const ctx: Record<string, any> = {};
+    this.kpiVariables.forEach((v, i) => {
+      ctx[`p${i + 1}`] = buildKpiCtxNode(v.title, this.getPanelSeries(v.panelId));
+    });
+    return ctx;
+  }
+
   public get previewSubject(): string {
-    return renderMailPreview(this.mailSubject, this.kpiVariables, id => this.getPanelCurrentValue(id), id => this.getPanelSeries(id));
+    let out = renderMailPreview(this.mailSubject, this.kpiVariables, id => this.getPanelCurrentValue(id), id => this.getPanelSeries(id));
+    return hasMailLogic(out) ? renderMailLogic(out, this.logicCtx) : out;
   }
   public get previewBody(): string {
-    return renderMailPreviewHtml(this.mailMessage, this.kpiVariables, id => this.getPanelCurrentValue(id), id => this.getPanelSeries(id));
+    let out = renderMailPreviewHtml(this.mailMessage, this.kpiVariables, id => this.getPanelCurrentValue(id), id => this.getPanelSeries(id));
+    return hasMailLogic(out) ? renderMailLogic(out, this.logicCtx) : out;
   }
   public get previewLink(): string {
     const locale = window.location.pathname.split('/').filter(Boolean)[0] || 'es';

@@ -8,6 +8,7 @@ const mailConfig = require('../../../config/mailing.config')
 let nodemailer = require('nodemailer');
 import { SchedulerFunctions } from './../scheduler/schedulerFunctions';
 import { MailDashboardsController } from '../dashboardToPDFService/mail-dashboards.controller';
+import { renderMailLogic, hasMailLogic, buildKpiCtxNode } from './mail-logic.util';
 const fs = require('fs');
 const path = require("path");
 
@@ -242,29 +243,49 @@ export class MailingService {
    * panels (same order as the dialog listing). Values run that panel's query as `user`, so they
    * respect row-level security. */
   static async resolveMailTemplate(template: string, dashboard: any, user: any): Promise<string> {
-    if (!template || !template.includes('${p')) return template || '';
+    if (!template) return '';
+    const hasVars = template.includes('${p');
+    const hasLogic = hasMailLogic(template);
+    if (!hasVars && !hasLogic) return template;
 
     const kpiPanels = (dashboard?.config?.panel || []).filter((p: any) => String(p?.content?.chart || '').startsWith('kpi'));
+
+    // Each panel's series is fetched at most once, shared by the `${…}` pass and the logic context.
+    const cache: Record<number, any> = {};
+    const seriesFor = async (i: number) => {
+      if (!(i in cache)) {
+        try { cache[i] = await MailingService.execKpiSeries(kpiPanels[i].content.query, user, String(kpiPanels[i]?.content?.chart || '')); }
+        catch { cache[i] = null; }
+      }
+      return cache[i];
+    };
+
     let out = template;
 
-    for (let i = 0; i < kpiPanels.length; i++) {
-      const panel = kpiPanels[i];
-      const base = `p${i + 1}`;
-      const chart = String(panel?.content?.chart || '');
-
-      out = out.split('${' + base + '.title}').join(panel.title ?? '');
-
-      if (out.includes('${' + base + '.value')) {
-        let series: any = null;
-        try { series = await MailingService.execKpiSeries(panel.content.query, user, chart); } catch { /* skip */ }
-        // longest tokens first so `.value.breakdown` isn't eaten by `.value`
-        for (const kind of ['breakdown', 'top', 'bottom', 'average']) {
-          const tok = '${' + base + '.value.' + kind + '}';
-          if (out.includes(tok)) out = out.split(tok).join(MailingService.kpiTokenValue(series, kind));
+    if (hasVars) {
+      for (let i = 0; i < kpiPanels.length; i++) {
+        const base = `p${i + 1}`;
+        out = out.split('${' + base + '.title}').join(kpiPanels[i].title ?? '');
+        if (out.includes('${' + base + '.value')) {
+          const series = await seriesFor(i);
+          // longest tokens first so `.value.breakdown` isn't eaten by `.value`
+          for (const kind of ['breakdown', 'top', 'bottom', 'average']) {
+            const tok = '${' + base + '.value.' + kind + '}';
+            if (out.includes(tok)) out = out.split(tok).join(MailingService.kpiTokenValue(series, kind));
+          }
+          const vtok = '${' + base + '.value}';
+          if (out.includes(vtok)) out = out.split(vtok).join(MailingService.kpiTokenValue(series, 'value'));
         }
-        const vtok = '${' + base + '.value}';
-        if (out.includes(vtok)) out = out.split(vtok).join(MailingService.kpiTokenValue(series, 'value'));
       }
+    }
+
+    if (hasLogic) {
+      const ctx: Record<string, any> = {};
+      for (let i = 0; i < kpiPanels.length; i++) {
+        const s = await seriesFor(i);
+        ctx[`p${i + 1}`] = buildKpiCtxNode(kpiPanels[i].title ?? '', s?.items || []);
+      }
+      out = renderMailLogic(out, ctx);
     }
 
     return out;
