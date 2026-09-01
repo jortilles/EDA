@@ -161,15 +161,15 @@ export class DashboardMailConfigModal {
     }
   }
 
-  private panelChartInstance(panelId: string): any {
+  private panelChartComp(panelId: string): any {
     const arr = (this.dashboard as any)?.edaPanels?.toArray?.() ?? [];
-    return arr.find((p: any) => p?.panel?.id === panelId)?.panelChart?.componentRef?.instance;
+    return arr.find((p: any) => p?.panel?.id === panelId)?.panelChart;
   }
 
   /** Best-effort current value of a KPI panel (the dashboard is still rendered behind the dialog) */
   public getPanelCurrentValue(panelId: string): string {
     try {
-      const v = this.panelChartInstance(panelId)?.inject?.value;
+      const v = this.panelChartComp(panelId)?.componentRef?.instance?.inject?.value;
       if (v === undefined || v === null || v === '') return '—';
       const n = Number(v);
       return Number.isFinite(n) ? n.toLocaleString('de-DE') : String(v);
@@ -178,11 +178,24 @@ export class DashboardMailConfigModal {
     }
   }
 
-  /** Category → value rows behind a kpibar/kpiline/kpiarea panel, from its rendered query result. */
+  /** Category → value rows behind a kpibar/kpiline/kpiarea panel, from its rendered mini-chart. */
   public getPanelSeries(panelId: string): { label: string; value: number }[] {
     try {
-      const inst = this.panelChartInstance(panelId);
-      const data = inst?.props?.data ?? inst?.data;
+      const pc = this.panelChartComp(panelId);
+
+      const num = (x: any) => Number(x && typeof x === 'object' ? (x.y ?? x.value ?? x.v) : x) || 0;
+
+      // Preferred: the KPI mini-chart config (kpibar/kpiline/kpiarea)
+      const ec = pc?.componentRef?.instance?.inject?.edaChart;
+      const ecLabels: any[] = ec?.chartLabels ?? [];
+      const dataset: any = (ec?.chartDataset ?? []).find((d: any) => !d?.isTrend) ?? (ec?.chartDataset ?? [])[0];
+      const ecValues: any[] = dataset?.data ?? [];
+      if (ecLabels.length && ecValues.length) {
+        return ecLabels.map((lab, i) => ({ label: String(lab ?? ''), value: num(ecValues[i]) }));
+      }
+
+      // Fallback: the raw query result on the PanelChartComponent
+      const data = pc?.props?.data ?? pc?.data;
       const labels: string[] = data?.labels ?? [];
       const rows: any[][] = data?.values ?? [];
       if (!rows.length || labels.length < 1) return [];
