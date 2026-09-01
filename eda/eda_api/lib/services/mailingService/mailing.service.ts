@@ -87,9 +87,9 @@ export class MailingService {
 
       for (const dashboard of dashboards) {
         const cfg = dashboard.config.sendViaMailConfig;
-        const registeredMails = (cfg.users || []).map((user: any) => user.email);
-        const manualMails = (cfg.otherRecipients || '').split(/\s+/).map((m: string) => m.trim()).filter((m: string) => m.length > 0);
-        const userMails: string[] = Array.from(new Set([...registeredMails, ...manualMails]));
+        const registeredMails: string[] = Array.from(new Set((cfg.users || []).map((u: any) => u.email).filter(Boolean)));
+        const manualMails: string[] = Array.from(new Set((cfg.otherRecipients || '').split(/\s+/).map((m: string) => m.trim()).filter((m: string) => m.length > 0)));
+        const userMails: string[] = [...registeredMails, ...manualMails];
         const dashboardID: string = dashboard._id.toString();
 
         const now = SchedulerFunctions.totLocalISOTime(new Date());
@@ -101,14 +101,30 @@ export class MailingService {
 
         if (shouldUpdate) {
           const ownerEmail = await MailingService.dashboardOwnerEmail(dashboard);
-          for (const mail of userMails) {
-            const renderEmail = await MailingService.renderIdentityEmail(mail, ownerEmail);
-            const mailUser = await MailingService.resolveMailUser(renderEmail);
+          const errLog = (mail: string) => (err: any) => console.error(`[MailingService] ERROR enviando dashboard "${dashboard.config.title}" a ${mail}:`, err);
+
+          // Registered users: rendered with their own permissions; anyone without access is skipped.
+          for (const mail of registeredMails) {
+            const mailUser = await MailingService.resolveMailUser(mail);
+            if (!(await MailingService.canAccessDashboard(dashboard, mailUser))) {
+              console.log(`[MailingService] "${mail}" sin acceso a "${dashboard.config.title}", se omite`);
+              continue;
+            }
             const subject = await MailingService.resolveMailTemplate(cfg.mailSubject || '', dashboard, mailUser);
             const message = await MailingService.resolveMailTemplate(cfg.mailMessage || '', dashboard, mailUser);
             const aiText = cfg.aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, mailUser) : '';
-            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message, token, senderEmail, subject, aiText, renderEmail)
-              .catch((err: any) => console.error(`[MailingService] ERROR enviando dashboard "${dashboard.config.title}" a ${mail}:`, err));
+            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message, token, senderEmail, subject, aiText, mail).catch(errLog(mail));
+          }
+
+          // Hand-typed external addresses: rendered as the dashboard owner (same content for all).
+          if (manualMails.length && ownerEmail) {
+            const ownerUser = await MailingService.resolveMailUser(ownerEmail);
+            const subject = await MailingService.resolveMailTemplate(cfg.mailSubject || '', dashboard, ownerUser);
+            const message = await MailingService.resolveMailTemplate(cfg.mailMessage || '', dashboard, ownerUser);
+            const aiText = cfg.aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, ownerUser) : '';
+            for (const mail of manualMails) {
+              MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message, token, senderEmail, subject, aiText, ownerEmail).catch(errLog(mail));
+            }
           }
           if (updateTimestamp) {
             dashboard.config.sendViaMailConfig.lastUpdated = newDate;
@@ -158,11 +174,12 @@ export class MailingService {
         const chart = String(panel?.content?.chart || '');
         const label = panel.title || 'Panel';
         try {
+          // KPI panels (plain or kpibar/line/area) -> their headline number. Tables and other
+          // charts -> a few rows; if the query can't be built server-side the panel is skipped.
           if (chart.startsWith('kpi')) {
-            const val = !q.query?.modeSQL
-              ? await MailingService.execQuery(q, user)
-              : await MailingService.execSqlQuery(q, user);
-            if (val !== null && val !== undefined && val !== '') blocks.push(`${label}: ${val}`);
+            const series = await MailingService.execKpiSeries(q, user, chart);
+            const val = MailingService.kpiTokenValue(series, chart === 'kpi' ? 'value' : 'breakdown');
+            if (val) blocks.push(`${label}: ${val}`);
           } else {
             const rows = await MailingService.execQueryRows(q, user, 12);
             if (!rows.length) continue;
@@ -220,9 +237,10 @@ export class MailingService {
 
   }
 
-  /** Replaces `${pN.title}` / `${pN.value}` tokens in a subject or body. pN is the 1-based position
-   * of a KPI panel among the dashboard's KPI panels (same order as the dialog listing). `.value`
-   * runs that panel's query as `user`, so it respects row-level security. */
+  /** Replaces `${pN.title}` / `${pN.value}` / `${pN.value.breakdown|top|bottom|average}` tokens
+   * in a subject or body. pN is the 1-based position of a KPI panel among the dashboard's KPI
+   * panels (same order as the dialog listing). Values run that panel's query as `user`, so they
+   * respect row-level security. */
   static async resolveMailTemplate(template: string, dashboard: any, user: any): Promise<string> {
     if (!template || !template.includes('${p')) return template || '';
 
@@ -232,21 +250,20 @@ export class MailingService {
     for (let i = 0; i < kpiPanels.length; i++) {
       const panel = kpiPanels[i];
       const base = `p${i + 1}`;
+      const chart = String(panel?.content?.chart || '');
 
       out = out.split('${' + base + '.title}').join(panel.title ?? '');
 
-      if (out.includes('${' + base + '.value}')) {
-        let val: any = '';
-        try {
-          const q = panel.content.query;
-          val = !q.query.modeSQL
-            ? await MailingService.execQuery(q, user)
-            : await MailingService.execSqlQuery(q, user);
-        } catch { val = ''; }
-        const rendered = (val === null || val === undefined || val === '')
-          ? ''
-          : (Number.isFinite(Number(val)) ? Number(val).toLocaleString('de-DE') : String(val));
-        out = out.split('${' + base + '.value}').join(rendered);
+      if (out.includes('${' + base + '.value')) {
+        let series: any = null;
+        try { series = await MailingService.execKpiSeries(panel.content.query, user, chart); } catch { /* skip */ }
+        // longest tokens first so `.value.breakdown` isn't eaten by `.value`
+        for (const kind of ['breakdown', 'top', 'bottom', 'average']) {
+          const tok = '${' + base + '.value.' + kind + '}';
+          if (out.includes(tok)) out = out.split(tok).join(MailingService.kpiTokenValue(series, kind));
+        }
+        const vtok = '${' + base + '.value}';
+        if (out.includes(vtok)) out = out.split(vtok).join(MailingService.kpiTokenValue(series, 'value'));
       }
     }
 
@@ -280,27 +297,37 @@ export class MailingService {
     }
   }
 
-  /** Email whose identity/permissions the report is rendered with for a given recipient:
-   * the recipient if they're an app user, otherwise `fallbackEmail` (whoever configured or
-   * triggered the send). The email is still delivered to the original recipient. */
-  static async renderIdentityEmail(recipientEmail: string, fallbackEmail: string): Promise<string> {
-    try {
-      if (fallbackEmail && fallbackEmail !== recipientEmail && !(await User.exists({ email: recipientEmail }))) {
-        console.log(`[MailingService] "${recipientEmail}" no es usuario de la app -> se renderiza como "${fallbackEmail}"`);
-        return fallbackEmail;
-      }
-    } catch (err: any) {
-      console.error('[MailingService] renderIdentityEmail error:', err?.message || err);
-    }
-    return recipientEmail;
-  }
-
-  /** Owner email of a dashboard, used as the render fallback for non-app-user recipients. */
+  /** Owner email of a dashboard, used as the render identity for hand-typed external recipients
+   * on the scheduled job (which has no interactive sender). */
   static async dashboardOwnerEmail(dashboard: any): Promise<string> {
     try {
       const owner: any = dashboard?.user ? await User.findById(dashboard.user, 'email') : null;
       return owner?.email || '';
     } catch { return ''; }
+  }
+
+  /** Same permission rule as DashboardController.getDashboard: a user can see a dashboard if it's
+   * open/common, they own it, they're in the EDA_ADMIN group, or one of their groups owns it. */
+  static async canAccessDashboard(dashboard: any, user: any): Promise<boolean> {
+    try {
+      if (['open', 'common'].includes(String(dashboard?.config?.visible))) return true;
+
+      const uid = String(user?._id || '');
+      if (uid && dashboard?.user && String(dashboard.user) === uid) return true;
+
+      const userGroups: string[] = (user?.role || []).map((r: any) => String(r));
+      if (userGroups.length === 0) return false;
+
+      const groups = await Group.find({ _id: { $in: userGroups } }, 'name').exec();
+      if (groups.some((g: any) => g.name === 'EDA_ADMIN')) return true;
+
+      const dashGroups = (Array.isArray(dashboard?.group) ? dashboard.group : [dashboard?.group])
+        .filter(Boolean).map((g: any) => String(g?._id || g));
+      return dashGroups.some((g: string) => userGroups.includes(g));
+    } catch (err: any) {
+      console.error('[MailingService] canAccessDashboard error:', err?.message || err);
+      return false;
+    }
   }
 
   /** Absolute URL of a frontend static asset (locale-independent, served from the app root). */
@@ -319,26 +346,26 @@ export class MailingService {
 
     const fallbackEmail = configuredByEmail || await MailingService.dashboardOwnerEmail(dashboard);
     const bannerUrl = MailingService.appAssetUrl('assets/images/logos/logo_500.png');
+    const mailing = alert.value.mailing || {};
+    const registered: string[] = Array.from(new Set((mailing.users || []).map((u: any) => u?.email || u).filter(Boolean)));
+    const manual: string[] = Array.from(new Set(String(mailing.otherRecipients || '').split(/\s+/).map((s: string) => s.trim()).filter(Boolean)));
 
-    alert.value.mailing.users.forEach(async (recipient: any) => {
+    const evalAndSend = async (deliverTo: string, renderAs: string) => {
+      const user = await MailingService.resolveMailUser(renderAs);
 
-      const recipientEmail = recipient?.email || recipient;
-      const renderEmail = await MailingService.renderIdentityEmail(recipientEmail, fallbackEmail);
-      const user = await MailingService.resolveMailUser(renderEmail);
-
-      let result = !alert.query.query.modeSQL ?
+      const result = !alert.query.query.modeSQL ?
         await MailingService.execQuery(alert.query, user) :
         await MailingService.execSqlQuery(alert.query, user);
 
-      let condition = MailingService.compareValues(result, alert.value.value, alert.value.operand);
-      console.log(`[MailingService] alerta KPI | resultado: ${result} | condición: ${result} ${alert.value.operand} ${alert.value.value} = ${condition} | destinatario: ${recipientEmail}`);
+      const condition = MailingService.compareValues(result, alert.value.value, alert.value.operand);
+      console.log(`[MailingService] alerta KPI | resultado: ${result} | condición: ${result} ${alert.value.operand} ${alert.value.value} = ${condition} | destinatario: ${deliverTo}`);
       if (!condition) return;
 
       const dashboardLink = MailingService.dashboardAppUrl(alert.query.dashboard.dashboard_id);
-      const subject = await MailingService.resolveMailTemplate(alert.value.mailing.mailSubject || 'EDA - Alerta KPI', dashboard, user);
-      const body = await MailingService.resolveMailTemplate(alert.value.mailing.mailMessage || '', dashboard, user);
+      const subject = await MailingService.resolveMailTemplate(mailing.mailSubject || 'EDA - Alerta KPI', dashboard, user);
+      const body = await MailingService.resolveMailTemplate(mailing.mailMessage || '', dashboard, user);
       const fieldName = alert.query.query.fields[0].display_name;
-      const aiText = alert.value.mailing.aiAnalysis && dashboard ? await MailingService.generateAiAnalysis(dashboard, user) : '';
+      const aiText = mailing.aiAnalysis && dashboard ? await MailingService.generateAiAnalysis(dashboard, user) : '';
 
       const aiBlock = aiText
         ? `<div style="margin:16px 0;padding:12px 14px;border:1px solid #cdeeeb;background:#f0fbfa;border-radius:8px">` +
@@ -359,28 +386,57 @@ export class MailingService {
           `</div>` +
         `</div>`;
 
-      transporter.sendMail({ from: senderEmail, to: recipientEmail, subject, text, html }, function (error: any) {
+      transporter.sendMail({ from: senderEmail, to: deliverTo, subject, text, html }, (error: any) => {
         if (error) console.log(error);
       });
-    })
+    };
+
+    for (const email of registered) {
+      const u = await MailingService.resolveMailUser(email);
+      if (!(await MailingService.canAccessDashboard(dashboard, u))) {
+        console.log(`[MailingService] alerta KPI | "${email}" sin acceso al informe, se omite`);
+        continue;
+      }
+      await evalAndSend(email, email);
+    }
+    for (const email of manual) {
+      await evalAndSend(email, fallbackEmail || email);
+    }
   }
 
   /** "Enviar" button: same render + PDF pipeline as the cron, one recipient at a time.
-   * `configuredByEmail` is the logged-in user who triggered the send — used as the render
-   * identity for recipients that aren't app users. */
-  static async sendDashboardNow(dashboardID: string, recipients: string[], subject: string, message: string, transporter: any, senderEmail: string, aiAnalysis = false, configuredByEmail = '') {
+   * `recipients` are users picked from the dropdown (rendered with their own permissions, skipped
+   * if they can't see the dashboard); `externalRecipients` are hand-typed addresses (rendered as
+   * `configuredByEmail`, the user who pressed Enviar, so they get exactly what the sender sees). */
+  static async sendDashboardNow(dashboardID: string, recipients: string[], externalRecipients: string[], subject: string, message: string, transporter: any, senderEmail: string, aiAnalysis = false, configuredByEmail = '') {
     const token = await UserController.provideFakeToken();
     const dashboard = await Dashboard.findById(dashboardID);
     const fallbackEmail = configuredByEmail || await MailingService.dashboardOwnerEmail(dashboard);
-    console.log(`[sendDashboardNow] informe "${dashboardID}" | destinatarios: ${recipients.length} | aiAnalysis: ${aiAnalysis} | fallback: ${fallbackEmail || '-'}`);
+    console.log(`[sendDashboardNow] informe "${dashboardID}" | usuarios: ${recipients.length} | externos: ${externalRecipients.length} | aiAnalysis: ${aiAnalysis} | render externos como: ${fallbackEmail || '-'}`);
+
+    const sendOne = async (deliverTo: string, renderAs: string) => {
+      const mailUser = await MailingService.resolveMailUser(renderAs);
+      const resolvedSubject = await MailingService.resolveMailTemplate(subject || '', dashboard, mailUser);
+      const resolvedMessage = await MailingService.resolveMailTemplate(message || '', dashboard, mailUser);
+      const aiText = aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, mailUser) : '';
+      await MailDashboardsController.sendDashboard(dashboardID, deliverTo, transporter, resolvedMessage, token, senderEmail, resolvedSubject, aiText, renderAs);
+    };
+
     for (const mail of recipients) {
       try {
-        const renderEmail = await MailingService.renderIdentityEmail(mail, fallbackEmail);
-        const mailUser = await MailingService.resolveMailUser(renderEmail);
-        const resolvedSubject = await MailingService.resolveMailTemplate(subject || '', dashboard, mailUser);
-        const resolvedMessage = await MailingService.resolveMailTemplate(message || '', dashboard, mailUser);
-        const aiText = aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, mailUser) : '';
-        await MailDashboardsController.sendDashboard(dashboardID, mail, transporter, resolvedMessage, token, senderEmail, resolvedSubject, aiText, renderEmail);
+        const mailUser = await MailingService.resolveMailUser(mail);
+        if (!(await MailingService.canAccessDashboard(dashboard, mailUser))) {
+          console.log(`[sendDashboardNow] "${mail}" sin acceso al informe, se omite`);
+          continue;
+        }
+        await sendOne(mail, mail);
+      } catch (err: any) {
+        console.error(`[sendDashboardNow] ERROR enviando "${dashboardID}" a ${mail}:`, err?.message || err);
+      }
+    }
+    for (const mail of externalRecipients) {
+      try {
+        await sendOne(mail, fallbackEmail || mail);
       } catch (err: any) {
         console.error(`[sendDashboardNow] ERROR enviando "${dashboardID}" a ${mail}:`, err?.message || err);
       }
@@ -389,7 +445,7 @@ export class MailingService {
 
   /** "Enviar" button: reloads the alert from Mongo (never runs a client-supplied query),
    * overriding only recipients and message with the dialog's current values. */
-  static async sendAlertNow(dashboardId: string, panelId: string, operand: string, value: any, recipients: string[], subject: string, message: string, transporter: any, senderEmail: string, aiAnalysis = false, configuredByEmail = '') {
+  static async sendAlertNow(dashboardId: string, panelId: string, operand: string, value: any, recipients: string[], externalRecipients: string[], subject: string, message: string, transporter: any, senderEmail: string, aiAnalysis = false, configuredByEmail = '') {
     const dashboard = await Dashboard.findById(dashboardId);
     if (!dashboard) throw new Error('Informe no encontrado');
 
@@ -414,6 +470,7 @@ export class MailingService {
         mailing: {
           ...(limit.mailing || {}),
           users: recipients.map((email: string) => ({ email })),
+          otherRecipients: (externalRecipients || []).join(' '),
           mailSubject: subject || limit.mailing?.mailSubject || '',
           mailMessage: message || limit.mailing?.mailMessage || '',
           aiAnalysis: aiAnalysis || !!limit.mailing?.aiAnalysis,
@@ -521,8 +578,8 @@ export class MailingService {
         results.push(output);
       }
       return results[0][0];
-    } catch (err) {
-      console.log(err);
+    } catch (err: any) {
+      console.warn('[MailingService] execQuery:', err?.message || err);
       return null;
     }
 
@@ -549,8 +606,8 @@ export class MailingService {
 
       return results[0][0];
 
-    } catch (err) {
-      console.log(err);
+    } catch (err: any) {
+      console.warn('[MailingService] execSqlQuery:', err?.message || err);
       return null;
     }
   }
@@ -569,9 +626,55 @@ export class MailingService {
       connection.client = await connection.getclient();
       const getResults = await connection.execQuery(query);
       return Array.isArray(getResults) ? getResults.slice(0, limit) : [];
-    } catch (err) {
-      console.log('[MailingService] execQueryRows error:', (err as any)?.message || err);
+    } catch (err: any) {
+      console.warn('[MailingService] execQueryRows:', err?.message || err);
       return [];
+    }
+  }
+
+  /** Data behind a KPI panel's `${pN.value...}` tokens. Plain `kpi` -> one item, no label.
+   * `kpibar` / `kpiline` / `kpiarea` -> one item per category (label + number). null if unresolved. */
+  static async execKpiSeries(panelQuery: any, user: any, chart: string): Promise<{ items: { label: string; value: number }[] } | null> {
+    if (chart === 'kpi') {
+      const v = panelQuery?.query?.modeSQL
+        ? await MailingService.execSqlQuery(panelQuery, user)
+        : await MailingService.execQuery(panelQuery, user);
+      if (v === null || v === undefined || v === '') return null;
+      return { items: [{ label: '', value: Number(v) || 0 }] };
+    }
+    const rows = await MailingService.execQueryRows(panelQuery, user, 5000);
+    if (!rows.length) return null;
+    const cols = Object.keys(rows[0]);
+    let numCol: string | null = null;
+    for (let c = cols.length - 1; c >= 0; c--) {
+      if (rows.every(r => { const v = r[cols[c]]; return v === null || v === '' || Number.isFinite(Number(v)); })) { numCol = cols[c]; break; }
+    }
+    if (!numCol) return null;
+    const labelCol = cols.find(c => c !== numCol) ?? null;
+    return {
+      items: rows.map(r => ({
+        label: labelCol ? String(r[labelCol] ?? '') : '',
+        value: Number(r[numCol as string]) || 0,
+      })),
+    };
+  }
+
+  private static fmtNum(n: number): string {
+    return Number.isFinite(n) ? Number(n).toLocaleString('de-DE') : String(n);
+  }
+
+  /** Text for a `${pN.value...}` token given the panel's series and the token kind. */
+  static kpiTokenValue(series: { items: { label: string; value: number }[] } | null, kind: string): string {
+    if (!series || !series.items.length) return '';
+    const items = series.items;
+    const pair = (i: { label: string; value: number }) => i.label ? `${i.label}: ${MailingService.fmtNum(i.value)}` : MailingService.fmtNum(i.value);
+    const total = items.reduce((s, i) => s + i.value, 0);
+    switch (kind) {
+      case 'top':       return pair(items.reduce((a, b) => (b.value > a.value ? b : a)));
+      case 'bottom':    return pair(items.reduce((a, b) => (b.value < a.value ? b : a)));
+      case 'average':   return MailingService.fmtNum(total / items.length);
+      case 'breakdown': return items.map(pair).join(', ');
+      default:          return MailingService.fmtNum(total);
     }
   }
 

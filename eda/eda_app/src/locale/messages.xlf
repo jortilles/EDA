@@ -1490,6 +1490,18 @@
       <trans-unit id="mailCopy" datatype="html">
         <source>Copiar</source>
       </trans-unit>
+      <trans-unit id="mailCopyAll" datatype="html">
+        <source>Todos</source>
+      </trans-unit>
+      <trans-unit id="mailCopyTop" datatype="html">
+        <source>Máximo</source>
+      </trans-unit>
+      <trans-unit id="mailCopyBottom" datatype="html">
+        <source>Mínimo</source>
+      </trans-unit>
+      <trans-unit id="mailCopyAvg" datatype="html">
+        <source>Media</source>
+      </trans-unit>
       <trans-unit id="mailPreviewShort" datatype="html">
         <source>Vista previa</source>
       </trans-unit>

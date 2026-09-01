@@ -223,11 +223,14 @@ export class KpiMailConfigModal implements OnInit {
     return this.otherRecipients.split(/\s+/).map(e => e.trim()).filter(e => e.length > 0);
   }
 
+  /** Emails of the users picked in the dropdown */
+  public get registeredEmails(): string[] {
+    return (this.selectedUsers || []).map((u: any) => (u.value ?? u).email).filter(Boolean);
+  }
+
   /** All recipients (registered users + manually typed emails), deduplicated */
   public get allRecipientEmails(): string[] {
-    const registered = (this.selectedUsers || []).map((u: any) => (u.value ?? u).email).filter(Boolean);
-    const manual = this.parseOtherRecipients();
-    return Array.from(new Set([...registered, ...manual]));
+    return Array.from(new Set([...this.registeredEmails, ...this.parseOtherRecipients()]));
   }
 
   public get kpiVariables(): MailKpiVariable[] {
@@ -288,7 +291,8 @@ export class KpiMailConfigModal implements OnInit {
         panelId: this.panelId,
         operand: this.alert?.operand,
         value: this.alert?.value,
-        to: this.allRecipientEmails,
+        to: this.registeredEmails,
+        toExternal: this.parseOtherRecipients(),
         subject: this.mailSubject,
         message: this.mailMessage,
         aiAnalysis: this.aiAvailable && this.aiAnalysis,

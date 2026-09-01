@@ -3515,6 +3515,22 @@ Qué estic veient?
     <source>Copiar</source>
     <target>Copiar</target>
   </trans-unit>
+  <trans-unit id="mailCopyAll">
+    <source>Todos</source>
+    <target>Tots</target>
+  </trans-unit>
+  <trans-unit id="mailCopyTop">
+    <source>Máximo</source>
+    <target>Màxim</target>
+  </trans-unit>
+  <trans-unit id="mailCopyBottom">
+    <source>Mínimo</source>
+    <target>Mínim</target>
+  </trans-unit>
+  <trans-unit id="mailCopyAvg">
+    <source>Media</source>
+    <target>Mitjana</target>
+  </trans-unit>
   <trans-unit id="mailPreviewShort">
     <source>Vista previa</source>
     <target>Previsualització</target>

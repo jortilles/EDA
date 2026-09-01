@@ -3470,6 +3470,22 @@ Que suis-je en train de voir ?
     <source>Copiar</source>
     <target>Copier</target>
   </trans-unit>
+  <trans-unit id="mailCopyAll">
+    <source>Todos</source>
+    <target>Tous</target>
+  </trans-unit>
+  <trans-unit id="mailCopyTop">
+    <source>Máximo</source>
+    <target>Maximum</target>
+  </trans-unit>
+  <trans-unit id="mailCopyBottom">
+    <source>Mínimo</source>
+    <target>Minimum</target>
+  </trans-unit>
+  <trans-unit id="mailCopyAvg">
+    <source>Media</source>
+    <target>Moyenne</target>
+  </trans-unit>
   <trans-unit id="mailPreviewShort">
     <source>Vista previa</source>
     <target>Aperçu</target>

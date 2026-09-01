@@ -238,11 +238,14 @@ export class DashboardMailConfigModal {
       .filter(email => email.length > 0);
   }
 
+  /** Emails of the users picked in the dropdown */
+  public get registeredEmails(): string[] {
+    return (this.selectedUsers || []).map((u: any) => (u.value ?? u).email).filter(Boolean);
+  }
+
   /** All recipients (registered users + manually typed emails), deduplicated, for the dialog summary */
   public get allRecipientEmails(): string[] {
-    const registered = (this.selectedUsers || []).map((u: any) => u.email).filter(Boolean);
-    const manual = this.parseOtherRecipients();
-    return Array.from(new Set([...registered, ...manual]));
+    return Array.from(new Set([...this.registeredEmails, ...this.parseOtherRecipients()]));
   }
 
   /** `${kpiN}` -> KPI panel name, listed in the dialog for use in the subject/body */
@@ -287,7 +290,7 @@ export class DashboardMailConfigModal {
       monthlyDay: this.monthlyDay,
       monthlyOrdinal: this.monthlyOrdinal,
       monthlyWeekday: this.monthlyWeekday,
-      users: this.selectedUsers,
+      users: (this.selectedUsers || []).map((u: any) => u.value ?? u),
       otherRecipients: this.otherRecipients,
       mailSubject: this.mailSubject,
       mailMessage: this.mailMessage,
@@ -317,7 +320,8 @@ export class DashboardMailConfigModal {
     try {
       await lastValueFrom(this.mailService.sendDashboardNow({
         dashboardId: this.dashboard.dashboardId,
-        to: this.allRecipientEmails,
+        to: this.registeredEmails,
+        toExternal: this.parseOtherRecipients(),
         subject: this.mailSubject,
         message: this.mailMessage,
         aiAnalysis: this.aiAvailable && this.aiAnalysis

@@ -166,12 +166,12 @@
                 <p class="text-sm font-semibold text-gray-700" i18n="@@mailInsertValueTitle">Insertar un valor del panel</p>
                 <p class="mb-1 text-xs text-gray-500" i18n="@@mailInsertValueHint">Copia el código y pégalo en el asunto o en el mensaje. Al enviarse se sustituye por el dato real.</p>
                 @for (v of kpiVariables; track v.base) {
-                  <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-gray-200 py-2 text-xs first:border-t-0">
-                    <span class="min-w-0">
+                  <div class="border-t border-gray-200 py-2 text-xs first:border-t-0">
+                    <div class="mb-1 flex flex-wrap items-center gap-x-3">
                       <span class="font-medium text-gray-800">{{ v.title }}</span>
                       <span class="text-gray-400"> · <span i18n="@@mailCurrentValue">valor actual:</span> {{ getPanelCurrentValue(v.panelId) }}</span>
-                    </span>
-                    <span class="ml-auto flex gap-1.5">
+                    </div>
+                    <div class="flex flex-wrap gap-1.5">
                       <button type="button" (click)="copyToken(v.titleToken)" class="mail-token-btn"
                         i18n-title="@@mailCopyTitleTip" title="Copiar el nombre del panel">
                         <code>{{ v.titleToken }}</code><span i18n="@@mailCopy">Copiar</span>
@@ -180,7 +180,21 @@
                         i18n-title="@@mailCopyValueTip" title="Copiar el valor del panel">
                         <code>{{ v.valueToken }}</code><span i18n="@@mailCopy">Copiar</span>
                       </button>
-                    </span>
+                      @if (v.hasBreakdown) {
+                        <button type="button" (click)="copyToken(v.breakdownToken)" class="mail-token-btn">
+                          <code>{{ v.breakdownToken }}</code><span i18n="@@mailCopyAll">Todos</span>
+                        </button>
+                        <button type="button" (click)="copyToken(v.topToken)" class="mail-token-btn">
+                          <code>{{ v.topToken }}</code><span i18n="@@mailCopyTop">Máximo</span>
+                        </button>
+                        <button type="button" (click)="copyToken(v.bottomToken)" class="mail-token-btn">
+                          <code>{{ v.bottomToken }}</code><span i18n="@@mailCopyBottom">Mínimo</span>
+                        </button>
+                        <button type="button" (click)="copyToken(v.averageToken)" class="mail-token-btn">
+                          <code>{{ v.averageToken }}</code><span i18n="@@mailCopyAvg">Media</span>
+                        </button>
+                      }
+                    </div>
                   </div>
                 }
               </div>

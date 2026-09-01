@@ -3221,6 +3221,22 @@ What am I seeing?
 <source>Copiar</source>
 <target>Copy</target>
 </trans-unit>
+<trans-unit id="mailCopyAll">
+<source>Todos</source>
+<target>All</target>
+</trans-unit>
+<trans-unit id="mailCopyTop">
+<source>Máximo</source>
+<target>Highest</target>
+</trans-unit>
+<trans-unit id="mailCopyBottom">
+<source>Mínimo</source>
+<target>Lowest</target>
+</trans-unit>
+<trans-unit id="mailCopyAvg">
+<source>Media</source>
+<target>Average</target>
+</trans-unit>
 <trans-unit id="mailPreviewShort">
 <source>Vista previa</source>
 <target>Preview</target>

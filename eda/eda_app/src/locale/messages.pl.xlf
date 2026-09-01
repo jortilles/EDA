@@ -3133,6 +3133,22 @@ Co widzę?
     <source>Copiar</source>
     <target>Kopiuj</target>
   </trans-unit>
+  <trans-unit id="mailCopyAll">
+    <source>Todos</source>
+    <target>Wszystkie</target>
+  </trans-unit>
+  <trans-unit id="mailCopyTop">
+    <source>Máximo</source>
+    <target>Maksimum</target>
+  </trans-unit>
+  <trans-unit id="mailCopyBottom">
+    <source>Mínimo</source>
+    <target>Minimum</target>
+  </trans-unit>
+  <trans-unit id="mailCopyAvg">
+    <source>Media</source>
+    <target>Średnia</target>
+  </trans-unit>
   <trans-unit id="mailPreviewShort">
     <source>Vista previa</source>
     <target>Podgląd</target>
