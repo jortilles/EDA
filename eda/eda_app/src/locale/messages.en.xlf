@@ -3209,17 +3209,17 @@ What am I seeing?
 <source>valor actual:</source>
 <target>current value:</target>
 </trans-unit>
-<trans-unit id="mailCopyTitleTip">
-<source>Copiar el nombre del panel</source>
-<target>Copy the panel name</target>
-</trans-unit>
-<trans-unit id="mailCopyValueTip">
-<source>Copiar el valor del panel</source>
-<target>Copy the panel value</target>
-</trans-unit>
 <trans-unit id="mailCopy">
 <source>Copiar</source>
 <target>Copy</target>
+</trans-unit>
+<trans-unit id="mailCopyTitle">
+<source>Título</source>
+<target>Title</target>
+</trans-unit>
+<trans-unit id="mailCopyValue">
+<source>Valor</source>
+<target>Value</target>
 </trans-unit>
 <trans-unit id="mailCopyAll">
 <source>Todos</source>

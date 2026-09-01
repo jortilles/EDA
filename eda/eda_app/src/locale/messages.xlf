@@ -1481,14 +1481,14 @@
       <trans-unit id="mailCurrentValue" datatype="html">
         <source>valor actual:</source>
       </trans-unit>
-      <trans-unit id="mailCopyTitleTip" datatype="html">
-        <source>Copiar el nombre del panel</source>
-      </trans-unit>
-      <trans-unit id="mailCopyValueTip" datatype="html">
-        <source>Copiar el valor del panel</source>
-      </trans-unit>
       <trans-unit id="mailCopy" datatype="html">
         <source>Copiar</source>
+      </trans-unit>
+      <trans-unit id="mailCopyTitle" datatype="html">
+        <source>Título</source>
+      </trans-unit>
+      <trans-unit id="mailCopyValue" datatype="html">
+        <source>Valor</source>
       </trans-unit>
       <trans-unit id="mailCopyAll" datatype="html">
         <source>Todos</source>

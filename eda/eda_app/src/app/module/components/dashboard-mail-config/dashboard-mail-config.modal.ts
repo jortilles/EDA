@@ -161,17 +161,40 @@ export class DashboardMailConfigModal {
     }
   }
 
+  private panelChartInstance(panelId: string): any {
+    const arr = (this.dashboard as any)?.edaPanels?.toArray?.() ?? [];
+    return arr.find((p: any) => p?.panel?.id === panelId)?.panelChart?.componentRef?.instance;
+  }
+
   /** Best-effort current value of a KPI panel (the dashboard is still rendered behind the dialog) */
   public getPanelCurrentValue(panelId: string): string {
     try {
-      const arr = (this.dashboard as any)?.edaPanels?.toArray?.() ?? [];
-      const comp = arr.find((p: any) => p?.panel?.id === panelId);
-      const v = comp?.panelChart?.componentRef?.instance?.inject?.value;
+      const v = this.panelChartInstance(panelId)?.inject?.value;
       if (v === undefined || v === null || v === '') return '—';
       const n = Number(v);
       return Number.isFinite(n) ? n.toLocaleString('de-DE') : String(v);
     } catch {
       return '—';
+    }
+  }
+
+  /** Category → value rows behind a kpibar/kpiline/kpiarea panel, from its rendered query result. */
+  public getPanelSeries(panelId: string): { label: string; value: number }[] {
+    try {
+      const inst = this.panelChartInstance(panelId);
+      const data = inst?.props?.data ?? inst?.data;
+      const labels: string[] = data?.labels ?? [];
+      const rows: any[][] = data?.values ?? [];
+      if (!rows.length || labels.length < 1) return [];
+      let numIdx = -1;
+      for (let c = labels.length - 1; c >= 0; c--) {
+        if (rows.every(r => r[c] === null || r[c] === '' || Number.isFinite(Number(r[c])))) { numIdx = c; break; }
+      }
+      if (numIdx < 0) return [];
+      const labIdx = labels.findIndex((_, i) => i !== numIdx);
+      return rows.map(r => ({ label: labIdx >= 0 ? String(r[labIdx] ?? '') : '', value: Number(r[numIdx]) || 0 }));
+    } catch {
+      return [];
     }
   }
 
@@ -258,11 +281,11 @@ export class DashboardMailConfigModal {
   public noSubjectLabel = $localize`:@@mailNoSubject:Sin asunto`;
 
   public get previewSubject(): string {
-    return renderMailPreview(this.mailSubject, this.kpiVariables, id => this.getPanelCurrentValue(id));
+    return renderMailPreview(this.mailSubject, this.kpiVariables, id => this.getPanelCurrentValue(id), id => this.getPanelSeries(id));
   }
 
   public get previewBody(): string {
-    return renderMailPreviewHtml(this.mailMessage, this.kpiVariables, id => this.getPanelCurrentValue(id));
+    return renderMailPreviewHtml(this.mailMessage, this.kpiVariables, id => this.getPanelCurrentValue(id), id => this.getPanelSeries(id));
   }
 
   public get previewLink(): string {

@@ -172,25 +172,23 @@
                       <span class="text-gray-400"> · <span i18n="@@mailCurrentValue">valor actual:</span> {{ getPanelCurrentValue(v.panelId) }}</span>
                     </div>
                     <div class="flex flex-wrap gap-1.5">
-                      <button type="button" (click)="copyToken(v.titleToken)" class="mail-token-btn"
-                        i18n-title="@@mailCopyTitleTip" title="Copiar el nombre del panel">
-                        <code>{{ v.titleToken }}</code><span i18n="@@mailCopy">Copiar</span>
+                      <button type="button" (click)="copyToken(v.titleToken)" class="mail-token-btn" i18n-title="@@mailCopy" title="Copiar">
+                        <code>{{ v.titleToken }}</code><span i18n="@@mailCopyTitle">Título</span>
                       </button>
-                      <button type="button" (click)="copyToken(v.valueToken)" class="mail-token-btn"
-                        i18n-title="@@mailCopyValueTip" title="Copiar el valor del panel">
-                        <code>{{ v.valueToken }}</code><span i18n="@@mailCopy">Copiar</span>
+                      <button type="button" (click)="copyToken(v.valueToken)" class="mail-token-btn" i18n-title="@@mailCopy" title="Copiar">
+                        <code>{{ v.valueToken }}</code><span i18n="@@mailCopyValue">Valor</span>
                       </button>
                       @if (v.hasBreakdown) {
-                        <button type="button" (click)="copyToken(v.breakdownToken)" class="mail-token-btn">
+                        <button type="button" (click)="copyToken(v.breakdownToken)" class="mail-token-btn" i18n-title="@@mailCopy" title="Copiar">
                           <code>{{ v.breakdownToken }}</code><span i18n="@@mailCopyAll">Todos</span>
                         </button>
-                        <button type="button" (click)="copyToken(v.topToken)" class="mail-token-btn">
+                        <button type="button" (click)="copyToken(v.topToken)" class="mail-token-btn" i18n-title="@@mailCopy" title="Copiar">
                           <code>{{ v.topToken }}</code><span i18n="@@mailCopyTop">Máximo</span>
                         </button>
-                        <button type="button" (click)="copyToken(v.bottomToken)" class="mail-token-btn">
+                        <button type="button" (click)="copyToken(v.bottomToken)" class="mail-token-btn" i18n-title="@@mailCopy" title="Copiar">
                           <code>{{ v.bottomToken }}</code><span i18n="@@mailCopyBottom">Mínimo</span>
                         </button>
-                        <button type="button" (click)="copyToken(v.averageToken)" class="mail-token-btn">
+                        <button type="button" (click)="copyToken(v.averageToken)" class="mail-token-btn" i18n-title="@@mailCopy" title="Copiar">
                           <code>{{ v.averageToken }}</code><span i18n="@@mailCopyAvg">Media</span>
                         </button>
                       }

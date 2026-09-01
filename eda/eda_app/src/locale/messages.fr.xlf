@@ -3458,17 +3458,17 @@ Que suis-je en train de voir ?
     <source>valor actual:</source>
     <target>valeur actuelle :</target>
   </trans-unit>
-  <trans-unit id="mailCopyTitleTip">
-    <source>Copiar el nombre del panel</source>
-    <target>Copier le nom du panneau</target>
-  </trans-unit>
-  <trans-unit id="mailCopyValueTip">
-    <source>Copiar el valor del panel</source>
-    <target>Copier la valeur du panneau</target>
-  </trans-unit>
   <trans-unit id="mailCopy">
     <source>Copiar</source>
     <target>Copier</target>
+  </trans-unit>
+  <trans-unit id="mailCopyTitle">
+    <source>Título</source>
+    <target>Titre</target>
+  </trans-unit>
+  <trans-unit id="mailCopyValue">
+    <source>Valor</source>
+    <target>Valeur</target>
   </trans-unit>
   <trans-unit id="mailCopyAll">
     <source>Todos</source>

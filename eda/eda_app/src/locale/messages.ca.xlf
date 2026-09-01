@@ -3503,17 +3503,17 @@ Qué estic veient?
     <source>valor actual:</source>
     <target>valor actual:</target>
   </trans-unit>
-  <trans-unit id="mailCopyTitleTip">
-    <source>Copiar el nombre del panel</source>
-    <target>Copiar el nom del panell</target>
-  </trans-unit>
-  <trans-unit id="mailCopyValueTip">
-    <source>Copiar el valor del panel</source>
-    <target>Copiar el valor del panell</target>
-  </trans-unit>
   <trans-unit id="mailCopy">
     <source>Copiar</source>
     <target>Copiar</target>
+  </trans-unit>
+  <trans-unit id="mailCopyTitle">
+    <source>Título</source>
+    <target>Títol</target>
+  </trans-unit>
+  <trans-unit id="mailCopyValue">
+    <source>Valor</source>
+    <target>Valor</target>
   </trans-unit>
   <trans-unit id="mailCopyAll">
     <source>Todos</source>
