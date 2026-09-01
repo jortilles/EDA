@@ -434,11 +434,20 @@ export class MailingService {
         console.error(`[sendDashboardNow] ERROR enviando "${dashboardID}" a ${mail}:`, err?.message || err);
       }
     }
-    for (const mail of externalRecipients) {
-      try {
-        await sendOne(mail, fallbackEmail || mail);
-      } catch (err: any) {
-        console.error(`[sendDashboardNow] ERROR enviando "${dashboardID}" a ${mail}:`, err?.message || err);
+
+    // Externals all render as the same identity -> resolve subject/message/AI once, reuse for all.
+    if (externalRecipients.length) {
+      const renderAs = fallbackEmail || externalRecipients[0];
+      const mailUser = await MailingService.resolveMailUser(renderAs);
+      const resolvedSubject = await MailingService.resolveMailTemplate(subject || '', dashboard, mailUser);
+      const resolvedMessage = await MailingService.resolveMailTemplate(message || '', dashboard, mailUser);
+      const aiText = aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, mailUser) : '';
+      for (const mail of externalRecipients) {
+        try {
+          await MailDashboardsController.sendDashboard(dashboardID, mail, transporter, resolvedMessage, token, senderEmail, resolvedSubject, aiText, renderAs);
+        } catch (err: any) {
+          console.error(`[sendDashboardNow] ERROR enviando "${dashboardID}" a ${mail}:`, err?.message || err);
+        }
       }
     }
   }
@@ -558,6 +567,35 @@ export class MailingService {
     }
   }
 
+  /** Same rule as DashboardController.securityCheck: when a datamodel has model-level security
+   * (`model_granted_roles`), the user must be listed explicitly, be in a granted group, or the
+   * model must be public. `getQueryBuilded` already enforces row/column granted roles, but not
+   * this model-level gate — so we check it before running a panel query for the mail. */
+  static datamodelAllowed(dataModel: any, user: any): boolean {
+    try {
+      const roles: string[] = (user?.role || []).map((r: any) => String(r));
+      if (roles.includes('135792467811111111111110')) return true; // EDA admin group
+      const granted: any[] = dataModel?.ds?.metadata?.model_granted_roles || [];
+      if (!granted.length) return true;
+
+      let anyone = false;
+      const allowedUsers: string[] = [];
+      let matchedGroup = false;
+      for (const p of granted) {
+        if (p?.type === 'anyoneCanSee' && p?.permission === true) anyone = true;
+        else if (p?.type === 'users') (p.users || []).forEach((u: any) => allowedUsers.push(String(u)));
+        else if (p?.type === 'groups') {
+          const g = (p.groups || []).map((x: any) => String(x));
+          if (roles.some(r => g.includes(r))) matchedGroup = true;
+        }
+      }
+      if (anyone || matchedGroup) return true;
+      return allowedUsers.includes(String(user?._id || ''));
+    } catch {
+      return true;
+    }
+  }
+
   static async execQuery(alertQuery, user) {
 
     try {
@@ -565,6 +603,10 @@ export class MailingService {
       const dataModel = await connection.getDataSource(alertQuery.model_id);
 
       const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+      if (!MailingService.datamodelAllowed(dataModelObject, user)) {
+        console.log(`[MailingService] execQuery: ${user?.email} sin acceso al datamodel, panel omitido`);
+        return null;
+      }
       const query = await connection.getQueryBuilded(alertQuery.query, dataModelObject, user);
 
       connection.client = await connection.getclient();
@@ -591,6 +633,10 @@ export class MailingService {
       const connection = await ManagerConnectionService.getConnection(alertQuery.model_id);
       const dataModel = await connection.getDataSource(alertQuery.model_id);
       const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+      if (!MailingService.datamodelAllowed(dataModelObject, user)) {
+        console.log(`[MailingService] execSqlQuery: ${user?.email} sin acceso al datamodel, panel omitido`);
+        return null;
+      }
       const query = connection.BuildSqlQuery(alertQuery.query, dataModelObject, user);
 
       connection.client = await connection.getclient();
@@ -619,6 +665,10 @@ export class MailingService {
       const connection = await ManagerConnectionService.getConnection(panelQuery.model_id);
       const dataModel = await connection.getDataSource(panelQuery.model_id);
       const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+      if (!MailingService.datamodelAllowed(dataModelObject, user)) {
+        console.log(`[MailingService] execQueryRows: ${user?.email} sin acceso al datamodel, panel omitido`);
+        return [];
+      }
       const query = panelQuery?.query?.modeSQL
         ? connection.BuildSqlQuery(panelQuery.query, dataModelObject, user)
         : await connection.getQueryBuilded(panelQuery.query, dataModelObject, user);
