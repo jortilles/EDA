@@ -4,6 +4,7 @@ import ManagerConnectionService from "../../services/connection/manager-connecti
 import { DashboardController } from "../dashboard/dashboard.controller";
 import formatDate from '../../services/date-format/date-format.service'
 import { QueryModeUtil } from '../../utils/query-mode.util';
+import ServerLogService from '../../services/server-log/server-log.service';
 
 
 /** Esta clase sirve para analizar los datos de una consulta si hay duplicados, etc. */
@@ -133,8 +134,14 @@ export class QueryController {
 
             return res.status(200).json(results)
         } catch (err) {
+            insertServerLog(req, 'error', 'QueryError', req.user?.name, `${req.body?.dashboard?.dashboard_id}--${req.body?.dashboard?.panel_id}: ${err?.message || err}`);
             throw err;
         }
     }
 
+}
+
+function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
+    const ip = req.headers['x-forwarded-for'] || req.get('origin');
+    ServerLogService.log({ level, action, userMail, ip, type, date_str: formatDate(new Date()) });
 }
