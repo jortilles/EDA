@@ -5,6 +5,8 @@ import { MultiSelectModule } from "primeng/multiselect";
 import { CalendarModule } from 'primeng/calendar';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { DropdownModule } from 'primeng/dropdown';
+import { DialogModule } from 'primeng/dialog';
+import { TooltipModule } from 'primeng/tooltip';
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 import { MailVarSuggestDirective } from "@eda/shared/directives/mail-var-suggest.directive";
 import { DashboardPage } from "../../pages/dashboard/dashboard.page";
@@ -13,7 +15,7 @@ import { MailConfigModalBase } from "../mail-config/mail-config-modal.base";
 @Component({
   selector: 'app-dashboard-mail-config',
   standalone: true,
-  imports: [CommonModule, FormsModule, MultiSelectModule, CalendarModule, InputSwitchModule, DropdownModule, EdaDialog2Component, MailVarSuggestDirective],
+  imports: [CommonModule, FormsModule, MultiSelectModule, CalendarModule, InputSwitchModule, DropdownModule, DialogModule, TooltipModule, EdaDialog2Component, MailVarSuggestDirective],
   templateUrl: '../mail-config/mail-config-modal.html',
   styleUrls: ['../mail-config/mail-config-modal.css'],
 })

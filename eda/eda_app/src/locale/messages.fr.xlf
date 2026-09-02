@@ -3446,46 +3446,6 @@ Que suis-je en train de voir ?
     <source>Genera un comentario sobre los datos de cada envío y lo añade debajo de tu mensaje. Cambia en cada correo.</source>
     <target>Génère un commentaire sur les données de chaque envoi et l'ajoute sous votre message. Il change à chaque e-mail.</target>
   </trans-unit>
-  <trans-unit id="mailInsertValueTitle">
-    <source>Insertar un valor del panel</source>
-    <target>Insérer une valeur du panneau</target>
-  </trans-unit>
-  <trans-unit id="mailInsertValueHint">
-    <source>Copia el código y pégalo en el asunto o en el mensaje. Al enviarse se sustituye por el dato real.</source>
-    <target>Copiez le code et collez-le dans l'objet ou le message. Il est remplacé par la valeur réelle à l'envoi.</target>
-  </trans-unit>
-  <trans-unit id="mailCurrentValue">
-    <source>valor actual:</source>
-    <target>valeur actuelle :</target>
-  </trans-unit>
-  <trans-unit id="mailCopy">
-    <source>Copiar</source>
-    <target>Copier</target>
-  </trans-unit>
-  <trans-unit id="mailCopyTitle">
-    <source>Título</source>
-    <target>Titre</target>
-  </trans-unit>
-  <trans-unit id="mailCopyValue">
-    <source>Valor</source>
-    <target>Valeur</target>
-  </trans-unit>
-  <trans-unit id="mailCopyAll">
-    <source>Todos</source>
-    <target>Tous</target>
-  </trans-unit>
-  <trans-unit id="mailCopyTop">
-    <source>Máximo</source>
-    <target>Maximum</target>
-  </trans-unit>
-  <trans-unit id="mailCopyBottom">
-    <source>Mínimo</source>
-    <target>Minimum</target>
-  </trans-unit>
-  <trans-unit id="mailCopyAvg">
-    <source>Media</source>
-    <target>Moyenne</target>
-  </trans-unit>
   <trans-unit id="mailPreviewShort">
     <source>Vista previa</source>
     <target>Aperçu</target>
@@ -7431,6 +7391,90 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Ver recursos</source>
         <target>Voir les ressources</target>
       </trans-unit>
+  <trans-unit id="mailRefIconTitle">
+    <source>Variables y condicionales</source>
+    <target>Variables et conditionnels</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarsTitle">
+    <source>Variables</source>
+    <target>Variables</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarsIntro">
+    <source>Los KPIs van numerados según su orden en el dashboard: p1 es el primero, p2 el segundo, y así sucesivamente.</source>
+    <target>Les KPI sont numérotés selon leur ordre sur le tableau de bord : p1 est le premier, p2 le deuxième, et ainsi de suite.</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertTitle">
+    <source>Insertar</source>
+    <target>Insérer</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertCode">
+    <source>Bloque CODE</source>
+    <target>Bloc CODE</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertCodeTip">
+    <source>Inserta un bloque condicional (if / else) en el mensaje</source>
+    <target>Insère un bloc conditionnel (if / else) dans le message</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarTitle">
+    <source>el título del KPI</source>
+    <target>le titre du KPI</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarValue">
+    <source>el valor actual del KPI</source>
+    <target>la valeur actuelle du KPI</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarTop">
+    <source>la categoría con el valor más alto</source>
+    <target>la catégorie avec la valeur la plus élevée</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarBottom">
+    <source>la categoría con el valor más bajo</source>
+    <target>la catégorie avec la valeur la plus basse</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarAvg">
+    <source>la media de las categorías</source>
+    <target>la moyenne des catégories</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarBreakdown">
+    <source>todas las categorías con su valor</source>
+    <target>toutes les catégories avec leur valeur</target>
+  </trans-unit>
+  <trans-unit id="mailRefExampleTitle">
+    <source>Ejemplo completo</source>
+    <target>Exemple complet</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondTitle">
+    <source>Condicionales</source>
+    <target>Conditionnels</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondIntro">
+    <source>Delimita el bloque con ""CODE y CODE"" en su propia línea. Dentro, if evalúa una condición y escribe el texto de esa rama; añade elif para más casos, else para el resto y cierra con end.</source>
+    <target>Délimitez le bloc avec ""CODE et CODE"" sur leur propre ligne. À l’intérieur, if évalue une condition et écrit le texte de cette branche ; ajoutez elif pour d’autres cas, else pour le reste et fermez avec end.</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondOps">
+    <source>En la condición puedes comparar con:</source>
+    <target>Dans la condition, vous pouvez comparer avec :</target>
+  </trans-unit>
+  <trans-unit id="mailRefCopy">
+    <source>Copiar</source>
+    <target>Copier</target>
+  </trans-unit>
+  <trans-unit id="mailRefCopied">
+    <source>Copiado</source>
+    <target>Copié</target>
+  </trans-unit>
+  <trans-unit id="mailRefCopyError">
+    <source>No se pudo copiar</source>
+    <target>Impossible de copier</target>
+  </trans-unit>
+  <trans-unit id="mailRefResultTitle">
+    <source>Así lo recibe el destinatario</source>
+    <target>Voici ce que reçoit le destinataire</target>
+  </trans-unit>
+  <trans-unit id="mailRefResultHint">
+    <source>Resaltado: lo que se sustituye automáticamente en cada envío.</source>
+    <target>En surbrillance : ce qui est remplacé automatiquement à chaque envoi.</target>
+  </trans-unit>
     </body>
   </file>
 </xliff>

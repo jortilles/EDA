@@ -3109,46 +3109,6 @@ Co widzę?
     <source>Genera un comentario sobre los datos de cada envío y lo añade debajo de tu mensaje. Cambia en cada correo.</source>
     <target>Generuje komentarz do danych każdej wysyłki i dodaje go pod Twoją wiadomością. Zmienia się przy każdym e-mailu.</target>
   </trans-unit>
-  <trans-unit id="mailInsertValueTitle">
-    <source>Insertar un valor del panel</source>
-    <target>Wstaw wartość panelu</target>
-  </trans-unit>
-  <trans-unit id="mailInsertValueHint">
-    <source>Copia el código y pégalo en el asunto o en el mensaje. Al enviarse se sustituye por el dato real.</source>
-    <target>Skopiuj kod i wklej go w temacie lub wiadomości. Przy wysyłce zostanie zastąpiony rzeczywistą wartością.</target>
-  </trans-unit>
-  <trans-unit id="mailCurrentValue">
-    <source>valor actual:</source>
-    <target>bieżąca wartość:</target>
-  </trans-unit>
-  <trans-unit id="mailCopy">
-    <source>Copiar</source>
-    <target>Kopiuj</target>
-  </trans-unit>
-  <trans-unit id="mailCopyTitle">
-    <source>Título</source>
-    <target>Tytuł</target>
-  </trans-unit>
-  <trans-unit id="mailCopyValue">
-    <source>Valor</source>
-    <target>Wartość</target>
-  </trans-unit>
-  <trans-unit id="mailCopyAll">
-    <source>Todos</source>
-    <target>Wszystkie</target>
-  </trans-unit>
-  <trans-unit id="mailCopyTop">
-    <source>Máximo</source>
-    <target>Maksimum</target>
-  </trans-unit>
-  <trans-unit id="mailCopyBottom">
-    <source>Mínimo</source>
-    <target>Minimum</target>
-  </trans-unit>
-  <trans-unit id="mailCopyAvg">
-    <source>Media</source>
-    <target>Średnia</target>
-  </trans-unit>
   <trans-unit id="mailPreviewShort">
     <source>Vista previa</source>
     <target>Podgląd</target>
@@ -7096,6 +7056,90 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Ver recursos</source>
         <target>Zobacz zasoby</target>
       </trans-unit>
+  <trans-unit id="mailRefIconTitle">
+    <source>Variables y condicionales</source>
+    <target>Zmienne i warunki</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarsTitle">
+    <source>Variables</source>
+    <target>Zmienne</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarsIntro">
+    <source>Los KPIs van numerados según su orden en el dashboard: p1 es el primero, p2 el segundo, y así sucesivamente.</source>
+    <target>KPI są numerowane według kolejności na pulpicie: p1 to pierwszy, p2 drugi i tak dalej.</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertTitle">
+    <source>Insertar</source>
+    <target>Wstaw</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertCode">
+    <source>Bloque CODE</source>
+    <target>Blok CODE</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertCodeTip">
+    <source>Inserta un bloque condicional (if / else) en el mensaje</source>
+    <target>Wstawia blok warunkowy (if / else) do wiadomości</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarTitle">
+    <source>el título del KPI</source>
+    <target>tytuł KPI</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarValue">
+    <source>el valor actual del KPI</source>
+    <target>bieżąca wartość KPI</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarTop">
+    <source>la categoría con el valor más alto</source>
+    <target>kategoria z najwyższą wartością</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarBottom">
+    <source>la categoría con el valor más bajo</source>
+    <target>kategoria z najniższą wartością</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarAvg">
+    <source>la media de las categorías</source>
+    <target>średnia z kategorii</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarBreakdown">
+    <source>todas las categorías con su valor</source>
+    <target>wszystkie kategorie z ich wartością</target>
+  </trans-unit>
+  <trans-unit id="mailRefExampleTitle">
+    <source>Ejemplo completo</source>
+    <target>Pełny przykład</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondTitle">
+    <source>Condicionales</source>
+    <target>Warunki</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondIntro">
+    <source>Delimita el bloque con ""CODE y CODE"" en su propia línea. Dentro, if evalúa una condición y escribe el texto de esa rama; añade elif para más casos, else para el resto y cierra con end.</source>
+    <target>Ogranicz blok za pomocą ""CODE i CODE"" w osobnych wierszach. Wewnątrz if sprawdza warunek i wypisuje tekst danej gałęzi; dodaj elif dla kolejnych przypadków, else dla reszty i zamknij za pomocą end.</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondOps">
+    <source>En la condición puedes comparar con:</source>
+    <target>W warunku możesz porównywać za pomocą:</target>
+  </trans-unit>
+  <trans-unit id="mailRefCopy">
+    <source>Copiar</source>
+    <target>Kopiuj</target>
+  </trans-unit>
+  <trans-unit id="mailRefCopied">
+    <source>Copiado</source>
+    <target>Skopiowano</target>
+  </trans-unit>
+  <trans-unit id="mailRefCopyError">
+    <source>No se pudo copiar</source>
+    <target>Nie udało się skopiować</target>
+  </trans-unit>
+  <trans-unit id="mailRefResultTitle">
+    <source>Así lo recibe el destinatario</source>
+    <target>Tak otrzymuje to odbiorca</target>
+  </trans-unit>
+  <trans-unit id="mailRefResultHint">
+    <source>Resaltado: lo que se sustituye automáticamente en cada envío.</source>
+    <target>Wyróżnione: to, co jest automatycznie podstawiane przy każdej wysyłce.</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

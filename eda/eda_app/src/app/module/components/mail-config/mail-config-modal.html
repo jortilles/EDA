@@ -20,7 +20,7 @@
 
   <!-- ===================== CONTENT ===================== -->
   <div content class="min-h-[calc(86vh-135px)]">
-    <div class="grid grid-cols-[minmax(0,1fr)_minmax(420px,600px)] items-start gap-8 px-6 py-4">
+    <div class="grid grid-cols-[minmax(0,1fr)_minmax(300px,380px)] items-start gap-6 px-6 py-4">
 
       <!-- ---------------- LEFT: steps ---------------- -->
       <div>
@@ -150,17 +150,134 @@
               <h5 class="text-base font-semibold text-gray-800" i18n="@@mailStep3">¿Qué dice el correo?</h5>
               <span class="text-xs text-gray-400" i18n="@@mailStep3Hint">Escribe el texto. La vista previa de la derecha se actualiza mientras escribes.</span>
             </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700" i18n="@@mailSubjectShort">Asunto</label>
-              <input type="text" [(ngModel)]="mailSubject" [edaMailVarSuggest]="kpiVariables" [edaMailVarSuggestValue]="varValueResolver"
-                class="mail-input w-full rounded-lg border border-gray-300 px-3 py-2">
+            <div class="flex flex-wrap items-stretch gap-4">
+              <!-- subject + message -->
+              <div class="flex w-[320px] max-w-full shrink-0 flex-col gap-3">
+                <div class="flex flex-col gap-1">
+                  <label class="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                    <span i18n="@@mailSubjectShort">Asunto</span>
+                    <i class="pi pi-info-circle cursor-pointer text-gray-400 hover:text-[var(--corporate-primary)]" style="font-size:0.8rem"
+                      (click)="openRef()" [pTooltip]="refIconTitle" tooltipPosition="top"></i>
+                  </label>
+                  <textarea #subjArea rows="1" [(ngModel)]="mailSubject" (focus)="activeField='subject'"
+                    [edaMailVarSuggest]="kpiVariables" [edaMailVarSuggestValue]="varValueResolver"
+                    class="mail-textarea w-full resize-none rounded-lg border border-gray-300 px-3 py-2 leading-tight"></textarea>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                    <span i18n="@@mailMessageLabel">Mensaje</span>
+                    <i class="pi pi-info-circle cursor-pointer text-gray-400 hover:text-[var(--corporate-primary)]" style="font-size:0.8rem"
+                      (click)="openRef()" [pTooltip]="refIconTitle" tooltipPosition="top"></i>
+                  </label>
+                  <textarea #msgArea rows="11" [(ngModel)]="mailMessage" (focus)="activeField='message'" [placeholder]="messageExample"
+                    [edaMailVarSuggest]="kpiVariables" [edaMailVarSuggestValue]="varValueResolver"
+                    class="mail-textarea w-full resize-y rounded-lg border border-gray-300 px-3 py-2"></textarea>
+                </div>
+              </div>
+
+              <!-- compact insert toolbox -->
+              <div class="mail-insert-box flex min-w-[240px] max-w-[340px] flex-1 flex-col gap-2 self-stretch overflow-y-auto rounded-lg p-2.5 text-xs">
+                <div>
+                  <p class="mail-insert-title" i18n="@@mailRefInsertTitle">Insertar</p>
+                  <p class="mail-insert-target">→ {{ activeFieldLabel }}</p>
+                </div>
+                @if (kpiVariables.length) {
+                  @for (v of kpiVariables; track v.base) {
+                    <div>
+                      <p class="mail-insert-kpi truncate" [pTooltip]="v.title" tooltipPosition="left">{{ v.base }} · {{ v.title }}</p>
+                      <div class="mt-1 flex flex-wrap gap-1">
+                        @for (tk of varTokensOf(v); track tk.token) {
+                          <button type="button" class="mail-ref-tok" [pTooltip]="tk.token" tooltipPosition="top"
+                            (mousedown)="$event.preventDefault()" (click)="insertToken(tk.token)">{{ shortTok(tk.token) }}</button>
+                        }
+                      </div>
+                    </div>
+                  }
+                } @else {
+                  <div class="flex flex-col items-start gap-1">
+                    @for (v of refVars; track v.token) {
+                      <button type="button" class="mail-ref-tok" [pTooltip]="v.desc" tooltipPosition="left"
+                        (mousedown)="$event.preventDefault()" (click)="insertToken(v.token)">{{ v.token }}</button>
+                    }
+                  </div>
+                }
+                <button type="button" class="mail-insert-code" [pTooltip]="codeBlockTip" tooltipPosition="top"
+                  (mousedown)="$event.preventDefault()" (click)="insertCodeBlock()">
+                  <i class="pi pi-plus text-[10px]"></i> <span i18n="@@mailRefInsertCode">Bloque CODE</span>
+                </button>
+              </div>
             </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700" i18n="@@mailMessageLabel">Mensaje</label>
-              <textarea rows="7" [(ngModel)]="mailMessage"
-                [edaMailVarSuggest]="kpiVariables" [edaMailVarSuggestValue]="varValueResolver"
-                class="mail-textarea w-full resize-y rounded-lg border border-gray-300 px-3 py-2"></textarea>
-            </div>
+
+              <p-dialog [(visible)]="refOpen" [modal]="true" [draggable]="false" [resizable]="false" [closable]="true"
+                [dismissableMask]="true" [baseZIndex]="11000" appendTo="body" styleClass="mail-ref-dialog" [header]="refIconTitle"
+                [style]="{width:'58rem','max-width':'94vw'}" [breakpoints]="{'1200px':'92vw'}">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)]">
+
+                  <!-- 1. worked example -->
+                  <div class="flex min-w-0 flex-col">
+                    <div class="mb-1.5 flex items-center justify-between">
+                      <h4 class="text-[11px] font-semibold uppercase tracking-wide text-gray-400" i18n="@@mailRefExampleTitle">Ejemplo completo</h4>
+                      <button type="button" (click)="copyExample()"
+                        class="inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-medium transition-colors"
+                        [class]="exampleCopied ? 'border-[var(--corporate-primary)] bg-[rgba(var(--corporate-primary-rgb),0.10)] text-[var(--corporate-primary-dark)]' : 'border-gray-300 text-gray-600 hover:border-[var(--corporate-primary)] hover:text-[var(--corporate-primary-dark)]'">
+                        <i class="pi text-[10px]" [ngClass]="exampleCopied ? 'pi-check' : 'pi-copy'"></i>
+                        @if (exampleCopied) { <span i18n="@@mailRefCopied">Copiado</span> }
+                        @else { <span i18n="@@mailRefCopy">Copiar</span> }
+                      </button>
+                    </div>
+                    <pre class="flex-1 whitespace-pre-wrap break-words rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs leading-relaxed text-gray-700">{{ refExample }}</pre>
+                  </div>
+
+                  <!-- 2. rendered result -->
+                  <div class="flex min-w-0 flex-col">
+                    <h4 class="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400" i18n="@@mailRefResultTitle">Así lo recibe el destinatario</h4>
+                    <div class="flex-1 whitespace-pre-wrap break-words rounded-lg border border-gray-200 bg-white p-3 text-xs leading-relaxed text-gray-700">@for (s of refResult; track $index) {<span [class.mail-ref-hl]="s.hl">{{ s.t }}</span>}</div>
+                    <p class="mt-1.5 text-[11px] text-gray-400" i18n="@@mailRefResultHint">Resaltado: lo que se sustituye automáticamente en cada envío.</p>
+                  </div>
+
+                  <!-- 3. reference -->
+                  <div class="flex min-w-0 flex-col">
+                    <h4 class="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400" i18n="@@mailRefIconTitle">Variables y condicionales</h4>
+                    <div class="flex-1 space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs leading-relaxed text-gray-600">
+
+                      <div>
+                        <h5 class="mb-1 flex items-center gap-1.5 text-sm font-semibold text-gray-800">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-[var(--corporate-primary)]">
+                            <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>
+                          </svg>
+                          <span i18n="@@mailRefVarsTitle">Variables</span>
+                        </h5>
+                        <p class="mb-2" i18n="@@mailRefVarsIntro">Los KPIs van numerados según su orden en el dashboard: p1 es el primero, p2 el segundo, y así sucesivamente.</p>
+                        <div class="space-y-1">
+                          @for (v of refVars; track v.token) {
+                            <div class="flex flex-wrap items-baseline gap-x-2">
+                              <code class="mail-ref-tok">{{ v.token }}</code>
+                              <span class="text-gray-500">{{ v.desc }}</span>
+                            </div>
+                          }
+                        </div>
+                      </div>
+
+                      <div class="border-t border-gray-200 pt-3">
+                        <h5 class="mb-1 flex items-center gap-1.5 text-sm font-semibold text-gray-800">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-[var(--corporate-primary)]">
+                            <polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline>
+                          </svg>
+                          <span i18n="@@mailRefCondTitle">Condicionales</span>
+                        </h5>
+                        <p class="mb-2" i18n="@@mailRefCondIntro">Delimita el bloque con ""CODE y CODE"" en su propia línea. Dentro, if evalúa una condición y escribe el texto de esa rama; añade elif para más casos, else para el resto y cierra con end.</p>
+                        <p><span i18n="@@mailRefCondOps">En la condición puedes comparar con:</span> <code class="mail-ref-tok">{{ condOps }}</code></p>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+              </p-dialog>
 
             @if (aiAvailable) {
               <div class="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2">
@@ -171,45 +288,6 @@
                 </div>
               </div>
             }
-
-            @if (kpiVariables.length > 0) {
-              <div class="rounded-lg border border-gray-200 p-3">
-                <p class="text-sm font-semibold text-gray-700" i18n="@@mailInsertValueTitle">Insertar un valor del panel</p>
-                <p class="mb-1 text-xs text-gray-500" i18n="@@mailInsertValueHint">Copia el código y pégalo en el asunto o en el mensaje. Al enviarse se sustituye por el dato real.</p>
-                @for (v of kpiVariables; track v.base) {
-                  <div class="border-t border-gray-200 py-2 text-xs first:border-t-0">
-                    <div class="mb-1 flex flex-wrap items-center gap-x-3">
-                      <span class="font-medium text-gray-800">{{ v.title }}</span>
-                      @if (!isAlert) {
-                        <span class="text-gray-400"> · <span i18n="@@mailCurrentValue">valor actual:</span> {{ getPanelCurrentValue(v.panelId) }}</span>
-                      }
-                    </div>
-                    <div class="flex flex-wrap gap-1.5">
-                      <button type="button" (click)="copyToken(v.titleToken)" class="mail-token-btn" i18n-title="@@mailCopy" title="Copiar">
-                        <code>{{ v.titleToken }}</code><span i18n="@@mailCopyTitle">Título</span>
-                      </button>
-                      <button type="button" (click)="copyToken(v.valueToken)" class="mail-token-btn" i18n-title="@@mailCopy" title="Copiar">
-                        <code>{{ v.valueToken }}</code><span i18n="@@mailCopyValue">Valor</span>
-                      </button>
-                      @if (v.hasBreakdown) {
-                        <button type="button" (click)="copyToken(v.breakdownToken)" class="mail-token-btn" i18n-title="@@mailCopy" title="Copiar">
-                          <code>{{ v.breakdownToken }}</code><span i18n="@@mailCopyAll">Todos</span>
-                        </button>
-                        <button type="button" (click)="copyToken(v.topToken)" class="mail-token-btn" i18n-title="@@mailCopy" title="Copiar">
-                          <code>{{ v.topToken }}</code><span i18n="@@mailCopyTop">Máximo</span>
-                        </button>
-                        <button type="button" (click)="copyToken(v.bottomToken)" class="mail-token-btn" i18n-title="@@mailCopy" title="Copiar">
-                          <code>{{ v.bottomToken }}</code><span i18n="@@mailCopyBottom">Mínimo</span>
-                        </button>
-                        <button type="button" (click)="copyToken(v.averageToken)" class="mail-token-btn" i18n-title="@@mailCopy" title="Copiar">
-                          <code>{{ v.averageToken }}</code><span i18n="@@mailCopyAvg">Media</span>
-                        </button>
-                      }
-                    </div>
-                  </div>
-                }
-              </div>
-            }
           </div>
         </div>
       </div>
@@ -217,18 +295,18 @@
       <!-- ---------------- RIGHT: preview ---------------- -->
       <div class="sticky top-3 flex max-h-[calc(86vh-150px)] flex-col gap-3 self-start">
         <div class="shrink-0">
-          <span class="text-base font-semibold text-gray-800" i18n="@@mailPreviewShort">Vista previa</span>
-          <span class="ml-1 text-sm text-gray-400" i18n="@@mailPreviewHint">· tal como lo recibirá el destinatario</span>
+          <span class="text-sm font-semibold text-gray-800" i18n="@@mailPreviewShort">Vista previa</span>
+          <span class="ml-1 text-xs text-gray-400" i18n="@@mailPreviewHint">· tal como lo recibirá el destinatario</span>
         </div>
 
-        <div class="min-h-0 flex-1 overflow-y-auto rounded-lg border border-gray-200 bg-white text-sm text-gray-800">
-          <div class="border-b border-gray-200 px-4 py-3">
-            <p class="text-[11px] font-semibold uppercase tracking-wide text-gray-400" i18n="@@mailSubjectShort">Asunto</p>
+        <div class="min-h-0 flex-1 overflow-y-auto rounded-lg border border-gray-200 bg-white text-xs text-gray-800">
+          <div class="border-b border-gray-200 px-3 py-2.5">
+            <p class="text-[10px] font-semibold uppercase tracking-wide text-gray-400" i18n="@@mailSubjectShort">Asunto</p>
             <p class="font-semibold text-gray-900 [overflow-wrap:anywhere]">{{ previewSubject || noSubjectLabel }}</p>
-            <p class="mt-0.5 text-xs text-gray-400"><span i18n="@@mailForLabel">Para:</span> {{ previewRecipientsLabel }}</p>
+            <p class="mt-0.5 text-[11px] text-gray-400"><span i18n="@@mailForLabel">Para:</span> {{ previewRecipientsLabel }}</p>
           </div>
 
-          <div class="px-4 py-4">
+          <div class="px-3 py-3">
             @if (mailMessage) {
               <div class="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [&_*]:max-w-full [&_*]:break-words" [innerHTML]="previewBody"></div>
             } @else {
@@ -236,34 +314,34 @@
             }
 
             @if (aiAnalysis && aiAvailable) {
-              <div class="mt-3 rounded-lg border border-[#cdeeeb] bg-[#f0fbfa] p-3">
-                <p class="text-[11px] font-semibold uppercase tracking-wide text-[#0a7d75]" i18n="@@mailPreviewAiTitle">Análisis automático</p>
-                <p class="mt-1 text-xs text-gray-500" i18n="@@mailPreviewAiDesc">Aquí se añadirá un resumen del dashboard escrito con IA en cada envío. Consume tokens de tu cuenta.</p>
+              <div class="mt-2.5 rounded-lg border border-[#cdeeeb] bg-[#f0fbfa] p-2.5">
+                <p class="text-[10px] font-semibold uppercase tracking-wide text-[#0a7d75]" i18n="@@mailPreviewAiTitle">Análisis automático</p>
+                <p class="mt-1 text-[11px] text-gray-500" i18n="@@mailPreviewAiDesc">Aquí se añadirá un resumen del dashboard escrito con IA en cada envío. Consume tokens de tu cuenta.</p>
               </div>
             }
 
             @if (isAlert) {
-              <div class="mt-3 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
+              <div class="mt-2.5 rounded border border-gray-200 bg-gray-50 px-2.5 py-2 text-[11px] text-gray-600">
                 <span class="font-medium text-gray-800">{{ kpiFieldName || previewKpiLabel }}:</span>
                 <span class="text-gray-400" i18n="@@mailPreviewKpiValue">valor del KPI en el momento del envío</span>
               </div>
             } @else {
-              <div class="mt-3 flex items-center justify-center rounded border border-dashed border-gray-300 bg-gray-50 py-10 text-xs text-gray-400" i18n="@@mailPreviewDashImg">imagen del dashboard</div>
+              <div class="mt-2.5 flex items-center justify-center rounded border border-dashed border-gray-300 bg-gray-50 py-6 text-[11px] text-gray-400" i18n="@@mailPreviewDashImg">imagen del dashboard</div>
             }
 
-            <div class="mt-3">
-              <a [href]="previewLink" target="_blank" rel="noopener" class="text-sm text-[#0a7d75] hover:underline" i18n="@@mailOpenDashboard">Abrir el dashboard en Edalitics →</a>
+            <div class="mt-2.5">
+              <a [href]="previewLink" target="_blank" rel="noopener" class="text-xs text-[#0a7d75] hover:underline" i18n="@@mailOpenDashboard">Abrir el dashboard en Edalitics →</a>
             </div>
 
             @if (!isAlert) {
-              <div class="mt-3 inline-flex items-center gap-2 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
+              <div class="mt-2.5 inline-flex items-center gap-2 rounded border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-[11px] text-gray-600">
                 <span class="font-semibold text-red-500">PDF</span>{{ pdfName }}
               </div>
             }
           </div>
 
-          <div class="border-t border-gray-200 px-4 py-3">
-            <img [src]="bannerImage" alt="" class="mx-auto block max-h-16 w-auto object-contain">
+          <div class="border-t border-gray-200 px-3 py-2">
+            <img [src]="bannerImage" alt="" class="mx-auto block max-h-12 w-auto object-contain">
           </div>
         </div>
 

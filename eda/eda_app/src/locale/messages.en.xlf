@@ -3197,46 +3197,6 @@ What am I seeing?
 <source>Genera un comentario sobre los datos de cada envío y lo añade debajo de tu mensaje. Cambia en cada correo.</source>
 <target>Generates a comment on each send's data and adds it below your message. It changes with every email.</target>
 </trans-unit>
-<trans-unit id="mailInsertValueTitle">
-<source>Insertar un valor del panel</source>
-<target>Insert a panel value</target>
-</trans-unit>
-<trans-unit id="mailInsertValueHint">
-<source>Copia el código y pégalo en el asunto o en el mensaje. Al enviarse se sustituye por el dato real.</source>
-<target>Copy the code and paste it into the subject or message. It's replaced with the real value when sent.</target>
-</trans-unit>
-<trans-unit id="mailCurrentValue">
-<source>valor actual:</source>
-<target>current value:</target>
-</trans-unit>
-<trans-unit id="mailCopy">
-<source>Copiar</source>
-<target>Copy</target>
-</trans-unit>
-<trans-unit id="mailCopyTitle">
-<source>Título</source>
-<target>Title</target>
-</trans-unit>
-<trans-unit id="mailCopyValue">
-<source>Valor</source>
-<target>Value</target>
-</trans-unit>
-<trans-unit id="mailCopyAll">
-<source>Todos</source>
-<target>All</target>
-</trans-unit>
-<trans-unit id="mailCopyTop">
-<source>Máximo</source>
-<target>Highest</target>
-</trans-unit>
-<trans-unit id="mailCopyBottom">
-<source>Mínimo</source>
-<target>Lowest</target>
-</trans-unit>
-<trans-unit id="mailCopyAvg">
-<source>Media</source>
-<target>Average</target>
-</trans-unit>
 <trans-unit id="mailPreviewShort">
 <source>Vista previa</source>
 <target>Preview</target>
@@ -7156,6 +7116,90 @@ OR<ph id="5"/>
   <source>Ver recursos</source>
   <target>View resources</target>
 </trans-unit>
+  <trans-unit id="mailRefIconTitle">
+    <source>Variables y condicionales</source>
+    <target>Variables and conditionals</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarsTitle">
+    <source>Variables</source>
+    <target>Variables</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarsIntro">
+    <source>Los KPIs van numerados según su orden en el dashboard: p1 es el primero, p2 el segundo, y así sucesivamente.</source>
+    <target>KPIs are numbered by their order on the dashboard: p1 is the first, p2 the second, and so on.</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertTitle">
+    <source>Insertar</source>
+    <target>Insert</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertCode">
+    <source>Bloque CODE</source>
+    <target>CODE block</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertCodeTip">
+    <source>Inserta un bloque condicional (if / else) en el mensaje</source>
+    <target>Inserts a conditional block (if / else) into the message</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarTitle">
+    <source>el título del KPI</source>
+    <target>the KPI title</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarValue">
+    <source>el valor actual del KPI</source>
+    <target>the current KPI value</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarTop">
+    <source>la categoría con el valor más alto</source>
+    <target>the category with the highest value</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarBottom">
+    <source>la categoría con el valor más bajo</source>
+    <target>the category with the lowest value</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarAvg">
+    <source>la media de las categorías</source>
+    <target>the average of the categories</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarBreakdown">
+    <source>todas las categorías con su valor</source>
+    <target>all categories with their value</target>
+  </trans-unit>
+  <trans-unit id="mailRefExampleTitle">
+    <source>Ejemplo completo</source>
+    <target>Full example</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondTitle">
+    <source>Condicionales</source>
+    <target>Conditionals</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondIntro">
+    <source>Delimita el bloque con ""CODE y CODE"" en su propia línea. Dentro, if evalúa una condición y escribe el texto de esa rama; añade elif para más casos, else para el resto y cierra con end.</source>
+    <target>Delimit the block with ""CODE and CODE"" on their own line. Inside, if evaluates a condition and writes that branch's text; add elif for more cases, else for the rest and close with end.</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondOps">
+    <source>En la condición puedes comparar con:</source>
+    <target>In the condition you can compare with:</target>
+  </trans-unit>
+  <trans-unit id="mailRefCopy">
+    <source>Copiar</source>
+    <target>Copy</target>
+  </trans-unit>
+  <trans-unit id="mailRefCopied">
+    <source>Copiado</source>
+    <target>Copied</target>
+  </trans-unit>
+  <trans-unit id="mailRefCopyError">
+    <source>No se pudo copiar</source>
+    <target>Could not copy</target>
+  </trans-unit>
+  <trans-unit id="mailRefResultTitle">
+    <source>Así lo recibe el destinatario</source>
+    <target>This is what the recipient gets</target>
+  </trans-unit>
+  <trans-unit id="mailRefResultHint">
+    <source>Resaltado: lo que se sustituye automáticamente en cada envío.</source>
+    <target>Highlighted: what is replaced automatically on every send.</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

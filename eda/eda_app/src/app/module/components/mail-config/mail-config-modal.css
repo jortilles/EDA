@@ -1,3 +1,81 @@
+/* reference dialog: centered modal, above the mail-config dialog it opens from */
+::ng-deep .p-dialog.mail-ref-dialog {
+  z-index: 20000 !important;
+}
+::ng-deep .p-dialog-mask:has(> .p-dialog.mail-ref-dialog) {
+  z-index: 19999 !important;
+}
+::ng-deep .mail-ref-dialog .p-dialog-content {
+  max-height: 74vh;
+  overflow-y: auto;
+}
+
+/* corporate token chip, shared by the reference dialog and the insert toolbox */
+::ng-deep .mail-ref-tok {
+  display: inline-block;
+  background: rgba(var(--corporate-primary-rgb), 0.10);
+  color: var(--corporate-primary-dark, #007B74);
+  border-radius: 0.25rem;
+  padding: 0.05rem 0.35rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  border: 1px solid transparent;
+  line-height: 1.4;
+}
+::ng-deep button.mail-ref-tok {
+  cursor: pointer;
+  transition: border-color .12s, background .12s;
+}
+::ng-deep button.mail-ref-tok:hover {
+  border-color: var(--corporate-primary);
+  background: rgba(var(--corporate-primary-rgb), 0.18);
+}
+::ng-deep .mail-ref-dialog .mail-ref-hl {
+  background: rgba(var(--corporate-primary-rgb), 0.14);
+  color: var(--corporate-primary-dark, #007B74);
+  border-radius: 0.2rem;
+  padding: 0 0.2rem;
+}
+
+/* compact insert toolbox beside the subject / message fields */
+.mail-insert-box {
+  border: 1px solid rgba(var(--corporate-primary-rgb), 0.28);
+  background: rgba(var(--corporate-primary-rgb), 0.045);
+  max-height: 24rem;
+}
+.mail-insert-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--corporate-primary-dark, #007B74);
+}
+.mail-insert-target {
+  font-size: 11px;
+  color: #6b7280;
+}
+.mail-insert-kpi {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--corporate-primary-dark, #007B74);
+}
+.mail-insert-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .25rem;
+  margin-top: .25rem;
+  padding: .35rem .5rem;
+  border-radius: .375rem;
+  font-weight: 600;
+  border: 1px solid var(--corporate-primary);
+  color: var(--corporate-primary-dark, #007B74);
+  background: rgba(var(--corporate-primary-rgb), 0.06);
+  transition: background .12s;
+}
+.mail-insert-code:hover {
+  background: rgba(var(--corporate-primary-rgb), 0.16);
+}
+
 /* Corporate-coloured focus for every control in the dialog */
 .mail-input:focus,
 .mail-textarea:focus,

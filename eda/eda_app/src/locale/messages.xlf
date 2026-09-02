@@ -1472,36 +1472,6 @@
       <trans-unit id="mailAiAddHint" datatype="html">
         <source>Genera un comentario sobre los datos de cada envío y lo añade debajo de tu mensaje. Cambia en cada correo.</source>
       </trans-unit>
-      <trans-unit id="mailInsertValueTitle" datatype="html">
-        <source>Insertar un valor del panel</source>
-      </trans-unit>
-      <trans-unit id="mailInsertValueHint" datatype="html">
-        <source>Copia el código y pégalo en el asunto o en el mensaje. Al enviarse se sustituye por el dato real.</source>
-      </trans-unit>
-      <trans-unit id="mailCurrentValue" datatype="html">
-        <source>valor actual:</source>
-      </trans-unit>
-      <trans-unit id="mailCopy" datatype="html">
-        <source>Copiar</source>
-      </trans-unit>
-      <trans-unit id="mailCopyTitle" datatype="html">
-        <source>Título</source>
-      </trans-unit>
-      <trans-unit id="mailCopyValue" datatype="html">
-        <source>Valor</source>
-      </trans-unit>
-      <trans-unit id="mailCopyAll" datatype="html">
-        <source>Todos</source>
-      </trans-unit>
-      <trans-unit id="mailCopyTop" datatype="html">
-        <source>Máximo</source>
-      </trans-unit>
-      <trans-unit id="mailCopyBottom" datatype="html">
-        <source>Mínimo</source>
-      </trans-unit>
-      <trans-unit id="mailCopyAvg" datatype="html">
-        <source>Media</source>
-      </trans-unit>
       <trans-unit id="mailPreviewShort" datatype="html">
         <source>Vista previa</source>
       </trans-unit>
@@ -5958,6 +5928,69 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/getting-started/getting-started.component.html</context>
         </context-group>
+      </trans-unit>
+      <trans-unit id="mailRefIconTitle" datatype="html">
+        <source>Variables y condicionales</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarsTitle" datatype="html">
+        <source>Variables</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarsIntro" datatype="html">
+        <source>Los KPIs van numerados según su orden en el dashboard: p1 es el primero, p2 el segundo, y así sucesivamente.</source>
+      </trans-unit>
+      <trans-unit id="mailRefInsertTitle" datatype="html">
+        <source>Insertar</source>
+      </trans-unit>
+      <trans-unit id="mailRefInsertCode" datatype="html">
+        <source>Bloque CODE</source>
+      </trans-unit>
+      <trans-unit id="mailRefInsertCodeTip" datatype="html">
+        <source>Inserta un bloque condicional (if / else) en el mensaje</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarTitle" datatype="html">
+        <source>el título del KPI</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarValue" datatype="html">
+        <source>el valor actual del KPI</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarTop" datatype="html">
+        <source>la categoría con el valor más alto</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarBottom" datatype="html">
+        <source>la categoría con el valor más bajo</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarAvg" datatype="html">
+        <source>la media de las categorías</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarBreakdown" datatype="html">
+        <source>todas las categorías con su valor</source>
+      </trans-unit>
+      <trans-unit id="mailRefExampleTitle" datatype="html">
+        <source>Ejemplo completo</source>
+      </trans-unit>
+      <trans-unit id="mailRefCondTitle" datatype="html">
+        <source>Condicionales</source>
+      </trans-unit>
+      <trans-unit id="mailRefCondIntro" datatype="html">
+        <source>Delimita el bloque con ""CODE y CODE"" en su propia línea. Dentro, if evalúa una condición y escribe el texto de esa rama; añade elif para más casos, else para el resto y cierra con end.</source>
+      </trans-unit>
+      <trans-unit id="mailRefCondOps" datatype="html">
+        <source>En la condición puedes comparar con:</source>
+      </trans-unit>
+      <trans-unit id="mailRefCopy" datatype="html">
+        <source>Copiar</source>
+      </trans-unit>
+      <trans-unit id="mailRefCopied" datatype="html">
+        <source>Copiado</source>
+      </trans-unit>
+      <trans-unit id="mailRefCopyError" datatype="html">
+        <source>No se pudo copiar</source>
+      </trans-unit>
+      <trans-unit id="mailRefResultTitle" datatype="html">
+        <source>Así lo recibe el destinatario</source>
+      </trans-unit>
+      <trans-unit id="mailRefResultHint" datatype="html">
+        <source>Resaltado: lo que se sustituye automáticamente en cada envío.</source>
       </trans-unit>
     </body>
   </file>

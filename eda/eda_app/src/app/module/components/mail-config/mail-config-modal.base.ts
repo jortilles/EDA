@@ -1,10 +1,10 @@
-import { Directive, EventEmitter, Input, OnInit, Output, inject, signal } from "@angular/core";
+import { Directive, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, inject, signal } from "@angular/core";
 import { Observable, lastValueFrom } from "rxjs";
 import { AlertService, MailService, UserService } from "@eda/services/service.index";
 import { AssistantService } from "@eda/services/api/assistant.service";
 import { DateUtils } from "@eda/services/utils/date-utils.service";
 import {
-  buildKpiVariables, MailKpiVariable, MailTokenKind, formatKpiToken,
+  buildKpiVariables, kpiVarTokens, MailKpiVariable, MailTokenKind, formatKpiToken,
   renderMailPreview, renderMailPreviewHtml,
 } from "@eda/services/utils/mail-variables.util";
 import { renderMailLogic, hasMailLogic, buildKpiCtxNode } from "@eda/services/utils/mail-logic.util";
@@ -214,15 +214,123 @@ export abstract class MailConfigModalBase implements OnInit {
     }
   }
 
-  // ---- variables + preview -------------------------------------------------
+  // ---- variables + conditions help --------------------------------------
 
-  public async copyToken(token: string): Promise<void> {
+  public readonly messageExample =
+    'Hola,\n\nResumen de ${p1.title}: ${p1.value}\n\n""CODE\nif p1.value > 1000000\n  Excelente mes 🎉\nelse\n  Mes por debajo de lo esperado\nend\nCODE""\n\nUn saludo.';
+
+  // reference card: KPI value tokens with a plain-language meaning
+  public readonly refVars: { token: string; desc: string }[] = [
+    { token: '${p1.title}', desc: $localize`:@@mailRefVarTitle:el título del KPI` },
+    { token: '${p1.value}', desc: $localize`:@@mailRefVarValue:el valor actual del KPI` },
+    { token: '${p1.value.top}', desc: $localize`:@@mailRefVarTop:la categoría con el valor más alto` },
+    { token: '${p1.value.bottom}', desc: $localize`:@@mailRefVarBottom:la categoría con el valor más bajo` },
+    { token: '${p1.value.average}', desc: $localize`:@@mailRefVarAvg:la media de las categorías` },
+    { token: '${p1.value.breakdown}', desc: $localize`:@@mailRefVarBreakdown:todas las categorías con su valor` },
+  ];
+
+  public readonly condOps = '>   <   >=   <=   ==   !=   contains';
+
+  // full worked example shown on the left side of the reference card
+  public readonly refExample =
+    'Asunto: Resumen de ${p1.title}\n' +
+    '\n' +
+    'Hola,\n' +
+    '\n' +
+    'El valor de ${p1.title} es ${p1.value}.\n' +
+    'Media por categoría: ${p1.value.average}\n' +
+    'Categoría más alta: ${p1.value.top}\n' +
+    '\n' +
+    '""CODE\n' +
+    'if p1.value > 1000000\n' +
+    '  Excelente mes 🎉\n' +
+    'elif p1.value > 500000\n' +
+    '  Mes correcto\n' +
+    'else\n' +
+    '  Por debajo de lo esperado\n' +
+    'end\n' +
+    'CODE""\n' +
+    '\n' +
+    'Desglose por categoría:\n' +
+    '${p1.value.breakdown}\n' +
+    '\n' +
+    'Un saludo.';
+
+  // rendered version of refExample with sample data; `hl` marks auto-substituted parts
+  public readonly refResult: { t: string; hl?: boolean }[] = [
+    { t: 'Asunto: Resumen de ' }, { t: 'Ventas 2024', hl: true },
+    { t: '\n\nHola,\n\nEl valor de ' }, { t: 'Ventas 2024', hl: true },
+    { t: ' es ' }, { t: '1.240.000', hl: true },
+    { t: '.\nMedia por categoría: ' }, { t: '310.000', hl: true },
+    { t: '\nCategoría más alta: ' }, { t: 'Europa: 480.000', hl: true },
+    { t: '\n\n' }, { t: 'Excelente mes 🎉', hl: true },
+    { t: '\n\nDesglose por categoría:\n' },
+    { t: 'Europa: 480.000, Asia: 360.000, América: 280.000', hl: true },
+    { t: '\n\nUn saludo.' },
+  ];
+
+  public exampleCopied = false;
+  public async copyExample(): Promise<void> {
     try {
-      await navigator.clipboard.writeText(token);
-      this.alertService.addSuccess(`Copiado: ${token}`);
+      await navigator.clipboard.writeText(this.refExample);
+      this.exampleCopied = true;
+      setTimeout(() => (this.exampleCopied = false), 2000);
     } catch {
-      this.alertService.addError('No se pudo copiar');
+      this.alertService.addError($localize`:@@mailRefCopyError:No se pudo copiar`);
     }
+  }
+
+  // ---- reference dialog + insert toolbox ------------------------------------
+
+  @ViewChild('msgArea') private msgArea?: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('subjArea') private subjArea?: ElementRef<HTMLInputElement>;
+
+  public refOpen = false;
+  public openRef(): void { this.refOpen = true; }
+
+  public readonly varTokensOf = kpiVarTokens;
+  public readonly refIconTitle = $localize`:@@mailRefIconTitle:Variables y condicionales`;
+  public readonly codeBlockTip = $localize`:@@mailRefInsertCodeTip:Inserta un bloque condicional (if / else) en el mensaje`;
+
+  /** `${p1.value.top}` -> `value.top` for the compact toolbox chips. */
+  public shortTok = (t: string): string => t.replace(/^\$\{p\d+\./, '').replace(/\}$/, '');
+
+  /** Field the toolbox inserts into: whichever of subject/message was focused last. */
+  public activeField: 'subject' | 'message' = 'message';
+  public get activeFieldLabel(): string {
+    return this.activeField === 'subject'
+      ? $localize`:@@mailSubjectShort:Asunto`
+      : $localize`:@@mailMessageLabel:Mensaje`;
+  }
+
+  private spliceInto(el: HTMLInputElement | HTMLTextAreaElement | undefined,
+                     current: string, text: string, apply: (v: string) => void): void {
+    const cur = current || '';
+    if (!el) { apply(cur + text); return; }
+    const s = el.selectionStart ?? cur.length;
+    const e = el.selectionEnd ?? cur.length;
+    apply(cur.slice(0, s) + text + cur.slice(e));
+    setTimeout(() => {
+      el.focus();
+      const p = s + text.length;
+      try { el.setSelectionRange(p, p); } catch { /* noop */ }
+    });
+  }
+
+  /** Insert a variable token into the active field (subject or message). */
+  public insertToken(text: string): void {
+    if (this.activeField === 'subject') {
+      this.spliceInto(this.subjArea?.nativeElement, this.mailSubject, text, v => (this.mailSubject = v));
+    } else {
+      this.spliceInto(this.msgArea?.nativeElement, this.mailMessage, text, v => (this.mailMessage = v));
+    }
+  }
+
+  public insertCodeBlock(): void {
+    const base = this.kpiVariables[0]?.base || 'p1';
+    this.activeField = 'message';
+    this.spliceInto(this.msgArea?.nativeElement, this.mailMessage,
+      `\n""CODE\nif ${base}.value > 0\n  \nelse\n  \nend\nCODE""\n`, v => (this.mailMessage = v));
   }
 
   public get kpiVariables(): MailKpiVariable[] {
