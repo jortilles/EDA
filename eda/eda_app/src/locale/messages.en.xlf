@@ -6885,6 +6885,211 @@ OR<ph id="5"/>
   <source>Ver recursos</source>
   <target>View resources</target>
 </trans-unit>
+      <trans-unit id="adminMedia">
+        <source>Gestor de archivos</source>
+        <target>File manager</target>
+      </trans-unit>
+
+      <trans-unit id="chooseImage">
+        <source>Elegir imagen</source>
+        <target>Choose image</target>
+      </trans-unit>
+
+      <trans-unit id="remove">
+        <source>Quitar</source>
+        <target>Remove</target>
+      </trans-unit>
+
+      <trans-unit id="delete">
+        <source>Eliminar</source>
+        <target>Delete</target>
+      </trans-unit>
+
+      <trans-unit id="mediaInvalidExtension">
+        <source>Formato de imagen no válido. Formatos permitidos: PNG, JPG, GIF, WEBP.</source>
+        <target>Invalid image format. Allowed formats: PNG, JPG, GIF, WEBP.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaMaxSizeError">
+        <source>La imagen supera el tamaño máximo permitido de 1MB.</source>
+        <target>The image exceeds the maximum allowed size of 1MB.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDeleteConfirmTitle">
+        <source>¿Eliminar esta imagen?</source>
+        <target>Delete this image?</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUploading">
+        <source>Subiendo imagen...</source>
+        <target>Uploading image...</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDropHint">
+        <source>Arrastra una imagen aquí o haz clic para subirla</source>
+        <target>Drag an image here or click to upload it</target>
+      </trans-unit>
+
+      <trans-unit id="mediaFormatsHint">
+        <source>PNG, JPG, GIF o WEBP · máximo 1MB</source>
+        <target>PNG, JPG, GIF or WEBP · max 1MB</target>
+      </trans-unit>
+
+      <trans-unit id="mediaLoading">
+        <source>Cargando imágenes...</source>
+        <target>Loading images...</target>
+      </trans-unit>
+
+      <trans-unit id="mediaEmpty">
+        <source>Todavía no se ha subido ninguna imagen.</source>
+        <target>No images have been uploaded yet.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUseImage">
+        <source>Usar esta imagen</source>
+        <target>Use this image</target>
+      </trans-unit>
+
+      <trans-unit id="mediaFoundCount">
+        <source>imágenes encontradas</source>
+        <target>images found</target>
+      </trans-unit>
+
+      <trans-unit id="mediaHome">
+        <source>Inicio</source>
+        <target>Home</target>
+      </trans-unit>
+
+      <trans-unit id="mediaNewFolder">
+        <source>Nueva carpeta</source>
+        <target>New folder</target>
+      </trans-unit>
+
+      <trans-unit id="mediaGridView">
+        <source>Cuadrícula</source>
+        <target>Grid</target>
+      </trans-unit>
+
+      <trans-unit id="mediaListView">
+        <source>Lista</source>
+        <target>List</target>
+      </trans-unit>
+
+      <trans-unit id="rename">
+        <source>Renombrar</source>
+        <target>Rename</target>
+      </trans-unit>
+
+      <trans-unit id="mediaFolderNamePlaceholder">
+        <source>Nombre de la carpeta</source>
+        <target>Folder name</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCreate">
+        <source>Crear</source>
+        <target>Create</target>
+      </trans-unit>
+
+      <trans-unit id="mediaRenameFolder">
+        <source>Renombrar carpeta</source>
+        <target>Rename folder</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSave">
+        <source>Guardar</source>
+        <target>Save</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDeleteFolderConfirmTitle">
+        <source>¿Eliminar esta carpeta?</source>
+        <target>Delete this folder?</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSelectedCount">
+        <source>seleccionadas</source>
+        <target>selected</target>
+      </trans-unit>
+
+      <trans-unit id="mediaMoveTo">
+        <source>Mover a carpeta</source>
+        <target>Move to folder</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDeleteSelected">
+        <source>Eliminar seleccionadas</source>
+        <target>Delete selected</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCancelSelection">
+        <source>Cancelar selección</source>
+        <target>Cancel selection</target>
+      </trans-unit>
+
+      <trans-unit id="mediaMove">
+        <source>Mover</source>
+        <target>Move</target>
+      </trans-unit>
+
+      <trans-unit id="mediaPreview">
+        <source>Vista previa</source>
+        <target>Preview</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSelectAll">
+        <source>Seleccionar todo</source>
+        <target>Select all</target>
+      </trans-unit>
+
+      <trans-unit id="mediaRenameTitle">
+        <source>Renombrar imagen</source>
+        <target>Rename image</target>
+      </trans-unit>
+
+      <trans-unit id="mediaBulkDeleteConfirmTitle">
+        <source>¿Eliminar las imágenes seleccionadas?</source>
+        <target>Delete the selected images?</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSize">
+        <source>Tamaño</source>
+        <target>Size</target>
+      </trans-unit>
+
+      <trans-unit id="mediaType">
+        <source>Tipo</source>
+        <target>Type</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUploadDate">
+        <source>Subida</source>
+        <target>Uploaded</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUsedIn">
+        <source>Usado en</source>
+        <target>Used in</target>
+      </trans-unit>
+
+      <trans-unit id="mediaNotUsed">
+        <source>No se usa en ningún dashboard.</source>
+        <target>Not used in any dashboard.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaRoot">
+        <source>Raíz</source>
+        <target>Root</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSelectPrompt">
+        <source>Selecciona una imagen para ver sus detalles</source>
+        <target>Select an image to see its details</target>
+      </trans-unit>
+
+      <trans-unit id="mediaTotalSize">
+        <source>Tamaño total</source>
+        <target>Total size</target>
+      </trans-unit>
+
 </body>
 </file>
 </xliff>

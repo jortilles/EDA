@@ -7160,6 +7160,211 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Ver recursos</source>
         <target>Voir les ressources</target>
       </trans-unit>
-    </body>
+          <trans-unit id="adminMedia">
+        <source>Gestor de archivos</source>
+        <target>Gestionnaire de fichiers</target>
+      </trans-unit>
+
+      <trans-unit id="chooseImage">
+        <source>Elegir imagen</source>
+        <target>Choisir une image</target>
+      </trans-unit>
+
+      <trans-unit id="remove">
+        <source>Quitar</source>
+        <target>Retirer</target>
+      </trans-unit>
+
+      <trans-unit id="delete">
+        <source>Eliminar</source>
+        <target>Supprimer</target>
+      </trans-unit>
+
+      <trans-unit id="mediaInvalidExtension">
+        <source>Formato de imagen no válido. Formatos permitidos: PNG, JPG, GIF, WEBP.</source>
+        <target>Format d’image non valide. Formats autorisés : PNG, JPG, GIF, WEBP.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaMaxSizeError">
+        <source>La imagen supera el tamaño máximo permitido de 1MB.</source>
+        <target>L’image dépasse la taille maximale autorisée de 1 Mo.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDeleteConfirmTitle">
+        <source>¿Eliminar esta imagen?</source>
+        <target>Supprimer cette image ?</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUploading">
+        <source>Subiendo imagen...</source>
+        <target>Téléversement de l’image...</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDropHint">
+        <source>Arrastra una imagen aquí o haz clic para subirla</source>
+        <target>Glissez une image ici ou cliquez pour la téléverser</target>
+      </trans-unit>
+
+      <trans-unit id="mediaFormatsHint">
+        <source>PNG, JPG, GIF o WEBP · máximo 1MB</source>
+        <target>PNG, JPG, GIF ou WEBP · 1 Mo maximum</target>
+      </trans-unit>
+
+      <trans-unit id="mediaLoading">
+        <source>Cargando imágenes...</source>
+        <target>Chargement des images...</target>
+      </trans-unit>
+
+      <trans-unit id="mediaEmpty">
+        <source>Todavía no se ha subido ninguna imagen.</source>
+        <target>Aucune image n’a encore été téléversée.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUseImage">
+        <source>Usar esta imagen</source>
+        <target>Utiliser cette image</target>
+      </trans-unit>
+
+      <trans-unit id="mediaFoundCount">
+        <source>imágenes encontradas</source>
+        <target>images trouvées</target>
+      </trans-unit>
+
+      <trans-unit id="mediaHome">
+        <source>Inicio</source>
+        <target>Accueil</target>
+      </trans-unit>
+
+      <trans-unit id="mediaNewFolder">
+        <source>Nueva carpeta</source>
+        <target>Nouveau dossier</target>
+      </trans-unit>
+
+      <trans-unit id="mediaGridView">
+        <source>Cuadrícula</source>
+        <target>Grille</target>
+      </trans-unit>
+
+      <trans-unit id="mediaListView">
+        <source>Lista</source>
+        <target>Liste</target>
+      </trans-unit>
+
+      <trans-unit id="rename">
+        <source>Renombrar</source>
+        <target>Renommer</target>
+      </trans-unit>
+
+      <trans-unit id="mediaFolderNamePlaceholder">
+        <source>Nombre de la carpeta</source>
+        <target>Nom du dossier</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCreate">
+        <source>Crear</source>
+        <target>Créer</target>
+      </trans-unit>
+
+      <trans-unit id="mediaRenameFolder">
+        <source>Renombrar carpeta</source>
+        <target>Renommer le dossier</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSave">
+        <source>Guardar</source>
+        <target>Enregistrer</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDeleteFolderConfirmTitle">
+        <source>¿Eliminar esta carpeta?</source>
+        <target>Supprimer ce dossier ?</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSelectedCount">
+        <source>seleccionadas</source>
+        <target>sélectionnées</target>
+      </trans-unit>
+
+      <trans-unit id="mediaMoveTo">
+        <source>Mover a carpeta</source>
+        <target>Déplacer vers un dossier</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDeleteSelected">
+        <source>Eliminar seleccionadas</source>
+        <target>Supprimer la sélection</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCancelSelection">
+        <source>Cancelar selección</source>
+        <target>Annuler la sélection</target>
+      </trans-unit>
+
+      <trans-unit id="mediaMove">
+        <source>Mover</source>
+        <target>Déplacer</target>
+      </trans-unit>
+
+      <trans-unit id="mediaPreview">
+        <source>Vista previa</source>
+        <target>Aperçu</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSelectAll">
+        <source>Seleccionar todo</source>
+        <target>Tout sélectionner</target>
+      </trans-unit>
+
+      <trans-unit id="mediaRenameTitle">
+        <source>Renombrar imagen</source>
+        <target>Renommer l’image</target>
+      </trans-unit>
+
+      <trans-unit id="mediaBulkDeleteConfirmTitle">
+        <source>¿Eliminar las imágenes seleccionadas?</source>
+        <target>Supprimer les images sélectionnées ?</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSize">
+        <source>Tamaño</source>
+        <target>Taille</target>
+      </trans-unit>
+
+      <trans-unit id="mediaType">
+        <source>Tipo</source>
+        <target>Type</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUploadDate">
+        <source>Subida</source>
+        <target>Téléversée</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUsedIn">
+        <source>Usado en</source>
+        <target>Utilisée dans</target>
+      </trans-unit>
+
+      <trans-unit id="mediaNotUsed">
+        <source>No se usa en ningún dashboard.</source>
+        <target>Non utilisée dans aucun tableau de bord.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaRoot">
+        <source>Raíz</source>
+        <target>Racine</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSelectPrompt">
+        <source>Selecciona una imagen para ver sus detalles</source>
+        <target>Sélectionnez une image pour voir ses détails</target>
+      </trans-unit>
+
+      <trans-unit id="mediaTotalSize">
+        <source>Tamaño total</source>
+        <target>Taille totale</target>
+      </trans-unit>
+
+</body>
   </file>
 </xliff>

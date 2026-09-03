@@ -37,6 +37,7 @@ export * from './api/createTable.service';
 export * from './api/mail.service';
 export * from './api/excel-formatter.service';
 export * from './api/log.service';
+export * from './api/media.service'; // Media library
 
 
 

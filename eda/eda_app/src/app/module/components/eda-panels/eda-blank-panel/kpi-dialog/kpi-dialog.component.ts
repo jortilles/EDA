@@ -3,20 +3,22 @@ import { AfterViewChecked, AfterViewInit, Component, ElementRef, Input, OnDestro
 import { KpiMailConfigModal } from '@eda/components/kpi-mail-config/kpi-mail-config.modal';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
-import { UserService } from '@eda/services/service.index';
+import { UserService, FileUtiles } from '@eda/services/service.index';
 import { StyleProviderService, ChartUtilsService } from '@eda/services/service.index';
 import * as _ from 'lodash';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
+import { MediaLibraryComponent } from '@eda/components/media-library/media-library.component';
+import { PipesModule } from '@eda/pipes/pipes.module';
 
 @Component({
     standalone: true,
     selector: 'app-kpi-dialog',
     templateUrl: './kpi-dialog.component.html',
     styleUrls: ['./kpi-dialog.component.css'],
-    imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent, KpiMailConfigModal, DropdownModule]
+    imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent, KpiMailConfigModal, DropdownModule, MediaLibraryComponent, PipesModule]
 })
 export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
     @Input() controller: any;
@@ -50,7 +52,8 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
 
     public kpiBackgroundColor: string = '';
     public kpiTextColor: string = '';
-    public prefixImage: string = '';
+    public prefixImage: string = '';  // base64 data URI (legacy) or media library url
+    public mediaPickerOpen: boolean = false;
 
     public currentAlert = null;
     public canIRunAlerts: boolean = false;
@@ -96,7 +99,8 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     constructor(
         private userService: UserService,
         private stylesProviderService: StyleProviderService,
-        private ChartUtilsService: ChartUtilsService
+        private ChartUtilsService: ChartUtilsService,
+        private fileUtils: FileUtiles
     ) {
         this.canIRunAlerts = this.userService.user.name !== "edaanonim";
     }
@@ -451,22 +455,26 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         }
     }
 
+    private resolveImageSrc(value: string): string {
+        if (!value) return value;
+        if (value.startsWith('data:') || /^https?:\/\//.test(value)) return value;
+        return this.fileUtils.connection(value);
+    }
+
     openPrefixImageInNewTab(): void {
         const win = window.open('', '_blank');
-        win.document.write(`<html><body style="margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="${this.prefixImage}" style="max-width:100%;max-height:100vh"></body></html>`);
+        win.document.write(`<html><body style="margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="${this.resolveImageSrc(this.prefixImage)}" style="max-width:100%;max-height:100vh"></body></html>`);
         win.document.close();
     }
 
-    onPrefixImageSelected(event: Event): void {
-        const input = event.target as HTMLInputElement;
-        const file = input?.files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-            this.prefixImage = reader.result as string;
-            this.updatePrefixImage();
-        };
-        reader.readAsDataURL(file);
+    openMediaPicker(): void {
+        this.mediaPickerOpen = true;
+    }
+
+    onMediaSelected(url: string): void {
+        this.prefixImage = url;
+        this.mediaPickerOpen = false;
+        this.updatePrefixImage();
     }
 
     updatePrefixImage() {

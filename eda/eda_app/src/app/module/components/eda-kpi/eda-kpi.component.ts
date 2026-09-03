@@ -9,12 +9,13 @@ import { EdaAreaComponent } from '../eda-area-d3/eda-area.component';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { PipesModule } from '@eda/pipes/pipes.module';
 
 @Component({
     standalone: true,
     selector: 'eda-kpi',
     templateUrl: './eda-kpi.component.html',
-    imports: [FormsModule, CommonModule, EdaBarD3Component, EdaLineComponent, EdaAreaComponent]
+    imports: [FormsModule, CommonModule, EdaBarD3Component, EdaLineComponent, EdaAreaComponent, PipesModule]
 })
 
 export class EdaKpiComponent implements OnInit, AfterViewInit {

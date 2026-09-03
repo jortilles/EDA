@@ -118,13 +118,12 @@
                 <div class="space-y-2 md:col-span-2">
                   <label class="text-sm font-medium" i18n="@@kpiPrefixImage">Imagen prefijo</label>
                   <div class="flex items-center gap-3">
-                    <label class="kpi-upload-btn">
-                      <i class="pi pi-upload"></i>
-                      <span i18n="@@uploadImage">Subir imagen</span>
-                      <input type="file" accept="image/*" class="hidden" (change)="onPrefixImageSelected($event)" />
-                    </label>
+                    <button type="button" class="kpi-upload-btn" (click)="openMediaPicker()">
+                      <i class="pi pi-images"></i>
+                      <span i18n="@@chooseImage">Elegir imagen</span>
+                    </button>
                     @if(prefixImage){
-                      <img [src]="prefixImage" alt="preview"
+                      <img [src]="prefixImage | mediaSrc" alt="preview"
                         (click)="openPrefixImageInNewTab()"
                         class="w-[7rem] h-[3rem] object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity" />
                       <span (click)="prefixImage=''; updatePrefixImage()"
@@ -715,4 +714,13 @@
     (apply)="onMailConfigApply($event)"
     (close)="closeMailingConfig()">
   </app-kpi-mail-config>
+}
+
+@if (mediaPickerOpen) {
+  <eda-dialog2 [display]="mediaPickerOpen" header="Gestor de archivos" i18n-header="@@adminMedia" width="70vw" height="70vh"
+    [showApply]="false" [overflow]="'auto'" (close)="mediaPickerOpen = false">
+    <div content class="p-4">
+      <app-media-library [pickMode]="true" (select)="onMediaSelected($event)"></app-media-library>
+    </div>
+  </eda-dialog2>
 }

@@ -8,7 +8,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { MenuModule } from 'primeng/menu';
 import { MessageModule } from 'primeng/message';
 import { CompactType, DisplayGrid, GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent, GridType } from 'angular-gridster2';
-import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService, UserService } from '@eda/services/service.index';
+import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService, UserService, MediaService } from '@eda/services/service.index';
 import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
 import { GlobalFilterComponent } from '@eda/components/global-filter/global-filter.component'; 
@@ -87,6 +87,7 @@ export class DashboardPage implements OnInit {
   private dashboardService = inject(DashboardService);
   private alertService = inject(AlertService);
   private fileUtils = inject(FileUtiles);
+  private mediaService = inject(MediaService);
   private route = inject(ActivatedRoute);
   private chartUtils = inject(ChartUtilsService);
   private dateUtilsService = inject(DateUtils);
@@ -331,10 +332,86 @@ export class DashboardPage implements OnInit {
         this.startCountdown(dashboard.config.refreshTime);
       }
       this.selectedTags = this.dashboard.config.tag;
+
+      // PROVISIONAL: migrate any legacy base64-embedded background/KPI images
+      // to the media library. Fire-and-forget so it never blocks dashboard rendering.
+      this.migrateEmbeddedImages(dashboard);
     }
 
     this.checkImportedPanels(dashboard);
     this.updateFilterDatesInPanels();
+  }
+
+  /**
+   * PROVISIONAL migration: legacy dashboards store background/KPI-prefix images
+   * as base64 data URIs directly inside the dashboard config. This detects any
+   * of those still present, uploads them to the media library named after the
+   * dashboard/panel, swaps the field for the returned url and silently
+   * persists the change - so the dashboard document stops carrying megabytes
+   * of embedded base64 the next time it's opened.
+   */
+  private async migrateEmbeddedImages(dashboard: any): Promise<void> {
+    if (!this.canIedit()) return;
+
+    let stylesChanged = false;
+    let panelsChanged = false;
+
+    const bg = dashboard.config?.styles?.backgroundImage;
+    if (typeof bg === 'string' && bg.startsWith('data:image')) {
+      const url = await this.migrateOneEmbeddedImage(bg, dashboard.config.title || 'dashboard');
+      if (url) {
+        dashboard.config.styles.backgroundImage = url;
+        stylesChanged = true;
+      }
+    }
+
+    for (const [i, panel] of (dashboard.config?.panel || []).entries()) {
+      const cfg = panel?.content?.query?.output?.config;
+      const prefix = cfg?.prefixImage;
+      if (typeof prefix === 'string' && prefix.startsWith('data:image')) {
+        const url = await this.migrateOneEmbeddedImage(prefix, panel.title || `panel-${i}`);
+        if (url) {
+          cfg.prefixImage = url;
+          panelsChanged = true;
+        }
+      }
+    }
+
+    if (!stylesChanged && !panelsChanged) return;
+
+    try {
+      if (stylesChanged) {
+        await lastValueFrom(this.dashboardService.updateDashboardSpecific(this.dashboardId,
+          { data: { key: 'config.styles', newValue: dashboard.config.styles } }));
+      }
+      if (panelsChanged) {
+        await lastValueFrom(this.dashboardService.updateDashboardSpecific(this.dashboardId,
+          { data: { key: 'config.panel', newValue: dashboard.config.panel } }));
+      }
+      // Re-apply so the on-screen background/KPI images reflect the new urls immediately
+      this.assignStyles();
+    } catch (e) {
+      console.warn('No se pudieron migrar las imágenes embebidas del dashboard', e);
+    }
+  }
+
+  /** Uploads one base64 data URI to the media library, returns its url (or null on failure). */
+  private async migrateOneEmbeddedImage(dataUri: string, suggestedName: string): Promise<string | null> {
+    try {
+      const blob = await (await fetch(dataUri)).blob();
+      const extension = (blob.type.split('/')[1] || 'png').replace('jpeg', 'jpg');
+      const safeName = (suggestedName || 'imagen')
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-zA-Z0-9-_]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 60) || 'imagen';
+      const res: any = await this.mediaService.upload(blob, `${safeName}.${extension}`);
+      return res?.media?.url || null;
+    } catch (e) {
+      console.warn('No se pudo migrar una imagen embebida', e);
+      return null;
+    }
   }
 
   private updateFilterDatesInPanels(): void {
@@ -412,7 +489,7 @@ export class DashboardPage implements OnInit {
     this.backgroundColor = {
       background: this.dashboard.config.styles.backgroundColor,
       ...(bgImage ? {
-        'background-image': `url(${bgImage})`,
+        'background-image': `url(${this.resolveImageSrc(bgImage)})`,
         'background-size': '100% auto',
         'background-position': 'top center',
         'background-repeat': 'repeat-y'
@@ -456,6 +533,13 @@ export class DashboardPage implements OnInit {
     };
 
     this.stylesProviderService.ActualChartPalette = this.dashboard.config.styles.palette;
+  }
+
+  /** Resolves a stored image reference (base64, absolute url, or media library path) to a displayable url. */
+  private resolveImageSrc(value: string): string {
+    if (!value) return value;
+    if (value.startsWith('data:') || /^https?:\/\//.test(value)) return value;
+    return this.fileUtils.connection(value);
   }
 
   private hexColorToRgba(hex: string, alpha: number): string {

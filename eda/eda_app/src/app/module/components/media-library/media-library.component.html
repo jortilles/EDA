@@ -1,0 +1,289 @@
+<div class="media-library" [class.media-library--split]="showOrgTools()">
+
+  <!-- Left tree: full nested folder hierarchy, always expanded -->
+  @if (showOrgTools()) {
+    <nav class="media-tree">
+      <a class="media-tree-node" [class.is-active]="!currentFolder()" (click)="goToRoot()">
+        <i class="pi pi-home"></i> <span i18n="@@mediaHome">Inicio</span>
+      </a>
+      @for (node of folderTree(); track node.folder._id) {
+        <a class="media-tree-node" [style.padding-left.px]="16 + node.depth * 14"
+           [class.is-active]="currentFolderId() === node.folder._id"
+           (click)="openFolder(node.folder)">
+          <i class="pi pi-folder"></i> <span [title]="node.folder.name">{{ node.folder.name }}</span>
+        </a>
+      }
+    </nav>
+  }
+
+  <div class="media-main">
+
+    <!-- Header: breadcrumb + view toggle -->
+    <div class="media-header">
+      <div class="media-breadcrumb">
+        <a (click)="goToRoot()" [class.is-current]="!currentFolder()" i18n="@@mediaHome">Inicio</a>
+        @for (folder of currentPath(); track folder._id) {
+          <span class="media-breadcrumb-sep">/</span>
+          <a (click)="openFolder(folder)" [class.is-current]="currentFolderId() === folder._id">{{ folder.name }}</a>
+        }
+        <span class="media-item-count">({{ currentFolderItemCount() }})</span>
+      </div>
+
+      <div class="media-header-actions">
+        @if (showOrgTools()) {
+          <button type="button" class="media-tool-btn" (click)="createFolder()">
+            <i class="pi pi-folder-plus"></i>
+            <span i18n="@@mediaNewFolder">Nueva carpeta</span>
+          </button>
+        }
+        <div class="media-view-toggle">
+          <button type="button" [class.active]="viewMode() === 'grid'" (click)="setViewMode('grid')" title="Cuadrícula" i18n-title="@@mediaGridView">
+            <i class="pi pi-th-large"></i>
+          </button>
+          <button type="button" [class.active]="viewMode() === 'list'" (click)="setViewMode('list')" title="Lista" i18n-title="@@mediaListView">
+            <i class="pi pi-bars"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar acting on the current selection (admin only) -->
+    @if (showOrgTools()) {
+      <div class="media-toolbar">
+        <button type="button" [disabled]="selectedIds().size === 0" (click)="deleteSelected()" title="Eliminar" i18n-title="@@delete">
+          <i class="pi pi-trash"></i> <span i18n="@@delete">Eliminar</span>
+        </button>
+        <button type="button" [disabled]="selectedIds().size !== 1" (click)="renameSelected()" title="Renombrar" i18n-title="@@rename">
+          <i class="pi pi-pencil"></i> <span i18n="@@rename">Renombrar</span>
+        </button>
+        <button type="button" [disabled]="selectedIds().size === 0" (click)="openMoveMenu()" title="Mover" i18n-title="@@mediaMove">
+          <i class="pi pi-folder"></i> <span i18n="@@mediaMove">Mover</span>
+        </button>
+        <span class="media-toolbar-spacer"></span>
+        <button type="button" (click)="toggleSelectAll()" i18n="@@mediaSelectAll">Seleccionar todo</button>
+        @if (selectedIds().size > 0) {
+          <button type="button" (click)="clearSelection()" i18n="@@mediaCancelSelection">Cancelar selección</button>
+        }
+      </div>
+    }
+
+    <!-- Upload zone -->
+    <label
+      class="dropzone"
+      [class.dropzone--dragging]="isDragging()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)">
+      <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" class="hidden" (change)="onFileSelected($event)" />
+      @if (uploading()) {
+        <span class="dropzone-text" i18n="@@mediaUploading">Subiendo imagen...</span>
+      } @else {
+        <i class="pi pi-cloud-upload dropzone-icon"></i>
+        <span class="dropzone-text" i18n="@@mediaDropHint">Arrastra una imagen aquí o haz clic para subirla</span>
+        <span class="dropzone-hint" i18n="@@mediaFormatsHint">PNG, JPG, GIF o WEBP · máximo 1MB</span>
+      }
+    </label>
+
+    <!-- Pick mode confirm bar -->
+    @if (pickMode && selectedItem(); as item) {
+      <div class="media-pick-bar">
+        <span [title]="item.originalName">{{ item.originalName }}</span>
+        <button type="button" (click)="choose(item)" i18n="@@mediaUseImage">Usar esta imagen</button>
+      </div>
+    }
+
+    <!-- Subfolders of the folder being browsed -->
+    @if (childFolders().length > 0) {
+      <div class="media-folder-grid">
+        @for (folder of childFolders(); track folder._id) {
+          <div class="media-folder-tile" (click)="openFolder(folder)">
+            <i class="pi pi-folder"></i>
+            <span class="media-folder-name" [title]="folder.name">{{ folder.name }}</span>
+            @if (showOrgTools()) {
+              <div class="media-folder-actions">
+                <button type="button" (click)="renameFolder(folder, $event)" title="Renombrar" i18n-title="@@rename"><i class="pi pi-pencil"></i></button>
+                <button type="button" (click)="deleteFolder(folder, $event)" title="Eliminar" i18n-title="@@delete"><i class="pi pi-trash"></i></button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Files -->
+    @if (loading()) {
+      <p class="media-status" i18n="@@mediaLoading">Cargando imágenes...</p>
+    } @else if (items().length === 0) {
+      <p class="media-status" i18n="@@mediaEmpty">Todavía no se ha subido ninguna imagen.</p>
+    } @else {
+      <!--
+        Only this area scrolls; the paginator and status bar below always stay put at the bottom.
+        The mousedown for drag-to-select lives here (not on .media-grid) and the scroll area fills
+        the full available height, so the whole box is a valid drag-select region - not just the
+        thin row the thumbnails happen to occupy.
+      -->
+      <div class="media-files-scroll" (mousedown)="onGridMouseDown($event)">
+        @if (viewMode() === 'grid') {
+          <div class="media-grid">
+            @for (item of paginatedItems(); track item._id) {
+              <div class="media-card"
+                   [attr.data-id]="item._id"
+                   [class.media-card--selected]="isSelected(item._id)"
+                   (click)="onTileClick(item, $event)">
+                <img [src]="item.url | mediaSrc" [alt]="item.originalName" class="media-thumb" />
+                <div class="media-card-overlay">
+                  <span class="media-card-name" [title]="item.originalName">{{ item.originalName }}</span>
+                  <span class="media-card-size">{{ formatSize(item.size) }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="media-table-wrap">
+            <table class="media-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th i18n="@@name">Nombre</th>
+                  <th i18n="@@mediaSize">Tamaño</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of paginatedItems(); track item._id) {
+                  <tr
+                      [class.media-row--selected]="isSelected(item._id)"
+                      (click)="onTileClick(item, $event)">
+                    <td><img [src]="item.url | mediaSrc" [alt]="item.originalName" class="media-row-thumb" /></td>
+                    <td class="media-row-name" [title]="item.originalName">{{ item.originalName }}</td>
+                    <td>{{ formatSize(item.size) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+        @if (marqueeRect(); as m) {
+          <div class="media-marquee" [style.left.px]="m.left" [style.top.px]="m.top" [style.width.px]="m.width" [style.height.px]="m.height"></div>
+        }
+      </div>
+
+      @if (totalPages() > 1) {
+        <div class="media-paginator">
+          <button (click)="setPage(1)" [disabled]="currentPage() === 1" class="paginator-btn">
+            <eda-icon name="chevron-double-left" size="sm"></eda-icon>
+          </button>
+          <button (click)="setPage(currentPage() - 1)" [disabled]="currentPage() === 1" class="paginator-btn">
+            <eda-icon name="chevron-left" size="sm"></eda-icon>
+          </button>
+          <p-dropdown class="paginator-dropdown mx-2"
+            [ngModel]="currentPage()" (onChange)="setPage($event.value)"
+            [options]="pageNumbers()" appendTo="body">
+          </p-dropdown>
+          <span class="text-sm font-semibold px-1">/ {{ totalPages() }}</span>
+          <button (click)="setPage(currentPage() + 1)" [disabled]="currentPage() === totalPages()" class="paginator-btn">
+            <eda-icon name="chevron-right" size="sm"></eda-icon>
+          </button>
+          <button (click)="setPage(totalPages())" [disabled]="currentPage() === totalPages()" class="paginator-btn">
+            <eda-icon name="chevron-double-right" size="sm"></eda-icon>
+          </button>
+          <p-dropdown class="paginator-dropdown mx-2 ml-4"
+            [ngModel]="itemsPerPage()" (onChange)="setPageSize($event.value)"
+            [options]="pageSizeOptions" appendTo="body">
+          </p-dropdown>
+        </div>
+      }
+
+      <div class="media-status-bar">
+        <span class="media-status-selected">
+          @if (selectedIds().size === 1) {
+            {{ selectedItem()?.originalName }}
+          } @else if (selectedIds().size > 1) {
+            {{ selectedIds().size }} <span i18n="@@mediaSelectedCount">seleccionadas</span>
+          }
+        </span>
+        <span class="media-count">{{ items().length }} <span i18n="@@mediaFoundCount">imágenes encontradas</span></span>
+      </div>
+    }
+
+  </div>
+
+  <!--
+    Side panel: selection details. The photo here is the ONLY way to open the big slideshow preview.
+    Only exists in the DOM while something is selected, on purpose: that's what makes the whole box
+    (not just the photo) slide in when a selection appears and disappear when it's cleared or you
+    navigate into a folder - switching from one selected image to another keeps this same element
+    alive, so the animation does NOT replay on every click, only on the 0 -> 1+ transition.
+  -->
+  @if (showOrgTools() && selectedIds().size > 0) {
+    <aside class="media-side-panel">
+      @if (selectedItem(); as item) {
+        <img [src]="item.url | mediaSrc" [alt]="item.originalName" class="side-panel-thumb" (click)="openSlideshow(item)" />
+        <dl class="side-panel-info">
+          <dt i18n="@@name">Nombre</dt><dd [title]="item.originalName">{{ item.originalName }}</dd>
+          <dt i18n="@@mediaUploadDate">Subida</dt><dd>{{ item.createdAt | date:'short' }}</dd>
+          <dt i18n="@@mediaSize">Tamaño</dt><dd>{{ formatSize(item.size) }}</dd>
+          <dt i18n="@@mediaType">Tipo</dt><dd>{{ item.mimeType }}</dd>
+        </dl>
+        <p class="media-usage-title" i18n="@@mediaUsedIn">Usado en</p>
+        @if (loadingUsage()) {
+          <p i18n="@@mediaLoading">Cargando imágenes...</p>
+        } @else if (previewUsage() && previewUsage().length > 0) {
+          <ul class="media-usage-list">
+            @for (d of previewUsage(); track d._id) {
+              <li><a [routerLink]="['/dashboard', d._id]">{{ d.title }}</a></li>
+            }
+          </ul>
+        } @else {
+          <p i18n="@@mediaNotUsed">No se usa en ningún dashboard.</p>
+        }
+      } @else {
+        <p class="side-panel-summary-count">{{ selectedIds().size }} <span i18n="@@mediaSelectedCount">seleccionadas</span></p>
+        <p class="side-panel-summary-size"><span i18n="@@mediaTotalSize">Tamaño total</span>: {{ formatSize(selectedTotalSize()) }}</p>
+        <button type="button" class="media-tool-btn" (click)="openMoveMenu()">
+          <i class="pi pi-folder"></i> <span i18n="@@mediaMoveTo">Mover a carpeta</span>
+        </button>
+        <button type="button" class="media-tool-btn media-tool-btn--danger" (click)="deleteSelected()">
+          <i class="pi pi-trash"></i> <span i18n="@@mediaDeleteSelected">Eliminar seleccionadas</span>
+        </button>
+        <button type="button" class="media-tool-btn" (click)="clearSelection()">
+          <span i18n="@@mediaCancelSelection">Cancelar selección</span>
+        </button>
+      }
+    </aside>
+  }
+
+</div>
+
+<!-- Move to folder -->
+@if (showMoveMenu()) {
+  <eda-dialog2 [display]="true" header="Mover a carpeta" i18n-header="@@mediaMoveTo" width="30vw" height="40vh"
+    [showApply]="false" [overflow]="'auto'" (close)="showMoveMenu.set(false)">
+    <div content class="media-move-list">
+      <button type="button" class="media-move-option" (click)="confirmMove(null)">
+        <i class="pi pi-home"></i> <span i18n="@@mediaRoot">Raíz</span>
+      </button>
+      @for (folder of folders(); track folder._id) {
+        <button type="button" class="media-move-option" (click)="confirmMove(folder._id)">
+          <i class="pi pi-folder"></i> {{ folder.name }}
+        </button>
+      }
+    </div>
+  </eda-dialog2>
+}
+
+<!-- Slideshow -->
+@if (slideshowItem(); as item) {
+  <eda-dialog2 [display]="true" [header]="item.originalName" width="90vw" height="90vh"
+    [showApply]="false" [overflow]="'hidden'" (close)="closeSlideshow()">
+    <div content class="media-slideshow" tabindex="0" (keydown)="onSlideshowKeydown($event)">
+      @if (items().length > 1) {
+        <button type="button" class="slide-nav slide-nav--prev" (click)="slidePrev()"><i class="pi pi-chevron-left"></i></button>
+      }
+      <img [src]="item.url | mediaSrc" [alt]="item.originalName" class="slide-img" />
+      @if (items().length > 1) {
+        <button type="button" class="slide-nav slide-nav--next" (click)="slideNext()"><i class="pi pi-chevron-right"></i></button>
+      }
+      <div class="slide-caption">{{ item.originalName }} · {{ (slideshowIndex() ?? 0) + 1 }} / {{ items().length }}</div>
+    </div>
+  </eda-dialog2>
+}

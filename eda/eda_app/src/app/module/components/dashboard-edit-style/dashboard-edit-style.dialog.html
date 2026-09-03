@@ -20,15 +20,13 @@
         <div>
           <h6 class="text-base font-semibold mb-2">Imagen de fondo:</h6>
           <div class="flex items-center gap-2">
-            <label class="cursor-pointer">
-              <span class="edit-style-upload inline-flex items-center gap-1 px-3 rounded border text-base bg-gray-50 transition-colors h-[3rem]">
-                <i class="pi pi-upload"></i> Subir imagen
-              </span>
-              <input type="file" accept="image/*" class="hidden" (change)="onBackgroundImageSelected($event)">
-            </label>
+            <button type="button" (click)="openMediaPicker()"
+              class="edit-style-upload inline-flex items-center gap-1 px-3 rounded border text-base bg-gray-50 transition-colors h-[3rem]">
+              <i class="pi pi-images"></i> <span i18n="@@chooseImage">Elegir imagen</span>
+            </button>
             @if (backgroundImage) {
-              <img [src]="backgroundImage" (click)="openImageInNewTab()" class="w-[7rem] h-[3rem] object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity" title="Ver imagen" />
-              <button class="text-base text-red-500 hover:underline" (click)="removeBackgroundImage()">Quitar</button>
+              <img [src]="backgroundImage | mediaSrc" (click)="openImageInNewTab()" class="w-[7rem] h-[3rem] object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity" title="Ver imagen" />
+              <button class="text-base text-red-500 hover:underline" (click)="removeBackgroundImage()" i18n="@@remove">Quitar</button>
             }
           </div>
         </div>
@@ -311,3 +309,12 @@
     </div>
   </div>
 </eda-dialog2>
+
+@if (mediaPickerOpen) {
+  <eda-dialog2 [display]="mediaPickerOpen" header="Gestor de archivos" i18n-header="@@adminMedia" width="70vw" height="70vh"
+    [showApply]="false" [overflow]="'auto'" (close)="mediaPickerOpen = false">
+    <div content class="p-4">
+      <app-media-library [pickMode]="true" (select)="onMediaSelected($event)"></app-media-library>
+    </div>
+  </eda-dialog2>
+}
