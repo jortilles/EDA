@@ -7491,6 +7491,110 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
     <source>Enviar una prueba ahora</source>
     <target>Envoyer un test maintenant</target>
   </trans-unit>
+  <trans-unit id="mailMsgExample">
+    <source>Hola,
+
+Este es un texto de prueba para el correo. Reemplaza este contenido por tu mensaje real.
+
+Primer KPI — ${p1.title}: ${p1.value}
+
+""CODE
+if p1.value > 0
+  El KPI tiene un valor positivo.
+else
+  El KPI no tiene datos disponibles.
+end
+CODE""
+</source>
+    <target>Bonjour,
+
+Ceci est un texte de test pour l'e-mail. Remplacez ce contenu par votre message réel.
+
+Premier KPI — ${p1.title}: ${p1.value}
+
+""CODE
+if p1.value > 0
+  Le KPI a une valeur positive.
+else
+  Le KPI n'a pas de données disponibles.
+end
+CODE""
+</target>
+  </trans-unit>
+  <trans-unit id="mailRefExample">
+    <source>Asunto: Resumen de ${p1.title}
+
+Hola,
+
+El valor de ${p1.title} es ${p1.value}.
+Media por categoría: ${p1.value.average}
+Categoría más alta: ${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Excelente mes 🎉
+elif p1.value > 500000
+  Mes correcto
+else
+  Por debajo de lo esperado
+end
+CODE""
+
+Desglose por categoría:
+${p1.value.breakdown}
+</source>
+    <target>Objet : Résumé de ${p1.title}
+
+Bonjour,
+
+La valeur de ${p1.title} est ${p1.value}.
+Moyenne par catégorie : ${p1.value.average}
+Catégorie la plus élevée : ${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Excellent mois 🎉
+elif p1.value > 500000
+  Mois correct
+else
+  En dessous des attentes
+end
+CODE""
+
+Répartition par catégorie :
+${p1.value.breakdown}
+</target>
+  </trans-unit>
+  <trans-unit id="mailRefResult">
+    <source>Asunto: Resumen de «Ventas 2024»
+
+Hola,
+
+El valor de «Ventas 2024» es «1.240.000».
+Media por categoría: «310.000»
+Categoría más alta: «Europa: 480.000»
+
+«Excelente mes 🎉»
+
+Desglose por categoría:
+«Europa: 480.000, Asia: 360.000, América: 280.000»
+
+Un saludo.</source>
+    <target>Objet : Résumé de «Ventes 2024»
+
+Bonjour,
+
+La valeur de «Ventes 2024» est «1 240 000».
+Moyenne par catégorie : «310 000»
+Catégorie la plus élevée : «Europe : 480 000»
+
+«Excellent mois 🎉»
+
+Répartition par catégorie :
+«Europe : 480 000, Asie : 360 000, Amérique : 280 000»
+
+Cordialement.</target>
+  </trans-unit>
     </body>
   </file>
 </xliff>

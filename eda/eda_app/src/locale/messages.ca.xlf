@@ -7523,6 +7523,110 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
     <source>Enviar una prueba ahora</source>
     <target>Envia una prova ara</target>
   </trans-unit>
+  <trans-unit id="mailMsgExample">
+    <source>Hola,
+
+Este es un texto de prueba para el correo. Reemplaza este contenido por tu mensaje real.
+
+Primer KPI — ${p1.title}: ${p1.value}
+
+""CODE
+if p1.value > 0
+  El KPI tiene un valor positivo.
+else
+  El KPI no tiene datos disponibles.
+end
+CODE""
+</source>
+    <target>Hola,
+
+Aquest és un text de prova per al correu. Reemplaça aquest contingut pel teu missatge real.
+
+Primer KPI — ${p1.title}: ${p1.value}
+
+""CODE
+if p1.value > 0
+  El KPI té un valor positiu.
+else
+  El KPI no té dades disponibles.
+end
+CODE""
+</target>
+  </trans-unit>
+  <trans-unit id="mailRefExample">
+    <source>Asunto: Resumen de ${p1.title}
+
+Hola,
+
+El valor de ${p1.title} es ${p1.value}.
+Media por categoría: ${p1.value.average}
+Categoría más alta: ${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Excelente mes 🎉
+elif p1.value > 500000
+  Mes correcto
+else
+  Por debajo de lo esperado
+end
+CODE""
+
+Desglose por categoría:
+${p1.value.breakdown}
+</source>
+    <target>Assumpte: Resum de ${p1.title}
+
+Hola,
+
+El valor de ${p1.title} és ${p1.value}.
+Mitjana per categoria: ${p1.value.average}
+Categoria més alta: ${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Excel·lent mes 🎉
+elif p1.value > 500000
+  Mes correcte
+else
+  Per sota del que s'esperava
+end
+CODE""
+
+Desglossament per categoria:
+${p1.value.breakdown}
+</target>
+  </trans-unit>
+  <trans-unit id="mailRefResult">
+    <source>Asunto: Resumen de «Ventas 2024»
+
+Hola,
+
+El valor de «Ventas 2024» es «1.240.000».
+Media por categoría: «310.000»
+Categoría más alta: «Europa: 480.000»
+
+«Excelente mes 🎉»
+
+Desglose por categoría:
+«Europa: 480.000, Asia: 360.000, América: 280.000»
+
+Un saludo.</source>
+    <target>Assumpte: Resum de «Vendes 2024»
+
+Hola,
+
+El valor de «Vendes 2024» és «1.240.000».
+Mitjana per categoria: «310.000»
+Categoria més alta: «Europa: 480.000»
+
+«Excel·lent mes 🎉»
+
+Desglossament per categoria:
+«Europa: 480.000, Àsia: 360.000, Amèrica: 280.000»
+
+Salutacions.</target>
+  </trans-unit>
     </body>
   </file>
 </xliff>

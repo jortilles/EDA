@@ -7156,6 +7156,110 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <source>Enviar una prueba ahora</source>
     <target>Wyślij test teraz</target>
   </trans-unit>
+  <trans-unit id="mailMsgExample">
+    <source>Hola,
+
+Este es un texto de prueba para el correo. Reemplaza este contenido por tu mensaje real.
+
+Primer KPI — ${p1.title}: ${p1.value}
+
+""CODE
+if p1.value > 0
+  El KPI tiene un valor positivo.
+else
+  El KPI no tiene datos disponibles.
+end
+CODE""
+</source>
+    <target>Cześć,
+
+To jest przykładowy tekst wiadomości e-mail. Zastąp tę treść swoją właściwą wiadomością.
+
+Pierwszy KPI — ${p1.title}: ${p1.value}
+
+""CODE
+if p1.value > 0
+  KPI ma wartość dodatnią.
+else
+  KPI nie ma dostępnych danych.
+end
+CODE""
+</target>
+  </trans-unit>
+  <trans-unit id="mailRefExample">
+    <source>Asunto: Resumen de ${p1.title}
+
+Hola,
+
+El valor de ${p1.title} es ${p1.value}.
+Media por categoría: ${p1.value.average}
+Categoría más alta: ${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Excelente mes 🎉
+elif p1.value > 500000
+  Mes correcto
+else
+  Por debajo de lo esperado
+end
+CODE""
+
+Desglose por categoría:
+${p1.value.breakdown}
+</source>
+    <target>Temat: Podsumowanie ${p1.title}
+
+Cześć,
+
+Wartość ${p1.title} wynosi ${p1.value}.
+Średnia na kategorię: ${p1.value.average}
+Najwyższa kategoria: ${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Świetny miesiąc 🎉
+elif p1.value > 500000
+  Przyzwoity miesiąc
+else
+  Poniżej oczekiwań
+end
+CODE""
+
+Podział według kategorii:
+${p1.value.breakdown}
+</target>
+  </trans-unit>
+  <trans-unit id="mailRefResult">
+    <source>Asunto: Resumen de «Ventas 2024»
+
+Hola,
+
+El valor de «Ventas 2024» es «1.240.000».
+Media por categoría: «310.000»
+Categoría más alta: «Europa: 480.000»
+
+«Excelente mes 🎉»
+
+Desglose por categoría:
+«Europa: 480.000, Asia: 360.000, América: 280.000»
+
+Un saludo.</source>
+    <target>Temat: Podsumowanie «Sprzedaż 2024»
+
+Cześć,
+
+Wartość «Sprzedaż 2024» wynosi «1 240 000».
+Średnia na kategorię: «310 000»
+Najwyższa kategoria: «Europa: 480 000»
+
+«Świetny miesiąc 🎉»
+
+Podział według kategorii:
+«Europa: 480 000, Azja: 360 000, Ameryka: 280 000»
+
+Pozdrawiam.</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

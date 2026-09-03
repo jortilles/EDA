@@ -6004,6 +6004,61 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="mailSendTestTitle" datatype="html">
         <source>Enviar una prueba ahora</source>
       </trans-unit>
+      <trans-unit id="mailMsgExample" datatype="html">
+        <source>Hola,
+
+Este es un texto de prueba para el correo. Reemplaza este contenido por tu mensaje real.
+
+Primer KPI — ${p1.title}: ${p1.value}
+
+""CODE
+if p1.value > 0
+  El KPI tiene un valor positivo.
+else
+  El KPI no tiene datos disponibles.
+end
+CODE""
+</source>
+      </trans-unit>
+      <trans-unit id="mailRefExample" datatype="html">
+        <source>Asunto: Resumen de ${p1.title}
+
+Hola,
+
+El valor de ${p1.title} es ${p1.value}.
+Media por categoría: ${p1.value.average}
+Categoría más alta: ${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Excelente mes 🎉
+elif p1.value > 500000
+  Mes correcto
+else
+  Por debajo de lo esperado
+end
+CODE""
+
+Desglose por categoría:
+${p1.value.breakdown}
+</source>
+      </trans-unit>
+      <trans-unit id="mailRefResult" datatype="html">
+        <source>Asunto: Resumen de «Ventas 2024»
+
+Hola,
+
+El valor de «Ventas 2024» es «1.240.000».
+Media por categoría: «310.000»
+Categoría más alta: «Europa: 480.000»
+
+«Excelente mes 🎉»
+
+Desglose por categoría:
+«Europa: 480.000, Asia: 360.000, América: 280.000»
+
+Un saludo.</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

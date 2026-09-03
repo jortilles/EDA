@@ -219,17 +219,20 @@ export abstract class MailConfigModalBase implements OnInit {
   /** Prefilled starting content (not a placeholder) — the user edits or clears it. */
   public readonly defaultSubject = $localize`:@@mailSubjectDefault:Correo de prueba del informe`;
   public readonly messageExample =
-    'Hola,\n\n' +
-    'Este es un texto de prueba para el correo. Reemplaza este contenido por tu mensaje real.\n\n' +
-    'Primer KPI — ${p1.title}: ${p1.value}\n\n' +
-    '""CODE\n' +
-    'if p1.value > 0\n' +
-    '  El KPI tiene un valor positivo.\n' +
-    'else\n' +
-    '  El KPI no tiene datos disponibles.\n' +
-    'end\n' +
-    'CODE""\n\n' +
-    `<img src="${SubLogoImage}" width=100% />`;
+    $localize`:@@mailMsgExample:Hola,
+
+Este es un texto de prueba para el correo. Reemplaza este contenido por tu mensaje real.
+
+Primer KPI — \${p1.title}: \${p1.value}
+
+""CODE
+if p1.value > 0
+  El KPI tiene un valor positivo.
+else
+  El KPI no tiene datos disponibles.
+end
+CODE""
+` + `\n<img src="${SubLogoImage}" width=100% />`;
 
   // reference card: KPI value tokens with a plain-language meaning
   public readonly refVars: { token: string; desc: string }[] = [
@@ -245,40 +248,50 @@ export abstract class MailConfigModalBase implements OnInit {
 
   // full worked example shown on the left side of the reference card
   public readonly refExample =
-    'Asunto: Resumen de ${p1.title}\n' +
-    '\n' +
-    'Hola,\n' +
-    '\n' +
-    'El valor de ${p1.title} es ${p1.value}.\n' +
-    'Media por categoría: ${p1.value.average}\n' +
-    'Categoría más alta: ${p1.value.top}\n' +
-    '\n' +
-    '""CODE\n' +
-    'if p1.value > 1000000\n' +
-    '  Excelente mes 🎉\n' +
-    'elif p1.value > 500000\n' +
-    '  Mes correcto\n' +
-    'else\n' +
-    '  Por debajo de lo esperado\n' +
-    'end\n' +
-    'CODE""\n' +
-    '\n' +
-    'Desglose por categoría:\n' +
-    '${p1.value.breakdown}\n' +
-    '\n';
+    $localize`:@@mailRefExample:Asunto: Resumen de \${p1.title}
 
-  // rendered version of refExample with sample data; `hl` marks auto-substituted parts
-  public readonly refResult: { t: string; hl?: boolean }[] = [
-    { t: 'Asunto: Resumen de ' }, { t: 'Ventas 2024', hl: true },
-    { t: '\n\nHola,\n\nEl valor de ' }, { t: 'Ventas 2024', hl: true },
-    { t: ' es ' }, { t: '1.240.000', hl: true },
-    { t: '.\nMedia por categoría: ' }, { t: '310.000', hl: true },
-    { t: '\nCategoría más alta: ' }, { t: 'Europa: 480.000', hl: true },
-    { t: '\n\n' }, { t: 'Excelente mes 🎉', hl: true },
-    { t: '\n\nDesglose por categoría:\n' },
-    { t: 'Europa: 480.000, Asia: 360.000, América: 280.000', hl: true },
-    { t: '\n\nUn saludo.' },
-  ];
+Hola,
+
+El valor de \${p1.title} es \${p1.value}.
+Media por categoría: \${p1.value.average}
+Categoría más alta: \${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Excelente mes 🎉
+elif p1.value > 500000
+  Mes correcto
+else
+  Por debajo de lo esperado
+end
+CODE""
+
+Desglose por categoría:
+\${p1.value.breakdown}
+`;
+
+  // rendered version of refExample with sample data; text between « » is a highlighted substitution
+  private readonly refResultRaw = $localize`:@@mailRefResult:Asunto: Resumen de «Ventas 2024»
+
+Hola,
+
+El valor de «Ventas 2024» es «1.240.000».
+Media por categoría: «310.000»
+Categoría más alta: «Europa: 480.000»
+
+«Excelente mes 🎉»
+
+Desglose por categoría:
+«Europa: 480.000, Asia: 360.000, América: 280.000»
+
+Un saludo.`;
+
+  public get refResult(): { t: string; hl?: boolean }[] {
+    return this.refResultRaw
+      .split(/(«[^»]*»)/)
+      .filter(s => s !== '')
+      .map(s => (s.startsWith('«') && s.endsWith('»') ? { t: s.slice(1, -1), hl: true } : { t: s }));
+  }
 
 
   // ---- reference dialog + insert toolbox ------------------------------------

@@ -7216,6 +7216,110 @@ OR<ph id="5"/>
     <source>Enviar una prueba ahora</source>
     <target>Send a test now</target>
   </trans-unit>
+  <trans-unit id="mailMsgExample">
+    <source>Hola,
+
+Este es un texto de prueba para el correo. Reemplaza este contenido por tu mensaje real.
+
+Primer KPI — ${p1.title}: ${p1.value}
+
+""CODE
+if p1.value > 0
+  El KPI tiene un valor positivo.
+else
+  El KPI no tiene datos disponibles.
+end
+CODE""
+</source>
+    <target>Hi,
+
+This is a test message for the email. Replace this content with your real message.
+
+First KPI — ${p1.title}: ${p1.value}
+
+""CODE
+if p1.value > 0
+  The KPI has a positive value.
+else
+  The KPI has no data available.
+end
+CODE""
+</target>
+  </trans-unit>
+  <trans-unit id="mailRefExample">
+    <source>Asunto: Resumen de ${p1.title}
+
+Hola,
+
+El valor de ${p1.title} es ${p1.value}.
+Media por categoría: ${p1.value.average}
+Categoría más alta: ${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Excelente mes 🎉
+elif p1.value > 500000
+  Mes correcto
+else
+  Por debajo de lo esperado
+end
+CODE""
+
+Desglose por categoría:
+${p1.value.breakdown}
+</source>
+    <target>Subject: Summary of ${p1.title}
+
+Hi,
+
+The value of ${p1.title} is ${p1.value}.
+Average per category: ${p1.value.average}
+Top category: ${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Great month 🎉
+elif p1.value > 500000
+  Decent month
+else
+  Below expectations
+end
+CODE""
+
+Breakdown by category:
+${p1.value.breakdown}
+</target>
+  </trans-unit>
+  <trans-unit id="mailRefResult">
+    <source>Asunto: Resumen de «Ventas 2024»
+
+Hola,
+
+El valor de «Ventas 2024» es «1.240.000».
+Media por categoría: «310.000»
+Categoría más alta: «Europa: 480.000»
+
+«Excelente mes 🎉»
+
+Desglose por categoría:
+«Europa: 480.000, Asia: 360.000, América: 280.000»
+
+Un saludo.</source>
+    <target>Subject: Summary of «Sales 2024»
+
+Hi,
+
+The value of «Sales 2024» is «1,240,000».
+Average per category: «310,000»
+Top category: «Europe: 480,000»
+
+«Great month 🎉»
+
+Breakdown by category:
+«Europe: 480,000, Asia: 360,000, America: 280,000»
+
+Best regards.</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>
