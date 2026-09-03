@@ -26,6 +26,9 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     @ViewChild('mailConfig', { static: false }) mailConfig: any;
     @ViewChild('previewContainer', { static: false }) previewContainer: ElementRef;
     public mailConfigOpen: boolean = false;
+    public dashboardId: string = '';
+    public panelId: string = '';
+    public kpiPanels: any[] = [];
 
     public panelChartConfig: PanelChart = new PanelChart();
     
@@ -150,6 +153,9 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.panelWidth = this.controller.params.panelWidth || 400;
         this.panelHeight = this.controller.params.panelHeight || 300;
         this.panelTitle = this.controller.params.panelTitle || '';
+        this.dashboardId = this.controller.params.dashboardId || '';
+        this.panelId = this.controller.params.panelID || '';
+        this.kpiPanels = this.controller.params.kpiPanels || [];
         this.previewAspectRatio = `${this.panelWidth} / ${this.panelHeight}`;
         const config: any = this.panelChartConfig.config.getConfig();
 
@@ -368,7 +374,11 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             value: this.value ? this.value : 0,
             operand: this.operand,
             color: this.color,
-            mailing: { units: null, quantity: null, hours: null, minutes: null, users: [], mailMessage: null, enabled: false }
+            mailing: {
+                units: null, quantity: null, hours: null, minutes: null,
+                weekday: 1, monthlyMode: 'dom', monthlyDay: 1, monthlyOrdinal: 'first', monthlyWeekday: 1,
+                users: [], otherRecipients: '', mailSubject: null, mailMessage: null, aiAnalysis: false, enabled: false
+            }
         });
     }
 

@@ -1,155 +1,117 @@
-import { Component, EventEmitter, Input, OnInit, Output, signal } from "@angular/core";
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, } from "@angular/forms";
-import { lastValueFrom } from "rxjs";
-import { AlertService, MailService, UserService } from "@eda/services/service.index";
-import { DateUtils } from "@eda/services/utils/date-utils.service";
-import { SharedModule } from "@eda/shared/shared.module";
+import { Component, Input, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
 import { MultiSelectModule } from "primeng/multiselect";
 import { CalendarModule } from 'primeng/calendar';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { SelectButtonModule } from "primeng/selectbutton";
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { DropdownModule } from 'primeng/dropdown';
+import { DialogModule } from 'primeng/dialog';
+import { TooltipModule } from 'primeng/tooltip';
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
-
-
-import * as _ from 'lodash';
-import { EdaDialog } from "@eda/shared/components/shared-components.index";
+import { MailVarSuggestDirective } from "@eda/shared/directives/mail-var-suggest.directive";
 import { DashboardPage } from "../../pages/dashboard/dashboard.page";
-
+import { MailConfigModalBase } from "../mail-config/mail-config-modal.base";
 
 @Component({
   selector: 'app-dashboard-mail-config',
   standalone: true,
-  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, FloatLabelModule,CalendarModule,InputSwitchModule,EdaDialog2Component],
-  templateUrl: './dashboard-mail-config.modal.html',
-  styleUrls: ['./dashboard-mail-config.modal.css'],
+  imports: [CommonModule, FormsModule, MultiSelectModule, CalendarModule, InputSwitchModule, DropdownModule, DialogModule, TooltipModule, EdaDialog2Component, MailVarSuggestDirective],
+  templateUrl: '../mail-config/mail-config-modal.html',
+  styleUrls: ['../mail-config/mail-config-modal.css'],
 })
+export class DashboardMailConfigModal extends MailConfigModalBase implements OnInit {
+  @Input() dashboard!: DashboardPage;
 
-export class DashboardMailConfigModal {
-  @Output() close: EventEmitter<any> = new EventEmitter<any>();
-  @Output() apply: EventEmitter<any> = new EventEmitter<any>();
-  @Input() dashboard: DashboardPage;
-  public display: boolean = false;
-  public dialog: EdaDialog;
+  get isAlert(): boolean { return false; }
+  protected get variablePanels(): any[] { return this.dashboard?.panels as any[]; }
+  protected get linkDashboardId(): string { return this.dashboard?.dashboardId ?? ''; }
 
-  /**mail config properties */
-  public units: string;
-  public quantity: number;
-  public hours: any;
-  public hoursSTR = $localize`:@@hours:Hora/s`;
-  public daysSTR = $localize`:@@days:Día/s`;
-  public mailMessage = '';
-  public currentAlert = null;
-  public users: any;
-  public selectedUsers: any = [];
-  public otherRecipients: string = '';
-  public enabled: boolean = true;
-  public isTesting = signal<boolean>(false);
+  override get subtitle(): string { return this.dashboard?.dashboard?.config?.title ?? ''; }
+  override get pdfName(): string { return `${this.dashboard?.dashboard?.config?.title || 'informe'}.pdf`; }
+  /** The dashboard dialog lets you save even a barely-filled config (existing behaviour). */
+  override disableApply(): boolean { return false; }
 
-  constructor(private alertService: AlertService, private userService: UserService, private dateUtils: DateUtils, private mailService: MailService) { }
-
-  ngOnInit(): void {
-    this.userService.getUsers().subscribe(
-      res => this.users = res.map(user => ({ label: user.name || user.email, value: user })),
-      err => console.log(err)
-    );
-
-    const sendViaMailConfig = this.dashboard.dashboard.config?.sendViaMailConfig;
-    if (sendViaMailConfig?.enabled) {
-      this.setConfig();
-    } else {
-      this.hours = this.dateUtils.roundToNextHalfHour(new Date());
-    }
+  loadConfig(): void {
+    const c = this.dashboard?.dashboard?.config?.sendViaMailConfig;
+    this.loadSchedule(c);
+    if (!c?.enabled) this.enabled = true;
   }
 
-  /** Snaps a manually typed time to the nearest :00 or :30 once the user leaves the field */
-  onHoursBlur(): void {
-    if (this.hours) {
-      this.hours = this.dateUtils.roundToNearestHalfHour(this.hours);
-    }
-  }
-
-  setConfig() {
-    const config = this.dashboard.dashboard.config.sendViaMailConfig;
-    /** Stored hours/minutes are UTC; convert to a Date so the picker shows the equivalent local time */
-    const utcHours = new Date();
-    utcHours.setUTCHours(parseInt(config.hours, 10) || 0, parseInt(config.minutes, 10) || 0, 0, 0);
-    this.hours = utcHours;
-    this.units = config.units;
-    this.quantity = config.quantity;
-    this.selectedUsers = config.users;
-    this.otherRecipients = config.otherRecipients || '';
-    this.mailMessage = config.mailMessage;
-    this.enabled = config.enabled;
-  }
-
-  /** Emails typed by hand in the "Otros destinatarios" input, space-separated */
-  public parseOtherRecipients(): string[] {
-    return this.otherRecipients
-      .split(/\s+/)
-      .map(email => email.trim())
-      .filter(email => email.length > 0);
-  }
-
-  /** All recipients (registered users + manually typed emails), deduplicated, for the dialog summary */
-  public get allRecipientEmails(): string[] {
-    const registered = (this.selectedUsers || []).map((u: any) => u.email).filter(Boolean);
-    const manual = this.parseOtherRecipients();
-    return Array.from(new Set([...registered, ...manual]));
-  }
-
-  save() {
-
-    /** Store hours/minutes in UTC so the schedule check on the backend is timezone-independent */
-    const hours = this.hours ? this.dateUtils.fillWithZeros(this.hours.getUTCHours()) : null;
-    const minutes = this.hours ? this.dateUtils.fillWithZeros(this.hours.getUTCMinutes()) : null;
-
-    const response = {
-      units: this.units,
-      quantity: this.quantity,
-      hours: hours,
-      minutes: minutes,
-      users: this.selectedUsers,
-      otherRecipients: this.otherRecipients,
-      mailMessage: this.mailMessage,
+  save(): void {
+    this.apply.emit({
+      ...this.schedulePayload(),
       lastUpdated: new Date().toISOString(),
-      enabled: this.enabled,
-      dashboard: this.dashboard
-    };
-    this.apply.emit(response);
+      dashboard: this.dashboard,
+    });
   }
 
-  public onApply() {
-    this.display = false;
-    this.save();
+  async sendNow(recipients?: { to: string[]; toExternal: string[] }): Promise<void> {
+    await this.runSend(
+      this.mailService.sendDashboardNow({
+        dashboardId: this.dashboard.dashboardId,
+        to: recipients ? recipients.to : this.registeredEmails,
+        toExternal: recipients ? recipients.toExternal : this.parseOtherRecipients(),
+        subject: this.mailSubject,
+        message: this.mailMessage,
+        aiAnalysis: this.aiAvailable && this.aiAnalysis,
+      }),
+      $localize`:@@mailSendNowStarted:Envío iniciado. Los informes se están generando y llegarán en unos minutos.`,
+    );
   }
 
-  public disableApply(): boolean {
-    return false;
+  // ---- live values from the panels still rendered behind the dialog ----
+
+  private panelChartComp(panelId: string): any {
+    const arr = (this.dashboard as any)?.edaPanels?.toArray?.() ?? [];
+    return arr.find((p: any) => p?.panel?.id === panelId)?.panelChart;
   }
 
-  disableTest(): boolean {
-    return this.isTesting() || this.allRecipientEmails.length === 0 || !this.mailMessage;
-  }
-
-  async sendTest() {
-    this.isTesting.set(true);
+  override getPanelCurrentValue(panelId: string): string {
     try {
-      await lastValueFrom(this.mailService.testSend({
-        to: this.allRecipientEmails,
-        subject: 'EDA - Prueba de envío de informe',
-        message: this.mailMessage
-      }));
-      this.alertService.addSuccess($localize`:@@testMailSent:Correo de prueba enviado correctamente`);
-    } catch (err: any) {
-      this.alertService.addError(err);
-    } finally {
-      this.isTesting.set(false);
+      const v = this.panelChartComp(panelId)?.componentRef?.instance?.inject?.value;
+      if (v === undefined || v === null || v === '') return '—';
+      const n = Number(v);
+      return Number.isFinite(n) ? n.toLocaleString('de-DE') : String(v);
+    } catch {
+      return '—';
     }
   }
 
-  public onClose(): void {
-    this.display = false;
-    this.close.emit();
+  override getPanelSeries(panelId: string): { label: string; value: number }[] {
+    try {
+      const pc = this.panelChartComp(panelId);
+      const num = (x: any) => Number(x && typeof x === 'object' ? (x.y ?? x.value ?? x.v) : x) || 0;
+
+      const ec = pc?.componentRef?.instance?.inject?.edaChart;
+      const ecLabels: any[] = ec?.chartLabels ?? [];
+      const dataset: any = (ec?.chartDataset ?? []).find((d: any) => !d?.isTrend) ?? (ec?.chartDataset ?? [])[0];
+      const ecValues: any[] = dataset?.data ?? [];
+      if (ecLabels.length && ecValues.length) {
+        return ecLabels.map((lab, i) => ({ label: String(lab ?? ''), value: num(ecValues[i]) }));
+      }
+
+      const data = pc?.props?.data ?? pc?.data;
+      const labels: string[] = data?.labels ?? [];
+      const rows: any[][] = data?.values ?? [];
+      if (rows.length && labels.length >= 1) {
+        let numIdx = -1;
+        for (let c = labels.length - 1; c >= 0; c--) {
+          if (rows.every(r => r[c] === null || r[c] === '' || Number.isFinite(Number(r[c])))) { numIdx = c; break; }
+        }
+        if (numIdx >= 0) {
+          const labIdx = labels.findIndex((_, i) => i !== numIdx);
+          return rows.map(r => ({ label: labIdx >= 0 ? String(r[labIdx] ?? '') : '', value: Number(r[numIdx]) || 0 }));
+        }
+      }
+
+      // Plain kpi panel: no series, just the headline number.
+      const single = pc?.componentRef?.instance?.inject?.value;
+      if (single !== undefined && single !== null && single !== '' && Number.isFinite(Number(single))) {
+        return [{ label: '', value: Number(single) }];
+      }
+      return [];
+    } catch {
+      return [];
+    }
   }
 }

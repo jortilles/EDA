@@ -1370,6 +1370,180 @@
           <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="sendingMailNow" datatype="html">
+        <source>Enviando...</source>
+      </trans-unit>
+      <trans-unit id="mailSendNowStarted" datatype="html">
+        <source>Envío iniciado. Los informes se están generando y llegarán en unos minutos.</source>
+      </trans-unit>
+      <trans-unit id="alertSendNowDone" datatype="html">
+        <source>Alerta enviada (si el KPI cumple la condición en este momento)</source>
+      </trans-unit>
+      <trans-unit id="kpiMailConfigTitle" datatype="html">
+        <source>Configuración de la alerta KPI por email</source>
+      </trans-unit>
+      <trans-unit id="selectRecipients" datatype="html">
+        <source>Selecciona los destinatarios *</source>
+      </trans-unit>
+      <trans-unit id="otherRecipientsPlaceholder" datatype="html">
+        <source>correo1@dominio.com correo2@dominio.com</source>
+      </trans-unit>
+      <trans-unit id="mailDlgTitle" datatype="html">
+        <source>Envío del panel por email</source>
+      </trans-unit>
+      <trans-unit id="mailActiveToggle" datatype="html">
+        <source>Envío de correo programado</source>
+      </trans-unit>
+      <trans-unit id="mailStep1" datatype="html">
+        <source>¿Cuándo se envía?</source>
+      </trans-unit>
+      <trans-unit id="mailStep1Hint" datatype="html">
+        <source>El informe se genera y se manda automáticamente en cada repetición.</source>
+      </trans-unit>
+      <trans-unit id="mailAlertStep1Hint" datatype="html">
+        <source>La alerta se comprueba en cada repetición y sólo se envía si el KPI cumple la condición.</source>
+      </trans-unit>
+      <trans-unit id="mailFreqHourly" datatype="html">
+        <source>Horario</source>
+      </trans-unit>
+      <trans-unit id="mailFreqDaily" datatype="html">
+        <source>Diario</source>
+      </trans-unit>
+      <trans-unit id="mailFreqWeekly2" datatype="html">
+        <source>Semanal</source>
+      </trans-unit>
+      <trans-unit id="mailFreqMonthly2" datatype="html">
+        <source>Mensual</source>
+      </trans-unit>
+      <trans-unit id="mailFreqEvery" datatype="html">
+        <source>Cada</source>
+      </trans-unit>
+      <trans-unit id="mailWeeklyEach" datatype="html">
+        <source>Cada</source>
+      </trans-unit>
+      <trans-unit id="mailWeeklyAt" datatype="html">
+        <source>a las</source>
+      </trans-unit>
+      <trans-unit id="mailMonthlyOnDay" datatype="html">
+        <source>el día</source>
+      </trans-unit>
+      <trans-unit id="mailMonthlyThe" datatype="html">
+        <source>el</source>
+      </trans-unit>
+      <trans-unit id="mailFreqMonthlyDom" datatype="html">
+        <source>El día del mes</source>
+      </trans-unit>
+      <trans-unit id="mailFreqMonthlyNth" datatype="html">
+        <source>Un día de la semana</source>
+      </trans-unit>
+      <trans-unit id="mailFreqLastDay" datatype="html">
+        <source>Último día</source>
+      </trans-unit>
+      <trans-unit id="mailStep2" datatype="html">
+        <source>¿A quién?</source>
+      </trans-unit>
+      <trans-unit id="mailStep2Hint" datatype="html">
+        <source>Usuarios de Edalitics, o cualquier dirección externa.</source>
+      </trans-unit>
+      <trans-unit id="mailUsersLabel" datatype="html">
+        <source>Usuarios</source>
+      </trans-unit>
+      <trans-unit id="mailExternalLabel" datatype="html">
+        <source>Direcciones externas</source>
+      </trans-unit>
+      <trans-unit id="mailExtHint" datatype="html">
+        <source>(separadas por un espacio)</source>
+      </trans-unit>
+      <trans-unit id="mailStep3" datatype="html">
+        <source>¿Qué dice el correo?</source>
+      </trans-unit>
+      <trans-unit id="mailStep3Hint" datatype="html">
+        <source>Escribe el texto. La vista previa de la derecha se actualiza mientras escribes.</source>
+      </trans-unit>
+      <trans-unit id="mailSubjectShort" datatype="html">
+        <source>Asunto</source>
+      </trans-unit>
+      <trans-unit id="mailMessageLabel" datatype="html">
+        <source>Mensaje</source>
+      </trans-unit>
+      <trans-unit id="mailAiAdd" datatype="html">
+        <source>Añadir análisis con IA</source>
+      </trans-unit>
+      <trans-unit id="mailAiAddHint" datatype="html">
+        <source>Genera un comentario sobre los datos de cada envío y lo añade debajo de tu mensaje. Cambia en cada correo.</source>
+      </trans-unit>
+      <trans-unit id="mailPreviewShort" datatype="html">
+        <source>Vista previa</source>
+      </trans-unit>
+      <trans-unit id="mailPreviewHint" datatype="html">
+        <source>· tal como lo recibirá el destinatario</source>
+      </trans-unit>
+      <trans-unit id="mailForLabel" datatype="html">
+        <source>Para:</source>
+      </trans-unit>
+      <trans-unit id="mailWriteToPreview" datatype="html">
+        <source>Escribe el mensaje para verlo aquí.</source>
+      </trans-unit>
+      <trans-unit id="mailPreviewAiTitle" datatype="html">
+        <source>Análisis automático</source>
+      </trans-unit>
+      <trans-unit id="mailPreviewAiDesc" datatype="html">
+        <source>Aquí se añadirá un resumen del dashboard escrito con IA en cada envío. Consume tokens de tu cuenta.</source>
+      </trans-unit>
+      <trans-unit id="mailPreviewDashImg" datatype="html">
+        <source>imagen del dashboard</source>
+      </trans-unit>
+      <trans-unit id="mailPreviewKpiLabel" datatype="html">
+        <source>Valor del KPI</source>
+      </trans-unit>
+      <trans-unit id="mailPreviewKpiValue" datatype="html">
+        <source>valor del KPI en el momento del envío</source>
+      </trans-unit>
+      <trans-unit id="mailOpenDashboard" datatype="html">
+        <source>Abrir el dashboard en Edalitics →</source>
+      </trans-unit>
+      <trans-unit id="mailSaveSchedule" datatype="html">
+        <source>Guardar programación</source>
+      </trans-unit>
+      <trans-unit id="mailNoSubject" datatype="html">
+        <source>Sin asunto</source>
+      </trans-unit>
+      <trans-unit id="weekdayMonday" datatype="html">
+        <source>Lunes</source>
+      </trans-unit>
+      <trans-unit id="weekdayTuesday" datatype="html">
+        <source>Martes</source>
+      </trans-unit>
+      <trans-unit id="weekdayWednesday" datatype="html">
+        <source>Miércoles</source>
+      </trans-unit>
+      <trans-unit id="weekdayThursday" datatype="html">
+        <source>Jueves</source>
+      </trans-unit>
+      <trans-unit id="weekdayFriday" datatype="html">
+        <source>Viernes</source>
+      </trans-unit>
+      <trans-unit id="weekdaySaturday" datatype="html">
+        <source>Sábado</source>
+      </trans-unit>
+      <trans-unit id="weekdaySunday" datatype="html">
+        <source>Domingo</source>
+      </trans-unit>
+      <trans-unit id="ordinalFirst" datatype="html">
+        <source>Primer</source>
+      </trans-unit>
+      <trans-unit id="ordinalSecond" datatype="html">
+        <source>Segundo</source>
+      </trans-unit>
+      <trans-unit id="ordinalThird" datatype="html">
+        <source>Tercer</source>
+      </trans-unit>
+      <trans-unit id="ordinalFourth" datatype="html">
+        <source>Cuarto</source>
+      </trans-unit>
+      <trans-unit id="ordinalLast" datatype="html">
+        <source>Último</source>
+      </trans-unit>
       <trans-unit id="noMail" datatype="html">
         <source>Sin alertas de correo</source>
         <context-group purpose="location">
@@ -5745,6 +5919,145 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/components/getting-started/getting-started.component.html</context>
         </context-group>
+      </trans-unit>
+      <trans-unit id="mailRefIconTitle" datatype="html">
+        <source>Variables y condicionales</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarsTitle" datatype="html">
+        <source>Variables</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarsIntro" datatype="html">
+        <source>Los KPIs van numerados según su orden en el dashboard: p1 es el primero, p2 el segundo, y así sucesivamente.</source>
+      </trans-unit>
+      <trans-unit id="mailRefInsertTitle" datatype="html">
+        <source>Insertar</source>
+      </trans-unit>
+      <trans-unit id="mailRefInsertCode" datatype="html">
+        <source>Bloque CODE</source>
+      </trans-unit>
+      <trans-unit id="mailRefInsertCodeTip" datatype="html">
+        <source>Inserta un bloque condicional (if / else) en el mensaje</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarTitle" datatype="html">
+        <source>el título del KPI</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarValue" datatype="html">
+        <source>el valor actual del KPI</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarTop" datatype="html">
+        <source>la categoría con el valor más alto</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarBottom" datatype="html">
+        <source>la categoría con el valor más bajo</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarAvg" datatype="html">
+        <source>la media de las categorías</source>
+      </trans-unit>
+      <trans-unit id="mailRefVarBreakdown" datatype="html">
+        <source>todas las categorías con su valor</source>
+      </trans-unit>
+      <trans-unit id="mailRefExampleTitle" datatype="html">
+        <source>Ejemplo completo</source>
+      </trans-unit>
+      <trans-unit id="mailRefCondTitle" datatype="html">
+        <source>Condicionales</source>
+      </trans-unit>
+      <trans-unit id="mailRefCondIntro" datatype="html">
+        <source>Delimita el bloque con ""CODE y CODE"" en su propia línea. Dentro, if evalúa una condición y escribe el texto de esa rama; añade elif para más casos, else para el resto y cierra con end.</source>
+      </trans-unit>
+      <trans-unit id="mailRefCondOps" datatype="html">
+        <source>En la condición puedes comparar con:</source>
+      </trans-unit>
+      <trans-unit id="mailRefResultTitle" datatype="html">
+        <source>Así lo recibe el destinatario</source>
+      </trans-unit>
+      <trans-unit id="mailRefResultHint" datatype="html">
+        <source>Resaltado: lo que se sustituye automáticamente en cada envío.</source>
+      </trans-unit>
+      <trans-unit id="mailSubjectDefault" datatype="html">
+        <source>Correo de prueba del informe</source>
+      </trans-unit>
+      <trans-unit id="mailPdfTipDash" datatype="html">
+        <source>PDF generado del dashboard</source>
+      </trans-unit>
+      <trans-unit id="mailPdfTipKpi" datatype="html">
+        <source>PDF generado del panel KPI</source>
+      </trans-unit>
+      <trans-unit id="mailClearContent" datatype="html">
+        <source>Borrar el asunto y el mensaje</source>
+      </trans-unit>
+      <trans-unit id="mailNoKpis" datatype="html">
+        <source>Este dashboard no tiene KPIs.</source>
+      </trans-unit>
+      <trans-unit id="mailSendToConfigured" datatype="html">
+        <source>Enviar prueba a los destinatarios configurados</source>
+      </trans-unit>
+      <trans-unit id="mailSendTestPlaceholder" datatype="html">
+        <source>o solo a este correo…</source>
+      </trans-unit>
+      <trans-unit id="mailSendTestBtn" datatype="html">
+        <source>Enviar</source>
+      </trans-unit>
+      <trans-unit id="mailSendNowHint" datatype="html">
+        <source>Envío único e inmediato. No guarda ni activa la programación de arriba.</source>
+      </trans-unit>
+      <trans-unit id="mailSendTestTitle" datatype="html">
+        <source>Enviar una prueba ahora</source>
+      </trans-unit>
+      <trans-unit id="mailMsgExample" datatype="html">
+        <source>Hola,
+
+Este es un texto de prueba para el correo. Reemplaza este contenido por tu mensaje real.
+
+Primer KPI — ${p1.title}: ${p1.value}
+
+""CODE
+if p1.value > 0
+  El KPI tiene un valor positivo.
+else
+  El KPI no tiene datos disponibles.
+end
+CODE""
+</source>
+      </trans-unit>
+      <trans-unit id="mailRefExample" datatype="html">
+        <source>Asunto: Resumen de ${p1.title}
+
+Hola,
+
+El valor de ${p1.title} es ${p1.value}.
+Media por categoría: ${p1.value.average}
+Categoría más alta: ${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Excelente mes 🎉
+elif p1.value > 500000
+  Mes correcto
+else
+  Por debajo de lo esperado
+end
+CODE""
+
+Desglose por categoría:
+${p1.value.breakdown}
+</source>
+      </trans-unit>
+      <trans-unit id="mailRefResult" datatype="html">
+        <source>Asunto: Resumen de «Ventas 2024»
+
+Hola,
+
+El valor de «Ventas 2024» es «1.240.000».
+Media por categoría: «310.000»
+Categoría más alta: «Europa: 480.000»
+
+«Excelente mes 🎉»
+
+Desglose por categoría:
+«Europa: 480.000, Asia: 360.000, América: 280.000»
+
+Un saludo.</source>
       </trans-unit>
     </body>
   </file>

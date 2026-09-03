@@ -2985,7 +2985,226 @@ Co widzę?
     <source>Contenido del mail: </source>
     <target>Treść wiadomości:  </target>
   </trans-unit>
-
+  <trans-unit id="sendingMailNow">
+    <source>Enviando...</source>
+    <target>Wysyłanie...</target>
+  </trans-unit>
+  <trans-unit id="mailSendNowStarted">
+    <source>Envío iniciado. Los informes se están generando y llegarán en unos minutos.</source>
+    <target>Wysyłanie rozpoczęte. Raporty są generowane i dotrą za kilka minut.</target>
+  </trans-unit>
+  <trans-unit id="alertSendNowDone">
+    <source>Alerta enviada (si el KPI cumple la condición en este momento)</source>
+    <target>Alert wysłany (jeśli KPI spełnia warunek w tym momencie)</target>
+  </trans-unit>
+  <trans-unit id="mailDlgTitle">
+    <source>Envío del panel por email</source>
+    <target>Wysyłka panelu e-mailem</target>
+  </trans-unit>
+  <trans-unit id="mailActiveToggle">
+    <source>Envío de correo programado</source>
+    <target>Zaplanowana wysyłka e-maili</target>
+  </trans-unit>
+  <trans-unit id="mailStep1">
+    <source>¿Cuándo se envía?</source>
+    <target>Kiedy jest wysyłane?</target>
+  </trans-unit>
+  <trans-unit id="mailStep1Hint">
+    <source>El informe se genera y se manda automáticamente en cada repetición.</source>
+    <target>Raport jest generowany i wysyłany automatycznie przy każdym powtórzeniu.</target>
+  </trans-unit>
+  <trans-unit id="mailAlertStep1Hint">
+    <source>La alerta se comprueba en cada repetición y sólo se envía si el KPI cumple la condición.</source>
+    <target>Alert jest sprawdzany przy każdym powtórzeniu i wysyłany tylko wtedy, gdy KPI spełnia warunek.</target>
+  </trans-unit>
+  <trans-unit id="mailFreqHourly">
+    <source>Horario</source>
+    <target>Godzinowo</target>
+  </trans-unit>
+  <trans-unit id="mailFreqDaily">
+    <source>Diario</source>
+    <target>Codziennie</target>
+  </trans-unit>
+  <trans-unit id="mailFreqWeekly2">
+    <source>Semanal</source>
+    <target>Co tydzień</target>
+  </trans-unit>
+  <trans-unit id="mailFreqMonthly2">
+    <source>Mensual</source>
+    <target>Co miesiąc</target>
+  </trans-unit>
+  <trans-unit id="mailFreqEvery">
+    <source>Cada</source>
+    <target>Co</target>
+  </trans-unit>
+  <trans-unit id="mailWeeklyEach">
+    <source>Cada</source>
+    <target>Każdy</target>
+  </trans-unit>
+  <trans-unit id="mailWeeklyAt">
+    <source>a las</source>
+    <target>o</target>
+  </trans-unit>
+  <trans-unit id="mailMonthlyOnDay">
+    <source>el día</source>
+    <target>w dniu</target>
+  </trans-unit>
+  <trans-unit id="mailMonthlyThe">
+    <source>el</source>
+    <target>w</target>
+  </trans-unit>
+  <trans-unit id="mailFreqMonthlyDom">
+    <source>El día del mes</source>
+    <target>Dzień miesiąca</target>
+  </trans-unit>
+  <trans-unit id="mailFreqMonthlyNth">
+    <source>Un día de la semana</source>
+    <target>Dzień tygodnia</target>
+  </trans-unit>
+  <trans-unit id="mailFreqLastDay">
+    <source>Último día</source>
+    <target>Ostatni dzień</target>
+  </trans-unit>
+  <trans-unit id="mailStep2">
+    <source>¿A quién?</source>
+    <target>Do kogo?</target>
+  </trans-unit>
+  <trans-unit id="mailStep2Hint">
+    <source>Usuarios de Edalitics, o cualquier dirección externa.</source>
+    <target>Użytkownicy Edalitics lub dowolny adres zewnętrzny.</target>
+  </trans-unit>
+  <trans-unit id="mailUsersLabel">
+    <source>Usuarios</source>
+    <target>Użytkownicy</target>
+  </trans-unit>
+  <trans-unit id="mailExternalLabel">
+    <source>Direcciones externas</source>
+    <target>Adresy zewnętrzne</target>
+  </trans-unit>
+  <trans-unit id="mailExtHint">
+    <source>(separadas por un espacio)</source>
+    <target>(oddzielone spacją)</target>
+  </trans-unit>
+  <trans-unit id="mailStep3">
+    <source>¿Qué dice el correo?</source>
+    <target>Co zawiera e-mail?</target>
+  </trans-unit>
+  <trans-unit id="mailStep3Hint">
+    <source>Escribe el texto. La vista previa de la derecha se actualiza mientras escribes.</source>
+    <target>Wpisz treść. Podgląd po prawej stronie aktualizuje się na bieżąco.</target>
+  </trans-unit>
+  <trans-unit id="mailSubjectShort">
+    <source>Asunto</source>
+    <target>Temat</target>
+  </trans-unit>
+  <trans-unit id="mailMessageLabel">
+    <source>Mensaje</source>
+    <target>Wiadomość</target>
+  </trans-unit>
+  <trans-unit id="mailAiAdd">
+    <source>Añadir análisis con IA</source>
+    <target>Dodaj analizę AI</target>
+  </trans-unit>
+  <trans-unit id="mailAiAddHint">
+    <source>Genera un comentario sobre los datos de cada envío y lo añade debajo de tu mensaje. Cambia en cada correo.</source>
+    <target>Generuje komentarz do danych każdej wysyłki i dodaje go pod Twoją wiadomością. Zmienia się przy każdym e-mailu.</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewShort">
+    <source>Vista previa</source>
+    <target>Podgląd</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewHint">
+    <source>· tal como lo recibirá el destinatario</source>
+    <target>· dokładnie tak, jak otrzyma je odbiorca</target>
+  </trans-unit>
+  <trans-unit id="mailForLabel">
+    <source>Para:</source>
+    <target>Do:</target>
+  </trans-unit>
+  <trans-unit id="mailWriteToPreview">
+    <source>Escribe el mensaje para verlo aquí.</source>
+    <target>Wpisz wiadomość, aby zobaczyć ją tutaj.</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewAiTitle">
+    <source>Análisis automático</source>
+    <target>Analiza automatyczna</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewAiDesc">
+    <source>Aquí se añadirá un resumen del dashboard escrito con IA en cada envío. Consume tokens de tu cuenta.</source>
+    <target>Tutaj przy każdej wysyłce zostanie dodane podsumowanie pulpitu napisane przez AI. Zużywa tokeny z Twojego konta.</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewDashImg">
+    <source>imagen del dashboard</source>
+    <target>obraz pulpitu</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewKpiLabel">
+    <source>Valor del KPI</source>
+    <target>Wartość KPI</target>
+  </trans-unit>
+  <trans-unit id="mailPreviewKpiValue">
+    <source>valor del KPI en el momento del envío</source>
+    <target>wartość KPI w momencie wysyłki</target>
+  </trans-unit>
+  <trans-unit id="mailOpenDashboard">
+    <source>Abrir el dashboard en Edalitics →</source>
+    <target>Otwórz pulpit w Edalitics →</target>
+  </trans-unit>
+  <trans-unit id="mailSaveSchedule">
+    <source>Guardar programación</source>
+    <target>Zapisz harmonogram</target>
+  </trans-unit>
+  <trans-unit id="mailNoSubject">
+    <source>Sin asunto</source>
+    <target>Bez tematu</target>
+  </trans-unit>
+  <trans-unit id="weekdayMonday">
+    <source>Lunes</source>
+    <target>Poniedziałek</target>
+  </trans-unit>
+  <trans-unit id="weekdayTuesday">
+    <source>Martes</source>
+    <target>Wtorek</target>
+  </trans-unit>
+  <trans-unit id="weekdayWednesday">
+    <source>Miércoles</source>
+    <target>Środa</target>
+  </trans-unit>
+  <trans-unit id="weekdayThursday">
+    <source>Jueves</source>
+    <target>Czwartek</target>
+  </trans-unit>
+  <trans-unit id="weekdayFriday">
+    <source>Viernes</source>
+    <target>Piątek</target>
+  </trans-unit>
+  <trans-unit id="weekdaySaturday">
+    <source>Sábado</source>
+    <target>Sobota</target>
+  </trans-unit>
+  <trans-unit id="weekdaySunday">
+    <source>Domingo</source>
+    <target>Niedziela</target>
+  </trans-unit>
+  <trans-unit id="ordinalFirst">
+    <source>Primer</source>
+    <target>Pierwszy</target>
+  </trans-unit>
+  <trans-unit id="ordinalSecond">
+    <source>Segundo</source>
+    <target>Drugi</target>
+  </trans-unit>
+  <trans-unit id="ordinalThird">
+    <source>Tercer</source>
+    <target>Trzeci</target>
+  </trans-unit>
+  <trans-unit id="ordinalFourth">
+    <source>Cuarto</source>
+    <target>Czwarty</target>
+  </trans-unit>
+  <trans-unit id="ordinalLast">
+    <source>Último</source>
+    <target>Ostatni</target>
+  </trans-unit>
    <trans-unit id="sendMailHeader">
     <source>Configuración de los envíos por email</source>
     <target>Konfigurowanie wysyłania wiadomości e-mail</target>
@@ -7030,6 +7249,222 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Łączny rozmiar</target>
       </trans-unit>
 
+  <trans-unit id="mailRefIconTitle">
+    <source>Variables y condicionales</source>
+    <target>Zmienne i warunki</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarsTitle">
+    <source>Variables</source>
+    <target>Zmienne</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarsIntro">
+    <source>Los KPIs van numerados según su orden en el dashboard: p1 es el primero, p2 el segundo, y así sucesivamente.</source>
+    <target>KPI są numerowane według kolejności na pulpicie: p1 to pierwszy, p2 drugi i tak dalej.</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertTitle">
+    <source>Insertar</source>
+    <target>Wstaw</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertCode">
+    <source>Bloque CODE</source>
+    <target>Blok CODE</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertCodeTip">
+    <source>Inserta un bloque condicional (if / else) en el mensaje</source>
+    <target>Wstawia blok warunkowy (if / else) do wiadomości</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarTitle">
+    <source>el título del KPI</source>
+    <target>tytuł KPI</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarValue">
+    <source>el valor actual del KPI</source>
+    <target>bieżąca wartość KPI</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarTop">
+    <source>la categoría con el valor más alto</source>
+    <target>kategoria z najwyższą wartością</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarBottom">
+    <source>la categoría con el valor más bajo</source>
+    <target>kategoria z najniższą wartością</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarAvg">
+    <source>la media de las categorías</source>
+    <target>średnia z kategorii</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarBreakdown">
+    <source>todas las categorías con su valor</source>
+    <target>wszystkie kategorie z ich wartością</target>
+  </trans-unit>
+  <trans-unit id="mailRefExampleTitle">
+    <source>Ejemplo completo</source>
+    <target>Pełny przykład</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondTitle">
+    <source>Condicionales</source>
+    <target>Warunki</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondIntro">
+    <source>Delimita el bloque con ""CODE y CODE"" en su propia línea. Dentro, if evalúa una condición y escribe el texto de esa rama; añade elif para más casos, else para el resto y cierra con end.</source>
+    <target>Ogranicz blok za pomocą ""CODE i CODE"" w osobnych wierszach. Wewnątrz if sprawdza warunek i wypisuje tekst danej gałęzi; dodaj elif dla kolejnych przypadków, else dla reszty i zamknij za pomocą end.</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondOps">
+    <source>En la condición puedes comparar con:</source>
+    <target>W warunku możesz porównywać za pomocą:</target>
+  </trans-unit>
+  <trans-unit id="mailRefResultTitle">
+    <source>Así lo recibe el destinatario</source>
+    <target>Tak otrzymuje to odbiorca</target>
+  </trans-unit>
+  <trans-unit id="mailRefResultHint">
+    <source>Resaltado: lo que se sustituye automáticamente en cada envío.</source>
+    <target>Wyróżnione: to, co jest automatycznie podstawiane przy każdej wysyłce.</target>
+  </trans-unit>
+  <trans-unit id="mailSubjectDefault">
+    <source>Correo de prueba del informe</source>
+    <target>Testowy e-mail raportu</target>
+  </trans-unit>
+  <trans-unit id="mailPdfTipDash">
+    <source>PDF generado del dashboard</source>
+    <target>PDF wygenerowany z pulpitu</target>
+  </trans-unit>
+  <trans-unit id="mailPdfTipKpi">
+    <source>PDF generado del panel KPI</source>
+    <target>PDF wygenerowany z panelu KPI</target>
+  </trans-unit>
+  <trans-unit id="mailClearContent">
+    <source>Borrar el asunto y el mensaje</source>
+    <target>Wyczyść temat i wiadomość</target>
+  </trans-unit>
+  <trans-unit id="mailNoKpis">
+    <source>Este dashboard no tiene KPIs.</source>
+    <target>Ten pulpit nie ma wskaźników KPI.</target>
+  </trans-unit>
+  <trans-unit id="mailSendToConfigured">
+    <source>Enviar prueba a los destinatarios configurados</source>
+    <target>Wyślij test do skonfigurowanych odbiorców</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestPlaceholder">
+    <source>o solo a este correo…</source>
+    <target>lub tylko na ten adres…</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestBtn">
+    <source>Enviar</source>
+    <target>Wyślij</target>
+  </trans-unit>
+  <trans-unit id="mailSendNowHint">
+    <source>Envío único e inmediato. No guarda ni activa la programación de arriba.</source>
+    <target>Jednorazowa, natychmiastowa wysyłka. Nie zapisuje ani nie aktywuje harmonogramu powyżej.</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestTitle">
+    <source>Enviar una prueba ahora</source>
+    <target>Wyślij test teraz</target>
+  </trans-unit>
+  <trans-unit id="mailMsgExample">
+    <source>Hola,
+
+Este es un texto de prueba para el correo. Reemplaza este contenido por tu mensaje real.
+
+Primer KPI — ${p1.title}: ${p1.value}
+
+""CODE
+if p1.value > 0
+  El KPI tiene un valor positivo.
+else
+  El KPI no tiene datos disponibles.
+end
+CODE""
+</source>
+    <target>Cześć,
+
+To jest przykładowy tekst wiadomości e-mail. Zastąp tę treść swoją właściwą wiadomością.
+
+Pierwszy KPI — ${p1.title}: ${p1.value}
+
+""CODE
+if p1.value > 0
+  KPI ma wartość dodatnią.
+else
+  KPI nie ma dostępnych danych.
+end
+CODE""
+</target>
+  </trans-unit>
+  <trans-unit id="mailRefExample">
+    <source>Asunto: Resumen de ${p1.title}
+
+Hola,
+
+El valor de ${p1.title} es ${p1.value}.
+Media por categoría: ${p1.value.average}
+Categoría más alta: ${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Excelente mes 🎉
+elif p1.value > 500000
+  Mes correcto
+else
+  Por debajo de lo esperado
+end
+CODE""
+
+Desglose por categoría:
+${p1.value.breakdown}
+</source>
+    <target>Temat: Podsumowanie ${p1.title}
+
+Cześć,
+
+Wartość ${p1.title} wynosi ${p1.value}.
+Średnia na kategorię: ${p1.value.average}
+Najwyższa kategoria: ${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Świetny miesiąc 🎉
+elif p1.value > 500000
+  Przyzwoity miesiąc
+else
+  Poniżej oczekiwań
+end
+CODE""
+
+Podział według kategorii:
+${p1.value.breakdown}
+</target>
+  </trans-unit>
+  <trans-unit id="mailRefResult">
+    <source>Asunto: Resumen de «Ventas 2024»
+
+Hola,
+
+El valor de «Ventas 2024» es «1.240.000».
+Media por categoría: «310.000»
+Categoría más alta: «Europa: 480.000»
+
+«Excelente mes 🎉»
+
+Desglose por categoría:
+«Europa: 480.000, Asia: 360.000, América: 280.000»
+
+Un saludo.</source>
+    <target>Temat: Podsumowanie «Sprzedaż 2024»
+
+Cześć,
+
+Wartość «Sprzedaż 2024» wynosi «1 240 000».
+Średnia na kategorię: «310 000»
+Najwyższa kategoria: «Europa: 480 000»
+
+«Świetny miesiąc 🎉»
+
+Podział według kategorii:
+«Europa: 480 000, Azja: 360 000, Ameryka: 280 000»
+
+Pozdrawiam.</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

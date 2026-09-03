@@ -711,6 +711,10 @@
 @if (mailConfigOpen) {
   <app-kpi-mail-config
     [alert]="currentAlert"
+    [dashboardId]="dashboardId"
+    [panelId]="panelId"
+    [kpiPanels]="kpiPanels"
+    [kpiFieldName]="panelTitle"
     (apply)="onMailConfigApply($event)"
     (close)="closeMailingConfig()">
   </app-kpi-mail-config>
