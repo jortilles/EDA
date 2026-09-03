@@ -3153,14 +3153,6 @@ Co widzę?
     <source>Enviar una copia ahora</source>
     <target>Wyślij kopię teraz</target>
   </trans-unit>
-  <trans-unit id="mailSendTestHint">
-    <source>Se envía a los destinatarios configurados, sin activar la programación.</source>
-    <target>Wysyłane do skonfigurowanych odbiorców, bez aktywowania harmonogramu.</target>
-  </trans-unit>
-  <trans-unit id="mailAlertSendTestHint">
-    <source>Se envía a los destinatarios configurados si el KPI cumple la condición ahora, sin activar la programación.</source>
-    <target>Wysyłane do skonfigurowanych odbiorców, jeśli KPI spełnia teraz warunek, bez aktywowania harmonogramu.</target>
-  </trans-unit>
   <trans-unit id="mailSaveSchedule">
     <source>Guardar programación</source>
     <target>Zapisz harmonogram</target>

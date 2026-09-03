@@ -3241,14 +3241,6 @@ What am I seeing?
 <source>Enviar una copia ahora</source>
 <target>Send a copy now</target>
 </trans-unit>
-<trans-unit id="mailSendTestHint">
-<source>Se envía a los destinatarios configurados, sin activar la programación.</source>
-<target>Sent to the configured recipients, without activating the schedule.</target>
-</trans-unit>
-<trans-unit id="mailAlertSendTestHint">
-<source>Se envía a los destinatarios configurados si el KPI cumple la condición ahora, sin activar la programación.</source>
-<target>Sent to the configured recipients if the KPI meets the condition now, without activating the schedule.</target>
-</trans-unit>
 <trans-unit id="mailSaveSchedule">
 <source>Guardar programación</source>
 <target>Save schedule</target>

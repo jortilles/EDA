@@ -341,11 +341,6 @@
           @if (isSending()) { <span i18n="@@sendingMailNow">Enviando...</span> }
           @else { <span i18n="@@mailSendTestNow">Enviar una copia ahora</span> }
         </button>
-        @if (isAlert) {
-          <p class="shrink-0 text-center text-xs text-gray-400" i18n="@@mailAlertSendTestHint">Se envía a los destinatarios configurados si el KPI cumple la condición ahora, sin activar la programación.</p>
-        } @else {
-          <p class="shrink-0 text-center text-xs text-gray-400" i18n="@@mailSendTestHint">Se envía a los destinatarios configurados, sin activar la programación.</p>
-        }
       </div>
 
     </div>

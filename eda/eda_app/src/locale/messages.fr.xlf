@@ -3490,14 +3490,6 @@ Que suis-je en train de voir ?
     <source>Enviar una copia ahora</source>
     <target>Envoyer une copie maintenant</target>
   </trans-unit>
-  <trans-unit id="mailSendTestHint">
-    <source>Se envía a los destinatarios configurados, sin activar la programación.</source>
-    <target>Envoyé aux destinataires configurés, sans activer la planification.</target>
-  </trans-unit>
-  <trans-unit id="mailAlertSendTestHint">
-    <source>Se envía a los destinatarios configurados si el KPI cumple la condición ahora, sin activar la programación.</source>
-    <target>Envoyé aux destinataires configurés si le KPI remplit la condition maintenant, sans activer la planification.</target>
-  </trans-unit>
   <trans-unit id="mailSaveSchedule">
     <source>Guardar programación</source>
     <target>Enregistrer la planification</target>

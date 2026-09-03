@@ -3535,14 +3535,6 @@ Qué estic veient?
     <source>Enviar una copia ahora</source>
     <target>Enviar una còpia ara</target>
   </trans-unit>
-  <trans-unit id="mailSendTestHint">
-    <source>Se envía a los destinatarios configurados, sin activar la programación.</source>
-    <target>S'envia als destinataris configurats, sense activar la programació.</target>
-  </trans-unit>
-  <trans-unit id="mailAlertSendTestHint">
-    <source>Se envía a los destinatarios configurados si el KPI cumple la condición ahora, sin activar la programación.</source>
-    <target>S'envia als destinataris configurats si el KPI compleix la condició ara, sense activar la programació.</target>
-  </trans-unit>
   <trans-unit id="mailSaveSchedule">
     <source>Guardar programación</source>
     <target>Desar programació</target>
