@@ -1,0 +1,272 @@
+<div class="eda-table eda-table--pivot" [class.eda-table--transparent]="styleProviderService.backgroundImage">
+    <p-table
+        #table
+        [columns]="inject.cols"
+        [value]="inject.value"
+        [paginator]="true"
+        [rows]="inject.rows"
+        [rowsPerPageOptions]="[5, 10, 25, 50, 100]"
+        paginatorDropdownAppendTo="body"
+        (onPage)="inject.onPage($event)"
+        (sortFunction)="customSort($event, inject.cols)"
+        [customSort]="true"
+        [sortField]="inject.sortedColumn ? inject.sortedColumn.field : null"
+        [sortOrder]="inject.sortedColumn ? inject.sortedColumn.order : null"
+        [autoLayout]="inject.autolayout"
+        styleClass="p-datatable-striped"
+        [ngStyle]="getStyle()">
+
+        <!-- Search -->
+         @if(inject.search){
+            <ng-template pTemplate="caption">
+                <div class="text-right">
+                    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                    <input type="text" pInputText size="50" i18n-placeholder="@@buscar"  placeholder="Buscar" [disabled]="inject.value.length === 0" (input)="table.filterGlobal($event.target.value, 'contains')">
+                </div>
+            </ng-template>
+         }
+
+
+        <!-- Header -->
+        <ng-template pTemplate="header" let-columns>
+            <!-- visibility:collapse broke dashboard export capture, so this sizing row is hidden via zero height/visibility instead -->
+            <tr class="header-invisible" style="visibility: hidden; height: 0; line-height: 0; font-size: 0; padding: 0; border: none;">
+                <ng-container *ngFor="let col of inject.cols">
+                    @if(col.visible === true){
+                        <th [width]="col.width" style="height: 0; line-height: 0; font-size: 0; padding: 0; border: none;"></th>
+                    }
+                </ng-container>
+            </tr>
+
+            <!-- Matrix header — always rendered, this component never has a flat header row. -->
+            <tr *ngFor="let serie of inject.series" >
+                <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [pSortableColumn]="label.column" [attr.colspan]="label.colspan"
+                (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center" [ngStyle]="getStyle()" >
+                    <div class="flex items-center">
+                        {{label.title}}
+                        @if(label.sortable){
+                            <p-sortIcon ></p-sortIcon>
+                        }
+                    </div>
+                </th>
+            </tr>
+
+            @if(verifyFilter()){
+                <tr class="header-filter">
+                    <ng-container *ngFor="let col of inject.cols">
+                        <th>
+                            @if(col.filter){
+                                <ng-container [ngSwitch]="col.filter.type">
+                                    <ng-container *ngSwitchCase="'EdaColumnFilterMultiSelect'">
+                                        <p-multiSelect [showHeader]="true" defaultLabel="Tot" [(ngModel)]="col.filter.ngModel" [options]="col.filter.options" [style]="col.filter.style" (onChange)="_tableFilter(table, $event.value, col)" appendTo="body">
+                                        </p-multiSelect>
+                                    </ng-container>
+                                </ng-container>
+                            }
+                        </th>
+                    </ng-container>
+                </tr>
+            }
+
+        </ng-template>
+
+        <!-- COLUMN CONTENT -->
+
+        <ng-template pTemplate="body" let-rowData let-columns="columns">
+            <tr>
+                <ng-container *ngFor="let col of inject.cols">
+                    @if(col.visible===true){
+                        <td [class]="col.styleClass" [width]="col.width" (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer; height: 35px;" [ngClass]="getStyleClass(col, rowData)" [ngStyle]="getTextStyle()">
+                            <ng-container [ngSwitch]="col.type">
+                                <!-- ngSwitch TEXT -->
+
+                                <ng-container *ngSwitchCase="'EdaColumnText'">
+                                   @if( inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field){
+                                    <div class="flex items-center w-full" [pTooltip]="getLinkTooltip(col)">
+
+                                        <span class="flex-1 break-words">
+                                        {{ lodash.get(rowData, col.field) }}
+                                        </span>
+
+                                        <div class="flex items-center gap-4">
+                                        @if(haveChild(col.field)){
+                                            <button class="nav-btn" title="Navegar" i18n-title="@@navegar"
+                                            (click)="handleNavIn(col.field, lodash.get(rowData, col.field), $event)">
+                                            +
+                                            </button>
+                                        }
+                                        @if(isChild(col.field)){
+                                            <button class="nav-btn" title="Volver" i18n-title="@@volver"
+                                            (click)="handleNavOut(getChildRootKey(col.field), $event)">
+                                            -
+                                            </button>
+                                        }
+                                        </div>
+
+                                    </div>
+                                    }
+
+                                    @if( (!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field) && !col.rangeOption){
+                                    <div class="flex items-center w-full">
+
+                                        <span class="flex-1 break-words">
+                                        {{ lodash.get(rowData, col.field) }}
+                                        </span>
+
+                                        <div class="flex items-center gap-4">
+                                        @if(haveChild(col.field)){
+                                            <button class="nav-btn" title="Navegar" i18n-title="@@navegar"
+                                            (click)="handleNavIn(col.field, lodash.get(rowData, col.field), $event)">
+                                            +
+                                            </button>
+                                        }
+                                        @if(isChild(col.field)){
+                                            <button class="nav-btn" title="Volver" i18n-title="@@volver"
+                                            (click)="handleNavOut(getChildRootKey(col.field), $event)">
+                                            -
+                                            </button>
+                                        }
+                                        </div>
+
+                                    </div>
+                                    }
+
+                                    @if( (!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field) && col.rangeOption) {
+                                    <div class="flex items-center w-full">
+
+                                        <span class="flex-1 break-words"
+                                            [innerHTML]="formatValoresRango(rowData, col.field)">
+                                        </span>
+
+                                        <div class="flex items-center gap-4">
+                                        @if(haveChild(col.field)){
+                                            <button class="nav-btn" title="Navegar" i18n-title="@@navegar"
+                                            (click)="handleNavIn(col.field, lodash.get(rowData, col.field), $event)">
+                                            +
+                                            </button>
+                                        }
+                                        @if(isChild(col.field)){
+                                            <button class="nav-btn" title="Volver" i18n-title="@@volver"
+                                            (click)="handleNavOut(getChildRootKey(col.field), $event)">
+                                            -
+                                            </button>
+                                        }
+                                        </div>
+
+                                    </div>
+                                    }
+                                </ng-container>
+
+                                <!-- ngSwitch HTML -->
+                                <ng-container *ngSwitchCase="'EdaColumnHtml'">
+                                    @if(inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field){
+                                        <div [pTooltip]="getLinkTooltip(col)" [innerHTML]="getSafeHtml(lodash.get(rowData, col.field))" (click)="handleHtmlClick($event)"></div>
+                                    }
+
+                                    @if(!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field){
+                                        <div [innerHTML]="getSafeHtml(lodash.get(rowData, col.field))" (click)="handleHtmlClick($event)"></div>
+                                    }
+
+                                </ng-container>
+                                <!-- ngSwitch NUMBER -->
+                                <ng-container *ngSwitchCase="'EdaColumnNumber'">
+                                    @if(isNumericValue(lodash.get(rowData, col.field))) {
+                                        <span [ngStyle]="{'color': getColor(lodash.get(rowData, col.field))}">
+                                            {{ lodash.get(rowData, col.field) | number:'1.0-10':'es' }}
+                                        </span>
+                                    } @else {
+                                        <div [innerHTML]="getSafeHtml(lodash.get(rowData, col.field))" (click)="handleHtmlClick($event)"></div>
+                                    }
+                                </ng-container>
+                                <!-- ngSwitch DATE -->
+                                <ng-container *ngSwitchCase="'EdaColumnDate'">
+                                    @if(inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field){
+                                        <div class="flex items-center w-full" [pTooltip]="getLinkTooltip(col)">
+                                            <span class="flex-1 truncate min-w-0">{{ lodash.get(rowData, col.field) }}</span>
+                                            <div class="flex items-center gap-4">
+                                                @if(haveChild(col.field)){
+                                                    <button class="nav-btn" title="Navegar" i18n-title="@@navegar"
+                                                    (click)="handleNavIn(col.field, lodash.get(rowData, col.field), $event)">+</button>
+                                                }
+                                                @if(isChild(col.field)){
+                                                    <button class="nav-btn" title="Volver" i18n-title="@@volver"
+                                                    (click)="handleNavOut(getChildRootKey(col.field), $event)">-</button>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+
+                                    @if(!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field){
+                                        <div class="flex items-center w-full">
+                                            <span class="flex-1 truncate min-w-0">{{ lodash.get(rowData, col.field) }}</span>
+                                            <div class="flex items-center gap-4">
+                                                @if(haveChild(col.field)){
+                                                    <button class="nav-btn" title="Navegar" i18n-title="@@navegar"
+                                                    (click)="handleNavIn(col.field, lodash.get(rowData, col.field), $event)">+</button>
+                                                }
+                                                @if(isChild(col.field)){
+                                                    <button class="nav-btn" title="Volver" i18n-title="@@volver"
+                                                    (click)="handleNavOut(getChildRootKey(col.field), $event)">-</button>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'EdaColumnPercentage'">
+                                    {{ lodash.get(rowData, col.field) }}
+                                </ng-container>
+                                <!-- ngSwitch CONTXET MENU -->
+                                <ng-container *ngSwitchCase="'EdaColumnContextMenu'">
+                                    <i class="fa fa-cog btn pl-1" (click)="inject._showContextMenu(rowData)"></i>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'EdaColumnFunction'">
+                                    <i class="fa fa-trash btn pl-1" (click)="col.click(rowData)"></i>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'EdaColumnEditable'">
+                                    <i class="fa fa-pencil btn pl-1" (click)="col.click(rowData)"></i>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'EdaColumnChart'">
+
+                                    <div class="eda-table-sparkline">
+                                        <eda-line-d3 [inject]="lodash.get(rowData, col.field)"></eda-line-d3>
+                                    </div>
+
+                                </ng-container>
+                            </ng-container>
+                        </td>
+                    }
+                </ng-container>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="footer" id="totalsFooter" >
+            @if(inject.withColSubTotals){
+                <tr>
+                    <td *ngFor="let column of  inject.partialTotalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [ngStyle]="getStyle()" [class]=column.class>
+                        {{column.data}}
+                    </td>
+                </tr>
+            }
+            @if(inject.withColTotals){
+                <tr>
+                    <td *ngFor="let column of  inject.totalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [ngStyle]="getStyle()" [class]=column.class>
+                        {{column.data}}
+                    </td>
+                </tr>
+            }
+
+        </ng-template>
+
+        <ng-template pTemplate="paginatorright">
+            @if(table.filteredValue != undefined){
+                <span i18n="@@registers1" class="items-length" [ngStyle]="getStyle()">{{ table.filteredValue.length }} registros</span>
+            }
+            @if(!table.filteredValue && table.value.length){
+                <span i18n="@@registers2" class="items-length" [ngStyle]="getStyle()">{{ table.value.length }} registros</span>
+            }
+        </ng-template>
+
+    </p-table>
+</div>
+
+<eda-context-menu [inject]="inject.contextMenu"></eda-context-menu>

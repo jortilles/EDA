@@ -2,8 +2,7 @@ import { Component, ViewChild, Input, ElementRef, OnInit, AfterViewInit, Output,
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { StyleProviderService, AlertService } from '@eda/services/service.index';
 import { Table } from 'primeng/table';
-// import { FilterUtils } from 'primeng/utils';
-import { EdaTable } from './eda-table';
+import { EdaCrosstableModel } from './eda-crosstable.model';
 import { computeTableColorStyles, getNiceName, ColorStyleSpec } from '../eda-table-core/eda-table.color';
 import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_default';
 import { registerLocaleData } from '@angular/common';
@@ -15,23 +14,26 @@ import { StyleService } from '@eda/services/service.index';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
-import { PaginatorModule } from 'primeng/paginator';     // if using paginator
-import { ButtonModule } from 'primeng/button';          // if you have buttons in the table
-import { InputTextModule } from 'primeng/inputtext';    // if using input filters
+import { PaginatorModule } from 'primeng/paginator';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 
-// tests
 import { TooltipModule } from 'primeng/tooltip';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { EdaLineComponent } from '@eda/components/eda-line-d3/eda-line.component';
 import { EdaContextMenuComponent } from '@eda/shared/components/shared-components.index';
-import { DialogModule } from 'primeng/dialog';  // <--- import PrimeNG module
+import { DialogModule } from 'primeng/dialog';
 
-
+/**
+ * Crosstable-only sibling of EdaTableComponent — same cell-rendering/color/sort/nav
+ * logic (ported verbatim, see eda-table.component.ts), minus every `if(pivot)`/`if(!pivot)`
+ * branch, since this component only ever renders a matrix header.
+ */
 @Component({
     standalone: true,
-    selector: 'eda-table',
-    templateUrl: './eda-table.component.html',
-    styleUrls: ['./eda-table.component.css'],
+    selector: 'eda-crosstable',
+    templateUrl: './eda-crosstable.component.html',
+    styleUrls: ['../eda-table/eda-table.component.css'],
     imports: [
         CommonModule,
         FormsModule,
@@ -46,9 +48,9 @@ import { DialogModule } from 'primeng/dialog';  // <--- import PrimeNG module
         DialogModule,
     ]
 })
-export class EdaTableComponent implements OnInit, AfterViewInit {
+export class EdaCrosstableComponent implements OnInit, AfterViewInit {
     @ViewChild('table', { static: false }) table: Table;
-    @Input() inject: EdaTable;
+    @Input() inject: EdaCrosstableModel;
     @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
     data: any;
@@ -66,21 +68,16 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
     ) {
         registerLocaleData(es);
     }
+
     ngOnInit(): void {
-        if(this?.inject?.styles && !this.inject.pivot){
-            this.applyStyles(this.inject.styles)
-        }else if(this?.inject?.styles && this.inject.pivot){
-            this.applyPivotSyles(this.inject.styles)
+        if (this?.inject?.styles) {
+            this.applyStyles(this.inject.styles);
         }
     }
 
     ngAfterViewInit(): void {
-        // Template is rendered here — querySelector('.eda-table') works correctly.
-        // inject is still undefined at this point (set after createComponent returns),
-        // so we apply defaults. setTableProperties overrides with saved colors afterwards.
         this.applyBandingColors(this.inject?.headerColor, this.inject?.bandingColor, this.inject?.colorEnabled);
     }
-
 
     _tableFilter(table: Table, value: any, col: any) {
         return table.filter(value, col.field, col.filter.comparationMethod);
@@ -100,11 +97,9 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
         } else {
             let filterBy = colname;
             let label = item;
-            // Find the column type to check if it is HTML
             const col = this.inject.cols.find(c => c.field === colname);
             const colType = col ? col.type : null;
 
-            // Do not emit event for numeric or HTML columns
             const isHtmlValue = typeof label === 'string' && label.trim().startsWith('<');
             if (typeof label !== 'number' && colType !== 'EdaColumnHtml' && !isHtmlValue) {
                 this.onClick.emit({ label, filterBy });
@@ -135,7 +130,6 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
     handleHtmlClick(event: MouseEvent) {
         event.stopPropagation();
         const target = event.target as HTMLElement;
-        // With pointer-events:none on <a>, clicks always land on the <div>, so we look for <a> in child elements.
         const anchor = target.querySelector('a') as HTMLAnchorElement;
         if (anchor) {
             const href = anchor.getAttribute('href');
@@ -151,14 +145,10 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
             const styleKey = this.styles[col.field] ? col.field : col.header;
             const styleEntry = this.styles[styleKey];
             if (styleEntry) {
-                let field = styleEntry.col || styleKey;
-                if(this.inject.pivot) field = styleEntry.value;
-
-                field = getNiceName(field);
+                const field = getNiceName(styleEntry.value);
 
                 const cellValue = parseFloat(rowData[col.field]);
 
-                // If it is a semaphore, return one of the 3 colors
                 if (styleEntry.type === 'semaphore') {
                     if (cellValue > styleEntry.value1) return `table-semaphore-${field}-0`;
                     else if (cellValue >= styleEntry.value2) return `table-semaphore-${field}-1`;
@@ -167,7 +157,6 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
 
                 if (isNaN(cellValue)) return null;
 
-                // If it is a gradient, return one of the 5 ranges we generate
                 let cellClass = null;
                 if (cellValue < parseFloat(styleEntry.ranges[0])) cellClass = `table-gradient-${field}-${0}`
                 else if (cellValue < parseFloat(styleEntry.ranges[1])) cellClass = `table-gradient-${field}-${1}`;
@@ -175,7 +164,6 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
                 else if (cellValue < parseFloat(styleEntry.ranges[3])) cellClass = `table-gradient-${field}-${3}`;
                 else  cellClass = `table-gradient-${field}-${4}`;
 
-                // Return the style class to apply to the column
                 return cellClass;
             }
             return null;
@@ -236,41 +224,14 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
     }
 
     public applyStyles(styles: Array<any>) {
-        try {
-        // Orphan style cleanup: keep only those with an active column
-        const activeCols = this.inject?.cols || [];
-        const validStyles = styles.filter((style: any) =>
-            activeCols.some((col: any) => col.field === style.col || col.header === style.col)
-        );
-        const orphans = styles.filter((s: any) => !validStyles.includes(s));
-        if (orphans.length > 0) {
-            // Update inject.styles so the cleanup persists
-            if (this.inject) this.inject.styles = validStyles as any;
-        }
-
-        const result = computeTableColorStyles(validStyles as ColorStyleSpec[], this.inject.value, 'flat');
-        this.applyComputedColorStyles(result);
-        this.styles = result.entries;
-
-        } catch (e) {
-            console.warn('[applyStyles] Error al aplicar estilos de color:', e);
-            this.alertService.addError('Error al aplicar los estilos de color de la tabla');
-        }
-    }
-
-    applyPivotSyles(styles){
         const result = computeTableColorStyles(styles as ColorStyleSpec[], this.inject.value, 'matrix');
-        this.applyComputedColorStyles(result);
-        this.styles = result.entries;
-    }
-
-    private applyComputedColorStyles(result: ReturnType<typeof computeTableColorStyles>) {
         result.cssVars.forEach(({ name, value }) => {
             this.elementRef.nativeElement.style.setProperty(name, value);
         });
         result.cssClasses.forEach(({ selector, declarations }) => {
             this.styleService.setStyles(selector, declarations);
         });
+        this.styles = result.entries;
     }
 
     formatValoresRango(rowData: any, colField: string): SafeHtml  {
@@ -309,7 +270,7 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
 
     }
 
-    
+
     customSort(event: any, cols: any) {
 
         const actualField = event.field;
@@ -352,22 +313,18 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
         const match = input.trim().match(regex);
 
         if (match) {
-          // Determine which number to extract based on the string format
           if (input.includes('<') || input.includes('>')) {
-            return parseInt(match[1], 10); // Extract the first number
+            return parseInt(match[1], 10);
           } else {
-            return match[2] ? parseInt(match[2], 10) : null; // Extract the second number if present
+            return match[2] ? parseInt(match[2], 10) : null;
           }
         }
-        return null; // No match found
+        return null;
     }
 
-    public getColor(valor: number) { 
-
-        // replace true with a variable that is toggled when editing negative values
-
+    public getColor(valor: number) {
         if(valor<0 && this.inject.negativeNumbers) {
-            return '#FF0000' 
+            return '#FF0000'
         }
     }
 
@@ -375,7 +332,7 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
     handleNavIn(field: string, value: any, event: MouseEvent): void {
         this.inject.onNavIn.emit({ field, value });
     }
-    
+
     handleNavOut(rootKey: string, event: MouseEvent): void {
         this.inject.onNavOut.emit({ rootKey });
     }
