@@ -5977,15 +5977,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       <trans-unit id="mailRefCondOps" datatype="html">
         <source>En la condición puedes comparar con:</source>
       </trans-unit>
-      <trans-unit id="mailRefCopy" datatype="html">
-        <source>Copiar</source>
-      </trans-unit>
-      <trans-unit id="mailRefCopied" datatype="html">
-        <source>Copiado</source>
-      </trans-unit>
-      <trans-unit id="mailRefCopyError" datatype="html">
-        <source>No se pudo copiar</source>
-      </trans-unit>
       <trans-unit id="mailRefResultTitle" datatype="html">
         <source>Así lo recibe el destinatario</source>
       </trans-unit>

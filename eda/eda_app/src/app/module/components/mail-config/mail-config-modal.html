@@ -20,7 +20,7 @@
 
   <!-- ===================== CONTENT ===================== -->
   <div content class="min-h-[calc(86vh-135px)]">
-    <div class="grid grid-cols-[minmax(0,1fr)_minmax(300px,380px)] items-start gap-6 px-6 py-4">
+    <div class="grid grid-cols-1 items-start gap-6 px-6 py-4 lg:grid-cols-[minmax(0,1fr)_minmax(320px,400px)]">
 
       <!-- ---------------- LEFT: steps ---------------- -->
       <div>
@@ -109,7 +109,7 @@
               <h5 class="text-base font-semibold text-gray-800" i18n="@@mailStep2">¿A quién?</h5>
               <span class="text-xs text-gray-400" i18n="@@mailStep2Hint">Usuarios de Edalitics, o cualquier dirección externa.</span>
             </div>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div class="flex flex-col gap-1">
                 <label class="text-sm font-medium text-gray-700" i18n="@@mailUsersLabel">Usuarios</label>
                 <p-multiSelect [(ngModel)]="selectedUsers" [options]="users" optionLabel="label" dataKey="_id"
@@ -152,7 +152,7 @@
             </div>
             <div class="flex flex-wrap items-stretch gap-4">
               <!-- subject + message -->
-              <div class="flex w-[320px] max-w-full shrink-0 flex-col gap-3">
+              <div class="flex min-w-[260px] flex-[2] flex-col gap-3">
                 <div class="flex flex-col gap-1">
                   <label class="flex items-center gap-1.5 text-sm font-medium text-gray-700">
                     <span i18n="@@mailSubjectShort">Asunto</span>
@@ -175,8 +175,8 @@
                 </div>
               </div>
 
-              <!-- compact insert toolbox -->
-              <div class="mail-insert-box flex min-w-[240px] max-w-[340px] flex-1 flex-col gap-2 self-stretch overflow-y-auto rounded-lg p-2.5 text-xs">
+              <!-- compact insert toolbox, aligned with the Asunto input -->
+              <div class="mail-insert-box mt-6 flex min-w-[240px] flex-1 flex-col gap-2 self-stretch overflow-y-auto rounded-lg p-2.5 text-xs">
                 <div>
                   <p class="mail-insert-title" i18n="@@mailRefInsertTitle">Insertar</p>
                   <p class="mail-insert-target">→ {{ activeFieldLabel }}</p>
@@ -210,21 +210,12 @@
 
               <p-dialog [(visible)]="refOpen" [modal]="true" [draggable]="false" [resizable]="false" [closable]="true"
                 [dismissableMask]="true" [baseZIndex]="11000" appendTo="body" styleClass="mail-ref-dialog" [header]="refIconTitle"
-                [style]="{width:'58rem','max-width':'94vw'}" [breakpoints]="{'1200px':'92vw'}">
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)]">
+                [style]="{width:'66rem','max-width':'95vw'}" [breakpoints]="{'1280px':'94vw'}">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,1.5fr)]">
 
                   <!-- 1. worked example -->
                   <div class="flex min-w-0 flex-col">
-                    <div class="mb-1.5 flex items-center justify-between">
-                      <h4 class="text-[11px] font-semibold uppercase tracking-wide text-gray-400" i18n="@@mailRefExampleTitle">Ejemplo completo</h4>
-                      <button type="button" (click)="copyExample()"
-                        class="inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-medium transition-colors"
-                        [class]="exampleCopied ? 'border-[var(--corporate-primary)] bg-[rgba(var(--corporate-primary-rgb),0.10)] text-[var(--corporate-primary-dark)]' : 'border-gray-300 text-gray-600 hover:border-[var(--corporate-primary)] hover:text-[var(--corporate-primary-dark)]'">
-                        <i class="pi text-[10px]" [ngClass]="exampleCopied ? 'pi-check' : 'pi-copy'"></i>
-                        @if (exampleCopied) { <span i18n="@@mailRefCopied">Copiado</span> }
-                        @else { <span i18n="@@mailRefCopy">Copiar</span> }
-                      </button>
-                    </div>
+                    <h4 class="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400" i18n="@@mailRefExampleTitle">Ejemplo completo</h4>
                     <pre class="flex-1 whitespace-pre-wrap break-words rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs leading-relaxed text-gray-700">{{ refExample }}</pre>
                   </div>
 
@@ -293,7 +284,7 @@
       </div>
 
       <!-- ---------------- RIGHT: preview ---------------- -->
-      <div class="sticky top-3 flex max-h-[calc(86vh-150px)] flex-col gap-3 self-start">
+      <div class="flex flex-col gap-3 self-start lg:sticky lg:top-3 lg:max-h-[calc(86vh-150px)]">
         <div class="shrink-0">
           <span class="text-sm font-semibold text-gray-800" i18n="@@mailPreviewShort">Vista previa</span>
           <span class="ml-1 text-xs text-gray-400" i18n="@@mailPreviewHint">· tal como lo recibirá el destinatario</span>

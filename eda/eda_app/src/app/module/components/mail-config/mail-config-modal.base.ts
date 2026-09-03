@@ -269,16 +269,6 @@ export abstract class MailConfigModalBase implements OnInit {
     { t: '\n\nUn saludo.' },
   ];
 
-  public exampleCopied = false;
-  public async copyExample(): Promise<void> {
-    try {
-      await navigator.clipboard.writeText(this.refExample);
-      this.exampleCopied = true;
-      setTimeout(() => (this.exampleCopied = false), 2000);
-    } catch {
-      this.alertService.addError($localize`:@@mailRefCopyError:No se pudo copiar`);
-    }
-  }
 
   // ---- reference dialog + insert toolbox ------------------------------------
 

@@ -7487,18 +7487,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
     <source>En la condición puedes comparar con:</source>
     <target>A la condició pots comparar amb:</target>
   </trans-unit>
-  <trans-unit id="mailRefCopy">
-    <source>Copiar</source>
-    <target>Copia</target>
-  </trans-unit>
-  <trans-unit id="mailRefCopied">
-    <source>Copiado</source>
-    <target>Copiat</target>
-  </trans-unit>
-  <trans-unit id="mailRefCopyError">
-    <source>No se pudo copiar</source>
-    <target>No s'ha pogut copiar</target>
-  </trans-unit>
   <trans-unit id="mailRefResultTitle">
     <source>Así lo recibe el destinatario</source>
     <target>Així ho rep el destinatari</target>

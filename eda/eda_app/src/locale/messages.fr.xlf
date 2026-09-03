@@ -7455,18 +7455,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
     <source>En la condición puedes comparar con:</source>
     <target>Dans la condition, vous pouvez comparer avec :</target>
   </trans-unit>
-  <trans-unit id="mailRefCopy">
-    <source>Copiar</source>
-    <target>Copier</target>
-  </trans-unit>
-  <trans-unit id="mailRefCopied">
-    <source>Copiado</source>
-    <target>Copié</target>
-  </trans-unit>
-  <trans-unit id="mailRefCopyError">
-    <source>No se pudo copiar</source>
-    <target>Impossible de copier</target>
-  </trans-unit>
   <trans-unit id="mailRefResultTitle">
     <source>Así lo recibe el destinatario</source>
     <target>Voici ce que reçoit le destinataire</target>
