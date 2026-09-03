@@ -68,6 +68,67 @@ export const CORPORATE_COLORS = {
 export const ChartsPalettes = [
     {
         paleta: [
+            '#BE0926',
+            '#145290',
+            '#5A88ED',
+            '#F8B644',
+            '#05c78a',
+            '#526991',
+            '#E9EEF6',
+            '#9B68F3'
+        ],
+        name: 'DDGI qualitativa'
+    },
+    {
+        paleta: [
+            '#F7F7F7',
+            '#D5B8C2',
+            '#C5B8C2',
+            '#E5B8C2',
+            '#F5B8C2',
+            '#EC899A',
+            '#E35B72',
+            '#D9304C',
+            '#BE0926',
+            '#9A071F',
+            '#760518',
+            '#520311'
+        ],
+        name: 'DDGI sequencial 1'
+    },
+    {
+        paleta: [
+            '#520311',
+            '#760518',
+            '#9A071F',
+            '#BE0926',
+            '#D9304C',
+            '#E35B72',
+            '#EC899A',
+            '#F5B8C2',
+            '#E5B8C2',
+            '#C5B8C2',
+            '#D5B8C2',
+            '#F7F7F7'
+        ],
+        name: 'DDGI sequencial 2'
+    },
+    {
+        paleta: [
+            '#760518',
+            '#BE0926',
+            '#E35B72',
+            '#F5B8C2',
+            '#F7F7F7',
+            '#A8BCC8',
+            '#4A7F9E',
+            '#1A4F6E',
+            '#0A2540'
+        ],
+        name: 'DDGI divergent'
+    },
+    {
+        paleta: [
             '#10B4BD',
             '#3C88CA',
             '#685CD9',
@@ -215,7 +276,7 @@ export const DEFAULT_TITLE_ALIGN: string = 'flex-start';
 export const DEFAULT_PANEL_TITLE_ALIGN: string = 'flex-start';
 export const EMPTY_VALUE: string = ''; // $localize`:@@EmptyValueMessage:Sin Informar` ;// Added empty values in different languages
 export const NULL_VALUE: string = '';// null Agregado de null_value en diferentes idiomas  if you want to leave the null you can put this value: LEAVE_THE_NULL . THIS LEAVE_THE_NULL will leave the null value as null
-export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === "Gradiente");
+export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === "DDGI qualitativa");
 export const FATHER_ID: number = 0; // Parent ID value for the Treetable component
 export const GLOBAL_FILTER_BUTTON_POSITION: string = 'left'; // By default the is left but you be modified to 'right' 
 
