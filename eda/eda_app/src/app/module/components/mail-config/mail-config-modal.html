@@ -14,13 +14,13 @@
     </div>
     <div class="mail-hdr-switch flex shrink-0 items-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-1 leading-none">
       <p-inputSwitch [(ngModel)]="enabled" class="mail-switch"></p-inputSwitch>
-      <span class="text-sm font-medium" [class]="enabled ? 'text-gray-700' : 'text-gray-400'" i18n="@@mailActiveToggle">Envío de correo</span>
+      <span class="text-sm font-medium" [class]="enabled ? 'text-gray-700' : 'text-gray-400'" i18n="@@mailActiveToggle">Envío de correo programado</span>
     </div>
   </div>
 
   <!-- ===================== CONTENT ===================== -->
   <div content class="min-h-[calc(86vh-135px)]">
-    <div class="grid grid-cols-1 items-start gap-6 px-6 py-4 lg:grid-cols-[minmax(0,1fr)_minmax(320px,400px)]">
+    <div class="grid grid-cols-1 items-start gap-6 px-6 py-4 lg:grid-cols-[minmax(0,1fr)_minmax(320px,35vw)]">
 
       <!-- ---------------- LEFT: steps ---------------- -->
       <div>
@@ -158,6 +158,10 @@
                     <span i18n="@@mailSubjectShort">Asunto</span>
                     <i class="pi pi-info-circle cursor-pointer text-gray-400 hover:text-[var(--corporate-primary)]" style="font-size:0.8rem"
                       (click)="openRef()" [pTooltip]="refIconTitle" tooltipPosition="top"></i>
+                    <button type="button" (click)="clearContent()" [pTooltip]="clearContentTip" tooltipPosition="left"
+                      class="ml-auto shrink-0 text-gray-400 hover:text-red-500 focus:outline-none">
+                      <i class="pi pi-trash text-sm"></i>
+                    </button>
                   </label>
                   <textarea #subjArea rows="1" [(ngModel)]="mailSubject" (focus)="activeField='subject'"
                     [edaMailVarSuggest]="kpiVariables" [edaMailVarSuggestValue]="varValueResolver"
@@ -194,12 +198,7 @@
                     </div>
                   }
                 } @else {
-                  <div class="flex flex-col items-start gap-1">
-                    @for (v of refVars; track v.token) {
-                      <button type="button" class="mail-ref-tok" [pTooltip]="v.desc" tooltipPosition="left"
-                        (mousedown)="$event.preventDefault()" (click)="insertToken(v.token)">{{ v.token }}</button>
-                    }
-                  </div>
+                  <p class="text-[11px] italic text-gray-400" i18n="@@mailNoKpis">Este dashboard no tiene KPIs.</p>
                 }
                 <button type="button" class="mail-insert-code" [pTooltip]="codeBlockTip" tooltipPosition="top"
                   (mousedown)="$event.preventDefault()" (click)="insertCodeBlock()">
@@ -324,23 +323,32 @@
               <a [href]="previewLink" target="_blank" rel="noopener" class="text-xs text-[#0a7d75] hover:underline" i18n="@@mailOpenDashboard">Abrir el dashboard en Edalitics →</a>
             </div>
 
-            @if (!isAlert) {
-              <div class="mt-2.5 inline-flex items-center gap-2 rounded border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-[11px] text-gray-600">
-                <span class="font-semibold text-red-500">PDF</span>{{ pdfName }}
-              </div>
-            }
-          </div>
-
-          <div class="border-t border-gray-200 px-3 py-2">
-            <img [src]="bannerImage" alt="" class="mx-auto block max-h-12 w-auto object-contain">
+            <div class="mt-2.5 inline-flex items-center gap-2 rounded border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-[11px] text-gray-600"
+              [pTooltip]="pdfTip" tooltipPosition="top">
+              <span class="font-semibold text-red-500">PDF</span>{{ pdfName }}
+            </div>
           </div>
         </div>
 
-        <button type="button" (click)="sendNow()" [disabled]="disableSend()"
-          class="shrink-0 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-0 disabled:pointer-events-none disabled:opacity-50">
-          @if (isSending()) { <span i18n="@@sendingMailNow">Enviando...</span> }
-          @else { <span i18n="@@mailSendTestNow">Enviar una copia ahora</span> }
-        </button>
+        <div class="shrink-0 rounded-lg border border-dashed border-gray-300 p-3 space-y-2">
+          <div class="flex flex-wrap items-baseline gap-x-2">
+            <p class="text-sm font-semibold text-gray-700" i18n="@@mailSendTestTitle">Enviar una prueba ahora</p>
+            <p class="text-[11px] text-gray-400" i18n="@@mailSendNowHint">Envío único e inmediato. No guarda ni activa la programación de arriba.</p>
+          </div>
+          <button type="button" (click)="sendToConfigured()" [disabled]="disableSend()"
+            class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-0 disabled:pointer-events-none disabled:opacity-50">
+            @if (isSending()) { <span i18n="@@sendingMailNow">Enviando...</span> }
+            @else { <span i18n="@@mailSendToConfigured">Enviar prueba a los destinatarios configurados</span> }
+          </button>
+          <div class="flex items-stretch gap-2">
+            <input type="text" [(ngModel)]="testRecipient"
+              i18n-placeholder="@@mailSendTestPlaceholder" placeholder="o solo a este correo…"
+              class="mail-input min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm">
+            <button type="button" (click)="sendToTest()" [disabled]="disableSendTest()"
+              class="shrink-0 rounded-lg border border-[var(--corporate-primary)] px-3 py-2 text-sm font-medium text-[var(--corporate-primary-dark)] hover:bg-[rgba(var(--corporate-primary-rgb),0.08)] disabled:pointer-events-none disabled:opacity-50"
+              i18n="@@mailSendTestBtn">Enviar</button>
+          </div>
+        </div>
       </div>
 
     </div>

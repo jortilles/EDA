@@ -3090,8 +3090,8 @@ What am I seeing?
 <target>Send panel by email</target>
 </trans-unit>
 <trans-unit id="mailActiveToggle">
-<source>Envío de correo</source>
-<target>Email sending</target>
+<source>Envío de correo programado</source>
+<target>Scheduled email</target>
 </trans-unit>
 <trans-unit id="mailStep1">
 <source>¿Cuándo se envía?</source>
@@ -3236,10 +3236,6 @@ What am I seeing?
 <trans-unit id="mailOpenDashboard">
 <source>Abrir el dashboard en Edalitics →</source>
 <target>Open the dashboard in Edalitics →</target>
-</trans-unit>
-<trans-unit id="mailSendTestNow">
-<source>Enviar una copia ahora</source>
-<target>Send a copy now</target>
 </trans-unit>
 <trans-unit id="mailSaveSchedule">
 <source>Guardar programación</source>
@@ -7179,6 +7175,46 @@ OR<ph id="5"/>
   <trans-unit id="mailRefResultHint">
     <source>Resaltado: lo que se sustituye automáticamente en cada envío.</source>
     <target>Highlighted: what is replaced automatically on every send.</target>
+  </trans-unit>
+  <trans-unit id="mailSubjectDefault">
+    <source>Correo de prueba del informe</source>
+    <target>Test report email</target>
+  </trans-unit>
+  <trans-unit id="mailPdfTipDash">
+    <source>PDF generado del dashboard</source>
+    <target>PDF generated from the dashboard</target>
+  </trans-unit>
+  <trans-unit id="mailPdfTipKpi">
+    <source>PDF generado del panel KPI</source>
+    <target>PDF generated from the KPI panel</target>
+  </trans-unit>
+  <trans-unit id="mailClearContent">
+    <source>Borrar el asunto y el mensaje</source>
+    <target>Clear the subject and message</target>
+  </trans-unit>
+  <trans-unit id="mailNoKpis">
+    <source>Este dashboard no tiene KPIs.</source>
+    <target>This dashboard has no KPIs.</target>
+  </trans-unit>
+  <trans-unit id="mailSendToConfigured">
+    <source>Enviar prueba a los destinatarios configurados</source>
+    <target>Send a test to the configured recipients</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestPlaceholder">
+    <source>o solo a este correo…</source>
+    <target>or just to this address…</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestBtn">
+    <source>Enviar</source>
+    <target>Send</target>
+  </trans-unit>
+  <trans-unit id="mailSendNowHint">
+    <source>Envío único e inmediato. No guarda ni activa la programación de arriba.</source>
+    <target>A one-off, immediate send. It does not save or activate the schedule above.</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestTitle">
+    <source>Enviar una prueba ahora</source>
+    <target>Send a test now</target>
   </trans-unit>
 </body>
 </file>

@@ -3339,8 +3339,8 @@ Que suis-je en train de voir ?
     <target>Envoi du panneau par e-mail</target>
   </trans-unit>
   <trans-unit id="mailActiveToggle">
-    <source>Envío de correo</source>
-    <target>Envoi d'e-mail</target>
+    <source>Envío de correo programado</source>
+    <target>Envoi d'e-mail programmé</target>
   </trans-unit>
   <trans-unit id="mailStep1">
     <source>¿Cuándo se envía?</source>
@@ -3485,10 +3485,6 @@ Que suis-je en train de voir ?
   <trans-unit id="mailOpenDashboard">
     <source>Abrir el dashboard en Edalitics →</source>
     <target>Ouvrir le tableau de bord dans Edalitics →</target>
-  </trans-unit>
-  <trans-unit id="mailSendTestNow">
-    <source>Enviar una copia ahora</source>
-    <target>Envoyer une copie maintenant</target>
   </trans-unit>
   <trans-unit id="mailSaveSchedule">
     <source>Guardar programación</source>
@@ -7454,6 +7450,46 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <trans-unit id="mailRefResultHint">
     <source>Resaltado: lo que se sustituye automáticamente en cada envío.</source>
     <target>En surbrillance : ce qui est remplacé automatiquement à chaque envoi.</target>
+  </trans-unit>
+  <trans-unit id="mailSubjectDefault">
+    <source>Correo de prueba del informe</source>
+    <target>E-mail de test du rapport</target>
+  </trans-unit>
+  <trans-unit id="mailPdfTipDash">
+    <source>PDF generado del dashboard</source>
+    <target>PDF généré du tableau de bord</target>
+  </trans-unit>
+  <trans-unit id="mailPdfTipKpi">
+    <source>PDF generado del panel KPI</source>
+    <target>PDF généré du panneau KPI</target>
+  </trans-unit>
+  <trans-unit id="mailClearContent">
+    <source>Borrar el asunto y el mensaje</source>
+    <target>Effacer l'objet et le message</target>
+  </trans-unit>
+  <trans-unit id="mailNoKpis">
+    <source>Este dashboard no tiene KPIs.</source>
+    <target>Ce tableau de bord n'a pas de KPI.</target>
+  </trans-unit>
+  <trans-unit id="mailSendToConfigured">
+    <source>Enviar prueba a los destinatarios configurados</source>
+    <target>Envoyer un test aux destinataires configurés</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestPlaceholder">
+    <source>o solo a este correo…</source>
+    <target>ou seulement à cette adresse…</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestBtn">
+    <source>Enviar</source>
+    <target>Envoyer</target>
+  </trans-unit>
+  <trans-unit id="mailSendNowHint">
+    <source>Envío único e inmediato. No guarda ni activa la programación de arriba.</source>
+    <target>Un envoi unique et immédiat. Il n'enregistre ni n'active la planification ci-dessus.</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestTitle">
+    <source>Enviar una prueba ahora</source>
+    <target>Envoyer un test maintenant</target>
   </trans-unit>
     </body>
   </file>

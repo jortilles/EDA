@@ -3002,8 +3002,8 @@ Co widzę?
     <target>Wysyłka panelu e-mailem</target>
   </trans-unit>
   <trans-unit id="mailActiveToggle">
-    <source>Envío de correo</source>
-    <target>Wysyłka e-maili</target>
+    <source>Envío de correo programado</source>
+    <target>Zaplanowana wysyłka e-maili</target>
   </trans-unit>
   <trans-unit id="mailStep1">
     <source>¿Cuándo se envía?</source>
@@ -3148,10 +3148,6 @@ Co widzę?
   <trans-unit id="mailOpenDashboard">
     <source>Abrir el dashboard en Edalitics →</source>
     <target>Otwórz pulpit w Edalitics →</target>
-  </trans-unit>
-  <trans-unit id="mailSendTestNow">
-    <source>Enviar una copia ahora</source>
-    <target>Wyślij kopię teraz</target>
   </trans-unit>
   <trans-unit id="mailSaveSchedule">
     <source>Guardar programación</source>
@@ -7119,6 +7115,46 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <trans-unit id="mailRefResultHint">
     <source>Resaltado: lo que se sustituye automáticamente en cada envío.</source>
     <target>Wyróżnione: to, co jest automatycznie podstawiane przy każdej wysyłce.</target>
+  </trans-unit>
+  <trans-unit id="mailSubjectDefault">
+    <source>Correo de prueba del informe</source>
+    <target>Testowy e-mail raportu</target>
+  </trans-unit>
+  <trans-unit id="mailPdfTipDash">
+    <source>PDF generado del dashboard</source>
+    <target>PDF wygenerowany z pulpitu</target>
+  </trans-unit>
+  <trans-unit id="mailPdfTipKpi">
+    <source>PDF generado del panel KPI</source>
+    <target>PDF wygenerowany z panelu KPI</target>
+  </trans-unit>
+  <trans-unit id="mailClearContent">
+    <source>Borrar el asunto y el mensaje</source>
+    <target>Wyczyść temat i wiadomość</target>
+  </trans-unit>
+  <trans-unit id="mailNoKpis">
+    <source>Este dashboard no tiene KPIs.</source>
+    <target>Ten pulpit nie ma wskaźników KPI.</target>
+  </trans-unit>
+  <trans-unit id="mailSendToConfigured">
+    <source>Enviar prueba a los destinatarios configurados</source>
+    <target>Wyślij test do skonfigurowanych odbiorców</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestPlaceholder">
+    <source>o solo a este correo…</source>
+    <target>lub tylko na ten adres…</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestBtn">
+    <source>Enviar</source>
+    <target>Wyślij</target>
+  </trans-unit>
+  <trans-unit id="mailSendNowHint">
+    <source>Envío único e inmediato. No guarda ni activa la programación de arriba.</source>
+    <target>Jednorazowa, natychmiastowa wysyłka. Nie zapisuje ani nie aktywuje harmonogramu powyżej.</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestTitle">
+    <source>Enviar una prueba ahora</source>
+    <target>Wyślij test teraz</target>
   </trans-unit>
 </body>
 </file>

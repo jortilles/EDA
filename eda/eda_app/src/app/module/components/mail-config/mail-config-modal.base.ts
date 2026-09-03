@@ -8,7 +8,7 @@ import {
   renderMailPreview, renderMailPreviewHtml,
 } from "@eda/services/utils/mail-variables.util";
 import { renderMailLogic, hasMailLogic, buildKpiCtxNode } from "@eda/services/utils/mail-logic.util";
-import { LogoImage, SubLogoImage } from "@eda/configs/customizable/customizable_default";
+import { SubLogoImage } from "@eda/configs/customizable/customizable_default";
 import { WEEKDAY_OPTIONS, MONTHLY_ORDINAL_OPTIONS, MONTH_DAY_OPTIONS } from "@eda/services/utils/mail-schedule.util";
 
 /** Shared dashboard / KPI-alert mail-config dialog. The two subclasses only supply where the
@@ -66,8 +66,6 @@ export abstract class MailConfigModalBase implements OnInit {
     { label: $localize`:@@mailFreqLastDay:Último día`, value: 'last' },
   ];
 
-  public logoImage = LogoImage;
-  public bannerImage = SubLogoImage;
   public noSubjectLabel = $localize`:@@mailNoSubject:Sin asunto`;
   public previewKpiLabel = $localize`:@@mailPreviewKpiLabel:Valor del KPI`;
 
@@ -81,8 +79,8 @@ export abstract class MailConfigModalBase implements OnInit {
   abstract loadConfig(): void;
   /** Emits the config to persist. */
   abstract save(): void;
-  /** "Enviar una copia ahora". */
-  abstract sendNow(): Promise<void>;
+  /** Send a copy now. With no argument → to the configured recipients; with `recipients` → only there. */
+  abstract sendNow(recipients?: { to: string[]; toExternal: string[] }): Promise<void>;
 
   /** Header subtitle (dashboard title). */
   public get subtitle(): string { return ''; }
@@ -91,6 +89,8 @@ export abstract class MailConfigModalBase implements OnInit {
 
   ngOnInit(): void {
     this.loadConfig();
+    if (!this.mailSubject) this.mailSubject = this.defaultSubject;
+    if (!this.mailMessage) this.mailMessage = this.messageExample;
 
     this.assistantService.availableChatGpt().subscribe(
       (r: any) => this.availableChatGpt = !!r?.response?.available,
@@ -216,8 +216,20 @@ export abstract class MailConfigModalBase implements OnInit {
 
   // ---- variables + conditions help --------------------------------------
 
+  /** Prefilled starting content (not a placeholder) — the user edits or clears it. */
+  public readonly defaultSubject = $localize`:@@mailSubjectDefault:Correo de prueba del informe`;
   public readonly messageExample =
-    'Hola,\n\nResumen de ${p1.title}: ${p1.value}\n\n""CODE\nif p1.value > 1000000\n  Excelente mes 🎉\nelse\n  Mes por debajo de lo esperado\nend\nCODE""\n\nUn saludo.';
+    'Hola,\n\n' +
+    'Este es un texto de prueba para el correo. Reemplaza este contenido por tu mensaje real.\n\n' +
+    'Primer KPI — ${p1.title}: ${p1.value}\n\n' +
+    '""CODE\n' +
+    'if p1.value > 0\n' +
+    '  El KPI tiene un valor positivo.\n' +
+    'else\n' +
+    '  El KPI no tiene datos disponibles.\n' +
+    'end\n' +
+    'CODE""\n\n' +
+    `<img src="${SubLogoImage}" width=100% />`;
 
   // reference card: KPI value tokens with a plain-language meaning
   public readonly refVars: { token: string; desc: string }[] = [
@@ -253,8 +265,7 @@ export abstract class MailConfigModalBase implements OnInit {
     '\n' +
     'Desglose por categoría:\n' +
     '${p1.value.breakdown}\n' +
-    '\n' +
-    'Un saludo.';
+    '\n';
 
   // rendered version of refExample with sample data; `hl` marks auto-substituted parts
   public readonly refResult: { t: string; hl?: boolean }[] = [
@@ -437,6 +448,27 @@ export abstract class MailConfigModalBase implements OnInit {
   public disableSend(): boolean {
     return this.isSending() || this.allRecipientEmails.length === 0 || !this.mailSubject || !this.mailMessage;
   }
+
+  // ---- "enviar ahora": to the configured recipients, or just to one address ----
+
+  public testRecipient = '';
+  public clearContent(): void { this.mailSubject = ''; this.mailMessage = ''; }
+
+  public sendToConfigured(): void { this.sendNow(); }
+  public sendToTest(): void {
+    const e = this.testRecipient.trim();
+    if (e) this.sendNow({ to: [], toExternal: [e] });
+  }
+  public disableSendTest(): boolean {
+    return this.isSending() || !this.testRecipient.trim() || !this.mailSubject || !this.mailMessage;
+  }
+
+  public get pdfTip(): string {
+    return this.isAlert
+      ? $localize`:@@mailPdfTipKpi:PDF generado del panel KPI`
+      : $localize`:@@mailPdfTipDash:PDF generado del dashboard`;
+  }
+  public readonly clearContentTip = $localize`:@@mailClearContent:Borrar el asunto y el mensaje`;
 
   public onApply(): void { this.display = false; this.save(); }
   public onClose(): void { this.display = false; this.close.emit(); }

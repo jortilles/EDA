@@ -3384,8 +3384,8 @@ Qué estic veient?
     <target>Enviament del panell per email</target>
   </trans-unit>
   <trans-unit id="mailActiveToggle">
-    <source>Envío de correo</source>
-    <target>Enviament de correu</target>
+    <source>Envío de correo programado</source>
+    <target>Enviament de correu programat</target>
   </trans-unit>
   <trans-unit id="mailStep1">
     <source>¿Cuándo se envía?</source>
@@ -3530,10 +3530,6 @@ Qué estic veient?
   <trans-unit id="mailOpenDashboard">
     <source>Abrir el dashboard en Edalitics →</source>
     <target>Obrir el tauler a Edalitics →</target>
-  </trans-unit>
-  <trans-unit id="mailSendTestNow">
-    <source>Enviar una copia ahora</source>
-    <target>Enviar una còpia ara</target>
   </trans-unit>
   <trans-unit id="mailSaveSchedule">
     <source>Guardar programación</source>
@@ -7486,6 +7482,46 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <trans-unit id="mailRefResultHint">
     <source>Resaltado: lo que se sustituye automáticamente en cada envío.</source>
     <target>Ressaltat: allò que se substitueix automàticament a cada enviament.</target>
+  </trans-unit>
+  <trans-unit id="mailSubjectDefault">
+    <source>Correo de prueba del informe</source>
+    <target>Correu de prova de l'informe</target>
+  </trans-unit>
+  <trans-unit id="mailPdfTipDash">
+    <source>PDF generado del dashboard</source>
+    <target>PDF generat del tauler</target>
+  </trans-unit>
+  <trans-unit id="mailPdfTipKpi">
+    <source>PDF generado del panel KPI</source>
+    <target>PDF generat del panell KPI</target>
+  </trans-unit>
+  <trans-unit id="mailClearContent">
+    <source>Borrar el asunto y el mensaje</source>
+    <target>Esborra l'assumpte i el missatge</target>
+  </trans-unit>
+  <trans-unit id="mailNoKpis">
+    <source>Este dashboard no tiene KPIs.</source>
+    <target>Aquest tauler no té KPIs.</target>
+  </trans-unit>
+  <trans-unit id="mailSendToConfigured">
+    <source>Enviar prueba a los destinatarios configurados</source>
+    <target>Envia una prova als destinataris configurats</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestPlaceholder">
+    <source>o solo a este correo…</source>
+    <target>o només a aquest correu…</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestBtn">
+    <source>Enviar</source>
+    <target>Envia</target>
+  </trans-unit>
+  <trans-unit id="mailSendNowHint">
+    <source>Envío único e inmediato. No guarda ni activa la programación de arriba.</source>
+    <target>Enviament únic i immediat. No desa ni activa la programació de dalt.</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestTitle">
+    <source>Enviar una prueba ahora</source>
+    <target>Envia una prova ara</target>
   </trans-unit>
     </body>
   </file>

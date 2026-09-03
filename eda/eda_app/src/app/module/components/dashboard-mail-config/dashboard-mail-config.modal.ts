@@ -45,12 +45,12 @@ export class DashboardMailConfigModal extends MailConfigModalBase implements OnI
     });
   }
 
-  async sendNow(): Promise<void> {
+  async sendNow(recipients?: { to: string[]; toExternal: string[] }): Promise<void> {
     await this.runSend(
       this.mailService.sendDashboardNow({
         dashboardId: this.dashboard.dashboardId,
-        to: this.registeredEmails,
-        toExternal: this.parseOtherRecipients(),
+        to: recipients ? recipients.to : this.registeredEmails,
+        toExternal: recipients ? recipients.toExternal : this.parseOtherRecipients(),
         subject: this.mailSubject,
         message: this.mailMessage,
         aiAnalysis: this.aiAvailable && this.aiAnalysis,

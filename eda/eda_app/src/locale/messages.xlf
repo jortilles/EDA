@@ -1392,7 +1392,7 @@
         <source>Envío del panel por email</source>
       </trans-unit>
       <trans-unit id="mailActiveToggle" datatype="html">
-        <source>Envío de correo</source>
+        <source>Envío de correo programado</source>
       </trans-unit>
       <trans-unit id="mailStep1" datatype="html">
         <source>¿Cuándo se envía?</source>
@@ -1501,9 +1501,6 @@
       </trans-unit>
       <trans-unit id="mailOpenDashboard" datatype="html">
         <source>Abrir el dashboard en Edalitics →</source>
-      </trans-unit>
-      <trans-unit id="mailSendTestNow" datatype="html">
-        <source>Enviar una copia ahora</source>
       </trans-unit>
       <trans-unit id="mailSaveSchedule" datatype="html">
         <source>Guardar programación</source>
@@ -5976,6 +5973,36 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
       </trans-unit>
       <trans-unit id="mailRefResultHint" datatype="html">
         <source>Resaltado: lo que se sustituye automáticamente en cada envío.</source>
+      </trans-unit>
+      <trans-unit id="mailSubjectDefault" datatype="html">
+        <source>Correo de prueba del informe</source>
+      </trans-unit>
+      <trans-unit id="mailPdfTipDash" datatype="html">
+        <source>PDF generado del dashboard</source>
+      </trans-unit>
+      <trans-unit id="mailPdfTipKpi" datatype="html">
+        <source>PDF generado del panel KPI</source>
+      </trans-unit>
+      <trans-unit id="mailClearContent" datatype="html">
+        <source>Borrar el asunto y el mensaje</source>
+      </trans-unit>
+      <trans-unit id="mailNoKpis" datatype="html">
+        <source>Este dashboard no tiene KPIs.</source>
+      </trans-unit>
+      <trans-unit id="mailSendToConfigured" datatype="html">
+        <source>Enviar prueba a los destinatarios configurados</source>
+      </trans-unit>
+      <trans-unit id="mailSendTestPlaceholder" datatype="html">
+        <source>o solo a este correo…</source>
+      </trans-unit>
+      <trans-unit id="mailSendTestBtn" datatype="html">
+        <source>Enviar</source>
+      </trans-unit>
+      <trans-unit id="mailSendNowHint" datatype="html">
+        <source>Envío único e inmediato. No guarda ni activa la programación de arriba.</source>
+      </trans-unit>
+      <trans-unit id="mailSendTestTitle" datatype="html">
+        <source>Enviar una prueba ahora</source>
       </trans-unit>
     </body>
   </file>

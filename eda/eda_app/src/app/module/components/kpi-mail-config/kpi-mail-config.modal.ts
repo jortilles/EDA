@@ -40,15 +40,15 @@ export class KpiMailConfigModal extends MailConfigModalBase implements OnInit {
     });
   }
 
-  async sendNow(): Promise<void> {
+  async sendNow(recipients?: { to: string[]; toExternal: string[] }): Promise<void> {
     await this.runSend(
       this.mailService.sendAlertNow({
         dashboardId: this.dashboardId,
         panelId: this.panelId,
         operand: this.alert?.operand,
         value: this.alert?.value,
-        to: this.registeredEmails,
-        toExternal: this.parseOtherRecipients(),
+        to: recipients ? recipients.to : this.registeredEmails,
+        toExternal: recipients ? recipients.toExternal : this.parseOtherRecipients(),
         subject: this.mailSubject,
         message: this.mailMessage,
         aiAnalysis: this.aiAvailable && this.aiAnalysis,
