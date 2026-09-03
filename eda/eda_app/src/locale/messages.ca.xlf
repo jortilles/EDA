@@ -7616,7 +7616,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Mida total</target>
       </trans-unit>
 
-</body>
   <trans-unit id="mailRefIconTitle">
     <source>Variables y condicionales</source>
     <target>Variables i condicionals</target>
