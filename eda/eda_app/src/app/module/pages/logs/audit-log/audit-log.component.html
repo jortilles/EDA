@@ -67,7 +67,7 @@
                                     <span *ngIf="!rowData.typeCanLinkDashboard && rowData.typeDashboardTitle" class="text-gray-600 dark:text-gray-300">{{rowData.typeDashboardTitle}}</span>
                                     <span *ngIf="(rowData.action === 'DashboardDeleted' || rowData.action === 'UserDeleted') && rowData.typeDetail" class="text-gray-400 text-xs">({{rowData.typeDetail}})</span>
                                     <button *ngIf="rowData.action === 'PanelQueryFailed'" type="button" (click)="openQueryErrorDialog(rowData)"
-                                        class="link-corporate text-xs font-medium text-gray-500 dark:text-gray-300 hover:underline" i18n="@@LogsViewDetails">Ver detalles</button>
+                                        class="link-corporate text-xs font-medium text-[var(--corporate-primary)] hover:underline" i18n="@@LogsViewDetails">Ver detalles</button>
                                 </span>
                                 <span *ngIf="col.field !== 'date_str' && col.field !== 'typeFilterText' && col.field !== 'actionLabel' && col.field !== 'level'">{{rowData[col.field]}}</span>
                             </td>

@@ -11,6 +11,7 @@ import * as fs from 'fs';
 import { ActiveDirectoryService } from '../../../services/active-directory/active-directory.service';
 import { GroupActiveDirectoryModel } from 'services/active-directory/model/group-active-directory.model'
 import { groupCollapsed } from 'console'
+import ServerLogService from '../../../services/server-log/server-log.service'
 
 const PROTECTED_GROUP_IDS = new Set([
   '135792467811111111111110', // EDA_ADMIN_ROLE
@@ -158,6 +159,11 @@ export class GroupController {
           );
         }
 
+        insertServerLog(req, 'info', 'GroupCreated', req.user.name.toString(), buildGroupLogType(groupSaved?._id, groupSaved?.name, `members:${(body.users || []).length}`));
+        if ((body.users || []).length > 0) {
+          insertServerLog(req, 'info', 'GroupMembershipChanged', req.user.name.toString(), buildGroupLogType(groupSaved?._id, groupSaved?.name, `membership:0->${(body.users || []).length}`));
+        }
+
         return res.status(201).json({ ok: true, group: groupSaved });
 
       } catch (err) {
@@ -189,6 +195,10 @@ export class GroupController {
         );
       }
 
+      // Capturamos valores previos para auditar cambios
+      const previousName = group.name;
+      const previousUsers = ((group.users || []) as any[]).map(user => user.toString()).sort();
+
       // Actualizar campos
       group.name = body.name;
       group.users = body.users;
@@ -207,6 +217,12 @@ export class GroupController {
         { _id: { $in: body.users } },
         { $push: { role: req.params.id } }
       );
+
+      const currentUsers = ((body.users || []) as any[]).map(user => user.toString()).sort();
+      insertServerLog(req, 'info', 'GroupUpdated', req.user.name.toString(), buildGroupLogType(groupSaved?._id, groupSaved?.name, `updated_from:${previousName}`));
+      if (!areStringArraysEqual(previousUsers, currentUsers)) {
+        insertServerLog(req, 'info', 'GroupMembershipChanged', req.user.name.toString(), buildGroupLogType(groupSaved?._id, groupSaved?.name, `membership:${previousUsers.length}->${currentUsers.length}`));
+      }
 
       return res.status(200).json({ ok: true, group: groupSaved });
 
@@ -237,6 +253,8 @@ export class GroupController {
     if (!groupDeleted) {
       return next(new HttpException(400, 'Group does not exist'));
     }
+
+    insertServerLog(req, 'info', 'GroupDeleted', req.user.name.toString(), buildGroupLogType(groupDeleted?._id, groupDeleted?.name, 'deleted'));
 
     return res.status(200).json({ ok: true });
 
@@ -284,4 +302,33 @@ export class GroupController {
       return grupo;
     }
   }
+}
+
+function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
+  const ip = req.headers['x-forwarded-for'] || req.get('origin');
+  var date = new Date();
+  var month = date.getMonth() + 1;
+  var monthstr = month < 10 ? '0' + month.toString() : month.toString();
+  var day = date.getDate();
+  var daystr = day < 10 ? '0' + day.toString() : day.toString();
+  var date_str = date.getFullYear() + '-' + monthstr + '-' + daystr + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+  ServerLogService.log({ level, action, userMail, ip, type, date_str });
+}
+
+// Build normalized payload for group audit events
+function buildGroupLogType(targetGroupId: any, targetGroupName: string, extra?: string) {
+  const safeId = (targetGroupId || '').toString().replace(/\|,\|/g, ' ');
+  const safeName = (targetGroupName || '-').toString().replace(/\|,\|/g, ' ');
+  if (!extra) return `${safeId}--${safeName}`;
+  const safeExtra = extra.toString().replace(/\|,\|/g, ' ');
+  return `${safeId}--${safeName}--${safeExtra}`;
+}
+
+// Compare two string arrays regardless of order
+function areStringArraysEqual(first: string[], second: string[]) {
+  if ((first || []).length !== (second || []).length) return false;
+  for (let i = 0; i < first.length; i++) {
+    if (first[i] !== second[i]) return false;
+  }
+  return true;
 }

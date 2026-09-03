@@ -56,8 +56,8 @@
 </trans-unit>
 
 <trans-unit id="logsManagement" datatype="html">
-  <source>Gestión de logs</source>
-  <target>Gestion des journaux</target>
+  <source>Visor de logs</source>
+  <target>Visionneuse de logs</target>
 </trans-unit>
 
 <trans-unit id="sidebarGroupManagement" datatype="html">
@@ -8877,6 +8877,7 @@ Cordialement.</target>
       <trans-unit id="filterHoverNotAffected">
         <source>Paneles no afectados por este filtro</source>
         <target>Panneaux non affectés par ce filtre</target>
+      </trans-unit>
       <trans-unit id="ResetZoom">
         <source>Restablecer (100%)</source>
         <target>Réinitialiser (100%)</target>
@@ -8884,6 +8885,114 @@ Cordialement.</target>
       <trans-unit id="aboutPageTitle">
         <source>Tutorial</source>
         <target>Tutoriel</target>
+      </trans-unit>
+      <trans-unit id="LogsActionNewLogin">
+        <source>Login</source>
+        <target>Connexion</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardAccessed">
+        <source>Dashboard Accessed</source>
+        <target>Tableau de bord consulté</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardCreated">
+        <source>Dashboard Created</source>
+        <target>Tableau de bord créé</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardUpdated">
+        <source>Dashboard Updated</source>
+        <target>Tableau de bord mis à jour</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardRenamed">
+        <source>Dashboard Renamed</source>
+        <target>Tableau de bord renommé</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardVisibilityChanged">
+        <source>Dashboard Visibility Changed</source>
+        <target>Visibilité du tableau de bord modifiée</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardDeleted">
+        <source>Dashboard Deleted</source>
+        <target>Tableau de bord supprimé</target>
+      </trans-unit>
+      <trans-unit id="LogsActionPanelQueryFailed">
+        <source>Panel Query Failed</source>
+        <target>Échec de la requête du panneau</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserCreated">
+        <source>User Created</source>
+        <target>Utilisateur créé</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserUpdated">
+        <source>User Updated</source>
+        <target>Utilisateur mis à jour</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserDeleted">
+        <source>User Deleted</source>
+        <target>Utilisateur supprimé</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserRolesChanged">
+        <source>User Roles Changed</source>
+        <target>Rôles de l'utilisateur modifiés</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserPasswordChanged">
+        <source>User Password Changed</source>
+        <target>Mot de passe de l'utilisateur modifié</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupCreated">
+        <source>Group Created</source>
+        <target>Groupe créé</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupUpdated">
+        <source>Group Updated</source>
+        <target>Groupe mis à jour</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupDeleted">
+        <source>Group Deleted</source>
+        <target>Groupe supprimé</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupMembershipChanged">
+        <source>Group Membership Changed</source>
+        <target>Appartenance au groupe modifiée</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelStarted">
+        <source>Update Model Started</source>
+        <target>Mise à jour du modèle démarrée</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelUsersAndGroupsSynced">
+        <source>Update Model Users/Groups Synced</source>
+        <target>Utilisateurs/Groupes synchronisés</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelUsersAndGroupsSyncFailed">
+        <source>Update Model Users/Groups Sync Failed</source>
+        <target>Échec de synchronisation des utilisateurs/groupes</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelRolesMapped">
+        <source>Update Model Roles Mapped</source>
+        <target>Rôles mappés</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelRolesMappingFailed">
+        <source>Update Model Roles Mapping Failed</source>
+        <target>Échec du mappage des rôles</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelDataModelBuilt">
+        <source>Update Model Data Model Built</source>
+        <target>Modèle de données construit</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelDataModelBuildFailed">
+        <source>Update Model Data Model Build Failed</source>
+        <target>Échec de la construction du modèle de données</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelCompleted">
+        <source>Update Model Completed</source>
+        <target>Mise à jour du modèle terminée</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelPushFailed">
+        <source>Update Model Push Failed</source>
+        <target>Échec de l'envoi du modèle</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelFailed">
+        <source>Update Model Failed</source>
+        <target>Échec de la mise à jour du modèle</target>
       </trans-unit>
     </body>
   </file>

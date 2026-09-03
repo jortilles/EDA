@@ -29,8 +29,6 @@ export class UserController {
             let token: string;
             let user: IUser = new User({ name: '', email: '', password: '', img: '', role: [] });
 
-            insertServerLog(req, 'info', 'newLogin', body.email, 'attempt');
-
             // Busca artxiu de configuracio activedirectory
             const ldapPath = path.resolve(__dirname, `../../../../config/activedirectory.json`);
 
@@ -48,7 +46,7 @@ export class UserController {
                                     Object.assign(user, userEda);
                                     user.password = ':)';
                                     token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
-                                    insertServerLog(req, 'info', 'newLogin', body.email, 'login');
+                                    insertServerLog(req, 'info', 'newLogin', user.name.toString(), 'login');
                                     return res.status(200).json({ user, token: token, id: user._id });
 
                     } 
@@ -135,7 +133,7 @@ export class UserController {
                     user.password = ':)';
                     token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
 
-                    insertServerLog(req, 'info', 'newLogin', body.email, 'login');
+                    insertServerLog(req, 'info', 'newLogin', user.name.toString(), 'login');
 
                     return res.status(200).json({ user, token: token, id: user._id });
                 
@@ -186,6 +184,8 @@ export class UserController {
             await Group.updateMany({}, { $pull: { users: userSaved._id } });
             // Introduim de nou els grups seleccionat al usuari actualitzat
             await Group.updateMany({ _id: { $in: body.role } }, { $push: { users: userSaved._id } });
+
+            insertServerLog(req, 'info', 'UserCreated', req.user.name.toString(), buildUserLogType(userSaved?._id, userSaved?.email, userSaved?.name, `roles:${(body.role || []).length}`));
 
             return res.status(201).json({ ok: true, user: userSaved, userToken: req.user });
         } catch (err) {
@@ -358,6 +358,12 @@ export class UserController {
                 return next(new HttpException(400, `User with this id not found`));
             }
 
+            // Capturamos valores previos para auditar cambios sensibles
+            const previousEmail = user.email;
+            const previousName = user.name;
+            const previousRoles = ((user.role || []) as any[]).map(role => String(role)).filter(r => r).sort();
+            const isPasswordUpdated = !!(body.password && body.password !== '');
+
             // Actualizar campos
             user.name = body.name;
             user.email = body.email;
@@ -386,6 +392,17 @@ export class UserController {
             // No devolver el password real
             userSaved.password = ':)';
 
+            const currentRoles = body.role !== undefined
+                ? ((body.role || []) as any[]).map(role => role && role._id ? String(role._id) : String(role)).filter(r => r).sort()
+                : previousRoles;
+            insertServerLog(req, 'info', 'UserUpdated', req.user.name.toString(), buildUserLogType(userSaved?._id, userSaved?.email, userSaved?.name, `updated_from:${previousEmail}`));
+            if (!areStringArraysEqual(previousRoles, currentRoles)) {
+                insertServerLog(req, 'info', 'UserRolesChanged', req.user.name.toString(), buildUserLogType(userSaved?._id, userSaved?.email, userSaved?.name, `roles:${previousRoles.length}->${currentRoles.length}`));
+            }
+            if (isPasswordUpdated) {
+                insertServerLog(req, 'info', 'UserPasswordChanged', req.user.name.toString(), buildUserLogType(userSaved?._id, userSaved?.email, userSaved?.name, `password_changed_for:${previousName}`));
+            }
+
             return res.status(200).json({ ok: true, user: userSaved });
 
         } catch (err) {
@@ -403,6 +420,9 @@ export class UserController {
             if (!userRemoved) {
                 return next(new HttpException(400, 'Not exists user with this id'));
             }
+
+            insertServerLog(req, 'info', 'UserDeleted', req.user.name.toString(), buildUserLogType(userRemoved?._id, userRemoved?.email, userRemoved?.name, `deleted--id:${userRemoved?._id}`));
+
             return res.status(200).json({ ok: true, user: userRemoved });
         } catch (err) {
             return next(new HttpException(500, 'Error removing an user'));
@@ -457,4 +477,23 @@ function insertServerLog(req: Request, level: string, action: string, userMail: 
     var daystr=day<10?"0"+day.toString(): day.toString();
     var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     ServerLogService.log({ level, action, userMail, ip, type, date_str});
+}
+
+// Build normalized payload for user audit events
+function buildUserLogType(targetUserId: any, targetUserEmail: any, targetUserName: any, extra?: any) {
+    const safeId = (targetUserId || '').toString().replace(/\|,\|/g, ' ');
+    const safeEmail = (targetUserEmail || '-').toString().replace(/\|,\|/g, ' ');
+    const safeName = (targetUserName || '-').toString().replace(/\|,\|/g, ' ');
+    if (!extra) return `${safeId}--${safeEmail}--${safeName}`;
+    const safeExtra = extra.toString().replace(/\|,\|/g, ' ');
+    return `${safeId}--${safeEmail}--${safeName}--${safeExtra}`;
+}
+
+// Compare two string arrays regardless of order
+function areStringArraysEqual(first: string[], second: string[]) {
+    if ((first || []).length !== (second || []).length) return false;
+    for (let i = 0; i < first.length; i++) {
+        if (first[i] !== second[i]) return false;
+    }
+    return true;
 }
