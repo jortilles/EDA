@@ -3,7 +3,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { StyleProviderService, AlertService } from '@eda/services/service.index';
 import { Table } from 'primeng/table';
 // import { FilterUtils } from 'primeng/utils';
-import { EdaTable } from './eda-table';
+import { EdaTableModel } from './eda-table.model';
 import { computeTableColorStyles, getNiceName, ColorStyleSpec } from '../eda-table-core/eda-table.color';
 import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_default';
 import { registerLocaleData } from '@angular/common';
@@ -48,7 +48,7 @@ import { DialogModule } from 'primeng/dialog';  // <--- import PrimeNG module
 })
 export class EdaTableComponent implements OnInit, AfterViewInit {
     @ViewChild('table', { static: false }) table: Table;
-    @Input() inject: EdaTable;
+    @Input() inject: EdaTableModel;
     @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
     data: any;
@@ -67,10 +67,8 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
         registerLocaleData(es);
     }
     ngOnInit(): void {
-        if(this?.inject?.styles && !this.inject.pivot){
+        if(this?.inject?.styles){
             this.applyStyles(this.inject.styles)
-        }else if(this?.inject?.styles && this.inject.pivot){
-            this.applyPivotSyles(this.inject.styles)
         }
     }
 
@@ -152,8 +150,6 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
             const styleEntry = this.styles[styleKey];
             if (styleEntry) {
                 let field = styleEntry.col || styleKey;
-                if(this.inject.pivot) field = styleEntry.value;
-
                 field = getNiceName(field);
 
                 const cellValue = parseFloat(rowData[col.field]);
@@ -256,12 +252,6 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
             console.warn('[applyStyles] Error al aplicar estilos de color:', e);
             this.alertService.addError('Error al aplicar los estilos de color de la tabla');
         }
-    }
-
-    applyPivotSyles(styles){
-        const result = computeTableColorStyles(styles as ColorStyleSpec[], this.inject.value, 'matrix');
-        this.applyComputedColorStyles(result);
-        this.styles = result.entries;
     }
 
     private applyComputedColorStyles(result: ReturnType<typeof computeTableColorStyles>) {

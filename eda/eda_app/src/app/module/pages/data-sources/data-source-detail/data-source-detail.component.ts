@@ -1,4 +1,5 @@
-import { EdaTable, EdaColumnText, EdaColumnContextMenu, EdaTableComponent } from '@eda/components/component.index';
+import { EdaColumnText, EdaColumnContextMenu, EdaTableComponent } from '@eda/components/component.index';
+import { EdaTableModel } from '@eda/components/eda-table/eda-table.model';
 import { Component, OnInit, OnDestroy, EventEmitter, Output, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
@@ -76,10 +77,10 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     @Output() onTableCreated: EventEmitter<any> = new EventEmitter();
 
     public form: UntypedFormGroup;
-    public permissionsColumn: EdaTable;
-    public permissionTable: EdaTable;
-    public permissionModel: EdaTable;
-    public relationsTable: EdaTable;
+    public permissionsColumn: EdaTableModel;
+    public permissionTable: EdaTableModel;
+    public permissionModel: EdaTableModel;
+    public relationsTable: EdaTableModel;
     public navigationSubscription: any;
     // Properties
     public tablePanel: EditTablePanel;
@@ -249,7 +250,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         );
 
-        this.permissionsColumn = new EdaTable({
+        this.permissionsColumn = new EdaTableModel({
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
                     new EdaContextMenuItem({
@@ -294,7 +295,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         });
 
 
-        this.permissionTable = new EdaTable({
+        this.permissionTable = new EdaTableModel({
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
                     new EdaContextMenuItem({
@@ -335,7 +336,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
 
 
-        this.permissionModel = new EdaTable({
+        this.permissionModel = new EdaTableModel({
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
                     new EdaContextMenuItem({
@@ -364,7 +365,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         });
 
 
-        this.relationsTable = new EdaTable({
+        this.relationsTable = new EdaTableModel({
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
                     new EdaContextMenuItem({

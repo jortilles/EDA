@@ -529,14 +529,7 @@ export class TableDialogComponent{
           }
         }
       }
-      if (!this.myPanelChartComponent.componentRef.instance.inject.pivot) {
-
-        this.myPanelChartComponent.componentRef.instance.applyStyles(this.styles, this.queryNumericColumns);
-
-      } else {
-
-        this.myPanelChartComponent.componentRef.instance.applyPivotSyles(this.styles);
-      }
+      this.myPanelChartComponent.componentRef.instance.applyStyles(this.styles);
     } finally {
       this.gradientMenuController = undefined;
     }
@@ -544,10 +537,9 @@ export class TableDialogComponent{
 
   /**
    * Applies a new sort mode to the cross table preview without closing the dialog.
-   * The EdaTable keeps the raw pre-pivot rows in origValues.  Clearing origValues and
-   * re-assigning the data forces the value setter to rebuild the pivot from scratch
-   * using the updated crossSortOrder, while also restoring the original column
-   * definitions (oldcols) so generateCrossParams can resolve axis columns correctly.
+   * EdaCrosstableModel keeps the raw pre-pivot rows in origValues. Clearing origValues
+   * and re-assigning the data forces the value setter to rebuild the cross table from
+   * scratch (via buildCrossTable()) using the updated crossSortOrder.
    */
   public setCrossSortOrder(value: string) {
     this.crossSortOrder = value;

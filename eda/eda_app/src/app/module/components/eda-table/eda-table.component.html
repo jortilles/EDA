@@ -1,4 +1,4 @@
-<div class="eda-table" [class.eda-table--transparent]="styleProviderService.backgroundImage" [class.eda-table--pivot]="inject.pivot">
+<div class="eda-table" [class.eda-table--transparent]="styleProviderService.backgroundImage">
     <p-table 
         #table 
         [columns]="inject.cols" 
@@ -38,36 +38,21 @@
                 </ng-container>
             </tr>
 
-            <tr *ngFor="let serie of inject.series" >
-                <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [pSortableColumn]="label.column" [attr.colspan]="label.colspan"
-                (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center" [ngStyle]="getStyle()" >
-                    <div class="flex items-center">
-                        {{label.title}}
-                        @if(label.sortable){
-                            <p-sortIcon ></p-sortIcon>
-                        }
-                    </div>
-                </th>
+            <tr class="header-title">
+                <ng-container *ngFor="let col of inject.cols">
+                    @if(col.type && col.visible){
+                        <th [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
+                            [width]="col.width" [attr.rowspan]="col.rowspan">
+                            <div class="flex items-center "  [ngStyle]="getTextStyle()">
+                                {{col.header}}
+                                @if(col.sortable){
+                                    <p-sortIcon [field]="col.field"  [ngStyle]="getTextStyle()"></p-sortIcon>
+                                }
+                            </div>
+                        </th>
+                    }
+                </ng-container>
             </tr>
-
-
-            @if(!inject.pivot){
-                <tr class="header-title">
-                    <ng-container *ngFor="let col of inject.cols">
-                        @if(col.type && col.visible){
-                            <th [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
-                                [width]="col.width" [attr.rowspan]="col.rowspan">
-                                <div class="flex items-center "  [ngStyle]="getTextStyle()">
-                                    {{col.header}}
-                                    @if(col.sortable){
-                                        <p-sortIcon [field]="col.field"  [ngStyle]="getTextStyle()"></p-sortIcon>
-                                    }
-                                </div>
-                            </th>
-                        }
-                    </ng-container>
-                </tr>
-            }
 
             @if(verifyFilter()){
                 <tr class="header-filter">
