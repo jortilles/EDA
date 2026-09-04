@@ -7832,6 +7832,46 @@ Desglossament per categoria:
 
 Salutacions.</target>
   </trans-unit>
-    </body>
+          <trans-unit id="mediaSearchPlaceholder">
+        <source>Buscar por nombre...</source>
+        <target>Cercar per nom...</target>
+      </trans-unit>
+
+      <trans-unit id="mediaNoSearchResults">
+        <source>Ninguna imagen coincide con la búsqueda.</source>
+        <target>Cap imatge coincideix amb la cerca.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCopyUrl">
+        <source>Copiar URL</source>
+        <target>Copiar URL</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUrlCopied">
+        <source>URL copiada al portapapeles</source>
+        <target>URL copiada al porta-retalls</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCopyUrlError">
+        <source>No se pudo copiar la URL</source>
+        <target>No s’ha pogut copiar la URL</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDimensions">
+        <source>Dimensiones</source>
+        <target>Dimensions</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCannotMoveIntoOwnSubfolder">
+        <source>No puedes mover una carpeta dentro de sí misma o de una subcarpeta suya.</source>
+        <target>No pots moure una carpeta dins d’ella mateixa o d’una subcarpeta seva.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaClearSearch">
+        <source>Limpiar</source>
+        <target>Netejar</target>
+      </trans-unit>
+
+</body>
   </file>
 </xliff>

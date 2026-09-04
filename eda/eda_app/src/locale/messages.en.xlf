@@ -7525,6 +7525,46 @@ Breakdown by category:
 
 Best regards.</target>
   </trans-unit>
+      <trans-unit id="mediaSearchPlaceholder">
+        <source>Buscar por nombre...</source>
+        <target>Search by name...</target>
+      </trans-unit>
+
+      <trans-unit id="mediaNoSearchResults">
+        <source>Ninguna imagen coincide con la búsqueda.</source>
+        <target>No images match your search.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCopyUrl">
+        <source>Copiar URL</source>
+        <target>Copy URL</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUrlCopied">
+        <source>URL copiada al portapapeles</source>
+        <target>URL copied to clipboard</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCopyUrlError">
+        <source>No se pudo copiar la URL</source>
+        <target>Could not copy the URL</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDimensions">
+        <source>Dimensiones</source>
+        <target>Dimensions</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCannotMoveIntoOwnSubfolder">
+        <source>No puedes mover una carpeta dentro de sí misma o de una subcarpeta suya.</source>
+        <target>You can’t move a folder into itself or one of its own subfolders.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaClearSearch">
+        <source>Limpiar</source>
+        <target>Clear</target>
+      </trans-unit>
+
 </body>
 </file>
 </xliff>

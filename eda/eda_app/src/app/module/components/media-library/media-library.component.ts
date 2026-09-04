@@ -60,31 +60,66 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
   /** Direct subfolders of the folder currently being browsed. */
   public childFolders = computed(() => this.folders().filter(f => (f.parentId ?? null) === this.currentFolderId()));
 
-  /** Left-side folder tree, flattened depth-first (always fully expanded, matches the sketch). */
+  /** Which folder ids are expanded in the tree - starts empty (everything collapsed by default). */
+  public expandedFolderIds = signal<Set<string>>(new Set());
+
+  /** Left-side folder tree, flattened depth-first, respecting expandedFolderIds. */
   public folderTree = computed(() => {
+    const expanded = this.expandedFolderIds();
     const byParent = new Map<string | null, IMediaFolder[]>();
     for (const f of this.folders()) {
       const key = f.parentId ?? null;
       if (!byParent.has(key)) byParent.set(key, []);
       byParent.get(key)!.push(f);
     }
-    const result: { folder: IMediaFolder, depth: number }[] = [];
+    const result: { folder: IMediaFolder, depth: number, hasChildren: boolean, isExpanded: boolean }[] = [];
     const walk = (parentId: string | null, depth: number) => {
       const children = (byParent.get(parentId) || []).slice().sort((a, b) => a.name.localeCompare(b.name));
       for (const child of children) {
-        result.push({ folder: child, depth });
-        walk(child._id, depth + 1);
+        const hasChildren = (byParent.get(child._id) || []).length > 0;
+        const isExpanded = expanded.has(child._id);
+        result.push({ folder: child, depth, hasChildren, isExpanded });
+        if (hasChildren && isExpanded) {
+          walk(child._id, depth + 1);
+        }
       }
     };
     walk(null, 0);
     return result;
   });
 
+  toggleTreeNode(folderId: string, event: Event): void {
+    event.stopPropagation();
+    const set = new Set(this.expandedFolderIds());
+    if (set.has(folderId)) set.delete(folderId); else set.add(folderId);
+    this.expandedFolderIds.set(set);
+  }
+
+  /** Reveals the path to a folder in the tree by expanding all of its ancestors. */
+  private expandAncestorsOf(folder: IMediaFolder): void {
+    const byId = new Map(this.folders().map(f => [f._id, f]));
+    const set = new Set(this.expandedFolderIds());
+    let f: IMediaFolder | null = folder.parentId ? byId.get(folder.parentId) ?? null : null;
+    while (f) {
+      set.add(f._id);
+      f = f.parentId ? byId.get(f.parentId) ?? null : null;
+    }
+    this.expandedFolderIds.set(set);
+  }
+
   public loading = signal<boolean>(false);
   public uploading = signal<boolean>(false);
   public isDragging = signal<boolean>(false);
 
   public viewMode = signal<'grid' | 'list'>('grid');
+
+  public searchTerm = signal<string>('');
+  /** Items in the current folder matching the search box, or all of them if it's empty. */
+  public filteredItems = computed(() => {
+    const term = this.searchTerm().trim().toLowerCase();
+    if (!term) return this.items();
+    return this.items().filter(i => i.originalName.toLowerCase().includes(term));
+  });
 
   // --- selection ---------------------------------------------------------------
   public selectedIds = signal<Set<string>>(new Set());
@@ -110,6 +145,15 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
   public previewUsage = signal<{ _id: string, title: string }[] | null>(null);
   public loadingUsage = signal<boolean>(false);
 
+  /** Pixel dimensions of the selected image, read client-side once it loads (not stored server-side). */
+  public imageDimensions = signal<{ width: number, height: number } | null>(null);
+
+  // --- side panel appear/disappear (kept in the DOM a bit longer than the selection itself,
+  // so the disappear animation - the same slide-in, reversed - has time to play) --------------
+  public showSidePanel = signal<boolean>(false);
+  public panelClosing = signal<boolean>(false);
+  private closeTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
   // --- drag-to-select (marquee) --------------------------------------------------
   public marqueeRect = signal<{ left: number, top: number, width: number, height: number } | null>(null);
   private marqueeStart: { x: number, y: number } | null = null;
@@ -132,11 +176,11 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
   /** How many elements (subfolders + files) live in the folder currently being browsed. */
   public currentFolderItemCount = computed(() => this.childFolders().length + this.items().length);
 
-  public totalPages = computed(() => Math.max(1, Math.ceil(this.items().length / this.itemsPerPage())));
+  public totalPages = computed(() => Math.max(1, Math.ceil(this.filteredItems().length / this.itemsPerPage())));
   public pageNumbers = computed(() => Array.from({ length: this.totalPages() }, (_, i) => i + 1));
   public paginatedItems = computed(() => {
     const start = (this.currentPage() - 1) * this.itemsPerPage();
-    return this.items().slice(start, start + this.itemsPerPage());
+    return this.filteredItems().slice(start, start + this.itemsPerPage());
   });
 
   ngOnInit(): void {
@@ -147,6 +191,7 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     document.removeEventListener('mousemove', this.onMarqueeMove);
     document.removeEventListener('mouseup', this.onMarqueeUp);
+    if (this.closeTimeoutId) clearTimeout(this.closeTimeoutId);
   }
 
   // --- loading -------------------------------------------------------------
@@ -156,6 +201,11 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
       next: (res: any) => this.folders.set(res.folders || []),
       error: (err: any) => this.alertService.addError(err)
     });
+  }
+
+  onSearchChange(term: string): void {
+    this.searchTerm.set(term);
+    this.setPage(1);
   }
 
   loadMedia(): void {
@@ -177,6 +227,7 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
 
   openFolder(folder: IMediaFolder): void {
     this.currentFolderId.set(folder._id);
+    this.expandAncestorsOf(folder);
     this.clearSelection();
     this.loadMedia();
   }
@@ -311,8 +362,43 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
   }
 
   private setSelection(ids: Set<string>): void {
+    if (ids.size === 0 && this.selectedIds().size > 0) {
+      // Closing: keep the old selection (and its detail data) around while the panel animates
+      // out, instead of blanking it immediately - updateSidePanelVisibility clears it for real
+      // once the exit animation finishes.
+      this.updateSidePanelVisibility(false);
+      return;
+    }
     this.selectedIds.set(ids);
     this.syncUsage();
+    this.syncDimensions();
+    this.updateSidePanelVisibility(ids.size > 0);
+  }
+
+  /**
+   * Keeps the side panel mounted for the duration of its CSS exit animation instead of
+   * unmounting it the instant the selection is cleared - `mediaSlideOut` is the exact reverse
+   * of the entrance `mediaSlideIn` (see the .css), so this just needs to give it time to play.
+   */
+  private updateSidePanelVisibility(hasSelection: boolean): void {
+    if (this.closeTimeoutId) {
+      clearTimeout(this.closeTimeoutId);
+      this.closeTimeoutId = null;
+    }
+    if (hasSelection) {
+      this.panelClosing.set(false);
+      this.showSidePanel.set(true);
+    } else if (this.showSidePanel()) {
+      this.panelClosing.set(true);
+      this.closeTimeoutId = setTimeout(() => {
+        this.selectedIds.set(new Set());
+        this.previewUsage.set(null);
+        this.imageDimensions.set(null);
+        this.showSidePanel.set(false);
+        this.panelClosing.set(false);
+        this.closeTimeoutId = null;
+      }, 280);
+    }
   }
 
   private syncUsage(): void {
@@ -331,6 +417,46 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
       },
       error: () => this.loadingUsage.set(false)
     });
+  }
+
+  private syncDimensions(): void {
+    this.imageDimensions.set(null);
+    const item = this.selectedItem();
+    if (!item) return;
+
+    const img = new Image();
+    img.onload = () => {
+      // ignore a late load if the selection moved on to something else meanwhile
+      if (this.selectedItem()?._id === item._id) {
+        this.imageDimensions.set({ width: img.naturalWidth, height: img.naturalHeight });
+      }
+    };
+    img.src = this.mediaService.resolveUrl(item.url);
+  }
+
+  /** Copies the image's absolute, authenticated URL - e.g. to paste into an HTML text box in a table. */
+  copyImageUrl(item: IMedia): void {
+    const url = this.mediaService.resolveUrl(item.url);
+    navigator.clipboard.writeText(url).then(() => {
+      this.alertService.addSuccess($localize`:@@mediaUrlCopied:URL copiada al portapapeles`);
+    }).catch(() => {
+      this.alertService.addError($localize`:@@mediaCopyUrlError:No se pudo copiar la URL`);
+    });
+  }
+
+  extensionOf(item: IMedia): string {
+    const fromName = item.originalName.split('.').pop();
+    const ext = fromName || item.mimeType.split('/').pop() || '';
+    return ext.toUpperCase();
+  }
+
+  /** Checkbox click toggles just that one item, same as Ctrl+click, without affecting the rest of the selection. */
+  onCheckboxClick(item: IMedia, event: Event): void {
+    event.stopPropagation();
+    const set = new Set(this.selectedIds());
+    if (set.has(item._id)) set.delete(item._id); else set.add(item._id);
+    this.setSelection(set);
+    this.lastClickedId = item._id;
   }
 
   clearSelection(): void {
@@ -370,16 +496,26 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.setSelection(new Set([item._id]));
+    // plain click on the only selected item toggles it off, like a real file explorer
+    if (this.selectedIds().size === 1 && this.selectedIds().has(item._id)) {
+      this.setSelection(new Set());
+    } else {
+      this.setSelection(new Set([item._id]));
+    }
     this.lastClickedId = item._id;
   }
 
-  // --- drag-to-select (marquee), grid view only, admin only -------------------------
+  // --- drag-to-select (marquee) + click-outside-deselects, admin only ----------------
+  // Bound to the whole component (see the .html) so the drag region isn't cut off at the
+  // grid's edges - it just never starts on anything interactive, and only .media-card
+  // elements are ever actually selected regardless of where the drag passes over.
+  private static readonly INTERACTIVE_SELECTOR =
+    '.media-card, .media-folder-tile, .media-tree-node, button, a, input, select, textarea, .p-dropdown';
 
   onGridMouseDown(event: MouseEvent): void {
     if (this.pickMode) return;
     const target = event.target as HTMLElement;
-    if (target.closest('.media-card')) return; // started on a tile, not the background
+    if (target.closest(MediaLibraryComponent.INTERACTIVE_SELECTOR)) return;
     const container = event.currentTarget as HTMLElement;
     this.marqueeContainer = container;
     const rect = container.getBoundingClientRect();
@@ -410,20 +546,26 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
     const container = this.marqueeContainer;
     const marquee = this.marqueeRect();
 
-    if (container && marquee && (marquee.width > 3 || marquee.height > 3)) {
-      const containerRect = container.getBoundingClientRect();
-      const selLeft = containerRect.left + marquee.left - container.scrollLeft;
-      const selTop = containerRect.top + marquee.top - container.scrollTop;
-      const selRight = selLeft + marquee.width;
-      const selBottom = selTop + marquee.height;
+    if (container && marquee) {
+      if (marquee.width > 3 || marquee.height > 3) {
+        // a real drag: select whatever image tiles the rectangle intersects
+        const containerRect = container.getBoundingClientRect();
+        const selLeft = containerRect.left + marquee.left - container.scrollLeft;
+        const selTop = containerRect.top + marquee.top - container.scrollTop;
+        const selRight = selLeft + marquee.width;
+        const selBottom = selTop + marquee.height;
 
-      const ids: string[] = [];
-      container.querySelectorAll<HTMLElement>('.media-card[data-id]').forEach((el) => {
-        const r = el.getBoundingClientRect();
-        const intersects = r.left < selRight && r.right > selLeft && r.top < selBottom && r.bottom > selTop;
-        if (intersects && el.dataset['id']) ids.push(el.dataset['id']!);
-      });
-      this.setSelection(new Set(ids));
+        const ids: string[] = [];
+        container.querySelectorAll<HTMLElement>('.media-card[data-id]').forEach((el) => {
+          const r = el.getBoundingClientRect();
+          const intersects = r.left < selRight && r.right > selLeft && r.top < selBottom && r.bottom > selTop;
+          if (intersects && el.dataset['id']) ids.push(el.dataset['id']!);
+        });
+        this.setSelection(new Set(ids));
+      } else {
+        // a plain click on empty background, not a drag: click-outside-an-image deselects all
+        this.clearSelection();
+      }
     }
 
     this.marqueeStart = null;
@@ -435,17 +577,10 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
 
   // --- toolbar actions on the current selection (admin only) -------------------------
 
-  deleteSelected(): void {
-    const ids = [...this.selectedIds()];
-    if (!ids.length) return;
-    const isSingle = ids.length === 1;
-    const singleItem = isSingle ? this.items().find(i => i._id === ids[0]) : null;
-
+  private deleteByIds(ids: string[], confirmTitle: string, confirmText?: string): void {
     Swal.fire({
-      title: isSingle
-        ? $localize`:@@mediaDeleteConfirmTitle:¿Eliminar esta imagen?`
-        : $localize`:@@mediaBulkDeleteConfirmTitle:¿Eliminar las imágenes seleccionadas?`,
-      text: isSingle ? singleItem?.originalName : `${ids.length}`,
+      title: confirmTitle,
+      text: confirmText,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: $localize`:@@delete:Eliminar`,
@@ -455,7 +590,9 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
       forkJoin(ids.map(id => this.mediaService.remove(id))).subscribe({
         next: () => {
           this.items.update(list => list.filter(m => !ids.includes(m._id)));
-          this.clearSelection();
+          const remaining = new Set(this.selectedIds());
+          ids.forEach(id => remaining.delete(id));
+          this.setSelection(remaining);
           if (this.currentPage() > this.totalPages()) {
             this.setPage(this.totalPages());
           }
@@ -463,6 +600,26 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
         error: (err: any) => this.alertService.addError(err)
       });
     });
+  }
+
+  deleteSelected(): void {
+    const ids = [...this.selectedIds()];
+    if (!ids.length) return;
+    const isSingle = ids.length === 1;
+    const singleItem = isSingle ? this.items().find(i => i._id === ids[0]) : null;
+    this.deleteByIds(
+      ids,
+      isSingle
+        ? $localize`:@@mediaDeleteConfirmTitle:¿Eliminar esta imagen?`
+        : $localize`:@@mediaBulkDeleteConfirmTitle:¿Eliminar las imágenes seleccionadas?`,
+      isSingle ? singleItem?.originalName : `${ids.length}`
+    );
+  }
+
+  /** Per-card delete icon, shown on hover - deletes that one image regardless of the current selection. */
+  removeOne(item: IMedia, event: Event): void {
+    event.stopPropagation();
+    this.deleteByIds([item._id], $localize`:@@mediaDeleteConfirmTitle:¿Eliminar esta imagen?`, item.originalName);
   }
 
   renameSelected(): void {
@@ -503,6 +660,80 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
       },
       error: (err: any) => this.alertService.addError(err)
     });
+  }
+
+  // --- drag-and-drop to move (native HTML5 DnD): image cards and folder tiles are draggable,
+  // folder tiles + every tree node (including "Inicio"/root) are drop targets. ------------------
+
+  public dragOverFolderId = signal<string | 'root' | null>(null);
+
+  onCardDragStart(item: IMedia, event: DragEvent): void {
+    if (!this.showOrgTools()) { event.preventDefault(); return; }
+    // dragging a card that's part of a multi-selection moves the whole selection together
+    const ids = this.selectedIds().has(item._id) && this.selectedIds().size > 1
+      ? [...this.selectedIds()]
+      : [item._id];
+    event.dataTransfer?.setData('application/json', JSON.stringify({ type: 'file', ids }));
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+  }
+
+  onFolderDragStart(folder: IMediaFolder, event: DragEvent): void {
+    if (!this.showOrgTools()) { event.preventDefault(); return; }
+    event.dataTransfer?.setData('application/json', JSON.stringify({ type: 'folder', id: folder._id }));
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+    event.stopPropagation();
+  }
+
+  onDropTargetDragOver(event: DragEvent): void {
+    event.preventDefault(); // required for the drop event to fire at all
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+  }
+
+  onDropTargetDragEnter(id: string | 'root', event: DragEvent): void {
+    event.preventDefault();
+    this.dragOverFolderId.set(id);
+  }
+
+  onDropTargetDragLeave(id: string | 'root'): void {
+    if (this.dragOverFolderId() === id) this.dragOverFolderId.set(null);
+  }
+
+  onDropOnFolder(targetFolderId: string | null, event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragOverFolderId.set(null);
+
+    const raw = event.dataTransfer?.getData('application/json');
+    if (!raw) return;
+    let payload: any;
+    try { payload = JSON.parse(raw); } catch { return; }
+
+    if (payload.type === 'file' && Array.isArray(payload.ids) && payload.ids.length) {
+      this.mediaService.move(payload.ids, targetFolderId).subscribe({
+        next: () => { this.clearSelection(); this.loadMedia(); },
+        error: (err: any) => this.alertService.addError(err)
+      });
+    } else if (payload.type === 'folder' && payload.id) {
+      if (payload.id === targetFolderId) return;
+      if (this.isDescendantOf(targetFolderId, payload.id)) {
+        this.alertService.addError($localize`:@@mediaCannotMoveIntoOwnSubfolder:No puedes mover una carpeta dentro de sí misma o de una subcarpeta suya.`);
+        return;
+      }
+      this.mediaService.moveFolder(payload.id, targetFolderId).subscribe({
+        next: () => this.loadFolders(),
+        error: (err: any) => this.alertService.addError(err)
+      });
+    }
+  }
+
+  private isDescendantOf(candidateId: string | null, ancestorId: string): boolean {
+    const byId = new Map(this.folders().map(f => [f._id, f]));
+    let f = candidateId ? byId.get(candidateId) ?? null : null;
+    while (f) {
+      if (f._id === ancestorId) return true;
+      f = f.parentId ? byId.get(f.parentId) ?? null : null;
+    }
+    return false;
   }
 
   // --- slideshow (only triggered by clicking the photo in the side panel) ------------------

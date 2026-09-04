@@ -78,19 +78,49 @@ export class MediaController {
         }
     }
 
+    // Also used to move a folder (change its parent): the frontend sends either `name`,
+    // `parentId`, or both in the same PUT, so drag-and-drop-to-move reuses this route.
     static async renameFolder(req: Request, res: Response, next: NextFunction) {
         try {
-            const name = (req.body.name || '').trim();
-            if (!name) {
-                return next(new HttpException(400, 'The folder name is required'));
+            const update: any = {};
+
+            if (req.body.name !== undefined) {
+                const name = (req.body.name || '').trim();
+                if (!name) {
+                    return next(new HttpException(400, 'The folder name is required'));
+                }
+                update.name = name;
             }
-            const folder = await MediaFolder.findByIdAndUpdate(req.params.id, { name }, { new: true });
+
+            if (req.body.parentId !== undefined) {
+                const parentId = req.body.parentId && req.body.parentId !== 'null' ? req.body.parentId : null;
+                if (parentId === req.params.id) {
+                    return next(new HttpException(400, 'A folder cannot be moved into itself'));
+                }
+                if (parentId) {
+                    // walk the target's ancestor chain to reject moving a folder into its own subfolder
+                    let current = await MediaFolder.findById(parentId);
+                    while (current) {
+                        if (String(current._id) === req.params.id) {
+                            return next(new HttpException(400, 'Cannot move a folder into one of its own subfolders'));
+                        }
+                        current = current.parentId ? await MediaFolder.findById(current.parentId) : null;
+                    }
+                }
+                update.parentId = parentId;
+            }
+
+            if (!Object.keys(update).length) {
+                return next(new HttpException(400, 'Nothing to update'));
+            }
+
+            const folder = await MediaFolder.findByIdAndUpdate(req.params.id, update, { new: true });
             if (!folder) {
                 return next(new HttpException(400, 'Folder not found'));
             }
             return res.status(200).json({ ok: true, folder });
         } catch (err) {
-            return next(new HttpException(500, 'Error renaming the folder'));
+            return next(new HttpException(500, 'Error updating the folder'));
         }
     }
 

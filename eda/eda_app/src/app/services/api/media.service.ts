@@ -64,6 +64,10 @@ export class MediaService extends ApiService {
         return this.put(`${this.route}/folders/${id}`, { name });
     }
 
+    moveFolder(id: string, parentId: string | null): Observable<any> {
+        return this.put(`${this.route}/folders/${id}`, { parentId });
+    }
+
     deleteFolder(id: string): Observable<any> {
         return this.delete(`${this.route}/folders/${id}`);
     }

@@ -1,15 +1,33 @@
-<div class="media-library" [class.media-library--split]="showOrgTools()">
+<div class="media-library" [class.media-library--split]="showOrgTools()" (mousedown)="onGridMouseDown($event)">
 
-  <!-- Left tree: full nested folder hierarchy, always expanded -->
+  <!-- Left tree: nested folder hierarchy, collapsed by default (chevrons expand/collapse) -->
   @if (showOrgTools()) {
     <nav class="media-tree">
-      <a class="media-tree-node" [class.is-active]="!currentFolder()" (click)="goToRoot()">
+      <a class="media-tree-node" [class.is-active]="!currentFolder()" [class.media-drop-target--over]="dragOverFolderId() === 'root'"
+         (click)="goToRoot()"
+         (dragover)="onDropTargetDragOver($event)"
+         (dragenter)="onDropTargetDragEnter('root', $event)"
+         (dragleave)="onDropTargetDragLeave('root')"
+         (drop)="onDropOnFolder(null, $event)">
+        <span class="media-tree-toggle-spacer"></span>
         <i class="pi pi-home"></i> <span i18n="@@mediaHome">Inicio</span>
       </a>
       @for (node of folderTree(); track node.folder._id) {
         <a class="media-tree-node" [style.padding-left.px]="16 + node.depth * 14"
            [class.is-active]="currentFolderId() === node.folder._id"
-           (click)="openFolder(node.folder)">
+           [class.media-drop-target--over]="dragOverFolderId() === node.folder._id"
+           (click)="openFolder(node.folder)"
+           (dragover)="onDropTargetDragOver($event)"
+           (dragenter)="onDropTargetDragEnter(node.folder._id, $event)"
+           (dragleave)="onDropTargetDragLeave(node.folder._id)"
+           (drop)="onDropOnFolder(node.folder._id, $event)">
+          @if (node.hasChildren) {
+            <button type="button" class="media-tree-toggle" (click)="toggleTreeNode(node.folder._id, $event)">
+              <i class="pi" [class.pi-chevron-right]="!node.isExpanded" [class.pi-chevron-down]="node.isExpanded"></i>
+            </button>
+          } @else {
+            <span class="media-tree-toggle-spacer"></span>
+          }
           <i class="pi pi-folder"></i> <span [title]="node.folder.name">{{ node.folder.name }}</span>
         </a>
       }
@@ -18,7 +36,7 @@
 
   <div class="media-main">
 
-    <!-- Header: breadcrumb + view toggle -->
+    <!-- Header: breadcrumb + search + view toggle, all in one compact row -->
     <div class="media-header">
       <div class="media-breadcrumb">
         <a (click)="goToRoot()" [class.is-current]="!currentFolder()" i18n="@@mediaHome">Inicio</a>
@@ -29,6 +47,17 @@
         <span class="media-item-count">({{ currentFolderItemCount() }})</span>
       </div>
 
+      <div class="media-search-row">
+        <i class="pi pi-search media-search-icon"></i>
+        <input type="text" class="media-search-input" [ngModel]="searchTerm()" (ngModelChange)="onSearchChange($event)"
+          placeholder="Buscar por nombre..." i18n-placeholder="@@mediaSearchPlaceholder" />
+        @if (searchTerm()) {
+          <button type="button" class="media-search-clear" (click)="onSearchChange('')" title="Limpiar" i18n-title="@@mediaClearSearch">
+            <i class="pi pi-times"></i>
+          </button>
+        }
+      </div>
+
       <div class="media-header-actions">
         @if (showOrgTools()) {
           <button type="button" class="media-tool-btn" (click)="createFolder()">
@@ -37,11 +66,11 @@
           </button>
         }
         <div class="media-view-toggle">
-          <button type="button" [class.active]="viewMode() === 'grid'" (click)="setViewMode('grid')" title="Cuadrícula" i18n-title="@@mediaGridView">
-            <i class="pi pi-th-large"></i>
+          <button type="button" [class.active]="viewMode() === 'grid'" (click)="setViewMode('grid')">
+            <i class="pi pi-th-large"></i> <span i18n="@@mediaGridView">Cuadrícula</span>
           </button>
-          <button type="button" [class.active]="viewMode() === 'list'" (click)="setViewMode('list')" title="Lista" i18n-title="@@mediaListView">
-            <i class="pi pi-bars"></i>
+          <button type="button" [class.active]="viewMode() === 'list'" (click)="setViewMode('list')">
+            <i class="pi pi-bars"></i> <span i18n="@@mediaListView">Lista</span>
           </button>
         </div>
       </div>
@@ -96,7 +125,15 @@
     @if (childFolders().length > 0) {
       <div class="media-folder-grid">
         @for (folder of childFolders(); track folder._id) {
-          <div class="media-folder-tile" (click)="openFolder(folder)">
+          <div class="media-folder-tile"
+               [class.media-drop-target--over]="dragOverFolderId() === folder._id"
+               [draggable]="showOrgTools()"
+               (dragstart)="onFolderDragStart(folder, $event)"
+               (dragover)="onDropTargetDragOver($event)"
+               (dragenter)="onDropTargetDragEnter(folder._id, $event)"
+               (dragleave)="onDropTargetDragLeave(folder._id)"
+               (drop)="onDropOnFolder(folder._id, $event)"
+               (click)="openFolder(folder)">
             <i class="pi pi-folder"></i>
             <span class="media-folder-name" [title]="folder.name">{{ folder.name }}</span>
             @if (showOrgTools()) {
@@ -115,23 +152,37 @@
       <p class="media-status" i18n="@@mediaLoading">Cargando imágenes...</p>
     } @else if (items().length === 0) {
       <p class="media-status" i18n="@@mediaEmpty">Todavía no se ha subido ninguna imagen.</p>
+    } @else if (filteredItems().length === 0) {
+      <p class="media-status" i18n="@@mediaNoSearchResults">Ninguna imagen coincide con la búsqueda.</p>
     } @else {
       <!--
         Only this area scrolls; the paginator and status bar below always stay put at the bottom.
-        The mousedown for drag-to-select lives here (not on .media-grid) and the scroll area fills
-        the full available height, so the whole box is a valid drag-select region - not just the
-        thin row the thumbnails happen to occupy.
+        Drag-to-select itself is bound on the whole component (see the outer div) so it isn't cut
+        off at this box's edges.
       -->
-      <div class="media-files-scroll" (mousedown)="onGridMouseDown($event)">
+      <div class="media-files-scroll">
         @if (viewMode() === 'grid') {
           <div class="media-grid">
             @for (item of paginatedItems(); track item._id) {
               <div class="media-card"
                    [attr.data-id]="item._id"
                    [class.media-card--selected]="isSelected(item._id)"
+                   [draggable]="showOrgTools()"
+                   (dragstart)="onCardDragStart(item, $event)"
                    (click)="onTileClick(item, $event)">
-                <img [src]="item.url | mediaSrc" [alt]="item.originalName" class="media-thumb" />
-                <div class="media-card-overlay">
+                @if (showOrgTools()) {
+                  <input type="checkbox" class="media-card-checkbox" [checked]="isSelected(item._id)" (click)="onCheckboxClick(item, $event)" />
+                }
+                <div class="media-card-thumb-wrap">
+                  <img [src]="item.url | mediaSrc" [alt]="item.originalName" class="media-thumb" />
+                  <span class="media-type-badge">{{ extensionOf(item) }}</span>
+                  @if (showOrgTools()) {
+                    <button type="button" class="media-card-delete" (click)="removeOne(item, $event)" title="Eliminar" i18n-title="@@delete">
+                      <i class="pi pi-trash"></i>
+                    </button>
+                  }
+                </div>
+                <div class="media-card-caption">
                   <span class="media-card-name" [title]="item.originalName">{{ item.originalName }}</span>
                   <span class="media-card-size">{{ formatSize(item.size) }}</span>
                 </div>
@@ -161,9 +212,6 @@
               </tbody>
             </table>
           </div>
-        }
-        @if (marqueeRect(); as m) {
-          <div class="media-marquee" [style.left.px]="m.left" [style.top.px]="m.top" [style.width.px]="m.width" [style.height.px]="m.height"></div>
         }
       </div>
 
@@ -201,7 +249,7 @@
             {{ selectedIds().size }} <span i18n="@@mediaSelectedCount">seleccionadas</span>
           }
         </span>
-        <span class="media-count">{{ items().length }} <span i18n="@@mediaFoundCount">imágenes encontradas</span></span>
+        <span class="media-count">{{ filteredItems().length }} <span i18n="@@mediaFoundCount">imágenes encontradas</span></span>
       </div>
     }
 
@@ -214,15 +262,21 @@
     navigate into a folder - switching from one selected image to another keeps this same element
     alive, so the animation does NOT replay on every click, only on the 0 -> 1+ transition.
   -->
-  @if (showOrgTools() && selectedIds().size > 0) {
-    <aside class="media-side-panel">
+  @if (showOrgTools() && showSidePanel()) {
+    <aside class="media-side-panel" [class.media-side-panel--closing]="panelClosing()">
       @if (selectedItem(); as item) {
-        <img [src]="item.url | mediaSrc" [alt]="item.originalName" class="side-panel-thumb" (click)="openSlideshow(item)" />
+        <div class="side-panel-photo" (click)="openSlideshow(item)">
+          <img [src]="item.url | mediaSrc" [alt]="item.originalName" />
+          <span class="media-type-badge">{{ extensionOf(item) }}</span>
+        </div>
+        <h3 class="side-panel-filename" [title]="item.originalName">{{ item.originalName }}</h3>
         <dl class="side-panel-info">
-          <dt i18n="@@name">Nombre</dt><dd [title]="item.originalName">{{ item.originalName }}</dd>
           <dt i18n="@@mediaUploadDate">Subida</dt><dd>{{ item.createdAt | date:'short' }}</dd>
           <dt i18n="@@mediaSize">Tamaño</dt><dd>{{ formatSize(item.size) }}</dd>
           <dt i18n="@@mediaType">Tipo</dt><dd>{{ item.mimeType }}</dd>
+          @if (imageDimensions(); as dim) {
+            <dt i18n="@@mediaDimensions">Dimensiones</dt><dd>{{ dim.width }}×{{ dim.height }}</dd>
+          }
         </dl>
         <p class="media-usage-title" i18n="@@mediaUsedIn">Usado en</p>
         @if (loadingUsage()) {
@@ -236,6 +290,14 @@
         } @else {
           <p i18n="@@mediaNotUsed">No se usa en ningún dashboard.</p>
         }
+        <div class="side-panel-actions">
+          <button type="button" class="media-tool-btn" (click)="copyImageUrl(item)">
+            <i class="pi pi-link"></i> <span i18n="@@mediaCopyUrl">Copiar URL</span>
+          </button>
+          <button type="button" class="media-tool-btn media-tool-btn--danger" (click)="deleteSelected()">
+            <i class="pi pi-trash"></i> <span i18n="@@delete">Eliminar</span>
+          </button>
+        </div>
       } @else {
         <p class="side-panel-summary-count">{{ selectedIds().size }} <span i18n="@@mediaSelectedCount">seleccionadas</span></p>
         <p class="side-panel-summary-size"><span i18n="@@mediaTotalSize">Tamaño total</span>: {{ formatSize(selectedTotalSize()) }}</p>
@@ -250,6 +312,10 @@
         </button>
       }
     </aside>
+  }
+
+  @if (marqueeRect(); as m) {
+    <div class="media-marquee" [style.left.px]="m.left" [style.top.px]="m.top" [style.width.px]="m.width" [style.height.px]="m.height"></div>
   }
 
 </div>

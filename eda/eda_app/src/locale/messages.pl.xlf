@@ -7465,6 +7465,46 @@ Podział według kategorii:
 
 Pozdrawiam.</target>
   </trans-unit>
+      <trans-unit id="mediaSearchPlaceholder">
+        <source>Buscar por nombre...</source>
+        <target>Szukaj po nazwie...</target>
+      </trans-unit>
+
+      <trans-unit id="mediaNoSearchResults">
+        <source>Ninguna imagen coincide con la búsqueda.</source>
+        <target>Żaden obraz nie pasuje do wyszukiwania.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCopyUrl">
+        <source>Copiar URL</source>
+        <target>Kopiuj URL</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUrlCopied">
+        <source>URL copiada al portapapeles</source>
+        <target>Skopiowano URL do schowka</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCopyUrlError">
+        <source>No se pudo copiar la URL</source>
+        <target>Nie udało się skopiować URL</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDimensions">
+        <source>Dimensiones</source>
+        <target>Wymiary</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCannotMoveIntoOwnSubfolder">
+        <source>No puedes mover una carpeta dentro de sí misma o de una subcarpeta suya.</source>
+        <target>Nie możesz przenieść folderu do niego samego ani do jego własnego podfolderu.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaClearSearch">
+        <source>Limpiar</source>
+        <target>Wyczyść</target>
+      </trans-unit>
+
 </body>
 </file>
 </xliff>
