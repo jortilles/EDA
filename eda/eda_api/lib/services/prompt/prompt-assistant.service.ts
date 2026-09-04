@@ -108,6 +108,11 @@ export class PromptService {
             suggestions.push({ type: 'sunburst', subType: 'sunburst', label: 'Sunburst' });
         }
 
+        // Bar chart race: exactly 1 date + 1 text + 1 numeric column
+        if (currentQuery.length === 3 && numeric.length === 1 && text.length === 1 && date.length === 1) {
+            suggestions.push({ type: 'raceBar', subType: 'raceBar', label: 'Barras en carrera' });
+        }
+
         if (currentQuery.length > 2 ) {
             suggestions.push({ type: 'treetable', subType: 'treetable', label: 'Tabla árbol' });
         }

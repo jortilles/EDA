@@ -1,5 +1,5 @@
 export type CategoryChartType = 'doughnut' | 'polarArea' | 'sunburst' | 'treeMap'
-  | 'scatterPlot' | 'bubblechart' | 'parallelSets' | 'funnel';
+  | 'scatterPlot' | 'bubblechart' | 'parallelSets' | 'funnel' | 'raceBar';
 
 /**
  * Ordered, de-duplicated category identifiers for a live chart instance - used both to seed a
@@ -35,6 +35,8 @@ export function getChartCategoryValues(chartType: CategoryChartType, componentRe
       // saves under - the dialog's "Inicio"/"Final" are hardcoded display labels, not bound to
       // these values, so this only needs to match for lookup/persistence, not display.
       return ['start', 'end'];
+    case 'raceBar':
+      return componentRefInstance.allCategories ?? [];
   }
 }
 

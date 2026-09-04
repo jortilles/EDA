@@ -280,6 +280,12 @@ export class EmailSettingsPage implements OnInit {
       : $localize`:@@sendScheduledMails:Enviar todos los correos programados`
   );
 
+  checkCredentialsLabel = computed(() =>
+    this.isChecking()
+      ? $localize`:@@testingMailConfig:Enviando prueba...`
+      : $localize`:@@testMailConfig:Probar y enviar correo de prueba`
+  );
+
   async handleSendNow() {
     this.isSendingNow.set(true);
     try {
@@ -297,14 +303,17 @@ export class EmailSettingsPage implements OnInit {
   }
 
   async handleCheckCredentials() {
+    this.isChecking.set(true);
     this.spinnerService.on();
     const options = this.getOptions();
     this.mailService.checkConfiguration(options).subscribe({
       next: () => {
+        this.isChecking.set(false);
         this.spinnerService.off();
-        this.alertService.addSuccess($localize`:@@mailConfOk:Credenciales correctas`);
+        this.alertService.addSuccess($localize`:@@mailConfOk:Correo de prueba enviado correctamente`);
       },
       error: err => {
+        this.isChecking.set(false);
         this.spinnerService.off();
         this.alertService.addError(err);
       }

@@ -49,6 +49,7 @@ export { EdaTreeMap} from './eda-treemap/eda-treemap.component';
 export { EdaKnobComponent } from './eda-knob/eda-knob.component';
 export { KnobDialogComponent } from './eda-panels/eda-blank-panel/knob-dialog/knob-dialog.component';
 export { EdaSunburstComponent } from './eda-sunburst/eda-sunburst.component';
+export { EdaRaceBarComponent } from './eda-race-bar/eda-race-bar.component';
 export { WhatIfDialogComponent } from './eda-panels/eda-blank-panel/whatif-dialog/whatif-dialog.component';
 export { EdaTreeTable} from './eda-treetable/eda-treetable.component';
 export { TreeTableDialogComponent } from './eda-panels/eda-blank-panel/tree-table-dialog/tree-table-dialog.component';

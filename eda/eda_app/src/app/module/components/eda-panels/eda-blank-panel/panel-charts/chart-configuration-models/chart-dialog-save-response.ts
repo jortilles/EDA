@@ -8,4 +8,9 @@ export interface ChartDialogSaveResponseBase {
   showGridLines?: boolean;
   innerRadiusPercent?: number;
   chartAnimation?: boolean;
+  labelColorMode?: string;
+  labelCustomColor?: string;
+  topNCount?: number;
+  showTimeline?: boolean;
+  transitionMs?: number;
 }

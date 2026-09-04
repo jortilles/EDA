@@ -156,8 +156,8 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="publicDashboardTitle" datatype="html">
-<source> Informe público EDA</source>
-<target> Public EDA dashboard</target>
+<source> Informe público edalitics</source>
+<target> Public edalitics dashboard</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/anonimous-login/anonymous-login.component.html</context>
 <context context-type="linenumber">1</context>
@@ -3073,7 +3073,226 @@ What am I seeing?
 <source>Contenido del mail: </source>
 <target>Mail body:  </target>
 </trans-unit>
-
+<trans-unit id="sendingMailNow">
+<source>Enviando...</source>
+<target>Sending...</target>
+</trans-unit>
+<trans-unit id="mailSendNowStarted">
+<source>Envío iniciado. Los informes se están generando y llegarán en unos minutos.</source>
+<target>Send started. The reports are being generated and will arrive in a few minutes.</target>
+</trans-unit>
+<trans-unit id="alertSendNowDone">
+<source>Alerta enviada (si el KPI cumple la condición en este momento)</source>
+<target>Alert sent (if the KPI meets the condition right now)</target>
+</trans-unit>
+<trans-unit id="mailDlgTitle">
+<source>Envío del panel por email</source>
+<target>Send panel by email</target>
+</trans-unit>
+<trans-unit id="mailActiveToggle">
+<source>Envío de correo programado</source>
+<target>Scheduled email</target>
+</trans-unit>
+<trans-unit id="mailStep1">
+<source>¿Cuándo se envía?</source>
+<target>When is it sent?</target>
+</trans-unit>
+<trans-unit id="mailStep1Hint">
+<source>El informe se genera y se manda automáticamente en cada repetición.</source>
+<target>The report is generated and sent automatically on every repetition.</target>
+</trans-unit>
+<trans-unit id="mailAlertStep1Hint">
+<source>La alerta se comprueba en cada repetición y sólo se envía si el KPI cumple la condición.</source>
+<target>The alert is checked on every repetition and only sent if the KPI meets the condition.</target>
+</trans-unit>
+<trans-unit id="mailFreqHourly">
+<source>Horario</source>
+<target>Hourly</target>
+</trans-unit>
+<trans-unit id="mailFreqDaily">
+<source>Diario</source>
+<target>Daily</target>
+</trans-unit>
+<trans-unit id="mailFreqWeekly2">
+<source>Semanal</source>
+<target>Weekly</target>
+</trans-unit>
+<trans-unit id="mailFreqMonthly2">
+<source>Mensual</source>
+<target>Monthly</target>
+</trans-unit>
+<trans-unit id="mailFreqEvery">
+<source>Cada</source>
+<target>Every</target>
+</trans-unit>
+<trans-unit id="mailWeeklyEach">
+<source>Cada</source>
+<target>Every</target>
+</trans-unit>
+<trans-unit id="mailWeeklyAt">
+<source>a las</source>
+<target>at</target>
+</trans-unit>
+<trans-unit id="mailMonthlyOnDay">
+<source>el día</source>
+<target>on day</target>
+</trans-unit>
+<trans-unit id="mailMonthlyThe">
+<source>el</source>
+<target>the</target>
+</trans-unit>
+<trans-unit id="mailFreqMonthlyDom">
+<source>El día del mes</source>
+<target>Day of the month</target>
+</trans-unit>
+<trans-unit id="mailFreqMonthlyNth">
+<source>Un día de la semana</source>
+<target>A weekday</target>
+</trans-unit>
+<trans-unit id="mailFreqLastDay">
+<source>Último día</source>
+<target>Last day</target>
+</trans-unit>
+<trans-unit id="mailStep2">
+<source>¿A quién?</source>
+<target>To whom?</target>
+</trans-unit>
+<trans-unit id="mailStep2Hint">
+<source>Usuarios de Edalitics, o cualquier dirección externa.</source>
+<target>Edalitics users, or any external address.</target>
+</trans-unit>
+<trans-unit id="mailUsersLabel">
+<source>Usuarios</source>
+<target>Users</target>
+</trans-unit>
+<trans-unit id="mailExternalLabel">
+<source>Direcciones externas</source>
+<target>External addresses</target>
+</trans-unit>
+<trans-unit id="mailExtHint">
+<source>(separadas por un espacio)</source>
+<target>(space-separated)</target>
+</trans-unit>
+<trans-unit id="mailStep3">
+<source>¿Qué dice el correo?</source>
+<target>What does the email say?</target>
+</trans-unit>
+<trans-unit id="mailStep3Hint">
+<source>Escribe el texto. La vista previa de la derecha se actualiza mientras escribes.</source>
+<target>Write the text. The preview on the right updates as you type.</target>
+</trans-unit>
+<trans-unit id="mailSubjectShort">
+<source>Asunto</source>
+<target>Subject</target>
+</trans-unit>
+<trans-unit id="mailMessageLabel">
+<source>Mensaje</source>
+<target>Message</target>
+</trans-unit>
+<trans-unit id="mailAiAdd">
+<source>Añadir análisis con IA</source>
+<target>Add AI analysis</target>
+</trans-unit>
+<trans-unit id="mailAiAddHint">
+<source>Genera un comentario sobre los datos de cada envío y lo añade debajo de tu mensaje. Cambia en cada correo.</source>
+<target>Generates a comment on each send's data and adds it below your message. It changes with every email.</target>
+</trans-unit>
+<trans-unit id="mailPreviewShort">
+<source>Vista previa</source>
+<target>Preview</target>
+</trans-unit>
+<trans-unit id="mailPreviewHint">
+<source>· tal como lo recibirá el destinatario</source>
+<target>· exactly as the recipient will receive it</target>
+</trans-unit>
+<trans-unit id="mailForLabel">
+<source>Para:</source>
+<target>To:</target>
+</trans-unit>
+<trans-unit id="mailWriteToPreview">
+<source>Escribe el mensaje para verlo aquí.</source>
+<target>Write the message to see it here.</target>
+</trans-unit>
+<trans-unit id="mailPreviewAiTitle">
+<source>Análisis automático</source>
+<target>Automatic analysis</target>
+</trans-unit>
+<trans-unit id="mailPreviewAiDesc">
+<source>Aquí se añadirá un resumen del dashboard escrito con IA en cada envío. Consume tokens de tu cuenta.</source>
+<target>An AI-written summary of the dashboard will be added here on every send. It uses tokens from your account.</target>
+</trans-unit>
+<trans-unit id="mailPreviewDashImg">
+<source>imagen del dashboard</source>
+<target>dashboard image</target>
+</trans-unit>
+<trans-unit id="mailPreviewKpiLabel">
+<source>Valor del KPI</source>
+<target>KPI value</target>
+</trans-unit>
+<trans-unit id="mailPreviewKpiValue">
+<source>valor del KPI en el momento del envío</source>
+<target>KPI value at send time</target>
+</trans-unit>
+<trans-unit id="mailOpenDashboard">
+<source>Abrir el dashboard en Edalitics →</source>
+<target>Open the dashboard in Edalitics →</target>
+</trans-unit>
+<trans-unit id="mailSaveSchedule">
+<source>Guardar programación</source>
+<target>Save schedule</target>
+</trans-unit>
+<trans-unit id="mailNoSubject">
+<source>Sin asunto</source>
+<target>No subject</target>
+</trans-unit>
+<trans-unit id="weekdayMonday">
+<source>Lunes</source>
+<target>Monday</target>
+</trans-unit>
+<trans-unit id="weekdayTuesday">
+<source>Martes</source>
+<target>Tuesday</target>
+</trans-unit>
+<trans-unit id="weekdayWednesday">
+<source>Miércoles</source>
+<target>Wednesday</target>
+</trans-unit>
+<trans-unit id="weekdayThursday">
+<source>Jueves</source>
+<target>Thursday</target>
+</trans-unit>
+<trans-unit id="weekdayFriday">
+<source>Viernes</source>
+<target>Friday</target>
+</trans-unit>
+<trans-unit id="weekdaySaturday">
+<source>Sábado</source>
+<target>Saturday</target>
+</trans-unit>
+<trans-unit id="weekdaySunday">
+<source>Domingo</source>
+<target>Sunday</target>
+</trans-unit>
+<trans-unit id="ordinalFirst">
+<source>Primer</source>
+<target>First</target>
+</trans-unit>
+<trans-unit id="ordinalSecond">
+<source>Segundo</source>
+<target>Second</target>
+</trans-unit>
+<trans-unit id="ordinalThird">
+<source>Tercer</source>
+<target>Third</target>
+</trans-unit>
+<trans-unit id="ordinalFourth">
+<source>Cuarto</source>
+<target>Fourth</target>
+</trans-unit>
+<trans-unit id="ordinalLast">
+<source>Último</source>
+<target>Last</target>
+</trans-unit>
 <trans-unit id="sendMailHeader">
 <source>Configuración de los envíos por email</source>
 <target>Configuration of sending by email</target>
@@ -3751,17 +3970,17 @@ What am I seeing?
 <trans-unit id="firstAboutParagraphSpan" datatype="html">
 <source>
 <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar 
-                informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar
+                informes gráficos e interactivos de forma sencilla. Edalitics es una aplicación que se puede instalar
                 en tus propios servidores o se puede difrutar en su versión SaaS 
 <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>. 
-                Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
+                Edalitics permite disfrutar de toda la potencia de Edalitics sin tener que preocuparte de instalaciones, 
                 configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.  </source>
 <target>
 <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> is an free  web application that allows you to perform
-                 graphical and interactive reports in a simple way. EDA is an application that can be installed
+                 graphical and interactive reports in a simple way. Edalitics is an application that can be installed
                  on your own servers or you can enjoy it in its SaaS version
 <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>.
-                 Edalitics allows you to enjoy all the power of EDA without having to worry about installations,
+                 Edalitics allows you to enjoy all the power of Edalitics without having to worry about installations,
                  settings, updates, etc. You connect your data sources and that's it. </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -3772,14 +3991,14 @@ What am I seeing?
 
 <trans-unit id="secondAboutParagraph" datatype="html">
 <source>
-                 EDA ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
+                Edalitics ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
                 Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
-                funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
+                funcionalidades o carácteristicas. Jortilles financia el desarrollo de Edalitics mediante las suscripciones a Edalitics
                 y el soporte empresarial que ofrece a sus clientes.  </source>
 <target>
-                 EDA has been developed by <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
+                Edalitics has been developed by <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
                 If you need business support, do not hesitate to contact us. Likewise, how if you want to request new
-                functionalities or characteristics. Jortilles finances the development of EDA through subscriptions to Edalitics
+                functionalities or characteristics. Jortilles finances the development of Edalitics through subscriptions to Edalitics
                 and the business support it offers its clients. </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -3789,10 +4008,10 @@ What am I seeing?
 
 <trans-unit id="thirdAboutParagraph" datatype="html">
 <source>
-   El código fuente de EDA está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+   El código fuente de Edalitics está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
 </source>
 <target>
-  The EDA source code is available at <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+  The Edalitics source code is available at <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
@@ -3802,10 +4021,10 @@ What am I seeing?
 
 <trans-unit id="fourthAboutParagraph" datatype="html">
 <source>
-   La documentación de EDA está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
+   La documentación de Edalitics está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
 </source>
 <target>
-  EDA documentation is available at <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">This Link</a>
+  Edalitics documentation is available at <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">This Link</a>
 </target>
 </trans-unit>
 
@@ -4577,8 +4796,8 @@ Once configured you can invoke it whenever you want from the button.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP1">
-<source>Una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla.</source>
-<target>An open source web application that allows you to create graphical and interactive reports in a simple way.</target>
+<source>Analítica de datos sin complicaciones.</source>
+<target>The most user friendly analytical tool.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaH1">
@@ -4587,8 +4806,8 @@ Once configured you can invoke it whenever you want from the button.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP2">
-<source>EDA es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
-<target>EDA is an application that can be installed on your own servers or enjoyed in its SaaS version, Edalitics.</target>
+<source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión <a href="https://www.edalitics.com" target="_blank" rel="noopener noreferrer" class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</source>
+<target>Edalitics is an application that can be installed on your own servers or enjoyed in its <a href="https://www.edalitics.com" target="_blank" rel="noopener noreferrer" class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a> version.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA1">
@@ -4627,8 +4846,8 @@ Once configured you can invoke it whenever you want from the button.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP5">
-<source>Aprende a usar EDA con nuestros tutoriales paso a paso.</source>
-<target>Learn how to use EDA with our step-by-step tutorials.</target>
+<source>Aprende a usar Edalitics con nuestros tutoriales paso a paso.</source>
+<target>Learn how to use Edalitics with our step-by-step tutorials.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaB1">
@@ -4642,8 +4861,8 @@ Once configured you can invoke it whenever you want from the button.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaH4">
-<source>¿Quieres probar EDA en el cloud?</source>
-<target>Want to try EDA in the cloud?</target>
+<source>¿Quieres probar Edalitics en el cloud?</source>
+<target>Want to try Edalitics in the cloud?</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP6">
@@ -4662,8 +4881,8 @@ Once configured you can invoke it whenever you want from the button.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA5">
-<source>EDA ha sido desarrollado por</source>
-<target>EDA has been developed by</target>
+<source>Edalitics ha sido desarrollado por</source>
+<target>Edalitics has been developed by</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP7">
@@ -5247,8 +5466,8 @@ Once configured you can invoke it whenever you want from the button.</target>
 </trans-unit>
 
 <trans-unit id="PanelModeSelectorEDA">
-<source>Modo EDA</source>
-<target>EDA mode</target>
+<source>Modo Edalitics</source>
+<target>Edalitics mode</target>
 </trans-unit>
 
 <trans-unit id="PanelModeSelectorSQL">
@@ -6394,8 +6613,8 @@ OR<ph id="5"/>
   <target>Datasource</target>
 </trans-unit>
 <trans-unit id="datasourceFilterPlaceholder" datatype="html">
-  <source>postgres, mysql...</source>
-  <target>postgres, mysql...</target>
+  <source>Nombre del datasource...</source>
+  <target>Datasource name...</target>
 </trans-unit>
 <trans-unit id="createdFilterLabel" datatype="html">
   <source>Creado en</source>
@@ -6590,8 +6809,8 @@ OR<ph id="5"/>
   <target>CONTEXT</target>
 </trans-unit>
 <trans-unit id="aiEDAApp" datatype="html">
-  <source>EDA APP URL</source>
-  <target>EDA APP URL</target>
+  <source>Edalitics APP URL</source>
+  <target>Edalitics APP URL</target>
 </trans-unit>
 <trans-unit id="aiMCPURL" datatype="html">
   <source>MCP URL</source>
@@ -6857,6 +7076,274 @@ OR<ph id="5"/>
   <source>Desactivar animaciones</source>
   <target>Disable animations</target>
 </trans-unit>
+<trans-unit id="aboutResourcesTitle">
+  <source>Recursos</source>
+  <target>Resources</target>
+</trans-unit>
+<trans-unit id="gettingStartedTitle">
+  <source>Primeros pasos</source>
+  <target>Getting started</target>
+</trans-unit>
+<trans-unit id="gettingStartedSubtitle">
+  <source>Todo lo que necesitas para crear tu primer informe en edalitics.</source>
+  <target>Everything you need to create your first report in edalitics.</target>
+</trans-unit>
+<trans-unit id="gsStep1Title">
+  <source>Conecta tus datos</source>
+  <target>Connect your data</target>
+</trans-unit>
+<trans-unit id="gsStep1Desc">
+  <source>Conecta una fuente de datos y define tu modelo de datos.</source>
+  <target>Connect a data source and define your data model.</target>
+</trans-unit>
+<trans-unit id="gsStep1Cta">
+  <source>Crear fuente de datos</source>
+  <target>Create data source</target>
+</trans-unit>
+<trans-unit id="gsStep1Hint">
+  <source>Pide a un administrador que conecte una fuente de datos.</source>
+  <target>Ask an administrator to connect a data source.</target>
+</trans-unit>
+<trans-unit id="gsStep2Title">
+  <source>Crea tu primer informe</source>
+  <target>Create your first report</target>
+</trans-unit>
+<trans-unit id="gsStep2Desc">
+  <source>Diseña un dashboard interactivo a partir de tu modelo de datos.</source>
+  <target>Design an interactive dashboard from your data model.</target>
+</trans-unit>
+<trans-unit id="gsStep2Cta">
+  <source>Crear informe</source>
+  <target>Create report</target>
+</trans-unit>
+<trans-unit id="gsStep3Title">
+  <source>Explora y aprende</source>
+  <target>Explore and learn</target>
+</trans-unit>
+<trans-unit id="gsStep3Desc">
+  <source>Tutoriales, documentación y comunidad para sacar el máximo partido a edalitics.</source>
+  <target>Tutorials, documentation and community to get the most out of edalitics.</target>
+</trans-unit>
+<trans-unit id="gsStep3Cta">
+  <source>Ver recursos</source>
+  <target>View resources</target>
+</trans-unit>
+  <trans-unit id="mailRefIconTitle">
+    <source>Variables y condicionales</source>
+    <target>Variables and conditionals</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarsTitle">
+    <source>Variables</source>
+    <target>Variables</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarsIntro">
+    <source>Los KPIs van numerados según su orden en el dashboard: p1 es el primero, p2 el segundo, y así sucesivamente.</source>
+    <target>KPIs are numbered by their order on the dashboard: p1 is the first, p2 the second, and so on.</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertTitle">
+    <source>Insertar</source>
+    <target>Insert</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertCode">
+    <source>Bloque CODE</source>
+    <target>CODE block</target>
+  </trans-unit>
+  <trans-unit id="mailRefInsertCodeTip">
+    <source>Inserta un bloque condicional (if / else) en el mensaje</source>
+    <target>Inserts a conditional block (if / else) into the message</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarTitle">
+    <source>el título del KPI</source>
+    <target>the KPI title</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarValue">
+    <source>el valor actual del KPI</source>
+    <target>the current KPI value</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarTop">
+    <source>la categoría con el valor más alto</source>
+    <target>the category with the highest value</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarBottom">
+    <source>la categoría con el valor más bajo</source>
+    <target>the category with the lowest value</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarAvg">
+    <source>la media de las categorías</source>
+    <target>the average of the categories</target>
+  </trans-unit>
+  <trans-unit id="mailRefVarBreakdown">
+    <source>todas las categorías con su valor</source>
+    <target>all categories with their value</target>
+  </trans-unit>
+  <trans-unit id="mailRefExampleTitle">
+    <source>Ejemplo completo</source>
+    <target>Full example</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondTitle">
+    <source>Condicionales</source>
+    <target>Conditionals</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondIntro">
+    <source>Delimita el bloque con ""CODE y CODE"" en su propia línea. Dentro, if evalúa una condición y escribe el texto de esa rama; añade elif para más casos, else para el resto y cierra con end.</source>
+    <target>Delimit the block with ""CODE and CODE"" on their own line. Inside, if evaluates a condition and writes that branch's text; add elif for more cases, else for the rest and close with end.</target>
+  </trans-unit>
+  <trans-unit id="mailRefCondOps">
+    <source>En la condición puedes comparar con:</source>
+    <target>In the condition you can compare with:</target>
+  </trans-unit>
+  <trans-unit id="mailRefResultTitle">
+    <source>Así lo recibe el destinatario</source>
+    <target>This is what the recipient gets</target>
+  </trans-unit>
+  <trans-unit id="mailRefResultHint">
+    <source>Resaltado: lo que se sustituye automáticamente en cada envío.</source>
+    <target>Highlighted: what is replaced automatically on every send.</target>
+  </trans-unit>
+  <trans-unit id="mailSubjectDefault">
+    <source>Correo de prueba del informe</source>
+    <target>Test report email</target>
+  </trans-unit>
+  <trans-unit id="mailPdfTipDash">
+    <source>PDF generado del dashboard</source>
+    <target>PDF generated from the dashboard</target>
+  </trans-unit>
+  <trans-unit id="mailPdfTipKpi">
+    <source>PDF generado del panel KPI</source>
+    <target>PDF generated from the KPI panel</target>
+  </trans-unit>
+  <trans-unit id="mailClearContent">
+    <source>Borrar el asunto y el mensaje</source>
+    <target>Clear the subject and message</target>
+  </trans-unit>
+  <trans-unit id="mailNoKpis">
+    <source>Este dashboard no tiene KPIs.</source>
+    <target>This dashboard has no KPIs.</target>
+  </trans-unit>
+  <trans-unit id="mailSendToConfigured">
+    <source>Enviar prueba a los destinatarios configurados</source>
+    <target>Send a test to the configured recipients</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestPlaceholder">
+    <source>o solo a este correo…</source>
+    <target>or just to this address…</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestBtn">
+    <source>Enviar</source>
+    <target>Send</target>
+  </trans-unit>
+  <trans-unit id="mailSendNowHint">
+    <source>Envío único e inmediato. No guarda ni activa la programación de arriba.</source>
+    <target>A one-off, immediate send. It does not save or activate the schedule above.</target>
+  </trans-unit>
+  <trans-unit id="mailSendTestTitle">
+    <source>Enviar una prueba ahora</source>
+    <target>Send a test now</target>
+  </trans-unit>
+  <trans-unit id="mailMsgExample">
+    <source>Hola,
+
+Este es un texto de prueba para el correo. Reemplaza este contenido por tu mensaje real.
+
+Primer KPI — ${p1.title}: ${p1.value}
+
+""CODE
+if p1.value > 0
+  El KPI tiene un valor positivo.
+else
+  El KPI no tiene datos disponibles.
+end
+CODE""
+</source>
+    <target>Hi,
+
+This is a test message for the email. Replace this content with your real message.
+
+First KPI — ${p1.title}: ${p1.value}
+
+""CODE
+if p1.value > 0
+  The KPI has a positive value.
+else
+  The KPI has no data available.
+end
+CODE""
+</target>
+  </trans-unit>
+  <trans-unit id="mailRefExample">
+    <source>Asunto: Resumen de ${p1.title}
+
+Hola,
+
+El valor de ${p1.title} es ${p1.value}.
+Media por categoría: ${p1.value.average}
+Categoría más alta: ${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Excelente mes 🎉
+elif p1.value > 500000
+  Mes correcto
+else
+  Por debajo de lo esperado
+end
+CODE""
+
+Desglose por categoría:
+${p1.value.breakdown}
+</source>
+    <target>Subject: Summary of ${p1.title}
+
+Hi,
+
+The value of ${p1.title} is ${p1.value}.
+Average per category: ${p1.value.average}
+Top category: ${p1.value.top}
+
+""CODE
+if p1.value > 1000000
+  Great month 🎉
+elif p1.value > 500000
+  Decent month
+else
+  Below expectations
+end
+CODE""
+
+Breakdown by category:
+${p1.value.breakdown}
+</target>
+  </trans-unit>
+  <trans-unit id="mailRefResult">
+    <source>Asunto: Resumen de «Ventas 2024»
+
+Hola,
+
+El valor de «Ventas 2024» es «1.240.000».
+Media por categoría: «310.000»
+Categoría más alta: «Europa: 480.000»
+
+«Excelente mes 🎉»
+
+Desglose por categoría:
+«Europa: 480.000, Asia: 360.000, América: 280.000»
+
+Un saludo.</source>
+    <target>Subject: Summary of «Sales 2024»
+
+Hi,
+
+The value of «Sales 2024» is «1,240,000».
+Average per category: «310,000»
+Top category: «Europe: 480,000»
+
+«Great month 🎉»
+
+Breakdown by category:
+«Europe: 480,000, Asia: 360,000, America: 280,000»
+
+Best regards.</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

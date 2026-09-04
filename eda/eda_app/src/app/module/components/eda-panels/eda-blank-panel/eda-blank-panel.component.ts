@@ -794,7 +794,7 @@ public tableNodeExpand(event: any): void {
             this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, navActiveNodes, savedDateNavState, fullCurrentQuery: this.currentQuery, resultSortingColumns: this.resultSortingColumns };
 
             /**This is to repaint on panel redimension */
-            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
+            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar', 'raceBar'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
         } else {
@@ -879,7 +879,7 @@ public tableNodeExpand(event: any): void {
      * Chart click event
     */
     public onChartClick(event: any): void {
-        if (['doughnut', 'polarArea', 'bar', 'radar', 'line', 'area', 'treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
+        if (['doughnut', 'polarArea', 'bar', 'radar', 'line', 'area', 'treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets', 'raceBar'].includes(this.panelChart.props.chartType) || //D3 CHARTS
             'geoJsonMap'.includes(this.panelChart.props.chartType) || //Leaflet 
             ['table', 'crosstable', 'treetable'].includes(this.panelChart.props.chartType)) // tables
         {
@@ -1626,7 +1626,7 @@ public tableNodeExpand(event: any): void {
         return instance.assignedColors;
     }
 
-    private static readonly RECOLOR_CHART_TYPES: CategoryChartType[] = ['treeMap', 'bubblechart', 'scatterPlot', 'parallelSets', 'sunburst'];
+    private static readonly RECOLOR_CHART_TYPES: CategoryChartType[] = ['treeMap', 'bubblechart', 'scatterPlot', 'parallelSets', 'sunburst', 'raceBar'];
 
     public onCloseCategoryChartProperties(event, response, chartType: CategoryChartType): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
@@ -1644,6 +1644,11 @@ public tableNodeExpand(event: any): void {
             if (response.showGridLines !== undefined) configPatch.showGridLines = response.showGridLines;
             if (response.innerRadiusPercent !== undefined) configPatch.innerRadiusPercent = response.innerRadiusPercent;
             if (response.chartAnimation !== undefined) configPatch.chartAnimation = response.chartAnimation;
+            if (response.labelColorMode !== undefined) configPatch.labelColorMode = response.labelColorMode;
+            if (response.labelCustomColor !== undefined) configPatch.labelCustomColor = response.labelCustomColor;
+            if (response.topNCount !== undefined) configPatch.topNCount = response.topNCount;
+            if (response.showTimeline !== undefined) configPatch.showTimeline = response.showTimeline;
+            if (response.transitionMs !== undefined) configPatch.transitionMs = response.transitionMs;
 
             this.applyDialogChartConfig(event, configPatch, 'categoryChartController');
         } else {
@@ -1796,8 +1801,9 @@ public tableNodeExpand(event: any): void {
                     || content.chart === 'scatterPlot'
                     || content.chart === 'funnel'
                     || content.chart === 'knob'
-                    || content.chart === 'sunburst' 
-                    || content.chart === 'bubblechart' 
+                    || content.chart === 'sunburst'
+                    || content.chart === 'bubblechart'
+                    || content.chart === 'raceBar'
                     || content.chart === 'dynamicText')
             ) {
 
@@ -2007,10 +2013,10 @@ public tableNodeExpand(event: any): void {
 
     /** It duplicates a dashboard panel and positions it one step below the original.*/
     public duplicatePanel(): void {
-        let duplicatedPanel =   _.cloneDeep(this.panel, true); 
+        let duplicatedPanel =   _.cloneDeep(this.panel, true);
         duplicatedPanel.id = this.fileUtiles.generateUUID();
         duplicatedPanel.y = duplicatedPanel.y+1;
-        this.duplicate.emit(duplicatedPanel);
+        this.duplicate.emit({ panel: duplicatedPanel, sourcePanelId: this.panel.id });
     }
 
     

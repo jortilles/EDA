@@ -17,6 +17,20 @@ function writeConfig(data: any): void {
 
 export class MailController {
 
+  /** Verifies the SMTP connection and sends one email, rejecting with an HttpException on either failure */
+  private static verifyAndSend(config: any, mailOptions: { from: string; to: string; subject: string; text: string }): Promise<void> {
+    const transporter = nodemailer.createTransport({ ...config, family: 4 });
+    return new Promise((resolve, reject) => {
+      transporter.verify((error: any) => {
+        if (error) return reject(new HttpException(501, error.message));
+        transporter.sendMail(mailOptions, (sendErr: any) => {
+          if (sendErr) return reject(new HttpException(501, 'No se pudo enviar el email de prueba: ' + sendErr.message));
+          resolve();
+        });
+      });
+    });
+  }
+
   static async checkCredentials(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body;
@@ -32,30 +46,16 @@ export class MailController {
       }
 
       const senderEmail = config.auth?.user;
-      const transporter = nodemailer.createTransport(config);
-
-      transporter.verify((error: any) => {
-        if (error) {
-          return next(new HttpException(501, error.message));
-        }
-
-        const mailOptions = {
-          from: senderEmail,
-          to: senderEmail,
-          subject: 'EDA - Test de configuración de correo',
-          text: `La configuración de correo de EDA es correcta.\n\nTipo: ${configType}\nHost: ${config.host}:${config.port}\nUsuario: ${senderEmail}`
-        };
-
-        transporter.sendMail(mailOptions, (sendErr: any) => {
-          if (sendErr) {
-            return next(new HttpException(501, 'Conexión correcta pero no se pudo enviar el email de prueba: ' + sendErr.message));
-          }
-          return res.status(200).json({ ok: true });
-        });
+      await MailController.verifyAndSend(config, {
+        from: senderEmail,
+        to: senderEmail,
+        subject: 'EDA - Test de configuración de correo',
+        text: `La configuración de correo de EDA es correcta.\n\nTipo: ${configType}\nHost: ${config.host}:${config.port}\nUsuario: ${senderEmail}`
       });
+      return res.status(200).json({ ok: true });
 
     } catch (err) {
-      return next(new HttpException(501, 'Error en el fichero de configuración'));
+      return next(err instanceof HttpException ? err : new HttpException(501, 'Error en el fichero de configuración'));
     }
   }
 
@@ -130,29 +130,75 @@ export class MailController {
     }
   }
 
-  private static sendConfigConfirmationEmail(config: any) {
+  private static async sendConfigConfirmationEmail(config: any) {
+    const recipientEmail = config.auth?.user;
+    if (!recipientEmail) return;
+
     try {
-      const transporter = nodemailer.createTransport({ ...config, family: 4 });
-      const recipientEmail = config.auth?.user;
-
-      if (!recipientEmail) return;
-
-      transporter.verify((error: any) => {
-        if (error) return;
-
-        const mailOptions = {
-          from: recipientEmail,
-          to: recipientEmail,
-          subject: 'EDA - Configuración de mailing establecida correctamente',
-          text: `El servicio de mailing de EDA ha sido configurado correctamente.\n\n` +
-            `Host: ${config.host}:${config.port}\n` +
-            `Usuario: ${recipientEmail}\n\n` +
-            `A partir de ahora los dashboards y alertas configurados con envío por correo serán enviados según su programación.`
-        };
-
-        transporter.sendMail(mailOptions, () => {});
+      await MailController.verifyAndSend(config, {
+        from: recipientEmail,
+        to: recipientEmail,
+        subject: 'EDA - Configuración de mailing establecida correctamente',
+        text: `El servicio de mailing de EDA ha sido configurado correctamente.\n\n` +
+          `Host: ${config.host}:${config.port}\n` +
+          `Usuario: ${recipientEmail}\n\n` +
+          `A partir de ahora los dashboards y alertas configurados con envío por correo serán enviados según su programación.`
       });
     } catch { }
+  }
+
+  /** Transporter from the saved SMTP config; rejects if the connection does not verify. */
+  private static async openTransporter(): Promise<{ transporter: any; senderEmail: string }> {
+    const config = readConfig();
+    const transporter = nodemailer.createTransport({ ...config, family: 4 });
+    await new Promise<void>((resolve, reject) => {
+      transporter.verify((err: any) => err ? reject(new HttpException(501, err.message)) : resolve());
+    });
+    return { transporter, senderEmail: config.auth?.user };
+  }
+
+  private static parseRecipients(to: any): string[] {
+    return (Array.isArray(to) ? to : [to]).map((x: any) => String(x ?? '').trim()).filter(Boolean);
+  }
+
+  static async sendDashboardNow(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { dashboardId, to, toExternal, subject, message, aiAnalysis } = req.body;
+      const recipients = MailController.parseRecipients(to);
+      const external = MailController.parseRecipients(toExternal);
+      if (!dashboardId) return next(new HttpException(400, 'Falta el identificador del informe'));
+      if (recipients.length === 0 && external.length === 0) return next(new HttpException(400, 'No hay destinatarios configurados'));
+
+      const { transporter, senderEmail } = await MailController.openTransporter();
+      const configuredByEmail = (req as any).user?.email || '';
+      // Returns before the sends finish — a render per recipient can take minutes.
+      MailingService.sendDashboardNow(dashboardId, recipients, external, subject, message, transporter, senderEmail, !!aiAnalysis, configuredByEmail)
+        .catch((err: any) => console.error('[sendDashboardNow]', err?.message || err));
+      return res.status(200).json({ ok: true });
+
+    } catch (err) {
+      return next(err instanceof HttpException ? err : new HttpException(501, 'Error enviando el informe por correo'));
+    }
+  }
+
+  static async sendAlertNow(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { dashboardId, panelId, operand, value, to, toExternal, subject, message, aiAnalysis } = req.body;
+      const recipients = MailController.parseRecipients(to);
+      const external = MailController.parseRecipients(toExternal);
+      if (!dashboardId || operand === undefined || value === undefined) {
+        return next(new HttpException(400, 'Faltan datos de la alerta'));
+      }
+      if (recipients.length === 0 && external.length === 0) return next(new HttpException(400, 'No hay destinatarios configurados'));
+
+      const { transporter, senderEmail } = await MailController.openTransporter();
+      const configuredByEmail = (req as any).user?.email || '';
+      await MailingService.sendAlertNow(dashboardId, panelId, operand, value, recipients, external, subject, message, transporter, senderEmail, !!aiAnalysis, configuredByEmail);
+      return res.status(200).json({ ok: true });
+
+    } catch (err) {
+      return next(err instanceof HttpException ? err : new HttpException(501, (err as any)?.message || 'Error enviando la alerta por correo'));
+    }
   }
 
   static async sendNow(_req: Request, res: Response, next: NextFunction) {

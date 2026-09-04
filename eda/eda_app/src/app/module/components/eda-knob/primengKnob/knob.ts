@@ -74,6 +74,8 @@ export class Knob implements AfterViewInit, AfterViewChecked {
 
     @Input() gradientMode: boolean = false;
 
+    @Input() animate: boolean = true;
+
     private static readonly SEG_COLORS = [
         '#cc2200', '#e03c00', '#f55a00', '#ff8000',
         '#ffaa00', '#ffcc00', '#aacc00', '#55bb00',
@@ -161,6 +163,10 @@ export class Knob implements AfterViewInit, AfterViewChecked {
     private revealValuePaths(): void {
         const paths: NodeListOf<SVGPathElement> = this.el.nativeElement.querySelectorAll('.p-knob-value:not(.p-knob-value-animate)');
         paths.forEach((path: SVGPathElement) => {
+            if (!this.animate) {
+                path.classList.add('p-knob-value-animate');
+                return;
+            }
             const length = path.getTotalLength();
             if (length === 0) return; // not laid out yet - retry on the next view check
             path.style.strokeDasharray = `${length}`;

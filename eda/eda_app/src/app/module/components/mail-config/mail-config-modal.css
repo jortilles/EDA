@@ -1,0 +1,215 @@
+/* reference dialog: centered modal, above the mail-config dialog it opens from */
+::ng-deep .p-dialog.mail-ref-dialog {
+  z-index: 20000 !important;
+}
+::ng-deep .p-dialog-mask:has(> .p-dialog.mail-ref-dialog) {
+  z-index: 19999 !important;
+}
+::ng-deep .mail-ref-dialog .p-dialog-content {
+  max-height: 74vh;
+  overflow-y: auto;
+}
+
+/* corporate token chip, shared by the reference dialog and the insert toolbox */
+::ng-deep .mail-ref-tok {
+  display: inline-block;
+  background: rgba(var(--corporate-primary-rgb), 0.10);
+  color: var(--corporate-primary-dark, #007B74);
+  border-radius: 0.25rem;
+  padding: 0.05rem 0.35rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  border: 1px solid transparent;
+  line-height: 1.4;
+}
+::ng-deep button.mail-ref-tok {
+  cursor: pointer;
+  transition: border-color .12s, background .12s;
+}
+::ng-deep button.mail-ref-tok:hover {
+  border-color: var(--corporate-primary);
+  background: rgba(var(--corporate-primary-rgb), 0.18);
+}
+::ng-deep .mail-ref-dialog .mail-ref-hl {
+  background: rgba(var(--corporate-primary-rgb), 0.14);
+  color: var(--corporate-primary-dark, #007B74);
+  border-radius: 0.2rem;
+  padding: 0 0.2rem;
+}
+
+/* compact insert toolbox beside the subject / message fields */
+.mail-insert-box {
+  border: 1px solid rgba(var(--corporate-primary-rgb), 0.28);
+  background: rgba(var(--corporate-primary-rgb), 0.045);
+  max-height: 24rem;
+}
+.mail-insert-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--corporate-primary-dark, #007B74);
+}
+.mail-insert-target {
+  font-size: 11px;
+  color: #6b7280;
+}
+.mail-insert-kpi {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--corporate-primary-dark, #007B74);
+}
+.mail-insert-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .25rem;
+  margin-top: .25rem;
+  padding: .35rem .5rem;
+  border-radius: .375rem;
+  font-weight: 600;
+  border: 1px solid var(--corporate-primary);
+  color: var(--corporate-primary-dark, #007B74);
+  background: rgba(var(--corporate-primary-rgb), 0.06);
+  transition: background .12s;
+}
+.mail-insert-code:hover {
+  background: rgba(var(--corporate-primary-rgb), 0.16);
+}
+
+/* Corporate-coloured focus for every control in the dialog */
+.mail-input:focus,
+.mail-textarea:focus,
+button:focus,
+select:focus,
+input:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.35) !important;
+}
+.mail-input:focus,
+.mail-textarea:focus,
+select:focus {
+  border-color: var(--corporate-primary);
+}
+
+/* Compact switch (header pill + AI option) */
+::ng-deep .mail-switch .p-inputswitch {
+  width: 2.4rem;
+  height: 1.35rem;
+  align-self: center;
+  vertical-align: middle;
+}
+::ng-deep .mail-switch .p-inputswitch .p-inputswitch-slider::before {
+  width: 0.95rem;
+  height: 0.95rem;
+  left: 0.2rem;
+  margin-top: -0.475rem;
+}
+::ng-deep .mail-switch .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider::before {
+  transform: translateX(1.05rem);
+}
+
+/* Corporate focus / no red border on the dialog switches */
+::ng-deep p-inputswitch.mail-switch .p-inputswitch.p-focus .p-inputswitch-slider {
+  box-shadow: 0 0 0 0.2rem rgba(var(--corporate-primary-rgb), 0.35) !important;
+}
+::ng-deep p-inputswitch.mail-switch > .p-inputswitch,
+::ng-deep p-inputswitch.mail-switch.ng-invalid > .p-inputswitch {
+  border-color: transparent !important;
+}
+
+.mail-radio {
+  accent-color: var(--corporate-primary);
+}
+
+.mail-step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.75rem;
+  width: 1.75rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: var(--corporate-primary);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.mail-seg {
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  outline: none;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.mail-chip {
+  background: var(--corporate-primary-light, #CCFAF7);
+  color: var(--corporate-primary-dark, #007B74);
+}
+
+.mail-token-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  outline: none;
+}
+.mail-token-btn:hover { background: #f9fafb; }
+.mail-token-btn code { color: var(--corporate-primary-dark, #007B74); }
+.mail-token-btn span { color: #6b7280; }
+
+/* Global (reaches [innerHTML] preview content): variable highlight in the email preview */
+::ng-deep .eda-mail-var {
+  color: var(--corporate-primary, #00BFB3);
+  font-weight: 600;
+}
+
+:host ::ng-deep .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+  background: var(--corporate-primary);
+}
+
+:host ::ng-deep .p-inputswitch.p-inputswitch-checked:not(.p-disabled):hover .p-inputswitch-slider {
+  background: var(--corporate-primary);
+  opacity: 0.88;
+}
+
+/* Dropdowns & multiselect — corporate hover / focus / selected */
+::ng-deep .p-dropdown:not(.p-disabled):hover,
+::ng-deep .p-multiselect:not(.p-disabled):hover {
+  border-color: var(--corporate-primary);
+}
+::ng-deep .p-dropdown:not(.p-disabled).p-focus,
+::ng-deep .p-multiselect:not(.p-disabled).p-focus {
+  border-color: var(--corporate-primary);
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.18);
+}
+::ng-deep .p-dropdown.mail-dd,
+::ng-deep .p-multiselect.mail-dd {
+  border-radius: 0.5rem;
+}
+::ng-deep .p-dropdown.mail-dd .p-dropdown-label,
+::ng-deep .p-multiselect.mail-dd .p-multiselect-label {
+  padding: 0.375rem 0.625rem;
+  font-size: 0.875rem;
+}
+::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,
+::ng-deep .p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight {
+  background: rgba(var(--corporate-primary-rgb), 0.12);
+  color: var(--corporate-primary-dark, #007B74);
+}
+::ng-deep .p-multiselect-panel .p-checkbox .p-checkbox-box.p-highlight {
+  background: var(--corporate-primary);
+  border-color: var(--corporate-primary);
+}
+
+:host ::ng-deep .p-calendar .p-inputtext:focus {
+  outline: none;
+  border-color: var(--corporate-primary);
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.15);
+}
