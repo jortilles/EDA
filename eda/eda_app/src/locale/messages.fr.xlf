@@ -7840,6 +7840,41 @@ Cordialement.</target>
         <target>Effacer</target>
       </trans-unit>
 
+      <trans-unit id="mediaDownload">
+        <source>Descargar</source>
+        <target>Télécharger</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDownloadError">
+        <source>No se pudo descargar la imagen</source>
+        <target>Impossible de télécharger l’image</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSortNewest">
+        <source>Más recientes</source>
+        <target>Plus récentes</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSortOldest">
+        <source>Más antiguas</source>
+        <target>Plus anciennes</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSortName">
+        <source>Nombre (A-Z)</source>
+        <target>Nom (A-Z)</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSortSize">
+        <source>Tamaño</source>
+        <target>Taille</target>
+      </trans-unit>
+
+      <trans-unit id="mediaMoveSuccess">
+        <source>Movido correctamente</source>
+        <target>Déplacé avec succès</target>
+      </trans-unit>
+
 </body>
   </file>
 </xliff>

@@ -111,7 +111,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.75rem 1rem;
+  gap: 0.75rem 1.75rem;
 }
 
 .media-breadcrumb {
@@ -153,6 +153,7 @@
   background: #fff;
   color: #334155;
   font-size: 0.85rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   cursor: pointer;
   transition: background-color 0.15s, border-color 0.15s;
 }
@@ -172,6 +173,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 0.4rem;
   overflow: hidden;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   flex-shrink: 0;
 }
 
@@ -203,14 +205,15 @@
 .media-search-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
   flex: 0 1 16rem;
   min-width: 10rem;
-  padding: 0 0.6rem;
+  padding: 0 0.85rem;
   border: 1px solid #e2e8f0;
   border-radius: 999px;
   background: #fff;
-  transition: border-color 0.15s;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .media-search-row:focus-within {
@@ -230,6 +233,14 @@
   padding: 0.5rem 0;
   font-size: 0.82rem;
   background: transparent;
+}
+
+/* Inside the "Elegir imagen" picker this input sits under a PrimeNG p-dialog, whose own global
+   theme styles a bare <input>:focus with a box-shadow ring regardless of our component's own
+   styles - !important is the only way to override a third-party global rule from here. */
+.media-search-input:focus {
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 .media-search-clear {
@@ -378,6 +389,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
   background: #f8fafc;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   cursor: pointer;
   transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
 }
@@ -911,4 +923,146 @@
   color: #334155;
   font-size: 0.85rem;
   font-weight: 600;
+}
+
+/* Custom drag preview (see setDragGhost in the .ts) - built off-screen at dragstart time */
+.media-drag-ghost {
+  position: fixed;
+  top: -150px;
+  left: -150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 0.85rem;
+  background: linear-gradient(135deg, var(--corporate-primary, #00BFB3), var(--corporate-primary-gradient, #009e96));
+  color: #fff;
+  font-size: 1.9rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 255, 255, 0.85);
+}
+
+.media-drag-ghost-badge {
+  display: none; /* toggled to flex from the .ts only when moving more than one file */
+  position: absolute;
+  bottom: -0.4rem;
+  right: -0.4rem;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 0.3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 2px solid #fff;
+}
+
+/* Sort dropdown, next to the view toggle */
+.media-sort-dropdown {
+  min-width: 9rem;
+}
+
+/* Pick-mode confirm bar thumbnail */
+.media-pick-bar-thumb {
+  width: 2.2rem;
+  height: 2.2rem;
+  object-fit: cover;
+  border-radius: 0.3rem;
+  flex-shrink: 0;
+}
+
+/* Loading skeleton, matches the grid's own column layout */
+@keyframes mediaSkeletonPulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+.media-skeleton-card {
+  aspect-ratio: 1 / 1;
+  border-radius: 0.5rem;
+  background: #e2e8f0;
+  animation: mediaSkeletonPulse 1.4s ease-in-out infinite;
+}
+
+/* Empty states (no images yet / no search results) */
+.media-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 3rem 0;
+  color: #94a3b8;
+}
+
+.media-empty-state .pi {
+  font-size: 2.5rem;
+  color: #cbd5e1;
+}
+
+/* Item-count badges: tree nodes and folder tiles */
+.media-tree-count {
+  color: #cbd5e1;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.media-folder-count {
+  flex-shrink: 0;
+  min-width: 1.3rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Overlapping thumbnail stack, multi-selection summary */
+.side-panel-stack {
+  display: flex;
+  margin-bottom: 0.75rem;
+}
+
+.side-panel-stack-thumb {
+  width: 3rem;
+  height: 3rem;
+  object-fit: cover;
+  border-radius: 0.4rem;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  margin-left: -0.75rem;
+}
+
+.side-panel-stack-thumb:first-child {
+  margin-left: 0;
+}
+
+.side-panel-stack-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.4rem;
+  border: 2px solid #fff;
+  background: #e2e8f0;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: -0.75rem;
+}
+
+/* Keyboard focus, for accessibility - buttons, links and inputs across the whole component.
+   The search input is excluded: its own parent (.media-search-row) already shows focus via a
+   border-color change, so it doesn't need this too - that's what was stacking into a thick ring. */
+.media-library button:focus-visible,
+.media-library a:focus-visible,
+.media-library input:focus-visible:not(.media-search-input) {
+  outline: 2px solid var(--corporate-primary, #00BFB3);
+  outline-offset: 2px;
 }

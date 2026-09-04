@@ -56,8 +56,19 @@ export class MediaController {
 
     static async listFolders(req: Request, res: Response, next: NextFunction) {
         try {
-            const folders = await MediaFolder.find({}).sort({ name: 1 });
-            return res.status(200).json({ ok: true, folders });
+            const [folders, counts] = await Promise.all([
+                MediaFolder.find({}).sort({ name: 1 }),
+                Media.aggregate([{ $group: { _id: '$folderId', count: { $sum: 1 } } }])
+            ]);
+            const countMap = new Map(counts.map((c: any) => [c._id, c.count]));
+            const result = folders.map((f: any) => ({
+                _id: f._id,
+                name: f.name,
+                parentId: f.parentId,
+                createdAt: f.createdAt,
+                fileCount: countMap.get(String(f._id)) || 0
+            }));
+            return res.status(200).json({ ok: true, folders: result });
         } catch (err) {
             return next(new HttpException(500, 'Error loading folders'));
         }
@@ -289,7 +300,9 @@ export class MediaController {
 
     static async serveImage(req: Request, res: Response, next: NextFunction) {
         try {
-            const filename = req.params.filename;
+            // path.basename strips any directory components (e.g. "../../etc/passwd"),
+            // so this can only ever resolve to a file directly inside MEDIA_STORAGE_PATH.
+            const filename = path.basename(req.params.filename);
             const imgPath = path.join(MEDIA_STORAGE_PATH, filename);
 
             if (fs.existsSync(imgPath)) {

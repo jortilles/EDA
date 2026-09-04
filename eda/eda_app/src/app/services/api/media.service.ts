@@ -19,6 +19,7 @@ export interface IMediaFolder {
     _id: string;
     name: string;
     parentId: string | null;
+    fileCount: number;
     createdAt: string;
 }
 

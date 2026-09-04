@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output, computed, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, inject, Input, OnDestroy, OnInit, Output, ViewChild, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -34,6 +34,13 @@ const VALID_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 export class MediaLibraryComponent implements OnInit, OnDestroy {
   @Input() pickMode = false;
   @Output() select = new EventEmitter<string>();
+
+  // Reusable, always-in-the-DOM (off-screen) drag previews - see setDragGhost(). Reusing the same
+  // elements instead of creating a throwaway node per drag avoids the browser occasionally using
+  // its own default screenshot preview because a brand-new node hadn't been painted yet.
+  @ViewChild('fileDragGhost') private fileDragGhostRef?: ElementRef<HTMLElement>;
+  @ViewChild('fileDragGhostBadge') private fileDragGhostBadgeRef?: ElementRef<HTMLElement>;
+  @ViewChild('folderDragGhost') private folderDragGhostRef?: ElementRef<HTMLElement>;
 
   private mediaService = inject(MediaService);
   private alertService = inject(AlertService);
@@ -114,11 +121,35 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
   public viewMode = signal<'grid' | 'list'>('grid');
 
   public searchTerm = signal<string>('');
-  /** Items in the current folder matching the search box, or all of them if it's empty. */
+
+  public sortBy = signal<'newest' | 'oldest' | 'name' | 'size'>('newest');
+  readonly sortOptions = [
+    { label: $localize`:@@mediaSortNewest:Más recientes`, value: 'newest' },
+    { label: $localize`:@@mediaSortOldest:Más antiguas`, value: 'oldest' },
+    { label: $localize`:@@mediaSortName:Nombre (A-Z)`, value: 'name' },
+    { label: $localize`:@@mediaSortSize:Tamaño`, value: 'size' }
+  ];
+
+  onSortChange(value: string): void {
+    this.sortBy.set(value as 'newest' | 'oldest' | 'name' | 'size');
+    this.setPage(1);
+  }
+
+  /** Items in the current folder matching the search box (or all of them) and sorted. */
   public filteredItems = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
-    if (!term) return this.items();
-    return this.items().filter(i => i.originalName.toLowerCase().includes(term));
+    const list = term ? this.items().filter(i => i.originalName.toLowerCase().includes(term)) : this.items();
+
+    const sort = this.sortBy();
+    return [...list].sort((a, b) => {
+      switch (sort) {
+        case 'name': return a.originalName.localeCompare(b.originalName);
+        case 'size': return b.size - a.size;
+        case 'oldest': return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case 'newest':
+        default: return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+    });
   });
 
   // --- selection ---------------------------------------------------------------
@@ -136,6 +167,15 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
     const ids = this.selectedIds();
     return this.items().filter(i => ids.has(i._id)).reduce((sum, i) => sum + (i.size || 0), 0);
   });
+
+  /** First 4 selected images, for the little overlapping thumbnail stack in the multi-select summary. */
+  public selectedPreviewThumbs = computed(() => {
+    const ids = this.selectedIds();
+    return this.items().filter(i => ids.has(i._id)).slice(0, 4);
+  });
+
+  /** Placeholder tiles shown while a folder's images are loading. */
+  readonly skeletonCount = Array.from({ length: 12 });
 
   public allOnPageSelected = computed(() => {
     const page = this.paginatedItems();
@@ -444,6 +484,25 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** Downloads the original file - fetched as a blob (not a plain <a download>) so it works
+   *  regardless of whether the API happens to be same-origin or behind a different proxy path. */
+  async downloadImage(item: IMedia): Promise<void> {
+    try {
+      const response = await fetch(this.mediaService.resolveUrl(item.url));
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = item.originalName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      this.alertService.addError($localize`:@@mediaDownloadError:No se pudo descargar la imagen`);
+    }
+  }
+
   extensionOf(item: IMedia): string {
     const fromName = item.originalName.split('.').pop();
     const ext = fromName || item.mimeType.split('/').pop() || '';
@@ -657,6 +716,8 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
       next: () => {
         this.clearSelection();
         this.loadMedia();
+        this.loadFolders(); // refresh folder file counts
+        this.alertService.addSuccess($localize`:@@mediaMoveSuccess:Movido correctamente`);
       },
       error: (err: any) => this.alertService.addError(err)
     });
@@ -675,6 +736,7 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
       : [item._id];
     event.dataTransfer?.setData('application/json', JSON.stringify({ type: 'file', ids }));
     if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+    this.setDragGhost(event, 'file', ids.length);
   }
 
   onFolderDragStart(folder: IMediaFolder, event: DragEvent): void {
@@ -682,6 +744,31 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
     event.dataTransfer?.setData('application/json', JSON.stringify({ type: 'folder', id: folder._id }));
     if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
     event.stopPropagation();
+    this.setDragGhost(event, 'folder', 1);
+  }
+
+  /**
+   * Replaces the browser's default drag preview (a screenshot of the dragged element, which for
+   * a whole multi-selection just shows whatever tile happened to start the drag) with the small
+   * corporate-color badge in the .html (#fileDragGhost/#folderDragGhost) - reused every time, not
+   * created on the fly, so the browser always has a fully painted element to snapshot.
+   */
+  private setDragGhost(event: DragEvent, kind: 'file' | 'folder', count: number): void {
+    if (!event.dataTransfer) return;
+    const ghost = kind === 'file' ? this.fileDragGhostRef?.nativeElement : this.folderDragGhostRef?.nativeElement;
+    if (!ghost) return;
+
+    const badge = this.fileDragGhostBadgeRef?.nativeElement;
+    if (badge) {
+      if (kind === 'file' && count > 1) {
+        badge.textContent = String(count);
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    event.dataTransfer.setDragImage(ghost, 32, 32);
   }
 
   onDropTargetDragOver(event: DragEvent): void {
@@ -710,7 +797,12 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
 
     if (payload.type === 'file' && Array.isArray(payload.ids) && payload.ids.length) {
       this.mediaService.move(payload.ids, targetFolderId).subscribe({
-        next: () => { this.clearSelection(); this.loadMedia(); },
+        next: () => {
+          this.clearSelection();
+          this.loadMedia();
+          this.loadFolders();
+          this.alertService.addSuccess($localize`:@@mediaMoveSuccess:Movido correctamente`);
+        },
         error: (err: any) => this.alertService.addError(err)
       });
     } else if (payload.type === 'folder' && payload.id) {
@@ -720,7 +812,10 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
         return;
       }
       this.mediaService.moveFolder(payload.id, targetFolderId).subscribe({
-        next: () => this.loadFolders(),
+        next: () => {
+          this.loadFolders();
+          this.alertService.addSuccess($localize`:@@mediaMoveSuccess:Movido correctamente`);
+        },
         error: (err: any) => this.alertService.addError(err)
       });
     }

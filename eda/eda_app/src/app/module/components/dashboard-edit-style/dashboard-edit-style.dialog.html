@@ -311,7 +311,7 @@
 </eda-dialog2>
 
 @if (mediaPickerOpen) {
-  <eda-dialog2 [display]="mediaPickerOpen" header="Gestor de archivos" i18n-header="@@adminMedia" width="70vw" height="70vh"
+  <eda-dialog2 [display]="mediaPickerOpen" header="Elegir imagen" i18n-header="@@chooseImage" width="70vw" height="70vh"
     [showApply]="false" [overflow]="'auto'" (close)="mediaPickerOpen = false">
     <div content class="p-4">
       <app-media-library [pickMode]="true" (select)="onMediaSelected($event)"></app-media-library>

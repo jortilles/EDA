@@ -29,6 +29,9 @@
             <span class="media-tree-toggle-spacer"></span>
           }
           <i class="pi pi-folder"></i> <span [title]="node.folder.name">{{ node.folder.name }}</span>
+          @if (node.folder.fileCount) {
+            <span class="media-tree-count">({{ node.folder.fileCount }})</span>
+          }
         </a>
       }
     </nav>
@@ -39,7 +42,7 @@
     <!-- Header: breadcrumb + search + view toggle, all in one compact row -->
     <div class="media-header">
       <div class="media-breadcrumb">
-        <a (click)="goToRoot()" [class.is-current]="!currentFolder()" i18n="@@mediaHome">Inicio</a>
+        <a (click)="goToRoot()" [class.is-current]="!currentFolder()"><i class="pi pi-home"></i> <span i18n="@@mediaHome">Inicio</span></a>
         @for (folder of currentPath(); track folder._id) {
           <span class="media-breadcrumb-sep">/</span>
           <a (click)="openFolder(folder)" [class.is-current]="currentFolderId() === folder._id">{{ folder.name }}</a>
@@ -65,6 +68,10 @@
             <span i18n="@@mediaNewFolder">Nueva carpeta</span>
           </button>
         }
+        <p-dropdown class="media-sort-dropdown"
+          [options]="sortOptions" optionLabel="label" optionValue="value"
+          [ngModel]="sortBy()" (onChange)="onSortChange($event.value)" appendTo="body">
+        </p-dropdown>
         <div class="media-view-toggle">
           <button type="button" [class.active]="viewMode() === 'grid'" (click)="setViewMode('grid')">
             <i class="pi pi-th-large"></i> <span i18n="@@mediaGridView">Cuadrícula</span>
@@ -116,6 +123,7 @@
     <!-- Pick mode confirm bar -->
     @if (pickMode && selectedItem(); as item) {
       <div class="media-pick-bar">
+        <img [src]="item.url | mediaSrc" [alt]="item.originalName" class="media-pick-bar-thumb" />
         <span [title]="item.originalName">{{ item.originalName }}</span>
         <button type="button" (click)="choose(item)" i18n="@@mediaUseImage">Usar esta imagen</button>
       </div>
@@ -136,6 +144,9 @@
                (click)="openFolder(folder)">
             <i class="pi pi-folder"></i>
             <span class="media-folder-name" [title]="folder.name">{{ folder.name }}</span>
+            @if (folder.fileCount) {
+              <span class="media-folder-count">{{ folder.fileCount }}</span>
+            }
             @if (showOrgTools()) {
               <div class="media-folder-actions">
                 <button type="button" (click)="renameFolder(folder, $event)" title="Renombrar" i18n-title="@@rename"><i class="pi pi-pencil"></i></button>
@@ -149,11 +160,21 @@
 
     <!-- Files -->
     @if (loading()) {
-      <p class="media-status" i18n="@@mediaLoading">Cargando imágenes...</p>
+      <div class="media-grid">
+        @for (i of skeletonCount; track $index) {
+          <div class="media-skeleton-card"></div>
+        }
+      </div>
     } @else if (items().length === 0) {
-      <p class="media-status" i18n="@@mediaEmpty">Todavía no se ha subido ninguna imagen.</p>
+      <div class="media-empty-state">
+        <i class="pi pi-images"></i>
+        <p i18n="@@mediaEmpty">Todavía no se ha subido ninguna imagen.</p>
+      </div>
     } @else if (filteredItems().length === 0) {
-      <p class="media-status" i18n="@@mediaNoSearchResults">Ninguna imagen coincide con la búsqueda.</p>
+      <div class="media-empty-state">
+        <i class="pi pi-search"></i>
+        <p i18n="@@mediaNoSearchResults">Ninguna imagen coincide con la búsqueda.</p>
+      </div>
     } @else {
       <!--
         Only this area scrolls; the paginator and status bar below always stay put at the bottom.
@@ -169,7 +190,8 @@
                    [class.media-card--selected]="isSelected(item._id)"
                    [draggable]="showOrgTools()"
                    (dragstart)="onCardDragStart(item, $event)"
-                   (click)="onTileClick(item, $event)">
+                   (click)="onTileClick(item, $event)"
+                   (dblclick)="pickMode && choose(item)">
                 @if (showOrgTools()) {
                   <input type="checkbox" class="media-card-checkbox" [checked]="isSelected(item._id)" (click)="onCheckboxClick(item, $event)" />
                 }
@@ -203,7 +225,8 @@
                 @for (item of paginatedItems(); track item._id) {
                   <tr
                       [class.media-row--selected]="isSelected(item._id)"
-                      (click)="onTileClick(item, $event)">
+                      (click)="onTileClick(item, $event)"
+                      (dblclick)="pickMode && choose(item)">
                     <td><img [src]="item.url | mediaSrc" [alt]="item.originalName" class="media-row-thumb" /></td>
                     <td class="media-row-name" [title]="item.originalName">{{ item.originalName }}</td>
                     <td>{{ formatSize(item.size) }}</td>
@@ -294,11 +317,22 @@
           <button type="button" class="media-tool-btn" (click)="copyImageUrl(item)">
             <i class="pi pi-link"></i> <span i18n="@@mediaCopyUrl">Copiar URL</span>
           </button>
+          <button type="button" class="media-tool-btn" (click)="downloadImage(item)">
+            <i class="pi pi-download"></i> <span i18n="@@mediaDownload">Descargar</span>
+          </button>
           <button type="button" class="media-tool-btn media-tool-btn--danger" (click)="deleteSelected()">
             <i class="pi pi-trash"></i> <span i18n="@@delete">Eliminar</span>
           </button>
         </div>
       } @else {
+        <div class="side-panel-stack">
+          @for (thumb of selectedPreviewThumbs(); track thumb._id) {
+            <img [src]="thumb.url | mediaSrc" [alt]="thumb.originalName" class="side-panel-stack-thumb" />
+          }
+          @if (selectedIds().size > selectedPreviewThumbs().length) {
+            <span class="side-panel-stack-more">+{{ selectedIds().size - selectedPreviewThumbs().length }}</span>
+          }
+        </div>
         <p class="side-panel-summary-count">{{ selectedIds().size }} <span i18n="@@mediaSelectedCount">seleccionadas</span></p>
         <p class="side-panel-summary-size"><span i18n="@@mediaTotalSize">Tamaño total</span>: {{ formatSize(selectedTotalSize()) }}</p>
         <button type="button" class="media-tool-btn" (click)="openMoveMenu()">
@@ -316,6 +350,17 @@
 
   @if (marqueeRect(); as m) {
     <div class="media-marquee" [style.left.px]="m.left" [style.top.px]="m.top" [style.width.px]="m.width" [style.height.px]="m.height"></div>
+  }
+
+  <!-- Reusable drag previews, off-screen - see setDragGhost() in the .ts -->
+  @if (showOrgTools()) {
+    <div class="media-drag-ghost" #fileDragGhost>
+      <i class="pi pi-image"></i>
+      <span class="media-drag-ghost-badge" #fileDragGhostBadge></span>
+    </div>
+    <div class="media-drag-ghost" #folderDragGhost>
+      <i class="pi pi-folder"></i>
+    </div>
   }
 
 </div>

@@ -7872,6 +7872,41 @@ Salutacions.</target>
         <target>Netejar</target>
       </trans-unit>
 
+      <trans-unit id="mediaDownload">
+        <source>Descargar</source>
+        <target>Descarregar</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDownloadError">
+        <source>No se pudo descargar la imagen</source>
+        <target>No s’ha pogut descarregar la imatge</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSortNewest">
+        <source>Más recientes</source>
+        <target>Més recents</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSortOldest">
+        <source>Más antiguas</source>
+        <target>Més antigues</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSortName">
+        <source>Nombre (A-Z)</source>
+        <target>Nom (A-Z)</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSortSize">
+        <source>Tamaño</source>
+        <target>Mida</target>
+      </trans-unit>
+
+      <trans-unit id="mediaMoveSuccess">
+        <source>Movido correctamente</source>
+        <target>Mogut correctament</target>
+      </trans-unit>
+
 </body>
   </file>
 </xliff>
