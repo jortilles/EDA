@@ -7907,6 +7907,11 @@ Salutacions.</target>
         <target>Mogut correctament</target>
       </trans-unit>
 
+      <trans-unit id="mediaDeleteInUseWarning">
+        <source>Atención: se usa en</source>
+        <target>Atenció: s’utilitza a</target>
+      </trans-unit>
+
 </body>
   </file>
 </xliff>

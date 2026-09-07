@@ -7600,6 +7600,11 @@ Best regards.</target>
         <target>Moved successfully</target>
       </trans-unit>
 
+      <trans-unit id="mediaDeleteInUseWarning">
+        <source>Atención: se usa en</source>
+        <target>Warning: used in</target>
+      </trans-unit>
+
 </body>
 </file>
 </xliff>

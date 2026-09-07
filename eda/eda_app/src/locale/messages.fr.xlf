@@ -7875,6 +7875,11 @@ Cordialement.</target>
         <target>Déplacé avec succès</target>
       </trans-unit>
 
+      <trans-unit id="mediaDeleteInUseWarning">
+        <source>Atención: se usa en</source>
+        <target>Attention : utilisée dans</target>
+      </trans-unit>
+
 </body>
   </file>
 </xliff>

@@ -636,6 +636,24 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
 
   // --- toolbar actions on the current selection (admin only) -------------------------
 
+  /** Actually deletes - no confirmation here, callers show that first. */
+  private performDelete(ids: string[]): void {
+    forkJoin(ids.map(id => this.mediaService.remove(id))).subscribe({
+      next: () => {
+        this.items.update(list => list.filter(m => !ids.includes(m._id)));
+        const remaining = new Set(this.selectedIds());
+        ids.forEach(id => remaining.delete(id));
+        this.setSelection(remaining);
+        if (this.currentPage() > this.totalPages()) {
+          this.setPage(this.totalPages());
+        }
+      },
+      error: (err: any) => this.alertService.addError(err)
+    });
+  }
+
+  /** Plain confirm, no usage lookup - used for bulk deletes, where checking every id up front
+   *  would feel laggy before the dialog even opens. */
   private deleteByIds(ids: string[], confirmTitle: string, confirmText?: string): void {
     Swal.fire({
       title: confirmTitle,
@@ -645,40 +663,59 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
       confirmButtonText: $localize`:@@delete:Eliminar`,
       cancelButtonText: $localize`:@@cancel:Cancelar`
     }).then((result) => {
-      if (!result.isConfirmed) return;
-      forkJoin(ids.map(id => this.mediaService.remove(id))).subscribe({
-        next: () => {
-          this.items.update(list => list.filter(m => !ids.includes(m._id)));
-          const remaining = new Set(this.selectedIds());
-          ids.forEach(id => remaining.delete(id));
-          this.setSelection(remaining);
-          if (this.currentPage() > this.totalPages()) {
-            this.setPage(this.totalPages());
-          }
-        },
-        error: (err: any) => this.alertService.addError(err)
-      });
+      if (result.isConfirmed) this.performDelete(ids);
+    });
+  }
+
+  /**
+   * Single-image delete: checks first whether it's used as a dashboard background or KPI prefix
+   * and, if so, names those dashboards in the confirm dialog - it still allows deleting (the app
+   * degrades gracefully to a placeholder image rather than breaking), just makes sure whoever
+   * deletes it knows. If the usage check itself fails, falls back to a plain confirm rather than
+   * blocking the deletion over it.
+   */
+  private confirmDeleteWithUsageCheck(item: IMedia, title: string): void {
+    this.mediaService.usage(item._id).subscribe({
+      next: (res: any) => this.showDeleteConfirmWithUsage(item, title, res.usedIn || []),
+      error: () => this.showDeleteConfirmWithUsage(item, title, [])
+    });
+  }
+
+  private showDeleteConfirmWithUsage(item: IMedia, title: string, usedIn: { _id: string, title: string }[]): void {
+    const warning = usedIn.length
+      ? `<br><br><strong style="color:#ef4444">${$localize`:@@mediaDeleteInUseWarning:Atención: se usa en`}:</strong> ${usedIn.map(d => d.title || '—').join(', ')}`
+      : '';
+    Swal.fire({
+      title,
+      html: `${item.originalName}${warning}`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: $localize`:@@delete:Eliminar`,
+      cancelButtonText: $localize`:@@cancel:Cancelar`
+    }).then((result) => {
+      if (result.isConfirmed) this.performDelete([item._id]);
     });
   }
 
   deleteSelected(): void {
     const ids = [...this.selectedIds()];
     if (!ids.length) return;
-    const isSingle = ids.length === 1;
-    const singleItem = isSingle ? this.items().find(i => i._id === ids[0]) : null;
-    this.deleteByIds(
-      ids,
-      isSingle
-        ? $localize`:@@mediaDeleteConfirmTitle:¿Eliminar esta imagen?`
-        : $localize`:@@mediaBulkDeleteConfirmTitle:¿Eliminar las imágenes seleccionadas?`,
-      isSingle ? singleItem?.originalName : `${ids.length}`
-    );
+
+    if (ids.length === 1) {
+      const item = this.items().find(i => i._id === ids[0]);
+      if (item) {
+        this.confirmDeleteWithUsageCheck(item, $localize`:@@mediaDeleteConfirmTitle:¿Eliminar esta imagen?`);
+        return;
+      }
+    }
+
+    this.deleteByIds(ids, $localize`:@@mediaBulkDeleteConfirmTitle:¿Eliminar las imágenes seleccionadas?`, `${ids.length}`);
   }
 
   /** Per-card delete icon, shown on hover - deletes that one image regardless of the current selection. */
   removeOne(item: IMedia, event: Event): void {
     event.stopPropagation();
-    this.deleteByIds([item._id], $localize`:@@mediaDeleteConfirmTitle:¿Eliminar esta imagen?`, item.originalName);
+    this.confirmDeleteWithUsageCheck(item, $localize`:@@mediaDeleteConfirmTitle:¿Eliminar esta imagen?`);
   }
 
   renameSelected(): void {

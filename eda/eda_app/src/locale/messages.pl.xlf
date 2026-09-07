@@ -7540,6 +7540,11 @@ Pozdrawiam.</target>
         <target>Przeniesiono pomyślnie</target>
       </trans-unit>
 
+      <trans-unit id="mediaDeleteInUseWarning">
+        <source>Atención: se usa en</source>
+        <target>Uwaga: używane w</target>
+      </trans-unit>
+
 </body>
 </file>
 </xliff>
