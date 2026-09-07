@@ -11,6 +11,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ChartDialogSaveResponseBase } from '../panel-charts/chart-configuration-models/chart-dialog-save-response';
 import { CategoryChartType, getChartCategoryValues, getSankeyRowLabels } from '../panel-charts/chart-category-values.util';
 import { DEFAULT_FRAME_DURATION_MS } from '@eda/components/eda-race-bar/eda-race-bar.component';
+import { MediaLibraryComponent } from '@eda/components/media-library/media-library.component';
 
 type ColorEditorShape = 'category-list' | 'start-end';
 type ToggleKey = 'chartLegend' | 'showLabels' | 'showLabelsPercent' | 'showGridLines' | 'showTimeline';
@@ -26,6 +27,8 @@ interface ChartTypeSpec {
   hasTopNCount: boolean;
   /** raceBar only - how long each tick's transition takes, in ms. */
   hasTransitionMs: boolean;
+  /** raceBar only - lets each category get an icon (from the media library) next to its value. */
+  hasIcons: boolean;
 }
 
 const TOGGLE_DEFAULTS: Record<ToggleKey, boolean> = {
@@ -37,22 +40,22 @@ const TOGGLE_DEFAULTS: Record<ToggleKey, boolean> = {
 };
 
 const CHART_TYPE_SPECS: Record<CategoryChartType, ChartTypeSpec> = {
-  doughnut:     { chartType: 'doughnut',     colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: true,  hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend', 'showLabels', 'showLabelsPercent'] },
-  polarArea:    { chartType: 'polarArea',    colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend', 'showGridLines', 'showLabels', 'showLabelsPercent'] },
-  sunburst:     { chartType: 'sunburst',     colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend'] },
-  treeMap:      { chartType: 'treeMap',      colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend'] },
-  scatterPlot:  { chartType: 'scatterPlot',  colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend'] },
-  bubblechart:  { chartType: 'bubblechart',  colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend'] },
-  parallelSets: { chartType: 'parallelSets', colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend'] },
-  funnel:       { chartType: 'funnel',       colorEditorShape: 'start-end',     hasUseGradient: false, hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, toggles: ['chartLegend'] },
-  raceBar:      { chartType: 'raceBar',      colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: true,  hasTransitionMs: true,  toggles: ['chartLegend', 'showTimeline'] },
+  doughnut:     { chartType: 'doughnut',     colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: true,  hasTopNCount: false, hasTransitionMs: false, hasIcons: false, toggles: ['chartLegend', 'showLabels', 'showLabelsPercent'] },
+  polarArea:    { chartType: 'polarArea',    colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, hasIcons: false, toggles: ['chartLegend', 'showGridLines', 'showLabels', 'showLabelsPercent'] },
+  sunburst:     { chartType: 'sunburst',     colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, hasIcons: false, toggles: ['chartLegend'] },
+  treeMap:      { chartType: 'treeMap',      colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, hasIcons: false, toggles: ['chartLegend'] },
+  scatterPlot:  { chartType: 'scatterPlot',  colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, hasIcons: false, toggles: ['chartLegend'] },
+  bubblechart:  { chartType: 'bubblechart',  colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, hasIcons: false, toggles: ['chartLegend'] },
+  parallelSets: { chartType: 'parallelSets', colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, hasIcons: false, toggles: ['chartLegend'] },
+  funnel:       { chartType: 'funnel',       colorEditorShape: 'start-end',     hasUseGradient: false, hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, hasIcons: false, toggles: ['chartLegend'] },
+  raceBar:      { chartType: 'raceBar',      colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: true,  hasTransitionMs: true,  hasIcons: true,  toggles: ['chartLegend', 'showTimeline'] },
 };
 
 @Component({
   standalone: true,
   selector: 'app-category-chart-dialog',
   templateUrl: './category-chart-dialog.component.html',
-  imports: [FormsModule, CommonModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, DropdownModule]
+  imports: [FormsModule, CommonModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, DropdownModule, MediaLibraryComponent]
 })
 export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
 
@@ -66,6 +69,8 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
 
   public spec: ChartTypeSpec;
   public assignedColors: { value: string | number; color: string }[] = [];
+  public assignedIcons: { value: string | number; icon: string }[] = [];
+  public iconPickerOpenForIndex: number | null = null;
   public toggleState: Record<string, boolean> = {};
   public innerRadiusPercent = 50;
   public useGradient = true;
@@ -77,6 +82,7 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
 
   private original: {
     assignedColors: { value: string | number; color: string }[];
+    assignedIcons: { value: string | number; icon: string }[];
     toggleState: Record<string, boolean>;
     innerRadiusPercent: number;
     useGradient: boolean;
@@ -111,6 +117,12 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
           return { value, color: match?.color || this.stylesProviderService.getPaletteColor(index) };
         });
 
+        const existingIcons: { value: string | number; icon: string }[] = config['assignedIcons'] || [];
+        this.assignedIcons = values.map(value => {
+          const match = existingIcons.find(c => c.value === value);
+          return { value, icon: match?.icon || '' };
+        });
+
         this.toggleState = {};
         for (const key of this.spec.toggles) {
           this.toggleState[key] = config[key] ?? TOGGLE_DEFAULTS[key];
@@ -126,6 +138,7 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
 
         this.original = {
           assignedColors: this.assignedColors.map(c => ({ ...c })),
+          assignedIcons: this.assignedIcons.map(c => ({ ...c })),
           toggleState: { ...this.toggleState },
           innerRadiusPercent: this.innerRadiusPercent,
           useGradient: this.useGradient,
@@ -144,6 +157,21 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
   }
 
   handleInputColor(): void {
+    this.syncChart();
+  }
+
+  openIconPicker(idx: number): void {
+    this.iconPickerOpenForIndex = idx;
+  }
+
+  onIconSelected(url: string, idx: number): void {
+    this.assignedIcons[idx].icon = url;
+    this.iconPickerOpenForIndex = null;
+    this.syncChart();
+  }
+
+  removeIcon(idx: number): void {
+    this.assignedIcons[idx].icon = '';
     this.syncChart();
   }
 
@@ -209,6 +237,7 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
       chartLegend: this.toggleState['chartLegend'],
       chartAnimation: this.chartAnimation
     };
+    if (this.spec.hasIcons) response.assignedIcons = [...this.assignedIcons];
     if (this.spec.hasUseGradient) response.useGradient = this.useGradient;
     if (this.spec.toggles.includes('showLabels')) response.showLabels = this.toggleState['showLabels'];
     if (this.spec.toggles.includes('showLabelsPercent')) response.showLabelsPercent = this.toggleState['showLabelsPercent'];
@@ -227,6 +256,7 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
 
   closeChartConfig(): void {
     this.assignedColors = this.original.assignedColors.map(c => ({ ...c }));
+    this.assignedIcons = this.original.assignedIcons.map(c => ({ ...c }));
     this.toggleState = { ...this.original.toggleState };
     this.innerRadiusPercent = this.original.innerRadiusPercent;
     this.useGradient = this.original.useGradient;
@@ -244,6 +274,7 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
   private syncChart(): void {
     const config = this.myPanelChartComponent.props.config.getConfig();
     config['assignedColors'] = [...this.assignedColors];
+    if (this.spec.hasIcons) config['assignedIcons'] = [...this.assignedIcons];
     for (const key of this.spec.toggles) {
       config[key] = this.toggleState[key];
     }

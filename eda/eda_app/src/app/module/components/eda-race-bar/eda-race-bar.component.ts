@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RaceBar } from './eda-race-bar';
-import { StyleProviderService, D3TooltipService, lightenHex, sanitizeId, ensureLinearGradient, formatAxisValue, formatDeNumber, initD3ResizeObserver, teardownD3Chart, measureMaxLabelWidth, measureTextWidth } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, sanitizeId, ensureLinearGradient, formatAxisValue, formatDeNumber, initD3ResizeObserver, teardownD3Chart, measureMaxLabelWidth, measureTextWidth, FileUtiles } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 // Own translations, not getLocaleMonthNames(LOCALE_ID) - the app never provides a LOCALE_ID, so that always falls back to 'en-US'.
@@ -56,6 +56,13 @@ export const DEFAULT_FRAME_DURATION_MS = 3000;
 // End-user playback speed cycle (the speed button below) - a multiplier on top of the admin's own
 // transitionMs, not a replacement for it.
 const SPEED_STEPS = [1, 2, 4];
+// Per-category value icon (assignedIcons) - gap between the badge's outer edge and the value number
+// (the badge itself is sized dynamically from barHeight - see iconSize in renderFrame()).
+const VALUE_ICON_GAP = 5;
+// Must match .eda-race-bar-timeline-input::-webkit-slider-thumb/::-moz-range-thumb's width in the .css -
+// scrubLeftCss needs the thumb's actual on-screen size to reproduce its "inset by half its own width
+// at each end" positioning, which a plain 0-100% mapping (unlike the thumb's own rendering) ignores.
+const TIMELINE_THUMB_SIZE_PX = 14;
 
 @Component({
   standalone: true,
@@ -97,6 +104,8 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   allCategories: string[] = [];
   /** Mirrors inject.assignedColors by reference - mutated in place by eda-blank-panel's recolorLegacyAssignedColors(). */
   assignedColors: any[] = [];
+  assignedIcons: any[] = [];
+  private iconByCategory: Map<string, string> = new Map();
   private hiddenCategories: Set<string> = new Set();
   /** Row eases toward its live-computed rank instead of snapping - carries the in-progress glide across tween frames/ticks. */
   private displayedRankByCategory: Map<string, number> = new Map();
@@ -119,8 +128,9 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   private barsG: any;
   private catLabelsG: any;
   private valueLabelsG: any;
+  private valueIconsG: any;
 
-  constructor(private styleProviderService: StyleProviderService, private tooltipService: D3TooltipService, private ngZone: NgZone) { }
+  constructor(private styleProviderService: StyleProviderService, private tooltipService: D3TooltipService, private ngZone: NgZone, private fileUtils: FileUtiles) { }
 
   ngOnInit(): void {
     this.id = `raceBar_${this.inject.id}`;
@@ -129,6 +139,8 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.styleProviderService.panelFontColor.subscribe(v => this.fontColor = v).unsubscribe();
     this.assignedColors = this.inject.assignedColors;
     this.colorByCategory = new Map((this.assignedColors || []).map((c: any) => [String(c.value), c.color]));
+    this.assignedIcons = this.inject.assignedIcons;
+    this.iconByCategory = new Map((this.assignedIcons || []).filter((c: any) => c.icon).map((c: any) => [String(c.value), c.icon]));
     this.buildFrames();
     this.noData = this.frames.length === 0;
     this.legendItems = this.allCategories.map(cat => ({
@@ -154,6 +166,8 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.chartLegend = this.inject.chartLegend ?? true;
     this.assignedColors = this.inject.assignedColors;
     this.colorByCategory = new Map((this.assignedColors || []).map((c: any) => [String(c.value), c.color]));
+    this.assignedIcons = this.inject.assignedIcons;
+    this.iconByCategory = new Map((this.assignedIcons || []).filter((c: any) => c.icon).map((c: any) => [String(c.value), c.icon]));
     this.legendItems = this.allCategories.map((cat, i) => ({
       label: cat,
       color: this.colorByCategory.get(cat) || '#cccccc',
@@ -216,6 +230,15 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.frames[this.frames.length - 1]?.label ?? '';
   }
 
+  /** CSS `left` for the sliding arrow indicator, matching a native range thumb's own positioning -
+   * the thumb's center can't go past the track edges by more than half its own width, so its mapping
+   * from value to pixel isn't a plain 0-100%; calc() reproduces that inset regardless of the track's
+   * actual rendered width (which a plain percentage can't do on its own). */
+  get scrubLeftCss(): string {
+    const fraction = this.scrubPosition / Math.max(1, this.frameCount - 1);
+    return `calc(${fraction} * (100% - ${TIMELINE_THUMB_SIZE_PX}px) + ${TIMELINE_THUMB_SIZE_PX / 2}px)`;
+  }
+
   /** Manual one-tick step (prev/next buttons) - pauses autoplay and animates just that one tick,
    * same pacing as autoplay would, instead of a scrub's instant jump. */
   stepFrame(delta: number): void {
@@ -226,9 +249,12 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.renderFrame(target, true);
   }
 
-  /** Fires while dragging - always pauses and jumps instantly (animate=false). */
+  /** Fires while dragging - always pauses and jumps instantly (animate=false). The input's own
+   * `step` is "any" (see the template) so animateScrub's fractional glide isn't silently rounded by
+   * the browser's range-input value sanitization - drag/click values still need rounding here, since
+   * they're no longer constrained to whole frames by the input itself. */
   onScrub(event: Event): void {
-    const index = Number((event.target as HTMLInputElement).value);
+    const index = Math.round(Number((event.target as HTMLInputElement).value));
     this.pause();
     this.finished = index >= this.frames.length - 1;
     this.renderFrame(index, false);
@@ -413,8 +439,20 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     return lo > 0 ? text.slice(0, lo) + '…' : '';
   }
 
+  /** Same resolution rules as shared/pipes/media-src.pipe.ts, duplicated here since D3 builds plain
+   * SVG <image> nodes outside Angular's template compiler - the pipe itself can't apply to them. */
+  private resolveIconUrl(value: string): string {
+    if (!value) return value;
+    if (value.startsWith('data:') || /^https?:\/\//.test(value)) return value;
+    return this.fileUtils.connection(value);
+  }
+
   private gradientId(hex: string): string {
     return `race-grad-${this.id}-${sanitizeId(hex)}`;
+  }
+
+  private get iconClipId(): string {
+    return `race-icon-clip-${this.id}`;
   }
 
   private barFill(category: string): string {
@@ -470,10 +508,19 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.rootG?.interrupt('race');
     this.svg.selectAll('*').remove();
     this.defs = this.svg.append('defs');
+    // objectBoundingBox units so this single clip applies to every icon regardless of its own x/y -
+    // crops to a circular badge instead of the <image>'s default letterboxing (visible padding) when
+    // the uploaded icon isn't itself perfectly square.
+    this.defs.append('clipPath')
+      .attr('id', this.iconClipId)
+      .attr('clipPathUnits', 'objectBoundingBox')
+      .append('circle')
+      .attr('cx', 0.5).attr('cy', 0.5).attr('r', 0.5);
     this.rootG = this.svg.append('g');
     this.axisG = this.rootG.append('g').attr('class', 'eda-race-bar-axis');
     this.barsG = this.rootG.append('g').attr('class', 'eda-race-bar-bars');
     this.valueLabelsG = this.rootG.append('g').attr('class', 'eda-race-bar-value-labels');
+    this.valueIconsG = this.rootG.append('g').attr('class', 'eda-race-bar-value-icons');
     this.catLabelsG = this.rootG.append('g').attr('class', 'eda-race-bar-cat-labels');
 
     this.renderFrame(this.currentFrameIndex, false);
@@ -500,8 +547,8 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.periodLabel = frame.label;
     this.tickerFontSizePx = Math.max(14, Math.min(32, height * 0.12));
 
-    // right depends on THIS frame's widest value label, so a big number doesn't get clipped.
-    const marginTop = 10, marginBottom = 4, marginLeft = 8;
+    // right/left both depend on THIS frame's widest label, so a long name/number never gets clipped.
+    const marginTop = 10, marginBottom = 4;
     const innerHeightProbe = Math.max(height - marginTop - marginBottom, 10);
     const topN = this.computeTopN(innerHeightProbe);
     const entries = this.rankedEntries(frame, topN);
@@ -511,6 +558,12 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const valueLabelTexts = entries.map((d: RaceBarDatum) => formatDeNumber(Math.round(d.value)));
     const maxValueLabelWidth = measureMaxLabelWidth(valueLabelTexts, 12, this.fontFamily);
+    // Category labels live outside/left of the bars now (not inside them) - capped at 40% of the
+    // width so one pathologically long name can't swallow the whole chart; truncateLabel below
+    // still shortens whatever doesn't fit within that budget.
+    const catLabelTexts = entries.map((d: RaceBarDatum) => `${d.rank + 1}. ${d.category}`);
+    const maxCatLabelWidth = measureMaxLabelWidth(catLabelTexts, 12, this.fontFamily);
+    const marginLeft = Math.min(width * 0.4, Math.max(60, maxCatLabelWidth + 16));
     const margin = { top: marginTop, right: Math.max(24, maxValueLabelWidth + 16), bottom: marginBottom, left: marginLeft };
     const innerWidth = Math.max(width - margin.left - margin.right, 10);
     const innerHeight = innerHeightProbe;
@@ -590,10 +643,12 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const catEnter = catLabels.enter().append('text')
         .attr('class', 'eda-race-bar-cat-label')
-        .attr('x', 8)
+        .attr('x', -8)
+        .attr('text-anchor', 'end')
         .attr('y', offscreenMid)
         .style('opacity', 0)
         .style('font-family', this.fontFamily)
+        .style('fill', this.fontColor)
         .style('pointer-events', 'none')
         .text((d: RaceBarDatum) => d.category);
 
@@ -623,6 +678,44 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
       const valMerged = valEnter.merge(valueLabels);
       valMerged.interrupt();
       valMerged.transition('fade').duration(rankMs).ease(d3.easeLinear).style('opacity', 1);
+
+      // Per-category icon (assignedIcons) as a circular badge straddling the bar's tip - centered
+      // exactly on it, half overlapping the bar and half past it, so it reads as "stuck to the end
+      // of the bar" instead of a small separate glyph floating in the gap before the number. Sized
+      // to the bar's own thickness (barHeight) so it scales with however many rows are shown - big
+      // when there are few bars, smaller (floored at 14px) when there are many.
+      // A <g> per datum (white backdrop ring + clipped image), keyed/joined like every label.
+      const iconSize = Math.max(14, barHeight);
+      const iconGroups = this.valueIconsG.selectAll('g.eda-race-bar-value-icon-group')
+        .data(entries, (d: RaceBarDatum) => d.category);
+
+      iconGroups.exit().transition().duration(rankMs).ease(d3.easeLinear)
+        .attr('transform', `translate(0,${offscreenMid})`).style('opacity', 0).remove();
+
+      const iconGroupEnter = iconGroups.enter().append('g')
+        .attr('class', 'eda-race-bar-value-icon-group')
+        .attr('transform', `translate(8,${offscreenMid})`)
+        .style('opacity', 0)
+        .style('pointer-events', 'none');
+      iconGroupEnter.append('circle').attr('class', 'eda-race-bar-value-icon-bg');
+      iconGroupEnter.append('image')
+        .attr('class', 'eda-race-bar-value-icon')
+        .attr('preserveAspectRatio', 'xMidYMid slice')
+        .attr('clip-path', `url(#${this.iconClipId})`)
+        // A dead/unreachable icon URL would otherwise sit there as the browser's own broken-image
+        // glyph - hide the whole badge instead so a bad icon degrades to "no icon" rather than clutter.
+        .on('error', function () { d3.select((this as any).parentNode).style('display', 'none'); });
+
+      const iconGroupMerged = iconGroupEnter.merge(iconGroups);
+      iconGroupMerged.select('circle.eda-race-bar-value-icon-bg').attr('r', iconSize / 2 + 2);
+      iconGroupMerged.select('image.eda-race-bar-value-icon')
+        .attr('x', -iconSize / 2).attr('y', -iconSize / 2)
+        .attr('width', iconSize).attr('height', iconSize)
+        .attr('href', (d: RaceBarDatum) => this.resolveIconUrl(this.iconByCategory.get(d.category) || ''));
+      iconGroupMerged.style('display', (d: RaceBarDatum) => this.iconByCategory.has(d.category) ? null : 'none');
+      iconGroupMerged.interrupt();
+      iconGroupMerged.transition('fade').duration(rankMs).ease(d3.easeLinear)
+        .style('opacity', (d: RaceBarDatum) => this.iconByCategory.has(d.category) ? 1 : 0);
 
       // Shared clock per category: value interpolates old->new; row order is re-sorted from it every tick.
       const valueAt = new Map<string, (t: number) => number>();
@@ -659,9 +752,8 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
               rowOf.set(d.category, nextRow);
               // The number reflects the instantaneous crossing (target), not the eased row it's still
               // sliding toward - it flips the moment the values cross, same tick, while the row glides after it.
-              const value = liveValue.get(d.category) ?? d.value;
               const prefix = `${target + 1}. `;
-              const available = Math.max(0, xScale(value) - 12 - measureTextWidth(prefix, 12, this.fontFamily));
+              const available = Math.max(0, margin.left - 16 - measureTextWidth(prefix, 12, this.fontFamily));
               catTextOf.set(d.category, prefix + this.truncateLabel(d.category, available));
             });
             const valueOf = (d: RaceBarDatum) => liveValue.get(d.category) ?? d.value;
@@ -673,9 +765,14 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
             catMerged
               .attr('y', (d: RaceBarDatum) => yMidForRank(rowOf.get(d.category) ?? d.rank))
               .each(function (d: RaceBarDatum) { (this as any).textContent = catTextOf.get(d.category) ?? d.category; });
+            iconGroupMerged
+              .attr('transform', (d: RaceBarDatum) => `translate(${Math.max(xScale(valueOf(d)), 0)},${yMidForRank(rowOf.get(d.category) ?? d.rank)})`);
             valMerged
               .attr('y', (d: RaceBarDatum) => yMidForRank(rowOf.get(d.category) ?? d.rank))
-              .attr('x', (d: RaceBarDatum) => Math.max(xScale(valueOf(d)), 0) + 8)
+              .attr('x', (d: RaceBarDatum) => {
+                const tip = Math.max(xScale(valueOf(d)), 0);
+                return this.iconByCategory.has(d.category) ? tip + iconSize / 2 + VALUE_ICON_GAP : tip + 8;
+              })
               .each(function (d: RaceBarDatum) { (this as any).textContent = formatDeNumber(Math.round(valueOf(d))); });
           };
         });

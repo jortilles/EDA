@@ -19,8 +19,11 @@
     @if (inject.showTimeline && frameCount > 1) {
       <div class="eda-race-bar-timeline">
         <span class="eda-race-bar-timeline-edge">{{ firstPeriodLabel }}</span>
-        <input type="range" class="eda-race-bar-timeline-input" min="0" [max]="frameCount - 1" step="1"
-          [value]="scrubPosition" (input)="onScrub($event)" [attr.aria-label]="timelineAriaLabel">
+        <div class="eda-race-bar-timeline-track">
+          <input type="range" class="eda-race-bar-timeline-input" min="0" [max]="frameCount - 1" step="any"
+            [value]="scrubPosition" (input)="onScrub($event)" [attr.aria-label]="timelineAriaLabel">
+          <div class="eda-race-bar-timeline-pointer" [style.left]="scrubLeftCss"></div>
+        </div>
         <span class="eda-race-bar-timeline-edge">{{ lastPeriodLabel }}</span>
       </div>
     }

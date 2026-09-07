@@ -8,6 +8,8 @@ export class RaceBar {
   dataDescription: any;
   linkedDashboard: LinkedDashboardProps;
   assignedColors: any[];
+  /** Per-category icon URL, same shape/lifecycle as assignedColors ({value, icon}[]). */
+  assignedIcons?: any[];
   useGradient?: boolean;
   chartLegend?: boolean;
   /** Autoplay the race on load - also doubles as the play/pause toggle's initial state. */

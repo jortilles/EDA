@@ -1951,6 +1951,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categoryIndex = categoryCol ? categoryCol.index : dataDescription.otherColumns[0]?.index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
+        inject.assignedIcons = this.props.config.getConfig()['assignedIcons'] ?? [];
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         // Off by default (unlike every other D3 category chart) - every bar already carries its own
         // category name, so a separate legend is just duplicated, space-eating chart junk here.

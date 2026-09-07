@@ -120,11 +120,44 @@
   flex-shrink: 0;
 }
 
-.eda-race-bar-timeline-input {
+.eda-race-bar-timeline-track {
+  position: relative;
   flex: 1 1 auto;
   min-width: 0;
+}
+
+.eda-race-bar-timeline-input {
+  display: block;
+  width: 100%;
   accent-color: var(--corporate-primary, #4472c4);
   cursor: pointer;
+}
+
+/* Fixed to a known size (kept in sync with THUMB_SIZE_PX in the .ts) so scrubLeftCss's calc() can
+   reproduce the thumb's own inset-at-each-end positioning instead of guessing at the browser/OS default. */
+.eda-race-bar-timeline-input::-webkit-slider-thumb {
+  width: 14px;
+  height: 14px;
+}
+
+.eda-race-bar-timeline-input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+}
+
+/* Slides along the track with scrubPosition, pointing up at the current period - left comes from
+   scrubLeftCss, which mirrors the native thumb's own "inset by half its width at each end" formula
+   so the two stay aligned across the whole range, not just at the midpoint. */
+.eda-race-bar-timeline-pointer {
+  position: absolute;
+  top: 100%;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 7px solid var(--corporate-primary, #4472c4);
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
 .eda-race-bar-no-data {
@@ -145,10 +178,11 @@
   display: none;
 }
 
+/* fill is set inline from TS (this.fontColor) - the label now sits outside the bar, on the panel's
+   own background, so it can no longer assume the white-on-colored-bar contrast it used to rely on. */
 ::ng-deep .eda-race-bar-cat-label {
   font-size: 12px;
   font-weight: 600;
-  fill: #ffffff;
   dominant-baseline: middle;
 }
 
@@ -156,6 +190,18 @@
   font-size: 12px;
   font-weight: 600;
   dominant-baseline: middle;
+}
+
+::ng-deep .eda-race-bar-value-icon {
+  pointer-events: none;
+}
+
+/* White ring behind the icon, slightly larger than it - keeps the badge readable regardless of the
+   bar's own color, and gives it a visible edge where it overlaps the bar. */
+::ng-deep .eda-race-bar-value-icon-bg {
+  fill: #ffffff;
+  stroke: rgba(0, 0, 0, 0.1);
+  stroke-width: 1px;
 }
 
 /* Same markup/classes as eda-bar.component.ts's tooltip (eda-bar.component.css) - duplicated here

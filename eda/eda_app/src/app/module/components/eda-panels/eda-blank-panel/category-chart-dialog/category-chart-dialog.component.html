@@ -152,6 +152,24 @@
                   <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
                     <span class="font-medium">{{ color.value }}</span>
                     <div class="flex items-center gap-2">
+                      @if (spec.hasIcons) {
+                        <div class="relative">
+                          <button type="button" (click)="openIconPicker(idx)"
+                            class="w-8 h-8 flex items-center justify-center rounded border bg-slate-50 overflow-hidden"
+                            i18n-title="@@chooseImage" title="Elegir imagen">
+                            @if (assignedIcons[idx]?.icon) {
+                              <img [src]="assignedIcons[idx].icon" class="w-full h-full object-cover">
+                            } @else {
+                              <i class="pi pi-image text-slate-400"></i>
+                            }
+                          </button>
+                          @if (assignedIcons[idx]?.icon) {
+                            <button type="button" (click)="removeIcon(idx)"
+                              class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-slate-600 text-white text-[10px] leading-none flex items-center justify-center"
+                              i18n-title="@@remove" title="Eliminar">×</button>
+                          }
+                        </div>
+                      }
                       <input [(ngModel)]="assignedColors[idx].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
                       <p-colorPicker [(ngModel)]="assignedColors[idx].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
                     </div>
@@ -185,3 +203,13 @@
     </div>
   </div>
 </eda-dialog2>
+
+@if (iconPickerOpenForIndex !== null) {
+  <eda-dialog2 width="70vw" height="70vh" header="Elegir imagen" i18n-header="@@chooseImage"
+    [display]="iconPickerOpenForIndex !== null" [showApply]="false" [overflow]="'auto'"
+    (close)="iconPickerOpenForIndex = null">
+    <div content class="p-4">
+      <app-media-library [pickMode]="true" (select)="onIconSelected($event, iconPickerOpenForIndex)"></app-media-library>
+    </div>
+  </eda-dialog2>
+}
