@@ -2840,13 +2840,19 @@ export async function buildPanelQueryErrorType(dashboard: any, err: any, mode: s
   const panelId = (dashboard && (dashboard.panel_id || dashboard.panelId)) || '-'
   let panelName = (dashboard && (dashboard.panel_name || dashboard.panelTitle || dashboard.panel_title)) || '-'
   if ((dashboardTitle === '-' || panelName === '-') && dashboardId) {
-    const dashboardDoc: any = await Dashboard.findById(dashboardId).exec()
-    if (dashboardDoc && dashboardDoc.config) {
-      if (dashboardTitle === '-') dashboardTitle = dashboardDoc.config.title || '-'
-      if (panelName === '-' && dashboardDoc.config.panel && panelId) {
-        const panel = dashboardDoc.config.panel.find(p => (p && p.id) == panelId)
-        if (panel && panel.title) panelName = panel.title
+    try {
+      const dashboardDoc: any = await Dashboard.findById(dashboardId).exec()
+      if (dashboardDoc && dashboardDoc.config) {
+        if (dashboardTitle === '-') dashboardTitle = dashboardDoc.config.title || '-'
+        if (panelName === '-' && dashboardDoc.config.panel && panelId) {
+          const panel = dashboardDoc.config.panel.find(p => (p && p.id) == panelId)
+          if (panel && panel.title) panelName = panel.title
+        }
       }
+    } catch (lookupErr) {
+      // Best-effort enrichment: if the lookup fails (e.g. DB down), keep the
+      // default values so the original error log is not lost
+      console.error('Error enriching panel query error type:', lookupErr);
     }
   }
   const rawMessage = (err && (err.message || (err.toString && err.toString()))) || 'unknown_error'
