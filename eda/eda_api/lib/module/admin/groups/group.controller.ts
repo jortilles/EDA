@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import { ActiveDirectoryService } from '../../../services/active-directory/active-directory.service';
 import { GroupActiveDirectoryModel } from 'services/active-directory/model/group-active-directory.model'
 import { groupCollapsed } from 'console'
-import ServerLogService from '../../../services/server-log/server-log.service'
+import { insertServerLog } from '../../../services/server-log/server-log.service'
 
 const PROTECTED_GROUP_IDS = new Set([
   '135792467811111111111110', // EDA_ADMIN_ROLE
@@ -302,17 +302,6 @@ export class GroupController {
       return grupo;
     }
   }
-}
-
-function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
-  const ip = req.headers['x-forwarded-for'] || req.get('origin');
-  var date = new Date();
-  var month = date.getMonth() + 1;
-  var monthstr = month < 10 ? '0' + month.toString() : month.toString();
-  var day = date.getDate();
-  var daystr = day < 10 ? '0' + day.toString() : day.toString();
-  var date_str = date.getFullYear() + '-' + monthstr + '-' + daystr + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-  ServerLogService.log({ level, action, userMail, ip, type, date_str });
 }
 
 // Build normalized payload for group audit events

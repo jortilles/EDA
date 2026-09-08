@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Request } from 'express';
+import formatDate from '../date-format/date-format.service';
 
 // SDA CUSTOM - Daily file logger without external runtime dependencies (10-day retention)
 const LOG_RETENTION_DAYS = 10;
@@ -63,5 +65,10 @@ const ServerLogSdaService = {
   }
 };
 // END SDA CUSTOM
+
+export function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
+  const ip = req.headers['x-forwarded-for'] || req.get('origin');
+  ServerLogSdaService.log({ level, action, userMail, ip, type, date_str: formatDate(new Date()) });
+}
 
 export default ServerLogSdaService;

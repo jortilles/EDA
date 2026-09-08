@@ -3,7 +3,7 @@ import { HttpException } from '../../global/model/index';
 import { ActiveDirectoryService } from '../../../services/active-directory/active-directory.service';
 import User, { IUser } from './model/user.model';
 import Group, { IGroup } from '../groups/model/group.model';
-import ServerLogService from '../../../services/server-log/server-log.service';
+import { insertServerLog } from '../../../services/server-log/server-log.service';
 import * as path from 'path';
 import * as fs from 'fs';
 import { QueryOptions } from 'mongoose';
@@ -466,17 +466,6 @@ export class UserController {
         return token;
     }
 
-}
-
-function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
-    const ip = req.headers['x-forwarded-for'] || req.get('origin')
-    var date = new Date();
-    var month =date.getMonth()+1 ;
-    var monthstr=month<10?"0"+month.toString(): month.toString();
-    var day = date.getDate();
-    var daystr=day<10?"0"+day.toString(): day.toString();
-    var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    ServerLogService.log({ level, action, userMail, ip, type, date_str});
 }
 
 // Build normalized payload for user audit events

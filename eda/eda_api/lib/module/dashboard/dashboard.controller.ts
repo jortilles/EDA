@@ -11,7 +11,7 @@ import { ArimaService } from '../../services/prediction/arima.service'
 import { TensorflowService } from '../../services/prediction/tensorflow.service'
 import { TimeFormatService } from '../../services/time-format/time-format.service'
 import { QueryOptions } from 'mongoose'
-import ServerLogService from '../../services/server-log/server-log.service'
+import { insertServerLog } from '../../services/server-log/server-log.service'
 import { DateUtil } from '../../utils/date.util'
 import { QueryModeUtil } from '../../utils/query-mode.util'
 import _ from 'lodash'
@@ -2822,34 +2822,6 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     return user?._id?.toString() === '135792467811111111111112';
   }
 
-}
-
-function insertServerLog(
-  req: Request,
-  level: string,
-  action: string,
-  userMail: string,
-  type: string
-) {
-  const ip = req.headers['x-forwarded-for'] || req.get('origin')
-  var date = new Date()
-  var month = date.getMonth() + 1
-  var monthstr = month < 10 ? '0' + month.toString() : month.toString()
-  var day = date.getDate()
-  var daystr = day < 10 ? '0' + day.toString() : day.toString()
-  var date_str =
-    date.getFullYear() +
-    '-' +
-    monthstr +
-    '-' +
-    daystr +
-    ' ' +
-    date.getHours() +
-    ':' +
-    date.getMinutes() +
-    ':' +
-    date.getSeconds()
-  ServerLogService.log({ level, action, userMail, ip, type, date_str })
 }
 
 // Normalize dashboard log payload including report name — parsed by the frontend as id--title--detail
