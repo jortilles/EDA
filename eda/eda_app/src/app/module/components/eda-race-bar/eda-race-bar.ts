@@ -10,6 +10,9 @@ export class RaceBar {
   assignedColors: any[];
   /** Per-category icon URL, same shape/lifecycle as assignedColors ({value, icon}[]). */
   assignedIcons?: any[];
+  /** Master on/off for the icon feature - off hides icons in the chart without discarding
+   * assignedIcons, so turning it back on restores them as-is. */
+  useIcons?: boolean;
   useGradient?: boolean;
   chartLegend?: boolean;
   /** Autoplay the race on load - also doubles as the play/pause toggle's initial state. */

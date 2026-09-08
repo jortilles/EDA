@@ -2,7 +2,7 @@ import { Component, ViewChild, OnInit, Input, AfterViewChecked } from '@angular/
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
-import { StyleProviderService } from '@eda/services/service.index';
+import { StyleProviderService, MediaService, AlertService } from '@eda/services/service.index';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
@@ -14,7 +14,7 @@ import { DEFAULT_FRAME_DURATION_MS } from '@eda/components/eda-race-bar/eda-race
 import { MediaLibraryComponent } from '@eda/components/media-library/media-library.component';
 
 type ColorEditorShape = 'category-list' | 'start-end';
-type ToggleKey = 'chartLegend' | 'showLabels' | 'showLabelsPercent' | 'showGridLines' | 'showTimeline';
+type ToggleKey = 'chartLegend' | 'showLabels' | 'showLabelsPercent' | 'showGridLines' | 'showTimeline' | 'useIcons';
 
 interface ChartTypeSpec {
   chartType: CategoryChartType;
@@ -36,7 +36,8 @@ const TOGGLE_DEFAULTS: Record<ToggleKey, boolean> = {
   showGridLines: true,
   showLabels: false,
   showLabelsPercent: false,
-  showTimeline: false
+  showTimeline: false,
+  useIcons: false
 };
 
 const CHART_TYPE_SPECS: Record<CategoryChartType, ChartTypeSpec> = {
@@ -48,7 +49,7 @@ const CHART_TYPE_SPECS: Record<CategoryChartType, ChartTypeSpec> = {
   bubblechart:  { chartType: 'bubblechart',  colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, hasIcons: false, toggles: ['chartLegend'] },
   parallelSets: { chartType: 'parallelSets', colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, hasIcons: false, toggles: ['chartLegend'] },
   funnel:       { chartType: 'funnel',       colorEditorShape: 'start-end',     hasUseGradient: false, hasInnerRadius: false, hasTopNCount: false, hasTransitionMs: false, hasIcons: false, toggles: ['chartLegend'] },
-  raceBar:      { chartType: 'raceBar',      colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: true,  hasTransitionMs: true,  hasIcons: true,  toggles: ['chartLegend', 'showTimeline'] },
+  raceBar:      { chartType: 'raceBar',      colorEditorShape: 'category-list', hasUseGradient: true,  hasInnerRadius: false, hasTopNCount: true,  hasTransitionMs: true,  hasIcons: true,  toggles: ['chartLegend', 'showTimeline', 'useIcons'] },
 };
 
 @Component({
@@ -71,6 +72,7 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
   public assignedColors: { value: string | number; color: string }[] = [];
   public assignedIcons: { value: string | number; icon: string }[] = [];
   public iconPickerOpenForIndex: number | null = null;
+  public matchFolderPickerOpen = false;
   public toggleState: Record<string, boolean> = {};
   public innerRadiusPercent = 50;
   public useGradient = true;
@@ -96,7 +98,11 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
   public selectedPalette: { name: string; paleta: string[] } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
-  constructor(private stylesProviderService: StyleProviderService) { }
+  constructor(
+    private stylesProviderService: StyleProviderService,
+    private mediaService: MediaService,
+    private alertService: AlertService
+  ) { }
 
   ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
@@ -175,6 +181,47 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
     this.syncChart();
   }
 
+  openMatchFolderPicker(): void {
+    this.matchFolderPickerOpen = true;
+  }
+
+  /** Bulk-assigns icons by filename: for every category, a file in `folder` whose name (minus
+   * extension, normalized) equals the category's own value gets assigned; anything without a match
+   * is cleared. One-shot action, not a lasting link to the folder - the per-row picker/remove
+   * buttons above still let the user correct any of it by hand afterward. */
+  onMatchFolderSelected(folder: { id: string | null; name: string }): void {
+    this.matchFolderPickerOpen = false;
+    this.mediaService.list(folder.id).subscribe({
+      next: (res: any) => {
+        const images: { url: string; originalName: string }[] = res.media || [];
+        const byName = new Map<string, string>();
+        images.forEach(img => byName.set(this.normalizeForMatch(img.originalName.replace(/\.[^.]+$/, '')), img.url));
+
+        let matched = 0;
+        this.assignedIcons = this.assignedIcons.map(entry => {
+          const url = byName.get(this.normalizeForMatch(String(entry.value))) || '';
+          if (url) matched++;
+          return { value: entry.value, icon: url };
+        });
+        this.syncChart();
+
+        const total = this.assignedIcons.length;
+        this.alertService.addSuccess(
+          `${$localize`:@@raceBarMatchingIconsDone:Iconos asignados por coincidencia de nombre`}: ${matched}/${total}`
+        );
+      },
+      error: (err: any) => this.alertService.addError(err)
+    });
+  }
+
+  /** Case/accent-insensitive key for matching a category value against a filename (e.g. "México" ~ "mexico.png").
+   * The combining-diacritics range (U+0300-U+036F) is built from char codes, not typed literally,
+   * so it can't silently get mangled into the visible accent glyphs themselves. */
+  private normalizeForMatch(value: string): string {
+    const combiningDiacritics = new RegExp(`[\\u0300-\\u036f]`, 'g');
+    return value.trim().toLowerCase().normalize('NFD').replace(combiningDiacritics, '');
+  }
+
   onToggleChanged(): void {
     this.syncChart();
   }
@@ -247,6 +294,7 @@ export class CategoryChartDialogComponent implements OnInit, AfterViewChecked {
     }
     if (this.spec.toggles.includes('showGridLines')) response.showGridLines = this.toggleState['showGridLines'];
     if (this.spec.toggles.includes('showTimeline')) response.showTimeline = this.toggleState['showTimeline'];
+    if (this.spec.toggles.includes('useIcons')) response.useIcons = this.toggleState['useIcons'];
     if (this.spec.hasInnerRadius) response.innerRadiusPercent = this.innerRadiusPercent;
     if (this.spec.hasTopNCount) response.topNCount = this.topNCount;
     if (this.spec.hasTransitionMs) response.transitionMs = this.transitionMs;

@@ -44,6 +44,9 @@
                     @case ('showTimeline') {
                       <label i18n="@@raceBarShowTimeline" class="font-medium">Mostrar línea de tiempo</label>
                     }
+                    @case ('useIcons') {
+                      <label i18n="@@raceBarUseIcons" class="font-medium">Añadir imágenes</label>
+                    }
                   }
                   <label class="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" [(ngModel)]="toggleState[key]" class="sr-only peer" (ngModelChange)="onToggleChanged()">
@@ -51,6 +54,16 @@
                       class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                     </div>
                   </label>
+                </div>
+              }
+
+              @if (spec.hasIcons && toggleState['useIcons']) {
+                <div class="flex items-center justify-between">
+                  <label class="font-medium" i18n="@@raceBarLoadMatchingIcons">Cargar coincidentes</label>
+                  <button type="button" (click)="openMatchFolderPicker()"
+                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded border text-sm bg-white hover:bg-slate-50">
+                    <i class="pi pi-folder-open"></i>
+                  </button>
                 </div>
               }
 
@@ -152,7 +165,7 @@
                   <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
                     <span class="font-medium">{{ color.value }}</span>
                     <div class="flex items-center gap-2">
-                      @if (spec.hasIcons) {
+                      @if (spec.hasIcons && toggleState['useIcons']) {
                         <div class="relative">
                           <button type="button" (click)="openIconPicker(idx)"
                             class="w-8 h-8 flex items-center justify-center rounded border bg-slate-50 overflow-hidden"
@@ -210,6 +223,16 @@
     (close)="iconPickerOpenForIndex = null">
     <div content class="p-4">
       <app-media-library [pickMode]="true" (select)="onIconSelected($event, iconPickerOpenForIndex)"></app-media-library>
+    </div>
+  </eda-dialog2>
+}
+
+@if (matchFolderPickerOpen) {
+  <eda-dialog2 width="70vw" height="70vh" header="Cargar coincidentes" i18n-header="@@raceBarLoadMatchingIcons"
+    [display]="matchFolderPickerOpen" [showApply]="false" [overflow]="'auto'"
+    (close)="matchFolderPickerOpen = false">
+    <div content class="p-4">
+      <app-media-library [pickFolderMode]="true" (folderSelect)="onMatchFolderSelected($event)"></app-media-library>
     </div>
   </eda-dialog2>
 }

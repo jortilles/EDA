@@ -7605,6 +7605,26 @@ Best regards.</target>
         <target>Warning: used in</target>
       </trans-unit>
 
+      <trans-unit id="raceBarUseIcons">
+        <source>Añadir imágenes</source>
+        <target>Add images</target>
+      </trans-unit>
+
+      <trans-unit id="raceBarLoadMatchingIcons">
+        <source>Cargar coincidentes</source>
+        <target>Load matching</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSelectThisFolder">
+        <source>Seleccionar esta carpeta</source>
+        <target>Select this folder</target>
+      </trans-unit>
+
+      <trans-unit id="raceBarMatchingIconsDone">
+        <source>Iconos asignados por coincidencia de nombre</source>
+        <target>Icons assigned by name match</target>
+      </trans-unit>
+
 </body>
 </file>
 </xliff>

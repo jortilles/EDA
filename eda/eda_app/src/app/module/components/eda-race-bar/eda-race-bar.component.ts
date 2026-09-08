@@ -140,7 +140,9 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.assignedColors = this.inject.assignedColors;
     this.colorByCategory = new Map((this.assignedColors || []).map((c: any) => [String(c.value), c.color]));
     this.assignedIcons = this.inject.assignedIcons;
-    this.iconByCategory = new Map((this.assignedIcons || []).filter((c: any) => c.icon).map((c: any) => [String(c.value), c.icon]));
+    this.iconByCategory = this.inject.useIcons
+      ? new Map((this.assignedIcons || []).filter((c: any) => c.icon).map((c: any) => [String(c.value), c.icon]))
+      : new Map();
     this.buildFrames();
     this.noData = this.frames.length === 0;
     this.legendItems = this.allCategories.map(cat => ({
@@ -167,7 +169,9 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.assignedColors = this.inject.assignedColors;
     this.colorByCategory = new Map((this.assignedColors || []).map((c: any) => [String(c.value), c.color]));
     this.assignedIcons = this.inject.assignedIcons;
-    this.iconByCategory = new Map((this.assignedIcons || []).filter((c: any) => c.icon).map((c: any) => [String(c.value), c.icon]));
+    this.iconByCategory = this.inject.useIcons
+      ? new Map((this.assignedIcons || []).filter((c: any) => c.icon).map((c: any) => [String(c.value), c.icon]))
+      : new Map();
     this.legendItems = this.allCategories.map((cat, i) => ({
       label: cat,
       color: this.colorByCategory.get(cat) || '#cccccc',

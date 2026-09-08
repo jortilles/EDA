@@ -1638,6 +1638,7 @@ public tableNodeExpand(event: any): void {
 
             const configPatch: any = { colors: response.colors, assignedColors };
             if (response.assignedIcons !== undefined) configPatch.assignedIcons = response.assignedIcons;
+            if (response.useIcons !== undefined) configPatch.useIcons = response.useIcons;
             if (response.useGradient !== undefined) configPatch.useGradient = response.useGradient;
             if (response.chartLegend !== undefined) configPatch.chartLegend = response.chartLegend;
             if (response.showLabels !== undefined) configPatch.showLabels = response.showLabels;

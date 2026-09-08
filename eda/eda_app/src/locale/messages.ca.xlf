@@ -7912,6 +7912,26 @@ Salutacions.</target>
         <target>Atenció: s’utilitza a</target>
       </trans-unit>
 
+      <trans-unit id="raceBarUseIcons">
+        <source>Añadir imágenes</source>
+        <target>Afegir imatges</target>
+      </trans-unit>
+
+      <trans-unit id="raceBarLoadMatchingIcons">
+        <source>Cargar coincidentes</source>
+        <target>Carregar coincidents</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSelectThisFolder">
+        <source>Seleccionar esta carpeta</source>
+        <target>Seleccionar aquesta carpeta</target>
+      </trans-unit>
+
+      <trans-unit id="raceBarMatchingIconsDone">
+        <source>Iconos asignados por coincidencia de nombre</source>
+        <target>Icones assignades per coincidencia de nom</target>
+      </trans-unit>
+
 </body>
   </file>
 </xliff>

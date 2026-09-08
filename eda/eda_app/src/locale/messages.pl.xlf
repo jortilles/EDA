@@ -7545,6 +7545,26 @@ Pozdrawiam.</target>
         <target>Uwaga: używane w</target>
       </trans-unit>
 
+      <trans-unit id="raceBarUseIcons">
+        <source>Añadir imágenes</source>
+        <target>Dodaj obrazy</target>
+      </trans-unit>
+
+      <trans-unit id="raceBarLoadMatchingIcons">
+        <source>Cargar coincidentes</source>
+        <target>Wczytaj dopasowania</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSelectThisFolder">
+        <source>Seleccionar esta carpeta</source>
+        <target>Wybierz ten folder</target>
+      </trans-unit>
+
+      <trans-unit id="raceBarMatchingIconsDone">
+        <source>Iconos asignados por coincidencia de nombre</source>
+        <target>Ikony przypisane przez dopasowanie nazwy</target>
+      </trans-unit>
+
 </body>
 </file>
 </xliff>

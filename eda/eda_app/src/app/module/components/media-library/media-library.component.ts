@@ -12,6 +12,9 @@ import Swal from 'sweetalert2';
 
 export const MEDIA_MAX_SIZE_BYTES = 1 * 1024 * 1024; // 1MB
 const VALID_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
+// Same id/text as the "Inicio" breadcrumb/tree root label - needed here as a plain string, not
+// template text, for pickFolderMode's confirm bar fallback when root is the picked folder.
+const ROOT_FOLDER_LABEL = $localize`:@@mediaHome:Inicio`;
 
 /**
  * Media library, file-explorer style: folders, a drop/click zone to upload new
@@ -34,6 +37,12 @@ const VALID_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 export class MediaLibraryComponent implements OnInit, OnDestroy {
   @Input() pickMode = false;
   @Output() select = new EventEmitter<string>();
+  /** Sibling to pickMode - picks a FOLDER instead of an image (bar-chart-race's "cargar
+   * coincidentes"). Reuses all the existing browsing UI (tree/breadcrumb/subfolder tiles)
+   * unchanged; only adds its own confirm bar (see chooseFolder()). */
+  @Input() pickFolderMode = false;
+  @Output() folderSelect = new EventEmitter<{ id: string | null; name: string }>();
+  readonly mediaHomeLabel = ROOT_FOLDER_LABEL;
 
   // Reusable, always-in-the-DOM (off-screen) drag previews - see setDragGhost(). Reusing the same
   // elements instead of creating a throwaway node per drag avoids the browser occasionally using
@@ -45,7 +54,7 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
   private mediaService = inject(MediaService);
   private alertService = inject(AlertService);
 
-  public showOrgTools = computed(() => !this.pickMode);
+  public showOrgTools = computed(() => !this.pickMode && !this.pickFolderMode);
 
   public items = signal<IMedia[]>([]);
   public folders = signal<IMediaFolder[]>([]);
@@ -395,6 +404,11 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
     this.select.emit(item.url);
   }
 
+  /** pickFolderMode's confirm action - the folder currently being browsed (root included). */
+  chooseFolder(): void {
+    this.folderSelect.emit({ id: this.currentFolderId(), name: this.currentFolder()?.name ?? '' });
+  }
+
   // --- selection -----------------------------------------------------------------
 
   isSelected(id: string): boolean {
@@ -531,6 +545,7 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
   }
 
   onTileClick(item: IMedia, event: MouseEvent): void {
+    if (this.pickFolderMode) return; // this mode picks a folder, not an image
     if (this.pickMode) {
       this.setSelection(new Set([item._id]));
       return;
@@ -572,7 +587,7 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
     '.media-card, .media-folder-tile, .media-tree-node, button, a, input, select, textarea, .p-dropdown';
 
   onGridMouseDown(event: MouseEvent): void {
-    if (this.pickMode) return;
+    if (this.pickMode || this.pickFolderMode) return;
     const target = event.target as HTMLElement;
     if (target.closest(MediaLibraryComponent.INTERACTIVE_SELECTOR)) return;
     const container = event.currentTarget as HTMLElement;

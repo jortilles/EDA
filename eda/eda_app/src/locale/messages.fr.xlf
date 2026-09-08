@@ -7880,6 +7880,26 @@ Cordialement.</target>
         <target>Attention : utilisée dans</target>
       </trans-unit>
 
+      <trans-unit id="raceBarUseIcons">
+        <source>Añadir imágenes</source>
+        <target>Ajouter des images</target>
+      </trans-unit>
+
+      <trans-unit id="raceBarLoadMatchingIcons">
+        <source>Cargar coincidentes</source>
+        <target>Charger les correspondances</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSelectThisFolder">
+        <source>Seleccionar esta carpeta</source>
+        <target>Sélectionner ce dossier</target>
+      </trans-unit>
+
+      <trans-unit id="raceBarMatchingIconsDone">
+        <source>Iconos asignados por coincidencia de nombre</source>
+        <target>Icônes assignées par correspondance de nom</target>
+      </trans-unit>
+
 </body>
   </file>
 </xliff>

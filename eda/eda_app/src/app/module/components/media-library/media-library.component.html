@@ -129,6 +129,15 @@
       </div>
     }
 
+    <!-- Pick FOLDER mode confirm bar - always shown (root is a valid pick too), not tied to a selection -->
+    @if (pickFolderMode) {
+      <div class="media-pick-bar">
+        <i class="pi pi-folder"></i>
+        <span [title]="currentFolder()?.name">{{ currentFolder()?.name || mediaHomeLabel }}</span>
+        <button type="button" (click)="chooseFolder()" i18n="@@mediaSelectThisFolder">Seleccionar esta carpeta</button>
+      </div>
+    }
+
     <!-- Subfolders of the folder being browsed -->
     @if (childFolders().length > 0) {
       <div class="media-folder-grid">
