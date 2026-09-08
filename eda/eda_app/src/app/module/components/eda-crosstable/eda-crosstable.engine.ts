@@ -33,6 +33,19 @@
  * preserved as-is here too — `synthesizeLegacyAxis` sets `itemZ[i].description` to the
  * column's HEADER (not its `.description` metadata) specifically because that matching
  * rule requires it, not because it's semantically a description.
+ *
+ * itemY columns are SPARSE, not dense: the Y-axis column set is the distinct (Y1, Y2, ...)
+ * value TUPLES that actually co-occur somewhere in `sourceRows`, not the cartesian product
+ * of each Y-dimension's own distinct values independently. With 2+ Y-dimensions that each
+ * have many distinct values, the dense cross product multiplies column count instead of
+ * bounding it by the row count — real data produced hundreds of thousands of synthetic,
+ * almost entirely empty columns and froze/crashed the browser tab. The sparse tuple set is
+ * bounded by `sourceRows.length` regardless of how many Y-dimensions are configured or how
+ * high their individual cardinality is. See computeSparseYTuples / buildMapTree /
+ * buildAxisHeaders. This changes nothing for a single Y-dimension (the common case): with
+ * only 1 dimension there is no cross product to begin with, so "every distinct value that
+ * occurs anywhere" is the same set whether computed densely or sparsely — confirmed by the
+ * existing 1-axis characterization coverage below passing unchanged.
  */
 import * as _ from 'lodash';
 import { EdaColumn } from '../eda-table/eda-columns/eda-column';
@@ -65,6 +78,15 @@ export interface CrossTableBuildOptions {
   navColumnSubstitution: Record<string, string>;
   hasConfiguredAxis: boolean;
 }
+
+// A separator for joining Y-tuple values into Map keys / prefix comparisons. MUST be a
+// character (or sequence) that real column values cannot contain — a plain empty string
+// here would let two DIFFERENT tuples join into the SAME key (e.g. ['AB','C'] and
+// ['A','BC'] both become "ABC"), corrupting both the aggregation lookup and the header
+// grouping. String.fromCharCode(1) is the non-printable SOH control character (U+0001) —
+// no real EDA data will ever contain it. Built via fromCharCode (not a literal in the
+// source) so it can never accidentally get typed/pasted back into an empty string.
+const TUPLE_SEP = String.fromCharCode(1);
 
 // ---------------------------------------------------------------------------
 // synthesizeLegacyAxis
@@ -122,6 +144,45 @@ function sortValuesByTotal(
 }
 
 // ---------------------------------------------------------------------------
+// computeSparseYTuples — the distinct (Y1, Y2, ...) value tuples that actually occur
+// anywhere in sourceRows, sorted the same way the old dense cross product would have
+// visited them (by each dimension's own order, dimension 0 first/outermost). Bounded by
+// sourceRows.length, never by the product of each dimension's cardinality.
+// ---------------------------------------------------------------------------
+
+function computeSparseYTuples(sourceRows: any[], yDimNames: string[], yDimValueOrders: string[][]): string[][] {
+  if (yDimNames.length === 0) return [[]]; // no Y dimensions: a single "empty tuple" column group
+
+  const rankMaps = yDimValueOrders.map(values => {
+    const m = new Map<string, number>();
+    values.forEach((v, i) => m.set(v, i));
+    return m;
+  });
+
+  const seen = new Set<string>();
+  const tuples: string[][] = [];
+  sourceRows.forEach(row => {
+    const tuple = yDimNames.map(name => row[name]);
+    const key = tuple.join(TUPLE_SEP);
+    if (!seen.has(key)) {
+      seen.add(key);
+      tuples.push(tuple);
+    }
+  });
+
+  tuples.sort((a, b) => {
+    for (let i = 0; i < a.length; i++) {
+      const ra = rankMaps[i].get(a[i]) ?? 0;
+      const rb = rankMaps[i].get(b[i]) ?? 0;
+      if (ra !== rb) return ra - rb;
+    }
+    return 0;
+  });
+
+  return tuples;
+}
+
+// ---------------------------------------------------------------------------
 // generateAxisParams — unifies generatePivotParams() + generateCrossParams()
 // ---------------------------------------------------------------------------
 
@@ -132,7 +193,8 @@ interface AxisParams {
   pivotColsLabels: string[];
   pivotCols: EdaColumn[];
   oldRows: any[];
-  newCols: string[][];
+  xCols: string[][];
+  yTuples: string[][];
 }
 
 function generateAxisParams(
@@ -175,29 +237,32 @@ function generateAxisParams(
     });
   });
 
-  const newCols: string[][] = [];
-  axis.itemX.forEach(e => {
+  // X-dims stay a dense per-dimension unique-value list — buildAxisRows still takes the
+  // full cross product of these for ROWS. X is typically 1 (occasionally 2-3) low-
+  // cardinality dimensions; the explosive case reported in practice is always Y (many
+  // synthetic COLUMNS), so only Y needs the sparse treatment below.
+  const xCols: string[][] = axis.itemX.map(e => {
     const effectiveName = navSub[e.column_name] || e.column_name;
-    newCols.push(_.orderBy(_.uniq(_.map(sourceRows, effectiveName))));
+    return _.orderBy(_.uniq(_.map(sourceRows, effectiveName)));
   });
-  axis.itemY.forEach(e => {
-    const effectiveName = navSub[e.column_name] || e.column_name;
-    newCols.push(_.orderBy(_.uniq(_.map(sourceRows, effectiveName))));
-  });
+
+  const yDimNames = axis.itemY.map(e => navSub[e.column_name] || e.column_name);
+  const yDimValueOrders: string[][] = yDimNames.map(name => _.orderBy(_.uniq(_.map(sourceRows, name))));
 
   if (opts.crossSortOrder === 'value' || opts.crossSortOrder === 'valueAsc') {
     const descending = opts.crossSortOrder === 'value';
     axis.itemX.forEach((e, i) => {
       const effectiveName = navSub[e.column_name] || e.column_name;
-      newCols[i] = sortValuesByTotal(newCols[i], effectiveName, oldRows, aggregatedColLabels, descending);
+      xCols[i] = sortValuesByTotal(xCols[i], effectiveName, oldRows, aggregatedColLabels, descending);
     });
-    axis.itemY.forEach((e, j) => {
-      const effectiveName = navSub[e.column_name] || e.column_name;
-      newCols[axis.itemX.length + j] = sortValuesByTotal(newCols[axis.itemX.length + j], effectiveName, oldRows, aggregatedColLabels, descending);
+    yDimNames.forEach((name, j) => {
+      yDimValueOrders[j] = sortValuesByTotal(yDimValueOrders[j], name, oldRows, aggregatedColLabels, descending);
     });
   }
 
-  return { mainCols, mainColsLabels, aggregatedColLabels, pivotColsLabels, pivotCols, oldRows, newCols };
+  const yTuples = computeSparseYTuples(sourceRows, yDimNames, yDimValueOrders);
+
+  return { mainCols, mainColsLabels, aggregatedColLabels, pivotColsLabels, pivotCols, oldRows, xCols, yTuples };
 }
 
 // ---------------------------------------------------------------------------
@@ -205,23 +270,24 @@ function generateAxisParams(
 // buildSubMapTree / buildMapCrossRecursive+buildSubMapCrossTree and populateMap/
 // populateCrossMap. See the file-level comment for why the leaf fill value alone
 // (0 vs '') is enough to reproduce both the legacy and cross paths' behavior.
+//
+// The tree nests one Map level per X-dimension (dense, as before); the innermost level is
+// a SINGLE flat Map keyed by the joined Y-tuple string, pre-filled with the sentinel for
+// every entry in the (sparse) `yTuples` list — replacing the old per-Y-dimension nested
+// levels, which is where the dense cross product used to get built.
 // ---------------------------------------------------------------------------
 
-function buildSubMapTree(keys: string[], values: string[], hasConfiguredAxis: boolean): Map<string, any> {
-  const out = new Map<string, any>();
-  keys.forEach(key => {
-    const valuesMap = new Map<string, any>();
-    values.forEach(value => valuesMap.set(value, hasConfiguredAxis ? '' : 0));
-    out.set(key, valuesMap);
-  });
-  return out;
+function buildYLeafMap(yTuples: string[][], hasConfiguredAxis: boolean): Map<string, any> {
+  const leaf = new Map<string, any>();
+  yTuples.forEach(tuple => leaf.set(tuple.join(TUPLE_SEP), hasConfiguredAxis ? '' : 0));
+  return leaf;
 }
 
-function buildMapTree(cols: string[][], hasConfiguredAxis: boolean): Map<string, any> {
-  if (cols.length === 2) return buildSubMapTree(cols[0], cols[1], hasConfiguredAxis);
-  const unsetCols = cols.slice(1);
+function buildMapTree(xCols: string[][], yTuples: string[][], hasConfiguredAxis: boolean): Map<string, any> {
+  if (xCols.length === 0) return buildYLeafMap(yTuples, hasConfiguredAxis);
+  const [firstXCol, ...restXCols] = xCols;
   const map = new Map<string, any>();
-  cols[0]?.forEach(col => map.set(col, buildMapTree(unsetCols, hasConfiguredAxis)));
+  firstXCol.forEach(key => map.set(key, buildMapTree(restXCols, yTuples, hasConfiguredAxis)));
   return map;
 }
 
@@ -232,21 +298,13 @@ function populateMapTree(
   aggregatedColLabel: string,
   pivotColsLabels: string[],
 ): Map<string, any> {
-  const cloneMainColsLabels = _.cloneDeep(mainColsLabels);
-  const firstMainColsLabel = cloneMainColsLabels[0];
-  cloneMainColsLabels.shift();
-  const traversalLabels = [...cloneMainColsLabels, ...pivotColsLabels];
-
   rows.forEach(row => {
     const value = row[aggregatedColLabel];
-    const steps = traversalLabels.length - 1;
-    let lastMapKey = map.get(row[firstMainColsLabel]);
-    let i = 0;
-    for (i = 0; i < steps; i++) {
-      lastMapKey = lastMapKey.get(row[traversalLabels[i]]);
-    }
-    const actualValue = lastMapKey.get(row[traversalLabels[i]]);
-    lastMapKey.set(row[traversalLabels[i]], Number(actualValue) + value);
+    let node = map;
+    mainColsLabels.forEach(label => { node = node.get(row[label]); });
+    const tupleKey = pivotColsLabels.map(label => row[label]).join(TUPLE_SEP);
+    const actualValue = node.get(tupleKey);
+    node.set(tupleKey, Number(actualValue) + value);
   });
   return map;
 }
@@ -256,19 +314,6 @@ function populateMapTree(
 // (+recursiveAccessCrossTable+combineArrays). Both always emit one row per X-axis
 // combination — the row-dropping behavior lives in mergeAxisRows, not here.
 // ---------------------------------------------------------------------------
-
-function buildNewRowsRecursive(map: Map<string, any>, colLabel: string, row: Array<{ label: string; value: any }>, serieLabel: string) {
-  map.forEach((value, key) => {
-    if (typeof value !== 'object') {
-      let label = `${colLabel} ~ ${key} ~ ${serieLabel}`;
-      label = label.substr(2);
-      row.push({ label, value });
-      return;
-    }
-    buildNewRowsRecursive(value, `${colLabel} ~ ${key}`, row, serieLabel);
-  });
-  return row;
-}
 
 function recursiveAccessCrossTable(map: Map<string, any>, keys: string[]): any {
   if (keys.length === 0) return map;
@@ -291,11 +336,21 @@ function combineArrays(arrays: any[][]): any[][] {
   return result;
 }
 
-function buildAxisRows(map: Map<string, any>, mainColsLabels: string[], serieLabel: string, newCols: string[][]): any[] {
-  const arraysMain: string[][] = [];
-  mainColsLabels.forEach((_e, i) => { arraysMain[i] = _.cloneDeep(newCols[i]); });
+// Reads the flat Y-tuple leaf map for one X-combination into { label, value } column
+// entries, in `yTuples` order (so every X-row ends up with the exact same set of column
+// labels, in the same order — required for the row objects to merge into a rectangular
+// table). Replaces the old buildNewRowsRecursive, which walked nested per-Y-dimension Map
+// levels instead of a flat tuple-keyed one.
+function buildAxisRowColumns(leafMap: Map<string, any>, yTuples: string[][], serieLabel: string): Array<{ label: string; value: any }> {
+  return yTuples.map(tuple => {
+    const value = leafMap.get(tuple.join(TUPLE_SEP));
+    const label = ' ' + [...tuple, serieLabel].join(' ~ ');
+    return { label, value };
+  });
+}
 
-  const combinations = combineArrays(arraysMain);
+function buildAxisRows(map: Map<string, any>, mainColsLabels: string[], serieLabel: string, xCols: string[][], yTuples: string[][]): any[] {
+  const combinations = combineArrays(xCols);
 
   const rows: any[] = [];
   combinations.forEach(element => {
@@ -307,8 +362,8 @@ function buildAxisRows(map: Map<string, any>, mainColsLabels: string[], serieLab
   const rowsTest: any[] = [];
   combinations.forEach(keys => {
     const row: any = {};
-    const mapItem = recursiveAccessCrossTable(map, keys);
-    const pivotedCols = buildNewRowsRecursive(mapItem, '', [], serieLabel);
+    const leafMap = recursiveAccessCrossTable(map, keys);
+    const pivotedCols = buildAxisRowColumns(leafMap, yTuples, serieLabel);
     pivotedCols.forEach(col => { row[col.label] = col.value; });
     rowsTest.push(row);
   });
@@ -368,7 +423,7 @@ function mergeAxisColumns(colsToMerge: EdaColumn[][], mainAxisLabelCount: number
 interface AxisSerieResult {
   cols: EdaColumn[];
   rows: any[];
-  newLabels: { mainsLabels: string[]; seriesLabels: string[][]; metricsLabels: string[] };
+  newLabels: { mainsLabels: string[]; yTuples: string[][]; metricsLabels: string[] };
 }
 
 function buildAxisSerie(
@@ -379,10 +434,10 @@ function buildAxisSerie(
   opts: CrossTableBuildOptions,
 ): AxisSerieResult {
   const params = generateAxisParams(sourceRows, sourceCols, axis, opts);
-  const mapTree = buildMapTree(params.newCols, opts.hasConfiguredAxis);
+  const mapTree = buildMapTree(params.xCols, params.yTuples, opts.hasConfiguredAxis);
   const populatedMap = populateMapTree(mapTree, params.oldRows, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
 
-  const newRows = buildAxisRows(populatedMap, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.newCols);
+  const newRows = buildAxisRows(populatedMap, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.xCols, params.yTuples);
   const newColNames = Object.keys(newRows[0]).slice(params.mainColsLabels.length);
 
   const tableColumns: EdaColumn[] = [];
@@ -397,13 +452,12 @@ function buildAxisSerie(
   });
   newColNames.forEach(col => tableColumns.push(new EdaColumnNumber({ header: col, field: col })));
 
-  const newColsCopy = params.newCols.slice();
   return {
     cols: tableColumns,
     rows: newRows,
     newLabels: {
       mainsLabels: params.mainColsLabels,
-      seriesLabels: newColsCopy.slice(params.mainColsLabels.length),
+      yTuples: params.yTuples,
       metricsLabels: [],
     },
   };
@@ -415,9 +469,31 @@ function buildAxisSerie(
 
 interface BuildAxisHeadersInput {
   mainsLabels: string[];
-  seriesLabels: string[][];
+  yTuples: string[][];
   metricsLabels: string[];
   metricsDescriptions: string[];
+}
+
+// Run-length-encodes `yTuples` on dimension `dim`: consecutive tuples sharing the same
+// prefix up to and including `dim` become one group. `yTuples` is sorted so that equal
+// prefixes are always adjacent (see computeSparseYTuples), so a single linear pass finds
+// every group. This replaces the old dense algorithm's `seriesLabels[dim].length`-based
+// cycling — for a fully dense tuple set (every combination present, which is what every
+// existing small fixture naturally is) each group's size is exactly what the dense formula
+// computed, so this produces byte-identical output for the already-covered 1-Y-dimension
+// case; for a genuinely sparse tuple set it produces the correct, smaller groups instead of
+// requiring the full cross product to exist at all.
+function groupTuplesByDimension(yTuples: string[][], dim: number): Array<{ value: string; count: number }> {
+  const groups: Array<{ value: string; count: number }> = [];
+  let i = 0;
+  while (i < yTuples.length) {
+    const prefix = yTuples[i].slice(0, dim + 1).join(TUPLE_SEP);
+    let j = i;
+    while (j < yTuples.length && yTuples[j].slice(0, dim + 1).join(TUPLE_SEP) === prefix) j++;
+    groups.push({ value: yTuples[i][dim], count: j - i });
+    i = j;
+  }
+  return groups;
 }
 
 function buildAxisHeaders(
@@ -429,10 +505,9 @@ function buildAxisHeaders(
   hasConfiguredAxis: boolean,
 ): HeaderRow[] {
   const series: HeaderRow[] = [];
-  const numRows = labels.seriesLabels.length + 1;
-  let numCols = 1;
-  labels.seriesLabels.forEach(label => { numCols *= label.length; });
-  numCols *= labels.metricsLabels.length;
+  const numYDims = axis.itemY.length;
+  const numRows = numYDims + 1;
+  const numCols = labels.yTuples.length * labels.metricsLabels.length;
 
   // --- mains (leading X-axis column header cell(s)) ---
   // Genuinely divergent between the two original paths (not just a naming difference):
@@ -475,13 +550,13 @@ function buildAxisHeaders(
   const seriesRowDescriptionAt = (dimIndex: number) => axis.itemY[dimIndex]?.description;
 
   if (labels.metricsLabels.length > 1) {
-    for (let i = 0; i < labels.seriesLabels[0].length; i++) {
+    groupTuplesByDimension(labels.yTuples, 0).forEach(g => {
       series[0].labels.push({
-        title: labels.seriesLabels[0][i],
+        title: g.value,
         description: seriesRowDescriptionAt(0),
-        rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false,
+        rowspan: 1, colspan: g.count * labels.metricsLabels.length, sortable: false,
       });
-    }
+    });
   } else {
     series[0].labels.push({
       title: labels.metricsLabels[0],
@@ -489,32 +564,28 @@ function buildAxisHeaders(
       description: metricDescriptionAt(0),
     });
     const serie: HeaderRow = { labels: [] };
-    for (let i = 0; i < labels.seriesLabels[0].length; i++) {
+    groupTuplesByDimension(labels.yTuples, 0).forEach(g => {
       serie.labels.push({
-        title: labels.seriesLabels[0][i],
+        title: g.value,
         description: seriesRowDescriptionAt(0),
-        rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false,
+        rowspan: 1, colspan: g.count * labels.metricsLabels.length, sortable: false,
         metric: labels.metricsLabels[0],
       });
-    }
+    });
     series.push(serie);
   }
 
-  let mult = labels.seriesLabels[0].length;
-  let colspanDiv = numCols / labels.seriesLabels[0].length;
-  for (let i = 1; i < labels.seriesLabels.length; i++) {
+  for (let dim = 1; dim < numYDims; dim++) {
     const serie: HeaderRow = { labels: [] };
-    for (let j = 0; j < labels.seriesLabels[i].length * mult; j++) {
+    groupTuplesByDimension(labels.yTuples, dim).forEach(g => {
       serie.labels.push({
-        title: labels.seriesLabels[i][j % labels.seriesLabels[i].length],
-        description: seriesRowDescriptionAt(i),
-        rowspan: 1, colspan: colspanDiv / labels.seriesLabels[i].length, sortable: false,
+        title: g.value,
+        description: seriesRowDescriptionAt(dim),
+        rowspan: 1, colspan: g.count * labels.metricsLabels.length, sortable: false,
         metric: labels.metricsLabels[0],
       });
-    }
+    });
     series.push(serie);
-    mult *= labels.seriesLabels[i].length;
-    colspanDiv = colspanDiv / labels.seriesLabels[i].length;
   }
 
   if (labels.metricsLabels.length > 1) {
@@ -575,7 +646,7 @@ export function buildCrossTable(
   const series = buildAxisHeaders(
     {
       mainsLabels: serieResult!.newLabels.mainsLabels,
-      seriesLabels: serieResult!.newLabels.seriesLabels,
+      yTuples: serieResult!.newLabels.yTuples,
       metricsLabels: axis.itemZ.map(e => e.description),
       metricsDescriptions,
     },
