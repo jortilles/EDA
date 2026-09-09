@@ -7,6 +7,7 @@ import { ApiService } from '../api/api.service';
 import { shareReplay } from 'rxjs/operators';
 import { LatLngExpression } from 'leaflet';
 import { DomSanitizer } from '@angular/platform-browser';
+import Supercluster from 'supercluster';
 
 @Injectable({ providedIn: "root" })
 export class MapUtilsService extends ApiService {
@@ -34,55 +35,75 @@ export class MapUtilsService extends ApiService {
     return this.mapsObservables$[mapID];
   }
 
+  // Cache of the last built spatial index, keyed by data array reference. Callers (eda-map.component.ts)
+  // re-invoke clusterData on every zoomend/moveend with the same `validData` array reference, so this
+  // lets pan/zoom reuse the already-built index instead of re-indexing the whole dataset each time.
+  private clusterIndexCache: { data: Array<any>; index: Supercluster; numIdx: number; unparseable: Array<any> } = null;
+
+  // Groups nearby points for rendering. Previously a hand-rolled O(n^2) pixel-distance comparison
+  // (every point against every other point), redone from scratch on each zoom/pan — unusable past a
+  // few hundred points. Supercluster builds a proper spatial index once and re-queries it in
+  // O(log n), so panning/zooming stays fast regardless of dataset size.
   clusterData(map: L.Map, data: Array<any>, pixelRadius: number = 40): Array<any> {
     if (!data || data.length === 0) return data;
 
-    let numIdx = -1;
-    for (const d of data) {
-      d.forEach((v: any, i: number) => {
-        if (typeof v === 'number' && i > 1 && numIdx === -1) numIdx = i;
+    let index: Supercluster, numIdx: number, unparseable: Array<any>;
+
+    if (this.clusterIndexCache && this.clusterIndexCache.data === data) {
+      ({ index, numIdx, unparseable } = this.clusterIndexCache);
+    } else {
+      // Same convention as before: the first numeric column after the coordinate pair is the
+      // aggregated value (dataset shape is [lon, lat, [category], value, ...]).
+      numIdx = -1;
+      for (const d of data) {
+        d.forEach((v: any, i: number) => {
+          if (typeof v === 'number' && i > 1 && numIdx === -1) numIdx = i;
+        });
+        if (numIdx > -1) break;
+      }
+
+      unparseable = [];
+      const points: Array<GeoJSON.Feature<GeoJSON.Point, { row: any }>> = [];
+      for (const row of data) {
+        const lon = parseFloat(row[0]);
+        const lat = parseFloat(row[1]);
+        if (isNaN(lon) || isNaN(lat)) { unparseable.push(row); continue; }
+        points.push({
+          type: 'Feature',
+          properties: { row },
+          geometry: { type: 'Point', coordinates: [lon, lat] },
+        });
+      }
+
+      index = new Supercluster({
+        radius: pixelRadius,
+        maxZoom: 18,
+        map: (props: any) => ({ sum: numIdx > -1 ? (props.row[numIdx] || 0) : 0 }),
+        reduce: (accumulated: any, props: any) => { accumulated.sum += props.sum; },
       });
-      if (numIdx > -1) break;
+      index.load(points);
+
+      this.clusterIndexCache = { data, index, numIdx, unparseable };
     }
 
-    const assigned = new Set<number>();
-    const result: Array<any> = [];
+    const zoom = Math.round(map.getZoom());
+    const clusters = index.getClusters([-180, -85, 180, 85], zoom);
 
-    for (let i = 0; i < data.length; i++) {
-      if (assigned.has(i)) continue;
-      const lat = parseFloat(data[i][0]);
-      const lon = parseFloat(data[i][1]);
-      if (isNaN(lat) || isNaN(lon)) { result.push(data[i]); assigned.add(i); continue; }
-
-      const pixelI = map.latLngToContainerPoint([lon, lat] as LatLngExpression);
-      const group: Array<any> = [data[i]];
-      assigned.add(i);
-
-      for (let j = i + 1; j < data.length; j++) {
-        if (assigned.has(j)) continue;
-        const lat2 = parseFloat(data[j][0]);
-        const lon2 = parseFloat(data[j][1]);
-        if (isNaN(lat2) || isNaN(lon2)) continue;
-        const pixelJ = map.latLngToContainerPoint([lon2, lat2] as LatLngExpression);
-        if (pixelI.distanceTo(pixelJ) <= pixelRadius) { group.push(data[j]); assigned.add(j); }
+    const result: Array<any> = clusters.map((c: any) => {
+      if (!c.properties.cluster) {
+        return c.properties.row;
       }
+      const [lon, lat] = c.geometry.coordinates;
+      const leaf = index.getLeaves(c.properties.cluster_id, 1)[0];
+      const aggregated: any = [...leaf.properties.row];
+      aggregated[0] = lon;
+      aggregated[1] = lat;
+      if (numIdx > -1) aggregated[numIdx] = c.properties.sum;
+      aggregated._clusterCount = c.properties.point_count;
+      return aggregated;
+    });
 
-      if (group.length === 1) {
-        result.push(data[i]);
-      } else {
-        const centLat = group.reduce((s: number, p: any) => s + parseFloat(p[0]), 0) / group.length;
-        const centLon = group.reduce((s: number, p: any) => s + parseFloat(p[1]), 0) / group.length;
-        const aggregated: any = [...group[0]];
-        aggregated[0] = centLat;
-        aggregated[1] = centLon;
-        if (numIdx > -1) {
-          aggregated[numIdx] = group.reduce((s: number, p: any) => s + (p[numIdx] || 0), 0);
-        }
-        aggregated._clusterCount = group.length;
-        result.push(aggregated);
-      }
-    }
-    return result;
+    return [...unparseable, ...result];
   }
 
   makeMarkers = (

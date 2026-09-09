@@ -8,6 +8,7 @@ import { DomSanitizer } from "@angular/platform-browser";
 
 import * as L from 'leaflet';
 import { feature } from "topojson-client";
+import * as d3 from 'd3';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -313,8 +314,28 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     let group = [value, ...groups].sort((a, b) => a - b).indexOf(value);
     let shade = group === 0 ? 80 : group === 1 ? 40 : group === 2 ? 0 : group == 3 ? -40 : -80;
 
-    return this.colorShade(baseColor, shade);
+    return this.getColorScale(baseColor)(shade);
   };
+
+  // Perceptual (HCL) color scale from a light tint through the base color to a dark shade, keyed by
+  // the same -80..80 "shade" domain used throughout this component (0 = base color unchanged).
+  // Replaces the previous approach of adding/subtracting a fixed amount to each RGB channel, which
+  // could clamp two different buckets to the same color once the base color was close to white or black.
+  private colorScaleCache: { key: string; scale: (shade: number) => string } = null;
+  private getColorScale(baseColor: string): (shade: number) => string {
+    if (!this.colorScaleCache || this.colorScaleCache.key !== baseColor) {
+      const interpolateHcl = (d3 as any).interpolateHcl;
+      const light = interpolateHcl('#ffffff', baseColor)(0.35);
+      const dark = interpolateHcl(baseColor, '#000000')(0.45);
+      const scale = (d3 as any).scaleLinear()
+        .domain([-80, 0, 80])
+        .range([dark, baseColor, light])
+        .interpolate(interpolateHcl)
+        .clamp(true);
+      this.colorScaleCache = { key: baseColor, scale };
+    }
+    return this.colorScaleCache.scale;
+  }
 
   private getGroups = (data: any, n = 5) => {
     let max = data.reduce((a: number, b: number) => Math.max(a, b));
@@ -408,32 +429,11 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     }
   }
 
-  private colorShade = (col, amt) => {
-    col = col.replace(/^#/, "");
-    if (col.length === 3)
-      col = col[0] + col[0] + col[1] + col[1] + col[2] + col[2];
-
-    let [r, g, b] = col.match(/.{2}/g);
-    [r, g, b] = [
-      parseInt(r, 16) + amt,
-      parseInt(g, 16) + amt,
-      parseInt(b, 16) + amt,
-    ];
-
-    r = Math.max(Math.min(255, r), 0).toString(16);
-    g = Math.max(Math.min(255, g), 0).toString(16);
-    b = Math.max(Math.min(255, b), 0).toString(16);
-
-    const rr = (r.length < 2 ? "0" : "") + r;
-    const gg = (g.length < 2 ? "0" : "") + g;
-    const bb = (b.length < 2 ? "0" : "") + b;
-    return `#${rr}${gg}${bb}`;
-  };
-
   private initLegend = (groups: Array<number>, label: string): void => {
     let me = this;
     label = me._sanitizer.sanitize(SecurityContext.HTML, label);
     const baseColor = this.assignedColors[0].color;
+    const scale = this.getColorScale(baseColor);
 
     this.legend.onAdd = function (map) {
       var div = L.DomUtil.create("div", "legend");
@@ -450,8 +450,8 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
       g.push(0);
       for (let i = g.length - 1; i > 0; i--) {
         let shade = i === 0 ? -80 : i === 1 ? -40 : i === 2 ? 0 : i === 3 ? 40 : 80;
-        div2.innerHTML += `<span class="circle" style="color: ${me.colorShade(baseColor, shade)}">
-                          </span><span>&nbsp ${new Intl.NumberFormat("de-DE").format(Math.floor(g[i]))} - 
+        div2.innerHTML += `<span class="circle" style="color: ${scale(shade)}">
+                          </span><span>&nbsp ${new Intl.NumberFormat("de-DE").format(Math.floor(g[i]))} -
                           ${new Intl.NumberFormat("de-DE").format(Math.floor(g[i - 1]))}</span><br>`;
       }
       return div;
