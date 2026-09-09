@@ -619,10 +619,28 @@ function buildAxisHeaders(
 export function buildCrossTable(
   sourceRows: any[],
   sourceCols: EdaColumn[],
-  axis: AxisConfig,
+  rawAxis: AxisConfig,
   opts: CrossTableBuildOptions,
 ): CrossTableBuildResult {
   const navSub = opts.navColumnSubstitution || {};
+
+  // Defensive: an itemY entry that resolves to the SAME effective field as an itemX entry
+  // must never reach the tree/tuple building below. EdaCrosstableModel.filterConfiguredAxis
+  // is supposed to strip this case before calling in, but a report whose query duplicates
+  // a column under two different aggregation series (e.g. the same "Estado" field appearing
+  // once per metric) can still let a stale/misrouted itemY entry point at the same field
+  // itemX already uses. When that happens, buildAxisRows navigates the X-levels using that
+  // field's value and then ALSO expects a Y-tuple keyed on that same value at the leaf —
+  // two different lookups against the same field that don't line up, so every row misses
+  // its cell and the whole table comes back empty. Dropping the offending itemY entry here
+  // makes the engine robust to that regardless of whether the upstream filter caught it.
+  const mainEffectiveNames = new Set(rawAxis.itemX.map(x => navSub[x.column_name] || x.column_name));
+  const axis: AxisConfig = {
+    itemX: rawAxis.itemX,
+    itemY: rawAxis.itemY.filter(y => !mainEffectiveNames.has(navSub[y.column_name] || y.column_name)),
+    itemZ: rawAxis.itemZ,
+  };
+
   const rowsToMerge: any[][] = [];
   const colsToMerge: EdaColumn[][] = [];
   let serieResult: AxisSerieResult | undefined;

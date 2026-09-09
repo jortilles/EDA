@@ -356,4 +356,150 @@ describe('eda-crosstable.engine — sparse itemY (2+ dimensions), no prior cover
     ]);
     expect(result.series[2].labels.map((l: any) => l.title)).toEqual(['MOTIVO DISTINTO A', 'MOTIVO DISTINTO B']);
   });
+
+  it('drops an itemY entry that resolves to the same field as itemX instead of returning an empty table (regression: a report with duplicated columns across two metric series let a stale itemY entry alias itemX, and every row lost its cell)', () => {
+    const cols = [
+      new EdaColumnText({ header: 'Estado', field: 'estado_1' }),
+      new EdaColumnText({ header: 'Prioridad', field: 'prioridad_1' }),
+      new EdaColumnNumber({ header: 'ID Proyectos', field: 'idproyectos_1' }),
+    ];
+    const rows = [
+      { estado_1: 'Activado', prioridad_1: 'Alta', idproyectos_1: 1 },
+      { estado_1: 'Activado', prioridad_1: 'Baja', idproyectos_1: 1 },
+      { estado_1: 'Cerrado', prioridad_1: 'Alta', idproyectos_1: 1 },
+    ];
+    // itemY's middle entry aliases itemX's own field ('estado_1') — the exact shape
+    // filterConfiguredAxis is meant to strip before this ever reaches the engine, but the
+    // engine itself must not silently produce an empty table if it slips through anyway.
+    const axis: AxisConfig = {
+      itemX: [{ column_name: 'estado_1', description: 'Estado' }],
+      itemY: [
+        { column_name: 'prioridad_1', description: 'Prioridad' },
+        { column_name: 'estado_1', description: 'Estado' },
+      ],
+      itemZ: [{ column_name: 'idproyectos_1', description: 'ID Proyectos' }],
+    };
+
+    const result = buildCrossTable(rows, cols, axis, { crossSortOrder: 'alphabetical', navColumnSubstitution: {}, hasConfiguredAxis: true });
+
+    // The offending 'estado_1' entry is dropped from itemY, leaving a normal 1-dimension
+    // pivot on 'prioridad_1' — real rows and real values, not an empty table.
+    expect(result.rows.length).toBeGreaterThan(0);
+    expect(colSummary(result.cols)).toEqual([
+      { field: 'estado_1', header: 'Estado', type: 'EdaColumnText' },
+      { field: ' Alta ~ idproyectos_1', header: ' Alta ~ idproyectos_1', type: 'EdaColumnNumber' },
+      { field: ' Baja ~ idproyectos_1', header: ' Baja ~ idproyectos_1', type: 'EdaColumnNumber' },
+    ]);
+  });
+});
+
+describe('eda-crosstable.engine — 3-dimension itemY, single vs multiple metrics (Excel reference: "Caso 1" vs "Caso 2")', () => {
+  // itemX = Tipo. itemY = [Estado, Asignado a, Tipo de relación] (dim0, dim1, dim2 in that
+  // drag-drop order). Deliberately UNEVEN co-occurrence — 'Hecho' pairs with 2 different
+  // (Asignado, TipoRelacion) combos, 'Activo' with only 1 — the same shape that exposed the
+  // "Distribución de proyectos" bug, so the header groups MUST come out different sizes per
+  // Estado value rather than a uniform grid.
+  function buildCols(withSecondMetric: boolean) {
+    const cols = [
+      new EdaColumnText({ header: 'Tipo', field: 'tipo' }),
+      new EdaColumnText({ header: 'Estado', field: 'estado' }),
+      new EdaColumnText({ header: 'Asignado a', field: 'asignado' }),
+      new EdaColumnText({ header: 'Tipo de relación', field: 'tiporelacion' }),
+      new EdaColumnNumber({ header: 'Precio', field: 'precio' }),
+    ];
+    if (withSecondMetric) cols.push(new EdaColumnNumber({ header: 'Quizás', field: 'quizas' }));
+    return cols;
+  }
+
+  function buildRows(withSecondMetric: boolean) {
+    const base = [
+      { tipo: 'Jornada', estado: 'Hecho', asignado: 'SinergiaCRM', tiporelacion: 'Hijo', precio: 10 },
+      { tipo: 'Jornada', estado: 'Hecho', asignado: 'Pedro', tiporelacion: 'Tutor', precio: 20 },
+      { tipo: 'Jornada', estado: 'Activo', asignado: 'SinergiaCRM', tiporelacion: 'Hijo', precio: 30 },
+    ];
+    if (!withSecondMetric) return base;
+    return base.map((r, i) => ({ ...r, quizas: (i + 1) * 100 }));
+  }
+
+  function buildAxis(withSecondMetric: boolean): AxisConfig {
+    const itemZ = [{ column_name: 'precio', description: 'Precio' }];
+    if (withSecondMetric) itemZ.push({ column_name: 'quizas', description: 'Quizás' });
+    return {
+      itemX: [{ column_name: 'tipo', description: 'Tipo' }],
+      itemY: [
+        { column_name: 'estado', description: 'Estado' },
+        { column_name: 'asignado', description: 'Asignado a' },
+        { column_name: 'tiporelacion', description: 'Tipo de relación' },
+      ],
+      itemZ,
+    };
+  }
+
+  it('Caso 1 (1 columna numérica): the metric gets its own top row, dimensions nest below it in itemY order, groups sized by actual co-occurrence', () => {
+    const result = buildCrossTable(buildRows(false), buildCols(false), buildAxis(false), {
+      crossSortOrder: 'alphabetical', navColumnSubstitution: {}, hasConfiguredAxis: true,
+    });
+
+    // 4 header rows: mains+metric title, Estado, Asignado a, Tipo de relación.
+    expect(result.series.length).toBe(4);
+    expect(result.series[0].labels[0].title).toBe('Tipo');
+    expect(result.series[0].labels[0].rowspan).toBe(4);
+    // The metric title is its own cell spanning every column, appended to the SAME row as mains.
+    expect(result.series[0].labels[1]).toEqual(jasmine.objectContaining({ title: 'Precio', colspan: 3 }));
+
+    // dim0 (Estado): 'Activo' co-occurs with only 1 combo, 'Hecho' with 2 — UNEVEN, not a uniform grid.
+    expect(result.series[1].labels.map((l: any) => ({ title: l.title, colspan: l.colspan }))).toEqual([
+      { title: 'Activo', colspan: 1 },
+      { title: 'Hecho', colspan: 2 },
+    ]);
+    // dim1 (Asignado a): one cell per surviving column, grouped under its own Estado parent.
+    expect(result.series[2].labels.map((l: any) => l.title)).toEqual(['SinergiaCRM', 'Pedro', 'SinergiaCRM']);
+    // dim2 (Tipo de relación): innermost, one cell per surviving column.
+    expect(result.series[3].labels.map((l: any) => l.title)).toEqual(['Hijo', 'Tutor', 'Hijo']);
+
+    expect(result.rows).toEqual([{
+      tipo: 'Jornada',
+      ' Activo ~ SinergiaCRM ~ Hijo ~ precio': 30,
+      ' Hecho ~ Pedro ~ Tutor ~ precio': 20,
+      ' Hecho ~ SinergiaCRM ~ Hijo ~ precio': 10,
+    }] as any);
+  });
+
+  it('Caso 2 (2+ columnas numéricas): no separate metric-title row — dim0 merges into the mains row instead, and the metrics cycle in their own innermost row', () => {
+    const result = buildCrossTable(buildRows(true), buildCols(true), buildAxis(true), {
+      crossSortOrder: 'alphabetical', navColumnSubstitution: {}, hasConfiguredAxis: true,
+    });
+
+    // 4 header rows: mains+Estado(dim0), Asignado a(dim1), Tipo de relación(dim2), metrics.
+    expect(result.series.length).toBe(4);
+    expect(result.series[0].labels[0].title).toBe('Tipo');
+    // dim0 (Estado) is appended directly to the mains row (no separate metric-title row) —
+    // colspans double vs. Caso 1 because each column now expands to 2 metrics.
+    expect(result.series[0].labels.slice(1).map((l: any) => ({ title: l.title, colspan: l.colspan }))).toEqual([
+      { title: 'Activo', colspan: 2 },
+      { title: 'Hecho', colspan: 4 },
+    ]);
+    expect(result.series[1].labels.map((l: any) => ({ title: l.title, colspan: l.colspan }))).toEqual([
+      { title: 'SinergiaCRM', colspan: 2 },
+      { title: 'Pedro', colspan: 2 },
+      { title: 'SinergiaCRM', colspan: 2 },
+    ]);
+    expect(result.series[2].labels.map((l: any) => ({ title: l.title, colspan: l.colspan }))).toEqual([
+      { title: 'Hijo', colspan: 2 },
+      { title: 'Tutor', colspan: 2 },
+      { title: 'Hijo', colspan: 2 },
+    ]);
+    // Innermost row: metrics cycling once per surviving column (Precio, Quizás, Precio, Quizás, ...).
+    expect(result.series[3].labels.map((l: any) => l.title)).toEqual(['Precio', 'Quizás', 'Precio', 'Quizás', 'Precio', 'Quizás']);
+
+    expect(result.rows).toEqual([{
+      tipo: 'Jornada',
+      ' Activo ~ SinergiaCRM ~ Hijo ~ precio': 30,
+      ' Activo ~ SinergiaCRM ~ Hijo ~ quizas': 300,
+      ' Hecho ~ Pedro ~ Tutor ~ precio': 20,
+      ' Hecho ~ Pedro ~ Tutor ~ quizas': 200,
+      ' Hecho ~ SinergiaCRM ~ Hijo ~ precio': 10,
+      ' Hecho ~ SinergiaCRM ~ Hijo ~ quizas': 100,
+    }] as any);
+  });
 });
