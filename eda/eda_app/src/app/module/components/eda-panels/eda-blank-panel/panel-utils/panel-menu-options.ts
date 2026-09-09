@@ -1,6 +1,6 @@
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { PanelInteractionUtils } from './panel-interaction-utils';
-import { SourceFieldsUtils } from './source-fields-utils';
+import { SourceFieldsUtils } from '../source-fields-dialog/source-fields-utils';
 import * as _ from 'lodash';
 
 import { EdaContextMenuItem, EdaDialogController, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";

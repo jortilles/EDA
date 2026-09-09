@@ -67,6 +67,12 @@ export const SourceFieldsUtils = {
   /**
    * Builds and executes a `SELECT * FROM ...` version of the panel's current query,
    * returning the raw headers/rows for display.
+   *
+   * SQL-mode panels already have raw SQL text, so it's trimmed client-side (that part is
+   * generic across engines). EDA2/structured panels have no SQL text on the client — building
+   * it correctly (joins, filters, quoting) depends on the connection's own query builder, so
+   * that case is delegated entirely to the backend, one connection type at a time (currently
+   * PostgreSQL only — see QueryBuilderService.sourceFieldsQuery in eda_api).
    */
   getSourceFieldsResult: async (ebp: EdaBlankPanelComponent): Promise<{ sql: string, headers: string[], rows: any[][] }> => {
     const baseQuery: Query = _.cloneDeep(ebp.panel.content.query);
@@ -74,18 +80,18 @@ export const SourceFieldsUtils = {
 
     const queryMode = baseQuery.query.queryMode || ((baseQuery.query as any).modeSQL ? 'SQL' : 'EDA');
 
-    const originalSql = queryMode === 'SQL'
-      ? baseQuery.query.SQLexpression
-      : await ebp.dashboardService.getBuildedQuery(baseQuery).toPromise();
+    if (queryMode === 'SQL') {
+      const sql = buildSelectAllQuery(baseQuery.query.SQLexpression);
 
-    const sql = buildSelectAllQuery(originalSql);
+      const execQuery: Query = _.cloneDeep(baseQuery);
+      execQuery.query.SQLexpression = sql;
+      execQuery.query.queryMode = 'SQL';
 
-    const execQuery: Query = _.cloneDeep(baseQuery);
-    execQuery.query.SQLexpression = sql;
-    execQuery.query.queryMode = 'SQL';
+      const [headers, rows] = await ebp.dashboardService.executeSqlQuery(execQuery).toPromise();
+      return { sql, headers, rows };
+    }
 
-    const [headers, rows] = await ebp.dashboardService.executeSqlQuery(execQuery).toPromise();
-
-    return { sql, headers, rows };
+    const [headers, rows] = await ebp.dashboardService.executeSourceFieldsQuery(baseQuery).toPromise();
+    return { sql: '', headers, rows };
   }
 };

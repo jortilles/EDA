@@ -2020,6 +2020,89 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
 
   /**
+   * "Mostrar campos de origen": builds and executes a `SELECT * FROM ... [WHERE ...]` version
+   * of the panel's current query (no selected columns, grouping, having, order or limit), so
+   * the user can see every field of the source table(s). The build step is delegated to each
+   * connection's own query-builder service — currently only implemented for PostgreSQL, other
+   * engines fall through to QueryBuilderService's default "not supported" error.
+   */
+  static async getSourceFieldsData(req: Request, res: Response, next: NextFunction) {
+    try {
+      let connectionProps: any;
+      if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
+      const dataModel = await connection.getDataSource(req.body.model_id)
+
+      /**Security check */
+      const allowed = DashboardController.securityCheck(dataModel, req.user)
+      if (!allowed) {
+        return next(
+          new HttpException(
+            500,
+            `Sorry, you are not allowed here, contact your administrator`
+          )
+        )
+      }
+
+      const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+
+      /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
+      /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro.....*/
+      if (req.body.query.filters) {
+        for (const filter of req.body.query.filters) {
+          if (!filter.filter_column_type) {
+            const filterTable = dataModelObject.ds.model.tables.find((t) => t.table_name == filter.filter_table.split('.')[0]);
+            if (filterTable) {
+              const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
+              filter.filter_column_type = filterColumn?.column_type || 'text';
+            }
+          }
+          if (!filter.hasOwnProperty('filterBeforeGrouping')) {
+            filter.filterBeforeGrouping = true;
+          }
+        }
+      }
+
+      const query = await connection.getQueryBuilded(
+        { ...req.body.query, sourceFields: true },
+        dataModelObject,
+        req.user
+      )
+
+      /** Forbidden tables: block the whole query if it touches a table the user can't see */
+      let uniquesForbiddenTables = DashboardController.getForbiddenTables(
+        dataModelObject,
+        req['user'].role,
+        req.user._id
+      )
+      const includesAdmin = req['user'].role.includes("135792467811111111111110")
+      if (includesAdmin) uniquesForbiddenTables = [];
+
+      const notAllowedQuery = uniquesForbiddenTables.some(table => query.indexOf(table) >= 0);
+      if (notAllowedQuery) {
+        console.log('Not allowed table in query')
+        return res.status(200).json("[['noDataAllowed'],[]]")
+      }
+
+      console.log('\x1b[32m%s\x1b[0m', `SOURCE FIELDS QUERY for user ${req.user.name}, with ID: ${req.user._id}, at: ${formatDate(new Date())} `);
+      console.log(query)
+      console.log('\n-------------------------------------------------------------------------------\n');
+
+      connection.client = await connection.getclient()
+      const getResults = await connection.execSqlQuery(query);
+
+      const labels = getResults.length > 0 ? Object.keys(getResults[0]) : ['NoData'];
+      const results = getResults.map(r => Object.keys(r).map(k => r[k] === null ? eda_api_config.null_value : r[k]));
+
+      return res.status(200).json([labels, results])
+    } catch (err) {
+      console.log(err)
+      next(new HttpException(500, DashboardController.parseQueryError(err)))
+    }
+  }
+
+  /**
    * Parses a DB error to produce a descriptive message when a column is not found.
    * Supports PostgreSQL, MySQL, SQL Server, SQLite and Oracle error formats.
    */

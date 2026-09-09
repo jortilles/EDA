@@ -272,6 +272,31 @@ router.post('/sql-query', authGuard, DashboardController.execSqlQuery);
 
 /**
  * @openapi
+ * /dashboard/source-fields-query:
+ *   post:
+ *     description: builds and executes a `SELECT * FROM ... [WHERE ...]` version of the panel's query, for "Mostrar campos de origen"
+ *     parameters:
+ *       - name: token
+ *         in: query
+ *         description: Authentication token
+ *         type: string
+ *       - name: query
+ *         in: body
+ *         required: true
+ *         type: object
+ *         description: Query configuration
+ *     responses:
+ *       200:
+ *         description: returns ok
+ *       500:
+ *         description: returns error by permisos, query error, or unsupported connection type
+ *     tags:
+ *       - Dashboard Routes
+ */
+router.post('/source-fields-query', authGuard, DashboardController.getSourceFieldsData);
+
+/**
+ * @openapi
  * /dashboard/view-query:
  *   post:
  *     description: creates the SQL query from panel
