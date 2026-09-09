@@ -1,5 +1,6 @@
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { PanelInteractionUtils } from './panel-interaction-utils';
+import { SourceFieldsUtils } from './source-fields-utils';
 import * as _ from 'lodash';
 
 import { EdaContextMenuItem, EdaDialogController, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
@@ -301,6 +302,27 @@ export const PanelOptions = {
       }
     });
   },
+  showSourceFields: (panelComponent: EdaBlankPanelComponent) => {
+    return new EdaContextMenuItem({
+      label: $localize`:@@panelOptionsShowSourceFields:Mostrar campos de origen`,
+      icon: 'mdi mdi-database-search',
+      command: async () => {
+        panelComponent.contextMenu.hideContextMenu();
+        panelComponent.spinnerService.on();
+        try {
+          const result = await SourceFieldsUtils.getSourceFieldsResult(panelComponent);
+          panelComponent.sourceFieldsController = new EdaDialogController({
+            params: result,
+            close: () => { panelComponent.sourceFieldsController = undefined; }
+          });
+        } catch (err) {
+          panelComponent.alertService.addError(err);
+        } finally {
+          panelComponent.spinnerService.off();
+        }
+      }
+    });
+  },
   toggleLock: (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
       label: panelComponent.isPanelLocked()
@@ -362,6 +384,10 @@ export const PanelOptions = {
       {
         show: !isRoOrAnonimus && isEditable && !!ebp.panel.content,
         item: () => PanelOptions.changeChartType(ebp),
+      },
+      {
+        show: !!ebp.panel.content,
+        item: () => PanelOptions.showSourceFields(ebp),
       },
       {
         show: !isRoOrAnonimus && isEditable && isImported,

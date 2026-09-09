@@ -1313,6 +1313,10 @@
   <app-chart-type-selector-dialog [controller]="chartTypeSelectorController"></app-chart-type-selector-dialog>
 }
 
+@if(sourceFieldsController) {
+  <app-source-fields-dialog [controller]="sourceFieldsController"></app-source-fields-dialog>
+}
+
 @if(isVisibleEbpChatGpt) {
   <chat-eda-ai (close)="closeChatGpt($event)" [dataChatGpt]="dataChatGpt"></chat-eda-ai>
 }

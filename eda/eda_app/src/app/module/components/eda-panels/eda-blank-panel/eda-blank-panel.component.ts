@@ -52,6 +52,7 @@ import { EdaTitlePanelComponent } from '@eda/components/component.index';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ChartTypeSelectorDialogComponent } from './chart-type-selector-dialog/chart-type-selector-dialog.component';
+import { SourceFieldsDialogComponent } from './source-fields-dialog/source-fields-dialog.component';
 import { PromptComponent } from '@eda/components/prompt/prompt.component';
 import { FilterAndOrDialogComponent } from './filter-and-or-dialog/filter-and-or-dialog.component';
 import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-or.component';
@@ -103,7 +104,7 @@ const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipM
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, ChatEdaAIComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
-    DragDropComponent, ChartTypeSelectorDialogComponent,
+    DragDropComponent, ChartTypeSelectorDialogComponent, SourceFieldsDialogComponent,
     IconComponent, FocusOnShowDirective, PromptComponent,
     FilterAndOrDialogComponent,
 ]
@@ -313,6 +314,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public isVisibleEbpChatGpt = false;
     public dataChatGpt: any;
     public chartTypeSelectorController: EdaDialogController;
+    public sourceFieldsController: EdaDialogController;
 
     // for the drag-drop component
     public axes:any[]=[]; 

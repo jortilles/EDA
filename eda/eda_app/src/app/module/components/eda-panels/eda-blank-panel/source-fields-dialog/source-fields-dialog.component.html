@@ -1,0 +1,42 @@
+<eda-dialog2
+  header="Mostrar campos de origen"
+  [showApply]="false"
+  (close)="onHide()"
+  width="80vw"
+  height="auto"
+  [overflow]="'auto'">
+  <div content class="source-fields-content">
+    <p-table [value]="rows" [columns]="headers" [paginator]="true" [rows]="50"
+      [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="{first} - {last} de {totalRecords} registros"
+      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+      [scrollable]="true" scrollHeight="45vh"
+      [tableStyle]="{'min-width': '100%'}" styleClass="p-datatable-striped p-datatable-sm">
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          @for (header of columns; track $index) {
+            <th [pSortableColumn]="$index.toString()">
+              <div class="source-fields-th">
+                <span>{{ header }}</span>
+                <p-sortIcon [field]="$index.toString()"></p-sortIcon>
+              </div>
+            </th>
+          }
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr>
+          @for (header of columns; track $index) {
+            <td>{{ rowData[$index] }}</td>
+          }
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [attr.colspan]="headers.length" i18n="@@noDataAvailable">No hay datos disponibles</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</eda-dialog2>

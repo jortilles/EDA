@@ -1,0 +1,49 @@
+.source-fields-content {
+    padding: 8px 4px 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.source-fields-th {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Match the look of the rest of the app's tables (eda-table): rounded, tinted header + banded rows */
+.source-fields-content {
+    --table-header-color: rgba(228, 228, 228, 0.5);
+    --table-banding-color: rgba(228, 228, 228, 0.5);
+}
+
+.source-fields-content th {
+    border-radius: 6px;
+    background-color: #F1F0F0;
+    border: 1px solid #fff;
+}
+
+.source-fields-content ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    background: var(--table-header-color) !important;
+}
+
+.source-fields-content ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) > td {
+    background: var(--table-banding-color) !important;
+}
+.source-fields-content ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
+    background: transparent !important;
+}
+.source-fields-content ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd),
+.source-fields-content ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd) > td {
+    background: transparent !important;
+}
+
+/* Pin the record count to the right edge of the paginator row without shifting the page controls,
+   which stay centered exactly as PrimeNG lays them out by default. */
+.source-fields-content ::ng-deep .p-paginator {
+    position: relative;
+}
+.source-fields-content ::ng-deep .p-paginator .p-paginator-current {
+    position: absolute;
+    right: 0.5rem;
+    margin: 0;
+}
