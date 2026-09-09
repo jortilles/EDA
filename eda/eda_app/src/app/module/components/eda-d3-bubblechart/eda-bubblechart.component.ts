@@ -12,7 +12,7 @@ import * as d3 from 'd3'
 import { EdaBubblechart } from './eda-bubblechart'
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
-import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, initD3ResizeObserver, teardownD3Chart, FileUtiles } from '@eda/services/service.index';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -47,13 +47,14 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   private valuesBubble: any[];
   private colorsBubble: any[];
   private colorScale: any;
+  private iconByCategory: Map<string, string> = new Map();
 
   chartLegend: boolean;
   legendItems: { label: string; color: string; hidden: boolean }[] = [];
   private hiddenIndexes: Set<number> = new Set();
   private hasRendered = false;
 
-  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService) { }
+  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService, private fileUtils: FileUtiles) { }
 
   ngOnInit(): void {
     this.id = `bubblechart_${this.inject.id}`
@@ -65,6 +66,11 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     this.firstColLabels = [...new Set(this.firstColLabels)];
     this.data = this.formatData(this.inject.data);
     this.assignedColors = this.inject.assignedColors;
+    // Gated on useIcons (not just assignedIcons.length) so turning the switch off hides icons
+    // without discarding the assignments - same pattern as eda-race-bar.component.ts.
+    this.iconByCategory = this.inject.useIcons
+      ? new Map((this.inject.assignedIcons || []).filter((c: any) => c.icon).map((c: any) => [String(c.value), c.icon]))
+      : new Map();
 
     this.legendItems = this.firstColLabels.map((label, i) => ({
       label: String(label),
@@ -122,6 +128,22 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     return this.colorsBubble[this.valuesBubble.findIndex((item) => d.data.name.includes(item))] || this.colorScale(d.data.name);
   }
 
+  /** Same "walk up to the top-level category" rule as leafColor() - icons are assigned per
+   * top-level category, same scope as colors, regardless of how deep the actual leaf is. */
+  private leafIcon(node: any): string {
+    let d = node;
+    while (d.depth > 1) d = d.parent;
+    return this.iconByCategory.get(d.data.name) || '';
+  }
+
+  /** Same resolution rules as shared/pipes/media-src.pipe.ts, duplicated here since D3 builds plain
+   * SVG <image> nodes outside Angular's template compiler - the pipe itself can't apply to them. */
+  private resolveIconUrl(value: string): string {
+    if (!value) return value;
+    if (value.startsWith('data:') || /^https?:\/\//.test(value)) return value;
+    return this.fileUtils.connection(value);
+  }
+
   private gradientId(colorHex: string): string {
     return `bubble-grad-${this.id}-${sanitizeId(colorHex)}`;
   }
@@ -152,6 +174,15 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
 
     let defs = this.svg.select('defs');
     if (defs.empty()) defs = this.svg.append('defs');
+
+    // objectBoundingBox units so this single clip applies to every bubble's icon regardless of its
+    // own size/position - crops to a circle instead of the <image>'s default letterboxing.
+    const iconClipId = `bubble-icon-clip-${this.id}`;
+    defs.append('clipPath')
+      .attr('id', iconClipId)
+      .attr('clipPathUnits', 'objectBoundingBox')
+      .append('circle')
+      .attr('cx', 0.5).attr('cy', 0.5).attr('r', 0.5);
 
     // call the circle pack layout
     const treemap = data => d3.pack()
@@ -333,6 +364,11 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       .selectAll("tspan")
       // Before creating and placing text we must analyze the circle diameter and the text length to truncate accordingly
       .data(d => {
+        // The icon (appended below) replaces the name entirely inside iconed bubbles - the
+        // tooltip still shows name+value on hover exactly as today.
+        if (this.leafIcon(d)) {
+          return '';
+        }
         if (d.r >= 100 && d.r <= 150 && d.data.name.trim().length >= 17) {
           return d.data.name.substr(0, 10) + '...';
         }
@@ -361,9 +397,30 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.9 : null)
       .text(d => d)// Load the text into each tspan
 
+    // Per-category icon (assignedIcons), replacing the name inside bubbles that have one - width/
+    // height are fixed at creation (only position moves with the simulation, the radius itself
+    // never changes between ticks), clipped to a circle so it fills the bubble the same way a
+    // country flag would.
+    const icon = elemEnter.append('image')
+      .attr('class', 'eda-bubblechart-icon')
+      .attr('clip-path', `url(#${iconClipId})`)
+      .attr('preserveAspectRatio', 'xMidYMid slice')
+      .style('pointer-events', 'none')
+      .style('opacity', animateEntrance ? 0 : 1)
+      .style('display', (d: any) => this.leafIcon(d) ? null : 'none')
+      .attr('width', (d: any) => size(d.value) * 2)
+      .attr('height', (d: any) => size(d.value) * 2)
+      .attr('href', (d: any) => this.resolveIconUrl(this.leafIcon(d)))
+      // A dead/unreachable icon URL would otherwise sit there as the browser's own broken-image
+      // glyph - hide it instead so a bad icon degrades to "no icon" (the name stays hidden too,
+      // same trade-off eda-race-bar.component.ts makes).
+      .on('error', function () { d3.select(this).style('display', 'none'); });
+
     if (animateEntrance) {
       node.transition().delay((d: any, i: number) => i * 15).duration(400).ease(d3.easeCubicOut).attr('r', (d: any) => size(d.value));
       elemEnter.select('text').transition().delay((d: any, i: number) => i * 15).duration(400).style('opacity', 1);
+      icon.transition().delay((d: any, i: number) => i * 15).duration(400)
+        .style('opacity', (d: any) => this.leafIcon(d) ? 1 : 0);
     }
 
     // Physics properties applied to nodes:
@@ -396,6 +453,12 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
           .attr("x", d => d.x)
           .style("text-anchor", "middle")// Center the text inside the circle
           .attr("y", d => d.y)
+
+        // Top-left corner of the square bounding the bubble's own circle - width/height (2x radius)
+        // were already fixed at creation, only position tracks the simulation like the circle does.
+        icon
+          .attr("x", (d: any) => d.x - size(d.value))
+          .attr("y", (d: any) => d.y - size(d.value))
       });
 
     // What happens when a circle is dragged?

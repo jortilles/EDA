@@ -31,6 +31,7 @@ import { EdaMap } from '@eda/components/eda-map/eda-map';
 import { EdaD3 } from '@eda/components/eda-d3-sankey/eda-d3-sankey';
 import { EdaFunnelComponent } from '@eda/components/eda-funnel/eda-funnel.component';
 import { EdaBubblechartComponent } from '@eda/components/eda-d3-bubblechart/eda-bubblechart.component';
+import { EdaBubblechart } from '@eda/components/eda-d3-bubblechart/eda-bubblechart';
 import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.component';
 import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
 import { EdaRaceBarComponent } from '@eda/components/eda-race-bar/eda-race-bar.component';
@@ -1868,7 +1869,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private renderBubblechart() {
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-        let inject: EdaD3 = new EdaD3;
+        let inject: EdaBubblechart = new EdaBubblechart;
         inject.id = this.randomID();
         inject.size = this.props.size;
         inject.data = this.props.data;
@@ -1877,6 +1878,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
+        inject.assignedIcons = this.props.config.getConfig()['assignedIcons'] ?? [];
+        inject.useIcons = this.props.config.getConfig()['useIcons'] ?? false;
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
         inject.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
