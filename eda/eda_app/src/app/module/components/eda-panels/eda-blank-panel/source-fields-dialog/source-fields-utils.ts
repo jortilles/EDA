@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { Query } from '@eda/models/model.index';
 import { EdaBlankPanelComponent } from '../eda-blank-panel.component';
+import { QueryUtils } from '../panel-utils/query-utils';
 
 const isWordBoundary = (ch: string | undefined): boolean => ch === undefined || /[^A-Za-z0-9_]/.test(ch);
 
@@ -65,7 +66,8 @@ export const buildSelectAllQuery = (sql: string): string => {
 export const SourceFieldsUtils = {
 
   /**
-   * Builds and executes a `SELECT * FROM ...` version of the panel's current query,
+   * Builds and executes a `SELECT * FROM ...` version of the panel's CURRENT query (i.e. with
+   * whatever filters — panel and global — are active right now, same as what's on screen),
    * returning the raw headers/rows for display.
    *
    * SQL-mode panels already have raw SQL text, so it's trimmed client-side (that part is
@@ -75,12 +77,12 @@ export const SourceFieldsUtils = {
    * PostgreSQL only — see QueryBuilderService.sourceFieldsQuery in eda_api).
    */
   getSourceFieldsResult: async (ebp: EdaBlankPanelComponent): Promise<{ sql: string, headers: string[], rows: any[][] }> => {
-    const baseQuery: Query = _.cloneDeep(ebp.panel.content.query);
-    baseQuery.dashboard.connectionProperties = ebp.connectionProperties;
-
-    const queryMode = baseQuery.query.queryMode || ((baseQuery.query as any).modeSQL ? 'SQL' : 'EDA');
+    const queryMode = ebp.selectedQueryMode;
 
     if (queryMode === 'SQL') {
+      const baseQuery: Query = _.cloneDeep(ebp.panel.content.query);
+      baseQuery.dashboard.connectionProperties = ebp.connectionProperties;
+
       const sql = buildSelectAllQuery(baseQuery.query.SQLexpression);
 
       const execQuery: Query = _.cloneDeep(baseQuery);
@@ -91,7 +93,13 @@ export const SourceFieldsUtils = {
       return { sql, headers, rows };
     }
 
-    const [headers, rows] = await ebp.dashboardService.executeSourceFieldsQuery(baseQuery).toPromise();
+    // EDA/EDA2: rebuild from LIVE state (currentQuery, rootTable, mergeFilters(selectedFilters, globalFilters))
+    // — the same helper runQuery() uses — so this reflects whatever filters currently apply on screen,
+    // not just what was last saved on the panel.
+    const query = QueryUtils.initEdaQuery(ebp);
+    (query.query as any).sourceFields = true;
+
+    const [headers, rows] = await ebp.dashboardService.executeSourceFieldsQuery(query).toPromise();
     return { sql: '', headers, rows };
   }
 };
