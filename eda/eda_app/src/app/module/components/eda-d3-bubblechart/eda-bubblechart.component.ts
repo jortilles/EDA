@@ -404,7 +404,9 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     const icon = elemEnter.append('image')
       .attr('class', 'eda-bubblechart-icon')
       .attr('clip-path', `url(#${iconClipId})`)
-      .attr('preserveAspectRatio', 'xMidYMid slice')
+      // 'none' = stretch to cover the whole bubble - 'slice' would crop a non-square logo, 'meet'
+      // would leave its own background showing around it inside the circle.
+      .attr('preserveAspectRatio', 'none')
       .style('pointer-events', 'none')
       .style('opacity', animateEntrance ? 0 : 1)
       .style('display', (d: any) => this.leafIcon(d) ? null : 'none')

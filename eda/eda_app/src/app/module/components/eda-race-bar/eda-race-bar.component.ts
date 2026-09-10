@@ -704,7 +704,9 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
       iconGroupEnter.append('circle').attr('class', 'eda-race-bar-value-icon-bg');
       iconGroupEnter.append('image')
         .attr('class', 'eda-race-bar-value-icon')
-        .attr('preserveAspectRatio', 'xMidYMid slice')
+        // 'none' = stretch to cover the whole badge - deliberate: 'slice' would crop a non-square
+        // logo (losing edges/text) and 'meet' would leave its own background showing inside the circle.
+        .attr('preserveAspectRatio', 'none')
         .attr('clip-path', `url(#${this.iconClipId})`)
         // A dead/unreachable icon URL would otherwise sit there as the browser's own broken-image
         // glyph - hide the whole badge instead so a bad icon degrades to "no icon" rather than clutter.

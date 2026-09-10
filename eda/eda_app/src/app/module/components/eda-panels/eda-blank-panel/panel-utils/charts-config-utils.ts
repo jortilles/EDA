@@ -175,14 +175,20 @@ export const ChartsConfigUtils = {
       };
     } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunburst", "raceBar"].includes(ebp.panelChart.props.chartType)) {
       const inst = ebp.panelChart.componentRef?.instance;
+      const savedConfig = ebp.panelChart.props.config?.getConfig();
       config = {
         assignedColors: inst ? inst.assignedColors : [],
+        // Icons (raceBar + bubblechart): same "saved config is authoritative, inst.inject is only a
+        // fallback" reasoning as the raceBar-only fields below - dropped on every requery/savePanel
+        // otherwise. Harmless keys for the other types here, which never set them.
+        assignedIcons: savedConfig?.['assignedIcons'] ?? inst?.inject?.assignedIcons ?? [],
+        useIcons: savedConfig?.['useIcons'] ?? inst?.inject?.useIcons ?? false,
         useGradient: inst ? inst.inject?.useGradient ?? true : true,
         chartLegend: inst ? inst.chartLegend ?? true : true,
         // Without this, every requery (initEdaQuery/initSqlQuery call setConfig() on every
         // filter change/refresh/reload) silently dropped chartAnimation back to its default,
         // undoing both the per-panel dialog checkbox and the dashboard-wide animations toggle.
-        chartAnimation: inst ? inst.inject?.chartAnimation ?? true : (ebp.panelChart.props.config?.getConfig()?.['chartAnimation'] ?? true),
+        chartAnimation: inst ? inst.inject?.chartAnimation ?? true : (savedConfig?.['chartAnimation'] ?? true),
       }
       if (ebp.panelChart.props.chartType === 'raceBar') {
         // Same trap as chartAnimation above: inst.inject only reflects whatever renderRaceBar() last
@@ -190,7 +196,6 @@ export const ChartsConfigUtils = {
         // it here on every requery/savePanel can race ahead of a dialog save and silently reset these
         // back to their defaults. The already-saved config is authoritative; inst.inject is only a
         // fallback for when there's no saved value yet (component freshly mounted, nothing saved).
-        const savedConfig = ebp.panelChart.props.config?.getConfig();
         config.topNCount = savedConfig?.['topNCount'] ?? inst?.inject?.topNCount ?? null;
         config.showTimeline = savedConfig?.['showTimeline'] ?? inst?.inject?.showTimeline ?? false;
         config.transitionMs = savedConfig?.['transitionMs'] ?? inst?.inject?.transitionMs ?? null;
