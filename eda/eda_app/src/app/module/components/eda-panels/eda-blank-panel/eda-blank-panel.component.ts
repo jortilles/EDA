@@ -79,7 +79,6 @@ import { dynamicTextDialogComponent } from '@eda/components/component.index';
 import { TableDialogComponent } from '@eda/components/component.index';
 import { TableGradientDialogComponent } from '@eda/components/component.index';
 import { KpiEditDialogComponent } from '@eda/components/component.index';
-import { CategoryChartDialogComponent } from '@eda/components/component.index';
 import { CategoryChartType, getChartCategoryValues } from './panel-charts/chart-category-values.util';
 export interface IPanelAction {
     code: string;
@@ -96,7 +95,7 @@ interface ChatMessage {
 const DIALOGS_COMPONENTS = [
     ChartDialogComponent, MapCoordDialogComponent, MapEditDialogComponent,
     TreeTableDialogComponent, KnobDialogComponent, dynamicTextDialogComponent, TableDialogComponent,
-    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent, CategoryChartDialogComponent
+    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent
 ];
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule, OverlayPanelModule];
@@ -148,7 +147,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public mapCoordController: EdaDialogController;
     public kpiController: EdaDialogController;
     public dynamicTextController: EdaDialogController;
-    public categoryChartController: EdaDialogController;
     public linkDashboardController: EdaDialogController;
     public knobController: EdaDialogController;
     public treeTableController: EdaDialogController;
@@ -1521,9 +1519,13 @@ public tableNodeExpand(event: any): void {
      * @param properties properties to set
      */
  public onCloseChartProperties(event, response): void {
-        // response is already the small typed patch chart-dialog.component.ts's saveChartConfig()
-        // builds (assignedColors + this family's own fields) - no more Chart.js-shaped chartColors/
-        // chartDataset to reconcile, so no per-type recolor step is needed here.
+        // The unified chart dialog tags its response with `family`. Category (D3 part-to-whole)
+        // charts carry a ChartDialogSaveResponseBase and need the positional colors[] re-matched
+        // onto assignedColors; axis charts carry the small custom-fields patch.
+        if (response?.family === 'category') {
+            this.onCloseCategoryChartProperties(event, response, this.graficos.chartType as CategoryChartType);
+            return;
+        }
         this.applyDialogChartConfig(event, readCustomFields(response, CUSTOM_CHART_CONFIG_FIELDS), 'chartController');
 }
 
@@ -1601,7 +1603,7 @@ public tableNodeExpand(event: any): void {
     }
 
     /** Shared tail for every onClose*Properties handler: merges into the existing config (not a wholesale replace), re-renders, clears the controller. */
-    private applyDialogChartConfig(event: EdaDialogCloseEvent, configPatch: any, controllerField: 'categoryChartController' | 'chartController'): void {
+    private applyDialogChartConfig(event: EdaDialogCloseEvent, configPatch: any, controllerField: 'chartController'): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config = {
                 ...this.panel.content.query.output.config,
@@ -1650,9 +1652,9 @@ public tableNodeExpand(event: any): void {
             if (response.showTimeline !== undefined) configPatch.showTimeline = response.showTimeline;
             if (response.transitionMs !== undefined) configPatch.transitionMs = response.transitionMs;
 
-            this.applyDialogChartConfig(event, configPatch, 'categoryChartController');
+            this.applyDialogChartConfig(event, configPatch, 'chartController');
         } else {
-            this.categoryChartController = undefined;
+            this.chartController = undefined;
         }
     }
 

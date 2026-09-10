@@ -56,5 +56,4 @@ export { TreeTableDialogComponent } from './eda-panels/eda-blank-panel/tree-tabl
 export { EdaDoughnut } from './eda-doughnut-d3/eda-doughnut.component';
 export { EdaPolarAreaComponent } from './eda-polar-area-d3/eda-polar-area.component';
 export { EdaBarD3Component } from './eda-bar-d3/eda-bar.component';
-export { CategoryChartDialogComponent } from './eda-panels/eda-blank-panel/category-chart-dialog/category-chart-dialog.component';
 

@@ -1,6 +1,6 @@
 
 import { PanelChartComponent } from './../panel-charts/panel-chart.component';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild, AfterViewChecked } from '@angular/core';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
 import { StyleProviderService, ChartUtilsService, AlertService, SpinnerService, DashboardService } from '@eda/services/service.index';
@@ -13,6 +13,9 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../prediction-dialog/prediction-dialog.component';
+import { CategoryChartType, getChartCategoryValues, getSankeyRowLabels } from '../panel-charts/chart-category-values.util';
+import { ChartDialogSaveResponseBase } from '../panel-charts/chart-configuration-models/chart-dialog-save-response';
+import { ChartDialogSpec, CHART_DIALOG_SPECS, CATEGORY_TRANSITION_MS_DEFAULT, resolveChartDialogSpec } from './chart-dialog-specs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -23,10 +26,37 @@ import Swal from 'sweetalert2';
     imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, PredictionDialogComponent, InputNumberModule, DropdownModule]
 })
 
-export class ChartDialogComponent {
+export class ChartDialogComponent implements AfterViewChecked {
     @Input() controller: any;
     @Input() dashboard: any;
     @ViewChild('PanelChartComponent', { static: false }) panelChartComponent: PanelChartComponent;
+
+    /** Per-type capability descriptor - drives every option block in the template. */
+    public spec: ChartDialogSpec;
+    /** Only set when spec.family === 'category'. */
+    public categoryChartType: CategoryChartType;
+
+    // Category-family extras
+    public innerRadiusPercent: number = 50;
+    public topNCount: number = 10;
+    public transitionMs: number = CATEGORY_TRANSITION_MS_DEFAULT;
+    public showTimeline: boolean = false;
+    private categoryColorsSeeded: boolean = false;
+    private originalCategory: {
+        assignedColors: { value: string; color: string; opacity?: number }[];
+        chartLegend: boolean;
+        showGridLines: boolean;
+        showLabels: boolean;
+        showLabelsPercent: boolean;
+        showTimeline: boolean;
+        innerRadiusPercent: number;
+        useGradient: boolean;
+        chartAnimation: boolean;
+        labelColorMode: string;
+        labelCustomColor: string;
+        topNCount: number;
+        transitionMs: number;
+    };
 
     public dialog: EdaDialog;
     public activeTabIndex: number = 0;
@@ -143,6 +173,19 @@ export class ChartDialogComponent {
 
     ngOnInit(): void {
         this.panelChartConfig = this.controller.params.config;
+        this.chart = this.controller.params.chart;
+
+        this.spec = resolveChartDialogSpec(this.chart?.edaChart, this.chart?.chartType ?? this.controller.params.chartType)
+            ?? CHART_DIALOG_SPECS['bar'];
+
+        if (this.spec.family === 'category') {
+            this.initCategory();
+            return;
+        }
+        this.initAxis();
+    }
+
+    private initAxis(): void {
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
         this.showLabelsPercent = this.controller.params.config.config.getConfig()['showLabelsPercent'] || false;
@@ -211,6 +254,157 @@ export class ChartDialogComponent {
             this.activeTabIndex = 1;
         }
         this.display = true;
+    }
+
+    // ---------------------------------------------------------------------------
+    // Category family (doughnut / polarArea / sunburst / treeMap / scatterPlot /
+    // bubblechart / parallelSets / funnel / raceBar) - D3 charts whose preview is
+    // driven by mutating the shared config + changeChartType(), not a PanelChart rebuild.
+    // ---------------------------------------------------------------------------
+
+    private initCategory(): void {
+        this.categoryChartType = (this.chart?.chartType ?? this.controller.params.chartType) as CategoryChartType;
+        const cfg = this.controller.params.config.config.getConfig();
+        this.chartLegend = cfg['chartLegend'] ?? true;
+        this.showGridLines = cfg['showGridLines'] ?? true;
+        this.showLabels = cfg['showLabels'] ?? false;
+        this.showLabelsPercent = cfg['showLabelsPercent'] ?? false;
+        this.showTimeline = cfg['showTimeline'] ?? false;
+        this.innerRadiusPercent = cfg['innerRadiusPercent'] ?? 50;
+        this.useGradient = cfg['useGradient'] ?? true;
+        this.chartAnimation = cfg['chartAnimation'] ?? true;
+        this.labelColorMode = cfg['labelColorMode'] || 'series';
+        this.labelCustomColor = cfg['labelCustomColor'] || '#000000';
+        this.topNCount = cfg['topNCount'] ?? 10;
+        this.transitionMs = cfg['transitionMs'] ?? CATEGORY_TRANSITION_MS_DEFAULT;
+        this.display = true;
+    }
+
+    ngAfterViewChecked(): void {
+        if (this.spec?.family !== 'category' || this.categoryColorsSeeded) return;
+        if (this.assignedColors.length || !this.panelChartComponent?.componentRef) return;
+        setTimeout(() => {
+            const instance = this.panelChartComponent.componentRef.instance;
+            const values = getChartCategoryValues(this.categoryChartType, instance);
+            if (!values?.length) return;
+            this.categoryColorsSeeded = true;
+            const cfg = this.panelChartComponent.props.config.getConfig();
+            const existingColors: { value: string | number; color: string }[] = cfg['assignedColors'] || [];
+
+            this.assignedColors = values.map((value, index) => {
+                const match = existingColors.find(c => c.value === value);
+                return { value: value as string, color: match?.color || this.stylesProviderService.getPaletteColor(index) };
+            });
+
+            this.originalCategory = {
+                assignedColors: this.assignedColors.map(c => ({ ...c })),
+                chartLegend: this.chartLegend,
+                showGridLines: this.showGridLines,
+                showLabels: this.showLabels,
+                showLabelsPercent: this.showLabelsPercent,
+                showTimeline: this.showTimeline,
+                innerRadiusPercent: this.innerRadiusPercent,
+                useGradient: this.useGradient,
+                chartAnimation: this.chartAnimation,
+                labelColorMode: this.labelColorMode,
+                labelCustomColor: this.labelCustomColor,
+                topNCount: this.topNCount,
+                transitionMs: this.transitionMs,
+            };
+        }, 0);
+    }
+
+    /** Category preview: mutate the live config and re-render - the one place every category setter/save/cancel funnels through. */
+    private syncCategoryChart(): void {
+        const cfg = this.panelChartComponent.props.config.getConfig();
+        cfg['assignedColors'] = [...this.assignedColors];
+        cfg['chartAnimation'] = this.chartAnimation;
+        if (this.spec.hasLegend) cfg['chartLegend'] = this.chartLegend;
+        if (this.spec.hasGridLines) cfg['showGridLines'] = this.showGridLines;
+        if (this.spec.hasLabels) cfg['showLabels'] = this.showLabels;
+        if (this.spec.hasLabelsPercent) cfg['showLabelsPercent'] = this.showLabelsPercent;
+        if (this.spec.hasTimeline) cfg['showTimeline'] = this.showTimeline;
+        if (this.spec.hasUseGradient) cfg['useGradient'] = this.useGradient;
+        if (this.spec.hasInnerRadius) cfg['innerRadiusPercent'] = this.innerRadiusPercent;
+        if (this.spec.hasTopNCount) cfg['topNCount'] = this.topNCount;
+        if (this.spec.hasTransitionMs) cfg['transitionMs'] = this.transitionMs;
+        if (this.spec.hasLabels || this.spec.hasLabelsPercent) {
+            cfg['labelColorMode'] = this.labelColorMode;
+            cfg['labelCustomColor'] = this.labelCustomColor;
+        }
+
+        if (this.categoryChartType === 'parallelSets') {
+            // Sankey's colors[] is positional-per-row, not positional-per-unique-label.
+            const rowLabels = getSankeyRowLabels(this.panelChartComponent.componentRef.instance);
+            const labelColorMap: Record<string, string> = {};
+            this.assignedColors.forEach(c => { labelColorMap[c.value as string] = c.color; });
+            cfg['colors'] = [...new Set(rowLabels.map(l => labelColorMap[l]))];
+        } else {
+            cfg['colors'] = this.assignedColors.map(c => c.color);
+        }
+
+        this.markUnsaved();
+        this.panelChartComponent.changeChartType();
+    }
+
+    /** Category color editor: apply the palette dropdown across every row (or the two ends for funnel). */
+    private applyCategoryPalette(): void {
+        if (!this.selectedPalette) return;
+        const palette = this.selectedPalette.paleta;
+        if (this.spec.colorEditorShape === 'start-end') {
+            this.assignedColors = this.assignedColors.map((item, index) => ({
+                value: item.value,
+                color: index === 0 ? palette[0] : palette[palette.length - 1]
+            }));
+        } else {
+            this.assignedColors = this.assignedColors.map((item, index) => ({
+                value: item.value,
+                color: palette[index % palette.length]
+            }));
+        }
+        this.syncCategoryChart();
+    }
+
+    private buildCategorySaveResponse(): ChartDialogSaveResponseBase {
+        this.syncCategoryChart();
+        const cfg = this.panelChartComponent.props.config.getConfig();
+        const response: ChartDialogSaveResponseBase = {
+            colors: cfg['colors'],
+            assignedColors: [...this.assignedColors],
+            chartLegend: this.chartLegend,
+            chartAnimation: this.chartAnimation,
+        };
+        if (this.spec.hasUseGradient) response.useGradient = this.useGradient;
+        if (this.spec.hasLabels) response.showLabels = this.showLabels;
+        if (this.spec.hasLabelsPercent) response.showLabelsPercent = this.showLabelsPercent;
+        if (this.spec.hasLabels || this.spec.hasLabelsPercent) {
+            response.labelColorMode = this.labelColorMode;
+            response.labelCustomColor = this.labelCustomColor;
+        }
+        if (this.spec.hasGridLines) response.showGridLines = this.showGridLines;
+        if (this.spec.hasTimeline) response.showTimeline = this.showTimeline;
+        if (this.spec.hasInnerRadius) response.innerRadiusPercent = this.innerRadiusPercent;
+        if (this.spec.hasTopNCount) response.topNCount = this.topNCount;
+        if (this.spec.hasTransitionMs) response.transitionMs = this.transitionMs;
+        return response;
+    }
+
+    private restoreCategory(): void {
+        if (!this.originalCategory) return;
+        this.assignedColors = this.originalCategory.assignedColors.map(c => ({ ...c }));
+        this.chartLegend = this.originalCategory.chartLegend;
+        this.showGridLines = this.originalCategory.showGridLines;
+        this.showLabels = this.originalCategory.showLabels;
+        this.showLabelsPercent = this.originalCategory.showLabelsPercent;
+        this.showTimeline = this.originalCategory.showTimeline;
+        this.innerRadiusPercent = this.originalCategory.innerRadiusPercent;
+        this.useGradient = this.originalCategory.useGradient;
+        this.chartAnimation = this.originalCategory.chartAnimation;
+        this.labelColorMode = this.originalCategory.labelColorMode;
+        this.labelCustomColor = this.originalCategory.labelCustomColor;
+        this.topNCount = this.originalCategory.topNCount;
+        this.transitionMs = this.originalCategory.transitionMs;
+        this.syncCategoryChart();
     }
 
     load() {
@@ -284,7 +478,7 @@ export class ChartDialogComponent {
         }
     }
 
-    // Get labels for this dialog's chart family (doughnut/polarArea moved to category-chart-dialog).
+    // Axis-family label list (category types seed their rows from getChartCategoryValues instead).
     private getChartLabels(): string[] {
         return this.chart.chartDataset?.map(d => d.label) || [];
     }
@@ -346,6 +540,21 @@ export class ChartDialogComponent {
         });
     }
 
+    /** Shared entry point for every plain display toggle - routes to the right family's preview engine. */
+    private applyDisplayOption(): void {
+        if (this.spec.family === 'category') {
+            this.syncCategoryChart();
+            return;
+        }
+        this.syncCustomFields();
+        this.refreshPreview();
+    }
+
+    setInnerRadius(): void { this.syncCategoryChart(); }
+    setTopNCount(): void { this.syncCategoryChart(); }
+    setTransitionMs(): void { this.syncCategoryChart(); }
+    setShowTimeline(): void { this.syncCategoryChart(); }
+
     // Toggles like Tendencia/Comparativa add or remove a dataset (and its label) on the fly - keeps
     // assignedColors' row list matching the chart's current labels immediately, without waiting for
     // a dialog close/reopen. Existing rows (and their colors/opacity) are preserved untouched.
@@ -383,8 +592,7 @@ export class ChartDialogComponent {
     }
 
     setShowLablesPercent() {
-        this.syncCustomFields();
-        this.refreshPreview();
+        this.applyDisplayOption();
     }
 
     allowCoparative(params) {
@@ -411,13 +619,11 @@ export class ChartDialogComponent {
 
 
     setShowLables() {
-        this.syncCustomFields();
-        this.refreshPreview();
+        this.applyDisplayOption();
     }
 
     setLabelColor() {
-        this.syncCustomFields();
-        this.refreshPreview();
+        this.applyDisplayOption();
     }
 
     labelColorButtonClass(mode: string): Record<string, boolean> {
@@ -428,13 +634,11 @@ export class ChartDialogComponent {
     }
 
     setChartLegend() {
-        this.syncCustomFields();
-        this.refreshPreview();
+        this.applyDisplayOption();
     }
 
     setShowGridLines() {
-        this.syncCustomFields();
-        this.refreshPreview();
+        this.applyDisplayOption();
     }
 
     setShowLines() {
@@ -448,8 +652,7 @@ export class ChartDialogComponent {
     }
 
     setChartAnimation() {
-        this.syncCustomFields();
-        this.refreshPreview();
+        this.applyDisplayOption();
     }
 
     setPredictionLines() {
@@ -615,6 +818,10 @@ export class ChartDialogComponent {
 
     // Simplified method for color changes
     handleInputColor(): void {
+        if (this.spec?.family === 'category') {
+            this.syncCategoryChart();
+            return;
+        }
         this.markUnsaved();
         // Apply assignedColors to the chart
         this.applyColorsToChart();
@@ -655,6 +862,10 @@ export class ChartDialogComponent {
     // Apply palette
     onPaletteSelected(): void {
         if (!this.selectedPalette) return;
+        if (this.spec?.family === 'category') {
+            this.applyCategoryPalette();
+            return;
+        }
         const palette = this.selectedPalette.paleta;
 
         // Always update assignedColors
@@ -696,6 +907,10 @@ export class ChartDialogComponent {
     }
 
     applyUseGradient(): void {
+        if (this.spec?.family === 'category') {
+            this.syncCategoryChart();
+            return;
+        }
         this.syncCustomFields();
         this.chart['useGradient'] = this.useGradient;
         this.handleInputColor();
@@ -753,12 +968,16 @@ export class ChartDialogComponent {
     // Save/cancel configuration methods
 
     saveChartConfig() {
+        if (this.spec.family === 'category') {
+            this.onClose(EdaDialogCloseEvent.UPDATE, { family: 'category', ...this.buildCategorySaveResponse() });
+            return;
+        }
         // Apply final colors to the live preview
         this.applyColorsToChart();
         this.syncCustomFields();
 
         // Small typed response - assignedColors + this family's own fields, no Chart.js shape.
-        this.onClose(EdaDialogCloseEvent.UPDATE, this.buildCustomFieldsPatch());
+        this.onClose(EdaDialogCloseEvent.UPDATE, { family: 'axis', ...this.buildCustomFieldsPatch() });
     }
 
     resetChartConfig() {
@@ -786,6 +1005,11 @@ export class ChartDialogComponent {
     }
 
     closeChartConfig() {
+        if (this.spec.family === 'category') {
+            this.restoreCategory();
+            this.onClose(EdaDialogCloseEvent.NONE);
+            return;
+        }
         // Restore original colors
         this.resetChartConfig();
         this.applyColorsToChart();
