@@ -351,7 +351,48 @@ export class MySqlBuilderService extends QueryBuilderService {
     return myQuery;
   };
 
-  public getFilters(filters, destLongitud, pTable): any { 
+  /**
+   * Builds `SELECT * FROM <origin> [JOINS] [WHERE ...]` for "Mostrar campos de origen":
+   * same origin/joins/where logic as normalQuery(), without the column list, grouping,
+   * having, order or limit.
+   */
+  public sourceFieldsQuery(origin: string, dest: any[], joinTree: any[], filters: any[], tables: Array<any>,
+    joinType: string, valueListJoins: Array<any>, schema: string, database: string, sortedFilters?: any[]): string {
+    let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
+    let myQuery = `SELECT * \nFROM ${o}`;
+
+    // JOINS
+    let joinString: any[];
+    let alias: any;
+    if (this.queryTODO.joined) {
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+      joinString = responseJoins.joinString;
+      alias = responseJoins.aliasTables;
+    } else {
+      joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, schema);
+    }
+
+    joinString.forEach(x => {
+      myQuery = myQuery + '\n' + x;
+    });
+
+    // WHERE
+    if (Array.isArray(sortedFilters) && sortedFilters.length !== 0) {
+      myQuery += this.getSortedFilters(sortedFilters, filters);
+    } else {
+      myQuery += this.getFilters(filters, dest.length, o);
+    }
+
+    if (alias) {
+      for (const key in alias) {
+        myQuery = myQuery.split(key).join(`\`${alias[key]}\``);
+      }
+    }
+
+    return myQuery;
+  }
+
+  public getFilters(filters, destLongitud, pTable): any {
 
     /** If We Have permissions And No Destination I Add To Filters */
 
