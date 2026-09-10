@@ -340,6 +340,45 @@
             </div>
             }
 
+            <!-- Icons: media-library image per category. Kept just before the label options so
+                 "Mostrar Etiquetas" & co. stay last in the section. -->
+            @if (features.hasIcons) {
+              <div class="flex items-center justify-between">
+                <label i18n="@@raceBarUseIcons" class="font-medium">Añadir imágenes</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" [(ngModel)]="useIcons" class="sr-only peer" (ngModelChange)="applyOption()">
+                  <div
+                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                  </div>
+                </label>
+              </div>
+              @if (useIcons) {
+                <div class="flex items-center justify-between">
+                  <label class="font-medium" i18n="@@raceBarLoadMatchingIcons">Cargar coincidentes</label>
+                  <button type="button" (click)="openMatchFolderPicker()"
+                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded border text-sm bg-white hover:bg-slate-50">
+                    <i class="pi pi-folder-open"></i>
+                  </button>
+                </div>
+
+                <!-- Own list when the colour editor has no per-category row: funnel (start/end gradient)
+                     and the axis bar family (colours are per-series, icons per bar/category). -->
+                @if (features.colorEditorShape === 'start-end' || features.family === 'axis') {
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    @for (item of assignedIcons; track item.value; let idx = $index) {
+                      <div class="flex items-center justify-between border rounded-lg p-2 bg-white">
+                        <span class="font-medium truncate max-w-[55%]" [title]="item.value">{{ item.value }}</span>
+                        <ng-container [ngTemplateOutlet]="iconBtn" [ngTemplateOutletContext]="{ $implicit: item, idx }"></ng-container>
+                      </div>
+                    }
+                    @if (!assignedIcons.length) {
+                      <p class="text-sm text-slate-400 italic col-span-full" i18n="@@iconsNoCategories">Sin categorías disponibles todavía.</p>
+                    }
+                  </div>
+                }
+              }
+            }
+
             <!-- Show Labels -->
             @if (features.hasLabels) {
             <div class="flex items-center justify-between">
@@ -480,39 +519,6 @@
               </div>
             }
 
-            <!-- Icons: media-library image per category (raceBar / bubblechart / funnel / treeMap / scatterPlot) -->
-            @if (features.hasIcons) {
-              <div class="flex items-center justify-between">
-                <label i18n="@@raceBarUseIcons" class="font-medium">Añadir imágenes</label>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" [(ngModel)]="useIcons" class="sr-only peer" (ngModelChange)="applyOption()">
-                  <div
-                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
-                  </div>
-                </label>
-              </div>
-              @if (useIcons) {
-                <div class="flex items-center justify-between">
-                  <label class="font-medium" i18n="@@raceBarLoadMatchingIcons">Cargar coincidentes</label>
-                  <button type="button" (click)="openMatchFolderPicker()"
-                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded border text-sm bg-white hover:bg-slate-50">
-                    <i class="pi pi-folder-open"></i>
-                  </button>
-                </div>
-
-                <!-- funnel has no per-category colour row (start/end gradient only), so its icons get their own list -->
-                @if (features.colorEditorShape === 'start-end') {
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    @for (item of assignedIcons; track item.value; let idx = $index) {
-                      <div class="flex items-center justify-between border rounded-lg p-2 bg-white">
-                        <span class="font-medium truncate max-w-[55%]" [title]="item.value">{{ item.value }}</span>
-                        <ng-container [ngTemplateOutlet]="iconBtn" [ngTemplateOutletContext]="{ $implicit: item, idx }"></ng-container>
-                      </div>
-                    }
-                  </div>
-                }
-              }
-            }
           </div>
         </div>
       </div>

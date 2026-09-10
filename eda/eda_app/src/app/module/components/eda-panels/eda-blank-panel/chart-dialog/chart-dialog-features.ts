@@ -73,6 +73,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasGridLines: true,
         hasThresholdColors: true,
         hasUniqueColors: true,
+        hasIcons: true,
     },
     horizontalBar: {
         ...(AXIS_BAR_COMMON as ChartDialogFeatures),
@@ -80,10 +81,11 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasGridLines: true,
         hasThresholdColors: true,
         hasUniqueColors: true,
+        hasIcons: true,
     },
     stackedbar: { ...(AXIS_BAR_COMMON as ChartDialogFeatures) },
     stackedbar100: { ...(AXIS_BAR_COMMON as ChartDialogFeatures) },
-    pyramid: { ...(AXIS_BAR_COMMON as ChartDialogFeatures) },
+    pyramid: { ...(AXIS_BAR_COMMON as ChartDialogFeatures), hasIcons: true },
     histogram: {
         ...(AXIS_BAR_COMMON as ChartDialogFeatures),
         hasNumberOfColumns: true,

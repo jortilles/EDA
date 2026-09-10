@@ -41,6 +41,9 @@ export interface RenderCategoryIconsOptions<D> {
     size: number | ((d: D) => number);
     /** final, resolved <image> href for this datum ('' -> badge hidden). */
     href: (d: D) => string;
+    /** how the image sits inside its box - default 'xMidYMid meet' (centred, fitted). Use e.g.
+     * 'xMidYMin meet' to top-align it so it sits flush against something above it. */
+    align?: string | ((d: D) => string);
 }
 
 /**
@@ -52,8 +55,9 @@ export interface RenderCategoryIconsOptions<D> {
  * centred on (x, y).
  */
 export function renderCategoryIcons<D>(opts: RenderCategoryIconsOptions<D>): void {
-    const { group, data, key, x, y, size, href } = opts;
+    const { group, data, key, x, y, size, href, align = 'xMidYMid meet' } = opts;
     const sizeOf = typeof size === 'function' ? size : () => size;
+    const alignOf = typeof align === 'function' ? align : () => align;
 
     const sel = group.selectAll('g.cat-icon').data(data.filter(d => !!href(d)), key as any);
     sel.exit().remove();
@@ -61,7 +65,6 @@ export function renderCategoryIcons<D>(opts: RenderCategoryIconsOptions<D>): voi
     const enter = sel.enter().append('g').attr('class', 'cat-icon');
     enter.append('image')
         .attr('class', 'cat-icon-img')
-        .attr('preserveAspectRatio', 'xMidYMid meet')
         // A dead/unreachable url degrades to "no image" instead of the browser's broken-image glyph.
         .on('error', (event: any) => {
             const g = event?.target?.parentNode;
@@ -71,6 +74,7 @@ export function renderCategoryIcons<D>(opts: RenderCategoryIconsOptions<D>): voi
     const merged = enter.merge(sel as any);
     merged.attr('transform', (d: D) => `translate(${x(d)},${y(d)})`).style('display', null);
     merged.select('image.cat-icon-img')
+        .attr('preserveAspectRatio', (d: D) => alignOf(d))
         .attr('x', (d: D) => -sizeOf(d) / 2).attr('y', (d: D) => -sizeOf(d) / 2)
         .attr('width', (d: D) => sizeOf(d)).attr('height', (d: D) => sizeOf(d))
         .attr('href', (d: D) => href(d));

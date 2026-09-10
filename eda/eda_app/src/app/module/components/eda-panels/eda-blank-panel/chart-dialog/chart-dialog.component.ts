@@ -84,6 +84,7 @@ export class ChartDialogComponent implements AfterViewChecked {
     private originalAssignedColors: { value: string; color: string; opacity?: number }[] = [];
     public uniqueBarColors: { value: string; color: string }[] = [];
     private originalUniqueBarColors: { value: string; color: string }[] = [];
+    private originalAssignedIcons: { value: string | number; icon: string }[] = [];
 
     // Colored bars thresholds
     public coloredBarsActive: boolean = false;
@@ -118,6 +119,7 @@ export class ChartDialogComponent implements AfterViewChecked {
         showGridLines: boolean;
         useGradient: boolean;
         useRoundedBars: boolean;
+        useIcons: boolean;
         chartAnimation: boolean;
     };
 
@@ -202,9 +204,11 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.useGradient = this.controller.params.config.config.getConfig()['useGradient'] ?? true;
         this.useRoundedBars = this.controller.params.config.config.getConfig()['useRoundedBars'] ?? true;
         this.chartAnimation = this.controller.params.config.config.getConfig()['chartAnimation'] ?? true;
+        this.useIcons = this.controller.params.config.config.getConfig()['useIcons'] ?? false;
 
         // NEW: Save original label values
         this.originalLabelValues = {
+            useIcons: this.useIcons,
             addTrend: this.addTrend,
             showLabels: this.showLabels,
             showLabelsPercent: this.showLabelsPercent,
@@ -520,12 +524,22 @@ export class ChartDialogComponent implements AfterViewChecked {
             return { value: label, color: match?.color || this.getDefaultColor(index) };
         });
 
+        // Icons are per-category (per bar), so keyed by chartLabels - not by series like assignedColors.
+        if (this.features.hasIcons) {
+            const savedIcons = this.controller.params.config.config.getConfig()['assignedIcons'] || [];
+            this.assignedIcons = barLabels.map(label => ({
+                value: label,
+                icon: savedIcons.find((c: any) => String(c.value) === String(label))?.icon || '',
+            }));
+        }
+
         // Apply colors to the chart
         this.applyColorsToChart();
 
         // Save the preview for cancellation
         this.originalAssignedColors = _.cloneDeep(this.assignedColors);
         this.originalUniqueBarColors = _.cloneDeep(this.uniqueBarColors);
+        this.originalAssignedIcons = _.cloneDeep(this.assignedIcons);
     }
 
     loadChartTypeProperties() {
@@ -591,7 +605,8 @@ export class ChartDialogComponent implements AfterViewChecked {
             showGridLines: this.showGridLines,
             useGradient: this.useGradient,
             useRoundedBars: this.useRoundedBars,
-            chartAnimation: this.chartAnimation
+            chartAnimation: this.chartAnimation,
+            ...(this.features.hasIcons ? { useIcons: this.useIcons, assignedIcons: [...this.assignedIcons] } : {}),
         };
     }
 
@@ -1071,8 +1086,10 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.useGradient = this.originalLabelValues.useGradient;
         this.useRoundedBars = this.originalLabelValues.useRoundedBars;
         this.chartAnimation = this.originalLabelValues.chartAnimation;
+        this.useIcons = this.originalLabelValues.useIcons;
         this.assignedColors = _.cloneDeep(this.originalAssignedColors);
         this.uniqueBarColors = _.cloneDeep(this.originalUniqueBarColors);
+        this.assignedIcons = _.cloneDeep(this.originalAssignedIcons);
 
         this.syncCustomFields();
     }

@@ -56,6 +56,8 @@ export const CUSTOM_CHART_CONFIG_FIELDS: CustomChartConfigField[] = [
   { name: 'useGradient', default: true, fallbackIfMissing: true },
   { name: 'useRoundedBars', default: true, fallbackIfMissing: true },
   { name: 'chartAnimation', default: true, fallbackIfMissing: true },
+  { name: 'useIcons', default: false },
+  { name: 'assignedIcons', default: [] },
 ];
 
 export function readCustomFields(cfg: any, fields: CustomChartConfigField[]): any {

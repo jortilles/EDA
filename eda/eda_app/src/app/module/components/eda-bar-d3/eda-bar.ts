@@ -34,4 +34,7 @@ export class EdaBarD3 {
   compact?: boolean;
   /** Sequential left-to-right entrance animation on first render. On by default. */
   chartAnimation?: boolean;
+  /** Per-category media-library images at each bar's tip - see category-icons.util.ts. */
+  assignedIcons?: { value: string | number; icon: string }[];
+  useIcons?: boolean;
 }
