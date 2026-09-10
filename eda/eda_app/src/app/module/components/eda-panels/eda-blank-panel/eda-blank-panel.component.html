@@ -1281,12 +1281,8 @@
   <app-table-dialog [controller]="tableController" [dashboard]="dashboard"></app-table-dialog>
 }
 
-@if(alertController){
-  <app-alert-dialog [controller]="alertController"></app-alert-dialog>
-}
-
-@if(cumsumAlertController){
-  <app-cumsum-alert-dialog [controller]="cumsumAlertController"></app-cumsum-alert-dialog>
+@if(warningController){
+  <app-warning-dialog [controller]="warningController"></app-warning-dialog>
 }
 
 @if(treeTableController){

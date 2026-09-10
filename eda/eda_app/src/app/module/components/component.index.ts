@@ -37,8 +37,7 @@ export { EdaTabsPanelComponent } from './eda-panels/eda-tabs-panel/eda-tabs-pane
 export { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe'
 export { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe'
 export { TitleDialogComponent } from './eda-panels/eda-title-panel/edit-title/quill-editor.component'
-export { AlertDialogComponent } from './eda-panels/eda-blank-panel/alert-dialog/alert-dialog.component';
-export { CumSumAlertDialogComponent } from './eda-panels/eda-blank-panel/cumulativeSum-alert/cumsum-alert-dialog.component';
+export { WarningDialogComponent } from './eda-panels/eda-blank-panel/warning-dialog/warning-dialog.component';
 export { MapEditDialogComponent } from './eda-panels/eda-blank-panel/maps-dialog/mapedit-dialog.component';
 export { MapCoordDialogComponent } from './eda-panels/eda-blank-panel/mapcoord-dialog/mapcoord-dialog.component';
 export { KpiEditDialogComponent } from './eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component';

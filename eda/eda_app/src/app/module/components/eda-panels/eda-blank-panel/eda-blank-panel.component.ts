@@ -65,8 +65,7 @@ import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
 import { NavigationUtils } from './panel-utils/navigation-utils';
 
 //
-import { CumSumAlertDialogComponent } from '@eda/components/component.index';
-import { AlertDialogComponent } from '@eda/components/component.index';
+import { WarningDialogComponent } from '@eda/components/component.index';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 
 // Tests
@@ -95,9 +94,9 @@ interface ChatMessage {
 const DIALOGS_COMPONENTS = [
     ChartDialogComponent, MapCoordDialogComponent, MapEditDialogComponent,
     TreeTableDialogComponent, KnobDialogComponent, dynamicTextDialogComponent, TableDialogComponent,
-    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent
+    TableGradientDialogComponent, WarningDialogComponent, KpiEditDialogComponent
 ];
-const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
+const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule, OverlayPanelModule];
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, ChatEdaAIComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
@@ -141,8 +140,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public filterController: EdaDialogController;
     public chartController: EdaDialogController;
     public tableController: EdaDialogController;
-    public alertController: EdaDialogController;
-    public cumsumAlertController : EdaDialogController;
+    public warningController: EdaDialogController;
     public mapController: EdaDialogController;
     public mapCoordController: EdaDialogController;
     public kpiController: EdaDialogController;
