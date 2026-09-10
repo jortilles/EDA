@@ -3,8 +3,8 @@
  * Consumed by eda-table.component.ts as `EdaTableComponent.inject`.
  */
 import { EdaTableBase } from '../eda-table-core/eda-table.base';
-import { FlatHeaderModel, HeaderModel } from '../eda-table-core/eda-table.header';
-import { FlatCellAggregation, CellAggregationStrategy, noRepeatedRows } from '../eda-table-core/eda-table.totals';
+import { FlatHeaderModel, HeaderModel } from '@eda/services/utils/eda-table-utils/eda-table.header';
+import { FlatCellAggregation, CellAggregationStrategy, noRepeatedRows } from '@eda/services/utils/eda-table-utils/eda-table.totals';
 
 export class EdaTableModel extends EdaTableBase {
   public readonly header: HeaderModel;

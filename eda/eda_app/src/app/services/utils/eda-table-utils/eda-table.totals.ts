@@ -10,11 +10,11 @@
  * separate CellAggregationStrategy, confirmed with the user during planning.
  */
 import * as _ from 'lodash';
-import { EdaColumn } from '../eda-table/eda-columns/eda-column';
-import { EdaColumnNumber } from '../eda-table/eda-columns/eda-column-number';
-import { EdaColumnChart } from '../eda-table/eda-columns/eda-column-chart';
-import { EdaColumnPercentage } from '../eda-table/eda-columns/eda-column-percentage';
-import { EdaLineD3 } from '../eda-line-d3/eda-line';
+import { EdaColumn } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column';
+import { EdaColumnNumber } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-number';
+import { EdaColumnChart } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-chart';
+import { EdaColumnPercentage } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-percentage';
+import { EdaLineD3 } from '@eda/components/eda-line-d3/eda-line';
 import { HeaderModel, SyntheticColumnKind } from './eda-table.header';
 
 export interface CellAggregationStrategy {

@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { EdaColumnContextMenu, EdaColumnText } from "@eda/components/component.index";
-import { EdaTableModel } from "@eda/components/eda-table/eda-table.model";
+import { EdaTableModel } from "@eda/components/eda-tables/eda-table/eda-table.model";
 import { DashboardService } from "@eda/services/service.index";
 import { EdaContextMenu, EdaContextMenuItem } from "@eda/shared/components/shared-components.index";
 import { ContextMenu } from "primeng/contextmenu";

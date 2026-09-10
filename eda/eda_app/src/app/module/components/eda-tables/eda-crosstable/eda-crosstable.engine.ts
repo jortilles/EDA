@@ -51,7 +51,7 @@ import * as _ from 'lodash';
 import { EdaColumn } from '../eda-table/eda-columns/eda-column';
 import { EdaColumnText } from '../eda-table/eda-columns/eda-column-text';
 import { EdaColumnNumber } from '../eda-table/eda-columns/eda-column-number';
-import { HeaderRow, HeaderLabel } from '../eda-table-core/eda-table.header';
+import { HeaderRow, HeaderLabel } from '@eda/services/utils/eda-table-utils/eda-table.header';
 
 export interface AxisItem {
   column_name: string;

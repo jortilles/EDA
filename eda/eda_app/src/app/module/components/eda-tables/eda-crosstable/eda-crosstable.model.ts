@@ -5,8 +5,8 @@
  */
 import { EdaColumn } from '../eda-table/eda-columns/eda-column';
 import { EdaTableBase } from '../eda-table-core/eda-table.base';
-import { HeaderModel, MatrixHeaderModel } from '../eda-table-core/eda-table.header';
-import { CellAggregationStrategy, MatrixCellAggregation } from '../eda-table-core/eda-table.totals';
+import { HeaderModel, MatrixHeaderModel } from '@eda/services/utils/eda-table-utils/eda-table.header';
+import { CellAggregationStrategy, MatrixCellAggregation } from '@eda/services/utils/eda-table-utils/eda-table.totals';
 import { AxisConfig, AxisItem, buildCrossTable, synthesizeLegacyAxis } from './eda-crosstable.engine';
 
 export class EdaCrosstableModel extends EdaTableBase {

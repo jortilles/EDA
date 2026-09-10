@@ -1,5 +1,5 @@
 import { EdaColumnText, EdaColumnContextMenu, EdaTableComponent } from '@eda/components/component.index';
-import { EdaTableModel } from '@eda/components/eda-table/eda-table.model';
+import { EdaTableModel } from '@eda/components/eda-tables/eda-table/eda-table.model';
 import { Component, OnInit, OnDestroy, EventEmitter, Output, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
@@ -8,9 +8,9 @@ import { AlertService, DataSourceService, QueryParams, QueryBuilderService, Spin
 import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource, Relation } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
 import { AGG_TYPES } from '@eda/configs/customizable/customizable_default';
-import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
+import { EdaColumnFunction } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-function';
 import * as _ from 'lodash';
-import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
+import { EdaColumnEditable } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-editable';
 import Swal from 'sweetalert2';
 import { PrimengModule } from 'app/core/primeng.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';

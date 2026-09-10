@@ -3,7 +3,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { StyleProviderService, AlertService } from '@eda/services/service.index';
 import { Table } from 'primeng/table';
 import { EdaCrosstableModel } from './eda-crosstable.model';
-import { computeTableColorStyles, getNiceName, ColorStyleSpec } from '../eda-table-core/eda-table.color';
+import { computeTableColorStyles, getNiceName, ColorStyleSpec } from '@eda/services/utils/eda-table-utils/eda-table.color';
 import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_default';
 import { registerLocaleData } from '@angular/common';
 

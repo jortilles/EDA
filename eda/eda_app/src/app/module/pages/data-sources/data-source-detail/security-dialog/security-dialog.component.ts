@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DataSourceService } from '@eda/services/service.index';
 import { EdaColumnText, EdaTableComponent } from '@eda/components/component.index';
-import { EdaTableModel } from '@eda/components/eda-table/eda-table.model';
+import { EdaTableModel } from '@eda/components/eda-tables/eda-table/eda-table.model';
 import { EditColumnPanel, EditModelPanel } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 

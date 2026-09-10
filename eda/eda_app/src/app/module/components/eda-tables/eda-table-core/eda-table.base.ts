@@ -29,7 +29,7 @@ import { EdaColumn } from '../eda-table/eda-columns/eda-column';
 import { EdaContextMenu } from '@eda/shared/components/eda-context-menu/eda-context-menu';
 import { AlertService } from '@eda/services/service.index';
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
-import { HeaderModel } from './eda-table.header';
+import { HeaderModel } from '@eda/services/utils/eda-table-utils/eda-table.header';
 import {
   TotalsContext,
   CellAggregationStrategy,
@@ -41,7 +41,7 @@ import {
   colSubTotals,
   colsPercentages,
   removePercentages,
-} from './eda-table.totals';
+} from '@eda/services/utils/eda-table-utils/eda-table.totals';
 
 export abstract class EdaTableBase implements TotalsContext {
   public onNotify: EventEmitter<any> = new EventEmitter();

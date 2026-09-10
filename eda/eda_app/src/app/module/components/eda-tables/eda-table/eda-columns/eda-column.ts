@@ -1,4 +1,4 @@
-import {EdaColumnFilter} from '@eda/components/eda-table/eda-column-filter/eda-column-filter';
+import {EdaColumnFilter} from '@eda/components/eda-tables/eda-table/eda-column-filter/eda-column-filter';
 
 export abstract class EdaColumn {
     width: any;
