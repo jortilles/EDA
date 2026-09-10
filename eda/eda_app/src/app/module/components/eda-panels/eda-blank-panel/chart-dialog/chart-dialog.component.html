@@ -19,9 +19,8 @@
           </span>
 
           <div class="space-y-4 text-base gap-3 flex flex-col">
-            @if (panelChartConfig.edaChart !== 'histogram') {
             <!-- Trend -->
-            @if (showTrend) {
+            @if (features.hasTrend) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -53,7 +52,7 @@
             }
 
             <!-- Comparison -->
-            @if (showComparative) {
+            @if (features.hasComparative && showComparative) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -85,8 +84,8 @@
             </div>
             }
 
-            <!-- Prediction: line charts only -->
-            @if (showTrend) {
+            <!-- Prediction: line/area charts only -->
+            @if (features.hasPrediction) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -117,10 +116,9 @@
               </label>
             </div>
             }
-            }
 
             <!-- Chart Entrance Animation -->
-            @if (['bar', 'horizontalBar', 'stackedbar', 'stackedbar100', 'pyramid', 'histogram', 'line', 'area', 'barline', 'doughnut', 'polarArea', 'radar'].includes(panelChartConfig.edaChart)) {
+            @if (features.hasAnimation) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -152,6 +150,7 @@
             }
 
             <!-- Show Legend -->
+            @if (features.hasLegend) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -180,9 +179,10 @@
                 </div>
               </label>
             </div>
+            }
 
             <!-- Show Grid Lines -->
-            @if (['bar', 'horizontalBar', 'line', 'area', 'kpiarea', 'polarArea', 'radar', 'barline'].includes(panelChartConfig.edaChart)) {
+            @if (features.hasGridLines) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -214,7 +214,7 @@
             }
 
             <!-- Point markers: line charts and barline's line half -->
-            @if (showTrend || panelChartConfig.edaChart === 'barline') {
+            @if (features.hasPointLines) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -247,7 +247,7 @@
             }
 
             <!-- Round Bars -->
-            @if (['bar', 'horizontalBar', 'stackedbar', 'stackedbar100', 'pyramid', 'histogram', 'barline'].includes(panelChartConfig.edaChart)) {
+            @if (features.hasRoundedBars) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -278,8 +278,8 @@
             </div>
             }
 
-            <!-- Second axis: barline only - lines get their own scale/axis on the right -->
-            @if (panelChartConfig.edaChart === 'barline') {
+            <!-- Second axis: barline only -->
+            @if (features.hasSecondAxis) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -312,7 +312,7 @@
             }
 
             <!-- Number of Columns (histogram only) -->
-            @if (showNumberOfColumns) {
+            @if (features.hasNumberOfColumns) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -341,6 +341,7 @@
             }
 
             <!-- Show Labels -->
+            @if (features.hasLabels) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -369,8 +370,10 @@
                 </div>
               </label>
             </div>
+            }
 
             <!-- Show Percentage Labels -->
+            @if (features.hasLabelsPercent) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -399,9 +402,10 @@
                 </div>
               </label>
             </div>
+            }
 
             <!-- Label color (only meaningful once labels are actually shown) -->
-            @if (showLabels || showLabelsPercent) {
+            @if ((features.hasLabels && showLabels) || (features.hasLabelsPercent && showLabelsPercent)) {
               <div class="flex items-center justify-between">
                 <label class="font-medium" i18n="@@labelColorOption">Color de las etiquetas</label>
                 <div class="flex items-center gap-3">
@@ -424,6 +428,57 @@
                 </div>
               </div>
             }
+
+            <!-- Inner radius (doughnut) -->
+            @if (features.hasInnerRadius) {
+              <div class="flex items-center justify-between">
+                <label i18n="@@innerRadius" class="font-medium">Radio interno</label>
+                <div class="flex items-center gap-3">
+                  <input type="range" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="applyOption()" class="w-56 accent-[var(--corporate-primary)]">
+                  <input type="number" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="applyOption()" class="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                </div>
+              </div>
+            }
+
+            <!-- Top N bars (raceBar) -->
+            @if (features.hasTopNCount) {
+              <div class="flex items-center gap-3">
+                <label i18n="@@raceBarTopN" class="font-medium shrink-0">Barras a mostrar (Top N)</label>
+                <input type="range" min="3" max="20" [(ngModel)]="topNCount" (input)="applyOption()" class="flex-1 min-w-0 accent-[var(--corporate-primary)]">
+                <input type="number" min="3" max="20" [(ngModel)]="topNCount" (input)="applyOption()" class="w-20 shrink-0 rounded-md border border-input bg-background px-3 py-2 text-sm">
+              </div>
+            }
+
+            <!-- Transition duration (raceBar) -->
+            @if (features.hasTransitionMs) {
+              <div class="flex items-center gap-3">
+                <label i18n="@@raceBarTransitionMs" class="font-medium shrink-0">Duración de la transición (ms)</label>
+                <input type="range" min="250" max="10000" step="250" [(ngModel)]="transitionMs" (input)="applyOption()" class="flex-1 min-w-0 accent-[var(--corporate-primary)]">
+                <input type="number" min="250" max="10000" step="250" [(ngModel)]="transitionMs" (input)="applyOption()" class="w-20 shrink-0 rounded-md border border-input bg-background px-3 py-2 text-sm">
+              </div>
+            }
+
+            <!-- Timeline (raceBar) -->
+            @if (features.hasTimeline) {
+              <div class="flex items-center justify-between">
+                <label i18n="@@raceBarShowTimeline" class="font-medium">Mostrar línea de tiempo</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" [(ngModel)]="showTimeline" class="sr-only peer" (ngModelChange)="applyOption()">
+                  <div
+                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                  </div>
+                </label>
+              </div>
+            }
+
+            <!-- Limits (knob) -->
+            @if (features.hasLimits) {
+              <div class="flex flex-col gap-2">
+                <label i18n="@@Limits" class="font-medium">Limites</label>
+                <input type="number" [(ngModel)]="min" (change)="applyOption()" class="w-full border p-1 rounded" placeholder="min">
+                <input type="number" [(ngModel)]="max" (change)="applyOption()" class="w-full border p-1 rounded" placeholder="max">
+              </div>
+            }
           </div>
         </div>
       </div>
@@ -434,7 +489,8 @@
           <span class="text-lg font-semibold" i18n="@@colorsChartH6">
             Colores
           </span>
-          @if (['bar', 'horizontalBar', 'stackedbar', 'stackedbar100', 'pyramid', 'histogram', 'barline', 'radar', 'area'].includes(panelChartConfig.edaChart)) {
+
+          @if (features.hasUseGradient) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5 pb-4">
                 <label i18n="@@useGradient" for="usarDegradadoBarras" class="font-medium">
@@ -449,11 +505,15 @@
               </label>
             </div>
           }
-          @if (panelChartConfig.edaChart !== 'bar' && panelChartConfig.edaChart !== 'horizontalBar') {
-            <div>
-              <div class="grid gap-4 grid-rows-auto gap-6">
-                <div>
-                  <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+
+          @switch (features.colorEditorShape) {
+
+            <!-- ============ per-series (axis charts) ============ -->
+            @case ('per-series') {
+              @if (!features.hasThresholdColors) {
+                <div class="grid gap-4 grid-rows-auto gap-6">
+                  <div>
+                    <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
                     <div class="flex items-stretch gap-2 mb-6">
                       <p-dropdown
                         [(ngModel)]="selectedPalette"
@@ -473,8 +533,7 @@
                         </div>
                       }
                     </div>
-  
-                    <!-- Iterate over assignedColors -->
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                       @for (color of assignedColors; track color.value; let idx = $index) {
                         <div class="flex flex-col gap-3 border rounded-lg p-4 bg-white ">
@@ -494,7 +553,7 @@
                               />
                             </div>
                           </div>
-                          @if (isAreaOrRadarChart) {
+                          @if (features.hasOpacity) {
                             <div class="flex items-center justify-between">
                               <label class="text-sm text-slate-500" i18n="@@opacityLabel">Opacidad</label>
                               <div class="flex items-center border rounded-md overflow-hidden">
@@ -517,155 +576,260 @@
                     </div>
                   </div>
                 </div>
-              </div>
-            }  
-            @else{
-              <div class="flex gap-2">
-                <button type="button" (click)="setActiveTab(0)" [ngClass]="tabButtonClass(0)"
-                  class="px-4 py-2 text-base font-medium rounded-t-md border-b-2 focus:outline-none transition-colors duration-300 ease-in-out"
-                  i18n="@@colorsTab">
-                  Colores
-                </button>
-                @if (showUniqueColorsTab) {
-                  <button type="button" (click)="setActiveTab(1)" [ngClass]="tabButtonClass(1)"
+              }
+              @else {
+                <div class="flex gap-2">
+                  <button type="button" (click)="setActiveTab(0)" [ngClass]="tabButtonClass(0)"
                     class="px-4 py-2 text-base font-medium rounded-t-md border-b-2 focus:outline-none transition-colors duration-300 ease-in-out"
-                    i18n="@@uniqueColorsTab">
-                    Colores Únicos
+                    i18n="@@colorsTab">
+                    Colores
                   </button>
+                  @if (showUniqueColorsTab) {
+                    <button type="button" (click)="setActiveTab(1)" [ngClass]="tabButtonClass(1)"
+                      class="px-4 py-2 text-base font-medium rounded-t-md border-b-2 focus:outline-none transition-colors duration-300 ease-in-out"
+                      i18n="@@uniqueColorsTab">
+                      Colores Únicos
+                    </button>
+                  }
+                  <button type="button" (click)="setActiveTab(intervalTabIndex)" [ngClass]="tabButtonClass(intervalTabIndex)"
+                    class="px-4 py-2 text-base font-medium rounded-t-md border-b-2 focus:outline-none transition-colors duration-300 ease-in-out"
+                    i18n="@@gradientTab">
+                    Colores por intervalo
+                  </button>
+                </div>
+
+                @if (activeTabIndex === 0) {
+                  <div class="grid p-6 gap-4 grid-rows-auto gap-6">
+                    <div>
+                      <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+                      <div class="flex items-stretch gap-2 mb-6">
+                        <p-dropdown
+                          [(ngModel)]="selectedPalette"
+                          [options]="allPalettes"
+                          optionLabel="name"
+                          i18n-placeholder="@@selectPalette"
+                          placeholder="-- Seleccione una paleta --"
+                          (ngModelChange)="onPaletteSelected()"
+                          [style]="{'width':'180px'}"
+                          appendTo="body">
+                        </p-dropdown>
+                        @if (selectedPalette) {
+                          <div class="flex rounded overflow-hidden" style="width: 80px;">
+                            @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                              <div class="flex-1" [style.background-color]="color"></div>
+                            }
+                          </div>
+                        }
+                      </div>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @for (color of assignedColors; track color.value; let idx = $index) {
+                        <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                          <span class="font-medium">{{ color.value }}</span>
+                          <div class="flex items-center gap-2">
+                            <input [(ngModel)]="assignedColors[idx].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                            <p-colorPicker [(ngModel)]="assignedColors[idx].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
+                          </div>
+                        </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
                 }
-                <button type="button" (click)="setActiveTab(intervalTabIndex)" [ngClass]="tabButtonClass(intervalTabIndex)"
-                  class="px-4 py-2 text-base font-medium rounded-t-md border-b-2 focus:outline-none transition-colors duration-300 ease-in-out"
-                  i18n="@@gradientTab">
-                  Colores por intervalo
-                </button>
-              </div>
 
-              @if (activeTabIndex === 0) {
-                <div class="grid p-6 gap-4 grid-rows-auto gap-6">
-                  <div>
-                    <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
-                    <div class="flex items-stretch gap-2 mb-6">
-                      <p-dropdown
-                        [(ngModel)]="selectedPalette"
-                        [options]="allPalettes"
-                        optionLabel="name"
-                        i18n-placeholder="@@selectPalette"
-                        placeholder="-- Seleccione una paleta --"
-                        (ngModelChange)="onPaletteSelected()"
-                        [style]="{'width':'180px'}"
-                        appendTo="body">
-                      </p-dropdown>
-                      @if (selectedPalette) {
-                        <div class="flex rounded overflow-hidden" style="width: 80px;">
-                          @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
-                            <div class="flex-1" [style.background-color]="color"></div>
-                          }
-                        </div>
-                      }
-                    </div>
-                    <!-- Iterate over assignedColors (one color per series) -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      @for (color of assignedColors; track color.value; let idx = $index) {
-                      <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
-                        <span class="font-medium">{{ color.value }}</span>
-                        <div class="flex items-center gap-2">
-                          <input [(ngModel)]="assignedColors[idx].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
-                          <p-colorPicker [(ngModel)]="assignedColors[idx].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
-                        </div>
+                @if (showUniqueColorsTab && activeTabIndex === 1) {
+                  <div class="grid p-6 gap-4 grid-rows-auto gap-6">
+                    <div>
+                      <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+                      <div class="flex items-stretch gap-2 mb-6">
+                        <p-dropdown
+                          [(ngModel)]="selectedPalette"
+                          [options]="allPalettes"
+                          optionLabel="name"
+                          i18n-placeholder="@@selectPalette"
+                          placeholder="-- Seleccione una paleta --"
+                          (ngModelChange)="onPaletteSelected()"
+                          [style]="{'width':'180px'}"
+                          appendTo="body">
+                        </p-dropdown>
+                        @if (selectedPalette) {
+                          <div class="flex rounded overflow-hidden" style="width: 80px;">
+                            @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                              <div class="flex-1" [style.background-color]="color"></div>
+                            }
+                          </div>
+                        }
                       </div>
+
+                      @if (uniqueBarColors.length === 0) {
+                        <p class="text-sm text-slate-400 italic" i18n="@@noUniqueLabels">No hay valores únicos disponibles.</p>
                       }
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @for (color of uniqueBarColors; track color.value; let idx = $index) {
+                        <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                          <span class="font-medium truncate max-w-[60%]" [title]="color.value">{{ color.value }}</span>
+                          <div class="flex items-center gap-2">
+                            <input [(ngModel)]="uniqueBarColors[idx].color" (input)="handleUniqueColorInput()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                            <p-colorPicker [(ngModel)]="uniqueBarColors[idx].color" (onChange)="handleUniqueColorInput()" format="hex" appendTo="body" />
+                          </div>
+                        </div>
+                        }
+                      </div>
                     </div>
                   </div>
-                </div>
-              }
+                }
 
-              @if (showUniqueColorsTab && activeTabIndex === 1) {
-                <div class="grid p-6 gap-4 grid-rows-auto gap-6">
-                  <div>
-                    <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
-                    <div class="flex items-stretch gap-2 mb-6">
-                      <p-dropdown
-                        [(ngModel)]="selectedPalette"
-                        [options]="allPalettes"
-                        optionLabel="name"
-                        i18n-placeholder="@@selectPalette"
-                        placeholder="-- Seleccione una paleta --"
-                        (ngModelChange)="onPaletteSelected()"
-                        [style]="{'width':'180px'}"
-                        appendTo="body">
-                      </p-dropdown>
-                      @if (selectedPalette) {
-                        <div class="flex rounded overflow-hidden" style="width: 80px;">
-                          @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
-                            <div class="flex-1" [style.background-color]="color"></div>
-                          }
+                @if (activeTabIndex === intervalTabIndex) {
+                  <div class="px-6 pb-4">
+
+                    <div class="chart-color-selection mt-4 bg-white" style="min-width: 300px;">
+                      <div class="flex items-center justify-between border rounded-lg p-3">
+                        <div>
+                          <span class="font-medium mr-4">{{coloredBarsColumnHeader}} <span i18n="@@aboveThreshold">es mayor que:</span></span>
+                          <p-inputNumber [(ngModel)]="thresholdHigh" mode="decimal" (onInput)="applyColoredBars()"
+                          [minFractionDigits]="0" [maxFractionDigits]="4"
+                          [ngClass]="{'ng-invalid ng-dirty': !thresholdsValid}" />
                         </div>
-                      }
+                        <div class="flex items-center gap-2">
+                          <input class="text-sm text-right text-slate-500 font-mono border rounded px-2 py-1 w-24" [(ngModel)]="colorAbove" (input)="applyColoredBars()">
+                          <p-colorPicker [(ngModel)]="colorAbove" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
+                        </div>
+                      </div>
                     </div>
 
-                    @if (uniqueBarColors.length === 0) {
-                      <p class="text-sm text-slate-400 italic" i18n="@@noUniqueLabels">No hay valores únicos disponibles.</p>
+                    <div class="chart-color-selection mt-4 bg-white" style="min-width: 300px;">
+                      <div class="flex items-center justify-between border rounded-lg p-3">
+                        <span class="font-medium">{{coloredBarsColumnHeader}} <span i18n="@@betweenThresholds">mayor que</span> {{thresholdLow}} <span i18n="@@betweenThresholds2">y menor que</span> {{thresholdHigh}}</span>
+                        <div class="flex items-center gap-2">
+                          <input class="text-sm text-right text-slate-500 font-mono border rounded px-2 py-1 w-24" [(ngModel)]="colorBetween" (input)="applyColoredBars()">
+                          <p-colorPicker [(ngModel)]="colorBetween" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="chart-color-selection mt-4 bg-white" style="min-width: 300px;">
+                      <div class="flex items-center justify-between border rounded-lg p-3">
+                        <div>
+                          <span class="font-medium mr-4">{{coloredBarsColumnHeader}} <span i18n="@@belowThreshold">es menor que:</span></span>
+                          <p-inputNumber [(ngModel)]="thresholdLow" mode="decimal" (onInput)="applyColoredBars()"
+                          [minFractionDigits]="0" [maxFractionDigits]="4"
+                          [ngClass]="{'ng-invalid ng-dirty': !thresholdsValid}" />
+                        </div>
+                        <div class="flex items-center gap-2">
+                          <input class="text-sm text-right text-slate-500 font-mono border rounded px-2 py-1 w-24" [(ngModel)]="colorBelow" (input)="applyColoredBars()">
+                          <p-colorPicker [(ngModel)]="colorBelow" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+              }
+            }
+
+            <!-- ============ category-list (doughnut / polarArea / sunburst / treeMap / scatter / bubble / sankey / raceBar / knob) ============ -->
+            @case ('category-list') {
+
+              <!-- Semaphore toggle (knob) -->
+              @if (features.hasSemaphore) {
+                <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                  <div class="space-y-0.5">
+                    <p class="font-medium" i18n="@@knobSemaphoreLabel">Color semafórico</p>
+                    <p class="text-xs text-slate-400" i18n="@@knobSemaphoreDesc">Rojo → amarillo → verde según el valor</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" [(ngModel)]="semaphoreColor" (ngModelChange)="applyOption()" class="sr-only peer">
+                    <div
+                      class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                    </div>
+                  </label>
+                </div>
+
+                @if (semaphoreColor) {
+                  <div class="flex items-center gap-3 px-1">
+                    <div class="h-3 flex-1 rounded-full" style="background: linear-gradient(to right, hsl(0,85%,42%), hsl(60,85%,42%), hsl(120,85%,42%))"></div>
+                    <span class="text-xs text-slate-400">min → max</span>
+                  </div>
+                }
+              }
+
+              @if (!features.hasSemaphore || !semaphoreColor) {
+                <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+                @if (!features.hasSemaphore) {
+                  <div class="flex items-stretch gap-2 mb-4">
+                    <p-dropdown
+                      [(ngModel)]="selectedPalette"
+                      [options]="allPalettes"
+                      optionLabel="name"
+                      i18n-placeholder="@@selectPalette"
+                      placeholder="-- Seleccione una paleta --"
+                      (ngModelChange)="onPaletteSelected()"
+                      [style]="{'width':'180px'}"
+                      appendTo="body">
+                    </p-dropdown>
+                    @if (selectedPalette) {
+                      <div class="flex rounded overflow-hidden" style="width: 80px;">
+                        @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                          <div class="flex-1" [style.background-color]="color"></div>
+                        }
+                      </div>
                     }
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      @for (color of uniqueBarColors; track color.value; let idx = $index) {
-                      <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
-                        <span class="font-medium truncate max-w-[60%]" [title]="color.value">{{ color.value }}</span>
-                        <div class="flex items-center gap-2">
-                          <input [(ngModel)]="uniqueBarColors[idx].color" (input)="handleUniqueColorInput()" class="text-md text-slate-500 font-mono w-[3.5vw]">
-                          <p-colorPicker [(ngModel)]="uniqueBarColors[idx].color" (onChange)="handleUniqueColorInput()" format="hex" appendTo="body" />
-                        </div>
-                      </div>
-                      }
-                    </div>
                   </div>
+                }
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  @for (color of assignedColors; track color.value; let idx = $index) {
+                    <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                      <span class="font-medium">{{ color.value }}</span>
+                      <div class="flex items-center gap-2">
+                        <input [(ngModel)]="assignedColors[idx].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                        <p-colorPicker [(ngModel)]="assignedColors[idx].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
+                      </div>
+                    </div>
+                  }
                 </div>
               }
+            }
 
-              @if (activeTabIndex === intervalTabIndex) {
-                <div class="px-6 pb-4">
-
-                  <div class="chart-color-selection mt-4 bg-white" style="min-width: 300px;">
-                    <div class="flex items-center justify-between border rounded-lg p-3">
-                      <div>
-                        <span class="font-medium mr-4">{{coloredBarsColumnHeader}} <span i18n="@@aboveThreshold">es mayor que:</span></span>
-                        <p-inputNumber [(ngModel)]="thresholdHigh" mode="decimal" (onInput)="applyColoredBars()"
-                        [minFractionDigits]="0" [maxFractionDigits]="4"
-                        [ngClass]="{'ng-invalid ng-dirty': !thresholdsValid}" />
-                      </div>
-                      <div class="flex items-center gap-2">
-                        <input class="text-sm text-right text-slate-500 font-mono border rounded px-2 py-1 w-24" [(ngModel)]="colorAbove" (input)="applyColoredBars()">
-                        <p-colorPicker [(ngModel)]="colorAbove" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
-                      </div>
+            <!-- ============ start-end (funnel) ============ -->
+            @case ('start-end') {
+              <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+              <div class="flex items-stretch gap-2 mb-4">
+                <p-dropdown
+                  [(ngModel)]="selectedPalette"
+                  [options]="allPalettes"
+                  optionLabel="name"
+                  i18n-placeholder="@@selectPalette"
+                  placeholder="-- Seleccione una paleta --"
+                  (ngModelChange)="onPaletteSelected()"
+                  [style]="{'width':'180px'}"
+                  appendTo="body">
+                </p-dropdown>
+                @if (selectedPalette) {
+                  <div class="flex rounded overflow-hidden" style="width: 80px;">
+                    @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                      <div class="flex-1" [style.background-color]="color"></div>
+                    }
+                  </div>
+                }
+              </div>
+              @if (assignedColors.length >= 2) {
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                    <span class="font-medium" i18n="@@Initial">Inicio</span>
+                    <div class="flex items-center gap-2">
+                      <input [(ngModel)]="assignedColors[0].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                      <p-colorPicker [(ngModel)]="assignedColors[0].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
                     </div>
                   </div>
-
-                  <div class="chart-color-selection mt-4 bg-white" style="min-width: 300px;">
-                    <div class="flex items-center justify-between border rounded-lg p-3">
-                      <span class="font-medium">{{coloredBarsColumnHeader}} <span i18n="@@betweenThresholds">mayor que</span> {{thresholdLow}} <span i18n="@@betweenThresholds2">y menor que</span> {{thresholdHigh}}</span>
-                      <div class="flex items-center gap-2">
-                        <input class="text-sm text-right text-slate-500 font-mono border rounded px-2 py-1 w-24" [(ngModel)]="colorBetween" (input)="applyColoredBars()">
-                        <p-colorPicker [(ngModel)]="colorBetween" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="chart-color-selection mt-4 bg-white" style="min-width: 300px;">
-                    <div class="flex items-center justify-between border rounded-lg p-3">
-                      <div>
-                        <span class="font-medium mr-4">{{coloredBarsColumnHeader}} <span i18n="@@belowThreshold">es menor que:</span></span>
-                        <p-inputNumber [(ngModel)]="thresholdLow" mode="decimal" (onInput)="applyColoredBars()"
-                        [minFractionDigits]="0" [maxFractionDigits]="4"
-                        [ngClass]="{'ng-invalid ng-dirty': !thresholdsValid}" />
-                      </div>
-                      <div class="flex items-center gap-2">
-                        <input class="text-sm text-right text-slate-500 font-mono border rounded px-2 py-1 w-24" [(ngModel)]="colorBelow" (input)="applyColoredBars()">
-                        <p-colorPicker [(ngModel)]="colorBelow" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
-                      </div>
+                  <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                    <span class="font-medium" i18n="@@Final">Final</span>
+                    <div class="flex items-center gap-2">
+                      <input [(ngModel)]="assignedColors[1].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                      <p-colorPicker [(ngModel)]="assignedColors[1].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
                     </div>
                   </div>
                 </div>
               }
             }
+          }
         </div>
       </div>
     </div>

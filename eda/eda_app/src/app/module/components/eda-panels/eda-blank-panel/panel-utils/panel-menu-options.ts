@@ -39,27 +39,22 @@ export const PanelOptions = {
 
         if (Object.entries(panelComponent.graficos).length !== 0 && panelComponent.chartData.length !== 0) {
           
-          if (['line', 'area', 'bar', 'horizontalBar', 'barline', 'histogram', 'pyramid', 'radar'].includes(panelComponent.graficos.chartType)) {
+          if (['line', 'area', 'bar', 'horizontalBar', 'barline', 'histogram', 'pyramid', 'radar',
+               'doughnut', 'polarArea', 'sunburst', 'treeMap', 'scatterPlot', 'bubblechart', 'parallelSets', 'funnel', 'raceBar',
+               'knob']
+               .includes(panelComponent.graficos.chartType)) {
 
+            // Single unified chart dialog for every axis + D3 category chart (+ knob) - it resolves
+            // per-type options from CHART_DIALOG_SPECS internally.
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.chartController = new EdaDialogController({
               params: {
                 panelId: _.get(panelComponent.panel, 'id'),
                 chart: panelComponent.graficos,
-                config: panelComponent.panelChartConfig
+                config: panelComponent.panelChartConfig,
+                chartType: panelComponent.graficos.chartType
             },
               close: (event, response) => panelComponent.onCloseChartProperties(event, response)
-            });
-
-          } else if (['doughnut', 'polarArea', 'sunburst', 'treeMap', 'scatterPlot', 'bubblechart', 'parallelSets', 'funnel', 'raceBar'].includes(panelComponent.graficos.chartType)) {
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.categoryChartController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig,
-                chartType: panelComponent.graficos.chartType
-              },
-              close: (event, response) => panelComponent.onCloseCategoryChartProperties(event, response, panelComponent.graficos.chartType)
             });
 
           } else if (['table', 'crosstable'].includes(panelComponent.graficos.chartType)) {
@@ -147,19 +142,6 @@ export const PanelOptions = {
               close: (event, response) => { panelComponent.onCloseTreeTableProperties(event, response) }
             })
 
-
-          }
-
-          else if(panelComponent.graficos.chartType === 'knob'){
-
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.knobController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseKnobProperties(event, response) }
-            });
 
           }
 
