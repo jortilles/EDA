@@ -1,7 +1,8 @@
 import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import * as d3 from 'd3';
 import { EdaFunnel } from './eda-funnel';
-import { ChartUtilsService, StyleProviderService, D3TooltipService, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, initD3ResizeObserver, teardownD3Chart, FileUtiles } from '@eda/services/service.index';
+import { buildIconMap, renderCategoryIcons, resolveIconHref } from '../eda-panels/eda-blank-panel/panel-charts/category-icons.util';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -46,7 +47,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
   private hiddenStepIndexes: Set<number> = new Set();
   private hasRendered = false;
 
-  constructor( private styleProviderService : StyleProviderService, private chartUtils : ChartUtilsService, private tooltipService: D3TooltipService) {
+  constructor( private styleProviderService : StyleProviderService, private chartUtils : ChartUtilsService, private tooltipService: D3TooltipService, private fileUtils: FileUtiles) {
   }
 
 
@@ -436,6 +437,26 @@ draw() {
         this.onClick.emit({label, filterBy });
       }
     });
+
+  // Per-step image badge, centred in each step's zone at the funnel's vertical middle. Sized as a
+  // fraction of the smaller of (zone width, funnel thickness at that step) so it scales with both.
+  const iconMap = buildIconMap(this.inject.assignedIcons, this.inject.useIcons);
+  if (iconMap.size) {
+    let defs: any = svg.select('defs');
+    if (defs.empty()) defs = svg.append('defs');
+    const stepSpan = (d: FunnelData) => { const [x0, x1] = zoneBounds(d.step); return x1 - x0; };
+    const bodyHeight = (d: FunnelData) => 2 * Math.abs(y(0) - y(d.value));
+    const iconG = svg.append('g').attr('class', 'eda-funnel-icons').style('pointer-events', 'none');
+    renderCategoryIcons<FunnelData>({
+      group: iconG,
+      data,
+      key: (d: FunnelData) => d.label,
+      x: (d: FunnelData) => { const [x0, x1] = zoneBounds(d.step); return (x0 + x1) / 2; },
+      y: () => y(0),
+      size: (d: FunnelData) => Math.min(stepSpan(d) * 0.6, bodyHeight(d) * 0.7),
+      href: (d: FunnelData) => Math.min(stepSpan(d), bodyHeight(d)) < 28 ? '' : resolveIconHref(iconMap.get(String(d.label)) || '', this.fileUtils),
+    });
+  }
 
   this.hasRendered = true;
 }

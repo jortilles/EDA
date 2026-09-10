@@ -1872,6 +1872,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
         inject.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
+        inject.assignedIcons = this.props.config.getConfig()['assignedIcons'] ?? [];
+        inject.useIcons = this.props.config.getConfig()['useIcons'] ?? false;
         this.createLegacyD3Component(inject, EdaFunnelComponent);
     }
 
@@ -1909,6 +1911,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
         inject.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
+        inject.assignedIcons = this.props.config.getConfig()['assignedIcons'] ?? [];
+        inject.useIcons = this.props.config.getConfig()['useIcons'] ?? false;
 
         this.createLegacyD3Component(inject, EdaTreeMap);
     }

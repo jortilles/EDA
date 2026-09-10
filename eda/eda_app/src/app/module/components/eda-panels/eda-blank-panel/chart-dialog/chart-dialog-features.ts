@@ -175,6 +175,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasLegend: true,
         colorEditorShape: 'category-list',
         hasUseGradient: true,
+        hasIcons: true,
     },
     scatterPlot: {
         family: 'live',
@@ -203,6 +204,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasAnimation: true,
         hasLegend: true,
         colorEditorShape: 'start-end',
+        hasIcons: true,
     },
     raceBar: {
         family: 'live',

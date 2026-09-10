@@ -480,7 +480,7 @@
               </div>
             }
 
-            <!-- Icons (raceBar / bubblechart) -->
+            <!-- Icons: media-library image per category (raceBar / bubblechart / funnel / treeMap / scatterPlot) -->
             @if (features.hasIcons) {
               <div class="flex items-center justify-between">
                 <label i18n="@@raceBarUseIcons" class="font-medium">Añadir imágenes</label>
@@ -499,6 +499,18 @@
                     <i class="pi pi-folder-open"></i>
                   </button>
                 </div>
+
+                <!-- funnel has no per-category colour row (start/end gradient only), so its icons get their own list -->
+                @if (features.colorEditorShape === 'start-end') {
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    @for (item of assignedIcons; track item.value; let idx = $index) {
+                      <div class="flex items-center justify-between border rounded-lg p-2 bg-white">
+                        <span class="font-medium truncate max-w-[55%]" [title]="item.value">{{ item.value }}</span>
+                        <ng-container [ngTemplateOutlet]="iconBtn" [ngTemplateOutletContext]="{ $implicit: item, idx }"></ng-container>
+                      </div>
+                    }
+                  </div>
+                }
               }
             }
           </div>
@@ -802,22 +814,7 @@
                       <span class="font-medium">{{ color.value }}</span>
                       <div class="flex items-center gap-2">
                         @if (features.hasIcons && useIcons) {
-                          <div class="relative">
-                            <button type="button" (click)="openIconPicker(idx)"
-                              class="w-8 h-8 flex items-center justify-center rounded border bg-slate-50 overflow-hidden"
-                              i18n-title="@@chooseImage" title="Elegir imagen">
-                              @if (assignedIcons[idx]?.icon) {
-                                <img [src]="assignedIcons[idx].icon" class="w-full h-full object-cover">
-                              } @else {
-                                <i class="pi pi-image text-slate-400"></i>
-                              }
-                            </button>
-                            @if (assignedIcons[idx]?.icon) {
-                              <button type="button" (click)="removeIcon(idx)"
-                                class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-slate-600 text-white text-[10px] leading-none flex items-center justify-center"
-                                i18n-title="@@remove" title="Eliminar">×</button>
-                            }
-                          </div>
+                          <ng-container [ngTemplateOutlet]="iconBtn" [ngTemplateOutletContext]="{ $implicit: assignedIcons[idx], idx }"></ng-container>
                         }
                         <input [(ngModel)]="assignedColors[idx].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
                         <p-colorPicker [(ngModel)]="assignedColors[idx].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
@@ -870,11 +867,32 @@
               }
             }
           }
+
         </div>
       </div>
     </div>
   </div>
 </eda-dialog2>
+
+<!-- Shared per-category image button (used inline in each colour row, and standalone for funnel). -->
+<ng-template #iconBtn let-item let-idx="idx">
+  <div class="relative">
+    <button type="button" (click)="openIconPicker(idx)"
+      class="w-9 h-9 flex items-center justify-center rounded-md border bg-slate-50 overflow-hidden hover:border-[var(--corporate-primary)]"
+      i18n-title="@@chooseImage" title="Elegir imagen">
+      @if (item?.icon) {
+        <img [src]="iconSrc(item.icon)" class="w-full h-full object-contain" alt="">
+      } @else {
+        <i class="pi pi-image text-slate-400"></i>
+      }
+    </button>
+    @if (item?.icon) {
+      <button type="button" (click)="removeIcon(idx)"
+        class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-slate-600 text-white text-[10px] leading-none flex items-center justify-center"
+        i18n-title="@@remove" title="Eliminar">×</button>
+    }
+  </div>
+</ng-template>
 
 <!-- Prediction Configuration Dialog -->
 @if (showPredictionDialog) {

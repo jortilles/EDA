@@ -3,7 +3,7 @@ import { PanelChartComponent } from './../panel-charts/panel-chart.component';
 import { Component, Input, ViewChild, AfterViewChecked } from '@angular/core';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
-import { StyleProviderService, ChartUtilsService, AlertService, SpinnerService, DashboardService, MediaService } from '@eda/services/service.index';
+import { StyleProviderService, ChartUtilsService, AlertService, SpinnerService, DashboardService, MediaService, FileUtiles } from '@eda/services/service.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 import { CommonModule } from '@angular/common';
@@ -139,7 +139,8 @@ export class ChartDialogComponent implements AfterViewChecked {
         private alertService: AlertService,
         private spinnerService: SpinnerService,
         private dashboardService: DashboardService,
-        private mediaService: MediaService
+        private mediaService: MediaService,
+        private fileUtils: FileUtiles
     ) {
         this.drops.pointStyles = [
             { label: 'Puntos', value: 'circle' },
@@ -314,10 +315,13 @@ export class ChartDialogComponent implements AfterViewChecked {
             });
             if (this.features.hasIcons) {
                 const existingIcons: { value: any; icon: string }[] = cfg['assignedIcons'] || [];
-                this.assignedIcons = values.map(value => ({
-                    value: value as string,
-                    icon: existingIcons.find(c => c.value === value)?.icon || '',
-                }));
+                const iconFor = (v: any) => existingIcons.find(c => String(c.value) === String(v))?.icon || '';
+                // funnel (start-end): the 2 colour rows are gradient ends, so its icons are their own
+                // per-step list taken from the legend. Everything else: one icon per colour row, same
+                // order as assignedColors so the inline button in each row lines up by index.
+                this.assignedIcons = this.features.colorEditorShape === 'start-end'
+                    ? (instance.legendItems ?? []).map((l: any) => ({ value: String(l.label), icon: iconFor(l.label) }))
+                    : this.assignedColors.map(c => ({ value: c.value, icon: iconFor(c.value) }));
             }
         }
         this.liveSeeded = true;
@@ -410,18 +414,26 @@ export class ChartDialogComponent implements AfterViewChecked {
 
     // --- Icons (raceBar / bubblechart) - media-library image per category -------
 
+    /** Resolve a stored media path to a displayable src for the dialog thumbnails (same rules as mediaSrc pipe). */
+    iconSrc(raw: string): string {
+        if (!raw) return '';
+        if (raw.startsWith('data:') || /^https?:\/\//.test(raw)) return raw;
+        return this.fileUtils.connection(raw);
+    }
+
     openIconPicker(idx: number): void {
         this.iconPickerOpenForIndex = idx;
     }
 
     onIconSelected(url: string, idx: number | null): void {
-        if (idx === null) return;
+        if (idx === null || !this.assignedIcons[idx]) return;
         this.assignedIcons[idx].icon = url;
         this.iconPickerOpenForIndex = null;
         this.applyOption();
     }
 
     removeIcon(idx: number): void {
+        if (!this.assignedIcons[idx]) return;
         this.assignedIcons[idx].icon = '';
         this.applyOption();
     }
