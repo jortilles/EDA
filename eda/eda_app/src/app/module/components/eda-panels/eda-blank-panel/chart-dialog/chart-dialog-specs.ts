@@ -1,13 +1,14 @@
 import { DEFAULT_FRAME_DURATION_MS } from '@eda/components/eda-race-bar/eda-race-bar.component';
 
 /**
- * Which of the two engines the unified chart dialog drives for a given chart type:
- *  - 'axis'     : the series/axis charts (bar, line, area, radar...) - live preview rebuilds a
- *                 `new PanelChart()`, trend/comparative/prediction re-run the panel query.
- *  - 'category' : the D3 part-to-whole / hierarchical charts (doughnut, sunburst, funnel...) -
- *                 live preview mutates the shared config and calls `changeChartType()`.
+ * Which of the two preview engines the unified chart dialog drives for a given chart type:
+ *  - 'axis' : the series/axis charts (bar, line, area, radar...) - live preview rebuilds a
+ *             `new PanelChart()`, trend/comparative/prediction re-run the panel query.
+ *  - 'live' : everything else - the D3 part-to-whole / hierarchical charts (doughnut, sunburst,
+ *             funnel, raceBar...) plus the knob gauge. Live preview just mutates the shared config
+ *             and calls `changeChartType()`. Which fields exist is driven purely by the has* flags.
  */
-export type ChartDialogFamily = 'axis' | 'category';
+export type ChartDialogFamily = 'axis' | 'live';
 
 export type ColorEditorShape = 'per-series' | 'category-list' | 'start-end';
 
@@ -43,11 +44,13 @@ export interface ChartDialogSpec {
     /** area / radar: per-color opacity stepper. */
     hasOpacity?: boolean;
 
-    // Category-only extras
-    hasInnerRadius?: boolean;
-    hasTopNCount?: boolean;
-    hasTransitionMs?: boolean;
-    hasTimeline?: boolean;
+    // 'live' family extras
+    hasInnerRadius?: boolean;      // doughnut
+    hasTopNCount?: boolean;        // raceBar
+    hasTransitionMs?: boolean;     // raceBar
+    hasTimeline?: boolean;         // raceBar
+    hasLimits?: boolean;           // knob - min/max numeric range of the gauge
+    hasSemaphore?: boolean;        // knob - red→amber→green gradient toggle; when on it hides the manual colour editor
 }
 
 const AXIS_BAR_COMMON: Partial<ChartDialogSpec> = {
@@ -137,9 +140,9 @@ export const CHART_DIALOG_SPECS: Record<string, ChartDialogSpec> = {
         hasOpacity: true,
     },
 
-    // --- category family ----------------------------------------------------
+    // --- live family (D3 category charts + knob) ----------------------------
     doughnut: {
-        family: 'category',
+        family: 'live',
         hasAnimation: true,
         hasLegend: true,
         hasLabels: true,
@@ -149,7 +152,7 @@ export const CHART_DIALOG_SPECS: Record<string, ChartDialogSpec> = {
         hasInnerRadius: true,
     },
     polarArea: {
-        family: 'category',
+        family: 'live',
         hasAnimation: true,
         hasLegend: true,
         hasGridLines: true,
@@ -159,48 +162,48 @@ export const CHART_DIALOG_SPECS: Record<string, ChartDialogSpec> = {
         hasUseGradient: true,
     },
     sunburst: {
-        family: 'category',
+        family: 'live',
         hasAnimation: true,
         hasLegend: true,
         colorEditorShape: 'category-list',
         hasUseGradient: true,
     },
     treeMap: {
-        family: 'category',
+        family: 'live',
         hasAnimation: true,
         hasLegend: true,
         colorEditorShape: 'category-list',
         hasUseGradient: true,
     },
     scatterPlot: {
-        family: 'category',
+        family: 'live',
         hasAnimation: true,
         hasLegend: true,
         colorEditorShape: 'category-list',
         hasUseGradient: true,
     },
     bubblechart: {
-        family: 'category',
+        family: 'live',
         hasAnimation: true,
         hasLegend: true,
         colorEditorShape: 'category-list',
         hasUseGradient: true,
     },
     parallelSets: {
-        family: 'category',
+        family: 'live',
         hasAnimation: true,
         hasLegend: true,
         colorEditorShape: 'category-list',
         hasUseGradient: true,
     },
     funnel: {
-        family: 'category',
+        family: 'live',
         hasAnimation: true,
         hasLegend: true,
         colorEditorShape: 'start-end',
     },
     raceBar: {
-        family: 'category',
+        family: 'live',
         hasAnimation: true,
         hasLegend: true,
         hasTimeline: true,
@@ -208,6 +211,14 @@ export const CHART_DIALOG_SPECS: Record<string, ChartDialogSpec> = {
         hasUseGradient: true,
         hasTopNCount: true,
         hasTransitionMs: true,
+    },
+
+    knob: {
+        family: 'live',
+        hasAnimation: true,
+        hasLimits: true,
+        hasSemaphore: true,
+        colorEditorShape: 'category-list',
     },
 };
 

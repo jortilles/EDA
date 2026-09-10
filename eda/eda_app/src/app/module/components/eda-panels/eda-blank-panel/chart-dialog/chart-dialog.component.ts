@@ -14,7 +14,6 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../prediction-dialog/prediction-dialog.component';
 import { CategoryChartType, getChartCategoryValues, getSankeyRowLabels } from '../panel-charts/chart-category-values.util';
-import { ChartDialogSaveResponseBase } from '../panel-charts/chart-configuration-models/chart-dialog-save-response';
 import { ChartDialogSpec, CHART_DIALOG_SPECS, CATEGORY_TRANSITION_MS_DEFAULT, resolveChartDialogSpec } from './chart-dialog-specs';
 import Swal from 'sweetalert2';
 
@@ -33,30 +32,19 @@ export class ChartDialogComponent implements AfterViewChecked {
 
     /** Per-type capability descriptor - drives every option block in the template. */
     public spec: ChartDialogSpec;
-    /** Only set when spec.family === 'category'. */
-    public categoryChartType: CategoryChartType;
 
-    // Category-family extras
+    // 'live' family working state (D3 category charts + knob). Which of these the type actually
+    // shows/persists is decided by the has* flags on `spec`, not by any per-type branch.
+    public liveChartType: CategoryChartType | 'knob';
     public innerRadiusPercent: number = 50;
     public topNCount: number = 10;
     public transitionMs: number = CATEGORY_TRANSITION_MS_DEFAULT;
     public showTimeline: boolean = false;
-    private categoryColorsSeeded: boolean = false;
-    private originalCategory: {
-        assignedColors: { value: string; color: string; opacity?: number }[];
-        chartLegend: boolean;
-        showGridLines: boolean;
-        showLabels: boolean;
-        showLabelsPercent: boolean;
-        showTimeline: boolean;
-        innerRadiusPercent: number;
-        useGradient: boolean;
-        chartAnimation: boolean;
-        labelColorMode: string;
-        labelCustomColor: string;
-        topNCount: number;
-        transitionMs: number;
-    };
+    public min: number;
+    public max: number;
+    public semaphoreColor: boolean = false;
+    private liveSeeded: boolean = false;
+    private originalLive: any;
 
     public dialog: EdaDialog;
     public activeTabIndex: number = 0;
@@ -175,15 +163,13 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.panelChartConfig = this.controller.params.config;
         this.chart = this.controller.params.chart;
 
-        this.spec = resolveChartDialogSpec(this.chart?.edaChart, this.chart?.chartType ?? this.controller.params.chartType)
-            ?? CHART_DIALOG_SPECS['bar'];
+        const resolved = resolveChartDialogSpec(this.chart?.edaChart, this.chart?.chartType ?? this.controller.params.chartType);
+        if (!resolved) console.error('[chart-dialog] no spec for', this.chart?.edaChart, this.chart?.chartType);
+        this.spec = resolved ?? CHART_DIALOG_SPECS['bar'];
 
-        if (this.spec.family === 'category') {
-            this.initCategory();
-            return;
-        }
-        this.initAxis();
+        this.spec.family === 'live' ? this.initLive() : this.initAxis();
     }
+
 
     private initAxis(): void {
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
@@ -257,13 +243,20 @@ export class ChartDialogComponent implements AfterViewChecked {
     }
 
     // ---------------------------------------------------------------------------
-    // Category family (doughnut / polarArea / sunburst / treeMap / scatterPlot /
-    // bubblechart / parallelSets / funnel / raceBar) - D3 charts whose preview is
-    // driven by mutating the shared config + changeChartType(), not a PanelChart rebuild.
+    // 'live' family: every D3 category chart (doughnut / polarArea / sunburst /
+    // treeMap / scatterPlot / bubblechart / parallelSets / funnel / raceBar) plus
+    // the knob gauge. Preview = mutate the shared config + changeChartType(). Which
+    // fields exist is decided entirely by the has* flags on `spec`.
     // ---------------------------------------------------------------------------
 
-    private initCategory(): void {
-        this.categoryChartType = (this.chart?.chartType ?? this.controller.params.chartType) as CategoryChartType;
+    private readonly LIVE_FIELDS = [
+        'chartLegend', 'showGridLines', 'showLabels', 'showLabelsPercent', 'showTimeline',
+        'innerRadiusPercent', 'useGradient', 'chartAnimation', 'labelColorMode', 'labelCustomColor',
+        'topNCount', 'transitionMs', 'min', 'max', 'semaphoreColor',
+    ] as const;
+
+    private initLive(): void {
+        this.liveChartType = (this.chart?.chartType ?? this.controller.params.chartType) as CategoryChartType | 'knob';
         const cfg = this.controller.params.config.config.getConfig();
         this.chartLegend = cfg['chartLegend'] ?? true;
         this.showGridLines = cfg['showGridLines'] ?? true;
@@ -277,68 +270,79 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.labelCustomColor = cfg['labelCustomColor'] || '#000000';
         this.topNCount = cfg['topNCount'] ?? 10;
         this.transitionMs = cfg['transitionMs'] ?? CATEGORY_TRANSITION_MS_DEFAULT;
+        this.semaphoreColor = cfg['semaphoreColor'] ?? false;
+        this.min = (cfg['limits'] || [])[0];
+        this.max = (cfg['limits'] || [])[1];
         this.display = true;
     }
 
     ngAfterViewChecked(): void {
-        if (this.spec?.family !== 'category' || this.categoryColorsSeeded) return;
-        if (this.assignedColors.length || !this.panelChartComponent?.componentRef) return;
-        setTimeout(() => {
-            const instance = this.panelChartComponent.componentRef.instance;
-            const values = getChartCategoryValues(this.categoryChartType, instance);
-            if (!values?.length) return;
-            this.categoryColorsSeeded = true;
-            const cfg = this.panelChartComponent.props.config.getConfig();
-            const existingColors: { value: string | number; color: string }[] = cfg['assignedColors'] || [];
-
-            this.assignedColors = values.map((value, index) => {
-                const match = existingColors.find(c => c.value === value);
-                return { value: value as string, color: match?.color || this.stylesProviderService.getPaletteColor(index) };
-            });
-
-            this.originalCategory = {
-                assignedColors: this.assignedColors.map(c => ({ ...c })),
-                chartLegend: this.chartLegend,
-                showGridLines: this.showGridLines,
-                showLabels: this.showLabels,
-                showLabelsPercent: this.showLabelsPercent,
-                showTimeline: this.showTimeline,
-                innerRadiusPercent: this.innerRadiusPercent,
-                useGradient: this.useGradient,
-                chartAnimation: this.chartAnimation,
-                labelColorMode: this.labelColorMode,
-                labelCustomColor: this.labelCustomColor,
-                topNCount: this.topNCount,
-                transitionMs: this.transitionMs,
-            };
-        }, 0);
+        if (this.spec?.family !== 'live' || this.liveSeeded || !this.panelChartComponent?.componentRef) return;
+        // knob resolves colour/limits off its rendered instance; category types wait until the
+        // chart has data so getChartCategoryValues() returns the real category list.
+        setTimeout(() => this.seedLive(), this.liveChartType === 'knob' ? 100 : 0);
     }
 
-    /** Category preview: mutate the live config and re-render - the one place every category setter/save/cancel funnels through. */
-    private syncCategoryChart(): void {
+    private seedLive(): void {
+        const instance = this.panelChartComponent?.componentRef?.instance;
+        if (!instance) return;
         const cfg = this.panelChartComponent.props.config.getConfig();
+        const existing: { value: any; color: string }[] = cfg['assignedColors'] || [];
+
+        if (this.liveChartType === 'knob') {
+            const label = this.panelChartConfig.data?.labels?.[0] ?? $localize`:@@colorsChartH6:Colores`;
+            this.assignedColors = [{ value: label, color: existing[0]?.color || instance.color }];
+            const limits = instance.limits || [];
+            this.min = limits[0] ?? this.min;
+            this.max = limits[1] ?? this.max;
+            this.semaphoreColor = !!instance.inject?.semaphoreColor;
+            this.chartAnimation = instance.inject?.chartAnimation ?? this.chartAnimation;
+        } else {
+            const values = getChartCategoryValues(this.liveChartType as CategoryChartType, instance);
+            if (!values?.length) return;
+            this.assignedColors = values.map((value, i) => {
+                const match = existing.find(c => c.value === value);
+                return { value: value as string, color: match?.color || this.stylesProviderService.getPaletteColor(i) };
+            });
+        }
+        this.liveSeeded = true;
+        this.originalLive = this.snapshotLive();
+    }
+
+    private snapshotLive(): any {
+        const snap: any = { assignedColors: this.assignedColors.map(c => ({ ...c })) };
+        this.LIVE_FIELDS.forEach(f => snap[f] = (this as any)[f]);
+        return snap;
+    }
+
+    /** The one place every live setter/save/cancel funnels through: write the enabled fields into the shared config and re-render. */
+    public syncLiveChart(): void {
+        const cfg = this.panelChartComponent.props.config.getConfig();
+        const s = this.spec;
         cfg['assignedColors'] = [...this.assignedColors];
         cfg['chartAnimation'] = this.chartAnimation;
-        if (this.spec.hasLegend) cfg['chartLegend'] = this.chartLegend;
-        if (this.spec.hasGridLines) cfg['showGridLines'] = this.showGridLines;
-        if (this.spec.hasLabels) cfg['showLabels'] = this.showLabels;
-        if (this.spec.hasLabelsPercent) cfg['showLabelsPercent'] = this.showLabelsPercent;
-        if (this.spec.hasTimeline) cfg['showTimeline'] = this.showTimeline;
-        if (this.spec.hasUseGradient) cfg['useGradient'] = this.useGradient;
-        if (this.spec.hasInnerRadius) cfg['innerRadiusPercent'] = this.innerRadiusPercent;
-        if (this.spec.hasTopNCount) cfg['topNCount'] = this.topNCount;
-        if (this.spec.hasTransitionMs) cfg['transitionMs'] = this.transitionMs;
-        if (this.spec.hasLabels || this.spec.hasLabelsPercent) {
+        if (s.hasLegend) cfg['chartLegend'] = this.chartLegend;
+        if (s.hasGridLines) cfg['showGridLines'] = this.showGridLines;
+        if (s.hasLabels) cfg['showLabels'] = this.showLabels;
+        if (s.hasLabelsPercent) cfg['showLabelsPercent'] = this.showLabelsPercent;
+        if (s.hasTimeline) cfg['showTimeline'] = this.showTimeline;
+        if (s.hasUseGradient) cfg['useGradient'] = this.useGradient;
+        if (s.hasInnerRadius) cfg['innerRadiusPercent'] = this.innerRadiusPercent;
+        if (s.hasTopNCount) cfg['topNCount'] = this.topNCount;
+        if (s.hasTransitionMs) cfg['transitionMs'] = this.transitionMs;
+        if (s.hasSemaphore) cfg['semaphoreColor'] = this.semaphoreColor;
+        if (s.hasLimits) cfg['limits'] = [this.min, this.max];
+        if (s.hasLabels || s.hasLabelsPercent) {
             cfg['labelColorMode'] = this.labelColorMode;
             cfg['labelCustomColor'] = this.labelCustomColor;
         }
 
-        if (this.categoryChartType === 'parallelSets') {
+        if (this.liveChartType === 'parallelSets') {
             // Sankey's colors[] is positional-per-row, not positional-per-unique-label.
             const rowLabels = getSankeyRowLabels(this.panelChartComponent.componentRef.instance);
-            const labelColorMap: Record<string, string> = {};
-            this.assignedColors.forEach(c => { labelColorMap[c.value as string] = c.color; });
-            cfg['colors'] = [...new Set(rowLabels.map(l => labelColorMap[l]))];
+            const map: Record<string, string> = {};
+            this.assignedColors.forEach(c => { map[c.value as string] = c.color; });
+            cfg['colors'] = [...new Set(rowLabels.map(l => map[l]))];
         } else {
             cfg['colors'] = this.assignedColors.map(c => c.color);
         }
@@ -347,64 +351,43 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.panelChartComponent.changeChartType();
     }
 
-    /** Category color editor: apply the palette dropdown across every row (or the two ends for funnel). */
-    private applyCategoryPalette(): void {
+    /** Live color editor: spread the palette dropdown across every row (or the two ends for funnel). */
+    private applyLivePalette(): void {
         if (!this.selectedPalette) return;
         const palette = this.selectedPalette.paleta;
-        if (this.spec.colorEditorShape === 'start-end') {
-            this.assignedColors = this.assignedColors.map((item, index) => ({
-                value: item.value,
-                color: index === 0 ? palette[0] : palette[palette.length - 1]
-            }));
-        } else {
-            this.assignedColors = this.assignedColors.map((item, index) => ({
-                value: item.value,
-                color: palette[index % palette.length]
-            }));
-        }
-        this.syncCategoryChart();
+        const endsOnly = this.spec.colorEditorShape === 'start-end';
+        this.assignedColors = this.assignedColors.map((item, i) => ({
+            value: item.value,
+            color: endsOnly ? (i === 0 ? palette[0] : palette[palette.length - 1]) : palette[i % palette.length],
+        }));
+        this.syncLiveChart();
     }
 
-    private buildCategorySaveResponse(): ChartDialogSaveResponseBase {
-        this.syncCategoryChart();
+    private buildLiveSaveResponse(): any {
+        this.syncLiveChart();
         const cfg = this.panelChartComponent.props.config.getConfig();
-        const response: ChartDialogSaveResponseBase = {
-            colors: cfg['colors'],
-            assignedColors: [...this.assignedColors],
-            chartLegend: this.chartLegend,
-            chartAnimation: this.chartAnimation,
-        };
-        if (this.spec.hasUseGradient) response.useGradient = this.useGradient;
-        if (this.spec.hasLabels) response.showLabels = this.showLabels;
-        if (this.spec.hasLabelsPercent) response.showLabelsPercent = this.showLabelsPercent;
-        if (this.spec.hasLabels || this.spec.hasLabelsPercent) {
-            response.labelColorMode = this.labelColorMode;
-            response.labelCustomColor = this.labelCustomColor;
-        }
-        if (this.spec.hasGridLines) response.showGridLines = this.showGridLines;
-        if (this.spec.hasTimeline) response.showTimeline = this.showTimeline;
-        if (this.spec.hasInnerRadius) response.innerRadiusPercent = this.innerRadiusPercent;
-        if (this.spec.hasTopNCount) response.topNCount = this.topNCount;
-        if (this.spec.hasTransitionMs) response.transitionMs = this.transitionMs;
-        return response;
+        const s = this.spec;
+        const r: any = { assignedColors: [...this.assignedColors], colors: cfg['colors'], chartAnimation: this.chartAnimation };
+        if (s.hasLegend) r.chartLegend = this.chartLegend;
+        if (s.hasGridLines) r.showGridLines = this.showGridLines;
+        if (s.hasLabels) r.showLabels = this.showLabels;
+        if (s.hasLabelsPercent) r.showLabelsPercent = this.showLabelsPercent;
+        if (s.hasLabels || s.hasLabelsPercent) { r.labelColorMode = this.labelColorMode; r.labelCustomColor = this.labelCustomColor; }
+        if (s.hasUseGradient) r.useGradient = this.useGradient;
+        if (s.hasInnerRadius) r.innerRadiusPercent = this.innerRadiusPercent;
+        if (s.hasTopNCount) r.topNCount = this.topNCount;
+        if (s.hasTransitionMs) r.transitionMs = this.transitionMs;
+        if (s.hasTimeline) r.showTimeline = this.showTimeline;
+        if (s.hasSemaphore) r.semaphoreColor = this.semaphoreColor;
+        if (s.hasLimits) { r.limits = [this.min, this.max]; this.stylesProviderService.palKnob = false; }
+        return r;
     }
 
-    private restoreCategory(): void {
-        if (!this.originalCategory) return;
-        this.assignedColors = this.originalCategory.assignedColors.map(c => ({ ...c }));
-        this.chartLegend = this.originalCategory.chartLegend;
-        this.showGridLines = this.originalCategory.showGridLines;
-        this.showLabels = this.originalCategory.showLabels;
-        this.showLabelsPercent = this.originalCategory.showLabelsPercent;
-        this.showTimeline = this.originalCategory.showTimeline;
-        this.innerRadiusPercent = this.originalCategory.innerRadiusPercent;
-        this.useGradient = this.originalCategory.useGradient;
-        this.chartAnimation = this.originalCategory.chartAnimation;
-        this.labelColorMode = this.originalCategory.labelColorMode;
-        this.labelCustomColor = this.originalCategory.labelCustomColor;
-        this.topNCount = this.originalCategory.topNCount;
-        this.transitionMs = this.originalCategory.transitionMs;
-        this.syncCategoryChart();
+    private restoreLive(): void {
+        if (!this.originalLive) return;
+        this.assignedColors = this.originalLive.assignedColors.map((c: any) => ({ ...c }));
+        this.LIVE_FIELDS.forEach(f => (this as any)[f] = this.originalLive[f]);
+        this.syncLiveChart();
     }
 
     load() {
@@ -542,18 +525,13 @@ export class ChartDialogComponent implements AfterViewChecked {
 
     /** Shared entry point for every plain display toggle - routes to the right family's preview engine. */
     private applyDisplayOption(): void {
-        if (this.spec.family === 'category') {
-            this.syncCategoryChart();
+        if (this.spec.family === 'live') {
+            this.syncLiveChart();
             return;
         }
         this.syncCustomFields();
         this.refreshPreview();
     }
-
-    setInnerRadius(): void { this.syncCategoryChart(); }
-    setTopNCount(): void { this.syncCategoryChart(); }
-    setTransitionMs(): void { this.syncCategoryChart(); }
-    setShowTimeline(): void { this.syncCategoryChart(); }
 
     // Toggles like Tendencia/Comparativa add or remove a dataset (and its label) on the fly - keeps
     // assignedColors' row list matching the chart's current labels immediately, without waiting for
@@ -818,8 +796,8 @@ export class ChartDialogComponent implements AfterViewChecked {
 
     // Simplified method for color changes
     handleInputColor(): void {
-        if (this.spec?.family === 'category') {
-            this.syncCategoryChart();
+        if (this.spec?.family === 'live') {
+            this.syncLiveChart();
             return;
         }
         this.markUnsaved();
@@ -862,8 +840,8 @@ export class ChartDialogComponent implements AfterViewChecked {
     // Apply palette
     onPaletteSelected(): void {
         if (!this.selectedPalette) return;
-        if (this.spec?.family === 'category') {
-            this.applyCategoryPalette();
+        if (this.spec?.family === 'live') {
+            this.applyLivePalette();
             return;
         }
         const palette = this.selectedPalette.paleta;
@@ -907,8 +885,8 @@ export class ChartDialogComponent implements AfterViewChecked {
     }
 
     applyUseGradient(): void {
-        if (this.spec?.family === 'category') {
-            this.syncCategoryChart();
+        if (this.spec?.family === 'live') {
+            this.syncLiveChart();
             return;
         }
         this.syncCustomFields();
@@ -968,8 +946,8 @@ export class ChartDialogComponent implements AfterViewChecked {
     // Save/cancel configuration methods
 
     saveChartConfig() {
-        if (this.spec.family === 'category') {
-            this.onClose(EdaDialogCloseEvent.UPDATE, { family: 'category', ...this.buildCategorySaveResponse() });
+        if (this.spec.family === 'live') {
+            this.onClose(EdaDialogCloseEvent.UPDATE, { family: 'live', chartType: this.liveChartType, ...this.buildLiveSaveResponse() });
             return;
         }
         // Apply final colors to the live preview
@@ -1005,8 +983,8 @@ export class ChartDialogComponent implements AfterViewChecked {
     }
 
     closeChartConfig() {
-        if (this.spec.family === 'category') {
-            this.restoreCategory();
+        if (this.spec.family === 'live') {
+            this.restoreLive();
             this.onClose(EdaDialogCloseEvent.NONE);
             return;
         }

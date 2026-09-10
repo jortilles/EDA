@@ -1293,10 +1293,6 @@
   <link-dashboards-dialog [controller]="linkDashboardController"></link-dashboards-dialog>
 }
 
-@if(knobController){
-  <knob-dialog [controller]="knobController"> </knob-dialog>
-}
-
 @if(contextMenu){
   <eda-context-menu (close)="contextMenu.display = false" [inject]="contextMenu"></eda-context-menu>
 }

@@ -73,7 +73,6 @@ import { MapEditDialogComponent } from '@eda/components/component.index';
 import { MapCoordDialogComponent } from '@eda/components/component.index';
 import { ChartDialogComponent } from '@eda/components/component.index';
 import { TreeTableDialogComponent } from '@eda/components/component.index';
-import { KnobDialogComponent } from '@eda/components/component.index';
 import { dynamicTextDialogComponent } from '@eda/components/component.index';
 import { TableDialogComponent } from '@eda/components/component.index';
 import { TableGradientDialogComponent } from '@eda/components/component.index';
@@ -93,7 +92,7 @@ interface ChatMessage {
 
 const DIALOGS_COMPONENTS = [
     ChartDialogComponent, MapCoordDialogComponent, MapEditDialogComponent,
-    TreeTableDialogComponent, KnobDialogComponent, dynamicTextDialogComponent, TableDialogComponent,
+    TreeTableDialogComponent, dynamicTextDialogComponent, TableDialogComponent,
     TableGradientDialogComponent, WarningDialogComponent, KpiEditDialogComponent
 ];
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass];
@@ -146,7 +145,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public kpiController: EdaDialogController;
     public dynamicTextController: EdaDialogController;
     public linkDashboardController: EdaDialogController;
-    public knobController: EdaDialogController;
     public treeTableController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
@@ -1517,11 +1515,10 @@ public tableNodeExpand(event: any): void {
      * @param properties properties to set
      */
  public onCloseChartProperties(event, response): void {
-        // The unified chart dialog tags its response with `family`. Category (D3 part-to-whole)
-        // charts carry a ChartDialogSaveResponseBase and need the positional colors[] re-matched
-        // onto assignedColors; axis charts carry the small custom-fields patch.
-        if (response?.family === 'category') {
-            this.onCloseCategoryChartProperties(event, response, this.graficos.chartType as CategoryChartType);
+        // The unified chart dialog tags its response with `family`: 'live' (D3 category charts +
+        // knob) carries a ready-made config patch; 'axis' carries the small custom-fields patch.
+        if (response?.family === 'live') {
+            this.onCloseLiveChartProperties(event, response);
             return;
         }
         this.applyDialogChartConfig(event, readCustomFields(response, CUSTOM_CHART_CONFIG_FIELDS), 'chartController');
@@ -1626,34 +1623,22 @@ public tableNodeExpand(event: any): void {
         return instance.assignedColors;
     }
 
-    private static readonly RECOLOR_CHART_TYPES: CategoryChartType[] = ['treeMap', 'bubblechart', 'scatterPlot', 'parallelSets', 'sunburst', 'raceBar'];
+    private static readonly RECOLOR_CHART_TYPES: (CategoryChartType | string)[] = ['treeMap', 'bubblechart', 'scatterPlot', 'parallelSets', 'sunburst', 'raceBar'];
 
-    public onCloseCategoryChartProperties(event, response, chartType: CategoryChartType): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            let assignedColors = response.assignedColors;
-            if (EdaBlankPanelComponent.RECOLOR_CHART_TYPES.includes(chartType)) {
-                const chartValues = getChartCategoryValues(chartType, this.panelChart.componentRef.instance);
-                assignedColors = this.recolorLegacyAssignedColors(chartValues, response);
-            }
+    /**
+     * Close handler for the 'live' family (D3 category charts + knob). The dialog already built a
+     * ready-to-merge config patch; here we only re-match the positional colors[] for the few types
+     * that store colours per-row, then merge-patch (never wholesale replace) and re-render.
+     */
+    public onCloseLiveChartProperties(event, response): void {
+        if (_.isEqual(event, EdaDialogCloseEvent.NONE)) { this.chartController = undefined; return; }
 
-            const configPatch: any = { colors: response.colors, assignedColors };
-            if (response.useGradient !== undefined) configPatch.useGradient = response.useGradient;
-            if (response.chartLegend !== undefined) configPatch.chartLegend = response.chartLegend;
-            if (response.showLabels !== undefined) configPatch.showLabels = response.showLabels;
-            if (response.showLabelsPercent !== undefined) configPatch.showLabelsPercent = response.showLabelsPercent;
-            if (response.showGridLines !== undefined) configPatch.showGridLines = response.showGridLines;
-            if (response.innerRadiusPercent !== undefined) configPatch.innerRadiusPercent = response.innerRadiusPercent;
-            if (response.chartAnimation !== undefined) configPatch.chartAnimation = response.chartAnimation;
-            if (response.labelColorMode !== undefined) configPatch.labelColorMode = response.labelColorMode;
-            if (response.labelCustomColor !== undefined) configPatch.labelCustomColor = response.labelCustomColor;
-            if (response.topNCount !== undefined) configPatch.topNCount = response.topNCount;
-            if (response.showTimeline !== undefined) configPatch.showTimeline = response.showTimeline;
-            if (response.transitionMs !== undefined) configPatch.transitionMs = response.transitionMs;
-
-            this.applyDialogChartConfig(event, configPatch, 'chartController');
-        } else {
-            this.chartController = undefined;
+        const { family, chartType, ...patch } = response ?? {};
+        if (EdaBlankPanelComponent.RECOLOR_CHART_TYPES.includes(chartType)) {
+            const chartValues = getChartCategoryValues(chartType, this.panelChart.componentRef.instance);
+            patch.assignedColors = this.recolorLegacyAssignedColors(chartValues, response);
         }
+        this.applyDialogChartConfig(event, patch, 'chartController');
     }
 
     public onCloseTreeTableProperties(event, response) {
@@ -1666,19 +1651,6 @@ public tableNodeExpand(event: any): void {
 
         this.treeTableController = undefined;
 
-    }
-
-    public onCloseKnobProperties(event, response): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-
-            this.panel.content.query.output.config = response;
-            const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-
-            this.dashboardService.setNotSaved(true);
-
-        }
-        this.knobController = undefined;
     }
 
     public onCloseLinkDashboardProperties(event, response: LinkedDashboardProps): void {

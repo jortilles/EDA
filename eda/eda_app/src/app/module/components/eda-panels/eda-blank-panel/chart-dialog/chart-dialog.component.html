@@ -434,8 +434,8 @@
               <div class="flex items-center justify-between">
                 <label i18n="@@innerRadius" class="font-medium">Radio interno</label>
                 <div class="flex items-center gap-3">
-                  <input type="range" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="setInnerRadius()" class="w-56 accent-[var(--corporate-primary)]">
-                  <input type="number" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="setInnerRadius()" class="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                  <input type="range" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="syncLiveChart()" class="w-56 accent-[var(--corporate-primary)]">
+                  <input type="number" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="syncLiveChart()" class="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm">
                 </div>
               </div>
             }
@@ -444,8 +444,8 @@
             @if (spec.hasTopNCount) {
               <div class="flex items-center gap-3">
                 <label i18n="@@raceBarTopN" class="font-medium shrink-0">Barras a mostrar (Top N)</label>
-                <input type="range" min="3" max="20" [(ngModel)]="topNCount" (input)="setTopNCount()" class="flex-1 min-w-0 accent-[var(--corporate-primary)]">
-                <input type="number" min="3" max="20" [(ngModel)]="topNCount" (input)="setTopNCount()" class="w-20 shrink-0 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                <input type="range" min="3" max="20" [(ngModel)]="topNCount" (input)="syncLiveChart()" class="flex-1 min-w-0 accent-[var(--corporate-primary)]">
+                <input type="number" min="3" max="20" [(ngModel)]="topNCount" (input)="syncLiveChart()" class="w-20 shrink-0 rounded-md border border-input bg-background px-3 py-2 text-sm">
               </div>
             }
 
@@ -453,8 +453,8 @@
             @if (spec.hasTransitionMs) {
               <div class="flex items-center gap-3">
                 <label i18n="@@raceBarTransitionMs" class="font-medium shrink-0">Duración de la transición (ms)</label>
-                <input type="range" min="250" max="10000" step="250" [(ngModel)]="transitionMs" (input)="setTransitionMs()" class="flex-1 min-w-0 accent-[var(--corporate-primary)]">
-                <input type="number" min="250" max="10000" step="250" [(ngModel)]="transitionMs" (input)="setTransitionMs()" class="w-20 shrink-0 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                <input type="range" min="250" max="10000" step="250" [(ngModel)]="transitionMs" (input)="syncLiveChart()" class="flex-1 min-w-0 accent-[var(--corporate-primary)]">
+                <input type="number" min="250" max="10000" step="250" [(ngModel)]="transitionMs" (input)="syncLiveChart()" class="w-20 shrink-0 rounded-md border border-input bg-background px-3 py-2 text-sm">
               </div>
             }
 
@@ -463,11 +463,20 @@
               <div class="flex items-center justify-between">
                 <label i18n="@@raceBarShowTimeline" class="font-medium">Mostrar línea de tiempo</label>
                 <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" [(ngModel)]="showTimeline" class="sr-only peer" (ngModelChange)="setShowTimeline()">
+                  <input type="checkbox" [(ngModel)]="showTimeline" class="sr-only peer" (ngModelChange)="syncLiveChart()">
                   <div
                     class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                   </div>
                 </label>
+              </div>
+            }
+
+            <!-- Limits (knob) -->
+            @if (spec.hasLimits) {
+              <div class="flex flex-col gap-2">
+                <label i18n="@@Limits" class="font-medium">Limites</label>
+                <input type="number" [(ngModel)]="min" (change)="syncLiveChart()" class="w-full border p-1 rounded" placeholder="min">
+                <input type="number" [(ngModel)]="max" (change)="syncLiveChart()" class="w-full border p-1 rounded" placeholder="max">
               </div>
             }
           </div>
@@ -716,39 +725,67 @@
               }
             }
 
-            <!-- ============ category-list (doughnut / polarArea / sunburst / treeMap / scatter / bubble / sankey / raceBar) ============ -->
+            <!-- ============ category-list (doughnut / polarArea / sunburst / treeMap / scatter / bubble / sankey / raceBar / knob) ============ -->
             @case ('category-list') {
-              <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
-              <div class="flex items-stretch gap-2 mb-4">
-                <p-dropdown
-                  [(ngModel)]="selectedPalette"
-                  [options]="allPalettes"
-                  optionLabel="name"
-                  i18n-placeholder="@@selectPalette"
-                  placeholder="-- Seleccione una paleta --"
-                  (ngModelChange)="onPaletteSelected()"
-                  [style]="{'width':'180px'}"
-                  appendTo="body">
-                </p-dropdown>
-                @if (selectedPalette) {
-                  <div class="flex rounded overflow-hidden" style="width: 80px;">
-                    @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
-                      <div class="flex-1" [style.background-color]="color"></div>
+
+              <!-- Semaphore toggle (knob) -->
+              @if (spec.hasSemaphore) {
+                <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                  <div class="space-y-0.5">
+                    <p class="font-medium" i18n="@@knobSemaphoreLabel">Color semafórico</p>
+                    <p class="text-xs text-slate-400" i18n="@@knobSemaphoreDesc">Rojo → amarillo → verde según el valor</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" [(ngModel)]="semaphoreColor" (ngModelChange)="syncLiveChart()" class="sr-only peer">
+                    <div
+                      class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                    </div>
+                  </label>
+                </div>
+
+                @if (semaphoreColor) {
+                  <div class="flex items-center gap-3 px-1">
+                    <div class="h-3 flex-1 rounded-full" style="background: linear-gradient(to right, hsl(0,85%,42%), hsl(60,85%,42%), hsl(120,85%,42%))"></div>
+                    <span class="text-xs text-slate-400">min → max</span>
+                  </div>
+                }
+              }
+
+              @if (!spec.hasSemaphore || !semaphoreColor) {
+                <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+                @if (!spec.hasSemaphore) {
+                  <div class="flex items-stretch gap-2 mb-4">
+                    <p-dropdown
+                      [(ngModel)]="selectedPalette"
+                      [options]="allPalettes"
+                      optionLabel="name"
+                      i18n-placeholder="@@selectPalette"
+                      placeholder="-- Seleccione una paleta --"
+                      (ngModelChange)="onPaletteSelected()"
+                      [style]="{'width':'180px'}"
+                      appendTo="body">
+                    </p-dropdown>
+                    @if (selectedPalette) {
+                      <div class="flex rounded overflow-hidden" style="width: 80px;">
+                        @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                          <div class="flex-1" [style.background-color]="color"></div>
+                        }
+                      </div>
                     }
                   </div>
                 }
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @for (color of assignedColors; track color.value; let idx = $index) {
-                  <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
-                    <span class="font-medium">{{ color.value }}</span>
-                    <div class="flex items-center gap-2">
-                      <input [(ngModel)]="assignedColors[idx].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
-                      <p-colorPicker [(ngModel)]="assignedColors[idx].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  @for (color of assignedColors; track color.value; let idx = $index) {
+                    <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                      <span class="font-medium">{{ color.value }}</span>
+                      <div class="flex items-center gap-2">
+                        <input [(ngModel)]="assignedColors[idx].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                        <p-colorPicker [(ngModel)]="assignedColors[idx].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
+                      </div>
                     </div>
-                  </div>
-                }
-              </div>
+                  }
+                </div>
+              }
             }
 
             <!-- ============ start-end (funnel) ============ -->
