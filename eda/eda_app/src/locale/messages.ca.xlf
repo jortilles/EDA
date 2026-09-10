@@ -7627,6 +7627,10 @@ Desglossament per categoria:
 
 Salutacions.</target>
   </trans-unit>
+  <trans-unit id="sourceFieldsDialogHeader">
+    <source>Campos de origen para </source>
+    <target>Camps d'origen per a </target>
+  </trans-unit>
     </body>
   </file>
 </xliff>

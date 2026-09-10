@@ -7260,6 +7260,10 @@ Podział według kategorii:
 
 Pozdrawiam.</target>
   </trans-unit>
+  <trans-unit id="sourceFieldsDialogHeader">
+    <source>Campos de origen para </source>
+    <target>Pola źródłowe dla </target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

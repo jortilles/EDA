@@ -16,6 +16,11 @@ export class SourceFieldsDialogComponent {
 
     visible = true;
 
+    get header(): string {
+        const panelTitle = this.controller?.params?.panelTitle || '';
+        return $localize`:@@sourceFieldsDialogHeader:Campos de origen para ${panelTitle}`;
+    }
+
     get headers(): string[] {
         return this.controller?.params?.headers || [];
     }

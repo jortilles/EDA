@@ -7595,6 +7595,10 @@ Répartition par catégorie :
 
 Cordialement.</target>
   </trans-unit>
+  <trans-unit id="sourceFieldsDialogHeader">
+    <source>Campos de origen para </source>
+    <target>Champs source pour </target>
+  </trans-unit>
     </body>
   </file>
 </xliff>

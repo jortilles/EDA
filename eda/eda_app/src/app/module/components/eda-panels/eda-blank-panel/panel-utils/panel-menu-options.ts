@@ -312,7 +312,7 @@ export const PanelOptions = {
         try {
           const result = await SourceFieldsUtils.getSourceFieldsResult(panelComponent);
           panelComponent.sourceFieldsController = new EdaDialogController({
-            params: result,
+            params: { ...result, panelTitle: panelComponent.panel.title },
             close: () => { panelComponent.sourceFieldsController = undefined; }
           });
         } catch (err) {

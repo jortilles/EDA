@@ -7320,6 +7320,10 @@ Breakdown by category:
 
 Best regards.</target>
   </trans-unit>
+  <trans-unit id="sourceFieldsDialogHeader">
+    <source>Campos de origen para </source>
+    <target>Source fields for </target>
+  </trans-unit>
 </body>
 </file>
 </xliff>
