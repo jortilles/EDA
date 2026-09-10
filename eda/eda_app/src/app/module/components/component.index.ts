@@ -1,10 +1,9 @@
-export * from './eda-table/eda-table';
-export * from './eda-table/eda-table.component';
-export * from './eda-table/eda-columns/eda-column-text';
-export * from './eda-table/eda-columns/eda-column-number';
-export * from './eda-table/eda-columns/eda-column-date';
-export * from './eda-table/eda-columns/eda-column-context-menu';
-export * from './eda-table/eda-column-filter/eda-column-filter-multiselect';
+export * from './eda-tables/eda-table/eda-table.component';
+export * from './eda-tables/eda-table/eda-columns/eda-column-text';
+export * from './eda-tables/eda-table/eda-columns/eda-column-number';
+export * from './eda-tables/eda-table/eda-columns/eda-column-date';
+export * from './eda-tables/eda-table/eda-columns/eda-column-context-menu';
+export * from './eda-tables/eda-table/eda-column-filter/eda-column-filter-multiselect';
 export * from './eda-map/eda-map.component';
 export * from './eda-map/eda-geoJsonMap.component';
 export * from './eda-funnel/eda-funnel.component';
@@ -37,8 +36,7 @@ export { EdaTabsPanelComponent } from './eda-panels/eda-tabs-panel/eda-tabs-pane
 export { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe'
 export { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe'
 export { TitleDialogComponent } from './eda-panels/eda-title-panel/edit-title/quill-editor.component'
-export { AlertDialogComponent } from './eda-panels/eda-blank-panel/alert-dialog/alert-dialog.component';
-export { CumSumAlertDialogComponent } from './eda-panels/eda-blank-panel/cumulativeSum-alert/cumsum-alert-dialog.component';
+export { WarningDialogComponent } from './eda-panels/eda-blank-panel/warning-dialog/warning-dialog.component';
 export { MapEditDialogComponent } from './eda-panels/eda-blank-panel/maps-dialog/mapedit-dialog.component';
 export { MapCoordDialogComponent } from './eda-panels/eda-blank-panel/mapcoord-dialog/mapcoord-dialog.component';
 export { KpiEditDialogComponent } from './eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component';
@@ -47,7 +45,6 @@ export { EdaScatter } from './eda-scatter/eda-scatter.component';
 export { LinkDashboardsComponent } from './eda-panels/eda-blank-panel/link-dashboards/link-dashboards.component';
 export { EdaTreeMap} from './eda-treemap/eda-treemap.component';
 export { EdaKnobComponent } from './eda-knob/eda-knob.component';
-export { KnobDialogComponent } from './eda-panels/eda-blank-panel/knob-dialog/knob-dialog.component';
 export { EdaSunburstComponent } from './eda-sunburst/eda-sunburst.component';
 export { EdaRaceBarComponent } from './eda-race-bar/eda-race-bar.component';
 export { WhatIfDialogComponent } from './eda-panels/eda-blank-panel/whatif-dialog/whatif-dialog.component';
@@ -56,5 +53,4 @@ export { TreeTableDialogComponent } from './eda-panels/eda-blank-panel/tree-tabl
 export { EdaDoughnut } from './eda-doughnut-d3/eda-doughnut.component';
 export { EdaPolarAreaComponent } from './eda-polar-area-d3/eda-polar-area.component';
 export { EdaBarD3Component } from './eda-bar-d3/eda-bar.component';
-export { CategoryChartDialogComponent } from './eda-panels/eda-blank-panel/category-chart-dialog/category-chart-dialog.component';
 

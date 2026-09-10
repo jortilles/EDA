@@ -1,19 +1,19 @@
-<div class="eda-table" [class.eda-table--transparent]="styleProviderService.backgroundImage" [class.eda-table--pivot]="inject.pivot">
-    <p-table 
-        #table 
-        [columns]="inject.cols" 
-        [value]="inject.value" 
-        [paginator]="true" 
-        [rows]="inject.rows" 
-        [rowsPerPageOptions]="[5, 10, 25, 50, 100]" 
-        paginatorDropdownAppendTo="body" 
-        (onPage)="inject.onPage($event)" 
-        (sortFunction)="customSort($event, inject.cols)" 
+<div class="eda-table eda-table--pivot" [class.eda-table--transparent]="styleProviderService.backgroundImage">
+    <p-table
+        #table
+        [columns]="inject.cols"
+        [value]="inject.value"
+        [paginator]="true"
+        [rows]="inject.rows"
+        [rowsPerPageOptions]="[5, 10, 25, 50, 100]"
+        paginatorDropdownAppendTo="body"
+        (onPage)="inject.onPage($event)"
+        (sortFunction)="customSort($event, inject.cols)"
         [customSort]="true"
         [sortField]="inject.sortedColumn ? inject.sortedColumn.field : null"
-        [sortOrder]="inject.sortedColumn ? inject.sortedColumn.order : null" 
+        [sortOrder]="inject.sortedColumn ? inject.sortedColumn.order : null"
         [autoLayout]="inject.autolayout"
-        styleClass="p-datatable-striped" 
+        styleClass="p-datatable-striped"
         [ngStyle]="getStyle()">
 
         <!-- Search -->
@@ -25,7 +25,7 @@
                 </div>
             </ng-template>
          }
-        
+
 
         <!-- Header -->
         <ng-template pTemplate="header" let-columns>
@@ -38,6 +38,7 @@
                 </ng-container>
             </tr>
 
+            <!-- Matrix header — always rendered, this component never has a flat header row. -->
             <tr *ngFor="let serie of inject.series" >
                 <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [pSortableColumn]="label.column" [attr.colspan]="label.colspan"
                 (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center" [ngStyle]="getStyle()" >
@@ -49,25 +50,6 @@
                     </div>
                 </th>
             </tr>
-
-
-            @if(!inject.pivot){
-                <tr class="header-title">
-                    <ng-container *ngFor="let col of inject.cols">
-                        @if(col.type && col.visible){
-                            <th [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
-                                [width]="col.width" [attr.rowspan]="col.rowspan">
-                                <div class="flex items-center "  [ngStyle]="getTextStyle()">
-                                    {{col.header}}
-                                    @if(col.sortable){
-                                        <p-sortIcon [field]="col.field"  [ngStyle]="getTextStyle()"></p-sortIcon>
-                                    }
-                                </div>
-                            </th>
-                        }
-                    </ng-container>
-                </tr>
-            }
 
             @if(verifyFilter()){
                 <tr class="header-filter">
@@ -85,7 +67,7 @@
                     </ng-container>
                 </tr>
             }
-            
+
         </ng-template>
 
         <!-- COLUMN CONTENT -->
@@ -101,7 +83,7 @@
                                 <ng-container *ngSwitchCase="'EdaColumnText'">
                                    @if( inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field){
                                     <div class="flex items-center w-full" [pTooltip]="getLinkTooltip(col)">
-                                        
+
                                         <span class="flex-1 break-words">
                                         {{ lodash.get(rowData, col.field) }}
                                         </span>
@@ -126,7 +108,7 @@
 
                                     @if( (!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field) && !col.rangeOption){
                                     <div class="flex items-center w-full">
-                                        
+
                                         <span class="flex-1 break-words">
                                         {{ lodash.get(rowData, col.field) }}
                                         </span>
@@ -151,7 +133,7 @@
 
                                     @if( (!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field) && col.rangeOption) {
                                     <div class="flex items-center w-full">
-                                        
+
                                         <span class="flex-1 break-words"
                                             [innerHTML]="formatValoresRango(rowData, col.field)">
                                         </span>
@@ -174,7 +156,7 @@
                                     </div>
                                     }
                                 </ng-container>
-                                
+
                                 <!-- ngSwitch HTML -->
                                 <ng-container *ngSwitchCase="'EdaColumnHtml'">
                                     @if(inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field){

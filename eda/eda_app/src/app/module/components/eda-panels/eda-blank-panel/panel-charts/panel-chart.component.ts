@@ -11,16 +11,18 @@ import { TableConfig } from './chart-configuration-models/table-config';
 import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
     OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID, Type } from '@angular/core';
 import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
-import { EdaTableComponent } from '../../../eda-table/eda-table.component';
+import { EdaTableComponent } from '../../../eda-tables/eda-table/eda-table.component';
+import { EdaCrosstableComponent } from '../../../eda-tables/eda-crosstable/eda-crosstable.component';
 import { PanelChart } from './panel-chart';
 import { ChartUtilsService, StyleConfig, StyleProviderService } from '@eda/services/service.index';
 import { EdaKpiComponent } from '@eda/components/eda-kpi/eda-kpi.component';
 import { Column } from '@eda/models/model.index';
-import { EdaColumnDate } from '@eda/components/eda-table/eda-columns/eda-column-date';
-import { EdaColumnNumber } from '@eda/components/eda-table/eda-columns/eda-column-number';
-import { EdaColumnText } from '@eda/components/eda-table/eda-columns/eda-column-text';
-import { EdaColumnHtml } from '@eda/components/eda-table/eda-columns/eda-column-html';
-import { EdaTable } from '@eda/components/eda-table/eda-table';
+import { EdaColumnDate } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-date';
+import { EdaColumnNumber } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-number';
+import { EdaColumnText } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-text';
+import { EdaColumnHtml } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-html';
+import { EdaTableModel } from '@eda/components/eda-tables/eda-table/eda-table.model';
+import { EdaCrosstableModel } from '@eda/components/eda-tables/eda-crosstable/eda-crosstable.model';
 import { KpiConfig } from './chart-configuration-models/kpi-config';
 import { DynamicTextConfig } from './chart-configuration-models/dynamicText-config';
 import { EdaMapComponent } from '@eda/components/eda-map/eda-map.component';
@@ -316,7 +318,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const config = this.props.config.getConfig();
 
-        this.componentRef = this.entry.createComponent(EdaTableComponent);
+        if (type === 'crosstable') {
+            this.componentRef = this.entry.createComponent(EdaCrosstableComponent);
+        } else {
+            this.componentRef = this.entry.createComponent(EdaTableComponent);
+        }
         const rowLen = this.props.data.values?.[0]?.length || 0;
         const queryLen = this.props.query?.length || 0;
         const hasPredictionData = rowLen > queryLen && config?.['showPredictionLines'] === true;
@@ -375,9 +381,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.sortedSerie = config.sortedSerie;
         this.componentRef.instance.inject.sortedColumn = config.sortedColumn;
         this.componentRef.instance.inject.noRepetitions = config.noRepetitions;
-        this.componentRef.instance.inject.ordering = config.ordering;
+        if (this.componentRef.instance.inject instanceof EdaCrosstableModel) {
+            this.componentRef.instance.inject.ordering = config.ordering;
+            this.componentRef.instance.inject.crossSortOrder = config.crossSortOrder || 'alphabetical';
+        }
         this.componentRef.instance.inject.negativeNumbers = config.negativeNumbers;
-        this.componentRef.instance.inject.crossSortOrder = config.crossSortOrder || 'alphabetical';
         this.componentRef.instance.inject.headerColor = config.headerColor || '';
         this.componentRef.instance.inject.bandingColor = config.bandingColor || '';
         this.componentRef.instance.inject.colorEnabled = config.colorEnabled !== false;
@@ -2206,7 +2214,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param type 
      * @param configs 
      */
-    private initializeTable(type: string, configs?: any, tableLabels?: string[]): EdaTable {
+    private initializeTable(type: string, configs?: any, tableLabels?: string[]): EdaTableModel | EdaCrosstableModel {
 
         const labels = tableLabels || this.props.data.labels;
         const tableColumns = [];
@@ -2265,9 +2273,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (type === 'table') {
-            return new EdaTable({ cols: tableColumns, ...configs });
+            return new EdaTableModel({ cols: tableColumns, ...configs });
         } else if (type === 'crosstable') {
-            return new EdaTable({ cols: tableColumns, pivot: true, ...configs });
+            return new EdaCrosstableModel({ cols: tableColumns, ...configs });
         }
 
     }

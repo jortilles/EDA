@@ -51,7 +51,7 @@ const ROW_CATCHUP_MS = 500;
 const TOOLTIP_OFFSET_X = 20;
 const TOOLTIP_OFFSET_Y = -20;
 // Fallback when inject.transitionMs isn't set - the date column's own format, not this, decides tick count/labels.
-// Exported so category-chart-dialog.component.ts's transitionMs default/fallback can't drift out of sync with it.
+// Exported so the chart dialog's transitionMs default/fallback can't drift out of sync with it.
 export const DEFAULT_FRAME_DURATION_MS = 3000;
 // End-user playback speed cycle (the speed button below) - a multiplier on top of the admin's own
 // transitionMs, not a replacement for it.
@@ -163,7 +163,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     teardownD3Chart(this.tooltipService, this.resizeObserver);
   }
 
-  /** Called by the shared category-chart-dialog.component.ts on every live color/toggle edit. */
+  /** Called by the shared chart-dialog.component.ts on every live color/toggle edit. */
   updateChart(): void {
     this.chartLegend = this.inject.chartLegend ?? true;
     this.assignedColors = this.inject.assignedColors;
