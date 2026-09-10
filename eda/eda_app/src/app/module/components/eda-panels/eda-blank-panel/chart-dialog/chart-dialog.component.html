@@ -20,7 +20,7 @@
 
           <div class="space-y-4 text-base gap-3 flex flex-col">
             <!-- Trend -->
-            @if (spec.hasTrend) {
+            @if (features.hasTrend) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -52,7 +52,7 @@
             }
 
             <!-- Comparison -->
-            @if (spec.hasComparative && showComparative) {
+            @if (features.hasComparative && showComparative) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -85,7 +85,7 @@
             }
 
             <!-- Prediction: line/area charts only -->
-            @if (spec.hasPrediction) {
+            @if (features.hasPrediction) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -118,7 +118,7 @@
             }
 
             <!-- Chart Entrance Animation -->
-            @if (spec.hasAnimation) {
+            @if (features.hasAnimation) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -150,7 +150,7 @@
             }
 
             <!-- Show Legend -->
-            @if (spec.hasLegend) {
+            @if (features.hasLegend) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -182,7 +182,7 @@
             }
 
             <!-- Show Grid Lines -->
-            @if (spec.hasGridLines) {
+            @if (features.hasGridLines) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -214,7 +214,7 @@
             }
 
             <!-- Point markers: line charts and barline's line half -->
-            @if (spec.hasPointLines) {
+            @if (features.hasPointLines) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -247,7 +247,7 @@
             }
 
             <!-- Round Bars -->
-            @if (spec.hasRoundedBars) {
+            @if (features.hasRoundedBars) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -279,7 +279,7 @@
             }
 
             <!-- Second axis: barline only -->
-            @if (spec.hasSecondAxis) {
+            @if (features.hasSecondAxis) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -312,7 +312,7 @@
             }
 
             <!-- Number of Columns (histogram only) -->
-            @if (spec.hasNumberOfColumns) {
+            @if (features.hasNumberOfColumns) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -341,7 +341,7 @@
             }
 
             <!-- Show Labels -->
-            @if (spec.hasLabels) {
+            @if (features.hasLabels) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -373,7 +373,7 @@
             }
 
             <!-- Show Percentage Labels -->
-            @if (spec.hasLabelsPercent) {
+            @if (features.hasLabelsPercent) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -405,7 +405,7 @@
             }
 
             <!-- Label color (only meaningful once labels are actually shown) -->
-            @if ((spec.hasLabels && showLabels) || (spec.hasLabelsPercent && showLabelsPercent)) {
+            @if ((features.hasLabels && showLabels) || (features.hasLabelsPercent && showLabelsPercent)) {
               <div class="flex items-center justify-between">
                 <label class="font-medium" i18n="@@labelColorOption">Color de las etiquetas</label>
                 <div class="flex items-center gap-3">
@@ -430,40 +430,40 @@
             }
 
             <!-- Inner radius (doughnut) -->
-            @if (spec.hasInnerRadius) {
+            @if (features.hasInnerRadius) {
               <div class="flex items-center justify-between">
                 <label i18n="@@innerRadius" class="font-medium">Radio interno</label>
                 <div class="flex items-center gap-3">
-                  <input type="range" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="syncLiveChart()" class="w-56 accent-[var(--corporate-primary)]">
-                  <input type="number" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="syncLiveChart()" class="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                  <input type="range" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="applyOption()" class="w-56 accent-[var(--corporate-primary)]">
+                  <input type="number" min="0" max="95" [(ngModel)]="innerRadiusPercent" (input)="applyOption()" class="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm">
                 </div>
               </div>
             }
 
             <!-- Top N bars (raceBar) -->
-            @if (spec.hasTopNCount) {
+            @if (features.hasTopNCount) {
               <div class="flex items-center gap-3">
                 <label i18n="@@raceBarTopN" class="font-medium shrink-0">Barras a mostrar (Top N)</label>
-                <input type="range" min="3" max="20" [(ngModel)]="topNCount" (input)="syncLiveChart()" class="flex-1 min-w-0 accent-[var(--corporate-primary)]">
-                <input type="number" min="3" max="20" [(ngModel)]="topNCount" (input)="syncLiveChart()" class="w-20 shrink-0 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                <input type="range" min="3" max="20" [(ngModel)]="topNCount" (input)="applyOption()" class="flex-1 min-w-0 accent-[var(--corporate-primary)]">
+                <input type="number" min="3" max="20" [(ngModel)]="topNCount" (input)="applyOption()" class="w-20 shrink-0 rounded-md border border-input bg-background px-3 py-2 text-sm">
               </div>
             }
 
             <!-- Transition duration (raceBar) -->
-            @if (spec.hasTransitionMs) {
+            @if (features.hasTransitionMs) {
               <div class="flex items-center gap-3">
                 <label i18n="@@raceBarTransitionMs" class="font-medium shrink-0">Duración de la transición (ms)</label>
-                <input type="range" min="250" max="10000" step="250" [(ngModel)]="transitionMs" (input)="syncLiveChart()" class="flex-1 min-w-0 accent-[var(--corporate-primary)]">
-                <input type="number" min="250" max="10000" step="250" [(ngModel)]="transitionMs" (input)="syncLiveChart()" class="w-20 shrink-0 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                <input type="range" min="250" max="10000" step="250" [(ngModel)]="transitionMs" (input)="applyOption()" class="flex-1 min-w-0 accent-[var(--corporate-primary)]">
+                <input type="number" min="250" max="10000" step="250" [(ngModel)]="transitionMs" (input)="applyOption()" class="w-20 shrink-0 rounded-md border border-input bg-background px-3 py-2 text-sm">
               </div>
             }
 
             <!-- Timeline (raceBar) -->
-            @if (spec.hasTimeline) {
+            @if (features.hasTimeline) {
               <div class="flex items-center justify-between">
                 <label i18n="@@raceBarShowTimeline" class="font-medium">Mostrar línea de tiempo</label>
                 <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" [(ngModel)]="showTimeline" class="sr-only peer" (ngModelChange)="syncLiveChart()">
+                  <input type="checkbox" [(ngModel)]="showTimeline" class="sr-only peer" (ngModelChange)="applyOption()">
                   <div
                     class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                   </div>
@@ -472,11 +472,11 @@
             }
 
             <!-- Limits (knob) -->
-            @if (spec.hasLimits) {
+            @if (features.hasLimits) {
               <div class="flex flex-col gap-2">
                 <label i18n="@@Limits" class="font-medium">Limites</label>
-                <input type="number" [(ngModel)]="min" (change)="syncLiveChart()" class="w-full border p-1 rounded" placeholder="min">
-                <input type="number" [(ngModel)]="max" (change)="syncLiveChart()" class="w-full border p-1 rounded" placeholder="max">
+                <input type="number" [(ngModel)]="min" (change)="applyOption()" class="w-full border p-1 rounded" placeholder="min">
+                <input type="number" [(ngModel)]="max" (change)="applyOption()" class="w-full border p-1 rounded" placeholder="max">
               </div>
             }
           </div>
@@ -490,7 +490,7 @@
             Colores
           </span>
 
-          @if (spec.hasUseGradient) {
+          @if (features.hasUseGradient) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5 pb-4">
                 <label i18n="@@useGradient" for="usarDegradadoBarras" class="font-medium">
@@ -506,11 +506,11 @@
             </div>
           }
 
-          @switch (spec.colorEditorShape) {
+          @switch (features.colorEditorShape) {
 
             <!-- ============ per-series (axis charts) ============ -->
             @case ('per-series') {
-              @if (!spec.hasThresholdColors) {
+              @if (!features.hasThresholdColors) {
                 <div class="grid gap-4 grid-rows-auto gap-6">
                   <div>
                     <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
@@ -553,7 +553,7 @@
                               />
                             </div>
                           </div>
-                          @if (spec.hasOpacity) {
+                          @if (features.hasOpacity) {
                             <div class="flex items-center justify-between">
                               <label class="text-sm text-slate-500" i18n="@@opacityLabel">Opacidad</label>
                               <div class="flex items-center border rounded-md overflow-hidden">
@@ -729,14 +729,14 @@
             @case ('category-list') {
 
               <!-- Semaphore toggle (knob) -->
-              @if (spec.hasSemaphore) {
+              @if (features.hasSemaphore) {
                 <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
                   <div class="space-y-0.5">
                     <p class="font-medium" i18n="@@knobSemaphoreLabel">Color semafórico</p>
                     <p class="text-xs text-slate-400" i18n="@@knobSemaphoreDesc">Rojo → amarillo → verde según el valor</p>
                   </div>
                   <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" [(ngModel)]="semaphoreColor" (ngModelChange)="syncLiveChart()" class="sr-only peer">
+                    <input type="checkbox" [(ngModel)]="semaphoreColor" (ngModelChange)="applyOption()" class="sr-only peer">
                     <div
                       class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                     </div>
@@ -751,9 +751,9 @@
                 }
               }
 
-              @if (!spec.hasSemaphore || !semaphoreColor) {
+              @if (!features.hasSemaphore || !semaphoreColor) {
                 <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
-                @if (!spec.hasSemaphore) {
+                @if (!features.hasSemaphore) {
                   <div class="flex items-stretch gap-2 mb-4">
                     <p-dropdown
                       [(ngModel)]="selectedPalette"

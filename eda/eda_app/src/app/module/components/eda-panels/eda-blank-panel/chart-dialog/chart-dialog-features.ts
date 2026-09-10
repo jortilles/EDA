@@ -15,9 +15,9 @@ export type ColorEditorShape = 'per-series' | 'category-list' | 'start-end';
 /**
  * Per-type capability descriptor: every option block in chart-dialog.component.html is gated on a
  * flag here instead of an inline `edaChart === ...` check, so adding/moving an option is a one-line
- * spec edit. A flag that is irrelevant to a type is simply omitted (falsy).
+ * features edit. A flag that is irrelevant to a type is simply omitted (falsy).
  */
-export interface ChartDialogSpec {
+export interface ChartDialogFeatures {
     family: ChartDialogFamily;
 
     // Display-options section
@@ -53,7 +53,7 @@ export interface ChartDialogSpec {
     hasSemaphore?: boolean;        // knob - red→amber→green gradient toggle; when on it hides the manual colour editor
 }
 
-const AXIS_BAR_COMMON: Partial<ChartDialogSpec> = {
+const AXIS_BAR_COMMON: Partial<ChartDialogFeatures> = {
     family: 'axis',
     hasAnimation: true,
     hasLegend: true,
@@ -64,27 +64,27 @@ const AXIS_BAR_COMMON: Partial<ChartDialogSpec> = {
     hasUseGradient: true,
 };
 
-export const CHART_DIALOG_SPECS: Record<string, ChartDialogSpec> = {
+export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
     // --- axis family ---------------------------------------------------------
     bar: {
-        ...(AXIS_BAR_COMMON as ChartDialogSpec),
+        ...(AXIS_BAR_COMMON as ChartDialogFeatures),
         hasComparative: true,
         hasGridLines: true,
         hasThresholdColors: true,
         hasUniqueColors: true,
     },
     horizontalBar: {
-        ...(AXIS_BAR_COMMON as ChartDialogSpec),
+        ...(AXIS_BAR_COMMON as ChartDialogFeatures),
         hasComparative: true,
         hasGridLines: true,
         hasThresholdColors: true,
         hasUniqueColors: true,
     },
-    stackedbar: { ...(AXIS_BAR_COMMON as ChartDialogSpec) },
-    stackedbar100: { ...(AXIS_BAR_COMMON as ChartDialogSpec) },
-    pyramid: { ...(AXIS_BAR_COMMON as ChartDialogSpec) },
+    stackedbar: { ...(AXIS_BAR_COMMON as ChartDialogFeatures) },
+    stackedbar100: { ...(AXIS_BAR_COMMON as ChartDialogFeatures) },
+    pyramid: { ...(AXIS_BAR_COMMON as ChartDialogFeatures) },
     histogram: {
-        ...(AXIS_BAR_COMMON as ChartDialogSpec),
+        ...(AXIS_BAR_COMMON as ChartDialogFeatures),
         hasNumberOfColumns: true,
     },
     line: {
@@ -225,12 +225,12 @@ export const CHART_DIALOG_SPECS: Record<string, ChartDialogSpec> = {
 export const CATEGORY_TRANSITION_MS_DEFAULT = DEFAULT_FRAME_DURATION_MS;
 
 /**
- * Resolves the spec key for a chart. `edaChart` wins when it names a known spec (bar subtypes carry
- * their variant there while `chartType` stays literally 'bar'); otherwise fall back to `chartType`
- * (category types are keyed by it).
+ * Resolves the features entry for a chart. `edaChart` wins when it names a known entry (bar subtypes
+ * carry their variant there while `chartType` stays literally 'bar'); otherwise fall back to
+ * `chartType` (the 'live' types are keyed by it).
  */
-export function resolveChartDialogSpec(edaChart: string | undefined, chartType: string | undefined): ChartDialogSpec | undefined {
-    if (edaChart && CHART_DIALOG_SPECS[edaChart]) return CHART_DIALOG_SPECS[edaChart];
-    if (chartType && CHART_DIALOG_SPECS[chartType]) return CHART_DIALOG_SPECS[chartType];
+export function resolveChartDialogFeatures(edaChart: string | undefined, chartType: string | undefined): ChartDialogFeatures | undefined {
+    if (edaChart && CHART_DIALOG_FEATURES[edaChart]) return CHART_DIALOG_FEATURES[edaChart];
+    if (chartType && CHART_DIALOG_FEATURES[chartType]) return CHART_DIALOG_FEATURES[chartType];
     return undefined;
 }

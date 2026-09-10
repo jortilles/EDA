@@ -14,7 +14,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../prediction-dialog/prediction-dialog.component';
 import { CategoryChartType, getChartCategoryValues, getSankeyRowLabels } from '../panel-charts/chart-category-values.util';
-import { ChartDialogSpec, CHART_DIALOG_SPECS, CATEGORY_TRANSITION_MS_DEFAULT, resolveChartDialogSpec } from './chart-dialog-specs';
+import { ChartDialogFeatures, CHART_DIALOG_FEATURES, CATEGORY_TRANSITION_MS_DEFAULT, resolveChartDialogFeatures } from './chart-dialog-features';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -31,10 +31,10 @@ export class ChartDialogComponent implements AfterViewChecked {
     @ViewChild('PanelChartComponent', { static: false }) panelChartComponent: PanelChartComponent;
 
     /** Per-type capability descriptor - drives every option block in the template. */
-    public spec: ChartDialogSpec;
+    public features: ChartDialogFeatures;
 
     // 'live' family working state (D3 category charts + knob). Which of these the type actually
-    // shows/persists is decided by the has* flags on `spec`, not by any per-type branch.
+    // shows/persists is decided by the has* flags on `features`, not by any per-type branch.
     public liveChartType: CategoryChartType | 'knob';
     public innerRadiusPercent: number = 50;
     public topNCount: number = 10;
@@ -163,11 +163,11 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.panelChartConfig = this.controller.params.config;
         this.chart = this.controller.params.chart;
 
-        const resolved = resolveChartDialogSpec(this.chart?.edaChart, this.chart?.chartType ?? this.controller.params.chartType);
-        if (!resolved) console.error('[chart-dialog] no spec for', this.chart?.edaChart, this.chart?.chartType);
-        this.spec = resolved ?? CHART_DIALOG_SPECS['bar'];
+        const resolved = resolveChartDialogFeatures(this.chart?.edaChart, this.chart?.chartType ?? this.controller.params.chartType);
+        if (!resolved) console.error('[chart-dialog] no features for', this.chart?.edaChart, this.chart?.chartType);
+        this.features = resolved ?? CHART_DIALOG_FEATURES['bar'];
 
-        this.spec.family === 'live' ? this.initLive() : this.initAxis();
+        this.features.family === 'live' ? this.initLive() : this.initAxis();
     }
 
 
@@ -246,7 +246,7 @@ export class ChartDialogComponent implements AfterViewChecked {
     // 'live' family: every D3 category chart (doughnut / polarArea / sunburst /
     // treeMap / scatterPlot / bubblechart / parallelSets / funnel / raceBar) plus
     // the knob gauge. Preview = mutate the shared config + changeChartType(). Which
-    // fields exist is decided entirely by the has* flags on `spec`.
+    // fields exist is decided entirely by the has* flags on `features`.
     // ---------------------------------------------------------------------------
 
     private readonly LIVE_FIELDS = [
@@ -277,7 +277,7 @@ export class ChartDialogComponent implements AfterViewChecked {
     }
 
     ngAfterViewChecked(): void {
-        if (this.spec?.family !== 'live' || this.liveSeeded || !this.panelChartComponent?.componentRef) return;
+        if (this.features?.family !== 'live' || this.liveSeeded || !this.panelChartComponent?.componentRef) return;
         // knob resolves colour/limits off its rendered instance; category types wait until the
         // chart has data so getChartCategoryValues() returns the real category list.
         setTimeout(() => this.seedLive(), this.liveChartType === 'knob' ? 100 : 0);
@@ -315,10 +315,10 @@ export class ChartDialogComponent implements AfterViewChecked {
         return snap;
     }
 
-    /** The one place every live setter/save/cancel funnels through: write the enabled fields into the shared config and re-render. */
-    public syncLiveChart(): void {
+    /** Writes the 'live'-family's enabled fields into the shared config (no re-render). */
+    private persistLive(): void {
         const cfg = this.panelChartComponent.props.config.getConfig();
-        const s = this.spec;
+        const s = this.features;
         cfg['assignedColors'] = [...this.assignedColors];
         cfg['chartAnimation'] = this.chartAnimation;
         if (s.hasLegend) cfg['chartLegend'] = this.chartLegend;
@@ -346,27 +346,24 @@ export class ChartDialogComponent implements AfterViewChecked {
         } else {
             cfg['colors'] = this.assignedColors.map(c => c.color);
         }
-
-        this.markUnsaved();
-        this.panelChartComponent.changeChartType();
     }
 
     /** Live color editor: spread the palette dropdown across every row (or the two ends for funnel). */
     private applyLivePalette(): void {
         if (!this.selectedPalette) return;
         const palette = this.selectedPalette.paleta;
-        const endsOnly = this.spec.colorEditorShape === 'start-end';
+        const endsOnly = this.features.colorEditorShape === 'start-end';
         this.assignedColors = this.assignedColors.map((item, i) => ({
             value: item.value,
             color: endsOnly ? (i === 0 ? palette[0] : palette[palette.length - 1]) : palette[i % palette.length],
         }));
-        this.syncLiveChart();
+        this.applyOption();
     }
 
     private buildLiveSaveResponse(): any {
-        this.syncLiveChart();
+        this.applyOption();
         const cfg = this.panelChartComponent.props.config.getConfig();
-        const s = this.spec;
+        const s = this.features;
         const r: any = { assignedColors: [...this.assignedColors], colors: cfg['colors'], chartAnimation: this.chartAnimation };
         if (s.hasLegend) r.chartLegend = this.chartLegend;
         if (s.hasGridLines) r.showGridLines = this.showGridLines;
@@ -387,7 +384,7 @@ export class ChartDialogComponent implements AfterViewChecked {
         if (!this.originalLive) return;
         this.assignedColors = this.originalLive.assignedColors.map((c: any) => ({ ...c }));
         this.LIVE_FIELDS.forEach(f => (this as any)[f] = this.originalLive[f]);
-        this.syncLiveChart();
+        this.applyOption();
     }
 
     load() {
@@ -513,9 +510,17 @@ export class ChartDialogComponent implements AfterViewChecked {
         Object.assign(this.controller.params.config.config.getConfig(), this.buildCustomFieldsPatch());
     }
 
-    private refreshPreview(): void {
+    /**
+     * Re-renders the axis-family preview after a config change.
+     *  - `rebuild` true  → the option changed the dataset (trend/comparative/prediction/histogram
+     *    bins), so re-instantiate PanelChart (its ngOnChanges re-runs the query path).
+     *  - `rebuild` false → visual-only option; just re-render the D3 component in place from config.
+     * Either way the dialog re-grabs `this.chart` and reconciles the colour rows afterwards.
+     */
+    private refreshPreview(rebuild = true): void {
         this.markUnsaved();
-        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        if (rebuild) this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        else this.panelChartComponent.changeChartType();
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
             this.load();
@@ -523,14 +528,20 @@ export class ChartDialogComponent implements AfterViewChecked {
         });
     }
 
-    /** Shared entry point for every plain display toggle - routes to the right family's preview engine. */
-    private applyDisplayOption(): void {
-        if (this.spec.family === 'live') {
-            this.syncLiveChart();
+    /**
+     * Single entry point for every display-option setter, both families. `requery` marks the option
+     * as one that changes the dataset (axis only). Live charts never requery - their preview is
+     * always an in-place config mutation + changeChartType().
+     */
+    public applyOption(requery = false): void {
+        if (this.features.family === 'live') {
+            this.persistLive();
+            this.markUnsaved();
+            this.panelChartComponent.changeChartType();
             return;
         }
         this.syncCustomFields();
-        this.refreshPreview();
+        this.refreshPreview(requery);
     }
 
     // Toggles like Tendencia/Comparativa add or remove a dataset (and its label) on the fly - keeps
@@ -555,22 +566,19 @@ export class ChartDialogComponent implements AfterViewChecked {
     }
 
     SetNumberOfColumns() {
-        this.syncCustomFields();
-        this.refreshPreview();
+        this.applyOption(true);
     }
 
     checkTrend() {
-        this.syncCustomFields();
-        this.refreshPreview();
+        this.applyOption(true);
     }
 
     setComparative() {
-        this.syncCustomFields();
-        this.refreshPreview();
+        this.applyOption(true);
     }
 
     setShowLablesPercent() {
-        this.applyDisplayOption();
+        this.applyOption();
     }
 
     allowCoparative(params) {
@@ -597,11 +605,11 @@ export class ChartDialogComponent implements AfterViewChecked {
 
 
     setShowLables() {
-        this.applyDisplayOption();
+        this.applyOption();
     }
 
     setLabelColor() {
-        this.applyDisplayOption();
+        this.applyOption();
     }
 
     labelColorButtonClass(mode: string): Record<string, boolean> {
@@ -612,25 +620,23 @@ export class ChartDialogComponent implements AfterViewChecked {
     }
 
     setChartLegend() {
-        this.applyDisplayOption();
+        this.applyOption();
     }
 
     setShowGridLines() {
-        this.applyDisplayOption();
+        this.applyOption();
     }
 
     setShowLines() {
-        this.syncCustomFields();
-        this.refreshPreview();
+        this.applyOption(true);
     }
 
     setSecondAxis() {
-        this.syncCustomFields();
-        this.refreshPreview();
+        this.applyOption(true);
     }
 
     setChartAnimation() {
-        this.applyDisplayOption();
+        this.applyOption();
     }
 
     setPredictionLines() {
@@ -796,8 +802,8 @@ export class ChartDialogComponent implements AfterViewChecked {
 
     // Simplified method for color changes
     handleInputColor(): void {
-        if (this.spec?.family === 'live') {
-            this.syncLiveChart();
+        if (this.features?.family === 'live') {
+            this.applyOption();
             return;
         }
         this.markUnsaved();
@@ -840,7 +846,7 @@ export class ChartDialogComponent implements AfterViewChecked {
     // Apply palette
     onPaletteSelected(): void {
         if (!this.selectedPalette) return;
-        if (this.spec?.family === 'live') {
+        if (this.features?.family === 'live') {
             this.applyLivePalette();
             return;
         }
@@ -885,8 +891,8 @@ export class ChartDialogComponent implements AfterViewChecked {
     }
 
     applyUseGradient(): void {
-        if (this.spec?.family === 'live') {
-            this.syncLiveChart();
+        if (this.features?.family === 'live') {
+            this.applyOption();
             return;
         }
         this.syncCustomFields();
@@ -946,7 +952,7 @@ export class ChartDialogComponent implements AfterViewChecked {
     // Save/cancel configuration methods
 
     saveChartConfig() {
-        if (this.spec.family === 'live') {
+        if (this.features.family === 'live') {
             this.onClose(EdaDialogCloseEvent.UPDATE, { family: 'live', chartType: this.liveChartType, ...this.buildLiveSaveResponse() });
             return;
         }
@@ -983,7 +989,7 @@ export class ChartDialogComponent implements AfterViewChecked {
     }
 
     closeChartConfig() {
-        if (this.spec.family === 'live') {
+        if (this.features.family === 'live') {
             this.restoreLive();
             this.onClose(EdaDialogCloseEvent.NONE);
             return;
