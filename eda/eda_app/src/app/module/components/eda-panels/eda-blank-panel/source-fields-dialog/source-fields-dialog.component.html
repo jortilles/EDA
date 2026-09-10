@@ -5,7 +5,9 @@
   width="80vw"
   height="auto"
   [overflow]="'auto'">
-  <div content class="source-fields-content">
+  <div content class="source-fields-content"
+    [style.--table-header-color]="headerColorVar"
+    [style.--table-banding-color]="bandingColorVar">
     <p-table [value]="rows" [columns]="headers" [paginator]="true" [rows]="50"
       [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body"
       [showCurrentPageReport]="true"

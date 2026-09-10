@@ -10,12 +10,8 @@
     gap: 6px;
 }
 
-/* Match the look of the rest of the app's tables (eda-table): rounded, tinted header + banded rows */
-.source-fields-content {
-    --table-header-color: rgba(228, 228, 228, 0.5);
-    --table-banding-color: rgba(228, 228, 228, 0.5);
-}
-
+/* Header/banding colors (--table-header-color / --table-banding-color) are set inline from the
+   panel's own configured colors (see source-fields-dialog.component.ts), matching eda-table's look. */
 .source-fields-content th {
     border-radius: 6px;
     background-color: #F1F0F0;

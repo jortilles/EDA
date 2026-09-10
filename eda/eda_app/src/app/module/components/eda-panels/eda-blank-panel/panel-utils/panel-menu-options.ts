@@ -311,8 +311,15 @@ export const PanelOptions = {
         panelComponent.spinnerService.on();
         try {
           const result = await SourceFieldsUtils.getSourceFieldsResult(panelComponent);
+          const tableInject = panelComponent.panelChart?.componentRef?.instance?.inject;
           panelComponent.sourceFieldsController = new EdaDialogController({
-            params: { ...result, panelTitle: panelComponent.panel.title },
+            params: {
+              ...result,
+              panelTitle: panelComponent.panel.title,
+              headerColor: tableInject?.headerColor,
+              bandingColor: tableInject?.bandingColor,
+              colorEnabled: tableInject?.colorEnabled,
+            },
             close: () => { panelComponent.sourceFieldsController = undefined; }
           });
         } catch (err) {
