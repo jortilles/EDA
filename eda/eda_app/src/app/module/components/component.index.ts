@@ -1,4 +1,3 @@
-export * from './eda-tables/eda-table/eda-table';
 export * from './eda-tables/eda-table/eda-table.component';
 export * from './eda-tables/eda-table/eda-columns/eda-column-text';
 export * from './eda-tables/eda-table/eda-columns/eda-column-number';
