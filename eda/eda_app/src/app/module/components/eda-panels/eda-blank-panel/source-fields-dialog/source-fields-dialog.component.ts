@@ -83,6 +83,13 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
         }, 300);
     }
 
+    /** ESC inside the filter input just closes the popup — exactly like clicking outside it —
+     *  without touching whatever filter is already applied. */
+    onFilterEscape(event: KeyboardEvent): void {
+        event.stopPropagation();
+        this.openFilterField = null;
+    }
+
     toggleFilter(field: string): void {
         this.openFilterField = this.openFilterField === field ? null : field;
     }

@@ -3,6 +3,7 @@
   [showApply]="false"
   [closable]="true"
   [dismissableMask]="true"
+  [closeOnEscape]="false"
   (close)="onHide()"
   width="80vw"
   height="75vh"
@@ -39,6 +40,7 @@
                     <input #filterInput type="text" pInputText class="source-fields-filter-input"
                       [value]="filterValues[$index.toString()] || ''"
                       (input)="onFilterInput($event, $index.toString(), dt)"
+                      (keydown.escape)="onFilterEscape($event)"
                       i18n-placeholder="@@sourceFieldsFilterPlaceholder" placeholder="Buscar" />
                   </div>
                 }
