@@ -8,6 +8,27 @@
     margin-top: 8px;
 }
 
+/* p-datatable-sm sets 0.5rem (8px) vertical cell padding app-wide — nudge it up just here
+   so rows read as slightly taller/thicker without leaving the "sm" density everywhere else.
+   Laptop-height screens (<=800px) don't have the room for this plus the taller scroll area
+   below, so both revert to their original values there. */
+.source-fields-content ::ng-deep .p-datatable.p-datatable-sm .p-datatable-thead > tr > th,
+.source-fields-content ::ng-deep .p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+@media (max-height: 800px) {
+    .source-fields-content ::ng-deep .p-datatable-wrapper {
+        height: 45vh !important;
+        max-height: 45vh !important;
+    }
+    .source-fields-content ::ng-deep .p-datatable.p-datatable-sm .p-datatable-thead > tr > th,
+    .source-fields-content ::ng-deep .p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+}
+
 .source-fields-th {
     display: inline-flex;
     align-items: center;
