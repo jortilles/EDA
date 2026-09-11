@@ -255,6 +255,16 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
         Object.entries(remapped).forEach(([field, value]) => table.filter(value, field, 'contains'));
     }
 
+    /** LIFO stack of deleted columns for this dialog session — each entry's removed values are
+     *  keyed by the row's own array reference (not its index), so they still land on the right
+     *  row on restore even if the user sorted the table in between (PrimeNG sorts `rows` in
+     *  place, but the row array objects themselves keep their identity). */
+    private deletedColumnsStack: { index: number; header: string; values: Map<any[], any> }[] = [];
+
+    get canRestoreColumn(): boolean {
+        return this.deletedColumnsStack.length > 0;
+    }
+
     /**
      * View-only removal (the dialog re-fetches fresh data every time it opens, so this never
      * touches real data) — drops the column from `headers` and the same position from every
@@ -266,8 +276,32 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
         const headers = this.headers;
         const rows = this.rows;
         if (!headers || index < 0 || index >= headers.length) return;
+
+        const values = new Map<any[], any>();
+        rows.forEach(row => values.set(row, row[index]));
+        this.deletedColumnsStack.push({ index, header: headers[index], values });
+
         headers.splice(index, 1);
         rows.forEach(row => row.splice(index, 1));
+        this.filterValues = {};
+        this.openFilterField = null;
+        table.reset();
+    }
+
+    /**
+     * Undoes the most recent deleteColumn — only a simple LIFO undo, not a full history: the
+     * restored index is clamped to the current column count, since a column reorder done after
+     * the delete isn't reconciled against the original position.
+     */
+    restoreColumn(table: any): void {
+        const entry = this.deletedColumnsStack.pop();
+        if (!entry) return;
+        const headers = this.headers;
+        const rows = this.rows;
+        const index = Math.min(entry.index, headers.length);
+
+        headers.splice(index, 0, entry.header);
+        rows.forEach(row => row.splice(index, 0, entry.values.get(row)));
         this.filterValues = {};
         this.openFilterField = null;
         table.reset();

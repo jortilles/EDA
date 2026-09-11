@@ -1,5 +1,4 @@
 <eda-dialog2
-  [header]="header"
   [showApply]="false"
   [closable]="true"
   [dismissableMask]="true"
@@ -8,6 +7,15 @@
   width="80vw"
   [height]="dialogHeight"
   [overflow]="'auto'">
+  <div header class="source-fields-header-content">
+    <span>{{ header }}</span>
+    @if (canRestoreColumn) {
+      <button type="button" class="source-fields-header-restore-btn" (click)="restoreColumn(dt)"
+        i18n-title="@@sourceFieldsRestoreColumn" title="Restaurar columna">
+        <i class="pi pi-undo"></i>
+      </button>
+    }
+  </div>
   <div content class="source-fields-content"
     [class.source-fields-dragging-active]="!!dragState"
     [style.--table-header-color]="headerColorVar"

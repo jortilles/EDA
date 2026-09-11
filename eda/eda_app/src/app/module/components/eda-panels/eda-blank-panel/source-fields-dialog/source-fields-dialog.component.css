@@ -8,6 +8,37 @@
     margin-top: 8px;
 }
 
+/* Projected into eda-dialog2's [header] slot so this undo icon sits right before PrimeNG's own
+   close (X) icon — that slot only activates when the dialog's `header` string input isn't
+   bound (see EdaDialog2's @if(!header) template), so the title text moves here too instead of
+   going through that input. */
+.source-fields-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex: 1;
+}
+
+.source-fields-header-restore-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: #374151;
+    cursor: pointer;
+    font-size: 1rem;
+}
+.source-fields-header-restore-btn:hover {
+    background: #f3f4f6;
+    color: #16a34a;
+}
+
 .source-fields-global-filter {
     position: relative;
     display: inline-block;
