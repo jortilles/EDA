@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { EdaDialog2Component } from '@eda/shared/components/eda-dialogs/eda-dialog2/eda-dialog2.component';
 import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_default';
+import { FileUtiles } from '@eda/services/utils/file-utils.service';
 
 @Component({
     standalone: true,
@@ -32,6 +33,8 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
     filterValues: Record<string, string> = {};
 
     visible = true;
+
+    constructor(private fileUtiles: FileUtiles) { }
 
     get header(): string {
         const panelTitle = this.controller?.params?.panelTitle || '';
@@ -110,6 +113,29 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
 
     onHide() {
         this.controller.close(EdaDialogCloseEvent.NONE);
+    }
+
+    /**
+     * Exports exactly what's currently on screen: PrimeNG's Table keeps `filteredValue` as
+     * the current filtered+sorted rows whenever any column filter is active (null otherwise,
+     * not just when empty — an active filter matching zero rows is still "the current view"
+     * and should export empty, not fall back to the unfiltered table). FileUtiles.exportToExcel
+     * expects rows as objects keyed by column name (matching how the rest of the app exports),
+     * so the positional row arrays get mapped into that shape here.
+     */
+    exportToExcel(table: any): void {
+        const displayedRows: any[][] = table.filteredValue !== null && table.filteredValue !== undefined
+            ? table.filteredValue
+            : table.value;
+        const headers = this.headers;
+        const cols = displayedRows.map((row: any[]) => {
+            const obj: Record<string, any> = {};
+            headers.forEach((h, i) => { obj[h] = row[i]; });
+            return obj;
+        });
+        const panelTitle = this.controller?.params?.panelTitle || '';
+        const fileName = panelTitle ? `Campos de origen - ${panelTitle}` : 'Campos de origen';
+        this.fileUtiles.exportToExcel(headers, cols, fileName);
     }
 
     ngAfterViewInit(): void {
