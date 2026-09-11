@@ -24,7 +24,7 @@
           @for (header of columns; track $index) {
             <th #headerCell class="source-fields-header-cell"
               [class.source-fields-dragging]="dragState?.dragIndex === $index"
-              (mousedown)="onHeaderMouseDown($event, $index)">
+              (mousedown)="onHeaderMouseDown($event, $index, dt)">
               <div class="source-fields-th">
                 <span>{{ header }}</span>
                 <span class="source-fields-sort-icon" tabindex="0" role="button"

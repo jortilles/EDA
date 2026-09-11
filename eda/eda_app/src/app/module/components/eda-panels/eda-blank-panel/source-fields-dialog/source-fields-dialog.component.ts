@@ -107,10 +107,11 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
     private dragStartX = 0;
     private dragWidths: number[] = [];
     private dragLefts: number[] = [];
+    private dragTable: any = null;
     private readonly onHeaderMouseMoveBound = (event: MouseEvent) => this.onHeaderMouseMove(event);
     private readonly onHeaderMouseUpBound = () => this.onHeaderMouseUp();
 
-    onHeaderMouseDown(event: MouseEvent, index: number): void {
+    onHeaderMouseDown(event: MouseEvent, index: number, table: any): void {
         if (event.button !== 0) return;
         const target = event.target as HTMLElement;
         if (target.closest('.source-fields-sort-icon, .source-fields-filter-icon, .source-fields-delete-icon, .source-fields-filter-popup')) {
@@ -122,6 +123,7 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
         this.dragLefts = cells.map(cell => cell.getBoundingClientRect().left);
         this.dragStartX = event.clientX;
         this.dragState = { dragIndex: index, dropIndex: index };
+        this.dragTable = table;
         cells[index].style.willChange = 'transform';
         document.addEventListener('mousemove', this.onHeaderMouseMoveBound);
         document.addEventListener('mouseup', this.onHeaderMouseUpBound);
@@ -172,20 +174,56 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
             ref.nativeElement.style.zIndex = '';
             ref.nativeElement.style.willChange = '';
         });
+        const table = this.dragTable;
+        this.dragTable = null;
         this.dragState = null;
 
         if (dragIndex !== dropIndex) {
-            this.reorderColumns(dragIndex, dropIndex);
+            this.reorderColumns(dragIndex, dropIndex, table);
         }
     }
 
-    /** Keeps each row's data aligned to its (now moved) column — same splice on `headers`
-     *  and on every row, since both are read positionally ($index as the "field"). */
-    private reorderColumns(dragIndex: number, dropIndex: number): void {
+    /** Where an old column index ends up after moving one column from dragIndex to dropIndex
+     *  (the same single-splice move used on `headers`/`rows`), so other index-keyed state
+     *  (filterValues) can be kept in sync without redoing the splice itself. */
+    private mapReorderedIndex(oldIndex: number, dragIndex: number, dropIndex: number): number {
+        if (oldIndex === dragIndex) return dropIndex;
+        if (dragIndex < dropIndex && oldIndex > dragIndex && oldIndex <= dropIndex) return oldIndex - 1;
+        if (dragIndex > dropIndex && oldIndex >= dropIndex && oldIndex < dragIndex) return oldIndex + 1;
+        return oldIndex;
+    }
+
+    /**
+     * Keeps each row's data aligned to its (now moved) column — same splice on `headers` and
+     * on every row, since both are read positionally ($index as the "field"). filterValues is
+     * keyed by index the same way, so without remapping it an applied filter would visually
+     * "stay" at the old index instead of following the column it was set on — and PrimeNG's
+     * own filter state (also field-keyed) would keep filtering whatever column ends up at
+     * that old index, not the one the user actually filtered. Re-applying filter() at the new
+     * index (and clearing it at the vacated old index) keeps both in sync.
+     */
+    private reorderColumns(dragIndex: number, dropIndex: number, table: any): void {
         const headers = this.headers;
         const rows = this.rows;
         headers.splice(dropIndex, 0, headers.splice(dragIndex, 1)[0]);
         rows.forEach(row => row.splice(dropIndex, 0, row.splice(dragIndex, 1)[0]));
+
+        if (Object.keys(this.filterValues).length === 0) return;
+
+        const remapped: Record<string, string> = {};
+        const staleFields = new Set<string>();
+        Object.entries(this.filterValues).forEach(([field, value]) => {
+            const newIndex = this.mapReorderedIndex(Number(field), dragIndex, dropIndex);
+            remapped[newIndex.toString()] = value;
+            if (newIndex.toString() !== field) staleFields.add(field);
+        });
+        this.filterValues = remapped;
+        if (this.openFilterField !== null) {
+            this.openFilterField = this.mapReorderedIndex(Number(this.openFilterField), dragIndex, dropIndex).toString();
+        }
+
+        staleFields.forEach(field => table.filter('', field, 'contains'));
+        Object.entries(remapped).forEach(([field, value]) => table.filter(value, field, 'contains'));
     }
 
     /**
