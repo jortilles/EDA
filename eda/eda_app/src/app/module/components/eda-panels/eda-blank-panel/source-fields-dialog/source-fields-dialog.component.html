@@ -29,6 +29,7 @@
                   <p-sortIcon [field]="$index.toString()"></p-sortIcon>
                 </span>
                 <span class="source-fields-filter-icon" tabindex="0" role="button"
+                  [class.source-fields-filter-active]="!!filterValues[$index.toString()]"
                   (click)="toggleFilter($index.toString())"
                   (keydown.enter)="toggleFilter($index.toString())">
                   <i class="pi pi-filter"></i>
@@ -36,6 +37,7 @@
                 @if (openFilterField === $index.toString()) {
                   <div class="source-fields-filter-popup">
                     <input #filterInput type="text" pInputText class="source-fields-filter-input"
+                      [value]="filterValues[$index.toString()] || ''"
                       (input)="onFilterInput($event, $index.toString(), dt)"
                       i18n-placeholder="@@sourceFieldsFilterPlaceholder" placeholder="Buscar" />
                   </div>

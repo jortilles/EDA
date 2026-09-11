@@ -56,6 +56,11 @@
     color: #16a34a;
 }
 
+/* Stays green while a filter is actually applied to the column, not just on hover. */
+.source-fields-filter-icon.source-fields-filter-active {
+    color: #16a34a;
+}
+
 .source-fields-filter-input {
     width: 12rem;
 }

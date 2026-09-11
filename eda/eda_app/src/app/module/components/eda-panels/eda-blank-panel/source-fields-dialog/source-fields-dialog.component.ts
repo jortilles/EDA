@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
@@ -26,6 +26,10 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
 
     /** Field ($index as string) whose filter popup is currently open, or null if none. */
     openFilterField: string | null = null;
+
+    /** Current filter text per field — drives the icon's "active" color and pre-fills the
+     *  input when a column's filter is reopened. */
+    filterValues: Record<string, string> = {};
 
     visible = true;
 
@@ -72,6 +76,7 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
      */
     onFilterInput(event: Event, field: string, table: any): void {
         const value = (event.target as HTMLInputElement).value;
+        this.filterValues[field] = value;
         clearTimeout(this.filterTimers[field]);
         this.filterTimers[field] = setTimeout(() => {
             table.filter(value, field, 'contains');
@@ -80,6 +85,20 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
 
     toggleFilter(field: string): void {
         this.openFilterField = this.openFilterField === field ? null : field;
+    }
+
+    /**
+     * Closes the open filter popup on any click that lands outside its icon and its own
+     * popup — this runs after the icon's own (click) handler (DOM events bubble target ->
+     * document), so clicking the icon itself still opens it without immediately re-closing.
+     */
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(event: MouseEvent): void {
+        if (!this.openFilterField) return;
+        const target = event.target as HTMLElement;
+        if (!target.closest('.source-fields-filter-icon, .source-fields-filter-popup')) {
+            this.openFilterField = null;
+        }
     }
 
     onHide() {
