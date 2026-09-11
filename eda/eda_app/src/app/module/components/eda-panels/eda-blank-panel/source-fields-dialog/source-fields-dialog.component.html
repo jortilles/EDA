@@ -9,6 +9,7 @@
   height="74vh"
   [overflow]="'auto'">
   <div content class="source-fields-content"
+    [class.source-fields-dragging-active]="!!dragState"
     [style.--table-header-color]="headerColorVar"
     [style.--table-banding-color]="bandingColorVar">
     <p-table #dt [value]="rows" [columns]="headers" [paginator]="true" [rows]="50"
@@ -21,7 +22,9 @@
       <ng-template pTemplate="header" let-columns>
         <tr>
           @for (header of columns; track $index) {
-            <th>
+            <th #headerCell class="source-fields-header-cell"
+              [class.source-fields-dragging]="dragState?.dragIndex === $index"
+              (mousedown)="onHeaderMouseDown($event, $index)">
               <div class="source-fields-th">
                 <span>{{ header }}</span>
                 <span class="source-fields-sort-icon" tabindex="0" role="button"
@@ -34,6 +37,11 @@
                   (click)="toggleFilter($index.toString())"
                   (keydown.enter)="toggleFilter($index.toString())">
                   <i class="pi pi-filter"></i>
+                </span>
+                <span class="source-fields-delete-icon" tabindex="0" role="button"
+                  (click)="deleteColumn($index, dt)"
+                  (keydown.enter)="deleteColumn($index, dt)">
+                  <i class="pi pi-times"></i>
                 </span>
                 @if (openFilterField === $index.toString()) {
                   <div class="source-fields-filter-popup">

@@ -29,6 +29,24 @@
     }
 }
 
+/* Custom mouse-driven column drag (see onHeaderMouseDown/Move/Up in the component) — the
+   dragged header follows the cursor and the headers it passes over slide aside, instead of
+   PrimeNG's native HTML5 drag/drop (a static browser ghost image, no in-between feedback). */
+.source-fields-content.source-fields-dragging-active {
+    user-select: none;
+}
+/* No static will-change here on purpose: it creates a new stacking context on every header
+   cell, which traps the filter popup's z-index inside its own column and lets the next
+   column's <th> (painted later) cover whatever part of the popup overflows into it. It's
+   applied dynamically instead, only to the cell actually being dragged (see onHeaderMouseDown/Up). */
+.source-fields-header-cell {
+    cursor: grab;
+}
+.source-fields-header-cell.source-fields-dragging {
+    cursor: grabbing;
+    opacity: 0.85;
+}
+
 .source-fields-th {
     display: inline-flex;
     align-items: center;
@@ -64,11 +82,12 @@
     background: var(--table-header-color) !important;
 }
 
-/* Sorting and filtering are both triggered by clicking their own icon only (see
-   .source-fields-sort-icon / .source-fields-filter-icon in the header template), not the
-   whole header cell — same wrapper pattern, same hover feedback, for both. */
+/* Sorting, filtering and column removal are all triggered by clicking their own icon only
+   (see .source-fields-sort-icon / .source-fields-filter-icon / .source-fields-delete-icon in
+   the header template), not the whole header cell — same wrapper pattern for all three. */
 .source-fields-sort-icon,
-.source-fields-filter-icon {
+.source-fields-filter-icon,
+.source-fields-delete-icon {
     display: inline-flex;
     cursor: pointer;
 }
@@ -84,6 +103,11 @@
 /* Stays green while a filter is actually applied to the column, not just on hover. */
 .source-fields-filter-icon.source-fields-filter-active {
     color: #16a34a;
+}
+
+/* Red hover, distinguishing this as a destructive action from sort/filter's green. */
+.source-fields-delete-icon:hover {
+    color: #dc2626;
 }
 
 .source-fields-filter-input {

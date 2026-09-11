@@ -97,6 +97,115 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
         this.openFilterField = this.openFilterField === field ? null : field;
     }
 
+    // Custom mouse-driven column drag — PrimeNG's native [reorderableColumns] uses the browser's
+    // own HTML5 drag/drop (a static ghost image, no live feedback besides two small arrow icons),
+    // which reads as rigid. This tracks the mouse directly instead, so the dragged header follows
+    // the cursor 1:1 and the headers it passes over slide out of the way with a CSS transition.
+    @ViewChildren('headerCell') private headerCells!: QueryList<ElementRef<HTMLTableCellElement>>;
+
+    dragState: { dragIndex: number; dropIndex: number } | null = null;
+    private dragStartX = 0;
+    private dragWidths: number[] = [];
+    private dragLefts: number[] = [];
+    private readonly onHeaderMouseMoveBound = (event: MouseEvent) => this.onHeaderMouseMove(event);
+    private readonly onHeaderMouseUpBound = () => this.onHeaderMouseUp();
+
+    onHeaderMouseDown(event: MouseEvent, index: number): void {
+        if (event.button !== 0) return;
+        const target = event.target as HTMLElement;
+        if (target.closest('.source-fields-sort-icon, .source-fields-filter-icon, .source-fields-delete-icon, .source-fields-filter-popup')) {
+            return;
+        }
+        event.preventDefault();
+        const cells = this.headerCells.toArray().map(ref => ref.nativeElement);
+        this.dragWidths = cells.map(cell => cell.getBoundingClientRect().width);
+        this.dragLefts = cells.map(cell => cell.getBoundingClientRect().left);
+        this.dragStartX = event.clientX;
+        this.dragState = { dragIndex: index, dropIndex: index };
+        cells[index].style.willChange = 'transform';
+        document.addEventListener('mousemove', this.onHeaderMouseMoveBound);
+        document.addEventListener('mouseup', this.onHeaderMouseUpBound);
+    }
+
+    private onHeaderMouseMove(event: MouseEvent): void {
+        if (!this.dragState) return;
+        const { dragIndex } = this.dragState;
+        const deltaX = event.clientX - this.dragStartX;
+        const draggedCenter = this.dragLefts[dragIndex] + this.dragWidths[dragIndex] / 2 + deltaX;
+
+        let dropIndex = 0;
+        this.dragWidths.forEach((width, i) => {
+            if (i === dragIndex) return;
+            const otherCenter = this.dragLefts[i] + width / 2;
+            if (otherCenter < draggedCenter) dropIndex++;
+        });
+        this.dragState.dropIndex = dropIndex;
+
+        this.headerCells.forEach((ref, i) => {
+            const cell = ref.nativeElement;
+            if (i === dragIndex) {
+                cell.style.transition = 'none';
+                cell.style.zIndex = '5';
+                cell.style.transform = `translateX(${deltaX}px)`;
+                return;
+            }
+            let shift = 0;
+            if (dragIndex < dropIndex && i > dragIndex && i <= dropIndex) {
+                shift = -this.dragWidths[dragIndex];
+            } else if (dragIndex > dropIndex && i >= dropIndex && i < dragIndex) {
+                shift = this.dragWidths[dragIndex];
+            }
+            cell.style.transition = 'transform 150ms ease';
+            cell.style.transform = shift ? `translateX(${shift}px)` : '';
+        });
+    }
+
+    private onHeaderMouseUp(): void {
+        if (!this.dragState) return;
+        const { dragIndex, dropIndex } = this.dragState;
+        document.removeEventListener('mousemove', this.onHeaderMouseMoveBound);
+        document.removeEventListener('mouseup', this.onHeaderMouseUpBound);
+
+        this.headerCells.forEach(ref => {
+            ref.nativeElement.style.transition = '';
+            ref.nativeElement.style.transform = '';
+            ref.nativeElement.style.zIndex = '';
+            ref.nativeElement.style.willChange = '';
+        });
+        this.dragState = null;
+
+        if (dragIndex !== dropIndex) {
+            this.reorderColumns(dragIndex, dropIndex);
+        }
+    }
+
+    /** Keeps each row's data aligned to its (now moved) column — same splice on `headers`
+     *  and on every row, since both are read positionally ($index as the "field"). */
+    private reorderColumns(dragIndex: number, dropIndex: number): void {
+        const headers = this.headers;
+        const rows = this.rows;
+        headers.splice(dropIndex, 0, headers.splice(dragIndex, 1)[0]);
+        rows.forEach(row => row.splice(dropIndex, 0, row.splice(dragIndex, 1)[0]));
+    }
+
+    /**
+     * View-only removal (the dialog re-fetches fresh data every time it opens, so this never
+     * touches real data) — drops the column from `headers` and the same position from every
+     * row, keeping them aligned the same way onColumnReorder does. Sort/filter are keyed by
+     * position, so a removed column can leave them pointing at a shifted/stale index —
+     * table.reset() clears that instead of trying to re-map it.
+     */
+    deleteColumn(index: number, table: any): void {
+        const headers = this.headers;
+        const rows = this.rows;
+        if (!headers || index < 0 || index >= headers.length) return;
+        headers.splice(index, 1);
+        rows.forEach(row => row.splice(index, 1));
+        this.filterValues = {};
+        this.openFilterField = null;
+        table.reset();
+    }
+
     /**
      * Closes the open filter popup on any click that lands outside its icon and its own
      * popup — this runs after the icon's own (click) handler (DOM events bubble target ->
@@ -149,5 +258,7 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         Object.values(this.filterTimers).forEach(timer => clearTimeout(timer));
         this.filterInputsSubscription?.unsubscribe();
+        document.removeEventListener('mousemove', this.onHeaderMouseMoveBound);
+        document.removeEventListener('mouseup', this.onHeaderMouseUpBound);
     }
 }
