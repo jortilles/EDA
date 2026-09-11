@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+.source-fields-content ::ng-deep .p-datatable {
+    margin-top: 8px;
+}
+
 .source-fields-th {
     display: inline-flex;
     align-items: center;
