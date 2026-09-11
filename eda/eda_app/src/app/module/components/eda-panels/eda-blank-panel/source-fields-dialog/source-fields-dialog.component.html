@@ -10,7 +10,7 @@
   <div content class="source-fields-content"
     [style.--table-header-color]="headerColorVar"
     [style.--table-banding-color]="bandingColorVar">
-    <p-table [value]="rows" [columns]="headers" [paginator]="true" [rows]="50"
+    <p-table #dt [value]="rows" [columns]="headers" [paginator]="true" [rows]="50"
       [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body"
       [showCurrentPageReport]="true"
       currentPageReportTemplate="{first} - {last} de {totalRecords} registros"
@@ -20,10 +20,19 @@
       <ng-template pTemplate="header" let-columns>
         <tr>
           @for (header of columns; track $index) {
-            <th [pSortableColumn]="$index.toString()">
+            <th>
               <div class="source-fields-th">
                 <span>{{ header }}</span>
-                <p-sortIcon [field]="$index.toString()"></p-sortIcon>
+                <span class="source-fields-sort-icon" tabindex="0" role="button"
+                  (click)="dt.sort({ originalEvent: $event, field: $index.toString() })"
+                  (keydown.enter)="dt.sort({ originalEvent: $event, field: $index.toString() })">
+                  <p-sortIcon [field]="$index.toString()"></p-sortIcon>
+                </span>
+                <p-columnFilter type="text" [field]="$index.toString()" display="menu"
+                  matchMode="contains" [showOperator]="false" [showAddButton]="false"
+                  [showMatchModes]="false" i18n-placeholder="@@sourceFieldsFilterPlaceholder"
+                  placeholder="Buscar">
+                </p-columnFilter>
               </div>
             </th>
           }

@@ -22,6 +22,20 @@
     background: var(--table-header-color) !important;
 }
 
+/* Sorting is triggered by clicking the arrow icon itself now (see .source-fields-sort-icon
+   in the header template), not the whole header cell — so hover/cursor feedback is scoped
+   to that wrapper, matching the filter icon's own already icon-scoped hover exactly. */
+.source-fields-sort-icon {
+    display: inline-flex;
+    cursor: pointer;
+    position: relative;
+    top: 2px;
+}
+.source-fields-content ::ng-deep .source-fields-sort-icon:hover .p-sortable-column-icon,
+.source-fields-content ::ng-deep .p-column-filter-menu-button:hover {
+    color: #16a34a;
+}
+
 .source-fields-content ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) > td {
     background: var(--table-banding-color) !important;
 }
