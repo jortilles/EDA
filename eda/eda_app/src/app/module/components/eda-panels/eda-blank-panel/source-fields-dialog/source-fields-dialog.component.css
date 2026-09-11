@@ -59,6 +59,12 @@
 .source-fields-filter-input {
     width: 12rem;
 }
+/* Override the app-wide green focus ring (.p-inputtext:enabled:focus in custom.css) — only
+   for this input, not touched anywhere else in the app. */
+.source-fields-filter-input:focus {
+    box-shadow: none !important;
+    border-color: #ced4da !important;
+}
 
 .source-fields-content ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) > td {
     background: var(--table-banding-color) !important;
