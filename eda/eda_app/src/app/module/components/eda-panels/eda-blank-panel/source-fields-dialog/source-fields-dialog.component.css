@@ -8,6 +8,27 @@
     margin-top: 8px;
 }
 
+.source-fields-global-filter {
+    position: relative;
+    display: inline-block;
+}
+.source-fields-global-filter .pi-search {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    pointer-events: none;
+}
+.source-fields-global-filter-input {
+    width: 18rem;
+    padding-left: 2rem !important;
+}
+.source-fields-global-filter-input:focus {
+    box-shadow: none !important;
+    border-color: #ced4da !important;
+}
+
 /* p-datatable-sm sets 0.5rem (8px) vertical cell padding app-wide — nudge it up just here
    so rows read as slightly taller/thicker without leaving the "sm" density everywhere else.
    Laptop-height screens (<=800px) don't have the room for this plus the taller scroll area

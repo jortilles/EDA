@@ -6,13 +6,21 @@
   [closeOnEscape]="false"
   (close)="onHide()"
   width="80vw"
-  height="74vh"
+  [height]="dialogHeight"
   [overflow]="'auto'">
   <div content class="source-fields-content"
     [class.source-fields-dragging-active]="!!dragState"
     [style.--table-header-color]="headerColorVar"
     [style.--table-banding-color]="bandingColorVar">
+    <div class="source-fields-global-filter">
+      <i class="pi pi-search"></i>
+      <input type="text" pInputText class="source-fields-global-filter-input"
+        [value]="globalFilterValue"
+        (input)="onGlobalFilterInput($event, dt)"
+        i18n-placeholder="@@sourceFieldsGlobalFilterPlaceholder" placeholder="Buscar en todos los campos" />
+    </div>
     <p-table #dt [value]="rows" [columns]="headers" [paginator]="true" [rows]="50"
+      [globalFilterFields]="globalFilterFields"
       [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body"
       [showCurrentPageReport]="true"
       currentPageReportTemplate="{first} - {last} de {totalRecords} registros"

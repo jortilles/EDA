@@ -44,6 +44,15 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
         return $localize`:@@sourceFieldsDialogHeader:Campos de origen para ` + panelTitle;
     }
 
+    /** Same 800px threshold as the @media (max-height: 800px) rule in the stylesheet — laptop
+     *  screens get a taller dialog (74vh reads as cramped once the fixed-height chrome eats a
+     *  bigger share of a shorter viewport) while large screens keep the original 74vh. Can't do
+     *  this purely in CSS: eda-dialog2's <p-dialog> uses appendTo="body", so it's portaled out
+     *  of this component's DOM subtree and a scoped ::ng-deep rule can't reach it. */
+    get dialogHeight(): string {
+        return window.innerHeight <= 800 ? '80vh' : '74vh';
+    }
+
     get headers(): string[] {
         return this.controller?.params?.headers || [];
     }
@@ -95,6 +104,26 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
 
     toggleFilter(field: string): void {
         this.openFilterField = this.openFilterField === field ? null : field;
+    }
+
+    globalFilterValue = '';
+    private globalFilterTimer?: ReturnType<typeof setTimeout>;
+
+    /** Index strings for every current column — recomputed from `headers`, so a column
+     *  delete/reorder keeps this in sync without any extra bookkeeping. */
+    get globalFilterFields(): string[] {
+        return this.headers.map((_, i) => i.toString());
+    }
+
+    /** Same debounced pattern as the per-column filters, but scoped to every field at once
+     *  via PrimeNG's own Table.filterGlobal(). */
+    onGlobalFilterInput(event: Event, table: any): void {
+        const value = (event.target as HTMLInputElement).value;
+        this.globalFilterValue = value;
+        clearTimeout(this.globalFilterTimer);
+        this.globalFilterTimer = setTimeout(() => {
+            table.filterGlobal(value, 'contains');
+        }, 300);
     }
 
     // Custom mouse-driven column drag — PrimeNG's native [reorderableColumns] uses the browser's
@@ -295,6 +324,7 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
 
     ngOnDestroy(): void {
         Object.values(this.filterTimers).forEach(timer => clearTimeout(timer));
+        clearTimeout(this.globalFilterTimer);
         this.filterInputsSubscription?.unsubscribe();
         document.removeEventListener('mousemove', this.onHeaderMouseMoveBound);
         document.removeEventListener('mouseup', this.onHeaderMouseUpBound);
