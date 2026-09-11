@@ -305,7 +305,7 @@ export const PanelOptions = {
   showSourceFields: (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
       label: $localize`:@@panelOptionsShowSourceFields:Mostrar campos de origen`,
-      icon: 'mdi mdi-database-search',
+      icon: 'mdi mdi-eye-outline',
       command: async () => {
         panelComponent.contextMenu.hideContextMenu();
         panelComponent.spinnerService.on();

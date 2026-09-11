@@ -13,6 +13,15 @@ export abstract class EdaDialog2 {
         sm: '90vw',
     };
 
+    // Off by default so existing dialogs keep their current behavior — opt in per-dialog.
+    // PrimeNG's Dialog only wires its Escape listener and mask-click listener when
+    // `closable` is true (see enableModality()/bindGlobalListeners() in primeng/dialog),
+    // so closable has to go along with dismissableMask/closeOnEscape for either to work —
+    // it no longer only means "show the native X icon" for this wrapper.
+    @Input() closable: boolean = false;
+    @Input() dismissableMask: boolean = false;
+    @Input() closeOnEscape: boolean = true;
+
     @Output() apply: EventEmitter<any> = new EventEmitter();
     @Output() close: EventEmitter<any> = new EventEmitter();
     @Output() delete: EventEmitter<any> = new EventEmitter();
