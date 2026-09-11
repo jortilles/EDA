@@ -28,11 +28,18 @@
                   (keydown.enter)="dt.sort({ originalEvent: $event, field: $index.toString() })">
                   <p-sortIcon [field]="$index.toString()"></p-sortIcon>
                 </span>
-                <p-columnFilter type="text" [field]="$index.toString()" display="menu"
-                  matchMode="contains" [showOperator]="false" [showAddButton]="false"
-                  [showMatchModes]="false" i18n-placeholder="@@sourceFieldsFilterPlaceholder"
-                  placeholder="Buscar">
-                </p-columnFilter>
+                <span class="source-fields-filter-icon" tabindex="0" role="button"
+                  (click)="toggleFilter($index.toString())"
+                  (keydown.enter)="toggleFilter($index.toString())">
+                  <i class="pi pi-filter"></i>
+                </span>
+                @if (openFilterField === $index.toString()) {
+                  <div class="source-fields-filter-popup">
+                    <input #filterInput type="text" pInputText class="source-fields-filter-input"
+                      (input)="onFilterInput($event, $index.toString(), dt)"
+                      i18n-placeholder="@@sourceFieldsFilterPlaceholder" placeholder="Buscar" />
+                  </div>
+                }
               </div>
             </th>
           }

@@ -1,6 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
+import { InputTextModule } from 'primeng/inputtext';
+import { Subscription } from 'rxjs';
 import { EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { EdaDialog2Component } from '@eda/shared/components/eda-dialogs/eda-dialog2/eda-dialog2.component';
 import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_default';
@@ -10,10 +12,20 @@ import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/co
     selector: 'app-source-fields-dialog',
     templateUrl: './source-fields-dialog.component.html',
     styleUrls: ['./source-fields-dialog.component.css'],
-    imports: [CommonModule, TableModule, EdaDialog2Component],
+    imports: [CommonModule, TableModule, InputTextModule, EdaDialog2Component],
 })
-export class SourceFieldsDialogComponent {
+export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
     @Input() controller: any;
+
+    // Only one filter popup (and its input) exists at a time, created fresh by @if each time
+    // it opens — so focusing it means watching this list for when it appears.
+    @ViewChildren('filterInput') filterInputs!: QueryList<ElementRef<HTMLInputElement>>;
+    private filterInputsSubscription?: Subscription;
+
+    private filterTimers: Record<string, ReturnType<typeof setTimeout>> = {};
+
+    /** Field ($index as string) whose filter popup is currently open, or null if none. */
+    openFilterField: string | null = null;
 
     visible = true;
 
@@ -54,7 +66,36 @@ export class SourceFieldsDialogComponent {
         return this.hexToRgba(this.controller?.params?.bandingColor || DEFAULT_TABLE_BANDING_COLOR, 0.15);
     }
 
+    /**
+     * Debounced per-column filter — no Apply/Clear buttons, filters automatically once
+     * typing pauses, calling PrimeNG's own Table.filter() directly.
+     */
+    onFilterInput(event: Event, field: string, table: any): void {
+        const value = (event.target as HTMLInputElement).value;
+        clearTimeout(this.filterTimers[field]);
+        this.filterTimers[field] = setTimeout(() => {
+            table.filter(value, field, 'contains');
+        }, 300);
+    }
+
+    toggleFilter(field: string): void {
+        this.openFilterField = this.openFilterField === field ? null : field;
+    }
+
     onHide() {
         this.controller.close(EdaDialogCloseEvent.NONE);
+    }
+
+    ngAfterViewInit(): void {
+        // The input only exists in the DOM while its popup is open (@if), so it's not there
+        // yet at this point — watch for it to appear (and reappear, per toggle) instead.
+        this.filterInputsSubscription = this.filterInputs.changes.subscribe((list: QueryList<ElementRef<HTMLInputElement>>) => {
+            list.first?.nativeElement.focus();
+        });
+    }
+
+    ngOnDestroy(): void {
+        Object.values(this.filterTimers).forEach(timer => clearTimeout(timer));
+        this.filterInputsSubscription?.unsubscribe();
     }
 }

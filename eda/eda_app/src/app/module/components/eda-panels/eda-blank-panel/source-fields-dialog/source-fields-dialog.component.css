@@ -8,6 +8,23 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    position: relative;
+}
+
+/* Custom filter popup — deliberately never leaves this component's own DOM (no appendTo
+   body / overlay portal), so it can never end up in a competing stacking context against
+   the dialog's own modal. It anchors to .source-fields-th (position: relative above). */
+.source-fields-filter-popup {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 10;
+    margin-top: 4px;
+    padding: 0.5rem;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Header/banding colors (--table-header-color / --table-banding-color) are set inline from the
@@ -22,18 +39,25 @@
     background: var(--table-header-color) !important;
 }
 
-/* Sorting is triggered by clicking the arrow icon itself now (see .source-fields-sort-icon
-   in the header template), not the whole header cell — so hover/cursor feedback is scoped
-   to that wrapper, matching the filter icon's own already icon-scoped hover exactly. */
-.source-fields-sort-icon {
+/* Sorting and filtering are both triggered by clicking their own icon only (see
+   .source-fields-sort-icon / .source-fields-filter-icon in the header template), not the
+   whole header cell — same wrapper pattern, same hover feedback, for both. */
+.source-fields-sort-icon,
+.source-fields-filter-icon {
     display: inline-flex;
     cursor: pointer;
+}
+.source-fields-sort-icon {
     position: relative;
     top: 2px;
 }
 .source-fields-content ::ng-deep .source-fields-sort-icon:hover .p-sortable-column-icon,
-.source-fields-content ::ng-deep .p-column-filter-menu-button:hover {
+.source-fields-filter-icon:hover {
     color: #16a34a;
+}
+
+.source-fields-filter-input {
+    width: 12rem;
 }
 
 .source-fields-content ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) > td {
