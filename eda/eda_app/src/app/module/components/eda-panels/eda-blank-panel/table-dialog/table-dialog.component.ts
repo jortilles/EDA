@@ -57,6 +57,26 @@ export class TableDialogComponent{
   public bandingColor: string = '';
   public colorEnabled: boolean = true;
 
+  /** Ordered column names to nest grouped subtotals by (e.g. [pais, ciudad]) — see
+   *  TableConfig.groupBySubtotalColumns. Purely a UI/config concern here: this only builds
+   *  and persists the selection, the actual subtotal rows aren't rendered yet. */
+  public groupBySubtotalColumns: string[] = [];
+  public groupBySubtotalNumericColumn: string = '';
+  public groupBySubtotalAggregation: string = 'sum';
+  /** Whether the picker section is expanded — independent of whether any column is chosen
+   *  yet, so turning it on doesn't need a column selected first. */
+  public groupedSubtotalsOpen: boolean = false;
+
+  public groupedSubtotalsTitle: string = $localize`:@@groupedSubtotalsTitle:Subtotales agrupados`;
+  public groupedSubtotalsAddPlaceholder: string = $localize`:@@groupedSubtotalsAddPlaceholder:+ Añadir columna…`;
+  public groupedSubtotalsGroupByLabel: string = $localize`:@@groupedSubtotalsGroupByLabel:Agrupar por (en orden)`;
+  public groupedSubtotalsNumericLabel: string = $localize`:@@groupedSubtotalsNumericLabel:Columna a totalizar`;
+  public groupedSubtotalsAggLabel: string = $localize`:@@groupedSubtotalsAggLabel:Tipo de cálculo`;
+  public aggSumLabel: string = $localize`:@@aggSumLabel:Suma`;
+  public aggAvgLabel: string = $localize`:@@aggAvgLabel:Promedio`;
+  public aggMinLabel: string = $localize`:@@aggMinLabel:Mínimo`;
+  public aggMaxLabel: string = $localize`:@@aggMaxLabel:Máximo`;
+
   /**Strings */
   public addTotals: string = $localize`:@@addTotals:Totales`;
   public addPercentages: string = $localize`:@@addPercentages:Porcentajes`;
@@ -124,6 +144,10 @@ export class TableDialogComponent{
       this.headerColor = config.headerColor || DEFAULT_TABLE_HEADER_COLOR;
       this.bandingColor = config.bandingColor || DEFAULT_TABLE_BANDING_COLOR;
       this.colorEnabled = config.colorEnabled !== false;
+      this.groupBySubtotalColumns = config.groupBySubtotalColumns || [];
+      this.groupBySubtotalNumericColumn = config.groupBySubtotalNumericColumn || '';
+      this.groupBySubtotalAggregation = config.groupBySubtotalAggregation || 'sum';
+      this.groupedSubtotalsOpen = this.groupBySubtotalColumns.length > 0;
     } else {
       this.panelChartConfig.config = new ChartConfig(
         new TableConfig(false, false, 5, false, false, false, false, null, null, null, false, false, [])
@@ -380,6 +404,55 @@ export class TableDialogComponent{
       }));
   }
 
+  /** Text and date columns alike — the app already handles date granularity (year/month/day)
+   *  as separate columns via col.format, so there's no special casing needed here: whichever
+   *  granularity the user added to the table, they group by it the same way as any text column. */
+  get queryGroupableColumns(): QueryColumn[] {
+    const panelID = this.controller?.params?.panelId;
+    if (!panelID || !this.dashboard) return [];
+    const dashboardPanel = this.dashboard.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
+    const fields: any[] = dashboardPanel?.panel?.content?.query?.query?.fields;
+    if (!fields) return [];
+    return fields
+      .filter((f: any) => f.column_type !== 'numeric')
+      .map((f: any) => ({
+        column_name: f.column_name,
+        table_id: f.table_id,
+        display_name: f.display_name?.default || f.column_name
+      }));
+  }
+
+  get availableGroupColumns(): QueryColumn[] {
+    return this.queryGroupableColumns.filter(c => !this.groupBySubtotalColumns.includes(c.column_name));
+  }
+
+  groupColumnLabel(columnName: string): string {
+    return this.queryGroupableColumns.find(c => c.column_name === columnName)?.display_name || columnName;
+  }
+
+  toggleGroupedSubtotals(): void {
+    this.groupedSubtotalsOpen = !this.groupedSubtotalsOpen;
+    if (!this.groupedSubtotalsOpen) {
+      this.groupBySubtotalColumns = [];
+    }
+  }
+
+  addGroupColumn(columnName: string): void {
+    if (!columnName || this.groupBySubtotalColumns.includes(columnName)) return;
+    this.groupBySubtotalColumns = [...this.groupBySubtotalColumns, columnName];
+    if (!this.groupBySubtotalNumericColumn && this.queryNumericColumns.length > 0) {
+      this.groupBySubtotalNumericColumn = this.queryNumericColumns[0].column_name;
+    }
+  }
+
+  removeGroupColumn(index: number): void {
+    this.groupBySubtotalColumns = this.groupBySubtotalColumns.filter((_, i) => i !== index);
+  }
+
+  setGroupAggregation(agg: string): void {
+    this.groupBySubtotalAggregation = agg;
+  }
+
   setPredictionCol() {
     if (this.showPredictionCol) {
       this.showPredictionDialog = true;
@@ -477,7 +550,8 @@ export class TableDialogComponent{
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows,
       this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles,
       this.noRepetitions, this.negativeNumbers, this.ordering, this.crossSortOrder,
-      this.headerColor, this.bandingColor, this.colorEnabled);
+      this.headerColor, this.bandingColor, this.colorEnabled,
+      this.groupBySubtotalColumns, this.groupBySubtotalNumericColumn, this.groupBySubtotalAggregation);
 
     // Apply prediction changes to the dashboard only on confirm
     const panelID = this.controller?.params?.panelId;

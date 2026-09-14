@@ -20,6 +20,13 @@ export class TableConfig {
   bandingColor: string;
   /** When false, header and banding are transparent (white/no color). */
   colorEnabled: boolean;
+  /** Ordered column names to group by for nested "grouped subtotals" (e.g. [pais, ciudad] —
+   *  order defines nesting depth). Empty = feature off. */
+  groupBySubtotalColumns: string[];
+  /** The single numeric column whose value gets aggregated at each group level. */
+  groupBySubtotalNumericColumn: string;
+  /** Aggregation applied per group level: 'sum' | 'avg' | 'min' | 'max'. */
+  groupBySubtotalAggregation: string;
 
   constructor(
     onlyPercentages: Boolean,
@@ -39,6 +46,9 @@ export class TableConfig {
     headerColor: string = '',
     bandingColor: string = '',
     colorEnabled: boolean = true,
+    groupBySubtotalColumns: string[] = [],
+    groupBySubtotalNumericColumn: string = '',
+    groupBySubtotalAggregation: string = 'sum',
     ) {
       this.onlyPercentages = onlyPercentages;
       this.resultAsPecentage = resultAsPecentage;
@@ -57,6 +67,9 @@ export class TableConfig {
       this.headerColor = headerColor;
       this.bandingColor = bandingColor;
       this.colorEnabled = colorEnabled;
+      this.groupBySubtotalColumns = groupBySubtotalColumns;
+      this.groupBySubtotalNumericColumn = groupBySubtotalNumericColumn;
+      this.groupBySubtotalAggregation = groupBySubtotalAggregation;
   }
 
 }
