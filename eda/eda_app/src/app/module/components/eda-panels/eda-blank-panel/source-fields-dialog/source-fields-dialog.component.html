@@ -4,7 +4,7 @@
   [dismissableMask]="true"
   [closeOnEscape]="false"
   (close)="onHide()"
-  width="80vw"
+  width="92vw"
   [height]="dialogHeight"
   [overflow]="'auto'">
   <div header class="source-fields-header-content">
@@ -33,7 +33,7 @@
       [showCurrentPageReport]="true"
       currentPageReportTemplate="{first} - {last} de {totalRecords} registros"
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
-      [scrollable]="true" scrollHeight="50vh"
+      [scrollable]="true" [scrollHeight]="tableScrollHeight"
       [tableStyle]="{'min-width': '100%'}" styleClass="p-datatable-striped p-datatable-sm">
       <ng-template pTemplate="header" let-columns>
         <tr>

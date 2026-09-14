@@ -19,6 +19,10 @@
     gap: 8px;
     flex: 1;
 }
+.source-fields-header-content span {
+    font-weight: 700;
+    font-size: 1.15rem;
+}
 
 .source-fields-header-restore-btn {
     display: inline-flex;
@@ -70,9 +74,37 @@
     padding-bottom: 9px;
 }
 @media (max-height: 800px) {
-    .source-fields-content ::ng-deep .p-datatable-wrapper {
-        height: 45vh !important;
-        max-height: 45vh !important;
+    /* [scrollHeight]="tableScrollHeight" switches p-table to scrollHeight="flex" here, which
+       makes PrimeNG size the table's own scrollable body to exactly whatever space is left
+       (see .p-datatable-flex-scrollable in PrimeNG's own CSS) — but that only cascades a real
+       height down if EVERY ancestor between the dialog's content area and <p-table> has a
+       determinate height too. eda-dialog2's <p-dialog> uses appendTo="body" (portaled out of
+       this component's DOM subtree), and its own #contentWrapper div has no class to target —
+       :has() lets this reach it (and only it: it's scoped to whichever .p-dialog-content
+       actually contains this dialog's .source-fields-content, so no other dialog is affected)
+       to complete the flex chain down to the table. */
+    ::ng-deep .p-dialog-content:has(.source-fields-content) {
+        display: flex;
+        flex-direction: column;
+    }
+    ::ng-deep .p-dialog-content:has(.source-fields-content) > div {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+    }
+    .source-fields-content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+    }
+    .source-fields-content > .source-fields-global-filter {
+        flex-shrink: 0;
+    }
+    .source-fields-content > p-table {
+        flex: 1;
+        min-height: 0;
     }
     .source-fields-content ::ng-deep .p-datatable.p-datatable-sm .p-datatable-thead > tr > th,
     .source-fields-content ::ng-deep .p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {

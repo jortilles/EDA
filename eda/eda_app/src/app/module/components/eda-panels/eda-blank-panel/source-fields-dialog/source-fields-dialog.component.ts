@@ -44,13 +44,23 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
         return $localize`:@@sourceFieldsDialogHeader:Campos de origen para ` + panelTitle;
     }
 
-    /** Same 800px threshold as the @media (max-height: 800px) rule in the stylesheet — laptop
-     *  screens get a taller dialog (74vh reads as cramped once the fixed-height chrome eats a
-     *  bigger share of a shorter viewport) while large screens keep the original 74vh. Can't do
-     *  this purely in CSS: eda-dialog2's <p-dialog> uses appendTo="body", so it's portaled out
-     *  of this component's DOM subtree and a scoped ::ng-deep rule can't reach it. */
+    /** Same 800px threshold as the @media (max-height: 800px) rule in the stylesheet. PrimeNG's
+     *  own `.p-dialog { max-height: 90% }` silently caps whatever we request here — asking for
+     *  more than 90vh does nothing to the dialog box itself, it just leaves the inner content
+     *  (sized independently, e.g. the table's own scrollHeight) taller than the space the dialog
+     *  actually got, which is what was producing the outer vertical scrollbar. 90vh matches that
+     *  real ceiling instead of a value that gets clamped anyway. */
     get dialogHeight(): string {
-        return window.innerHeight <= 800 ? '80vh' : '74vh';
+        return window.innerHeight <= 800 ? '90vh' : '88vh';
+    }
+
+    /** Large screens keep a fixed scrollHeight (works fine, plenty of headroom under the 90vh
+     *  cap). On laptop screens 'flex' makes PrimeNG size the table to fill exactly whatever
+     *  space is actually left inside the dialog — see the @media (max-height:800px) flex chain
+     *  in the stylesheet — instead of guessing a fixed vh that's either too tall (outer scroll)
+     *  or leaves the table smaller than it could be. */
+    get tableScrollHeight(): string {
+        return window.innerHeight <= 800 ? 'flex' : '64vh';
     }
 
     get headers(): string[] {
