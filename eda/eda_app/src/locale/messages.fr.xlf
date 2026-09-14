@@ -7800,7 +7800,11 @@ Répartition par catégorie :
 
 Cordialement.</target>
   </trans-unit>
-          <trans-unit id="mediaSearchPlaceholder">
+  <trans-unit id="sourceFieldsDialogHeader">
+    <source>Campos de origen para </source>
+    <target>Champs source pour </target>
+  </trans-unit>
+      <trans-unit id="mediaSearchPlaceholder">
         <source>Buscar por nombre...</source>
         <target>Rechercher par nom...</target>
       </trans-unit>

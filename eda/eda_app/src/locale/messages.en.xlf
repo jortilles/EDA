@@ -7525,6 +7525,10 @@ Breakdown by category:
 
 Best regards.</target>
   </trans-unit>
+  <trans-unit id="sourceFieldsDialogHeader">
+    <source>Campos de origen para </source>
+    <target>Source fields for </target>
+  </trans-unit>
       <trans-unit id="mediaSearchPlaceholder">
         <source>Buscar por nombre...</source>
         <target>Search by name...</target>
