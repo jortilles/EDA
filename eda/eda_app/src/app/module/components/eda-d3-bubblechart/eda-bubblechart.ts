@@ -7,6 +7,10 @@ export class EdaBubblechart {
   colors : Array<string>;
   linkedDashboard : LinkedDashboardProps;
   assignedColors: any[];
+  /** Per-category icon URL ({value, icon}[]) + master on/off switch - same shape/lifecycle as
+   * eda-race-bar's assignedIcons/useIcons. */
+  assignedIcons?: any[];
+  useIcons?: boolean;
   useGradient?: boolean;
   chartLegend?: boolean;
   chartAnimation?: boolean;

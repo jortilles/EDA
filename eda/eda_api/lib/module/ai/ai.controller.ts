@@ -177,21 +177,25 @@ export class AiController {
 
     static async aIsaveConfig(req: Request, res: Response, next: NextFunction) {
         try {
-            const { PROVIDER, API_KEY, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, MODEL, CONTEXT, AVAILABLE, LIMIT, MAX_TOKENS, EDA_APP_URL, MCP_URL, MCP_EMAIL, MCP_PASSWORD } = req.body;
+            const { PROVIDER, BASE_URL, API_KEY, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, MODEL, CONTEXT, AVAILABLE, LIMIT, MAX_TOKENS, EDA_APP_URL, MCP_URL, MCP_EMAIL, MCP_PASSWORD } = req.body;
             const configPath = path.resolve(__dirname, '../../../config/ai.config.js');
             const currentConfig = getAiConfig();
             const finalApiKey = (API_KEY !== undefined && API_KEY !== null) ? API_KEY : currentConfig.API_KEY;
             const finalProvider = PROVIDER ?? currentConfig.PROVIDER;
+            const finalBaseUrl = BASE_URL ?? currentConfig.BASE_URL ?? '';
             const finalAwsAccessKey = AWS_ACCESS_KEY ?? currentConfig.AWS_ACCESS_KEY ?? '';
             const finalAwsSecretKey = (AWS_SECRET_KEY !== undefined && AWS_SECRET_KEY !== null) ? AWS_SECRET_KEY : currentConfig.AWS_SECRET_KEY ?? '';
             const finalAwsRegion = AWS_REGION ?? currentConfig.AWS_REGION ?? '';
+            const finalModel = MODEL ?? currentConfig.MODEL ?? '';
+            const finalAvailable = AVAILABLE ?? currentConfig.AVAILABLE ?? false;
+            const finalLimit = LIMIT ?? currentConfig.LIMIT ?? 4000;
             const finalMaxTokens = MAX_TOKENS ?? currentConfig.MAX_TOKENS ?? 1000;
             const finalEdaAppUrl = EDA_APP_URL ?? currentConfig.EDA_APP_URL ?? '';
             const finalMcpUrl = MCP_URL ?? currentConfig.MCP_URL ?? '';
             const finalMcpEmail = MCP_EMAIL ?? currentConfig.MCP_EMAIL ?? '';
             const finalMcpPassword = MCP_PASSWORD ?? currentConfig.MCP_PASSWORD ?? '';
-            const safeContext = (CONTEXT || '').replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
-            const content = `module.exports = { \n    PROVIDER: '${finalProvider}',\n    API_KEY: '${finalApiKey}',\n    AWS_ACCESS_KEY: '${finalAwsAccessKey}',\n    AWS_SECRET_KEY: '${finalAwsSecretKey}',\n    AWS_REGION: '${finalAwsRegion}',\n    MODEL: '${MODEL}',\n    CONTEXT: \`${safeContext}\`,\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n    MAX_TOKENS: ${finalMaxTokens},\n    EDA_APP_URL: '${finalEdaAppUrl}',\n    MCP_URL: '${finalMcpUrl}',\n    MCP_EMAIL: '${finalMcpEmail}',\n    MCP_PASSWORD: '${finalMcpPassword}',\n};\n`;
+            const safeContext = (CONTEXT ?? currentConfig.CONTEXT ?? '').replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
+            const content = `module.exports = { \n    PROVIDER: '${finalProvider}',\n    BASE_URL: '${finalBaseUrl}',\n    API_KEY: '${finalApiKey}',\n    AWS_ACCESS_KEY: '${finalAwsAccessKey}',\n    AWS_SECRET_KEY: '${finalAwsSecretKey}',\n    AWS_REGION: '${finalAwsRegion}',\n    MODEL: '${finalModel}',\n    CONTEXT: \`${safeContext}\`,\n    AVAILABLE: ${finalAvailable},\n    LIMIT: ${finalLimit},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n    MAX_TOKENS: ${finalMaxTokens},\n    EDA_APP_URL: '${finalEdaAppUrl}',\n    MCP_URL: '${finalMcpUrl}',\n    MCP_EMAIL: '${finalMcpEmail}',\n    MCP_PASSWORD: '${finalMcpPassword}',\n};\n`;
             fs.writeFile(configPath, content, 'utf8', (err) => {
                 if (err) return next(new HttpException(500, 'Error saving the AI configuration'));
                 return res.status(200).json({ ok: true });

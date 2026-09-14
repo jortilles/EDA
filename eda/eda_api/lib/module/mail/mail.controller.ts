@@ -147,26 +147,57 @@ export class MailController {
     } catch { }
   }
 
-  /** Sends an immediate test email using the saved SMTP config, for the "Probar" button in the KPI/dashboard mail-config dialogs */
-  static async testSend(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { to, subject, message } = req.body;
-      const recipients: string[] = (Array.isArray(to) ? to : [to]).filter(Boolean);
-      if (recipients.length === 0) {
-        return next(new HttpException(400, 'No hay destinatarios configurados'));
-      }
+  /** Transporter from the saved SMTP config; rejects if the connection does not verify. */
+  private static async openTransporter(): Promise<{ transporter: any; senderEmail: string }> {
+    const config = readConfig();
+    const transporter = nodemailer.createTransport({ ...config, family: 4 });
+    await new Promise<void>((resolve, reject) => {
+      transporter.verify((err: any) => err ? reject(new HttpException(501, err.message)) : resolve());
+    });
+    return { transporter, senderEmail: config.auth?.user };
+  }
 
-      const config = readConfig();
-      await MailController.verifyAndSend(config, {
-        from: config.auth?.user,
-        to: recipients.join(', '),
-        subject: subject || 'EDA - Correo de prueba',
-        text: message || 'Correo de prueba enviado desde EDA.'
-      });
+  private static parseRecipients(to: any): string[] {
+    return (Array.isArray(to) ? to : [to]).map((x: any) => String(x ?? '').trim()).filter(Boolean);
+  }
+
+  static async sendDashboardNow(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { dashboardId, to, toExternal, subject, message, aiAnalysis } = req.body;
+      const recipients = MailController.parseRecipients(to);
+      const external = MailController.parseRecipients(toExternal);
+      if (!dashboardId) return next(new HttpException(400, 'Falta el identificador del informe'));
+      if (recipients.length === 0 && external.length === 0) return next(new HttpException(400, 'No hay destinatarios configurados'));
+
+      const { transporter, senderEmail } = await MailController.openTransporter();
+      const configuredByEmail = (req as any).user?.email || '';
+      // Returns before the sends finish — a render per recipient can take minutes.
+      MailingService.sendDashboardNow(dashboardId, recipients, external, subject, message, transporter, senderEmail, !!aiAnalysis, configuredByEmail)
+        .catch((err: any) => console.error('[sendDashboardNow]', err?.message || err));
       return res.status(200).json({ ok: true });
 
     } catch (err) {
-      return next(err instanceof HttpException ? err : new HttpException(501, 'Error en el fichero de configuración de correo'));
+      return next(err instanceof HttpException ? err : new HttpException(501, 'Error enviando el informe por correo'));
+    }
+  }
+
+  static async sendAlertNow(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { dashboardId, panelId, operand, value, to, toExternal, subject, message, aiAnalysis } = req.body;
+      const recipients = MailController.parseRecipients(to);
+      const external = MailController.parseRecipients(toExternal);
+      if (!dashboardId || operand === undefined || value === undefined) {
+        return next(new HttpException(400, 'Faltan datos de la alerta'));
+      }
+      if (recipients.length === 0 && external.length === 0) return next(new HttpException(400, 'No hay destinatarios configurados'));
+
+      const { transporter, senderEmail } = await MailController.openTransporter();
+      const configuredByEmail = (req as any).user?.email || '';
+      await MailingService.sendAlertNow(dashboardId, panelId, operand, value, recipients, external, subject, message, transporter, senderEmail, !!aiAnalysis, configuredByEmail);
+      return res.status(200).json({ ok: true });
+
+    } catch (err) {
+      return next(err instanceof HttpException ? err : new HttpException(501, (err as any)?.message || 'Error enviando la alerta por correo'));
     }
   }
 

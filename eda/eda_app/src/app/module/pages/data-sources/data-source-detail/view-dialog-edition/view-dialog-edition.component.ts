@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlertService, DashboardService, DataSourceService, SpinnerService } from '@eda/services/service.index';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { unwrapViewQuery } from '@eda/services/utils/view-query.util';
 import * as _ from 'lodash';
 
 @Component({
@@ -46,8 +47,8 @@ export class ViewDialogEditionComponent implements OnInit {
     this.initForm()
 
     this.form = this.formBuilder.group({
-      SQLexpression: [this.viewInEdition.query, Validators.required]
-    });  
+      SQLexpression: [this.SQLexpression, Validators.required]
+    });
 
     // Evaluate initial state
     this.ok = !!this.form.get('SQLexpression').value?.trim();
@@ -64,7 +65,7 @@ export class ViewDialogEditionComponent implements OnInit {
     this.viewName = this.viewInEdition.display_name.default;
     this.description = this.viewInEdition.description.default;
     this.technical_name = this.viewInEdition.table_name;
-    this.SQLexpression = this.viewInEdition.query.match(/^\((.+)\)\s+as\s+/i)?.[1] || "";
+    this.SQLexpression = unwrapViewQuery(this.viewInEdition.query);
   }
 
 

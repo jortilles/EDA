@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DataSourceService } from '@eda/services/service.index';
-import { EdaColumnText, EdaTable, EdaTableComponent } from '@eda/components/component.index';
+import { EdaColumnText, EdaTableComponent } from '@eda/components/component.index';
+import { EdaTableModel } from '@eda/components/eda-tables/eda-table/eda-table.model';
 import { EditColumnPanel, EditModelPanel } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 
@@ -22,9 +23,9 @@ export class SecurityDialogComponent implements OnInit {
 
   public columnPanel: EditColumnPanel;
   public modelPanel: EditModelPanel;
-  public securityTable: EdaTable;
-  public securityTableTableLevel: EdaTable;
-  public securityModelTableLevel: EdaTable;
+  public securityTable: EdaTableModel;
+  public securityTableTableLevel: EdaTableModel;
+  public securityModelTableLevel: EdaTableModel;
 
 
   public si = $localize`:@@si:Si`;
@@ -35,7 +36,7 @@ export class SecurityDialogComponent implements OnInit {
   constructor(
     public dataModelService: DataSourceService,
   ) {
-    this.securityTable = new EdaTable({
+    this.securityTable = new EdaTableModel({
 
       cols: [
         new EdaColumnText({ field: 'user', header: $localize`:@@userTable:USUARIO` }),
@@ -45,7 +46,7 @@ export class SecurityDialogComponent implements OnInit {
         new EdaColumnText({ field: 'permission', header: $localize`:@@permisos:PERMISOS` }),
       ]
     });
-    this.securityTableTableLevel = new EdaTable({
+    this.securityTableTableLevel = new EdaTableModel({
 
       cols: [
         new EdaColumnText({ field: 'user', header: $localize`:@@userTable:USUARIO` }),
@@ -54,7 +55,7 @@ export class SecurityDialogComponent implements OnInit {
         new EdaColumnText({ field: 'value', header: $localize`:@@visible:VISIBLE` }),
       ]
     });
-    this.securityModelTableLevel = new EdaTable({
+    this.securityModelTableLevel = new EdaTableModel({
 
       cols: [
         new EdaColumnText({ field: 'user', header: $localize`:@@userTable:USUARIO` }),

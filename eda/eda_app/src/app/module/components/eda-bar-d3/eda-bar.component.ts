@@ -3,8 +3,9 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaBarD3 } from './eda-bar';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatDePercent, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, roundedTipRectPath } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatDePercent, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, roundedTipRectPath, FileUtiles } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
+import { buildIconMap, resolveIconHref } from '../eda-panels/eda-blank-panel/panel-charts/category-icons.util';
 
 interface BarSeries {
   label: string;
@@ -68,7 +69,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   // triggered redraw shouldn't make every bar shrink to zero and regrow.
   private hasRendered = false;
 
-  constructor(private styleProviderService: StyleProviderService, private tooltipService: D3TooltipService) { }
+  constructor(private styleProviderService: StyleProviderService, private tooltipService: D3TooltipService, private fileUtils: FileUtiles) { }
 
   ngOnInit(): void {
     this.id = `bar_${this.inject.id}`;
@@ -616,6 +617,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       const transform = horizontal ? `translate(0,${delta})` : `translate(${delta},0)`;
       [...slotBars(slot), ...slotLabels(slot)].forEach(sel =>
         sel.interrupt('neighborShift').transition('neighborShift').duration(NEIGHBOR_SHIFT_MS).attr('transform', transform));
+      this.shiftCatIcon(slot.cat, horizontal ? 0 : delta, horizontal ? delta : 0, NEIGHBOR_SHIFT_MS);
     };
     // Called from every bar's mouseover/mouseout below - pushes the immediate neighbor slot on
     // either side (left/right for vertical bars, top/bottom for horizontal ones) out of the way
@@ -1030,6 +1032,114 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     }
     }
 
+    // Per-category media-library image inside each bar, near its tip.
+    this.renderCategoryImages(
+      g, visibleCategories, horizontal, stacked, categoryScale, valueScale,
+      (cat: string) => { const ci = this.categories.indexOf(cat); return visibleSeries.map(s => s.data[ci] || 0); },
+      animateEntrance, (cat: string) => visibleCategories.indexOf(cat) * perCatDelay + perCatDelay,
+    );
+
+    // Grow a category's image while any of its bars is hovered (namespaced listeners, so the
+    // existing bar darken/widen handlers are left untouched).
+    barsGroup.selectAll('path')
+      .on('mouseover.iconscale', (_e: any, d: any) => this.scaleCatIcon(String(d?.cat ?? d?.data?.cat ?? ''), chartAnimOn ? 1.18 : 1, HOVER_MS))
+      .on('mouseout.iconscale', (_e: any, d: any) => this.scaleCatIcon(String(d?.cat ?? d?.data?.cat ?? ''), 1, HOVER_MS));
+
     this.hasRendered = true;
+  }
+
+  // --- Per-category media-library images (assignedIcons), one snug inside each bar near its tip.
+  // Kept as its own method + instance state so shiftSlot()/hover can move & scale them after draw().
+  private iconNodeByCat = new Map<string, any>();
+  private iconBaseXY = new Map<string, { x: number; y: number }>();
+  private iconShift = new Map<string, { dx: number; dy: number; f: number }>();
+
+  private renderCategoryImages(
+    hostG: any, visibleCategories: string[], horizontal: boolean, stacked: boolean,
+    categoryScale: any, valueScale: any, seriesValsForCat: (cat: string) => number[],
+    animateEntrance: boolean, entranceDelay: (cat: string) => number,
+  ): void {
+    this.iconNodeByCat.clear();
+    this.iconBaseXY.clear();
+    this.iconShift.clear();
+    const iconMap = buildIconMap(this.inject.assignedIcons, this.inject.useIcons);
+    if (!iconMap.size || categoryScale.bandwidth() < 14) return;
+
+    const tipValue = (cat: string): number => {
+      const vals = seriesValsForCat(cat);
+      if (stacked) {
+        // Matches the stacked/pyramid layout: a category sits entirely on one side (negative if ANY
+        // of its segments is), its tip at the running total of the segment magnitudes.
+        const total = vals.reduce((a, b) => a + Math.abs(b), 0);
+        return vals.some(v => v < 0) ? -total : total;
+      }
+      return vals.reduce((best, v) => Math.abs(v) > Math.abs(best) ? v : best, 0);
+    };
+    const barLen = (cat: string) => Math.abs(valueScale(tipValue(cat)) - valueScale(0));
+    // Image fits inside the bar: bounded by the band's cross-size (bar thickness) and by the bar's length.
+    const sizeFor = (cat: string) => Math.min(categoryScale.bandwidth() * 0.9, 130, barLen(cat) - 8);
+    const dirOf = (cat: string) => Math.sign(valueScale(0) - valueScale(tipValue(cat))) || 1;
+    // Gap between the image's tip-side edge and the bar tip. Vertical bars: a small NEGATIVE value
+    // (overshoot) so the artwork - which usually has its own transparent margin - lands near the top
+    // edge. Horizontal bars: sit the image well inside, centred, so it doesn't hug the very end.
+    const gap = horizontal ? 12 : -6;
+    const inward = (cat: string) => dirOf(cat) * (gap + sizeFor(cat) / 2);
+    const alignFor = (cat: string) => horizontal
+      ? 'xMidYMid meet'
+      : (dirOf(cat) > 0 ? 'xMidYMin meet' : 'xMidYMax meet');
+    const baseX = (cat: string) => horizontal ? valueScale(tipValue(cat)) + inward(cat) : (categoryScale(cat) || 0) + categoryScale.bandwidth() / 2;
+    const baseY = (cat: string) => horizontal ? (categoryScale(cat) || 0) + categoryScale.bandwidth() / 2 : valueScale(tipValue(cat)) + inward(cat);
+
+    const iconG = hostG.append('g').attr('class', 'eda-bar-icons').style('pointer-events', 'none');
+    visibleCategories.forEach(cat => {
+      const s = sizeFor(cat);
+      if (s < 14) return;
+      const href = resolveIconHref(iconMap.get(String(cat)) || '', this.fileUtils);
+      if (!href) return;
+      const bx = baseX(cat), by = baseY(cat);
+      const node = iconG.append('g');
+      node.append('image')
+        .attr('preserveAspectRatio', alignFor(cat))
+        .attr('x', -s / 2).attr('y', -s / 2).attr('width', s).attr('height', s)
+        .attr('href', href)
+        .on('error', (e: any) => { const p = e?.target?.parentNode; if (p?.style) p.style.display = 'none'; });
+      this.iconNodeByCat.set(cat, node);
+      this.iconBaseXY.set(cat, { x: bx, y: by });
+      this.iconShift.set(cat, { dx: 0, dy: 0, f: 1 });
+
+      if (animateEntrance) {
+        node.style('opacity', 0).attr('transform', `translate(${bx},${by}) scale(0.3)`)
+          .transition('iconenter').delay(entranceDelay(cat)).duration(300)
+          .style('opacity', 1).attr('transform', `translate(${bx},${by}) scale(1)`);
+      } else {
+        node.attr('transform', `translate(${bx},${by})`);
+      }
+    });
+  }
+
+  private applyCatIconTransform(cat: string, ms: number): void {
+    const node = this.iconNodeByCat.get(cat);
+    const base = this.iconBaseXY.get(cat);
+    const st = this.iconShift.get(cat);
+    if (!node || !base || !st) return;
+    node.interrupt('iconenter');
+    const t = `translate(${base.x + st.dx},${base.y + st.dy}) scale(${st.f})`;
+    (ms > 0 ? node.interrupt('iconmove').transition('iconmove').duration(ms) : node).attr('transform', t).style('opacity', 1);
+  }
+
+  /** Called by shiftSlot() so a nudged category's image slides with its bars. */
+  shiftCatIcon(cat: string, dx: number, dy: number, ms: number): void {
+    const st = this.iconShift.get(cat);
+    if (!st) return;
+    st.dx = dx; st.dy = dy;
+    this.applyCatIconTransform(cat, ms);
+  }
+
+  /** Called on bar hover to grow/return its image. */
+  scaleCatIcon(cat: string, f: number, ms: number): void {
+    const st = this.iconShift.get(cat);
+    if (!st) return;
+    st.f = f;
+    this.applyCatIconTransform(cat, ms);
   }
 }

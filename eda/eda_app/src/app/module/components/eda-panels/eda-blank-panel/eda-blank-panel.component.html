@@ -1281,16 +1281,8 @@
   <app-table-dialog [controller]="tableController" [dashboard]="dashboard"></app-table-dialog>
 }
 
-@if(alertController){
-  <app-alert-dialog [controller]="alertController"></app-alert-dialog>
-}
-
-@if(cumsumAlertController){
-  <app-cumsum-alert-dialog [controller]="cumsumAlertController"></app-cumsum-alert-dialog>
-}
-
-@if(categoryChartController){
-  <app-category-chart-dialog [controller]="categoryChartController"></app-category-chart-dialog>
+@if(warningController){
+  <app-warning-dialog [controller]="warningController"></app-warning-dialog>
 }
 
 @if(treeTableController){
@@ -1299,10 +1291,6 @@
 
 @if(linkDashboardController){
   <link-dashboards-dialog [controller]="linkDashboardController"></link-dashboards-dialog>
-}
-
-@if(knobController){
-  <knob-dialog [controller]="knobController"> </knob-dialog>
 }
 
 @if(contextMenu){

@@ -11,6 +11,7 @@
     "copy-index": "node scripts/copy-index.js",
     "build:prod": "ng build --configuration production --localize --build-optimizer --vendor-chunk && npm run copy-index",
     "test": "ng test",
+    "test:characterization": "node --import tsx node_modules/jasmine/bin/jasmine.js --config=spec/support/jasmine.json",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "int:extract": "ng i18n --output-path locale"
@@ -92,10 +93,13 @@
     "eslint-plugin-jsdoc": "^46.5.1",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "eslint-plugin-prettier": "^5.2.3",
+    "jasmine": "^3.99.0",
     "postcss": "^8.5.10",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",
     "ts-node": "^10.9.1",
+    "tsconfig-paths": "^3.15.0",
+    "tsx": "^4.23.13",
     "typescript": "^5.2.2",
     "webpack-dev-server": "^5.2.2"
   },

@@ -1,0 +1,370 @@
+<eda-dialog2 [display]="display"
+  width="88vw" height="86vh" overflow="auto"
+  [showApply]="false" [showClose]="false">
+
+  <!-- ===================== HEADER ===================== -->
+  <div header class="flex w-full items-center justify-between gap-4 pr-6">
+    <div class="min-w-0">
+      @if (isAlert) {
+        <span class="text-lg font-semibold text-gray-800" i18n="@@kpiMailConfigTitle">Configuración de la alerta KPI por email</span>
+      } @else {
+        <span class="text-lg font-semibold text-gray-800" i18n="@@mailDlgTitle">Envío del panel por email</span>
+        <span class="ml-2 text-gray-400">{{ subtitle }}</span>
+      }
+    </div>
+    <div class="mail-hdr-switch flex shrink-0 items-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-1 leading-none">
+      <p-inputSwitch [(ngModel)]="enabled" class="mail-switch"></p-inputSwitch>
+      <span class="text-sm font-medium" [class]="enabled ? 'text-gray-700' : 'text-gray-400'" i18n="@@mailActiveToggle">Envío de correo programado</span>
+    </div>
+  </div>
+
+  <!-- ===================== CONTENT ===================== -->
+  <div content class="min-h-[calc(86vh-135px)]">
+    <div class="grid grid-cols-1 items-start gap-6 px-6 py-4 lg:grid-cols-[minmax(0,1fr)_minmax(320px,35vw)]">
+
+      <!-- ---------------- LEFT: steps ---------------- -->
+      <div>
+
+        <!-- STEP 1 -->
+        <div class="flex gap-3 pb-6">
+          <div class="flex flex-col items-center">
+            <div class="mail-step">1</div>
+            <div class="mt-1.5 w-px flex-1 bg-gray-200"></div>
+          </div>
+          <div class="min-w-0 flex-1 space-y-3">
+            <div class="flex flex-wrap items-baseline gap-x-2">
+              <h5 class="text-base font-semibold text-gray-800" i18n="@@mailStep1">¿Cuándo se envía?</h5>
+              @if (isAlert) {
+                <span class="text-xs text-gray-400" i18n="@@mailAlertStep1Hint">La alerta se comprueba en cada repetición y sólo se envía si el KPI cumple la condición.</span>
+              } @else {
+                <span class="text-xs text-gray-400" i18n="@@mailStep1Hint">El informe se genera y se manda automáticamente en cada repetición.</span>
+              }
+            </div>
+
+            <div class="inline-flex gap-1 rounded-lg bg-gray-100 p-1">
+              <button type="button" (click)="setUnits('hours')"   class="mail-seg" [class]="seg('hours')"   i18n="@@mailFreqHourly">Horario</button>
+              <button type="button" (click)="setUnits('days')"    class="mail-seg" [class]="seg('days')"    i18n="@@mailFreqDaily">Diario</button>
+              <button type="button" (click)="setUnits('weekly')"  class="mail-seg" [class]="seg('weekly')"  i18n="@@mailFreqWeekly2">Semanal</button>
+              <button type="button" (click)="setUnits('monthly')" class="mail-seg" [class]="seg('monthly')" i18n="@@mailFreqMonthly2">Mensual</button>
+            </div>
+
+            @if (units) {
+              <div class="rounded-lg border border-[#cdeeeb] bg-[#f0fbfa] px-4 py-3">
+                <div class="flex flex-wrap items-center gap-x-2.5 gap-y-2 text-sm text-gray-600">
+
+                  @if (units === 'hours') {
+                    <span i18n="@@mailFreqEvery">Cada</span>
+                    <input type="number" min="1" [(ngModel)]="quantity" (ngModelChange)="clampQuantity()" (keydown)="blockNonPositive($event)"
+                      class="mail-input w-16 rounded-lg border border-gray-300 px-2.5 py-1.5">
+                    <span>{{ hoursSTR }}</span>
+                  }
+
+                  @if (units === 'days') {
+                    <span i18n="@@at">A las</span>
+                    <p-calendar [timeOnly]="true" [stepMinute]="30" [(ngModel)]="hours" (onBlur)="onHoursBlur()"
+                      inputStyleClass="mail-input rounded-lg border border-gray-300 px-2.5 py-1.5 w-24"></p-calendar>
+                  }
+
+                  @if (units === 'weekly') {
+                    <span i18n="@@mailWeeklyEach">Cada</span>
+                    <p-dropdown [options]="weekdayOptions" optionLabel="long" optionValue="value" [(ngModel)]="weekday"
+                      styleClass="mail-dd" [style]="{'min-width':'9rem'}"></p-dropdown>
+                    <span i18n="@@mailWeeklyAt">a las</span>
+                    <p-calendar [timeOnly]="true" [stepMinute]="30" [(ngModel)]="hours" (onBlur)="onHoursBlur()"
+                      inputStyleClass="mail-input rounded-lg border border-gray-300 px-2.5 py-1.5 w-24"></p-calendar>
+                  }
+
+                  @if (units === 'monthly') {
+                    <p-dropdown [options]="monthlyModeOptions" optionLabel="label" optionValue="value" [(ngModel)]="monthlyMode"
+                      styleClass="mail-dd" [style]="{'min-width':'11rem'}"></p-dropdown>
+                    @if (monthlyMode === 'dom') {
+                      <span i18n="@@mailMonthlyOnDay">el día</span>
+                      <p-dropdown [options]="monthDayDropdownOptions" optionLabel="label" optionValue="value" [(ngModel)]="monthlyDay"
+                        styleClass="mail-dd" [style]="{'min-width':'7rem'}"></p-dropdown>
+                    } @else {
+                      <span i18n="@@mailMonthlyThe">el</span>
+                      <p-dropdown [options]="ordinalOptions" optionLabel="label" optionValue="value" [(ngModel)]="monthlyOrdinal"
+                        styleClass="mail-dd" [style]="{'min-width':'7rem'}"></p-dropdown>
+                      <p-dropdown [options]="weekdayOptions" optionLabel="long" optionValue="value" [(ngModel)]="monthlyWeekday"
+                        styleClass="mail-dd" [style]="{'min-width':'9rem'}"></p-dropdown>
+                    }
+                    <span i18n="@@mailWeeklyAt">a las</span>
+                    <p-calendar [timeOnly]="true" [stepMinute]="30" [(ngModel)]="hours" (onBlur)="onHoursBlur()"
+                      inputStyleClass="mail-input rounded-lg border border-gray-300 px-2.5 py-1.5 w-24"></p-calendar>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="flex gap-3 pb-6">
+          <div class="flex flex-col items-center">
+            <div class="mail-step">2</div>
+            <div class="mt-1.5 w-px flex-1 bg-gray-200"></div>
+          </div>
+          <div class="min-w-0 flex-1 space-y-3">
+            <div class="flex flex-wrap items-baseline gap-x-2">
+              <h5 class="text-base font-semibold text-gray-800" i18n="@@mailStep2">¿A quién?</h5>
+              <span class="text-xs text-gray-400" i18n="@@mailStep2Hint">Usuarios de Edalitics, o cualquier dirección externa.</span>
+            </div>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div class="flex flex-col gap-1">
+                <label class="text-sm font-medium text-gray-700" i18n="@@mailUsersLabel">Usuarios</label>
+                <p-multiSelect [(ngModel)]="selectedUsers" [options]="users" optionLabel="label" dataKey="_id"
+                  i18n-defaultLabel="@@selectRecipients" defaultLabel="Selecciona los destinatarios *"
+                  styleClass="mail-dd" [style]="{'width':'100%'}" [maxSelectedLabels]="1"></p-multiSelect>
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-sm font-medium text-gray-700">
+                  <span i18n="@@mailExternalLabel">Direcciones externas</span>
+                  <span class="ml-1 font-normal text-gray-400" i18n="@@mailExtHint">(separadas por un espacio)</span>
+                </label>
+                <input type="text" [(ngModel)]="otherRecipients"
+                  i18n-placeholder="@@otherRecipientsPlaceholder" placeholder="correo1@dominio.com correo2@dominio.com"
+                  class="mail-input w-full rounded-lg border border-gray-300 px-3 py-2">
+              </div>
+            </div>
+            @if (recipientChips.length > 0) {
+              <div class="flex flex-wrap gap-1.5">
+                @for (c of recipientChips; track c.label) {
+                  <span class="mail-chip inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs">
+                    {{ c.label }}
+                    <button type="button" (click)="removeChip(c)" class="leading-none opacity-60 hover:opacity-100 focus:outline-none focus:ring-0">&times;</button>
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="flex gap-3">
+          <div class="flex flex-col items-center">
+            <div class="mail-step">3</div>
+            <div class="mt-1.5 w-px flex-1 bg-gray-200"></div>
+          </div>
+          <div class="min-w-0 flex-1 space-y-3">
+            <div class="flex flex-wrap items-baseline gap-x-2">
+              <h5 class="text-base font-semibold text-gray-800" i18n="@@mailStep3">¿Qué dice el correo?</h5>
+              <span class="text-xs text-gray-400" i18n="@@mailStep3Hint">Escribe el texto. La vista previa de la derecha se actualiza mientras escribes.</span>
+            </div>
+            <div class="flex flex-wrap items-stretch gap-4">
+              <!-- subject + message -->
+              <div class="flex min-w-[260px] flex-[2] flex-col gap-3">
+                <div class="flex flex-col gap-1">
+                  <label class="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                    <span i18n="@@mailSubjectShort">Asunto</span>
+                    <i class="pi pi-info-circle cursor-pointer text-gray-400 hover:text-[var(--corporate-primary)]" style="font-size:0.8rem"
+                      (click)="openRef()" [pTooltip]="refIconTitle" tooltipPosition="top"></i>
+                    <button type="button" (click)="clearContent()" [pTooltip]="clearContentTip" tooltipPosition="left"
+                      class="ml-auto shrink-0 text-gray-400 hover:text-red-500 focus:outline-none">
+                      <i class="pi pi-trash text-sm"></i>
+                    </button>
+                  </label>
+                  <textarea #subjArea rows="1" [(ngModel)]="mailSubject" (focus)="activeField='subject'"
+                    [edaMailVarSuggest]="kpiVariables" [edaMailVarSuggestValue]="varValueResolver"
+                    class="mail-textarea w-full resize-none rounded-lg border border-gray-300 px-3 py-2 leading-tight"></textarea>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                    <span i18n="@@mailMessageLabel">Mensaje</span>
+                    <i class="pi pi-info-circle cursor-pointer text-gray-400 hover:text-[var(--corporate-primary)]" style="font-size:0.8rem"
+                      (click)="openRef()" [pTooltip]="refIconTitle" tooltipPosition="top"></i>
+                  </label>
+                  <textarea #msgArea rows="11" [(ngModel)]="mailMessage" (focus)="activeField='message'" [placeholder]="messageExample"
+                    [edaMailVarSuggest]="kpiVariables" [edaMailVarSuggestValue]="varValueResolver"
+                    class="mail-textarea w-full resize-y rounded-lg border border-gray-300 px-3 py-2"></textarea>
+                </div>
+              </div>
+
+              <!-- compact insert toolbox, aligned with the Asunto input -->
+              <div class="mail-insert-box mt-6 flex min-w-[240px] flex-1 flex-col gap-2 self-stretch overflow-y-auto rounded-lg p-2.5 text-xs">
+                <div>
+                  <p class="mail-insert-title" i18n="@@mailRefInsertTitle">Insertar</p>
+                  <p class="mail-insert-target">→ {{ activeFieldLabel }}</p>
+                </div>
+                @if (kpiVariables.length) {
+                  @for (v of kpiVariables; track v.base) {
+                    <div>
+                      <p class="mail-insert-kpi truncate" [pTooltip]="v.title" tooltipPosition="left">{{ v.base }} · {{ v.title }}</p>
+                      <div class="mt-1 flex flex-wrap gap-1">
+                        @for (tk of varTokensOf(v); track tk.token) {
+                          <button type="button" class="mail-ref-tok" [pTooltip]="tk.token" tooltipPosition="top"
+                            (mousedown)="$event.preventDefault()" (click)="insertToken(tk.token)">{{ shortTok(tk.token) }}</button>
+                        }
+                      </div>
+                    </div>
+                  }
+                } @else {
+                  <p class="text-[11px] italic text-gray-400" i18n="@@mailNoKpis">Este dashboard no tiene KPIs.</p>
+                }
+                <button type="button" class="mail-insert-code" [pTooltip]="codeBlockTip" tooltipPosition="top"
+                  (mousedown)="$event.preventDefault()" (click)="insertCodeBlock()">
+                  <i class="pi pi-plus text-[10px]"></i> <span i18n="@@mailRefInsertCode">Bloque CODE</span>
+                </button>
+              </div>
+            </div>
+
+              <p-dialog [(visible)]="refOpen" [modal]="true" [draggable]="false" [resizable]="false" [closable]="true"
+                [dismissableMask]="true" [baseZIndex]="11000" appendTo="body" styleClass="mail-ref-dialog" [header]="refIconTitle"
+                [style]="{width:'66rem','max-width':'95vw'}" [breakpoints]="{'1280px':'94vw'}">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,1.5fr)]">
+
+                  <!-- 1. worked example -->
+                  <div class="flex min-w-0 flex-col">
+                    <h4 class="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400" i18n="@@mailRefExampleTitle">Ejemplo completo</h4>
+                    <pre class="flex-1 whitespace-pre-wrap break-words rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs leading-relaxed text-gray-700">{{ refExample }}</pre>
+                  </div>
+
+                  <!-- 2. rendered result -->
+                  <div class="flex min-w-0 flex-col">
+                    <h4 class="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400" i18n="@@mailRefResultTitle">Así lo recibe el destinatario</h4>
+                    <div class="flex-1 whitespace-pre-wrap break-words rounded-lg border border-gray-200 bg-white p-3 text-xs leading-relaxed text-gray-700">@for (s of refResult; track $index) {<span [class.mail-ref-hl]="s.hl">{{ s.t }}</span>}</div>
+                    <p class="mt-1.5 text-[11px] text-gray-400" i18n="@@mailRefResultHint">Resaltado: lo que se sustituye automáticamente en cada envío.</p>
+                  </div>
+
+                  <!-- 3. reference -->
+                  <div class="flex min-w-0 flex-col">
+                    <h4 class="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400" i18n="@@mailRefIconTitle">Variables y condicionales</h4>
+                    <div class="flex-1 space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs leading-relaxed text-gray-600">
+
+                      <div>
+                        <h5 class="mb-1 flex items-center gap-1.5 text-sm font-semibold text-gray-800">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-[var(--corporate-primary)]">
+                            <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>
+                          </svg>
+                          <span i18n="@@mailRefVarsTitle">Variables</span>
+                        </h5>
+                        <p class="mb-2" i18n="@@mailRefVarsIntro">Los KPIs van numerados según su orden en el dashboard: p1 es el primero, p2 el segundo, y así sucesivamente.</p>
+                        <div class="space-y-1">
+                          @for (v of refVars; track v.token) {
+                            <div class="flex flex-wrap items-baseline gap-x-2">
+                              <code class="mail-ref-tok">{{ v.token }}</code>
+                              <span class="text-gray-500">{{ v.desc }}</span>
+                            </div>
+                          }
+                        </div>
+                      </div>
+
+                      <div class="border-t border-gray-200 pt-3">
+                        <h5 class="mb-1 flex items-center gap-1.5 text-sm font-semibold text-gray-800">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-[var(--corporate-primary)]">
+                            <polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline>
+                          </svg>
+                          <span i18n="@@mailRefCondTitle">Condicionales</span>
+                        </h5>
+                        <p class="mb-2" i18n="@@mailRefCondIntro">Delimita el bloque con ""CODE y CODE"" en su propia línea. Dentro, if evalúa una condición y escribe el texto de esa rama; añade elif para más casos, else para el resto y cierra con end.</p>
+                        <p><span i18n="@@mailRefCondOps">En la condición puedes comparar con:</span> <code class="mail-ref-tok">{{ condOps }}</code></p>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+              </p-dialog>
+
+            @if (aiAvailable) {
+              <div class="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2">
+                <p-inputSwitch [(ngModel)]="aiAnalysis" class="mail-switch shrink-0"></p-inputSwitch>
+                <div class="flex min-w-0 flex-wrap items-baseline gap-x-1.5">
+                  <span class="text-sm font-medium text-gray-800" i18n="@@mailAiAdd">Añadir análisis con IA</span>
+                  <span class="text-xs text-gray-400" i18n="@@mailAiAddHint">Genera un comentario sobre los datos de cada envío y lo añade debajo de tu mensaje. Cambia en cada correo.</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------------- RIGHT: preview ---------------- -->
+      <div class="flex flex-col gap-3 self-start lg:sticky lg:top-3 lg:max-h-[calc(86vh-150px)]">
+        <div class="shrink-0">
+          <span class="text-sm font-semibold text-gray-800" i18n="@@mailPreviewShort">Vista previa</span>
+          <span class="ml-1 text-xs text-gray-400" i18n="@@mailPreviewHint">· tal como lo recibirá el destinatario</span>
+        </div>
+
+        <div class="min-h-0 flex-1 overflow-y-auto rounded-lg border border-gray-200 bg-white text-xs text-gray-800">
+          <div class="border-b border-gray-200 px-3 py-2.5">
+            <p class="text-[10px] font-semibold uppercase tracking-wide text-gray-400" i18n="@@mailSubjectShort">Asunto</p>
+            <p class="font-semibold text-gray-900 [overflow-wrap:anywhere]">{{ previewSubject || noSubjectLabel }}</p>
+            <p class="mt-0.5 text-[11px] text-gray-400"><span i18n="@@mailForLabel">Para:</span> {{ previewRecipientsLabel }}</p>
+          </div>
+
+          <div class="px-3 py-3">
+            @if (mailMessage) {
+              <div class="whitespace-pre-wrap break-words [overflow-wrap:anywhere] [&_*]:max-w-full [&_*]:break-words" [innerHTML]="previewBody"></div>
+            } @else {
+              <p class="text-gray-400" i18n="@@mailWriteToPreview">Escribe el mensaje para verlo aquí.</p>
+            }
+
+            @if (aiAnalysis && aiAvailable) {
+              <div class="mt-2.5 rounded-lg border border-[#cdeeeb] bg-[#f0fbfa] p-2.5">
+                <p class="text-[10px] font-semibold uppercase tracking-wide text-[#0a7d75]" i18n="@@mailPreviewAiTitle">Análisis automático</p>
+                <p class="mt-1 text-[11px] text-gray-500" i18n="@@mailPreviewAiDesc">Aquí se añadirá un resumen del dashboard escrito con IA en cada envío. Consume tokens de tu cuenta.</p>
+              </div>
+            }
+
+            @if (isAlert) {
+              <div class="mt-2.5 rounded border border-gray-200 bg-gray-50 px-2.5 py-2 text-[11px] text-gray-600">
+                <span class="font-medium text-gray-800">{{ kpiFieldName || previewKpiLabel }}:</span>
+                <span class="text-gray-400" i18n="@@mailPreviewKpiValue">valor del KPI en el momento del envío</span>
+              </div>
+            } @else {
+              <div class="mt-2.5 flex items-center justify-center rounded border border-dashed border-gray-300 bg-gray-50 py-6 text-[11px] text-gray-400" i18n="@@mailPreviewDashImg">imagen del dashboard</div>
+            }
+
+            <div class="mt-2.5">
+              <a [href]="previewLink" target="_blank" rel="noopener" class="text-xs text-[#0a7d75] hover:underline" i18n="@@mailOpenDashboard">Abrir el dashboard en Edalitics →</a>
+            </div>
+
+            <div class="mt-2.5 inline-flex items-center gap-2 rounded border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-[11px] text-gray-600"
+              [pTooltip]="pdfTip" tooltipPosition="top">
+              <span class="font-semibold text-red-500">PDF</span>{{ pdfName }}
+            </div>
+          </div>
+        </div>
+
+        <div class="shrink-0 rounded-lg border border-dashed border-gray-300 p-3 space-y-2">
+          <div class="flex flex-wrap items-baseline gap-x-2">
+            <p class="text-sm font-semibold text-gray-700" i18n="@@mailSendTestTitle">Enviar una prueba ahora</p>
+            <p class="text-[11px] text-gray-400" i18n="@@mailSendNowHint">Envío único e inmediato. No guarda ni activa la programación de arriba.</p>
+          </div>
+          <button type="button" (click)="sendToConfigured()" [disabled]="disableSend()"
+            class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-0 disabled:pointer-events-none disabled:opacity-50">
+            @if (isSending()) { <span i18n="@@sendingMailNow">Enviando...</span> }
+            @else { <span i18n="@@mailSendToConfigured">Enviar prueba a los destinatarios configurados</span> }
+          </button>
+          <div class="flex items-stretch gap-2">
+            <input type="text" [(ngModel)]="testRecipient"
+              i18n-placeholder="@@mailSendTestPlaceholder" placeholder="o solo a este correo…"
+              class="mail-input min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm">
+            <button type="button" (click)="sendToTest()" [disabled]="disableSendTest()"
+              class="shrink-0 rounded-lg border border-[var(--corporate-primary)] px-3 py-2 text-sm font-medium text-[var(--corporate-primary-dark)] hover:bg-[rgba(var(--corporate-primary-rgb),0.08)] disabled:pointer-events-none disabled:opacity-50"
+              i18n="@@mailSendTestBtn">Enviar</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================== FOOTER ===================== -->
+  <div footer class="flex flex-1 items-center justify-between gap-3">
+    <span class="truncate text-sm text-gray-500">{{ footerSummary }}</span>
+    <div class="flex shrink-0 gap-2">
+      <button type="button" class="cancel-button" (click)="onClose()">
+        <i class="fa fa-times"></i> <span i18n="@@cancelarBtn">Cancelar</span>
+      </button>
+      <button type="button" class="confirm-button" [disabled]="disableApply()" (click)="onApply()">
+        <i class="fa fa-check"></i> <span i18n="@@mailSaveSchedule">Guardar programación</span>
+      </button>
+    </div>
+  </div>
+
+</eda-dialog2>

@@ -37,6 +37,65 @@ export class SchedulerFunctions {
     return now >= nextSend;
   }
 
+  /**
+   * Weekly schedule: fires on the given UTC weekday once its HH:MM slot has passed and we have
+   * not already sent since that slot.
+   * @param weekday 0 (Sun) .. 6 (Sat)
+   */
+  static checkScheduleWeekly(weekday: number, hours: string, minutes: string, currLastUpdated: string) {
+    const now = new Date();
+    const last = new Date(Date.parse(currLastUpdated));
+    if (now.getUTCDay() !== Number(weekday)) return false;
+
+    const slot = new Date(Date.UTC(
+      now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
+      parseInt(hours) || 0, parseInt(minutes) || 0, 0, 0
+    ));
+    return now >= slot && last < slot;
+  }
+
+  /**
+   * Monthly schedule: fires once per month, on either a day-of-month rule ('dom' + monthlyDay,
+   * where 'last' = last day) or an nth-weekday rule ('nth' + monthlyOrdinal + monthlyWeekday).
+   */
+  static checkScheduleMonthly(mode: string, monthlyDay: any, monthlyOrdinal: string, monthlyWeekday: number, hours: string, minutes: string, currLastUpdated: string) {
+    const now = new Date();
+    const last = new Date(Date.parse(currLastUpdated));
+    const h = parseInt(hours) || 0;
+    const m = parseInt(minutes) || 0;
+
+    const targetFor = (year: number, month: number): Date | null => {
+      const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+      let dayOfMonth: number;
+
+      if (mode === 'nth') {
+        const ordIdx: Record<string, number> = { first: 0, second: 1, third: 2, fourth: 3 };
+        if (monthlyOrdinal === 'last') {
+          const lastDay = new Date(Date.UTC(year, month + 1, 0));
+          const back = (lastDay.getUTCDay() - Number(monthlyWeekday) + 7) % 7;
+          dayOfMonth = lastDay.getUTCDate() - back;
+        } else {
+          const first = new Date(Date.UTC(year, month, 1));
+          const forward = (Number(monthlyWeekday) - first.getUTCDay() + 7) % 7;
+          dayOfMonth = 1 + forward + (ordIdx[monthlyOrdinal] ?? 0) * 7;
+          if (dayOfMonth > daysInMonth) return null; // that occurrence doesn't exist this month
+        }
+      } else {
+        dayOfMonth = monthlyDay === 'last' ? daysInMonth : Math.min(Number(monthlyDay) || 1, daysInMonth);
+      }
+
+      return new Date(Date.UTC(year, month, dayOfMonth, h, m, 0, 0));
+    };
+
+    const thisMonth = targetFor(now.getUTCFullYear(), now.getUTCMonth());
+    if (thisMonth && now >= thisMonth) return last < thisMonth;
+
+    // this month's slot is still in the future -> check last month's occurrence
+    const pm = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
+    const prev = targetFor(pm.getUTCFullYear(), pm.getUTCMonth());
+    return !!prev && last < prev;
+  }
+
   static totLocalISOTime = (date:Date) => {
 
     var tzoffset = (date).getTimezoneOffset() * 60000; //offset in milliseconds

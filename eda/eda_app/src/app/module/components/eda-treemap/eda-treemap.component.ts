@@ -1,5 +1,6 @@
 
-import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, FileUtiles } from '@eda/services/service.index';
+import { buildIconMap, renderCategoryIcons, resolveIconHref } from '../eda-panels/eda-blank-panel/panel-charts/category-icons.util';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import * as d3 from 'd3';
 import { TreeMap } from "./eda-treeMap";
@@ -44,7 +45,7 @@ export class EdaTreeMap implements AfterViewInit {
   private hiddenIndexes: Set<number> = new Set();
   private hasRendered = false;
 
-  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService) {
+  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService, private tooltipService: D3TooltipService, private fileUtils: FileUtiles) {
     this.update = true;
   }
 
@@ -322,6 +323,35 @@ export class EdaTreeMap implements AfterViewInit {
 
     if (animateEntrance) {
       leaf.select('text').transition().delay((d: any, i: number) => i * 20).duration(300).style('opacity', 1);
+    }
+
+    // Per-category image, centred in each leaf rect, sized as a fraction of the rect (grows with
+    // the cell). Skipped for rects too small to show it.
+    const iconMap = buildIconMap(this.inject.assignedIcons, this.inject.useIcons);
+    if (iconMap.size) {
+      const topName = (n: any) => { while (n.depth > 1) n = n.parent; return String(n.data.name); };
+      const cellMin = (d: any) => Math.min(d.x1 - d.x0, d.y1 - d.y0);
+      const iconG = svg.append('g').attr('class', 'eda-treemap-icons').style('pointer-events', 'none');
+      const centre = (d: any) => `translate(${(d.x0 + d.x1) / 2},${(d.y0 + d.y1) / 2})`;
+      renderCategoryIcons<any>({
+        group: iconG,
+        data: root.leaves(),
+        key: (_d, i?: any) => i,
+        x: (d: any) => (d.x0 + d.x1) / 2,
+        y: (d: any) => (d.y0 + d.y1) / 2,
+        size: (d: any) => cellMin(d) * 0.4,
+        href: (d: any) => cellMin(d) < 36 ? '' : resolveIconHref(iconMap.get(topName(d)) || '', this.fileUtils),
+      });
+
+      // Grow this cell's icon while the cell is hovered - namespaced listeners, so the existing
+      // darken/label-grow handlers on the same rect are untouched.
+      const iconSel = iconG.selectAll('g.cat-icon');
+      const scaleIcon = (d: any, factor: number) => iconSel.filter((ic: any) => ic === d)
+        .interrupt('iconhover').transition('iconhover').duration(HOVER_MS)
+        .attr('transform', `${centre(d)} scale(${factor})`);
+      rects
+        .on('mouseover.icon', (_e: any, d: any) => scaleIcon(d, chartAnimOn ? 1.18 : 1))
+        .on('mouseout.icon', (_e: any, d: any) => scaleIcon(d, 1));
     }
 
     this.hasRendered = true;
