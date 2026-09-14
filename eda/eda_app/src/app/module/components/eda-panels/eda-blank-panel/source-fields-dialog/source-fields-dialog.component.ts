@@ -295,7 +295,7 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
         rows.forEach(row => row.splice(index, 1));
         this.filterValues = {};
         this.openFilterField = null;
-        table.reset();
+        this.resetTableColumnState(table);
     }
 
     /**
@@ -314,7 +314,29 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
         rows.forEach(row => row.splice(index, 0, entry.values.get(row)));
         this.filterValues = {};
         this.openFilterField = null;
-        table.reset();
+        this.resetTableColumnState(table);
+    }
+
+    /**
+     * Clears sort and per-column filters after a column's index shifts (same intent as
+     * table.reset()), but keeps the global filter applied instead of wiping it too.
+     * table.reset() sets filteredValue to null synchronously — a full, unfiltered render —
+     * and only reapplies a global filter later once PrimeNG's own internal filter debounce
+     * fires, which showed up as a visible flash of the whole table before the search
+     * re-narrowed it a moment later. Leaving 'global' in table.filters and calling
+     * table._filter() once (bypassing that debounce, same as PrimeNG's own internal callers
+     * do) recomputes the correct filtered result in a single synchronous pass instead.
+     */
+    private resetTableColumnState(table: any): void {
+        table._sortField = null;
+        table._sortOrder = table.defaultSortOrder;
+        table._multiSortMeta = null;
+        table.tableService.onSort(null);
+        Object.keys(table.filters).forEach(field => {
+            if (field !== 'global') delete table.filters[field];
+        });
+        table.first = 0;
+        table._filter();
     }
 
     /**
