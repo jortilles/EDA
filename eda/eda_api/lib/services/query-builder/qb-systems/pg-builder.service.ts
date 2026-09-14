@@ -311,6 +311,56 @@ export class PgBuilderService extends QueryBuilderService {
     return myQuery;
   }
 
+  /**
+   * Builds `SELECT * FROM <origin> [JOINS] [WHERE ...]` for "Mostrar campos de origen":
+   * same origin/joins/where logic as normalQuery(), without the column list, grouping,
+   * having, order or limit.
+   */
+  public sourceFieldsQuery(origin: string, dest: any[], joinTree: any[], filters: any[], tables: Array<any>,
+    joinType: string, valueListJoins: Array<any>, schema: string, database: string, sortedFilters?: any[]): string {
+    if (schema === 'null' || schema === '') {
+      schema = 'public';
+    }
+    let myQuery = `SELECT * \n`;
+    let o = tables.filter(table => table.name === origin).map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
+    let vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true : false })[0];
+    if (vista) { // Es una vista. NO la pongo entre comillas
+      myQuery += `FROM ${o}`;
+    } else { // Es una tabla. La pongo entre comillas
+      myQuery += `FROM "${schema}"."${o}"`;
+    }
+
+    // JOINS
+    let joinString: any[];
+    let alias: any;
+    if (this.queryTODO.joined) { /** si es modo arbol */
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+      joinString = responseJoins.joinString;
+      alias = responseJoins.aliasTables;
+    } else {
+      joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, schema);
+    }
+
+    joinString.forEach(x => {
+      myQuery = myQuery + '\n' + x;
+    });
+
+    // WHERE
+    if (Array.isArray(sortedFilters) && sortedFilters.length !== 0) {
+      myQuery += this.getSortedFilters(sortedFilters, filters);
+    } else {
+      myQuery += this.getFilters(filters);
+    }
+
+    if (alias) {
+      for (const key in alias) {
+        myQuery = myQuery.split(key).join(`"${alias[key]}"`);
+      }
+    }
+
+    return myQuery;
+  }
+
   public getFilters(filters ) {
     if (this.permissions.length > 0) {
       this.permissions.forEach(permission => { filters.push(permission); });

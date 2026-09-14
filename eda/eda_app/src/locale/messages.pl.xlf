@@ -7465,6 +7465,10 @@ Podział według kategorii:
 
 Pozdrawiam.</target>
   </trans-unit>
+  <trans-unit id="sourceFieldsDialogHeader">
+    <source>Campos de origen para </source>
+    <target>Pola źródłowe dla </target>
+  </trans-unit>
       <trans-unit id="mediaSearchPlaceholder">
         <source>Buscar por nombre...</source>
         <target>Szukaj po nazwie...</target>

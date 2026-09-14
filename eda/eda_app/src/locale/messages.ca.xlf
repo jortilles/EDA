@@ -7832,7 +7832,11 @@ Desglossament per categoria:
 
 Salutacions.</target>
   </trans-unit>
-          <trans-unit id="mediaSearchPlaceholder">
+  <trans-unit id="sourceFieldsDialogHeader">
+    <source>Campos de origen para </source>
+    <target>Camps d'origen per a </target>
+  </trans-unit>
+      <trans-unit id="mediaSearchPlaceholder">
         <source>Buscar por nombre...</source>
         <target>Cercar per nom...</target>
       </trans-unit>
@@ -7931,7 +7935,6 @@ Salutacions.</target>
         <source>Iconos asignados por coincidencia de nombre</source>
         <target>Icones assignades per coincidencia de nom</target>
       </trans-unit>
-
 </body>
   </file>
 </xliff>
