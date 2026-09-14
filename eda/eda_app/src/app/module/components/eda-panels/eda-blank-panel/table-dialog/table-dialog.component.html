@@ -76,7 +76,7 @@
                     <span class="inline-flex items-center gap-1.5 rounded-full bg-white border border-gray-200 pl-2.5 pr-1.5 py-1 text-xs font-medium text-gray-700">
                       <span class="inline-flex items-center justify-center w-4 h-4 rounded-full text-white text-[10px] font-bold"
                         [style.background-color]="'var(--corporate-primary)'">{{ i + 1 }}</span>
-                      {{ groupColumnLabel(colName) }}
+                      {{ colName }}
                       <button type="button" (click)="removeGroupColumn(i)" class="text-gray-400 hover:text-gray-700 leading-none">
                         <i class="pi pi-times text-[10px]"></i>
                       </button>
@@ -90,8 +90,8 @@
                   [disabled]="availableGroupColumns.length === 0"
                   (change)="addGroupColumn($any($event.target).value); $any($event.target).value = ''">
                   <option value="">{{ groupedSubtotalsAddPlaceholder }}</option>
-                  @for (col of availableGroupColumns; track col.column_name) {
-                    <option [value]="col.column_name">{{ col.display_name }}</option>
+                  @for (col of availableGroupColumns; track col.display_name) {
+                    <option [value]="col.display_name">{{ col.display_name }}</option>
                   }
                 </select>
               </div>
@@ -100,8 +100,8 @@
                 <span class="block text-xs font-semibold uppercase tracking-wide text-gray-500">{{ groupedSubtotalsNumericLabel }}</span>
                 <select class="w-full rounded-lg border border-gray-200 px-2.5 py-2 text-sm text-gray-700 bg-white"
                   [(ngModel)]="groupBySubtotalNumericColumn">
-                  @for (col of queryNumericColumns; track col.column_name) {
-                    <option [value]="col.column_name">{{ col.display_name }}</option>
+                  @for (col of queryNumericColumns; track col.display_name) {
+                    <option [value]="col.display_name">{{ col.display_name }}</option>
                   }
                 </select>
               </div>

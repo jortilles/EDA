@@ -422,12 +422,12 @@ export class TableDialogComponent{
       }));
   }
 
+  // Identified by display_name, not column_name: the same underlying column can be added to a
+  // table twice at different date granularities ("Order date" / "Order date mes" are both
+  // column_name 'orderdate') — display_name is what's actually unique per visible column, and
+  // it's what the backend's grouped-subtotals endpoint resolves against too.
   get availableGroupColumns(): QueryColumn[] {
-    return this.queryGroupableColumns.filter(c => !this.groupBySubtotalColumns.includes(c.column_name));
-  }
-
-  groupColumnLabel(columnName: string): string {
-    return this.queryGroupableColumns.find(c => c.column_name === columnName)?.display_name || columnName;
+    return this.queryGroupableColumns.filter(c => !this.groupBySubtotalColumns.includes(c.display_name));
   }
 
   toggleGroupedSubtotals(): void {
@@ -437,11 +437,11 @@ export class TableDialogComponent{
     }
   }
 
-  addGroupColumn(columnName: string): void {
-    if (!columnName || this.groupBySubtotalColumns.includes(columnName)) return;
-    this.groupBySubtotalColumns = [...this.groupBySubtotalColumns, columnName];
+  addGroupColumn(displayName: string): void {
+    if (!displayName || this.groupBySubtotalColumns.includes(displayName)) return;
+    this.groupBySubtotalColumns = [...this.groupBySubtotalColumns, displayName];
     if (!this.groupBySubtotalNumericColumn && this.queryNumericColumns.length > 0) {
-      this.groupBySubtotalNumericColumn = this.queryNumericColumns[0].column_name;
+      this.groupBySubtotalNumericColumn = this.queryNumericColumns[0].display_name;
     }
   }
 
