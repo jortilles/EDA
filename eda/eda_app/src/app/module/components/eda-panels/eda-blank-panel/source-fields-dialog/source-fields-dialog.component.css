@@ -19,9 +19,67 @@
     gap: 8px;
     flex: 1;
 }
-.source-fields-header-content span {
+.source-fields-header-title > span {
     font-weight: 700;
     font-size: 1.15rem;
+}
+
+.source-fields-header-title {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.source-fields-info-icon {
+    cursor: pointer;
+    color: #6b7280;
+    font-size: 1rem;
+}
+.source-fields-info-icon:hover {
+    color: #16a34a;
+}
+
+/* Same local, non-portal popup pattern as the column filter popup — anchored inside
+   .source-fields-header-title (position: relative above), never leaves this component's own
+   DOM, so it can't end up behind the dialog's own modal stacking context. */
+.source-fields-query-popup {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 10;
+    margin-top: 6px;
+    width: 32rem;
+    max-width: 60vw;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-weight: 400;
+    text-align: left;
+}
+.source-fields-query-popup-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid #e5e7eb;
+    color: #374151;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.source-fields-query-popup-content {
+    margin: 0;
+    padding: 0.85rem;
+    max-height: 40vh;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: monospace;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #374151;
 }
 
 .source-fields-header-restore-btn {

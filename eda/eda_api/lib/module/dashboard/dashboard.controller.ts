@@ -2095,7 +2095,9 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       const labels = getResults.length > 0 ? Object.keys(getResults[0]) : ['NoData'];
       const results = getResults.map(r => Object.keys(r).map(k => r[k] === null ? eda_api_config.null_value : r[k]));
 
-      return res.status(200).json([labels, results])
+      // `query` is the SQL already built (and just executed) above — sent back only so the
+      // client can display it, not to run anything again.
+      return res.status(200).json([labels, results, query])
     } catch (err) {
       console.log(err)
       next(new HttpException(500, DashboardController.parseQueryError(err)))

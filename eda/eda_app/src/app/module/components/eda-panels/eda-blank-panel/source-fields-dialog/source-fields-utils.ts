@@ -95,11 +95,13 @@ export const SourceFieldsUtils = {
 
     // EDA/EDA2: rebuild from LIVE state (currentQuery, rootTable, mergeFilters(selectedFilters, globalFilters))
     // — the same helper runQuery() uses — so this reflects whatever filters currently apply on screen,
-    // not just what was last saved on the panel.
+    // not just what was last saved on the panel. The connection's query builder assembles the actual
+    // SQL text server-side to run it — the backend sends that same text back as a third element so it
+    // can be displayed here without building or running anything a second time.
     const query = QueryUtils.initEdaQuery(ebp);
     (query.query as any).sourceFields = true;
 
-    const [headers, rows] = await ebp.dashboardService.executeSourceFieldsQuery(query).toPromise();
-    return { sql: '', headers, rows };
+    const [headers, rows, sql] = await ebp.dashboardService.executeSourceFieldsQuery(query).toPromise();
+    return { sql: sql || '', headers, rows };
   }
 };

@@ -8,7 +8,24 @@
   [height]="dialogHeight"
   [overflow]="'auto'">
   <div header class="source-fields-header-content">
-    <span>{{ header }}</span>
+    <div class="source-fields-header-title">
+      <span>{{ header }}</span>
+      @if (sql) {
+        <i class="pi pi-info-circle source-fields-info-icon" tabindex="0" role="button"
+          i18n-title="@@sourceFieldsViewQueryTooltip" title="Ver consulta SQL"
+          (click)="toggleQueryPopup($event)"
+          (keydown.enter)="toggleQueryPopup($event)"></i>
+        @if (showQueryPopup) {
+          <div class="source-fields-query-popup">
+            <div class="source-fields-query-popup-header">
+              <i class="pi pi-code"></i>
+              <span i18n="@@yourQuerySQL">Mi consulta SQL</span>
+            </div>
+            <pre class="source-fields-query-popup-content">{{ sql }}</pre>
+          </div>
+        }
+      }
+    </div>
     @if (canRestoreColumn) {
       <button type="button" class="source-fields-header-restore-btn" (click)="restoreColumn(dt)"
         i18n-title="@@sourceFieldsRestoreColumn" title="Restaurar columna">

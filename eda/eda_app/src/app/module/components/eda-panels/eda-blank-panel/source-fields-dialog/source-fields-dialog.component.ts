@@ -63,6 +63,20 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
         return window.innerHeight <= 800 ? 'flex' : '64vh';
     }
 
+    /** The SQL already built (and executed) to fetch what's shown here — sent back purely for
+     *  display, so the info icon can show it without running anything again. Empty when it
+     *  wasn't returned (e.g. an older API), in which case the icon just doesn't render. */
+    get sql(): string {
+        return this.controller?.params?.sql || '';
+    }
+
+    showQueryPopup = false;
+
+    toggleQueryPopup(event: Event): void {
+        event.stopPropagation();
+        this.showQueryPopup = !this.showQueryPopup;
+    }
+
     get headers(): string[] {
         return this.controller?.params?.headers || [];
     }
@@ -340,16 +354,19 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
     }
 
     /**
-     * Closes the open filter popup on any click that lands outside its icon and its own
-     * popup — this runs after the icon's own (click) handler (DOM events bubble target ->
-     * document), so clicking the icon itself still opens it without immediately re-closing.
+     * Closes the open filter popup (and the query popup) on any click that lands outside its
+     * own icon/popup — this runs after the icon's own (click) handler (DOM events bubble
+     * target -> document), so clicking the icon itself still opens it without immediately
+     * re-closing.
      */
     @HostListener('document:click', ['$event'])
     onDocumentClick(event: MouseEvent): void {
-        if (!this.openFilterField) return;
         const target = event.target as HTMLElement;
-        if (!target.closest('.source-fields-filter-icon, .source-fields-filter-popup')) {
+        if (this.openFilterField && !target.closest('.source-fields-filter-icon, .source-fields-filter-popup')) {
             this.openFilterField = null;
+        }
+        if (this.showQueryPopup && !target.closest('.source-fields-info-icon, .source-fields-query-popup')) {
+            this.showQueryPopup = false;
         }
     }
 
