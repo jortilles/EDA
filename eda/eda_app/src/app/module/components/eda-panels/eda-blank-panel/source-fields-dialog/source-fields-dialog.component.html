@@ -20,6 +20,10 @@
             <div class="source-fields-query-popup-header">
               <i class="pi pi-code"></i>
               <span i18n="@@yourQuerySQL">Mi consulta SQL</span>
+              <button type="button" class="source-fields-copy-btn" (click)="copyQuery($event)"
+                [title]="copied ? copiedTooltip : copyTooltip">
+                <i class="pi" [class.pi-copy]="!copied" [class.pi-check]="copied"></i>
+              </button>
             </div>
             <pre class="source-fields-query-popup-content">{{ sql }}</pre>
           </div>

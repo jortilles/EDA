@@ -71,10 +71,24 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
     }
 
     showQueryPopup = false;
+    copied = false;
+    private copiedTimer?: ReturnType<typeof setTimeout>;
+
+    readonly copyTooltip = $localize`:@@sourceFieldsCopyQuery:Copiar`;
+    readonly copiedTooltip = $localize`:@@sourceFieldsCopyQueryDone:Copiado`;
 
     toggleQueryPopup(event: Event): void {
         event.stopPropagation();
         this.showQueryPopup = !this.showQueryPopup;
+    }
+
+    copyQuery(event: Event): void {
+        event.stopPropagation();
+        navigator.clipboard.writeText(this.sql).then(() => {
+            this.copied = true;
+            clearTimeout(this.copiedTimer);
+            this.copiedTimer = setTimeout(() => this.copied = false, 2000);
+        });
     }
 
     get headers(): string[] {
@@ -408,6 +422,7 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         Object.values(this.filterTimers).forEach(timer => clearTimeout(timer));
         clearTimeout(this.globalFilterTimer);
+        clearTimeout(this.copiedTimer);
         this.filterInputsSubscription?.unsubscribe();
         document.removeEventListener('mousemove', this.onHeaderMouseMoveBound);
         document.removeEventListener('mouseup', this.onHeaderMouseUpBound);

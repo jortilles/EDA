@@ -82,6 +82,29 @@
     color: #374151;
 }
 
+.source-fields-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    width: 1.6rem;
+    height: 1.6rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+.source-fields-copy-btn:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+.source-fields-copy-btn .pi-check {
+    color: #16a34a;
+}
+
 .source-fields-header-restore-btn {
     display: inline-flex;
     align-items: center;
