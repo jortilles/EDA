@@ -212,8 +212,55 @@ export class DashboardPage implements OnInit {
   
               }, 0);
           });
-  
+
       }
+
+  /**
+   * When a brand-new (non-duplicated) TREE panel gets its root table set for the first time,
+   * replicate the path of an existing TREE global filter that already targets a sibling panel
+   * sharing that same root table, so the new panel is filtered immediately without having to
+   * reopen the global filter dialog.
+   */
+  public onNewPanelRootTableSet(rootTableName: string, panel: EdaPanel): void {
+      if (!rootTableName) return;
+      const newPanelComp = this.edaPanels.find(p => p.panel.id === panel.id);
+      if (!newPanelComp) return;
+
+      const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.queryMode === 'TREE' && f.pathList) || [];
+
+      globalFilters.forEach((filter: any) => {
+          if (!filter.panelList?.length) return;
+
+          // Find the first active panel in this filter that shares the same rootTable
+          const matchingPanelId = filter.panelList.find((pid: string) => {
+              const existing = this.edaPanels.find(p => p.panel.id === pid);
+              return existing?.rootTable?.table_name === rootTableName;
+          });
+
+          if (matchingPanelId && filter.pathList[matchingPanelId]) {
+              filter.pathList[panel.id] = { ...filter.pathList[matchingPanelId] };
+              filter.panelList.push(panel.id);
+              const formatted = this.globalFiltersService.formatFilter(filter);
+              newPanelComp.assertGlobalFilter(formatted);
+          }
+      });
+  }
+
+  /**
+   * When a TREE panel loses its root table (all columns removed), it can no longer be a valid
+   * target for any global filter path, so we drop it from panelList/pathList to keep the
+   * global filters consistent.
+   */
+  public onNewPanelRootTableCleared(panel: EdaPanel): void {
+      const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.queryMode === 'TREE') || [];
+
+      globalFilters.forEach((filter: any) => {
+          filter.panelList = filter.panelList?.filter((pid: string) => pid !== panel.id) || [];
+          if (filter.pathList?.[panel.id]) {
+              delete filter.pathList[panel.id];
+          }
+      });
+  }
 
   ngOnDestroy() {
     // Reset styles to defaults
@@ -353,6 +400,18 @@ export class DashboardPage implements OnInit {
 
   private updateFilterDatesInPanels(): void {
 
+        // A dynamic in/not_in date range was never supported as a literal SQL IN by the backend
+        // (it only reads value1, dropping the range's end). Filters saved before this was fixed —
+        // including ones from the old pre-migration app — still carry filter_type 'in'/'not_in'
+        // frozen from when they were created. Remap it here too so old dashboards get the correct
+        // between/not_between query, without needing to be re-saved.
+        const wireFilterType = (filter: any): string => {
+            if (filter.filter_column_type === 'date' && filter.selectedRange && ['in', 'not_in'].includes(filter.filter_type)) {
+                return filter.filter_type === 'in' ? 'between' : 'not_between';
+            }
+            return filter.filter_type;
+        };
+
         /**Set ranges for dates in panel filters */
         this.panels.filter(panel => panel.content).forEach(panel => {
 
@@ -368,12 +427,29 @@ export class DashboardPage implements OnInit {
 
                     pFilter.filter_elements[0] = { value1: [stringRange[0]] }
                     pFilter.filter_elements[1] = { value2: [stringRange[1]] }
+                    pFilter.filter_type = wireFilterType(pFilter);
 
                 }
 
                 panel.content.query.query.filters.push(pFilter);
 
             });
+
+            // Same date recompute + filter_type remap for the AND/OR filter tree, which the
+            // loop above doesn't touch — it lives at panel.content.query.query.sortedFilters.
+            const sortedFilters = panel.content.query.query.sortedFilters;
+            if (Array.isArray(sortedFilters)) {
+                sortedFilters.forEach(sFilter => {
+                    if (!!sFilter.selectedRange) {
+                        let range = this.dateUtilsService.getRange(sFilter.selectedRange);
+                        let stringRange = this.dateUtilsService.rangeToString(range);
+
+                        sFilter.filter_elements[0] = { value1: [stringRange[0]] };
+                        sFilter.filter_elements[1] = { value2: [stringRange[1]] };
+                        sFilter.filter_type = wireFilterType(sFilter);
+                    }
+                });
+            }
 
         });
 
@@ -1014,44 +1090,6 @@ export class DashboardPage implements OnInit {
         // already completed, so trigger the query run directly instead of relying on a
         // flag nothing else re-checks.
         if (applicable.length > 0) newPanel.runQueryFromDashboard(true);
-      }
-    });
-  }
-
-  /** When a brand-new (non-duplicated) panel gets its root table for the first time,
-   * auto-attach it to global filters that already apply to sibling panels sharing that root table. */
-  public onNewPanelRootTableSet(rootTableName: string, panel: EdaPanel): void {
-    if (!rootTableName) return;
-    const newPanelComp = this.edaPanels.find(p => p.panel.id === panel.id);
-    if (!newPanelComp) return;
-
-    const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.pathList) || [];
-
-    globalFilters.forEach((filter: any) => {
-      if (!filter.panelList?.length) return;
-
-      // Find the first active panel in this filter that has the same rootTable
-      const matchingPanelId = filter.panelList.find((pid: string) => {
-        const existing = this.edaPanels.find(p => p.panel.id === pid);
-        return existing?.rootTable?.table_name === rootTableName;
-      });
-
-      if (matchingPanelId && filter.pathList[matchingPanelId]) {
-        filter.pathList[panel.id] = { ...filter.pathList[matchingPanelId] };
-        filter.panelList.push(panel.id);
-        const formatted = this.globalFiltersService.formatFilter(filter);
-        newPanelComp.assertGlobalFilter(formatted);
-      }
-    });
-  }
-
-  public onNewPanelRootTableCleared(panel: EdaPanel): void {
-    const globalFilters = this.globalFilter?.globalFilters?.filter((f: any) => f.isGlobal) || [];
-
-    globalFilters.forEach((filter: any) => {
-      filter.panelList = filter.panelList?.filter((pid: string) => pid !== panel.id) || [];
-      if (filter.pathList?.[panel.id]) {
-        delete filter.pathList[panel.id];
       }
     });
   }

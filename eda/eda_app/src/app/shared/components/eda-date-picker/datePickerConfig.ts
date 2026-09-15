@@ -1,5 +1,1 @@
-export class EdaDatePickerConfig{
-  public dateRange : Array<Date>;
-  public range : string;
-  public filter : string;
-}
+export { DatePickerConfig as EdaDatePickerConfig } from '../date-picker/datePickerConfig';

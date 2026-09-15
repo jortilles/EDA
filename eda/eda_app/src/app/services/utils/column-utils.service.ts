@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FilterType } from '@eda/services/utils/chart-utils.service';
+import { ChartUtilsService, FilterType } from '@eda/services/utils/chart-utils.service';
 import { FileUtiles } from '@eda/services/utils/file-utils.service';
 import * as _ from 'lodash';
 interface FilterOptions {
@@ -20,7 +20,7 @@ interface FilterOptions {
 }
 @Injectable()
 export class ColumnUtilsService {
-    constructor(private fileUtiles: FileUtiles) { }
+    constructor(private fileUtiles: FileUtiles, private chartUtils: ChartUtilsService) { }
 
     /**
      * @deprecated The method should not be used. Use setFilter(options: FilterOptions) instead
@@ -80,13 +80,24 @@ export class ColumnUtilsService {
             valuesIds = _.cloneDeep(values);
         }
 
+        // The backend never learned to treat a value1/value2 pair as an "in"/"not_in" clause —
+        // it only ever reads value1, silently dropping the range's end. A dynamic in/not_in
+        // range must be sent as between/not_between so the backend actually ranges over it.
+        const wireFilterType = (column_type === 'date' && selectedRange && ['in', 'not_in'].includes(type))
+            ? (type === 'in' ? 'between' : 'not_between')
+            : type;
+
         const filterObject = {
             isGlobal: false,
             filter_id: this.fileUtiles.generateUUID(),
             filter_table: table,
             filter_column: column,
             filter_column_type: column_type,
-            filter_type: type,
+            filter_type: wireFilterType,
+            // The operator the user actually picked (e.g. 'in') — filter_type may have been
+            // remapped above for the backend's sake and no longer matches what was selected.
+            // Stored as its display label/symbol (e.g. '!=' -> '≠') so filter tags can render it directly.
+            display_filter_type: this.chartUtils.filterTypesLabels.find(f => f.value === type)?.label || type,
             filter_elements: values,
             filter_codes: valuesIds,
             selectedRange: selectedRange,

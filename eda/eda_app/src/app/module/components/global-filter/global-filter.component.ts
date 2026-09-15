@@ -1,6 +1,7 @@
 import { Component, inject, Input, OnInit, ChangeDetectorRef } from "@angular/core";
-import { AlertService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
-import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
+import { AlertService, ChartUtilsService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
+import { DatePickerConfig } from "@eda/shared/components/date-picker/datePickerConfig";
+import { getDateFilterOperatorLabel, getDateFilterValueLabel } from "@eda/shared/components/date-picker/date-filter-display.util";
 import { EdaDialogController } from "@eda/shared/components/shared-components.index";
 import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component";
 import { OverlayPanelModule } from "primeng/overlaypanel";
@@ -20,10 +21,10 @@ import { DropdownModule } from 'primeng/dropdown';       // if use <p-dropdown>
 import { InputSwitchModule } from 'primeng/inputswitch'; // if use <p-inputSwitch>
 import { ScrollPanelModule } from 'primeng/scrollpanel'; // if use <p-scrollPanel>
 import { GlobalFilterDialogComponent } from "../component.index";
-import { EdaDatePickerComponent } from "@eda/shared/components/shared-components.index";
+import { DatePickerComponent } from "@eda/shared/components/shared-components.index";
 
 const STANDALONE_COMPONENTS = [
-    EdaDatePickerComponent
+    DatePickerComponent
 ];
 
 const PRIMENG_MODULES = [
@@ -74,6 +75,7 @@ export class GlobalFilterComponent implements OnInit {
 
     public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
     public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
+    public resumenSingular: string = $localize`:@@filterSummarySingular:Resumen de filtro`;
     public selectedItemsLabel: string = $localize`:@@globalFilterSelectedItemsLabel:elementos seleccionados`;
 
     public filterHoverTooltipHtml: string =
@@ -100,6 +102,7 @@ export class GlobalFilterComponent implements OnInit {
         private userService: UserService,
         private destroyRef: DestroyRef,
         private cdr: ChangeDetectorRef,
+        private chartUtils: ChartUtilsService,
     ) { }
 
     public ngOnInit(): void {
@@ -245,8 +248,8 @@ export class GlobalFilterComponent implements OnInit {
                     const filterApplied = ebp.globalFilters.find((gf: any) => gf.filter_id === filter.id);
 
                     if (filterApplied) {
-                        filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
-                        filterApplied.filter_codes = this.globalFilterService.assertGlobalFilterCodes(filter);
+                        filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter, filter.dateFilterType);
+                        filterApplied.filter_codes = this.globalFilterService.assertGlobalFilterCodes(filter, filter.dateFilterType);
                     } else {
                         const formatedFilter = this.globalFilterService.formatFilter(filter);
                         ebp.assertGlobalFilter(formatedFilter);
@@ -554,6 +557,8 @@ export class GlobalFilterComponent implements OnInit {
                     filter.selectedColumn = this.globalFilter.selectedColumn;
                     filter.selectedItems = this.globalFilter.selectedItems;
                     filter.selectedRange = this.globalFilter.selectedRange;
+                    filter.dateFilterType = this.globalFilter.dateFilterType;
+                    filter.dynamicValue = this.globalFilter.dynamicValue;
                     filter.panelList = this.globalFilter.panelList;
                     filter.pathList = this.globalFilter.pathList;
                     filter.type = this.globalFilter.type;
@@ -681,6 +686,25 @@ export class GlobalFilterComponent implements OnInit {
         return label;
     }
 
+    /** Just the value part of the summary, e.g. "Hoy" or "05-08-26 - 08-08-26" — the operator lives in its own badge */
+    public getDateFilterValueText(filter: any): string {
+        // Single-value comparison operators only ever mean one date, even though selectedItems
+        // stores it duplicated as [date, date] for internal consistency with the pair-shaped operators
+        const items = filter.selectedItems;
+        const isDiscreteList = Array.isArray(items?.[0]);
+        return getDateFilterValueLabel({
+            operator: filter.dateFilterType,
+            dynamicRangeValue: filter.dynamicValue || filter.selectedRange,
+            value1: isDiscreteList ? items[0] : items?.[0],
+            value2: isDiscreteList ? undefined : items?.[1],
+        });
+    }
+
+    /** Just the operator part of the summary, e.g. "=" or "Entre" — rendered as a badge */
+    public getDateFilterOperatorText(filter: any): string {
+        return getDateFilterOperatorLabel(filter.dateFilterType, this.chartUtils.filterTypesLabels);
+    }
+
     public removeGlobalFilter(filter: any, reload?: boolean): void {
 
         const formatedFilter = filter;
@@ -743,21 +767,28 @@ export class GlobalFilterComponent implements OnInit {
      * @param filter 
      */
     public processPickerEvent(event: any, filter: any): void {
+        filter.dateFilterType = event.operator;
+
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-            if (!event.dates[1]) {
-                event.dates[1] = event.dates[0];
+            const toStr = (date: Date) => {
+                const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                return `${ye}-${mo}-${da}`;
+            };
+
+            const isStaticInNotIn = ['in', 'not_in'].includes(event.operator) && !event.range;
+            if (isStaticInNotIn) {
+                // Discrete, individually picked dates — kept as a single nested list, not a start/end pair
+                filter.selectedItems = [event.dates.filter((d: any) => d != null).map(toStr)];
+            } else {
+                if (!event.dates[1]) {
+                    event.dates[1] = event.dates[0];
+                }
+                filter.selectedItems = [event.dates[0], event.dates[1]].map(toStr);
             }
 
-            let stringRange = [event.dates[0], event.dates[1]]
-                .map(date => {
-                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-                    return `${ye}-${mo}-${da}`
-                });
-
-            filter.selectedItems = stringRange;
             filter.selectedRange = event.range;
-            this.loadDatesFromFilter(filter);
+            filter.dynamicValue = event.range;
         }
 
         if (!event.dates) {
@@ -766,12 +797,11 @@ export class GlobalFilterComponent implements OnInit {
 
         if (!event.range) {
             filter.selectedRange = null;
+            filter.dynamicValue = null;
         }
 
+        this.loadDatesFromFilter(filter);
         this.applyGlobalFilter(filter);
-        this.setGlobalFilterItems(filter);
-        // filter = this.globalFilterService.formatGlobalFilter(filter);
-        // this.applyGlobalFilter(filter);
     }
 
     /**
@@ -779,17 +809,25 @@ export class GlobalFilterComponent implements OnInit {
      * @param filter 
      */
     private loadDatesFromFilter(filter) {
-        this.datePickerConfigs[filter.id] = new EdaDatePickerConfig();
+        this.datePickerConfigs[filter.id] = new DatePickerConfig();
         const config = this.datePickerConfigs[filter.id];
         config.dateRange = [];
         config.range = filter.selectedRange;
         config.filter = filter;
+        config.dateFilterType = filter.dateFilterType;
         if (filter.selectedItems.length > 0) {
             if (!filter.selectedRange) {
-                let firstDate = filter.selectedItems[0];
-                let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
-                config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
-                config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
+                // Static in/not_in stores its discrete dates nested as selectedItems[0]
+                const isDiscreteList = Array.isArray(filter.selectedItems[0]);
+                if (isDiscreteList) {
+                    // Restore every discrete date, not just the first and last
+                    config.dateRange = filter.selectedItems[0].map((d: string) => new Date(d.replace(/-/g, '/')));
+                } else {
+                    let firstDate = filter.selectedItems[0];
+                    let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
+                    config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
+                    config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
+                }
             }
         }
     }
@@ -831,8 +869,11 @@ export class GlobalFilterComponent implements OnInit {
             const message = res[0][0];
             
             if (['noDataAllowed', 'noFilterAllowed'].includes(message)) {
-                this.globalFilters.find((gf: any) => gf.id == globalFilter.id).visible = 'hidden';
-                this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = false;
+                const restrictedFilter = this.globalFilters.find((gf: any) => gf.id == globalFilter.id);
+                if (restrictedFilter) {
+                    restrictedFilter.visible = 'hidden';
+                    restrictedFilter.data = false;
+                }
             }
             
             const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
@@ -1087,8 +1128,10 @@ export class GlobalFilterComponent implements OnInit {
     public showFilterTooltip(event: MouseEvent, op: any, filter?: any): void {
     // if the dropdown is open the tooltip is not shown
         if (this.isDropdownOpen) return;
-    // If the filter doesn't have selected values, the tooltip won't be shown
-        if (filter && (!filter.selectedItems || filter.selectedItems.length === 0)) return;
+    // If the filter doesn't have selected values, the tooltip won't be shown — unless it's a date
+    // filter configured with a no-value operator (not_null, not_null_nor_empty, null_or_empty),
+    // where selectedItems is always empty even though the filter is meaningfully set.
+        if (filter && (!filter.selectedItems || filter.selectedItems.length === 0) && !filter.dateFilterType) return;
     // If there is some active timeout to hide the tooltip, it will be cleared 
         if (this.tooltipHideTimeout && this.lastPanel === filter.id) {
            clearTimeout(this.tooltipHideTimeout);

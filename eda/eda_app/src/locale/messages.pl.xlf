@@ -6120,6 +6120,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Resumen de filtros</source>
         <target>Podsumowanie filtrów</target>
       </trans-unit>
+      <trans-unit id="filterSummarySingular">
+        <source>Resumen de filtros</source>
+        <target>Podsumowanie filtra</target>
+      </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
         <source>items seleccionados</source>
         <target>wybranych elementów</target>

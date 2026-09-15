@@ -75,28 +75,32 @@
           <!-- Filtros del panel -->
           <div class="mb-3">
             <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenFiltrosPanelH6">Filtros del panel</h4>
-            @if (selectedFilters.length === 0) {
+            @if (!hasActiveFilters(selectedFilters)) {
               <span class="text-sm text-gray-400 italic" i18n="@@noFilters">Sin filtros</span>
             }
             @for (filter of selectedFilters; track filter) {
-              <div class="text-sm py-0.5">
-                <span class="text-gray-400 text-xs" [innerHTML]="getFilterJoins(filter)"></span>
-                <span [innerHTML]="getDisplayFilterStr(filter)"></span>
-              </div>
+              @if (isFilterActive(filter)) {
+                <div class="text-sm py-0.5">
+                  <span class="text-gray-400 text-xs" [innerHTML]="getFilterJoins(filter)"></span>
+                  <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+                </div>
+              }
             }
           </div>
 
           <!-- Filtros del informe -->
           <div>
             <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenFiltrosInformeH6">Filtros del informe</h4>
-            @if (globalFilters.length === 0) {
+            @if (!hasActiveFilters(globalFilters)) {
               <span class="text-sm text-gray-400 italic" i18n="@@noFilters">Sin filtros</span>
             }
             @for (filter of globalFilters; track filter) {
-              <div class="text-sm py-0.5">
-                <span class="text-gray-400 text-xs" [innerHTML]="getFilterJoins(filter)"></span>
-                <span [innerHTML]="getDisplayFilterStr(filter)"></span>
-              </div>
+              @if (isFilterActive(filter)) {
+                <div class="text-sm py-0.5">
+                  <span class="text-gray-400 text-xs" [innerHTML]="getFilterJoins(filter)"></span>
+                  <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+                </div>
+              }
             }
           </div>
 
@@ -623,10 +627,12 @@
                         <div class="summary-section">
                           <h3 class="summary-section-title text-base font-semibold" i18n="@@resumenFiltrosInformeH6">Resumen de filtros del informe</h3>
                           @for (filter of globalFilters; track filter) {
-                            <div class="summary-item text-base">
-                              <span class="text-sm text-gray-400" [innerHTML]="getFilterJoins(filter)"></span>
-                              <span [innerHTML]="getDisplayFilterStr(filter)"></span>
-                            </div>
+                            @if (isFilterActive(filter)) {
+                              <div class="summary-item text-base">
+                                <span class="text-sm text-gray-400" [innerHTML]="getFilterJoins(filter)"></span>
+                                <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+                              </div>
+                            }
                           }
                         </div>
 
@@ -634,10 +640,12 @@
                         <div class="summary-section border-t border-r border-gray-200">
                           <h3 class="summary-section-title text-base font-semibold" i18n="@@resumenFiltrosPanelH6">Resumen de filtros del panel</h3>
                           @for (filter of selectedFilters; track filter) {
-                            <div class="summary-item text-base">
-                              <span class="text-sm text-gray-400" [innerHTML]="getFilterJoins(filter)"></span>
-                              <span [innerHTML]="getDisplayFilterStr(filter)"></span>
-                            </div>
+                            @if (isFilterActive(filter)) {
+                              <div class="summary-item text-base">
+                                <span class="text-sm text-gray-400" [innerHTML]="getFilterJoins(filter)"></span>
+                                <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+                              </div>
+                            }
                           }
                                 </div>
 

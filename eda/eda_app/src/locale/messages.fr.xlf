@@ -6455,6 +6455,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Resumen de filtros</source>
         <target>Résumé des filtres</target>
       </trans-unit>
+      <trans-unit id="filterSummarySingular">
+        <source>Resumen de filtros</source>
+        <target>Résumé du filtre</target>
+      </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
         <source>items seleccionados</source>
         <target>articles sélectionnés</target>

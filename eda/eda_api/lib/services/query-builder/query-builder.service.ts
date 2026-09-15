@@ -926,6 +926,14 @@ export abstract class QueryBuilderService {
     }
 
 
+    /**
+     * false (EDA default) -> value-list filters compare against the description column (target_description_column).
+     * true (SinergiaDA) -> value-list filters compare against the internal code column (target_id_column) instead.
+     */
+    public useValueListCodeForFilters(): boolean {
+        return !!eda_api_config.custom_behaviour?.USE_VALUE_LIST_CODE_FOR_FILTERS;
+    }
+
     public findColumn(table: string, column: string) {
         const tmpTable = this.tables.find((t: any) => t.table_name === table.split('.')[0]);
         const col =  tmpTable.columns.find((c: any) => c.column_name === column);
@@ -966,7 +974,7 @@ export abstract class QueryBuilderService {
     public setFilterType(filter: string) {
         if (['=', '!=', '>', '<', '<=', '>=', 'like', 'not_like'].includes(filter)) return 0;
         else if (['not_in', 'in'].includes(filter)) return 1;
-        else if (filter === 'between') return 2;
+        else if (filter === 'between' || filter === 'not_between') return 2;
         else if (filter === 'not_null') return 3;
         else if (filter === 'is_null') return 4;
         else if (filter === 'not_null_nor_empty') return 5;

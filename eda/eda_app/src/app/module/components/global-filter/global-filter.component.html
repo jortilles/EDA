@@ -34,9 +34,37 @@
               }
 
               @if (getFilterType(filter) == 'date') {
-              <eda-date-picker [autoClear]="true" [inject]="datePickerConfigs[filter.id]"
-                (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)">
-              </eda-date-picker>
+
+              <date-picker #dp [autoClear]="true" [inject]="datePickerConfigs[filter.id]" [summaryLabel]="getDateFilterValueText(filter)"
+                [summaryOperator]="getDateFilterOperatorText(filter)" [showNativeTooltip]="false"
+                (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)"
+                (mouseenter)="showFilterTooltip($event, opDate, filter)" (mouseleave)="hideFilterTooltip(opDate)"
+                (click)="opDate.hide()">
+              </date-picker>
+              <p-overlayPanel #opDate appendTo="body">
+                <ng-template pTemplate>
+                  <div (mouseenter)="showFilterTooltip($event, opDate, filter)" (mouseleave)="hideFilterTooltip(opDate)"
+                       class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]">
+                    <div class="flex items-center justify-between mb-1 pl-1 pr-4 py-2">
+                      <span>{{ resumenSingular }}</span>
+                      @if(filter.visible !== "readOnly" || isAdmin) {
+                        <button type="button" class="pi pi-trash filter-tooltip-button ml-2"
+                            (click)="dp.clean()">
+                        </button>
+                      }
+                    </div>
+                    @if (filter.dateFilterType) {
+                      <div class="filter-tooltip-container filter-tooltip-container--static px-4 py-2 rounded flex items-center mr-1">
+                        <span class="flex justify-between gap-3 w-full customMultiselect filters-size filter-tooltip-text">
+                          <span>{{ getDateFilterOperatorText(filter) }}</span>
+                          <span class="filter-tooltip-value">{{ getDateFilterValueText(filter) }}</span>
+                        </span>
+                      </div>
+                    }
+                  </div>
+                </ng-template>
+              </p-overlayPanel>
+
               } @else if (filter.multipleSelection === false) {
               <p-multiSelect
                 [style]="styleButton"
@@ -149,9 +177,35 @@
                 <span class="filter-hover-tooltip" [innerHTML]="filterHoverTooltipHtml"></span>
               }
               @if (getFilterType(filter) == 'date') {
-              <eda-date-picker [autoClear]="true" [inject]="datePickerConfigs[filter.id]"
-                (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)">
-              </eda-date-picker>
+              <date-picker #dp [autoClear]="true" [inject]="datePickerConfigs[filter.id]" [summaryLabel]="getDateFilterValueText(filter)"
+                [summaryOperator]="getDateFilterOperatorText(filter)" [showNativeTooltip]="false"
+                (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)"
+                (mouseenter)="showFilterTooltip($event, opDate, filter)" (mouseleave)="hideFilterTooltip(opDate)"
+                (click)="opDate.hide()">
+              </date-picker>
+              <p-overlayPanel #opDate appendTo="body">
+                <ng-template pTemplate>
+                  <div (mouseenter)="showFilterTooltip($event, opDate, filter)" (mouseleave)="hideFilterTooltip(opDate)"
+                       class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]">
+                    <div class="flex items-center justify-between mb-1 pl-1 pr-4 py-2">
+                      <span>{{ resumenSingular }}</span>
+                      @if(filter.visible !== "readOnly" || isAdmin) {
+                        <button type="button" class="pi pi-trash filter-tooltip-button ml-2"
+                            (click)="dp.clean()">
+                        </button>
+                      }
+                    </div>
+                    @if (filter.dateFilterType) {
+                      <div class="filter-tooltip-container filter-tooltip-container--static px-4 py-2 rounded flex items-center mr-1">
+                        <span class="flex justify-between gap-3 w-full customMultiselect filters-size filter-tooltip-text">
+                          <span>{{ getDateFilterOperatorText(filter) }}</span>
+                          <span class="filter-tooltip-value">{{ getDateFilterValueText(filter) }}</span>
+                        </span>
+                      </div>
+                    }
+                  </div>
+                </ng-template>
+              </p-overlayPanel>
               } @else {
               <p-autoComplete [(ngModel)]="filter.selectedItems" (keydown.enter)="onAddValue($event, filter)" [suggestions]="autoCompleteValues"
                 (completeMethod)="loadFilterAutoComplete($event, filter)" placeholder="abc..." [forceSelection]="false"

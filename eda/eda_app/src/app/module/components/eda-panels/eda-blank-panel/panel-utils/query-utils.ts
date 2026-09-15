@@ -144,6 +144,25 @@ export const QueryUtils = {
     else return QueryUtils.initSqlQuery(ebp);
   },
 
+  /** Heal a filters array's global entries against the live global filter bar's join paths. A
+   * global filter the user hasn't actively touched this session still holds whatever was last
+   * saved to panel.content — assertGlobalFilter() (which resolves joins/filter_table from
+   * pathList) never ran for it live, so a stale/never-resolved join path would otherwise silently
+   * drop its table from the query. Used both for ebp.globalFilters (runQuery) and for the raw
+   * persisted panelContent.query.query.filters (loadChartsData, which bypasses ebp.globalFilters
+   * entirely when the panel has no nav children). */
+  healGlobalFilterJoins: (ebp: EdaBlankPanelComponent, filters: any[]) => {
+    const liveGlobalFilterDefs = ebp.dashboard?.globalFilter?.globalFilters || [];
+    for (const filter of filters || []) {
+      if (!filter.isGlobal) continue;
+      const livePath = liveGlobalFilterDefs.find((d: any) => d.id === filter.filter_id)?.pathList?.[ebp.panel.id];
+      if (livePath) {
+        filter.joins = livePath.path;
+        filter.filter_table = livePath.table_id;
+      }
+    }
+  },
+
   /**
  * Runs a query and sets panel chart
  * @param globalFilters flag to apply when runQuery() is called from dashboard component.
@@ -152,12 +171,53 @@ export const QueryUtils = {
 
     // Update globalFilters elements
 
+    QueryUtils.healGlobalFilterJoins(ebp, ebp.globalFilters);
+
     if(ebp.sortedFilters === undefined) ebp.sortedFilters = []; // if it is an old report, we define the report as empty
 
     for(let i=0; i<ebp.sortedFilters.length; i++){
       if(ebp.sortedFilters[i].isGlobal) {
-        ebp.sortedFilters[i].filter_elements = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id).filter_elements;
-        ebp.sortedFilters[i].filter_codes = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id).filter_codes;
+        const liveGlobalFilter = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id);
+        if (liveGlobalFilter) {
+          ebp.sortedFilters[i].filter_elements = liveGlobalFilter.filter_elements;
+          ebp.sortedFilters[i].filter_codes = liveGlobalFilter.filter_codes;
+          // filter_type must stay in sync with filter_elements/filter_codes' shape (e.g. a date
+          // filter's operator changing from 'between' to '=' changes it from 2 elements to 1) —
+          // it was only ever set once, when the filter was first added to the AND/OR tree.
+          ebp.sortedFilters[i].filter_type = liveGlobalFilter.filter_type;
+        }
+      }
+    }
+
+    /** When advanced (AND/OR) filters are configured, filters/global filters added afterwards
+     * (e.g. from the global filter bar) are not part of the saved tree yet. Append them here
+     * as top-level AND conditions so running the query from outside the panel picks them up,
+     * mirroring EdaFilterAndOrComponent.addMissingFilters() which only runs when the dialog opens. */
+    if (ebp.sortedFilters.length !== 0) {
+      const existingIds = new Set(ebp.sortedFilters.map((sf: any) => sf.filter_id));
+
+      const missing = [
+        ...ebp.selectedFilters.filter((sf: any) => sf.filterBeforeGrouping !== false),
+        ...ebp.globalFilters.filter((gf: any) => gf.filterBeforeGrouping !== false),
+      ].filter((f: any) => !existingIds.has(f.filter_id));
+
+      if (missing.length > 0) {
+        const maxY = Math.max(...ebp.sortedFilters.map((sf: any) => sf.y)) + 1;
+
+        missing.forEach((f: any, i: number) => {
+          ebp.sortedFilters.push({
+            cols: 3, rows: 1, y: maxY + i, x: 0,
+            filter_table: f.filter_table,
+            filter_column: f.filter_column,
+            filter_type: f.filter_type,
+            filter_column_type: f.filter_column_type,
+            filter_elements: f.filter_elements,
+            filter_codes: f.filter_codes,
+            filter_id: f.filter_id,
+            isGlobal: f.isGlobal,
+            value: 'and',
+          });
+        });
       }
     }
 

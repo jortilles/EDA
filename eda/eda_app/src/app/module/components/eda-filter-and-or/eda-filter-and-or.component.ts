@@ -24,6 +24,8 @@ import {
   GridType,
 } from 'angular-gridster2';
 import * as _ from 'lodash';
+import { ChartUtilsService } from '@eda/services/service.index';
+import { getDateFilterOperatorLabel, getDynamicRangeLabel } from '@eda/shared/components/date-picker/date-filter-display.util';
 
 @Component({
   standalone: true,
@@ -60,9 +62,8 @@ export class EdaFilterAndOrComponent implements OnInit {
   selectedButtonInitialValue: string;
   stringQuery: string = '';
   existeIntercambioItems: boolean = false;
-  public textBetween: string = $localize`:@@textBetween:Entre`;
 
-  constructor(private cdr: ChangeDetectorRef) {
+  constructor(private cdr: ChangeDetectorRef, private chartUtils: ChartUtilsService) {
     let rowHeight = 0;
     let colWidth = 0;
     const widthScreen = window.innerWidth;
@@ -445,11 +446,18 @@ export class EdaFilterAndOrComponent implements OnInit {
     const tableName = table?.display_name?.default || item.filter_table;
     const columnName = table?.columns.find((c: any) => c.column_name === item.filter_column)?.display_name?.default || item.filter_column;
 
+    // sortedFilters entries don't carry selectedRange/display_filter_type — look up the live
+    // filter definition by id, same reason getFilterJoins() below looks up .joins from here.
+    const liveFilter = (item.isGlobal ? this.globalFilters : this.selectedFilters)
+      .find((f: any) => f.filter_id === item.filter_id);
+
     const values = item.filter_elements[0]?.value1;
     const values2 = item.filter_elements[1]?.value2;
 
     let valueStr = '';
-    if (values) {
+    if (liveFilter?.selectedRange) {
+      valueStr = `"${getDynamicRangeLabel(liveFilter.selectedRange)}"`;
+    } else if (values) {
       if (values.length === 1 && !['in', 'not_in'].includes(item.filter_type)) {
         valueStr = `"${values[0]}"`;
       } else if (values.length > 1 || ['in', 'not_in'].includes(item.filter_type)) {
@@ -461,8 +469,8 @@ export class EdaFilterAndOrComponent implements OnInit {
       }
     }
 
-    let filterType = item.filter_type;
-    if (filterType === 'between') filterType = this.textBetween;
+    const filterType = liveFilter?.display_filter_type
+      || getDateFilterOperatorLabel(item.filter_type, this.chartUtils.filterTypesLabels);
 
     const filterDescription = item.isGlobal ? 'Filtro Global' : 'Filtro Panel';
     str = `${tableName} [${columnName}] ${filterType} ${valueStr} > ${filterDescription}`;

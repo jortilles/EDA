@@ -6487,6 +6487,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Resumen de filtros</source>
         <target>Resum de filtres</target>
       </trans-unit>
+      <trans-unit id="filterSummarySingular">
+        <source>Resumen de filtro</source>
+        <target>Resum de filtre</target>
+      </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
         <source>elementos seleccionados</source>
         <target>elements seleccionats</target>

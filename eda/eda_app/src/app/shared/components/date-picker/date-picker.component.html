@@ -1,0 +1,97 @@
+@if (!inline) {
+	<p-calendar class='eda-filter-multiselect' [locale]="locale" [(ngModel)]="rangeDates" dateFormat="dd-mm-y"
+		[selectionMode]="selectionMode" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" [yearRange]="calendarYearRange"
+		[hideOnDateTimeSelect]="false" [showOnFocus]="false"
+		[firstDayOfWeek]="firstDayOfWeek" [placeholder]="rangePlaceholder" (onClickOutside)="handleOutsideClick($event)"
+		(onClose)="handleClose()" (onFocus)="activate()" (click)="datePickerRef.showOverlay()" appendTo="body" [style]="{width:'100%'}"
+		[panelStyleClass]="hideCalendarGrid ? 'date-picker-panel hide-calendar-grid' : 'date-picker-panel'"
+		[attr.title]="showNativeTooltip && summaryOperator ? (summaryOperator + ' ' + summaryLabel) : null">
+
+		<p-header>
+			<div class="flex flex-col gap-2 p-2" (mousedown)="$event.stopPropagation()">
+				<div>
+					<label class="block text-sm mb-1" i18n="@@filterOperatorSelectionText">Selección de operador del filtro:</label>
+					<p-dropdown [options]="filterTypesOptions" [(ngModel)]="filterTypeSelected" optionLabel="label"
+						[autoDisplayFirst]="false" [style]="{'width':'100%'}" [showClear]="true" scrollHeight="230px"
+						(onChange)="handleFilterChange(filterTypeSelected)">
+					</p-dropdown>
+				</div>
+
+				@if(showDateFormatSelecter){
+					<div>
+						<label class="block text-sm mb-1" i18n="@@dateSelectionText">Selección de fecha:</label>
+						<p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder"
+							[style]="{'width':'100%'}" [disabled]="!filterTypeSelected" scrollHeight="230px" (onChange)="updateRangeSelection()">
+						</p-dropdown>
+					</div>
+				}
+			</div>
+		</p-header>
+
+		<p-footer>
+
+			<div class="flex items-center justify-between w-full pt-3 pb-3 pr-2 pl-2" style="gap: 10px;" (mousedown)="$event.stopPropagation()">
+				<div class="flex items-center" style="gap: 10px;">
+					@if(autoRemove || autoClear){
+						<ng-content select="[footer]"></ng-content>
+
+						@if(autoRemove){
+							<button
+								pButton pRipple type="button"
+								icon="fa fa-trash"
+								(click)="remove()"
+								class="p-button-danger p-button-rounded p-button-outlined">
+							</button>
+						}
+
+						@if(autoClear){
+							<button
+								pButton pRipple type="button"
+								i18n-label="@@datePickerCleanBtn" label="Limpiar" icon="pi pi-undo"
+								(click)="clean()"
+								class="p-button-rounded p-button-outlined">
+							</button>
+						}
+					}
+				</div>
+			</div>
+		</p-footer>
+	</p-calendar>
+
+	<div class="summary-overlay" [title]="showNativeTooltip && summaryOperator ? (summaryOperator + ' ' + summaryLabel) : null">
+		@if (summaryOperator) {
+			<span class="summary-operator-badge">{{ summaryOperator }}</span>
+			<span class="summary-value-text">{{ summaryLabel }}</span>
+		} @else {
+			<span class="summary-placeholder-text">{{ rangePlaceholder }}</span>
+		}
+	</div>
+} @else {
+	<div class="grid grid-cols-3 items-start gap-3 date-picker-inline">
+		<div class="min-w-0">
+			<p-dropdown [options]="filterTypesOptions" [(ngModel)]="filterTypeSelected" optionLabel="label"
+				[autoDisplayFirst]="false" [style]="{'width':'100%'}" [showClear]="true" scrollHeight="230px"
+				i18n-placeholder="@@filterOperatorPlaceholder" placeholder="Selecciona un operador"
+				(onChange)="onInlineOperatorChange()">
+			</p-dropdown>
+		</div>
+
+		@if (showDateFormatSelecter) {
+			<div class="min-w-0">
+				<p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder"
+					[style]="{'width':'100%'}" [disabled]="!filterTypeSelected" scrollHeight="230px" (onChange)="onInlineRangeChange()">
+				</p-dropdown>
+			</div>
+		}
+
+		@if (!hideCalendarGrid) {
+			<div class="min-w-0">
+				<p-calendar class="eda-filter-multiselect" [locale]="locale" [(ngModel)]="rangeDates" dateFormat="dd-mm-y"
+					[selectionMode]="selectionMode" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" [yearRange]="calendarYearRange"
+					[firstDayOfWeek]="firstDayOfWeek" [placeholder]="rangePlaceholder" appendTo="body" [style]="{width:'100%'}"
+					(onSelect)="onInlineDatesChange()">
+				</p-calendar>
+			</div>
+		}
+	</div>
+}

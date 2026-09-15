@@ -38,6 +38,7 @@ import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
 
 // Standalone components
 import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent} from '@eda/shared/components/shared-components.index';
+import { rangeDateFormats } from '@eda/shared/components/date-picker/date-picker.index';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
@@ -153,8 +154,8 @@ export class EdaBlankPanelComponent implements OnInit {
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
     @Output() panelConfigChanged: EventEmitter<any> = new EventEmitter<IPanelAction>();
-    @Output() rootTableFirstSet = new EventEmitter<string>();
-    @Output() rootTableCleared = new EventEmitter<void>();
+    @Output() rootTableFirstSet: EventEmitter<string> = new EventEmitter<string>();
+    @Output() rootTableCleared: EventEmitter<void> = new EventEmitter<void>();
 
     /** Properties injected into the dialog with chart-specific properties. */
     public configController: EdaDialogController;
@@ -665,6 +666,11 @@ public tableNodeExpand(event: any): void {
             }
             PanelInteractionUtils.handleFilters(this, panelContent.query.query); // 3. populate selectedFilters (reads dateNavState)
 
+            // panelContent.query.query.filters is the persisted snapshot — when there are no nav
+            // children, it's sent to the backend as-is (see queryToRun below), bypassing the live
+            // global filter bar entirely. Heal its joins so a filter whose join path was never
+            // resolved at save time doesn't silently drop its table from the query.
+            QueryUtils.healGlobalFilterJoins(this, panelContent.query.query.filters);
             // Duplicated panel: skip this initial query run (the inherited global filters are
             // still being attached asynchronously by the dashboard) — buildGlobalconfiguration
             // triggers the real, filter-aware query run once that's done. Everything above this
@@ -2099,6 +2105,12 @@ public tableNodeExpand(event: any): void {
     public moveItem = (column: any) => {
         PanelInteractionUtils.moveItem(this, column);
 
+        // First column of a new panel (query never executed): let the dashboard try to
+        // inherit an existing TREE global filter's path for this rootTable.
+        if (this.selectedQueryMode === 'TREE' && this.currentQuery.length === 1 && _.isNil(this.panel.content) && this.rootTable) {
+            this.rootTableFirstSet.emit(this.rootTable.table_name);
+        }
+
         const sortingMatch = this.resultSortingColumns.find(
             c => c.column_name === column.column_name && c.table_id === column.table_id
         );
@@ -2131,11 +2143,14 @@ public tableNodeExpand(event: any): void {
 
         if (!isTreeMode || isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
             const columnHadFilter = this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name);
-            // Last column of a new panel (query never executed): reset global filter config before utils runs
+
+            // Last column of a new panel (query never executed): reset global filter config before utils runs.
+
             if (currentQueryLength === 1 && _.isNil(this.panel.content)) {
                 this.rootTableCleared.emit();
                 this.globalFilters = [];
             }
+
             const removed = PanelInteractionUtils.removeColumn(this, c, list);
             if (removed !== false) {
                 // We check whether a field being removed had a filter in selectedFilters (this is verified before removeColumn deletes it).
@@ -2350,7 +2365,11 @@ public tableNodeExpand(event: any): void {
             const aggregation = filter.aggregation_type;
             let valueStr = '';
 
-            if (values) {
+            if (filter.selectedRange) {
+                // Dynamic date range (e.g. "Aquesta setmana") — show its label instead of the
+                // literal dates it currently resolves to, which change every time the query runs.
+                valueStr = `"${rangeDateFormats.find(r => r.value === filter.selectedRange)?.label || filter.selectedRange}"`;
+            } else if (values) {
                 if (values.length == 1 && !['in', 'not_in'].includes(filter.filter_type)) {
                     valueStr = `"${values[0]}"`;
                 }  else if (values.length > 1 || ['in', 'not_in'].includes(filter.filter_type)) {
@@ -2371,9 +2390,15 @@ public tableNodeExpand(event: any): void {
             let aggregationLabel = '';
             if(AGG_TYPES.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = AGG_TYPES.filter(agg => agg.value === aggregation)[0].label;
 
-            // Added internationalization for the “between” operator.
-            let filterType = filter.filter_type
-            if(filterType === 'between') filterType = this.textBetween;
+            // display_filter_type carries the operator the user actually picked (e.g. 'in' -> "Dentro de"),
+            // already resolved to its label — filter_type may have been remapped for the backend's sake
+            // (e.g. a dynamic 'in' range becomes 'between' since the backend can't range over 'in').
+            // Fall back to resolving filter_type's own label (not just the raw value) for filters
+            // persisted before display_filter_type existed — e.g. a static 'in' still reads 'in' as
+            // its wire type (only a dynamic range gets remapped to 'between'), so the lookup still works.
+            let filterType = filter.display_filter_type
+                || this.chartUtils.filterTypesLabels.find(f => f.value === filter.filter_type)?.label
+                || filter.filter_type;
 
             str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp${aggregationLabel ? ` - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>` : ''}&nbsp`;
         }
@@ -2381,6 +2406,21 @@ public tableNodeExpand(event: any): void {
         return str;
     }
 
+    /** False for a filter that's been cleared (no value, no dynamic range) — it applies no real
+     * constraint and shouldn't be listed as an active filter in the summary overlay/dialog. */
+    public isFilterActive(filter: any): boolean {
+        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+        if (noValueTypes.includes(filter.filter_type)) return true;
+        if (filter.selectedRange) return true;
+
+        const value1 = filter.filter_elements?.[0]?.value1;
+        const value2 = filter.filter_elements?.[1]?.value2;
+        return (Array.isArray(value1) && value1.length > 0) || (Array.isArray(value2) && value2.length > 0);
+    }
+
+    public hasActiveFilters(filters: any[]): boolean {
+        return (filters || []).some(f => this.isFilterActive(f));
+    }
 
     public onCloseWhatIfDialog(): void {
         this.display_v.whatIf_dialog = false;

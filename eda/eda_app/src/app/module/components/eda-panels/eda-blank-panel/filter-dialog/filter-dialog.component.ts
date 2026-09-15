@@ -1,6 +1,7 @@
-import {Component, Input, ViewChild, Output, EventEmitter} from '@angular/core';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {SelectItem} from 'primeng/api';
-import {EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent, EdaDatePickerComponent} from '@eda/shared/components/shared-components.index';
+import {EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent, DatePickerComponent} from '@eda/shared/components/shared-components.index';
+import { getDynamicRangeLabel } from '@eda/shared/components/date-picker/date-filter-display.util';
 import {Column} from '@eda/models/model.index';
 import { CommonModule } from '@angular/common';
 import { NgClass } from '@angular/common';
@@ -33,7 +34,7 @@ const PRIMENG_MODULES = [
 
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component,
-    EdaDatePickerComponent
+    DatePickerComponent
 ];
 
 
@@ -48,8 +49,7 @@ const STANDALONE_COMPONENTS = [
 
 export class FilterDialogComponent {
 
-    @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
-    @Output() updateSortedFiltersFilterDialog: EventEmitter<any> = new EventEmitter<any>();    
+    @Output() updateSortedFiltersFilterDialog: EventEmitter<any> = new EventEmitter<any>();
 
     @Input() controller: any;
 
@@ -249,7 +249,10 @@ export class FilterDialogComponent {
         const addToSortedFilters = { add: false, filter: item };
         this.updateSortedFiltersFilterDialog.emit(addToSortedFilters);
 
-        this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id) ).removed = true;
+        const matched = this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id));
+        if (matched) {
+            matched.removed = true;
+        }
 
         this.filter.forDisplay = this.filter.selecteds.filter(f => {
             return _.startsWith(f.filter_table, this.selectedColumn.table_id) &&
@@ -360,26 +363,53 @@ export class FilterDialogComponent {
 
     }
 
-    processPickerEvent(event){
+    processPickerEvent(event) {
+        // date-picker owns its operator dropdown internally for date columns (no external
+        // filter.types dropdown for them) — pick up the confirmed operator from the event.
+        if (event.operator) {
+            this.filterSelected = this.filter.types.find(t => t.value === event.operator) ?? this.filterSelected;
+        } else if (event.operator === null) {
+            // Operator was cleared in the date-picker itself (inline mode's own clear button)
+            this.filterSelected = undefined;
+        }
+
+        this.filter.range = event.range;
+
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            const toDateString = (date: any) => {
+                let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                return `${ye}-${mo}-${da}`;
+            };
             const singleValueOperators = ['=', '!=', '>', '<', '>=', '<='];
             const isSingleDate = singleValueOperators.includes(this.filterSelected?.value);
+            const isStaticInNotIn = ['in', 'not_in'].includes(this.filterSelected?.value) && !event.range;
 
-            const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
-            if (!dates[1]) dates[1] = dates[0];
+            if (isStaticInNotIn) {
+                // Discretely picked dates for a static in/not_in: all of them belong together
+                // under value1 (the backend only ever reads value1 for in/not_in), not split
+                // into a value1/value2 pair that silently drops everything past the second date.
+                const dates = Array.isArray(event.dates) ? event.dates : [event.dates];
+                this.filterValue = { value1: dates.filter(date => date != null).map(toDateString) };
+            } else {
+                const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
+                if (!dates[1]) dates[1] = dates[0];
 
-            let stringRange = [dates[0], dates[1]]
-                .map(date => {
-                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-                    return `${ye}-${mo}-${da}`
-                });
+                let stringRange = [dates[0], dates[1]].map(toDateString);
 
-            this.filter.range = event.range;
-            this.filterValue.value1 = stringRange[0];
-            this.filterValue.value2 = isSingleDate ? null : stringRange[1];
-            this.display.filterButton = false;
+                this.filterValue.value1 = stringRange[0];
+                this.filterValue.value2 = isSingleDate ? null : stringRange[1];
+            }
+        } else {
+            this.filterValue = {};
         }
+
+        this.display.filterButton = event.operator === null ? true : false;
+    }
+
+    /** Label for an already-added filter's dynamic range (e.g. "Avui"), used in the "Filtros activos" list */
+    public getRangeLabelForFilter(rangeValue: string): string {
+        return getDynamicRangeLabel(rangeValue);
     }
 
     closeDialog() {

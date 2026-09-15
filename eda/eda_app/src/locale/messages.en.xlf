@@ -6180,6 +6180,10 @@ OR<ph id="5"/>
   <source>Resumen de filtros</source>
   <target>Filters Summary</target>
 </trans-unit>
+<trans-unit id="filterSummarySingular">
+  <source>Resumen de filtro</source>
+  <target>Filter summary</target>
+</trans-unit>
 <trans-unit id="globalFilterSelectedItemsLabel">
   <source>items seleccionados</source>
   <target>items selected</target>

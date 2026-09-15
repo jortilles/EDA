@@ -27,6 +27,7 @@
             <div class="space-x-2 flex items-center h-max">
               <label i18n="@@autocompleteFilter" [pTooltip]="tooltipAutocomplete" tooltipPosition="top">¿Filtro autocomplete?</label>
               <button type="button" role="switch" [attr.aria-checked]="isAutocompleted"
+                [disabled]="globalFilter.selectedColumn?.column_type === 'date'"
                 (click)="autocompleteFilterCheck(this)"
                 class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
                 [ngClass]="{'bg-[var(--corporate-primary)]': isAutocompleted, 'bg-input': !isAutocompleted}">
@@ -145,14 +146,15 @@
                     [style]="{ width: '100%', height:'100%', alignItems:'center'}" [panelStyle]="{minWidth:'15em'}"
                     [maxSelectedLabels]="1" i18n-defaultLabel="@@defaultValueLabel" defaultLabel="Valor por defecto" [loading]="loading"
                     display="chip" appendTo="body"
-                    (onChange)="onSingleSelectChange()">
+                    (onChange)="onSingleSelectChange(); onSelectedItemsChange($event.value)">
                   </p-multiSelect>
                   } @else {
                   <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect' [options]="columnValues"
                     [(ngModel)]="globalFilter.selectedItems" [virtualScroll]="true" [itemSize]="30"
                     [style]="{ width: '100%', height:'100%', alignItems:'center'}" [panelStyle]="{minWidth:'15em'}"
                     [maxSelectedLabels]="1" i18n-defaultLabel="@@defaultValueLabel" defaultLabel="Valor por defecto" [loading]="loading"
-                    display="chip" appendTo="body">
+                    display="chip" appendTo="body"
+                    (onChange)="onSelectedItemsChange($event.value)">
                   </p-multiSelect>
                   }
                 }@else{
@@ -164,10 +166,12 @@
                 }
               }
               @if (globalFilter.selectedColumn?.column_type === 'date') {
-                <eda-date-picker #myCalendar
+                <date-picker
                   [inject]="datePickerConfigs[globalFilter?.id]"
-                  [autoClear]="true" (onDatesChanges)="processPickerEvent($event)">
-                </eda-date-picker>
+                  [autoClear]="true" (onDatesChanges)="processPickerEvent($event)"
+                  [summaryOperator]="getDateFilterOperatorText()"
+                  [summaryLabel]="getDateFilterValueText()">
+                </date-picker>
               }
             </div>
           </div>

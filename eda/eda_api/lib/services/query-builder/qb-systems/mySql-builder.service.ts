@@ -373,6 +373,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         column.autorelation = f.autorelation;
         column.joins = f.joins;
         column.valueListSource = f.valueListSource;
+        column.filter_codes = f.filter_codes;
         const colname = this.getFilterColname(column);
         if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
@@ -451,7 +452,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     sortedFilters.sort((a: any, b: any) => a.y - b.y); 
 
     // Calculating global filters and they are empty.
-    const nullSortedFilters  =  sortedFilters.filter((f: any) => ((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+    const nullSortedFilters  =  sortedFilters.filter((f: any) => ((f.isGlobal===true) && (f.filter_elements?.length > 0 && f.filter_elements[0]?.value1?.length === 0)));
 
     // If we have empty values in the filters we define a new sortedFilters
     if(nullSortedFilters.length !==0){
@@ -471,7 +472,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       }  )
   
       // Order in the y axis
-      const newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+      const newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal===true) && (f.filter_elements?.length > 0 && f.filter_elements[0]?.value1?.length === 0)));
       newSortedFilters.forEach( (f,i) => f.y=i );
 
       sortedFilters = _.cloneDeep(newSortedFilters);
@@ -479,7 +480,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     // If we have a global filter with only one empty value selected
     filters.forEach(filter => {
-      if(filter.isGlobal && (filter.filter_type === 'null_or_empty') && (filter.filter_elements[0].value1[0]==='emptyString')) {
+      if(filter.isGlobal && (filter.filter_type === 'null_or_empty') && (filter.filter_elements?.length > 0 && filter.filter_elements[0]?.value1?.[0]==='emptyString')) {
         const selectedFilter = sortedFilters.find(sf => sf.filter_id === filter.filter_id);
 
         if(selectedFilter) {
@@ -521,17 +522,30 @@ export class MySqlBuilderService extends QueryBuilderService {
     let stringQuery = '\nwhere ';
 
     // Adding needed permissions if we have some item in the array of permissions with toBeUsed in true
-    if(sqlPermissionsExpresion !== '') stringQuery += `\n${sqlPermissionsExpresion}\nAND\n`; 
+    if(sqlPermissionsExpresion !== '') stringQuery += `\n${sqlPermissionsExpresion}\nAND\n`;
+
+    // false (EDA) -> value-list filters use the description column | true (SinergiaDA) -> use the internal code column
+    const useCodeForFilters = this.useValueListCodeForFilters();
 
     // Recursive function for the necessary nesting according to the AND/OR filter graph.
     function cadenaRecursiva(item: any) {
       // recursive item
       const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_codes, value, valueListSource, sqlOptional, computed_column, SQLexpression } = item;
 
-      ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
+      // filter_table can be a synthetic joined-path id (e.g. "target_table.target_column.source_column",
+      // built in the frontend's global-filters.service.ts onNodeExpand) instead of a real table name —
+      // strip it down the same way the rest of this file does (col.table_id.split('.')[0]).
+      const filterTableName = filter_table?.split('.')[0];
+
+      // false (EDA) -> compare against the raw selected values | true (SinergiaDA) -> compare against the internal codes
+      const codesOrElements = useCodeForFilters ? filter_codes : filter_elements;
+
+      ////////////////////////////////////////////////// filter_type //////////////////////////////////////////////////
       let filter_type_value = '';
       if(filter_type === 'not_in'){
         filter_type_value = 'not in';
+      } else if(filter_type === 'not_between'){
+        filter_type_value = 'not between';
       } else {
         if(filter_type === 'not_like') {
           filter_type_value = 'not like';
@@ -564,34 +578,34 @@ export class MySqlBuilderService extends QueryBuilderService {
           //Value of type text
           if(filter_column_type === 'text'){
             if(filter_type === 'in' || filter_type === 'not_in'){
-              filter_elements_value = filter_elements_value + `(\'${filter_codes[0].value1[0]}\')`;
+              filter_elements_value = filter_elements_value + `(\'${codesOrElements[0].value1[0]}\')`;
             } else {
-              filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_codes[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
+              filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${codesOrElements[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
             }
           } 
 
           // Numeric type value
           if(filter_column_type === 'numeric'){
-            if(filter_type === 'between') {
-              filter_elements_value = filter_elements_value + ` ${Number(filter_codes[0].value1[0])} and ${Number(filter_codes[1].value2[0])}`;
+            if(filter_type === 'between' || filter_type === 'not_between') {
+              filter_elements_value = filter_elements_value + ` ${Number(codesOrElements[0].value1[0])} and ${Number(codesOrElements[1].value2[0])}`;
             } else {
               if(filter_type === 'in' || filter_type === 'not_in') {
-                filter_elements_value = filter_elements_value + `(${filter_codes[0].value1[0]})`;
+                filter_elements_value = filter_elements_value + `(${codesOrElements[0].value1[0]})`;
               } else {
-                filter_elements_value = filter_elements_value + `${filter_codes[0].value1[0]}`;
+                filter_elements_value = filter_elements_value + `${codesOrElements[0].value1[0]}`;
               }
             }
           } 
 
           // Date type value
           if(filter_column_type === 'date'){
-            if(filter_type === 'between'){
-              filter_elements_value = filter_elements_value + ` STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_codes[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
+            if(filter_type === 'between' || filter_type === 'not_between'){
+              filter_elements_value = filter_elements_value + ` STR_TO_DATE(\'${codesOrElements[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${codesOrElements[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
             } else {
               if(filter_type==='in' || filter_type==='not_in') {
-                filter_elements_value = filter_elements_value + `(STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\'))`;
+                filter_elements_value = filter_elements_value + `(STR_TO_DATE(\'${codesOrElements[0].value1[0]}\',\'%Y-%m-%d\'))`;
               } else {
-                filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\')`;
+                filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${codesOrElements[0].value1[0]}\',\'%Y-%m-%d\')`;
               }
             }
           }
@@ -604,29 +618,29 @@ export class MySqlBuilderService extends QueryBuilderService {
           // Text type values
 
           if(filter_column_type === 'text'){
-            filter_codes[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `'${element}'` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
+            codesOrElements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(codesOrElements[0].value1.length-1)? ')': ','}`;
             })
           }
 
           // Numeric type values
           if(filter_column_type === 'numeric'){
-            filter_codes[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `${element}` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
+            codesOrElements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `${element}` + `${index===(codesOrElements[0].value1.length-1)? ')': ','}`;
             })
           }
 
           // Date type values
           if(filter_column_type === 'date'){
-            filter_codes[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `STR_TO_DATE(\'${element}\',\'%Y-%m-%d\')` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
+            codesOrElements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `STR_TO_DATE(\'${element}\',\'%Y-%m-%d\')` + `${index===(codesOrElements[0].value1.length-1)? ')': ','}`;
             })
           }
 
           // Values ​​that do not have a filter_column_type defined
           if(filter_column_type === undefined){
-            filter_codes[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `'${element}'` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
+            codesOrElements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(codesOrElements[0].value1.length-1)? ')': ','}`;
             })
           }
         }
@@ -636,14 +650,18 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       // variable to find filters with valueListSource
       let validador = (valueListSource !== undefined && valueListSource !== null);
-      // Result of the whole string 
+      // SDA CUSTOM - Keep value-list filters on the internal code column when we have codes to compare against (nested AND/OR conditions)
+      const valueListFilterColumn = validador
+        ? ((useCodeForFilters && filter_codes?.length !== undefined && valueListSource.target_id_column) ? valueListSource.target_id_column : valueListSource.target_description_column)
+        : filter_column;
+      // Result of the whole string
 
       let resultado = '';
 
       if(computed_column==='computed') {
         resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} (${SQLexpression}) ${filter_type_value}${filter_elements_value}`;
       } else {
-        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
+        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filterTableName}\`.\`${valueListFilterColumn}\` ${filter_type_value}${filter_elements_value}`;
       }
 
 
@@ -652,7 +670,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         if(computed_column==='computed') {
           resultado = `${resultado} (${SQLexpression}) != '')`;
         } else {
-          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != '')`;
+          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filterTableName}\`.\`${valueListFilterColumn}\` != '')`;
         }
       }
 
@@ -661,7 +679,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         if(computed_column==='computed') {
           resultado = `${resultado} (${SQLexpression}) = '')`;
         } else {
-          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = '')`;
+          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filterTableName}\`.\`${valueListFilterColumn}\` = '')`;
         }
       }
 
@@ -1043,31 +1061,35 @@ export class MySqlBuilderService extends QueryBuilderService {
       column.autorelation = filterObject.autorelation;
       column.joins = filterObject.joins || [];
       column.valueListSource = filterObject.valueListSource;
+      column.filter_codes = filterObject.filter_codes;
       const colname=this.getFilterColname(column);
       const valueListSource = filterObject.valueListSource;
-      
+      // false (EDA) -> compare against the raw selected values | true (SinergiaDA) -> compare against the internal codes
+      const filterValues = this.useValueListCodeForFilters() ? filterObject.filter_codes : filterObject.filter_elements;
+
       switch (this.setFilterType(filterObject.filter_type)) {
         case 0:
           if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
           if (filterObject.filter_type === 'like') {
-            return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+            return `${colname}  ${filterObject.filter_type} '%${filterValues[0].value1}%' `;
           }
-          if (filterObject.filter_type === 'not_like') { 
+          if (filterObject.filter_type === 'not_like') {
             filterObject.filter_type = 'not like'
-            return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
-          }   
-          return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
+            return `${colname}  ${filterObject.filter_type} '%${filterValues[0].value1}%' `;
+          }
+          return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterValues[0].value1, colType)} `;
           // in values
         case 1:
           if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
           if(valueListSource !== undefined && this.queryTODO.queryMode === 'SQL') {
             return `${colname}  ${filterObject.filter_type} (${this.processFilterValueList(filterObject)}) `;
           } else {
-            return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
+            return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterValues[0].value1, colType)}) `;
           }
         case 2:
-          return `${colname}  ${filterObject.filter_type} 
-                      ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
+          if (filterObject.filter_type === 'not_between') { filterObject.filter_type = 'not between' }
+          return `${colname}  ${filterObject.filter_type}
+                      ${this.processFilter(filterValues[0].value1, colType)} and ${this.processFilterEndRange(filterValues[1].value2, colType)}`;
         case 3:
           if(valueListSource !== undefined && this.queryTODO.queryMode === 'SQL') {
             return `${colname}  ${filterObject.filter_type} (${this.processFilterValueList(filterObject)}) `;
@@ -1106,10 +1128,13 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       if (column.autorelation && !column.valueListSource) {
         colname = `\`${column.joins[column.joins.length-1][0]}\`.\`${column.column_name}\``;
+      } else if (this.useValueListCodeForFilters() && column.valueListSource?.target_id_column && column.filter_codes?.length !== undefined) {
+        // SDA CUSTOM - Keep value-list filters on the internal code column when we have codes to compare against
+        colname = `\`${column.valueListSource.target_table}\`.\`${column.valueListSource.target_id_column}\``;
       } else {
         colname = `\`${column.table_id}\`.\`${column.column_name}\`` ;
       }
-      
+
     }else{
       if(column.column_type == 'numeric'){
         if(column.aggregation_type === 'count_distinct') {
@@ -1238,7 +1263,8 @@ public getHavingColname(column: any){
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
-        return `${colname}  ${filterObject.filter_type} 
+        if (filterObject.filter_type === 'not_between') { filterObject.filter_type = 'not between' }
+        return `${colname}  ${filterObject.filter_type}
                     ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
         return `${colname} is not null`;
