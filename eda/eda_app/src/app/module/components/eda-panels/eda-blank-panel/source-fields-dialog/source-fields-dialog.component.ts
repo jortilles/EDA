@@ -34,6 +34,10 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
 
     visible = true;
 
+    // This dialog only ever closes (view-only, no Apply button), so "Cerrar"/"Close" reads
+    // better than eda-dialog2's default "Cancelar"/"Cancel".
+    readonly closeLabel = $localize`:@@cerrarBtn:Cerrar`;
+
     constructor(private fileUtiles: FileUtiles) { }
 
     get header(): string {

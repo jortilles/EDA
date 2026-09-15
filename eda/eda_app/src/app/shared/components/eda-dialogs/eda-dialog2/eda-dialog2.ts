@@ -35,6 +35,9 @@ export abstract class EdaDialog2 {
 
     @Input() showApply: boolean = true;
     @Input() showClose: boolean = true;
+    // Lets a specific dialog override the button label — e.g. a view-only dialog with no
+    // Apply button reads better as "Cerrar"/"Close" than "Cancelar"/"Cancel".
+    @Input() closeLabel: string = $localize`:@@cancelarBtn:Cancelar`;
     @Input() showReset: boolean = false;
     @Input() showDuplicate: boolean = false;
     @Input() showNotStyles: boolean = false;
