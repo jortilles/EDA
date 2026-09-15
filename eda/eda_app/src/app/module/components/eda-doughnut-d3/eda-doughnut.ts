@@ -19,4 +19,7 @@ export class EdaDoughnutD3 {
   chartAnimation?: boolean;
   labelColorMode?: string;
   labelCustomColor?: string;
+  /** per-category media-library images - see category-icons.util.ts */
+  assignedIcons?: any[];
+  useIcons?: boolean;
 }

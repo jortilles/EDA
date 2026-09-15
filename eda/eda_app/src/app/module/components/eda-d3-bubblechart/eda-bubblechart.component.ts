@@ -212,6 +212,10 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     // is off.
     const HOVER_MS = (this.inject.chartAnimation ?? true) ? 150 : 0;
     const HOVER_STROKE_MS = (this.inject.chartAnimation ?? true) ? 200 : 0;
+    // Shared by the circle's own hover-grow and its icon's hover-scale below - the icon's diameter
+    // is set exactly equal to the circle's, so growing it faster than the circle would let it
+    // overrun and hide the stroke ring.
+    const HOVER_GROW_FACTOR = 1.12;
     // Stroke-width growth and label font-size growth on hover are skipped entirely (not just
     // instant) when chartAnimation is off - color darken is left unaffected, still the hover cue
     // left when animation is off.
@@ -297,6 +301,11 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
                       .transition()
                       .duration(HOVER_STROKE_MS)
                       .style("stroke-width", 3);
+
+                  // Grow the bubble itself a touch - same hover "pop" as eda-bar-d3, kept modest
+                  // since collision detection isn't aware of this purely visual radius change.
+                  target.interrupt('hovergrow').transition('hovergrow').duration(HOVER_STROKE_MS)
+                    .attr('r', size(data.value) * HOVER_GROW_FACTOR);
                 }
 
                 // Swap the gradient url for its own flat base color first, instantly (no
@@ -310,6 +319,14 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
                     .interrupt('grow').transition('grow').duration(HOVER_MS)
                     .attr('font-size', `${textSize(data.value) * 1.3}px`)
                     .style('font-weight', 'bold');
+
+                  // Grow this bubble's own icon around its own centre - same treatment as the
+                  // per-category icons in every other chart that has them (doughnut, treemap...).
+                  // Only the image's own transform (scale) is touched here - its wrap <g> owns the
+                  // translate and is left alone, since the simulation keeps moving it every tick.
+                  d3.select(d.currentTarget.parentNode).select('image.eda-bubblechart-icon')
+                    .interrupt('iconhover').transition('iconhover').duration(HOVER_MS)
+                    .attr('transform', `scale(${HOVER_GROW_FACTOR})`);
                 }
 
                 // Create a label that contains the data for each bubble
@@ -332,6 +349,9 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
             .transition()
             .duration(HOVER_STROKE_MS)
             .style("stroke-width", 1);
+
+          target.interrupt('hovergrow').transition('hovergrow').duration(HOVER_STROKE_MS)
+            .attr('r', size(data.value));
         }
 
         target.interrupt('color').transition('color').duration(HOVER_MS)
@@ -343,6 +363,10 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
             .interrupt('grow').transition('grow').duration(HOVER_MS)
             .attr('font-size', `${textSize(data.value)}px`)
             .style('font-weight', null);
+
+          d3.select(d.currentTarget.parentNode).select('image.eda-bubblechart-icon')
+            .interrupt('iconhover').transition('iconhover').duration(HOVER_MS)
+            .attr('transform', 'scale(1)');
         }
 
         this.tooltipService.hide();
@@ -397,11 +421,14 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.9 : null)
       .text(d => d)// Load the text into each tspan
 
-    // Per-category icon (assignedIcons), replacing the name inside bubbles that have one - width/
-    // height are fixed at creation (only position moves with the simulation, the radius itself
-    // never changes between ticks), clipped to a circle so it fills the bubble the same way a
-    // country flag would.
-    const icon = elemEnter.append('image')
+    // Per-category icon (assignedIcons), replacing the name inside bubbles that have one. Position
+    // and hover-grow are split across two elements on purpose: the simulation never fully settles
+    // (alphaTarget(.03) below keeps it ticking forever), so the outer <g> below absorbs that
+    // continuous per-tick translate, while the <image>'s own transform is free for the hover-scale
+    // transition to own - sharing one transform attr between "tick" and "hover" caused them to race
+    // every frame (whichever wrote last that frame won, which read as the icon randomly not growing).
+    const iconWrap = elemEnter.append('g').attr('class', 'eda-bubblechart-icon-wrap');
+    const icon = iconWrap.append('image')
       .attr('class', 'eda-bubblechart-icon')
       .attr('clip-path', `url(#${iconClipId})`)
       // 'none' = stretch to cover the whole bubble - 'slice' would crop a non-square logo, 'meet'
@@ -410,6 +437,8 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       .style('pointer-events', 'none')
       .style('opacity', animateEntrance ? 0 : 1)
       .style('display', (d: any) => this.leafIcon(d) ? null : 'none')
+      .attr('x', (d: any) => -size(d.value))
+      .attr('y', (d: any) => -size(d.value))
       .attr('width', (d: any) => size(d.value) * 2)
       .attr('height', (d: any) => size(d.value) * 2)
       .attr('href', (d: any) => this.resolveIconUrl(this.leafIcon(d)))
@@ -417,6 +446,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       // glyph - hide it instead so a bad icon degrades to "no icon" (the name stays hidden too,
       // same trade-off eda-race-bar.component.ts makes).
       .on('error', function () { d3.select(this).style('display', 'none'); });
+    iconWrap.attr('transform', (d: any) => `translate(${d.x},${d.y})`);
 
     if (animateEntrance) {
       node.transition().delay((d: any, i: number) => i * 15).duration(400).ease(d3.easeCubicOut).attr('r', (d: any) => size(d.value));
@@ -456,11 +486,9 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
           .style("text-anchor", "middle")// Center the text inside the circle
           .attr("y", d => d.y)
 
-        // Top-left corner of the square bounding the bubble's own circle - width/height (2x radius)
-        // were already fixed at creation, only position tracks the simulation like the circle does.
-        icon
-          .attr("x", (d: any) => d.x - size(d.value))
-          .attr("y", (d: any) => d.y - size(d.value))
+        // Position tracks the simulation the same way the circle does - only the wrap's translate
+        // moves each tick, leaving the <image>'s own transform free for the hover-scale transition.
+        iconWrap.attr('transform', (d: any) => `translate(${d.x},${d.y})`)
       });
 
     // What happens when a circle is dragged?
