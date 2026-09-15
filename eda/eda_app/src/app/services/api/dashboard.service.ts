@@ -66,6 +66,10 @@ export class DashboardService extends ApiService {
         return this.post(`${this.route}source-fields-query`, body);
     }
 
+    executeGroupedSubtotalsQuery(body): Observable<any> {
+        return this.post(`${this.route}grouped-subtotals-query`, body);
+    }
+
     cleanCache(body): Observable<any> {
         return this.post(`${this.route}clean-refresh`, body);
     }
