@@ -60,13 +60,8 @@ export class TableDialogComponent{
 
   /** Ordered column names to nest grouped subtotals by (e.g. [pais, ciudad]) — see
    *  TableConfig.groupBySubtotalColumns. Purely a UI/config concern here: this only builds
-   *  and persists the selection, the actual subtotal rows aren't rendered yet. Numeric column
-   *  + aggregation picking is deferred to a later step — for now the config always totals
-   *  whatever TableConfig.groupBySubtotalNumericColumn/Aggregation last had (or their
-   *  defaults), same as any other TableConfig field this dialog doesn't yet expose UI for. */
+   *  and persists the selection, the actual subtotal rows aren't rendered yet. */
   public groupBySubtotalColumns: string[] = [];
-  public groupBySubtotalNumericColumn: string = '';
-  public groupBySubtotalAggregation: string = 'sum';
   /** Whether the picker section is expanded — independent of whether any column is chosen
    *  yet, so turning it on doesn't need a column selected first. */
   public groupedSubtotalsOpen: boolean = false;
@@ -142,8 +137,6 @@ export class TableDialogComponent{
       this.bandingColor = config.bandingColor || DEFAULT_TABLE_BANDING_COLOR;
       this.colorEnabled = config.colorEnabled !== false;
       this.groupBySubtotalColumns = config.groupBySubtotalColumns || [];
-      this.groupBySubtotalNumericColumn = config.groupBySubtotalNumericColumn || '';
-      this.groupBySubtotalAggregation = config.groupBySubtotalAggregation || 'sum';
       this.groupedSubtotalsOpen = this.groupBySubtotalColumns.length > 0;
     } else {
       this.panelChartConfig.config = new ChartConfig(
@@ -396,13 +389,23 @@ export class TableDialogComponent{
     return (typeof f.display_name === 'string' ? f.display_name : f.display_name?.default) || f.column_name;
   }
 
-  get queryNumericColumns(): QueryColumn[] {
+  /** aggregation_type shows up as either an already-flattened plain string or the full
+   *  [{value, selected}, ...] options array, same split as display_name — the panel's SAVED
+   *  content (below) has it flattened in practice, but this handles both regardless. */
+  private static resolveAggregation(f: any): string {
+    if (typeof f.aggregation_type === 'string') return f.aggregation_type;
+    return f.aggregation_type?.find((a: any) => a.selected)?.value || 'none';
+  }
+
+  private get panelQueryFields(): any[] {
     const panelID = this.controller?.params?.panelId;
     if (!panelID || !this.dashboard) return [];
     const dashboardPanel = this.dashboard.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
-    const fields: any[] = dashboardPanel?.panel?.content?.query?.query?.fields;
-    if (!fields) return [];
-    return fields
+    return dashboardPanel?.panel?.content?.query?.query?.fields || [];
+  }
+
+  get queryNumericColumns(): QueryColumn[] {
+    return this.panelQueryFields
       .filter((f: any) => f.column_type === 'numeric')
       .map((f: any) => ({
         column_name: f.column_name,
@@ -415,12 +418,7 @@ export class TableDialogComponent{
    *  as separate columns via col.format, so there's no special casing needed here: whichever
    *  granularity the user added to the table, they group by it the same way as any text column. */
   get queryGroupableColumns(): QueryColumn[] {
-    const panelID = this.controller?.params?.panelId;
-    if (!panelID || !this.dashboard) return [];
-    const dashboardPanel = this.dashboard.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
-    const fields: any[] = dashboardPanel?.panel?.content?.query?.query?.fields;
-    if (!fields) return [];
-    return fields
+    return this.panelQueryFields
       .filter((f: any) => f.column_type !== 'numeric')
       .map((f: any) => ({
         column_name: f.column_name,
@@ -429,11 +427,47 @@ export class TableDialogComponent{
       }));
   }
 
+  /**
+   * Both derived automatically from the table's own query — not user-picked. The table
+   * already has a numeric column configured with an aggregation (that's how its own cells
+   * currently total), and that's the same aggregation "subtotales agrupados" should use, so
+   * the subtotal rows match what the table already shows instead of picking a different one.
+   * Scope for now: the FIRST numeric field found — a table with several numeric columns still
+   * only totals one, same restriction as before, just automatic instead of a dropdown.
+   */
+  get groupBySubtotalNumericColumn(): string {
+    const numericField = this.panelQueryFields.find((f: any) => f.column_type === 'numeric');
+    return numericField ? TableDialogComponent.resolveDisplayName(numericField) : '';
+  }
+
+  get groupBySubtotalAggregation(): string {
+    const numericField = this.panelQueryFields.find((f: any) => f.column_type === 'numeric');
+    if (!numericField) return 'sum';
+    const agg = TableDialogComponent.resolveAggregation(numericField);
+    return agg === 'none' ? 'sum' : agg;
+  }
+
   toggleGroupedSubtotals(): void {
     this.groupedSubtotalsOpen = !this.groupedSubtotalsOpen;
     if (!this.groupedSubtotalsOpen) {
       this.groupBySubtotalColumns = [];
     }
+    this.refreshGroupedSubtotals();
+  }
+
+  /**
+   * Live preview: panel-chart's applyGroupedSubtotals() takes a TableConfig-shaped object and
+   * reads only these 3 fields from it — it doesn't need the persisted TableConfig instance
+   * (that one is only rebuilt at Confirm, in saveChartConfig(); col_totals/etc. only land in
+   * `currentConfig` — the live inject model — on interaction, not in the saved config, and
+   * this follows the same split).
+   */
+  refreshGroupedSubtotals(): void {
+    this.myPanelChartComponent.applyGroupedSubtotals({
+      groupBySubtotalColumns: this.groupBySubtotalColumns,
+      groupBySubtotalNumericColumn: this.groupBySubtotalNumericColumn,
+      groupBySubtotalAggregation: this.groupBySubtotalAggregation,
+    } as TableConfig);
   }
 
   setPredictionCol() {

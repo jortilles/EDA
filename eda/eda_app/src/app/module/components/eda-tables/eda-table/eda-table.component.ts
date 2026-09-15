@@ -57,6 +57,11 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
     public colors = {};
     public styles = {};
 
+    /** Must match GROUPED_SUBTOTAL_LEVEL_KEY in eda-blank-panel/panel-utils/grouped-subtotals-utils.ts
+     *  — duplicated as a literal (not imported) so this shared/generic table component doesn't
+     *  take on a dependency toward an eda-blank-panel-specific util. */
+    public readonly groupedSubtotalKey = '__groupedSubtotalLevel';
+
     constructor(
         private elementRef: ElementRef,
         private styleService: StyleService,

@@ -76,6 +76,21 @@
         <!-- COLUMN CONTENT -->
 
         <ng-template pTemplate="body" let-rowData let-columns="columns">
+            @if (rowData[groupedSubtotalKey] !== undefined) {
+                <!-- Grouped subtotal row (see grouped-subtotals-utils.ts) — a synthetic row
+                     spliced into inject.value, not a real query result, so it skips the
+                     per-column-type switch below (no nav buttons, tooltips, HTML rendering)
+                     and just shows the plain "X Total" / aggregated-value text, bold. -->
+                <tr>
+                    <ng-container *ngFor="let col of inject.cols">
+                        @if (col.visible === true) {
+                            <td [width]="col.width" [class]="col.type === 'EdaColumnNumber' ? 'sub-total-row' : 'sub-total-row-header'">
+                                {{ lodash.get(rowData, col.field) }}
+                            </td>
+                        }
+                    </ng-container>
+                </tr>
+            } @else {
             <tr>
                 <ng-container *ngFor="let col of inject.cols">
                     @if(col.visible===true){
@@ -240,6 +255,7 @@
                     }
                 </ng-container>
             </tr>
+            }
         </ng-template>
 
         <ng-template pTemplate="footer" id="totalsFooter" >

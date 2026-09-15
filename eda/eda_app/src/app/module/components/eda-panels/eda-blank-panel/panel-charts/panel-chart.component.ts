@@ -23,6 +23,7 @@ import { EdaColumnText } from '@eda/components/eda-tables/eda-table/eda-columns/
 import { EdaColumnHtml } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-html';
 import { EdaTableModel } from '@eda/components/eda-tables/eda-table/eda-table.model';
 import { EdaCrosstableModel } from '@eda/components/eda-tables/eda-crosstable/eda-crosstable.model';
+import { GroupedSubtotalsUtils } from '../panel-utils/grouped-subtotals-utils';
 import { KpiConfig } from './chart-configuration-models/kpi-config';
 import { DynamicTextConfig } from './chart-configuration-models/dynamicText-config';
 import { EdaMapComponent } from '@eda/components/eda-map/eda-map.component';
@@ -391,6 +392,88 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.colorEnabled = config.colorEnabled !== false;
         this.componentRef.instance.applyBandingColors(config.headerColor, config.bandingColor, config.colorEnabled !== false);
         this.configUpdated.emit(this.currentConfig);;
+        this.applyGroupedSubtotals(config);
+    }
+
+    /**
+     * Plain table only (fetchGroupedSubtotals is undefined for every other chart type/
+     * crosstable, so this is a no-op there). Fetches every level via the closure
+     * EdaBlankPanelComponent built (this component never touches currentQuery/services
+     * itself) and merges the result into inject.value once it resolves. Public so table-dialog
+     * can call it directly on every picker interaction for a live preview — the same way
+     * colTotals()/colSubTotals() call inject.checkTotals(null) directly — since this needs an
+     * async fetch checkTotals() was never built for.
+     *
+     * IMPORTANT: EdaTableModel.checkTotals() (run on every page turn — see eda-table.base.ts's
+     * onPage()) calls noRepeatedRows(), which — with no "ocultar repetidos"/percentage flags
+     * active, the normal case — unconditionally does `ctx.replaceRows(cloneDeep(origValues))`.
+     * That silently wiped every subtotal row back out on the very next page turn, since nothing
+     * re-ran the merge afterward. Fixed by keeping inject.origValues itself pointed at the
+     * MERGED (detail + subtotal) rows once merged, so that reset lands on the right data — the
+     * TRUE clean rows (needed as the merge input, and to restore when subtotals are turned
+     * back off) are kept separately on inject.__groupedSubtotalsCleanRows instead, captured
+     * once and left untouched.
+     */
+    public applyGroupedSubtotals(config: TableConfig): void {
+        const inject: any = this.componentRef?.instance?.inject;
+        if (!inject || inject instanceof EdaCrosstableModel) return;
+
+        const groupByColumns = config.groupBySubtotalColumns;
+        if (!groupByColumns?.length || !this.props.fetchGroupedSubtotals) {
+            // Toggled off (or nothing selected yet) — restore the true clean rows instead of
+            // leaving stale subtotal rows (or a stale merged origValues) on screen.
+            if (inject.__groupedSubtotalsCleanRows) {
+                inject.value = inject.__groupedSubtotalsCleanRows;
+                inject.origValues = inject.__groupedSubtotalsCleanRows;
+                inject.__groupedSubtotalsCleanRows = null;
+            }
+            return;
+        }
+
+        // "El grupo manda": a column-header sort re-orders inject.value by VALUE across the
+        // WHOLE array (p-table's [customSort] + eda-table's customSort()), which has no idea
+        // subtotal rows exist — it happily scatters a "Classic Cars Total" row wherever its
+        // number falls in the new order, away from the end of its group. Clearing the sort here
+        // (only when subtotals are turned ON, not when turning them off) keeps the grouped
+        // order — the one thing this feature is actually for — as something PrimeNG won't undo.
+        inject.sortedColumn = { field: null, order: null };
+
+        // Captured once — every subsequent call (picker interaction, page-turn-triggered
+        // re-merge) merges from this same clean baseline, never from whatever inject.value/
+        // origValues currently hold (which may already be a previous merge result).
+        if (!inject.__groupedSubtotalsCleanRows) {
+            inject.__groupedSubtotalsCleanRows = inject.origValues;
+        }
+        const cleanRows = inject.__groupedSubtotalsCleanRows;
+
+        // EdaColumn.field is keyed by the response label (display_name), not column_name — see
+        // initializeTable(): tableColumns[i].field is built by matching this.props.query[i]
+        // positionally against the query response labels. Keying this map by display_name
+        // matches the picker/fetch side, which also identifies columns by display_name — the
+        // only thing that's actually unique when the same column is added twice at different
+        // date granularities (e.g. "Order date" / "Order date mes").
+        const displayNameToField: Record<string, string> = {};
+        this.props.query.forEach((col: any, i: number) => {
+            const edaCol = inject.cols[i];
+            const displayName = col.display_name?.default ?? col.display_name;
+            if (edaCol && displayName) displayNameToField[displayName] = edaCol.field;
+        });
+
+        this.props.fetchGroupedSubtotals(config).then(levels => {
+            // The base render may be gone by the time this resolves (panel re-rendered,
+            // dialog closed) — bail rather than writing into a stale/detached model.
+            if (this.componentRef?.instance?.inject !== inject) return;
+            const merged = GroupedSubtotalsUtils.mergeRows(
+                cleanRows,
+                inject.cols.map((c: any) => c.field),
+                displayNameToField,
+                groupByColumns,
+                config.groupBySubtotalNumericColumn,
+                levels
+            );
+            inject.value = merged;
+            inject.origValues = merged;
+        }).catch(err => console.error('No se pudieron cargar los subtotales agrupados', err));
     }
 
     /** Render knob */

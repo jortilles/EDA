@@ -1,6 +1,8 @@
 import { DashboardStyles } from '@eda/services/service.index';
 import { LinkedDashboardProps } from '../link-dashboards/link-dashboard-props';
 import { ChartConfig } from './chart-configuration-models/chart-config';
+import { GroupedSubtotalLevel } from '../panel-utils/grouped-subtotals-utils';
+import { TableConfig } from './chart-configuration-models/table-config';
 
 
 export class PanelChart {
@@ -23,6 +25,15 @@ export class PanelChart {
     childFieldMap: {[columnName: string]: string};
     navColumnSubstitution: {[originalName: string]: string};
   };
+  /** Closure built by EdaBlankPanelComponent (the only place with currentQuery/dashboardService
+   *  access) — panel-chart just calls it after rendering the base table and merges the result
+   *  in, with zero knowledge of how grouped subtotals are actually fetched. Takes the CURRENT
+   *  TableConfig as a parameter (not read from a closure-captured reference) so it always
+   *  fetches the exact same groupByColumns/numericColumn the caller is about to merge with —
+   *  the earlier design closed over the PERSISTED config instead, so a live picker change (add
+   *  a 2nd grouping column) fetched stale 1-level data while the merge expected 2 levels.
+   *  Undefined for every chart type except table. */
+  public fetchGroupedSubtotals?: (config: TableConfig) => Promise<GroupedSubtotalLevel[]>;
   constructor(init?: Partial<PanelChart>) {
     Object.assign(this, init);
   }

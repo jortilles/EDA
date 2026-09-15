@@ -60,6 +60,7 @@ import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-
 // Panel Utils
 import { TableUtils } from './panel-utils/tables-utils';
 import { QueryUtils } from './panel-utils/query-utils';
+import { GroupedSubtotalsUtils } from './panel-utils/grouped-subtotals-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils, CUSTOM_CHART_CONFIG_FIELDS, readCustomFields } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
@@ -855,6 +856,19 @@ public tableNodeExpand(event: any): void {
             linkedDashboardProps: this.panel.linkedDashboardProps,
             predictionConfig: this.panel.content?.query?.query?.predictionConfig,
             childNavConfig: NavigationUtils.hasNavigation(this) ? this.computeChildNavConfig() : { parentFields: [], childFieldMap: {}, navColumnSubstitution: {} },
+            // Takes the config the caller is about to merge with, instead of reading
+            // chartConfig.getConfig() itself — that closure-captured reference is the
+            // PERSISTED config, which panel-chart's live-preview callers (table-dialog's
+            // picker, before Confirm) don't update; fetching against it instead of the config
+            // actually being merged is what left picker changes fetching stale data.
+            fetchGroupedSubtotals: type === 'table' ? (liveConfig: TableConfig) => {
+                return GroupedSubtotalsUtils.fetchLevels(
+                    this,
+                    liveConfig.groupBySubtotalColumns || [],
+                    liveConfig.groupBySubtotalNumericColumn,
+                    liveConfig.groupBySubtotalAggregation || 'sum'
+                );
+            } : undefined,
         });
     }
 
