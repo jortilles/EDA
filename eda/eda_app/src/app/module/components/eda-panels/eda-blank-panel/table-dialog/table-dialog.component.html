@@ -58,67 +58,30 @@
 
         <!-- Grouped subtotals (eda-table only for now) -->
         @if (chartType === 'table') {
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between" [class.opacity-50]="queryNumericColumns.length === 0">
             <label class="text-base font-medium text-gray-700">{{ groupedSubtotalsTitle }}</label>
             <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" [checked]="groupedSubtotalsOpen" (change)="toggleGroupedSubtotals()" class="sr-only peer">
+              <input type="checkbox" [checked]="groupedSubtotalsOpen" [disabled]="queryNumericColumns.length === 0"
+                (change)="toggleGroupedSubtotals()" class="sr-only peer">
               <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle"></div>
             </label>
           </div>
 
           @if (groupedSubtotalsOpen) {
-            <div class="rounded-lg border border-dashed border-gray-200 bg-slate-50 p-3 space-y-3">
-
-              <div class="space-y-1.5">
-                <span class="block text-xs font-semibold uppercase tracking-wide text-gray-500">{{ groupedSubtotalsGroupByLabel }}</span>
-                <div class="flex flex-wrap gap-1.5">
-                  @for (colName of groupBySubtotalColumns; track colName; let i = $index) {
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-white border border-gray-200 pl-2.5 pr-1.5 py-1 text-xs font-medium text-gray-700">
-                      <span class="inline-flex items-center justify-center w-4 h-4 rounded-full text-white text-[10px] font-bold"
-                        [style.background-color]="'var(--corporate-primary)'">{{ i + 1 }}</span>
-                      {{ colName }}
-                      <button type="button" (click)="removeGroupColumn(i)" class="text-gray-400 hover:text-gray-700 leading-none">
-                        <i class="pi pi-times text-[10px]"></i>
-                      </button>
-                    </span>
-                  }
-                  @if (groupBySubtotalColumns.length === 0) {
-                    <span class="text-xs text-gray-400 py-1" i18n="@@groupedSubtotalsEmpty">Ninguna columna elegida todavía</span>
-                  }
-                </div>
-                <select class="w-full rounded-lg border border-gray-200 px-2.5 py-2 text-sm text-gray-700 bg-white"
-                  [disabled]="availableGroupColumns.length === 0"
-                  (change)="addGroupColumn($any($event.target).value); $any($event.target).value = ''">
-                  <option value="">{{ groupedSubtotalsAddPlaceholder }}</option>
-                  @for (col of availableGroupColumns; track col.display_name) {
-                    <option [value]="col.display_name">{{ col.display_name }}</option>
-                  }
-                </select>
-              </div>
-
-              <div class="space-y-1.5">
-                <span class="block text-xs font-semibold uppercase tracking-wide text-gray-500">{{ groupedSubtotalsNumericLabel }}</span>
-                <select class="w-full rounded-lg border border-gray-200 px-2.5 py-2 text-sm text-gray-700 bg-white"
-                  [(ngModel)]="groupBySubtotalNumericColumn">
-                  @for (col of queryNumericColumns; track col.display_name) {
-                    <option [value]="col.display_name">{{ col.display_name }}</option>
-                  }
-                </select>
-              </div>
-
-              <div class="space-y-1.5">
-                <span class="block text-xs font-semibold uppercase tracking-wide text-gray-500">{{ groupedSubtotalsAggLabel }}</span>
-                <div class="flex w-full rounded-lg border border-gray-200 overflow-hidden text-xs font-medium">
-                  @for (agg of [{v:'sum',l:aggSumLabel},{v:'avg',l:aggAvgLabel},{v:'min',l:aggMinLabel},{v:'max',l:aggMaxLabel}]; track agg.v) {
-                    <button type="button" (click)="setGroupAggregation(agg.v)"
-                      class="flex-1 px-1.5 py-2 text-center transition-colors border-r border-gray-200 last:border-r-0"
-                      [style.background-color]="groupBySubtotalAggregation === agg.v ? 'var(--corporate-primary)' : ''"
-                      [style.color]="groupBySubtotalAggregation === agg.v ? 'white' : ''">{{ agg.l }}</button>
-                  }
-                </div>
-              </div>
-
-              <p class="text-xs text-gray-400 leading-relaxed" i18n="@@groupedSubtotalsHint">Cada subtotal se pide a la base de datos — nunca se recalcula sumando lo que ya está en pantalla.</p>
+            <div class="space-y-1.5">
+              <span class="block text-xs font-semibold uppercase tracking-wide text-gray-500">{{ groupedSubtotalsGroupByLabel }}</span>
+              <p-multiSelect
+                [options]="queryGroupableColumns"
+                optionLabel="display_name"
+                optionValue="display_name"
+                [(ngModel)]="groupBySubtotalColumns"
+                [filter]="true"
+                i18n-filterPlaceHolder="@@groupedSubtotalsSearchPlaceholder" filterPlaceHolder="Buscar..."
+                i18n-defaultLabel="@@groupedSubtotalsAddPlaceholder" defaultLabel="Seleccionar columnas..."
+                [showToggleAll]="false"
+                styleClass="w-full"
+                appendTo="body">
+              </p-multiSelect>
             </div>
           }
         }

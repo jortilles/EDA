@@ -17,13 +17,14 @@ import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../pre
 import { QueryUtils } from '../panel-utils/query-utils';
 import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_default';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
   standalone: true,
   selector: 'app-table-dialog',
   templateUrl: './table-dialog.component.html',
   styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css'],
-  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent, PredictionDialogComponent, ColorPickerModule]
+  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent, PredictionDialogComponent, ColorPickerModule, MultiSelectModule]
 })
 
 export class TableDialogComponent{
@@ -59,7 +60,10 @@ export class TableDialogComponent{
 
   /** Ordered column names to nest grouped subtotals by (e.g. [pais, ciudad]) — see
    *  TableConfig.groupBySubtotalColumns. Purely a UI/config concern here: this only builds
-   *  and persists the selection, the actual subtotal rows aren't rendered yet. */
+   *  and persists the selection, the actual subtotal rows aren't rendered yet. Numeric column
+   *  + aggregation picking is deferred to a later step — for now the config always totals
+   *  whatever TableConfig.groupBySubtotalNumericColumn/Aggregation last had (or their
+   *  defaults), same as any other TableConfig field this dialog doesn't yet expose UI for. */
   public groupBySubtotalColumns: string[] = [];
   public groupBySubtotalNumericColumn: string = '';
   public groupBySubtotalAggregation: string = 'sum';
@@ -68,14 +72,7 @@ export class TableDialogComponent{
   public groupedSubtotalsOpen: boolean = false;
 
   public groupedSubtotalsTitle: string = $localize`:@@groupedSubtotalsTitle:Subtotales agrupados`;
-  public groupedSubtotalsAddPlaceholder: string = $localize`:@@groupedSubtotalsAddPlaceholder:+ Añadir columna…`;
   public groupedSubtotalsGroupByLabel: string = $localize`:@@groupedSubtotalsGroupByLabel:Agrupar por (en orden)`;
-  public groupedSubtotalsNumericLabel: string = $localize`:@@groupedSubtotalsNumericLabel:Columna a totalizar`;
-  public groupedSubtotalsAggLabel: string = $localize`:@@groupedSubtotalsAggLabel:Tipo de cálculo`;
-  public aggSumLabel: string = $localize`:@@aggSumLabel:Suma`;
-  public aggAvgLabel: string = $localize`:@@aggAvgLabel:Promedio`;
-  public aggMinLabel: string = $localize`:@@aggMinLabel:Mínimo`;
-  public aggMaxLabel: string = $localize`:@@aggMaxLabel:Máximo`;
 
   /**Strings */
   public addTotals: string = $localize`:@@addTotals:Totales`;
@@ -389,6 +386,16 @@ export class TableDialogComponent{
     this.setItems(); // This is where color modification is requested
   }
 
+  /** display_name shows up as either a plain string or the {default, localized} i18n object
+   *  depending on the source — this panel's SAVED content (read below) has it flattened to a
+   *  string in practice, so a naive `.default` access silently falls through to column_name
+   *  (which breaks grouping when the same column is added twice at different date
+   *  granularities, e.g. "Order date" / "Order date mes"). Handling both shapes here avoids
+   *  that regardless of which shape this particular field happens to be in. */
+  private static resolveDisplayName(f: any): string {
+    return (typeof f.display_name === 'string' ? f.display_name : f.display_name?.default) || f.column_name;
+  }
+
   get queryNumericColumns(): QueryColumn[] {
     const panelID = this.controller?.params?.panelId;
     if (!panelID || !this.dashboard) return [];
@@ -400,7 +407,7 @@ export class TableDialogComponent{
       .map((f: any) => ({
         column_name: f.column_name,
         table_id: f.table_id,
-        display_name: f.display_name?.default || f.column_name
+        display_name: TableDialogComponent.resolveDisplayName(f)
       }));
   }
 
@@ -418,16 +425,8 @@ export class TableDialogComponent{
       .map((f: any) => ({
         column_name: f.column_name,
         table_id: f.table_id,
-        display_name: f.display_name?.default || f.column_name
+        display_name: TableDialogComponent.resolveDisplayName(f)
       }));
-  }
-
-  // Identified by display_name, not column_name: the same underlying column can be added to a
-  // table twice at different date granularities ("Order date" / "Order date mes" are both
-  // column_name 'orderdate') — display_name is what's actually unique per visible column, and
-  // it's what the backend's grouped-subtotals endpoint resolves against too.
-  get availableGroupColumns(): QueryColumn[] {
-    return this.queryGroupableColumns.filter(c => !this.groupBySubtotalColumns.includes(c.display_name));
   }
 
   toggleGroupedSubtotals(): void {
@@ -435,22 +434,6 @@ export class TableDialogComponent{
     if (!this.groupedSubtotalsOpen) {
       this.groupBySubtotalColumns = [];
     }
-  }
-
-  addGroupColumn(displayName: string): void {
-    if (!displayName || this.groupBySubtotalColumns.includes(displayName)) return;
-    this.groupBySubtotalColumns = [...this.groupBySubtotalColumns, displayName];
-    if (!this.groupBySubtotalNumericColumn && this.queryNumericColumns.length > 0) {
-      this.groupBySubtotalNumericColumn = this.queryNumericColumns[0].display_name;
-    }
-  }
-
-  removeGroupColumn(index: number): void {
-    this.groupBySubtotalColumns = this.groupBySubtotalColumns.filter((_, i) => i !== index);
-  }
-
-  setGroupAggregation(agg: string): void {
-    this.groupBySubtotalAggregation = agg;
   }
 
   setPredictionCol() {
