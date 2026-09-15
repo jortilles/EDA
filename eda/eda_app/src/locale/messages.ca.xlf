@@ -7935,6 +7935,39 @@ Salutacions.</target>
         <source>Iconos asignados por coincidencia de nombre</source>
         <target>Icones assignades per coincidencia de nom</target>
       </trans-unit>
+
+<trans-unit id="panelOptionsShowSourceFields">
+<source>Mostrar campos de origen</source>
+<target>Mostrar camps d'origen</target>
+</trans-unit>
+<trans-unit id="sourceFieldsGlobalFilterPlaceholder">
+<source>Buscar en todos los campos</source>
+<target>Cercar a tots els camps</target>
+</trans-unit>
+<trans-unit id="sourceFieldsViewQueryTooltip">
+<source>Ver consulta SQL</source>
+<target>Veure consulta SQL</target>
+</trans-unit>
+<trans-unit id="sourceFieldsRestoreColumn">
+<source>Restaurar columna</source>
+<target>Restaurar columna</target>
+</trans-unit>
+<trans-unit id="sourceFieldsFilterPlaceholder">
+<source>Buscar</source>
+<target>Cercar</target>
+</trans-unit>
+<trans-unit id="sourceFieldsExportExcel">
+<source>Exportar a Excel</source>
+<target>Exportar a Excel</target>
+</trans-unit>
+<trans-unit id="sourceFieldsCopyQuery">
+<source>Copiar</source>
+<target>Copiar</target>
+</trans-unit>
+<trans-unit id="sourceFieldsCopyQueryDone">
+<source>Copiado</source>
+<target>Copiat</target>
+</trans-unit>
 </body>
   </file>
 </xliff>

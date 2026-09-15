@@ -7904,6 +7904,39 @@ Cordialement.</target>
         <target>Icônes assignées par correspondance de nom</target>
       </trans-unit>
 
+<trans-unit id="panelOptionsShowSourceFields">
+<source>Mostrar campos de origen</source>
+<target>Afficher les champs source</target>
+</trans-unit>
+<trans-unit id="sourceFieldsGlobalFilterPlaceholder">
+<source>Buscar en todos los campos</source>
+<target>Rechercher dans tous les champs</target>
+</trans-unit>
+<trans-unit id="sourceFieldsViewQueryTooltip">
+<source>Ver consulta SQL</source>
+<target>Afficher la requête SQL</target>
+</trans-unit>
+<trans-unit id="sourceFieldsRestoreColumn">
+<source>Restaurar columna</source>
+<target>Restaurer la colonne</target>
+</trans-unit>
+<trans-unit id="sourceFieldsFilterPlaceholder">
+<source>Buscar</source>
+<target>Rechercher</target>
+</trans-unit>
+<trans-unit id="sourceFieldsExportExcel">
+<source>Exportar a Excel</source>
+<target>Exporter vers Excel</target>
+</trans-unit>
+<trans-unit id="sourceFieldsCopyQuery">
+<source>Copiar</source>
+<target>Copier</target>
+</trans-unit>
+<trans-unit id="sourceFieldsCopyQueryDone">
+<source>Copiado</source>
+<target>Copié</target>
+</trans-unit>
+
 </body>
   </file>
 </xliff>

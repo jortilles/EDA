@@ -7629,6 +7629,39 @@ Best regards.</target>
         <target>Icons assigned by name match</target>
       </trans-unit>
 
+<trans-unit id="panelOptionsShowSourceFields">
+<source>Mostrar campos de origen</source>
+<target>Show source fields</target>
+</trans-unit>
+<trans-unit id="sourceFieldsGlobalFilterPlaceholder">
+<source>Buscar en todos los campos</source>
+<target>Search in all fields</target>
+</trans-unit>
+<trans-unit id="sourceFieldsViewQueryTooltip">
+<source>Ver consulta SQL</source>
+<target>View SQL query</target>
+</trans-unit>
+<trans-unit id="sourceFieldsRestoreColumn">
+<source>Restaurar columna</source>
+<target>Restore column</target>
+</trans-unit>
+<trans-unit id="sourceFieldsFilterPlaceholder">
+<source>Buscar</source>
+<target>Search</target>
+</trans-unit>
+<trans-unit id="sourceFieldsExportExcel">
+<source>Exportar a Excel</source>
+<target>Export to Excel</target>
+</trans-unit>
+<trans-unit id="sourceFieldsCopyQuery">
+<source>Copiar</source>
+<target>Copy</target>
+</trans-unit>
+<trans-unit id="sourceFieldsCopyQueryDone">
+<source>Copiado</source>
+<target>Copied</target>
+</trans-unit>
+
 </body>
 </file>
 </xliff>
