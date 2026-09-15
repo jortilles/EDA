@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DropdownModule } from 'primeng/dropdown';
-import { forkJoin } from 'rxjs';
+import { forkJoin, firstValueFrom } from 'rxjs';
 import { AlertService, MediaService, IMedia, IMediaFolder } from '@eda/services/service.index';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
@@ -362,39 +362,184 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
   onDrop(event: DragEvent): void {
     event.preventDefault();
     this.isDragging.set(false);
-    const file = event.dataTransfer?.files?.[0];
-    if (file) this.uploadFile(file);
+    if (event.dataTransfer?.files?.length) this.uploadFiles(event.dataTransfer.files);
   }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const file = input?.files?.[0];
-    if (file) this.uploadFile(file);
+    if (input?.files?.length) this.uploadFiles(input.files);
     input.value = '';
   }
 
-  private uploadFile(file: File): void {
-    const extension = file.name.split('.').pop()?.toLowerCase() || '';
-    if (VALID_EXTENSIONS.indexOf(extension) < 0) {
-      this.alertService.addError($localize`:@@mediaInvalidExtension:Formato de imagen no válido. Formatos permitidos: PNG, JPG, GIF, WEBP.`);
-      return;
+  /**
+   * Uploads a whole batch at once (drag-selecting or ctrl/shift-picking several files in the OS
+   * dialog both land here) - each file is validated and sent independently, so a single bad one
+   * (wrong format, too big) doesn't block the rest of the batch.
+   */
+  private uploadFiles(fileList: FileList): void {
+    const files = Array.from(fileList);
+    const valid: File[] = [];
+    const invalidNames: string[] = [];
+
+    for (const file of files) {
+      const extension = file.name.split('.').pop()?.toLowerCase() || '';
+      if (VALID_EXTENSIONS.indexOf(extension) < 0 || file.size > MEDIA_MAX_SIZE_BYTES) {
+        invalidNames.push(file.name);
+      } else {
+        valid.push(file);
+      }
     }
-    if (file.size > MEDIA_MAX_SIZE_BYTES) {
-      this.alertService.addError($localize`:@@mediaMaxSizeError:La imagen supera el tamaño máximo permitido de 1MB.`);
+
+    if (invalidNames.length) {
+      const detail = invalidNames.length > 1 ? invalidNames.join(', ') : invalidNames[0];
+      this.alertService.addError(
+        $localize`:@@mediaInvalidBatchError:No se pudieron subir estas imágenes (formato no válido o superan 1MB): ${detail}`
+      );
+    }
+    if (!valid.length) return;
+
+    // Windows-Explorer-style name-collision check, scoped to the folder being uploaded into.
+    const existingByLowerName = new Map(this.items().map(i => [i.originalName.toLowerCase(), i]));
+    const conflictNames = [...new Set(
+      valid.filter(f => existingByLowerName.has(f.name.toLowerCase())).map(f => f.name)
+    )];
+
+    if (!conflictNames.length) {
+      this.runUpload(valid, existingByLowerName, new Map());
       return;
     }
 
-    this.uploading.set(true);
-    this.mediaService.upload(file, file.name, this.currentFolderId()).then((res) => {
-      this.uploading.set(false);
-      this.items.update(list => [res.media, ...list]);
-      this.setPage(1); // show the just-uploaded image
-      if (this.pickMode) {
-        this.select.emit(res.media.url);
+    this.confirmDuplicateActions(conflictNames).then((actions) => {
+      if (!actions) return; // a dialog was dismissed (Escape/backdrop) - abort the whole batch, nothing uploaded
+      this.runUpload(valid, existingByLowerName, actions);
+    });
+  }
+
+  /**
+   * Same three choices Windows offers when copying into a folder with a name clash, asked one
+   * file at a time (not one choice applied to the whole batch) so "usa.png" can be replaced while
+   * "spain.png" is kept as a duplicate, say.
+   */
+  private async confirmDuplicateActions(names: string[]): Promise<Map<string, 'replace' | 'keep-both' | 'skip'> | null> {
+    const actions = new Map<string, 'replace' | 'keep-both' | 'skip'>();
+
+    for (let i = 0; i < names.length; i++) {
+      const name = names[i];
+      const progress = names.length > 1
+        ? `<p style="margin-top:4px;opacity:.65;font-size:.9em">${$localize`:@@mediaDuplicateProgress:Archivo`} ${i + 1}/${names.length}</p>`
+        : '';
+      const result = await Swal.fire({
+        title: $localize`:@@mediaDuplicateTitleSingle:Ya existe una imagen con este nombre`,
+        html: `<p style="margin-top:10px"><strong>${name}</strong></p>${progress}`,
+        icon: 'question',
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: $localize`:@@mediaDuplicateKeepBoth:Mantener ambas`,
+        denyButtonText: $localize`:@@mediaDuplicateReplace:Reemplazar`,
+        cancelButtonText: $localize`:@@mediaDuplicateSkip:Omitir esta`,
+        reverseButtons: true
+      });
+
+      const action = result.isConfirmed ? 'keep-both' : result.isDenied ? 'replace' : result.dismiss === 'cancel' ? 'skip' : null;
+      if (!action) return null; // Escape/backdrop on any one of them - abort the whole batch
+      actions.set(name.toLowerCase(), action);
+    }
+
+    return actions;
+  }
+
+  /** name -> lowercase-unique-name, Windows "Copy (1)" style, against everything already `taken`. */
+  private dedupeFilename(name: string, taken: Set<string>): string {
+    if (!taken.has(name.toLowerCase())) return name;
+    const dot = name.lastIndexOf('.');
+    const base = dot > 0 ? name.slice(0, dot) : name;
+    const ext = dot > 0 ? name.slice(dot) : '';
+    let i = 1;
+    let candidate = `${base} (${i})${ext}`;
+    while (taken.has(candidate.toLowerCase())) {
+      i++;
+      candidate = `${base} (${i})${ext}`;
+    }
+    return candidate;
+  }
+
+  /**
+   * Resolves a final (file, upload-name) plan for the whole batch up front - avoids any race
+   * between parallel uploads when two files in the same drop would otherwise dedupe to the same
+   * name - then deletes any "replace" targets before uploading, so the backend never briefly sees
+   * two items with the same name.
+   */
+  private runUpload(
+    valid: File[],
+    existingByLowerName: Map<string, IMedia>,
+    actionsByName: Map<string, 'replace' | 'keep-both' | 'skip'>
+  ): void {
+    const reserved = new Set(existingByLowerName.keys());
+    // A library-name clash is only replaced/skipped/renamed-by-choice ONCE per batch - if the same
+    // name shows up twice in the same drop (e.g. two files both called "usa.png"), the second one
+    // just falls through to the plain dedupe branch below like any other repeat.
+    const handledConflict = new Set<string>();
+    const toUpload: { file: File, name: string }[] = [];
+    const toDeleteIds = new Set<string>();
+
+    for (const file of valid) {
+      const key = file.name.toLowerCase();
+      const isFirstConflictHit = existingByLowerName.has(key) && !handledConflict.has(key);
+
+      if (isFirstConflictHit) {
+        handledConflict.add(key);
+        const action = actionsByName.get(key) ?? 'keep-both';
+        if (action === 'skip') continue;
+        if (action === 'replace') {
+          toDeleteIds.add(existingByLowerName.get(key)!._id);
+          toUpload.push({ file, name: file.name }); // key stays in `reserved` (seeded from the library) - no rename needed
+          continue;
+        }
+        // 'keep-both' falls through to the dedupe branch below
       }
-    }).catch((err) => {
+
+      const name = this.dedupeFilename(file.name, reserved);
+      reserved.add(name.toLowerCase());
+      toUpload.push({ file, name });
+    }
+
+    if (!toUpload.length) return;
+
+    this.uploading.set(true);
+    const folderId = this.currentFolderId();
+
+    const deleteStep = toDeleteIds.size
+      ? firstValueFrom(forkJoin([...toDeleteIds].map(id => this.mediaService.remove(id))))
+      : Promise.resolve(null);
+
+    deleteStep.catch(() => null).then(() => {
+      if (toDeleteIds.size) {
+        this.items.update(list => list.filter(i => !toDeleteIds.has(i._id)));
+      }
+      return Promise.allSettled(toUpload.map(({ file, name }) => this.mediaService.upload(file, name, folderId)));
+    }).then((results) => {
       this.uploading.set(false);
-      this.alertService.addError(err);
+      const uploaded = results
+        .filter((r): r is PromiseFulfilledResult<{ ok: boolean, media: IMedia }> => r.status === 'fulfilled')
+        .map(r => r.value.media);
+      const failedCount = results.length - uploaded.length;
+
+      if (uploaded.length) {
+        this.items.update(list => [...uploaded, ...list]);
+        this.setPage(1); // show the just-uploaded images
+        if (this.pickMode) {
+          // Several new images at once in pick mode: select the first one uploaded, same as the
+          // single-file case always has (there's no meaningful way to pick "the right one" for the caller).
+          this.select.emit(uploaded[0].url);
+        }
+      }
+      if (failedCount > 0) {
+        this.alertService.addError(
+          failedCount === 1
+            ? $localize`:@@mediaUploadErrorSingle:No se pudo subir una de las imágenes.`
+            : $localize`:@@mediaUploadErrorMultiple:No se pudieron subir ${failedCount} imágenes.`
+        );
+      }
     });
   }
 
