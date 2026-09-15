@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaAreaD3 } from './eda-area';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, opacityFraction, DASH_TREND } from '@eda/services/service.index';
+import { StyleProviderService, PanelStyleOverride, D3TooltipService, lightenHex, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, opacityFraction, DASH_TREND } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface AreaPoint {
@@ -38,6 +38,7 @@ const TOOLTIP_OFFSET_Y = -20;
 })
 export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() inject: EdaAreaD3;
+  @Input() panelStyleOverride?: PanelStyleOverride;
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
 
@@ -59,7 +60,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.id = `area_${this.inject.id}`;
     this.chartLegend = this.inject.chartLegend ?? !(this.inject.compact ?? false);
-    this.styleProviderService.panelFontFamily.subscribe(v => this.fontFamily = v).unsubscribe();
+    this.fontFamily = this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride);
     this.buildSeries();
   }
 

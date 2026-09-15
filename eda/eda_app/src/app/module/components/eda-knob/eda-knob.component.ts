@@ -1,4 +1,4 @@
-import { StyleProviderService } from '@eda/services/service.index';
+import { StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import { EdaKnob } from "./edaKnob";
 import { Knob } from './primengKnob/knob';
@@ -17,6 +17,7 @@ import { CommonModule } from '@angular/common';
 export class EdaKnobComponent implements OnInit, AfterViewInit {
 
   @Input() inject: EdaKnob;
+  @Input() panelStyleOverride?: PanelStyleOverride;
   @ViewChild('parentDiv')
   parentDiv: ElementRef;
 
@@ -91,8 +92,8 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
 
   private applyTextStyle(): void {
     const parent = this.parentDiv?.nativeElement;
-    const color = this.styleProviderService.panelFontColor.source['_value'];
-    const fontFamily = this.styleProviderService.panelFontFamily.source['_value'];
+    const color = this.styleProviderService.resolveContentFontColor(this.panelStyleOverride);
+    const fontFamily = this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride);
 
     // Knob center text
     const centerText = parent?.querySelector('.p-knob-text');
@@ -143,8 +144,8 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
 
   getStyle() {
     return {
-      'color': this.styleProviderService.panelFontColor.source['_value'], 
-      'font-family': this.styleProviderService.panelFontFamily.source['_value'],
+      'color': this.styleProviderService.resolveContentFontColor(this.panelStyleOverride),
+      'font-family': this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride),
       'justify-items': 'center', 
       'display': 'block'
     };

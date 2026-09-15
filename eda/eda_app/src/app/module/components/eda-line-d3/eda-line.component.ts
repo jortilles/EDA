@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaLineD3 } from './eda-line';
-import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
+import { StyleProviderService, PanelStyleOverride, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface LinePoint {
@@ -38,6 +38,7 @@ const TOOLTIP_OFFSET_Y = -20;
 })
 export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() inject: EdaLineD3;
+  @Input() panelStyleOverride?: PanelStyleOverride;
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
 
@@ -60,7 +61,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.id = `line_${this.inject.id}`;
     this.chartLegend = this.inject.chartLegend ?? !(this.inject.compact ?? false);
-    this.styleProviderService.panelFontFamily.subscribe(v => this.fontFamily = v).unsubscribe();
+    this.fontFamily = this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride);
     this.styleProviderService.panelColor.subscribe(v => this.panelBackgroundColor = v || '#ffffff').unsubscribe();
     this.buildSeries();
   }

@@ -12,7 +12,7 @@ import * as d3 from 'd3'
 import { EdaBubblechart } from './eda-bubblechart'
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
-import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, initD3ResizeObserver, teardownD3Chart, FileUtiles } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, initD3ResizeObserver, teardownD3Chart, FileUtiles, PanelStyleOverride } from '@eda/services/service.index';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -26,6 +26,7 @@ import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.co
 })
 export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   @Input() inject: EdaBubblechart
+  @Input() panelStyleOverride?: PanelStyleOverride;
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef
@@ -415,9 +416,9 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       })
 
       .join("tspan") // Join all tspans inside the text block to avoid letters being scattered across the SVG     
-      .style("font-family", this.styleProviderService.panelFontFamily.source['_value'])
+      .style("font-family", this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride))
       .style("pointer-events", "none")
-      .attr("fill", this.styleProviderService.panelFontColor.source['_value'])      
+      .attr("fill", this.styleProviderService.resolveContentFontColor(this.panelStyleOverride))
       .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.9 : null)
       .text(d => d)// Load the text into each tspan
 

@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaBarD3 } from './eda-bar';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatDePercent, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, roundedTipRectPath, FileUtiles } from '@eda/services/service.index';
+import { StyleProviderService, PanelStyleOverride, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatDePercent, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, roundedTipRectPath, FileUtiles } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 import { buildIconMap, resolveIconHref } from '../eda-panels/eda-blank-panel/panel-charts/category-icons.util';
 
@@ -50,6 +50,7 @@ const TOOLTIP_OFFSET_Y = -20;
 })
 export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   @Input() inject: EdaBarD3;
+  @Input() panelStyleOverride?: PanelStyleOverride;
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
 
@@ -74,7 +75,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.id = `bar_${this.inject.id}`;
     this.chartLegend = this.inject.chartLegend ?? !(this.inject.compact ?? false);
-    this.styleProviderService.panelFontFamily.subscribe(v => this.fontFamily = v).unsubscribe();
+    this.fontFamily = this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride);
     this.buildSeries();
   }
 

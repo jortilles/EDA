@@ -2,7 +2,7 @@ import { Component, OnInit, OnChanges, SimpleChanges, Input, HostBinding,
          ChangeDetectorRef, AfterViewInit, Self, ElementRef, Inject, LOCALE_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EdaKpiDeviation } from './eda-kpi-deviation';
-import { StyleProviderService } from '@eda/services/service.index';
+import { StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
 import { PipesModule } from '@eda/pipes/pipes.module';
 
 @Component({
@@ -14,6 +14,7 @@ import { PipesModule } from '@eda/pipes/pipes.module';
 })
 export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewInit {
     @Input() inject: EdaKpiDeviation;
+    @Input() panelStyleOverride?: PanelStyleOverride;
 
     @HostBinding('style.display') readonly hostDisplay = 'block';
     @HostBinding('style.position') readonly hostPosition = 'relative';
@@ -41,8 +42,6 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
         @Self() private hostRef: ElementRef,
         @Inject(LOCALE_ID) private locale: string
     ) {
-        this.color = this.styleProviderService.panelFontColor.source['_value'] || '#67757c';
-        this.family = this.styleProviderService.panelFontFamily.source['_value'] || 'inherit';
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -52,6 +51,8 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
     }
 
     ngOnInit(): void {
+        this.color = this.styleProviderService.resolveContentFontColor(this.panelStyleOverride) || '#67757c';
+        this.family = this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride) || 'inherit';
         this._syncFromInject();
     }
 

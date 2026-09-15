@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RaceBar } from './eda-race-bar';
-import { StyleProviderService, D3TooltipService, lightenHex, sanitizeId, ensureLinearGradient, formatAxisValue, formatDeNumber, initD3ResizeObserver, teardownD3Chart, measureMaxLabelWidth, measureTextWidth, FileUtiles } from '@eda/services/service.index';
+import { StyleProviderService, PanelStyleOverride, D3TooltipService, lightenHex, sanitizeId, ensureLinearGradient, formatAxisValue, formatDeNumber, initD3ResizeObserver, teardownD3Chart, measureMaxLabelWidth, measureTextWidth, FileUtiles } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 // Own translations, not getLocaleMonthNames(LOCALE_ID) - the app never provides a LOCALE_ID, so that always falls back to 'en-US'.
@@ -73,6 +73,7 @@ const TIMELINE_THUMB_SIZE_PX = 14;
 })
 export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() inject: RaceBar;
+  @Input() panelStyleOverride?: PanelStyleOverride;
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
@@ -135,8 +136,8 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.id = `raceBar_${this.inject.id}`;
     this.chartLegend = this.inject.chartLegend ?? true;
-    this.styleProviderService.panelFontFamily.subscribe(v => this.fontFamily = v).unsubscribe();
-    this.styleProviderService.panelFontColor.subscribe(v => this.fontColor = v).unsubscribe();
+    this.fontFamily = this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride);
+    this.fontColor = this.styleProviderService.resolveContentFontColor(this.panelStyleOverride);
     this.assignedColors = this.inject.assignedColors;
     this.colorByCategory = new Map((this.assignedColors || []).map((c: any) => [String(c.value), c.color]));
     this.assignedIcons = this.inject.assignedIcons;

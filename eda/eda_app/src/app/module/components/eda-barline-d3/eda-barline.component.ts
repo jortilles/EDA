@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaBarlineD3 } from './eda-barline';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, roundedTipRectPath } from '@eda/services/service.index';
+import { StyleProviderService, PanelStyleOverride, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, roundedTipRectPath } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface BarlineSeriesBase {
@@ -44,6 +44,7 @@ const HOVER_GAP_CONTRIBUTION_CAP_PX = 12;
 })
 export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() inject: EdaBarlineD3;
+  @Input() panelStyleOverride?: PanelStyleOverride;
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
 
@@ -66,7 +67,7 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.id = `barline_${this.inject.id}`;
     this.chartLegend = (this.inject.compact ? false : this.inject.chartLegend) ?? true;
-    this.styleProviderService.panelFontFamily.subscribe(v => this.fontFamily = v).unsubscribe();
+    this.fontFamily = this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride);
     this.buildSeries();
   }
 

@@ -1,6 +1,6 @@
 import { Component, ViewChild, Input, ElementRef, OnInit, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { StyleProviderService, AlertService } from '@eda/services/service.index';
+import { StyleProviderService, AlertService, PanelStyleOverride } from '@eda/services/service.index';
 import { Table } from 'primeng/table';
 import { EdaCrosstableModel } from './eda-crosstable.model';
 import { computeTableColorStyles, getNiceName, ColorStyleSpec } from '@eda/services/utils/eda-table-utils/eda-table.color';
@@ -51,6 +51,7 @@ import { DialogModule } from 'primeng/dialog';
 export class EdaCrosstableComponent implements OnInit, AfterViewInit {
     @ViewChild('table', { static: false }) table: Table;
     @Input() inject: EdaCrosstableModel;
+    @Input() panelStyleOverride?: PanelStyleOverride;
     @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
     data: any;
@@ -181,8 +182,8 @@ export class EdaCrosstableComponent implements OnInit, AfterViewInit {
                 ? this.hexToRgba(panelColor, 0.5)
                 : panelColor;
             return {
-                'color': this.styleProviderService.panelFontColor.source['_value'],
-                'font-family': this.styleProviderService.panelFontFamily.source['_value'],
+                'color': this.styleProviderService.resolveContentFontColor(this.panelStyleOverride),
+                'font-family': this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride),
                 'background': bg,
             };
         }
@@ -192,8 +193,8 @@ export class EdaCrosstableComponent implements OnInit, AfterViewInit {
     getTextStyle() {
         if(this.styleProviderService.pageStylesApplied.source['_value'] && Object.keys(this.styles).length === 0) {
             return {
-                'color': this.styleProviderService.panelFontColor.source['_value'],
-                'font-family': this.styleProviderService.panelFontFamily.source['_value'],
+                'color': this.styleProviderService.resolveContentFontColor(this.panelStyleOverride),
+                'font-family': this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride),
             };
         }
         return;

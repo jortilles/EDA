@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, HostBinding } from '@angular/core';
-import { StyleProviderService } from '@eda/services/service.index';
+import { StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
@@ -20,6 +20,7 @@ import { PipesModule } from '@eda/pipes/pipes.module';
 
 export class EdaKpiComponent implements OnInit, AfterViewInit {
     @Input() inject: EdaKpi;
+    @Input() panelStyleOverride?: PanelStyleOverride;
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
 
     @HostBinding('style.display') readonly hostDisplay = 'block';
@@ -34,8 +35,8 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
     // the same updateChart() convention, so a loose type is fine here.
     @ViewChild('EdaChart', { static: false }) edaChartComponent: any;
     sufixClick: boolean = false;
-    color: string = this.styleProviderService.panelFontColor.source['_value'];
-    family: string = this.styleProviderService.panelFontFamily.source['_value'];
+    color: string;
+    family: string;
     defaultColor = '#67757c';
     warningColor = '#ff8100';
     containerHeight: number = 20;
@@ -52,6 +53,8 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
+        this.color = this.styleProviderService.resolveContentFontColor(this.panelStyleOverride);
+        this.family = this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride);
         try {
             registerLocaleData(es);
 

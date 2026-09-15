@@ -1,5 +1,5 @@
 // Angular
-import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, OnInit, OnChanges, SimpleChanges, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DragDropModule, CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem, copyArrayItem } from '@angular/cdk/drag-drop';
@@ -27,7 +27,7 @@ import { KpiDeviationConfig } from './panel-charts/chart-configuration-models/kp
 import { DynamicTextConfig } from './panel-charts/chart-configuration-models/dynamicText-config';
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 // Eda Services
-import { EdaChartType, FilterType, OrdenationType} from '@eda/services/service.index';
+import { EdaChartType, FilterType, OrdenationType, StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
 import { DashboardService, ChartUtilsService, AlertService, SpinnerService, FileUtiles, QueryBuilderService, UserService } from '@eda/services/service.index';
 import { GroupService } from '../../../../services/api/group.service';
 import { QueryService } from '@eda/services/api/query.service';
@@ -78,6 +78,7 @@ import { dynamicTextDialogComponent } from '@eda/components/component.index';
 import { TableDialogComponent } from '@eda/components/component.index';
 import { TableGradientDialogComponent } from '@eda/components/component.index';
 import { KpiEditDialogComponent } from '@eda/components/component.index';
+import { PanelEditStyleDialogComponent } from './panel-edit-style-dialog/panel-edit-style-dialog.component';
 import { CategoryChartType, getChartCategoryValues } from './panel-charts/chart-category-values.util';
 export interface IPanelAction {
     code: string;
@@ -103,7 +104,7 @@ const STANDALONE_COMPONENTS = [
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
     DragDropComponent, ChartTypeSelectorDialogComponent, SourceFieldsDialogComponent,
     IconComponent, FocusOnShowDirective, PromptComponent,
-    FilterAndOrDialogComponent,
+    FilterAndOrDialogComponent, PanelEditStyleDialogComponent,
 ]
 @Component({
     standalone: true,
@@ -113,7 +114,7 @@ const STANDALONE_COMPONENTS = [
     templateUrl: './eda-blank-panel.component.html',
     styleUrls: ['./eda-blank-panel.component.css'],
 })
-export class EdaBlankPanelComponent implements OnInit {
+export class EdaBlankPanelComponent implements OnInit, OnChanges {
     /** Reference to the dashboard root element (used for image capture during Excel export) */
     public elRef = inject(ElementRef);
 
@@ -126,6 +127,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
     @Input() panelContent: any = {};
     @Input() panelText: any;
+    /** panelContent/panelText merged with panel.styleOverride, without mutating the shared global objects. */
+    public effectivePanelContent: any = {};
+    public effectivePanelText: any = {};
     @Input() dashboard: DashboardPage;
     @Input() panel: EdaPanel;
     @Input() inject: InjectEdaPanel;
@@ -145,6 +149,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public mapCoordController: EdaDialogController;
     public kpiController: EdaDialogController;
     public dynamicTextController: EdaDialogController;
+    public panelStyleController: EdaDialogController;
     public linkDashboardController: EdaDialogController;
     public treeTableController: EdaDialogController;
     public contextMenu: EdaContextMenu;
@@ -336,6 +341,7 @@ export class EdaBlankPanelComponent implements OnInit {
         public dashboardService: DashboardService,
         public queryService: QueryService,
         public chartUtils: ChartUtilsService,
+        public styleProviderService: StyleProviderService,
         public alertService: AlertService,
         public spinnerService: SpinnerService,
         public groupService: GroupService,
@@ -370,6 +376,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.index = 0;
         this.readonly = this.panel.readonly;
         if (this.panel.description === undefined) this.panel.description = '';
+        this.recomputeEffectiveStyles();
 
         await this.setTablesData();
 
@@ -426,6 +433,46 @@ export class EdaBlankPanelComponent implements OnInit {
     public openContextMenu(event: MouseEvent): void {
         this.contextMenu.contextMenuItems = PanelOptions.generateMenu(this);
         this.contextMenu.showContextMenu(event);
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        // panelContent/panelText are the shared global style objects (dashboard.page.ts assignStyles());
+        // re-merge with this panel's own override whenever the global style changes.
+        if ((changes.panelContent || changes.panelText) && this.panel) {
+            this.recomputeEffectiveStyles();
+        }
+    }
+
+    /** Merges panelContent/panelText (global, shared by reference across every panel) with
+     * panel.styleOverride, without mutating the shared objects. */
+    public recomputeEffectiveStyles(): void {
+        const override = this.panel?.styleOverride;
+
+        this.effectivePanelContent = {
+            ...this.panelContent,
+            background: this.styleProviderService.resolvePanelColor(override),
+        };
+
+        const align = this.styleProviderService.resolvePanelTitleAlign(override);
+        this.effectivePanelText = {
+            ...this.panelText,
+            color: this.styleProviderService.resolvePanelTitleFontColor(override),
+            'font-family': this.styleProviderService.resolvePanelTitleFontFamily(override),
+            'font-size': (20 + this.styleProviderService.resolvePanelTitleFontSize(override) * 3) + 'px',
+            'justify-content': align === 'center' ? 'center' : align === 'flex-end' ? 'right' : 'flex-start',
+        };
+    }
+
+    public onClosePanelStyleProperties(event: EdaDialogCloseEvent, response: PanelStyleOverride | null): void {
+        if (event !== EdaDialogCloseEvent.NONE) {
+            this.panel.styleOverride = response || undefined;
+            this.recomputeEffectiveStyles();
+            // Rebuilds panelChartConfig (new PanelChart reference) so PanelChartComponent picks up
+            // the fresh panelStyleOverride and re-creates the underlying chart/table/KPI component.
+            if (this.panel.content) this.reloadContent();
+            this.dashboardService.setNotSaved(true);
+        }
+        this.panelStyleController = undefined;
     }
 
     /**
@@ -855,6 +902,7 @@ public tableNodeExpand(event: any): void {
             linkedDashboardProps: this.panel.linkedDashboardProps,
             predictionConfig: this.panel.content?.query?.query?.predictionConfig,
             childNavConfig: NavigationUtils.hasNavigation(this) ? this.computeChildNavConfig() : { parentFields: [], childFieldMap: {}, navColumnSubstitution: {} },
+            panelStyleOverride: this.panel.styleOverride,
         });
     }
 

@@ -1,11 +1,11 @@
-<div class="flex flex-col h-full rounded-lg pb-6 pr-6 pl-6 shadow-sm bg-white" [ngStyle]="panelContent">
+<div class="flex flex-col h-full rounded-lg pb-6 pr-6 pl-6 shadow-sm bg-white" [ngStyle]="effectivePanelContent">
   <!-- Header -->
   <div class="flex items-center justify-between mb-2 w-full drag-handler min-h-12">
     <!-- Container with dynamic alignment for the title -->
     <div class="flex-1 flex flex-col pt-3 pb-1 min-w-0">
-      <h2 class="text-base md:text-lg font-base" [ngStyle]="panelText">{{ panel.title || title }}</h2>
+      <h2 class="text-base md:text-lg font-base" [ngStyle]="effectivePanelText">{{ panel.title || title }}</h2>
       @if (panel.description) {
-        <span class="text-sm whitespace-pre-line break-words" [ngStyle]="{'color': panelText?.color || '#000000'}">{{ panel.description }}</span>
+        <span class="text-sm whitespace-pre-line break-words" [ngStyle]="{'color': effectivePanelText?.color || '#000000'}">{{ panel.description }}</span>
       }
     </div>
 
@@ -1275,6 +1275,10 @@
 
 @if(dynamicTextController){
   <app-dynamicText-dialog [controller]="dynamicTextController"></app-dynamicText-dialog>
+}
+
+@if(panelStyleController){
+  <app-panel-edit-style-dialog [controller]="panelStyleController"></app-panel-edit-style-dialog>
 }
 
 @if(tableController){

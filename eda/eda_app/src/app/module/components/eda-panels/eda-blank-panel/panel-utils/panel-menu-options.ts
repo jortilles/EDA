@@ -151,6 +151,22 @@ export const PanelOptions = {
       }
     });
   },
+  editPanelStyle: (panelComponent: EdaBlankPanelComponent) => {
+    return new EdaContextMenuItem({
+      label: $localize`:@@panelOptionsEditStyle:Editar estilo del panel`,
+      icon: 'mdi mdi-palette',
+      command: () => {
+        panelComponent.contextMenu.hideContextMenu();
+        panelComponent.panelStyleController = new EdaDialogController({
+          params: {
+            panelId: _.get(panelComponent.panel, 'id'),
+            override: panelComponent.panel.styleOverride,
+          },
+          close: (event, response) => panelComponent.onClosePanelStyleProperties(event, response)
+        });
+      }
+    });
+  },
   linkPanel:(panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
       label:$localize`:@@panelOptions5:Vincular con otro informe`,
@@ -369,6 +385,10 @@ export const PanelOptions = {
       {
         show: !isRoOrAnonimus,
         item: () => PanelOptions.editChart(ebp),
+      },
+      {
+        show: !isRoOrAnonimus && isEditable,
+        item: () => PanelOptions.editPanelStyle(ebp),
       },
       {
         show: !isRoOrAnonimus && isEditable && !!ebp.panel.content,

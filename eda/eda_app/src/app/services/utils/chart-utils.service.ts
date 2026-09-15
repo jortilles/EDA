@@ -1204,8 +1204,8 @@ export class ChartUtilsService {
         showGridLines: boolean = true,
         styleProviderService: StyleProviderService,
     ): { chartOptions: any } {
-        let colorStyle : any = styleProviderService.panelFontColor.source['value'];
-        let fontStyle : any = styleProviderService.panelFontFamily.source['value'];
+        let colorStyle : any = styles.fontColor ?? styleProviderService.panelFontColor.source['value'];
+        let fontStyle : any = styles.fontFamily ?? styleProviderService.panelFontFamily.source['value'];
         let panelStyle : any = styleProviderService.panelColor.source['value'];
         const t = $localize`:@@linkedTo:Vinculado con`;
         const linked = linkedDashboard ? `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';
