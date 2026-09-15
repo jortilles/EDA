@@ -7601,6 +7601,14 @@ Pozdrawiam.</target>
 <source>Copiado</source>
 <target>Skopiowano</target>
 </trans-unit>
+<trans-unit id="panelOptionsEnableFilters">
+<source>Click en filtros habilitado</source>
+<target>Kliknij włączone filtry</target>
+</trans-unit>
+<trans-unit id="panelOptionsDisableFilters">
+<source>Click en filtros deshabilitado</source>
+<target>Kliknij filtry wyłączone</target>
+</trans-unit>
 
 </body>
 </file>

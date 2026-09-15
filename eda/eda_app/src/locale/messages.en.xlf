@@ -7661,6 +7661,14 @@ Best regards.</target>
 <source>Copiado</source>
 <target>Copied</target>
 </trans-unit>
+<trans-unit id="panelOptionsEnableFilters">
+<source>Click en filtros habilitado</source>
+<target>Filter click enabled</target>
+</trans-unit>
+<trans-unit id="panelOptionsDisableFilters">
+<source>Click en filtros deshabilitado</source>
+<target>Filter click disabled</target>
+</trans-unit>
 
 </body>
 </file>

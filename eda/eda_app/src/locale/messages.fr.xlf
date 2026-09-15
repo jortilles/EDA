@@ -7936,6 +7936,14 @@ Cordialement.</target>
 <source>Copiado</source>
 <target>Copié</target>
 </trans-unit>
+<trans-unit id="panelOptionsEnableFilters">
+<source>Click en filtros habilitado</source>
+<target>Cliquez sur les filtres activés</target>
+</trans-unit>
+<trans-unit id="panelOptionsDisableFilters">
+<source>Click en filtros deshabilitado</source>
+<target>Cliquez sur les filtres désactivés</target>
+</trans-unit>
 
 </body>
   </file>

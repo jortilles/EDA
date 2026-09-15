@@ -7968,6 +7968,14 @@ Salutacions.</target>
 <source>Copiado</source>
 <target>Copiat</target>
 </trans-unit>
+<trans-unit id="panelOptionsEnableFilters">
+<source>Click en filtros habilitado</source>
+<target>Click en filtres habilitat</target>
+</trans-unit>
+<trans-unit id="panelOptionsDisableFilters">
+<source>Click en filtros deshabilitado</source>
+<target>Click en filtres deshabilitat</target>
+</trans-unit>
 </body>
   </file>
 </xliff>
