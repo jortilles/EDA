@@ -52,6 +52,11 @@ export interface ChartDialogFeatures {
     hasLimits?: boolean;           // knob - min/max numeric range of the gauge
     hasSemaphore?: boolean;        // knob - red→amber→green gradient toggle; when on it hides the manual colour editor
     hasIcons?: boolean;            // raceBar / bubblechart - assign a media-library image per category
+    /** stackedbar / stackedbar100: icons are assigned per SERIES (like colors, one per legend entry)
+     * instead of per category - each bar shows one icon per visible segment, not one for the whole
+     * bar, since a stacked bar's real "value" is the segment. Unset (default) = per category, the
+     * plain bar/horizontalBar/pyramid behaviour (one icon per bar, at its tip). */
+    iconsPerSeries?: boolean;
 }
 
 const AXIS_BAR_COMMON: Partial<ChartDialogFeatures> = {
@@ -85,14 +90,16 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasIcons: true,
     },
 
-    stackedbar: { 
-        ...(AXIS_BAR_COMMON as ChartDialogFeatures), 
-        hasIcons: true 
+    stackedbar: {
+        ...(AXIS_BAR_COMMON as ChartDialogFeatures),
+        hasIcons: true,
+        iconsPerSeries: true
     },
 
-    stackedbar100: { 
-        ...(AXIS_BAR_COMMON as ChartDialogFeatures), 
-        hasIcons: true
+    stackedbar100: {
+        ...(AXIS_BAR_COMMON as ChartDialogFeatures),
+        hasIcons: true,
+        iconsPerSeries: true
     },
 
     pyramid: { 
