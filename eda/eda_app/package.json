@@ -5,6 +5,7 @@
     "ng": "ng",
     "apply-overwrites": "node scripts/apply-overwrites.js",
     "prestart": "node scripts/apply-overwrites.js",
+    "postinstall": "node scripts/patch-ngx-sweetalert2-types.js",
     "start": "ng serve -o --configuration=ca",
     "start:ca": "ng serve -o --configuration=ca",
     "start:en": "ng serve -o --configuration=en",
