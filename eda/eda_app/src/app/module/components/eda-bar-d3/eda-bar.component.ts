@@ -1034,7 +1034,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
     // Per-category media-library image inside each bar, near its tip.
     this.renderCategoryImages(
-      g, visibleCategories, horizontal, stacked, categoryScale, valueScale,
+      g, visibleCategories, horizontal, stacked, isPyramid, categoryScale, valueScale,
       (cat: string) => { const ci = this.categories.indexOf(cat); return visibleSeries.map(s => s.data[ci] || 0); },
       animateEntrance, (cat: string) => visibleCategories.indexOf(cat) * perCatDelay + perCatDelay,
     );
@@ -1055,7 +1055,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   private iconShift = new Map<string, { dx: number; dy: number; f: number }>();
 
   private renderCategoryImages(
-    hostG: any, visibleCategories: string[], horizontal: boolean, stacked: boolean,
+    hostG: any, visibleCategories: string[], horizontal: boolean, stacked: boolean, isPyramid: boolean,
     categoryScale: any, valueScale: any, seriesValsForCat: (cat: string) => number[],
     animateEntrance: boolean, entranceDelay: (cat: string) => number,
   ): void {
@@ -1075,20 +1075,27 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       }
       return vals.reduce((best, v) => Math.abs(v) > Math.abs(best) ? v : best, 0);
     };
+    // stackedbar/stackedbar100 anchor at the category axis (base), not the stack's tip: the tip's
+    // height (and which segment ends up outermost there) varies per category and carries no useful
+    // anchor - the base is always at the same spot, giving a consistent row of images. Pyramid keeps
+    // anchoring at the tip (left/right by sign) since it genuinely diverges from a shared centre.
+    const baseAnchored = stacked && !isPyramid;
+    const anchorVal = (cat: string) => baseAnchored ? 0 : tipValue(cat);
+    const farVal = (cat: string) => baseAnchored ? tipValue(cat) : 0;
     const barLen = (cat: string) => Math.abs(valueScale(tipValue(cat)) - valueScale(0));
     // Image fits inside the bar: bounded by the band's cross-size (bar thickness) and by the bar's length.
     const sizeFor = (cat: string) => Math.min(categoryScale.bandwidth() * 0.9, 130, barLen(cat) - 8);
-    const dirOf = (cat: string) => Math.sign(valueScale(0) - valueScale(tipValue(cat))) || 1;
-    // Gap between the image's tip-side edge and the bar tip. Vertical bars: a small NEGATIVE value
-    // (overshoot) so the artwork - which usually has its own transparent margin - lands near the top
-    // edge. Horizontal bars: sit the image well inside, centred, so it doesn't hug the very end.
-    const gap = horizontal ? 12 : -6;
+    const dirOf = (cat: string) => Math.sign(valueScale(farVal(cat)) - valueScale(anchorVal(cat))) || 1;
+    // Gap between the image and its anchor edge, moving INTO the bar. Tip-anchored vertical bars use
+    // a small NEGATIVE value (overshoot) so artwork with its own transparent margin still lands near
+    // the edge; base-anchored and horizontal ones sit centred, comfortably inside.
+    const gap = baseAnchored ? 10 : (horizontal ? 12 : -6);
     const inward = (cat: string) => dirOf(cat) * (gap + sizeFor(cat) / 2);
-    const alignFor = (cat: string) => horizontal
+    const alignFor = (cat: string) => (horizontal || baseAnchored)
       ? 'xMidYMid meet'
       : (dirOf(cat) > 0 ? 'xMidYMin meet' : 'xMidYMax meet');
-    const baseX = (cat: string) => horizontal ? valueScale(tipValue(cat)) + inward(cat) : (categoryScale(cat) || 0) + categoryScale.bandwidth() / 2;
-    const baseY = (cat: string) => horizontal ? (categoryScale(cat) || 0) + categoryScale.bandwidth() / 2 : valueScale(tipValue(cat)) + inward(cat);
+    const baseX = (cat: string) => horizontal ? valueScale(anchorVal(cat)) + inward(cat) : (categoryScale(cat) || 0) + categoryScale.bandwidth() / 2;
+    const baseY = (cat: string) => horizontal ? (categoryScale(cat) || 0) + categoryScale.bandwidth() / 2 : valueScale(anchorVal(cat)) + inward(cat);
 
     const iconG = hostG.append('g').attr('class', 'eda-bar-icons').style('pointer-events', 'none');
     visibleCategories.forEach(cat => {
