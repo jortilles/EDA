@@ -164,6 +164,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         colorEditorShape: 'category-list',
         hasUseGradient: true,
         hasInnerRadius: true,
+        hasIcons: true,
     },
 
     polarArea: {
@@ -175,6 +176,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasLabelsPercent: true,
         colorEditorShape: 'category-list',
         hasUseGradient: true,
+        hasIcons: true,
     },
 
     sunburst: {
