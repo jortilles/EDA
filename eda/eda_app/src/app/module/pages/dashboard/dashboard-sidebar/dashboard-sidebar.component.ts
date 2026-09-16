@@ -216,6 +216,15 @@ export class DashboardSidebarComponent implements AfterViewInit {
         command: () => this.cleanPanelsCache()
       },
       {
+        id: 'compactPanels',
+        label: $localize`:@@dashboardSidebarCompactPanels: Compactar paneles`,
+        icon: "pi pi-th-large",
+        command: () => {
+          this.dashboard.compactPanels();
+          this.hidePopover();
+        }
+      },
+      {
         id: 'liveDashboard',
         label: $localize`:@@dashboardSidebarLiveDashboard: Live Dashboard`,
         icon: "pi pi-desktop",

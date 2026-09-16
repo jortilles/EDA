@@ -5617,6 +5617,11 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Recharger le rapport</target>
 </trans-unit>
 
+<trans-unit id="dashboardSidebarCompactPanels">
+  <source>Compactar paneles</source>
+  <target>Compacter les panneaux</target>
+</trans-unit>
+
 <trans-unit id="dashboardSidebarDashboardPrivacity">
   <source>Privacidad informe</source>
   <target>Rapport sur la confidentialité</target>
@@ -5655,6 +5660,16 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="dashboardSidebarEditStyles">
   <source>Editar estilos</source>
   <target>Modifier les styles</target>
+</trans-unit>
+
+<trans-unit id="panelOptionsEditStyle">
+  <source>Editar estilo del panel</source>
+  <target>Modifier le style du panneau</target>
+</trans-unit>
+
+<trans-unit id="editPanelStyleTitle">
+  <source>Editar estilo del panel</source>
+  <target>Modifier le style du panneau</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarDownloadPDF">

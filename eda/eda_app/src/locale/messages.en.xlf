@@ -5245,6 +5245,11 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Refresh dashboard</target>
 </trans-unit>
 
+<trans-unit id="dashboardSidebarCompactPanels">
+<source>Compactar paneles</source>
+<target>Compact panels</target>
+</trans-unit>
+
 <trans-unit id="dashboardSidebarDashboardPrivacity">
 <source>Privacidad informe</source>
 <target>Privacy report</target>
@@ -5283,6 +5288,16 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="dashboardSidebarEditStyles">
 <source>Editar estilos</source>
 <target>Edit styles</target>
+</trans-unit>
+
+<trans-unit id="panelOptionsEditStyle">
+<source>Editar estilo del panel</source>
+<target>Edit panel style</target>
+</trans-unit>
+
+<trans-unit id="editPanelStyleTitle">
+<source>Editar estilo del panel</source>
+<target>Edit panel style</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarDownloadPDF">

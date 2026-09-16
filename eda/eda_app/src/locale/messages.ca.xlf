@@ -5683,6 +5683,11 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Recarregar informe</target>
 </trans-unit>
 
+<trans-unit id="dashboardSidebarCompactPanels">
+  <source>Compactar paneles</source>
+  <target>Compactar panells</target>
+</trans-unit>
+
 <trans-unit id="dashboardSidebarDashboardPrivacity">
   <source>Privacidad informe</source>
   <target>Privacitat informe</target>
@@ -5721,6 +5726,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="dashboardSidebarEditStyles">
   <source>Editar estilos</source>
   <target>Editar estils</target>
+</trans-unit>
+
+<trans-unit id="panelOptionsEditStyle">
+  <source>Editar estilo del panel</source>
+  <target>Editar estil del panell</target>
+</trans-unit>
+
+<trans-unit id="editPanelStyleTitle">
+  <source>Editar estilo del panel</source>
+  <target>Editar estil del panell</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarDownloadPDF">

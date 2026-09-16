@@ -5111,6 +5111,11 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Załaduj ponownie raport</target>
 </trans-unit>
 
+<trans-unit id="dashboardSidebarCompactPanels">
+  <source>Compactar paneles</source>
+  <target>Kompaktuj panele</target>
+</trans-unit>
+
 <trans-unit id="dashboardSidebarDashboardPrivacity">
   <source>Privacidad informe</source>
   <target>Raport dotyczący prywatności</target>
@@ -5149,6 +5154,16 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 <trans-unit id="dashboardSidebarEditStyles">
   <source>Editar estilos</source>
   <target>Edytuj style</target>
+</trans-unit>
+
+<trans-unit id="panelOptionsEditStyle">
+  <source>Editar estilo del panel</source>
+  <target>Edytuj styl panelu</target>
+</trans-unit>
+
+<trans-unit id="editPanelStyleTitle">
+  <source>Editar estilo del panel</source>
+  <target>Edytuj styl panelu</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarDownloadPDF">

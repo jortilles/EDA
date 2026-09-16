@@ -1520,6 +1520,67 @@ public startCountdown(seconds: number) {
     }
   }
 
+  /**
+   * Compacts the layout: reviews every panel in reading order (top-to-bottom, left-to-right)
+   * and drops each one into the first free spot in the grid it fits in (scanning row by row,
+   * left to right) — closing gaps left by deleted or resized panels instead of just rising
+   * within its own column.
+   */
+  public compactPanels(): void {
+    if (!this.panels?.length) return;
+
+    const cols = this.gridsterOptions.minCols || 40;
+    const orderedPanels = [...this.panels].sort((a, b) => a.y - b.y || a.x - b.x);
+
+    // occupiedRows[row] is a boolean[cols] marking taken cells; grown on demand, so any
+    // row not yet touched is implicitly free.
+    const occupiedRows: boolean[][] = [];
+
+    const isFree = (x: number, y: number, w: number, h: number): boolean => {
+      for (let r = y; r < y + h; r++) {
+        const row = occupiedRows[r];
+        if (!row) continue;
+        for (let c = x; c < x + w; c++) {
+          if (row[c]) return false;
+        }
+      }
+      return true;
+    };
+
+    const occupy = (x: number, y: number, w: number, h: number): void => {
+      for (let r = y; r < y + h; r++) {
+        if (!occupiedRows[r]) occupiedRows[r] = new Array(cols).fill(false);
+        for (let c = x; c < x + w; c++) occupiedRows[r][c] = true;
+      }
+    };
+
+    orderedPanels.forEach((panel) => {
+      const w = Math.min(panel.cols || panel.w || 1, cols);
+      const h = panel.rows || panel.h || 1;
+
+      let placedX = 0;
+      let placedY = 0;
+      findSpot:
+      for (let y = 0; ; y++) {
+        for (let x = 0; x <= cols - w; x++) {
+          if (isFree(x, y, w, h)) {
+            placedX = x;
+            placedY = y;
+            break findSpot;
+          }
+        }
+      }
+
+      panel.x = placedX;
+      panel.y = placedY;
+      occupy(placedX, placedY, w, h);
+    });
+
+    this.gridsterOptions.api?.optionsChanged();
+    this.dashboardService.setNotSaved(true);
+    this.onItemChange(orderedPanels[0]);
+  }
+
   // Function to check if the clicked column is navigable
   public checkNavigableColumn(event: any): boolean {
     const columnClicked = event?.data?.filterBy;
