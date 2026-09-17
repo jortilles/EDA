@@ -75,7 +75,7 @@
                 optionLabel="display_name"
                 optionValue="display_name"
                 [(ngModel)]="groupBySubtotalColumns"
-                (onChange)="refreshGroupedSubtotals()"
+                (onPanelHide)="refreshGroupedSubtotals()"
                 [filter]="true"
                 i18n-filterPlaceHolder="@@groupedSubtotalsSearchPlaceholder" filterPlaceHolder="Buscar..."
                 i18n-defaultLabel="@@groupedSubtotalsAddPlaceholder" defaultLabel="Seleccionar columnas..."
