@@ -1343,167 +1343,17 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
       const dataModelObject = JSON.parse(JSON.stringify(dataModel));
 
-
-
-      /** Forbidden tables   tengo todas las tablas que están prohividas para mi. */
-      let uniquesForbiddenTables = DashboardController.getForbiddenTables(
-        dataModelObject,
-        req['user'].role,
-        req.user._id
-      )
-
-      //console.log('uniquesForbiddenTables', uniquesForbiddenTables);
-      //console.log('req.body.query', req.body.query);
-
-
-      const includesAdmin = req['user'].role.includes("135792467811111111111110")
-      if (includesAdmin) {
-        // el admin ve todo
-        uniquesForbiddenTables = [];
-      }
-
-      let mylabels = []
-      let myQuery: any
-      if (uniquesForbiddenTables.length > 0) {
-        myQuery = { fields: [], filters: [] }
-        mylabels = []
-        let notAllowedColumns = []
-        for (let c = 0; c < req.body.query.fields.length; c++) {
-          if (
-            uniquesForbiddenTables.includes(req.body.query.fields[c].table_id.split('.')[0])
-          ) {
-            notAllowedColumns.push(req.body.query.fields[c])
-          } else {
-            mylabels.push(req.body.query.fields[c].column_name)
-            myQuery.fields.push(req.body.query.fields[c])
-          }
-        }
-        if (uniquesForbiddenTables.length > 0) {
-          for (let i = 0; i < myQuery.fields.length; i++) {
-            myQuery.fields[i].order = i
-          }
-          myQuery.filters = req.body.query.filters
-        }
-        myQuery.sortedFilters = req.body.query.sortedFilters;
-        myQuery.resultSortingColumns = req.body.query.resultSortingColumns;
-      } else {
-        // las etiquetas son el nombre técnico...
-        myQuery = JSON.parse(JSON.stringify(req.body.query))
-        for (let c = 0; c < req.body.query.fields.length; c++) {
-          mylabels.push(req.body.query.fields[c].column_name)
-        }
-      }
-      myQuery.queryMode = req.body.query.queryMode ? req.body.query.queryMode : 'EDA'; /** lo añado siempre */
-      myQuery.rootTable = myQuery.queryMode == 'EDA2' && req.body.query.rootTable ? req.body.query.rootTable : ''; /** lo añado siempre  pero solo para las consulas EDA2*/
-      myQuery.simple = req.body.query.simple;
-      myQuery.queryLimit = req.body.query.queryLimit;
-      myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
-
-      // console.log('myQuery: ', myQuery);
-
-       if (myQuery.fields.length < req.body.query.fields.length ) { //Not allowed to see all the data. If you have one forbidden column you cannot see the query. It will breack the chart
-        console.log('you cannot see any data');
-        return res.status(200).json([['noDataAllowed'], [[]]]);
-      }
-      if (req.body.query.hasOwnProperty('forSelector') && req.body.query.forSelector === true) {
-        myQuery.forSelector = true;
-      } else {
-        myQuery.forSelector = false;
-      }
-
-
-      /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
-      if (myQuery.filters) {
-        for (const filter of myQuery.filters) {
-          if (!filter.filter_column_type) {
-            const filterTable = dataModelObject.ds.model.tables.find((t) => t.table_name == filter.filter_table.split('.')[0]);
-
-            if (filterTable) {
-              const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
-              filter.filter_column_type = filterColumn?.column_type || 'text';
-            }
-          }
-          /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro lo pongo en el where*/ 
-          if(! filter.hasOwnProperty('filterBeforeGrouping') ){
-            filter.filterBeforeGrouping = true;
-          }
-        }
-      }
-
-      let nullFilter = {};
-      const filters = myQuery.filters;
-
-
-      filters.forEach(a => {
-        a.filter_elements.forEach(b => {
-          if (b.value1) {
-            if (
-              (b.value1.includes('null') || b.value1.includes('1900-01-01'))
-              && b.value1.length > 1  /** Si tengo varios elementos  */
-              && (a.filter_type == '=' || a.filter_type == 'in' || a.filter_type == 'like' || a.filter_type == 'between')
-            ) {
-              nullFilter = {
-                filter_id: 'is_null',
-                filter_table: a.filter_table,
-                filter_column: a.filter_column,
-                filter_type: 'is_null',
-                filter_elements: [{ value1: ['null'] }],
-                filter_column_type: a.filter_column_type,
-                isGlobal: true,
-                applyToAll: false
-              }
-              b.value1 = b.value1.filter(c => c != 'null')
-              filters.push(nullFilter);
-            } else if ((b.value1.includes('null') || b.value1.includes('1900-01-01'))
-              && b.value1.length > 1  /** Si tengo varios elementos  */
-              && (a.filter_type == '!=' || a.filter_type == 'not_in' || a.filter_type == 'not_like')
-            ) {
-              nullFilter = {
-                filter_id: 'not_null',
-                filter_table: a.filter_table,
-                filter_column: a.filter_column,
-                filter_type: 'not_null',
-                filter_elements: [{ value1: ['null'] }],
-                filter_column_type: a.filter_column_type,
-                isGlobal: true,
-                applyToAll: false
-              }
-              b.value1 = b.value1.filter(c => c != 'null')
-              filters.push(nullFilter);
-            } else if (
-              (b.value1.includes('null') || b.value1.includes('1900-01-01'))
-              && b.value1.length == 1
-              && (a.filter_type == '=' || a.filter_type == 'in' || a.filter_type == 'like' || a.filter_type == 'between')
-            ) {
-              a.filter_type = 'is_null';
-            } else if (
-              (b.value1.includes('null') || b.value1.includes('1900-01-01'))
-              && b.value1.length == 1
-              && (a.filter_type == '!=' || a.filter_type == 'not_in' || a.filter_type == 'not_like')
-            ) {
-              a.filter_type = 'not_null';
-            }
-          }
-        })
-      })
-
-      myQuery.filters = filters;
-
-
-      if (uniquesForbiddenTables.length > 0) {
-        if (myQuery.filters.filter(f => uniquesForbiddenTables.includes(f.filter_table.split('.')[0])).length > 0) {
+      const builtQuery = await DashboardController.buildEdaQuery(req.body.query, dataModelObject, req.user, connection);
+      if ('forbidden' in builtQuery) {
+        if (builtQuery.forbidden === 'noDataAllowed') {
+          console.log('you cannot see any data');
+          return res.status(200).json([['noDataAllowed'], [[]]]);
+        } else {
           console.log('you are not allowed to user this filters');
           return res.status(200).json([['noFilterAllowed'], [[]]]);
         }
-
       }
-
-      const query = await connection.getQueryBuilded(
-        myQuery,
-        dataModelObject,
-        req.user,
-        req.body.query.queryLimit // Agregado de limite para fuente de datos generados a partir de un excel
-      )
+      const { query, myQuery, mylabels } = builtQuery;
 
       /**---------------------------------------------------------------------------------------------------------*/
 
@@ -2378,6 +2228,131 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
   }
 
 
+  /**
+   * Construye la query EDA final (columnas/tablas prohibidas por rol, defaults de
+   * queryMode/rootTable/simple/joinType/forSelector, filtros null/not_null y
+   * queryLimit) tal y como se ejecuta y se cachea. Único punto de normalización:
+   * lo usan tanto execQuery (para ejecutar) como cleanDashboardCache (para recalcular
+   * el hash de caché a borrar), de forma que ambos generan siempre la misma query.
+   */
+  private static async buildEdaQuery(
+    queryData: any, dataModelObject: any, user: any, connection: any
+  ): Promise<{ query: any; myQuery: any; mylabels: string[] } | { forbidden: 'noDataAllowed' | 'noFilterAllowed' }> {
+    let uniquesForbiddenTables = DashboardController.getForbiddenTables(
+      dataModelObject,
+      user.role,
+      user._id
+    );
+
+    const includesAdmin = user.role.includes("135792467811111111111110");
+    if (includesAdmin) {
+      uniquesForbiddenTables = [];
+    }
+
+    let mylabels = [];
+    let myQuery: any;
+    if (uniquesForbiddenTables.length > 0) {
+      myQuery = { fields: [], filters: [] };
+      for (let c = 0; c < queryData.fields.length; c++) {
+        if (!uniquesForbiddenTables.includes(queryData.fields[c].table_id.split('.')[0])) {
+          mylabels.push(queryData.fields[c].column_name);
+          myQuery.fields.push(queryData.fields[c]);
+        }
+      }
+      for (let i = 0; i < myQuery.fields.length; i++) {
+        myQuery.fields[i].order = i;
+      }
+      myQuery.filters = queryData.filters;
+      myQuery.sortedFilters = queryData.sortedFilters;
+      myQuery.resultSortingColumns = queryData.resultSortingColumns;
+    } else {
+      myQuery = JSON.parse(JSON.stringify(queryData));
+      for (let c = 0; c < queryData.fields.length; c++) {
+        mylabels.push(queryData.fields[c].column_name);
+      }
+    }
+
+    myQuery.queryMode = queryData.queryMode ? queryData.queryMode : 'EDA';
+    myQuery.rootTable = myQuery.queryMode == 'EDA2' && queryData.rootTable ? queryData.rootTable : '';
+    myQuery.simple = queryData.simple;
+    myQuery.queryLimit = queryData.queryLimit;
+    myQuery.joinType = queryData.joinType ? queryData.joinType : 'inner';
+
+    if (myQuery.fields.length < queryData.fields.length) {
+      return { forbidden: 'noDataAllowed' };
+    }
+    myQuery.forSelector = queryData.hasOwnProperty('forSelector') && queryData.forSelector === true;
+
+    if (myQuery.filters) {
+      for (const filter of myQuery.filters) {
+        if (!filter.filter_column_type) {
+          const filterTable = dataModelObject.ds.model.tables.find((t) => t.table_name == filter.filter_table.split('.')[0]);
+          if (filterTable) {
+            const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
+            filter.filter_column_type = filterColumn?.column_type || 'text';
+          }
+        }
+        if (!filter.hasOwnProperty('filterBeforeGrouping')) {
+          filter.filterBeforeGrouping = true;
+        }
+      }
+    }
+
+    const filters = myQuery.filters;
+    filters.forEach(a => {
+      a.filter_elements.forEach(b => {
+        if (b.value1) {
+          if (
+            (b.value1.includes('null') || b.value1.includes('1900-01-01'))
+            && b.value1.length > 1
+            && (a.filter_type == '=' || a.filter_type == 'in' || a.filter_type == 'like' || a.filter_type == 'between')
+          ) {
+            filters.push({
+              filter_id: 'is_null', filter_table: a.filter_table, filter_column: a.filter_column,
+              filter_type: 'is_null', filter_elements: [{ value1: ['null'] }],
+              filter_column_type: a.filter_column_type, isGlobal: true, applyToAll: false
+            });
+            b.value1 = b.value1.filter(c => c != 'null');
+          } else if (
+            (b.value1.includes('null') || b.value1.includes('1900-01-01'))
+            && b.value1.length > 1
+            && (a.filter_type == '!=' || a.filter_type == 'not_in' || a.filter_type == 'not_like')
+          ) {
+            filters.push({
+              filter_id: 'not_null', filter_table: a.filter_table, filter_column: a.filter_column,
+              filter_type: 'not_null', filter_elements: [{ value1: ['null'] }],
+              filter_column_type: a.filter_column_type, isGlobal: true, applyToAll: false
+            });
+            b.value1 = b.value1.filter(c => c != 'null');
+          } else if (
+            (b.value1.includes('null') || b.value1.includes('1900-01-01'))
+            && b.value1.length == 1
+            && (a.filter_type == '=' || a.filter_type == 'in' || a.filter_type == 'like' || a.filter_type == 'between')
+          ) {
+            a.filter_type = 'is_null';
+          } else if (
+            (b.value1.includes('null') || b.value1.includes('1900-01-01'))
+            && b.value1.length == 1
+            && (a.filter_type == '!=' || a.filter_type == 'not_in' || a.filter_type == 'not_like')
+          ) {
+            a.filter_type = 'not_null';
+          }
+        }
+      });
+    });
+
+    myQuery.filters = filters;
+
+    if (uniquesForbiddenTables.length > 0) {
+      if (myQuery.filters.filter(f => uniquesForbiddenTables.includes(f.filter_table.split('.')[0])).length > 0) {
+        return { forbidden: 'noFilterAllowed' };
+      }
+    }
+
+    const query = await connection.getQueryBuilded(myQuery, dataModelObject, user, queryData.queryLimit);
+    return { query, myQuery, mylabels };
+  }
+
   static async cleanDashboardCache(req: Request, res: Response, next: NextFunction) {
     let connectionProps: any;
     if (req.body.dashboard?.connectionProperties !== undefined)
@@ -2404,14 +2379,23 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     const dataModelObject = JSON.parse(JSON.stringify(dataModel))
 
     for (const query of req.body.queries) {
-      if (query.queryMode === 'SQL') {
-        let userSql = query.SQLexpression;
-        let hashedQuery = CachedQueryService.build(req.body.model_id, userSql, 'SQL');
-        await CachedQueryService.deleteQuery(hashedQuery);
-      } else {
-        let edaQuery = await connection.getQueryBuilded(query, dataModelObject, req.user);
-        let hashedQuery = CachedQueryService.build(req.body.model_id, edaQuery, 'EDA');
-        await CachedQueryService.deleteQuery(hashedQuery);
+      try {
+        if (query.queryMode === 'SQL') {
+          // Debe coincidir con el SQL ya construido (filtros/permisos inyectados) que se usó al guardar en caché
+          const builtSql = connection.BuildSqlQuery(query, dataModelObject, req.user);
+          if (builtSql) {
+            const hashedQuery = CachedQueryService.build(req.body.model_id, builtSql, 'SQL');
+            await CachedQueryService.deleteQuery(hashedQuery);
+          }
+        } else {
+          const built = await DashboardController.buildEdaQuery(query, dataModelObject, req.user, connection);
+          if (!('forbidden' in built)) {
+            const hashedQuery = CachedQueryService.build(req.body.model_id, built.query, 'EDA');
+            await CachedQueryService.deleteQuery(hashedQuery);
+          }
+        }
+      } catch (err) {
+        console.log(`cleanDashboardCache: unable to recompute cache key for a query, skipping: ${err}`);
       }
     }
 

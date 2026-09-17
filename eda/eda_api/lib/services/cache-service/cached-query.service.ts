@@ -81,7 +81,7 @@ export class CachedQueryService {
 
     try {
       const res = await CachedQuery.deleteMany({
-        'cachedQuery.lastLoaded': {
+        'cachedQuery.dateAdded': {
           $lte: SchedulerFunctions.totLocalISOTime(limitDate)
         }
       }).exec()
