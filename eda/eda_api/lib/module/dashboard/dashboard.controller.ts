@@ -1817,7 +1817,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         if (oracleDataTypes.length > 1) {
           for (var i = 0; i < oracleDataTypes.length - 1; i++) {
             for (var j = 0; j < oracleDataTypes[i].length; j++) {
-              if (oracleDataTypes[j][0] === 'int' && oracleDataTypes[i][j] !== oracleDataTypes[i + 1][j]) {
+              if (oracleDataTypes[0][j] === 'int' && oracleDataTypes[i][j] !== oracleDataTypes[i + 1][j]) {
                 oracleEval = false;
               }
             }
