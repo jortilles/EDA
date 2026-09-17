@@ -662,6 +662,7 @@ export class DashboardPage implements OnInit {
     const tasks = this.edaPanels.map(async (panel) => {
       if (panel.currentQuery.length > 0) {
         panel.display_v.chart = '';
+        panel.markDirty();
 
         await panel.runQueryFromDashboard(true);
 
@@ -1150,6 +1151,7 @@ export class DashboardPage implements OnInit {
           { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
         ];
       }
+      panel.markDirty();
     }
   }
 
@@ -1157,6 +1159,7 @@ export class DashboardPage implements OnInit {
     this.edaPanels.forEach(async (panel) => {
       if (panel.currentQuery.length > 0) {
         panel.display_v.chart = '';
+        panel.markDirty();
         await panel.runQueryFromDashboard(true);
         setTimeout(() => panel.panelChart?.updateComponent(), 100);
       }
@@ -1170,6 +1173,7 @@ export class DashboardPage implements OnInit {
         const isChartJS = ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar', 'knob'].includes(chartType);
         if (!isChartJS) {
           panel.display_v.chart = '';
+          panel.markDirty();
           await panel.runQueryFromDashboard(true);
         }
         setTimeout(() => panel.panelChart?.updateComponent(), 100);

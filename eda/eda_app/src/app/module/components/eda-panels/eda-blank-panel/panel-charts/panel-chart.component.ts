@@ -9,7 +9,7 @@ import { TreeMap } from './../../../eda-treemap/eda-treeMap';
 import { EdaD3Component } from './../../../eda-d3-sankey/eda-d3-sankey.component';
 import { TableConfig } from './chart-configuration-models/table-config';
 import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
-    OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID, Type } from '@angular/core';
+    OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID, Type, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
 import { EdaTableComponent } from '../../../eda-tables/eda-table/eda-table.component';
 import { EdaCrosstableComponent } from '../../../eda-tables/eda-crosstable/eda-crosstable.component';
@@ -74,7 +74,8 @@ import { EdaBarlineD3 } from '@eda/components/eda-barline-d3/eda-barline';
     standalone: true,
     selector: 'panel-chart',
     templateUrl: './panel-chart.component.html',
-    imports: [FormsModule, CommonModule]
+    imports: [FormsModule, CommonModule],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
@@ -112,22 +113,32 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         private chartUtils: ChartUtilsService,
         @Self() private ownRef: ElementRef,
         public styleProviderService: StyleProviderService,
+        private cdr: ChangeDetectorRef,
         @Inject(LOCALE_ID) private locale: string) {
-        
+
         this.fontColor = this.styleProviderService.panelFontColor.source['value'];
         this.paletaActual = this.styleProviderService.ActualChartPalette !== undefined ?
             this.styleProviderService.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
 
-        
+
         this.styleProviderService.panelFontFamily.subscribe(family => {
             this.fontFamily = family;
             if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
+            this.cdr.markForCheck();
         });
 
         this.styleProviderService.panelFontSize.subscribe(size => {
             this.fontSize = size;
             if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line','area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
+            this.cdr.markForCheck();
         });
+    }
+
+    /** Marca este componente para revisión bajo OnPush. Necesario porque otros componentes
+     *  (EdaBlankPanelComponent, query-utils.ts) mutan directamente propiedades de este panel
+     *  (p.ej. NO_DATA) desde fuera de cualquier evento propio de su plantilla. */
+    public markDirty(): void {
+        this.cdr.markForCheck();
     }
 
 
@@ -148,12 +159,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         if (this.props.data && this.props.data.values.length !== 0
             && !this.props.data.values.reduce((a, b) => a && b.every(element => element === null), true)) {
-                requestAnimationFrame(() => {                    
+                requestAnimationFrame(() => {
                 setTimeout(_ => {
                     this.NO_DATA = false;
+                    this.cdr.markForCheck();
                 });
-    
+
                 this.changeChartType();
+                this.cdr.markForCheck();
               });
         }
         /**
@@ -172,6 +185,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     this.NO_DATA_ALLOWED = false;
                     this.NO_FILTER_ALLOWED = true;
                 }
+                this.cdr.markForCheck();
             })
         }
     }
@@ -266,6 +280,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (type === 'kpideviation') {
             this.renderEdaKpiDeviation();
         }
+        this.cdr.markForCheck();
     }
 
     /**
@@ -2053,6 +2068,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 console.error('Error en updateComponent:', err);
             }
         }
+        this.cdr.markForCheck();
     }
 
     public updateKPIColors() {
@@ -2133,6 +2149,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 this.componentRef = null;
             }
             render();
+            this.cdr.markForCheck();
         });
     }
 

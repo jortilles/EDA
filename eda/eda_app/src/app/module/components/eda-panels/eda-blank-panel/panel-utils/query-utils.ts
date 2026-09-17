@@ -185,7 +185,9 @@ export const QueryUtils = {
 
     } else {
       ebp.panelChart.NO_DATA = false;
+      ebp.panelChart.markDirty();
       ebp.display_v.minispinner = true;
+      ebp.markDirty();
     }
 
     try {
@@ -255,6 +257,7 @@ export const QueryUtils = {
     // Ensure the dragAndDrop component can be displayed
     ebp.dragAndDropAvailable = !ebp.chartTypes.filter( grafico => grafico.subValue === 'crosstable')[0].ngIf;
 
+    ebp.markDirty();
 
   },
 
@@ -281,6 +284,7 @@ export const QueryUtils = {
         params: { kind: 'cumsum' },
         close: (event) => {
           ebp.warningController = null;
+          ebp.markDirty();
         }
       })
     } else {
@@ -329,6 +333,7 @@ export const QueryUtils = {
               QueryUtils.runQuery(ebp, false);
             }
             ebp.warningController = null;
+            ebp.markDirty();
           }
         });
 

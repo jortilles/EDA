@@ -510,6 +510,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
         queries.push(panel.content.query.query);
       }
     }
+    queries.push(...this.dashboard.globalFilter.getFilterSelectorQueries());
 
     const body = {
       model_id: this.dashboard.dataSource._id,
