@@ -208,7 +208,7 @@ export class DashboardPage implements OnInit {
     this.stylesProviderService.setDefaultBackgroundColor();
     this.stylesProviderService.loadingFromPalette = false;
     this.stopRefresh = true;
-    this.dashboard.config.stopRefresh = true;
+    if (this.dashboard) this.dashboard.config.stopRefresh = true;
     clearInterval(this.countdownInterval);
     this.mobileResizeObserver?.disconnect();
     if (this.edaPanelsSubscription) {
@@ -290,7 +290,12 @@ export class DashboardPage implements OnInit {
       this.applyToAllfilter = dashboard.config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
       this.globalFilter?.initOrderDependentFilters(dashboard.config.orderDependentFilters || []); // Dependent filters
       //this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Dashboard filters
-      await this.globalFilter?.initGlobalFilters( this.checkFiltersVisibility( dashboard.config.filters , data.datasource.model.tables ) ||[]);// Dashboard filters
+      try {
+        // A failure loading one filter's data must not prevent the rest of the dashboard (panels) from loading.
+        await this.globalFilter?.initGlobalFilters( this.checkFiltersVisibility( dashboard.config.filters , data.datasource.model.tables ) ||[]);// Dashboard filters
+      } catch (err) {
+        console.error('Error initializing dashboard filters: ', err);
+      }
       this.initPanels(dashboard);
       this.sortPanelsForMobile();
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
