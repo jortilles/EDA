@@ -556,10 +556,14 @@ public tableNodeExpand(event: any): void {
     }
 
     isClickFiltersEnabled(): boolean {
+        // Click-to-filter never fires for SQL panels (onPanelAction requires EDA mode), so
+        // report it as disabled regardless of the saved flag.
+        if (this.selectedQueryMode === 'SQL') return false;
         return (this.panel as any).clickFiltersEnabled ?? true;
     }
 
     toggleClickFilters(): void {
+        if (this.selectedQueryMode === 'SQL') return;
         const panel = this.panel as any;
         panel.clickFiltersEnabled = !this.isClickFiltersEnabled();
         this.dashboardService.setNotSaved(true);

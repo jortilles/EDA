@@ -399,7 +399,7 @@ export const PanelOptions = {
         item: () => PanelOptions.toggleLock(ebp),
       },
       {
-        show: !isRoOrAnonimus && isEditable,
+        show: !isRoOrAnonimus && isEditable && ebp.selectedQueryMode !== 'SQL',
         item: () => PanelOptions.toggleClickFilter(ebp),
       },
       {
