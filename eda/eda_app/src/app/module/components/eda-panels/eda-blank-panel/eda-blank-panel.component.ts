@@ -141,6 +141,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public filterController: EdaDialogController;
     public chartController: EdaDialogController;
     public tableController: EdaDialogController;
+    /** Set by onCloseTableProperties() right before the confirm-triggered renderChart() call,
+     *  read once by that renderChart() and cleared — see PanelChart.groupedSubtotalsPreview. */
+    private pendingGroupedSubtotalsPreview?: { cleanRows: any[], mergedRows: any[] };
     public warningController: EdaDialogController;
     public mapController: EdaDialogController;
     public mapCoordController: EdaDialogController;
@@ -869,7 +872,9 @@ public tableNodeExpand(event: any): void {
                     liveConfig.groupBySubtotalAggregation || 'sum'
                 );
             } : undefined,
+            groupedSubtotalsPreview: type === 'table' ? this.pendingGroupedSubtotalsPreview : undefined,
         });
+        this.pendingGroupedSubtotalsPreview = undefined;
     }
 
     /**
@@ -1541,12 +1546,13 @@ public tableNodeExpand(event: any): void {
 }
 
 
-    public onCloseTableProperties(event, properties: TableConfig): void {
+    public onCloseTableProperties(event, properties: TableConfig, groupedSubtotalsPreview?: { cleanRows: any[], mergedRows: any[] }): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             if (properties) {
                 this.panel.content.query.output.config = properties;
                 const config = new ChartConfig(properties);
 
+                this.pendingGroupedSubtotalsPreview = groupedSubtotalsPreview;
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
             }

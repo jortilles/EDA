@@ -34,6 +34,12 @@ export class PanelChart {
    *  a 2nd grouping column) fetched stale 1-level data while the merge expected 2 levels.
    *  Undefined for every chart type except table. */
   public fetchGroupedSubtotals?: (config: TableConfig) => Promise<GroupedSubtotalLevel[]>;
+  /** Already-merged rows from table-dialog's live preview, handed off on Confirm so the real
+   *  panel paints the correct grouped table immediately instead of showing the raw table while
+   *  applyGroupedSubtotals() re-fetches from scratch. Only set by EdaBlankPanelComponent right
+   *  before the confirm-triggered renderChart() call — undefined on every other render path,
+   *  where the normal fetchGroupedSubtotals flow still applies. */
+  public groupedSubtotalsPreview?: { cleanRows: any[], mergedRows: any[] };
   constructor(init?: Partial<PanelChart>) {
     Object.assign(this, init);
   }

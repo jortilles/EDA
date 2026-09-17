@@ -63,7 +63,7 @@ export const PanelOptions = {
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.tableController = new EdaDialogController({
               params: { panelId: _.get(panelComponent.panel, 'id'), panelChart: panelComponent.panelChartConfig },
-              close: (event, response) => panelComponent.onCloseTableProperties(event, response)
+              close: (event, response, extra) => panelComponent.onCloseTableProperties(event, response, extra)
             });
 
           } else if (panelComponent.graficos.chartType === 'geoJsonMap') {

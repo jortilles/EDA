@@ -430,6 +430,19 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             return Promise.resolve();
         }
 
+        // Confirm handoff: table-dialog's live preview already fetched+merged this exact
+        // grouping (the picker fires the same fetch on every selection change), so reuse it
+        // instead of re-fetching from the backend — that avoids repainting the raw table while
+        // a redundant request is in flight. Only set by EdaBlankPanelComponent right before the
+        // confirm-triggered renderChart() call.
+        if (this.props.groupedSubtotalsPreview) {
+            inject.sortedColumn = { field: null, order: null };
+            inject.__groupedSubtotalsCleanRows = this.props.groupedSubtotalsPreview.cleanRows;
+            inject.value = this.props.groupedSubtotalsPreview.mergedRows;
+            inject.origValues = this.props.groupedSubtotalsPreview.mergedRows;
+            return Promise.resolve();
+        }
+
         // "El grupo manda": a column-header sort re-orders inject.value by VALUE across the
         // WHOLE array (p-table's [customSort] + eda-table's customSort()), which has no idea
         // subtotal rows exist — it happily scatters a "Classic Cars Total" row wherever its

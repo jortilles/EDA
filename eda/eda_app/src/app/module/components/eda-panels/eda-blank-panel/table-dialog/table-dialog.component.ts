@@ -555,9 +555,9 @@ export class TableDialogComponent{
     }
   }
 
-  onClose(event: EdaDialogCloseEvent, response?: any): void {
+  onClose(event: EdaDialogCloseEvent, response?: any, extra?: any): void {
     this.myPanelChartComponent.componentRef.instance.inject.styles = this.styles;
-    return this.controller.close(event, response);
+    return this.controller.close(event, response, extra);
   }
 
   async saveChartConfig() {
@@ -601,7 +601,15 @@ export class TableDialogComponent{
       }
     }
 
-    this.onClose(EdaDialogCloseEvent.UPDATE, properties);
+    // Hand off the live preview's already-fetched+merged rows so the real panel can paint the
+    // grouped table immediately on Confirm instead of showing the raw table while it re-fetches
+    // from scratch (see applyGroupedSubtotals()'s groupedSubtotalsPreview short-circuit).
+    const previewInject: any = this.myPanelChartComponent.componentRef?.instance?.inject;
+    const groupedSubtotalsPreview = (this.groupBySubtotalColumns.length && previewInject?.__groupedSubtotalsCleanRows)
+      ? { cleanRows: previewInject.__groupedSubtotalsCleanRows, mergedRows: previewInject.value }
+      : undefined;
+
+    this.onClose(EdaDialogCloseEvent.UPDATE, properties, groupedSubtotalsPreview);
   }
 
   closeChartConfig() {
