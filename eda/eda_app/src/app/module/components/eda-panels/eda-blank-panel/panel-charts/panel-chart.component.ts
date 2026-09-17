@@ -414,9 +414,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * back off) are kept separately on inject.__groupedSubtotalsCleanRows instead, captured
      * once and left untouched.
      */
-    public applyGroupedSubtotals(config: TableConfig): void {
+    public applyGroupedSubtotals(config: TableConfig): Promise<void> {
         const inject: any = this.componentRef?.instance?.inject;
-        if (!inject || inject instanceof EdaCrosstableModel) return;
+        if (!inject || inject instanceof EdaCrosstableModel) return Promise.resolve();
 
         const groupByColumns = config.groupBySubtotalColumns;
         if (!groupByColumns?.length || !this.props.fetchGroupedSubtotals) {
@@ -427,7 +427,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 inject.origValues = inject.__groupedSubtotalsCleanRows;
                 inject.__groupedSubtotalsCleanRows = null;
             }
-            return;
+            return Promise.resolve();
         }
 
         // "El grupo manda": a column-header sort re-orders inject.value by VALUE across the
@@ -459,7 +459,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             if (edaCol && displayName) displayNameToField[displayName] = edaCol.field;
         });
 
-        this.props.fetchGroupedSubtotals(config).then(levels => {
+        return this.props.fetchGroupedSubtotals(config).then(levels => {
             // The base render may be gone by the time this resolves (panel re-rendered,
             // dialog closed) — bail rather than writing into a stale/detached model.
             if (this.componentRef?.instance?.inject !== inject) return;

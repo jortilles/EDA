@@ -18,13 +18,14 @@ import { QueryUtils } from '../panel-utils/query-utils';
 import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_default';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   standalone: true,
   selector: 'app-table-dialog',
   templateUrl: './table-dialog.component.html',
   styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css'],
-  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent, PredictionDialogComponent, ColorPickerModule, MultiSelectModule]
+  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent, PredictionDialogComponent, ColorPickerModule, MultiSelectModule, ProgressSpinnerModule]
 })
 
 export class TableDialogComponent{
@@ -65,6 +66,7 @@ export class TableDialogComponent{
   /** Whether the picker section is expanded — independent of whether any column is chosen
    *  yet, so turning it on doesn't need a column selected first. */
   public groupedSubtotalsOpen: boolean = false;
+  public groupedSubtotalsLoading: boolean = false;
 
   public groupedSubtotalsTitle: string = $localize`:@@groupedSubtotalsTitle:Subtotales agrupados`;
   public groupedSubtotalsGroupByLabel: string = $localize`:@@groupedSubtotalsGroupByLabel:Agrupar por (en orden)`;
@@ -463,11 +465,12 @@ export class TableDialogComponent{
    * this follows the same split).
    */
   refreshGroupedSubtotals(): void {
+    this.groupedSubtotalsLoading = true;
     this.myPanelChartComponent.applyGroupedSubtotals({
       groupBySubtotalColumns: this.groupBySubtotalColumns,
       groupBySubtotalNumericColumn: this.groupBySubtotalNumericColumn,
       groupBySubtotalAggregation: this.groupBySubtotalAggregation,
-    } as TableConfig);
+    } as TableConfig).finally(() => this.groupedSubtotalsLoading = false);
   }
 
   setPredictionCol() {

@@ -2,13 +2,18 @@
   <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[75vh]">
 
     <!-- Table Preview -->
-    <div class="flex-[3] overflow-auto bg-slate-50 border-r border-gray-200 p-4">
+    <div class="relative flex-[3] overflow-auto bg-slate-50 border-r border-gray-200 p-4">
       <panel-chart
         #PanelChartComponent
         [props]="panelChartConfig"
         (configUpdated)="setChartProperties()"
         class="block w-full h-full">
       </panel-chart>
+      @if (groupedSubtotalsLoading) {
+        <div class="absolute inset-0 flex items-center justify-center bg-slate-50/70 z-10">
+          <p-progressSpinner [style]="{width: '4vw', height: '4vw'}" strokeWidth="6" fill="#EEEEEE" animationDuration=".5s"></p-progressSpinner>
+        </div>
+      }
     </div>
 
     <!-- Settings -->
