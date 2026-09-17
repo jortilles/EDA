@@ -302,12 +302,13 @@ export const PanelOptions = {
               bandingColor: tableInject?.bandingColor,
               colorEnabled: tableInject?.colorEnabled,
             },
-            close: () => { panelComponent.sourceFieldsController = undefined; }
+            close: () => { panelComponent.sourceFieldsController = undefined; panelComponent.markDirty(); }
           });
         } catch (err) {
           panelComponent.alertService.addError(err);
         } finally {
           panelComponent.spinnerService.off();
+          panelComponent.markDirty();
         }
       }
     });

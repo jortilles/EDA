@@ -98,6 +98,7 @@ export class DashboardPage implements OnInit {
   public gridsterOptions: GridsterConfig;
   public gridsterDashboard: GridsterItem[];
   private edaPanelsSubscription: Subscription;
+  private notSavedSubscription: Subscription;
   
   public reportTitle: any;
   public reportPanel: any;
@@ -162,7 +163,7 @@ export class DashboardPage implements OnInit {
     this.initializeResponsiveSizes();
     this.initializeGridsterOptions();
     this.loadDashboard();
-    this.dashboardService.notSaved.subscribe(
+    this.notSavedSubscription = this.dashboardService.notSaved.subscribe(
       (data) => this.notSaved = data
     );
 
@@ -214,6 +215,11 @@ export class DashboardPage implements OnInit {
     if (this.edaPanelsSubscription) {
         this.edaPanelsSubscription.unsubscribe();
     }
+    if (this.notSavedSubscription) {
+        this.notSavedSubscription.unsubscribe();
+    }
+    // Don't let this dashboard's "unsaved changes" state leak into the next dashboard navigated to.
+    this.dashboardService.setNotSaved(false);
   }
 
 
@@ -278,6 +284,9 @@ export class DashboardPage implements OnInit {
   }
 
   public async loadDashboard() {
+    // Reset before loading so a leftover "unsaved changes" flag from a previously viewed
+    // dashboard (the service-level flag is shared/global) never leaks into this one.
+    this.dashboardService.setNotSaved(false);
     const dashboardId = this.route.snapshot.paramMap.get('id');
     const data = await lastValueFrom(this.dashboardService.getDashboard(dashboardId));
     const dashboard = data.dashboard;
