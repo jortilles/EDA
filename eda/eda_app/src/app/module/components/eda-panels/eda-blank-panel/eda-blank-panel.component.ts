@@ -141,9 +141,10 @@ export class EdaBlankPanelComponent implements OnInit {
     public filterController: EdaDialogController;
     public chartController: EdaDialogController;
     public tableController: EdaDialogController;
-    /** Set by onCloseTableProperties() right before the confirm-triggered renderChart() call,
-     *  read once by that renderChart() and cleared — see PanelChart.groupedSubtotalsPreview. */
+    /** Read once by renderChart() then cleared — see PanelChart.groupedSubtotalsPreview. */
     private pendingGroupedSubtotalsPreview?: { cleanRows: any[], mergedRows: any[] };
+    /** Read once by renderChart() then cleared — see PanelChart.groupedSubtotalsPreloadedLevels. */
+    private pendingGroupedSubtotalsPreloadedLevels?: any[];
     public warningController: EdaDialogController;
     public mapController: EdaDialogController;
     public mapCoordController: EdaDialogController;
@@ -683,7 +684,7 @@ public tableNodeExpand(event: any): void {
                 
                 })); // We replace nulls and empty strings with a customizable value.
             
-            this.buildGlobalconfiguration(panelContent);
+            await this.buildGlobalconfiguration(panelContent);
         } catch (err) {
             this.alertService.addError(err);
             this.display_v.minispinner = false;
@@ -695,7 +696,7 @@ public tableNodeExpand(event: any): void {
      * Sets configuration dialog and chart
      * @param panelContent Panel content to build configuration
      */
-    public buildGlobalconfiguration(panelContent: any): void {
+    public async buildGlobalconfiguration(panelContent: any): Promise<void> {
         const { query, chart, edaChart } = panelContent;
         const { modeSQL, fields, filters, queryLimit, groupByEnabled, config } = query.query;
         const queryMode = this.selectedQueryMode;
@@ -742,6 +743,22 @@ public tableNodeExpand(event: any): void {
         this.chartForm.patchValue({ chart: chartOption });
 
         const recoveredConfig = ChartsConfigUtils.recoverConfig(chart, panelContent.query.output.config);
+
+        // Pre-fetch grouped subtotals so the table never paints without them first.
+        const groupByCols = recoveredConfig.getConfig()?.['groupBySubtotalColumns'];
+        if (chart === 'table' && groupByCols?.length) {
+            try {
+                this.pendingGroupedSubtotalsPreloadedLevels = await GroupedSubtotalsUtils.fetchLevels(
+                    this,
+                    groupByCols,
+                    recoveredConfig.getConfig()['groupBySubtotalNumericColumn'],
+                    recoveredConfig.getConfig()['groupBySubtotalAggregation'] || 'sum'
+                );
+            } catch (err) {
+                console.error('No se pudieron precargar los subtotales agrupados', err);
+            }
+        }
+
         this.changeChartType(chart, edaChart, recoveredConfig);
 
         // Show panel and configure chart type
@@ -873,8 +890,10 @@ public tableNodeExpand(event: any): void {
                 );
             } : undefined,
             groupedSubtotalsPreview: type === 'table' ? this.pendingGroupedSubtotalsPreview : undefined,
+            groupedSubtotalsPreloadedLevels: type === 'table' ? this.pendingGroupedSubtotalsPreloadedLevels : undefined,
         });
         this.pendingGroupedSubtotalsPreview = undefined;
+        this.pendingGroupedSubtotalsPreloadedLevels = undefined;
     }
 
     /**

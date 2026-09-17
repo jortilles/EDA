@@ -1,5 +1,12 @@
 
-<template #chartComponent></template>
+<div class="relative w-full h-full">
+  <template #chartComponent></template>
+  @if (groupedSubtotalsLoading) {
+    <div class="absolute inset-0 flex items-center justify-center bg-slate-50 z-10">
+      <p-progressSpinner [style]="{width: '4vw', height: '4vw'}" strokeWidth="6" fill="#EEEEEE" animationDuration=".5s"></p-progressSpinner>
+    </div>
+  }
+</div>
 @if(NO_DATA){
   <ng-container>
     <div class="d-flex justify-content-center place-self-center">

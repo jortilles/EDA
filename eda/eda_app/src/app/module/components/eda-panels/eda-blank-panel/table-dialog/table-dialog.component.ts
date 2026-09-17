@@ -601,9 +601,7 @@ export class TableDialogComponent{
       }
     }
 
-    // Hand off the live preview's already-fetched+merged rows so the real panel can paint the
-    // grouped table immediately on Confirm instead of showing the raw table while it re-fetches
-    // from scratch (see applyGroupedSubtotals()'s groupedSubtotalsPreview short-circuit).
+    // Hand off the live preview's already-merged rows so Confirm skips a re-fetch.
     const previewInject: any = this.myPanelChartComponent.componentRef?.instance?.inject;
     const groupedSubtotalsPreview = (this.groupBySubtotalColumns.length && previewInject?.__groupedSubtotalsCleanRows)
       ? { cleanRows: previewInject.__groupedSubtotalsCleanRows, mergedRows: previewInject.value }

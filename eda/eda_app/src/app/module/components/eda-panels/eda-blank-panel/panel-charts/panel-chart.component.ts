@@ -70,12 +70,13 @@ import { EdaAreaComponent } from '@eda/components/eda-area-d3/eda-area.component
 import { EdaAreaD3 } from '@eda/components/eda-area-d3/eda-area';
 import { EdaBarlineComponent } from '@eda/components/eda-barline-d3/eda-barline.component';
 import { EdaBarlineD3 } from '@eda/components/eda-barline-d3/eda-barline';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
     standalone: true,
     selector: 'panel-chart',
     templateUrl: './panel-chart.component.html',
-    imports: [FormsModule, CommonModule]
+    imports: [FormsModule, CommonModule, ProgressSpinnerModule]
 })
 
 export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
@@ -95,6 +96,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public NO_DATA: boolean;
     public NO_DATA_ALLOWED: boolean;
     public NO_FILTER_ALLOWED: boolean;
+    public groupedSubtotalsLoading: boolean = false;
 
     /**Styles */
     public fontColor: string;
@@ -430,11 +432,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             return Promise.resolve();
         }
 
-        // Confirm handoff: table-dialog's live preview already fetched+merged this exact
-        // grouping (the picker fires the same fetch on every selection change), so reuse it
-        // instead of re-fetching from the backend — that avoids repainting the raw table while
-        // a redundant request is in flight. Only set by EdaBlankPanelComponent right before the
-        // confirm-triggered renderChart() call.
+        // Confirm handoff: reuse table-dialog's already-merged preview instead of re-fetching.
         if (this.props.groupedSubtotalsPreview) {
             inject.sortedColumn = { field: null, order: null };
             inject.__groupedSubtotalsCleanRows = this.props.groupedSubtotalsPreview.cleanRows;
@@ -472,6 +470,23 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             if (edaCol && displayName) displayNameToField[displayName] = edaCol.field;
         });
 
+        // Initial load/reload: levels were already fetched before the table existed, so merge
+        // now, synchronously — the table never paints without subtotals in the first place.
+        if (this.props.groupedSubtotalsPreloadedLevels) {
+            const merged = GroupedSubtotalsUtils.mergeRows(
+                cleanRows,
+                inject.cols.map((c: any) => c.field),
+                displayNameToField,
+                groupByColumns,
+                config.groupBySubtotalNumericColumn,
+                this.props.groupedSubtotalsPreloadedLevels
+            );
+            inject.value = merged;
+            inject.origValues = merged;
+            return Promise.resolve();
+        }
+
+        this.groupedSubtotalsLoading = true;
         return this.props.fetchGroupedSubtotals(config).then(levels => {
             // The base render may be gone by the time this resolves (panel re-rendered,
             // dialog closed) — bail rather than writing into a stale/detached model.
@@ -486,7 +501,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             );
             inject.value = merged;
             inject.origValues = merged;
-        }).catch(err => console.error('No se pudieron cargar los subtotales agrupados', err));
+        }).catch(err => console.error('No se pudieron cargar los subtotales agrupados', err))
+          .finally(() => this.groupedSubtotalsLoading = false);
     }
 
     /** Render knob */
