@@ -38,7 +38,7 @@ export class HomePage implements OnInit, OnDestroy {
   privateReports: any[] = [];
   roleReports: any[] = [];
   sharedReports: any[] = [];
-  reportMap: any = {};
+  reportMap: any = { public: [], shared: [], private: [], group: [] };
 
   tags: any[] = [];
   selectedTags = signal<any>(JSON.parse(sessionStorage.getItem('activeTags') ? sessionStorage.getItem('activeTags') : '[]'));

@@ -95,10 +95,11 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     this.legendPosition = this.inject.legendPosition ? this.inject.legendPosition : "bottomright";
     this.legend = new (L.Control.extend({ options: { position: this.legendPosition } }))();
     this.baseLayerLayer = L.tileLayer(
-      "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+      "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
       {
         maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+        maxNativeZoom: 16,
+        attribution: 'Tiles &copy; <a href="https://www.esri.com" target="_blank">Esri</a> &mdash; Esri, DeLorme, NAVTEQ',
       }
     );
   }
