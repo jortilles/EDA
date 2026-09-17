@@ -75,7 +75,13 @@ import { EdaBarlineD3 } from '@eda/components/eda-barline-d3/eda-barline';
     selector: 'panel-chart',
     templateUrl: './panel-chart.component.html',
     imports: [FormsModule, CommonModule],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    // Custom elements default to display:inline, which ignores the parent's h-full/w-full
+    // (height/width 100%) classes entirely - without this, the dynamically-created chart inside
+    // (treemap/bubblechart/sunburst/etc.) never gets a definite, live-resizing containing block,
+    // so anything measuring its own size (e.g. eda-chart-legend on panel resize) only reflects
+    // whatever the size happened to be at creation time.
+    styles: `:host { display: block; height: 100%; width: 100%; }`
 })
 
 export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
