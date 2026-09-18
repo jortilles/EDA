@@ -397,10 +397,8 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
         leftStartPx: number;
         rightStartPx: number;
         containerWidthPx: number;
-        widthsPxBaseline: Record<string, number>;
-        guideEl: HTMLElement;
-        guideStartLeft: number;
-        lastDeltaPx: number;
+        leftCol: HTMLElement;
+        rightCol: HTMLElement;
     } | null = null;
     private resizeMoveListener = (event: MouseEvent) => this.onColResizeMove(event);
     private resizeUpListener = () => this.onColResizeEnd();
@@ -435,38 +433,33 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const table = (event.currentTarget as HTMLElement).closest('table');
         const visibleThs = Array.from(table.querySelectorAll('tr.header-title th[data-field]')) as HTMLElement[];
-        const widthsPxBaseline: Record<string, number> = {};
+        const cols = Array.from(table.querySelectorAll('col[data-field]')) as HTMLElement[];
+        const widthsPx: Record<string, number> = {};
+        const colEls: Record<string, HTMLElement> = {};
         let containerWidthPx = 0;
         resizable.forEach(c => {
             const th = visibleThs.find(t => t.dataset['field'] === c.field);
-            widthsPxBaseline[c.field] = th?.getBoundingClientRect().width || 0;
-            containerWidthPx += widthsPxBaseline[c.field];
+            const colEl = cols.find(t => t.dataset['field'] === c.field);
+            widthsPx[c.field] = th?.getBoundingClientRect().width || 0;
+            if (colEl) colEls[c.field] = colEl;
+            containerWidthPx += widthsPx[c.field];
         });
-        if (!containerWidthPx) return;
+        if (!containerWidthPx || !colEls[col.field] || !colEls[rightCol.field]) return;
 
-        // A thin guide line tracks the mouse live (cheap); the actual table only reflows once,
-        // at drag end. Fixed to the viewport and appended to <body> so it can't affect any
-        // ancestor's layout/scroll (an earlier absolute-positioned version caused a scrollbar).
-        const tableRect = table.getBoundingClientRect();
-        const guideEl = document.createElement('div');
-        guideEl.className = 'col-resize-guide';
-        guideEl.style.height = tableRect.height + 'px';
-        guideEl.style.top = tableRect.top + 'px';
-        const guideStartLeft = event.clientX;
-        guideEl.style.left = guideStartLeft + 'px';
-        document.body.appendChild(guideEl);
+        // Pin every column's <col> to its exact current pixel width — the browser's native
+        // mechanism for table-layout:fixed widths, much cheaper to update live than a <th>/<td>.
+        resizable.forEach(c => { colEls[c.field].style.width = widthsPx[c.field] + 'px'; });
+        this.inject.autolayout = false;
 
         this.resizeDrag = {
             leftField: col.field,
             rightField: rightCol.field,
             startX: event.clientX,
-            leftStartPx: widthsPxBaseline[col.field],
-            rightStartPx: widthsPxBaseline[rightCol.field],
+            leftStartPx: widthsPx[col.field],
+            rightStartPx: widthsPx[rightCol.field],
             containerWidthPx,
-            widthsPxBaseline,
-            guideEl,
-            guideStartLeft,
-            lastDeltaPx: 0,
+            leftCol: colEls[col.field],
+            rightCol: colEls[rightCol.field],
         };
         document.body.style.cursor = 'col-resize';
         document.body.style.userSelect = 'none';
@@ -486,8 +479,8 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
         const maxDelta = drag.rightStartPx - minWidthPx;
         deltaPx = Math.max(minDelta, Math.min(maxDelta, deltaPx));
 
-        drag.lastDeltaPx = deltaPx;
-        drag.guideEl.style.left = (drag.guideStartLeft + deltaPx) + 'px';
+        drag.leftCol.style.width = (drag.leftStartPx + deltaPx) + 'px';
+        drag.rightCol.style.width = (drag.rightStartPx - deltaPx) + 'px';
     }
 
     private onColResizeEnd(): void {
@@ -498,14 +491,17 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
         const drag = this.resizeDrag;
         if (!drag) return;
         this.resizeDrag = null;
-        drag.guideEl.remove();
 
-        // Re-enter Angular here: this is the only point that actually resizes the table.
+        // Re-enter Angular here: this is the only point that touches the model/config, once.
         this.ngZone.run(() => {
             const resizable = this.resizableCols;
-            const finalPx = { ...drag.widthsPxBaseline };
-            finalPx[drag.leftField] = drag.leftStartPx + drag.lastDeltaPx;
-            finalPx[drag.rightField] = drag.rightStartPx - drag.lastDeltaPx;
+            const table = drag.leftCol.closest('table');
+            const cols = Array.from(table.querySelectorAll('col[data-field]')) as HTMLElement[];
+            const pxByField: Record<string, number> = {};
+            resizable.forEach(c => {
+                const colEl = cols.find(t => t.dataset['field'] === c.field);
+                pxByField[c.field] = colEl ? parseFloat(colEl.style.width) || 0 : 0;
+            });
 
             // Last column absorbs the rounding remainder so the sum is always exactly 100%.
             const widths: Record<string, string> = {};
@@ -514,7 +510,7 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (i === resizable.length - 1) {
                     widths[c.field] = (100 - sumPct).toFixed(2) + '%';
                 } else {
-                    const pct = parseFloat((finalPx[c.field] / drag.containerWidthPx * 100).toFixed(2));
+                    const pct = parseFloat((pxByField[c.field] / drag.containerWidthPx * 100).toFixed(2));
                     widths[c.field] = pct + '%';
                     sumPct += pct;
                 }

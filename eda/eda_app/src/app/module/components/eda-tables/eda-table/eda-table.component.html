@@ -16,6 +16,18 @@
         styleClass="p-datatable-striped" 
         [ngStyle]="getStyle()">
 
+        <!-- Colgroup: the browser's native, lightweight mechanism for table-layout:fixed
+             column widths — resizing writes to these <col>s instead of any <th>/<td>. -->
+        <ng-template pTemplate="colgroup">
+            <colgroup>
+                <ng-container *ngFor="let col of inject.cols">
+                    @if(col.visible === true){
+                        <col [style.width]="col.width" [attr.data-field]="col.field">
+                    }
+                </ng-container>
+            </colgroup>
+        </ng-template>
+
         <!-- Search -->
          @if(inject.search){
             <ng-template pTemplate="caption">
