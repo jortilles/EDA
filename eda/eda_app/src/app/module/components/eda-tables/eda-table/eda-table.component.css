@@ -47,6 +47,22 @@
   font-weight: bold !important;
 }
 
+/* Grouped subtotals (see grouped-subtotals-utils.ts) — own color, distinct from the classic
+   partial-totals rows above, which keep using --table-total-color. */
+.grouped-sub-total-row {
+  background-color: var(--green-300) !important;
+  color:var(--panel-font-color)!important;
+  text-align: right;
+  font-weight: bold !important;
+}
+
+.grouped-sub-total-row-header {
+  background-color: var(--green-300) !important;
+  color:var(--panel-font-color)!important;
+  text-align: left;
+  font-weight: bold !important;
+}
+
 .total-row-header{
   background-color: var(--table-total-color) !important;
   color:var(--panel-font-color)!important;

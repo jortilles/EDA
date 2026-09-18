@@ -342,6 +342,61 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
         this.inject.sortedColumn = { field: event.field, order: event.order };
     }
 
+    /** Same comparator as customSort(), but sorts only within each group (the run of detail
+     *  rows between subtotal rows) instead of the whole flat array — a plain sort would
+     *  scatter subtotal rows away from their group. Used instead of customSort() when the
+     *  table has grouped subtotals active (see eda-table.component.html). */
+    customSortGrouped(event: any, cols: any) {
+
+        const actualField = event.field;
+        const actualCol = cols.find(col => col.field === actualField)
+
+        const comparator = (data1: any, data2: any) => {
+            let value1 = data1[event.field];
+            let value2 = data2[event.field];
+            let result = null;
+
+            if (value1 == null && value2 != null)
+                result = -1;
+            else if (value1 != null && value2 == null)
+                result = 1;
+            else if (value1 == null && value2 == null)
+                result = 0;
+            else if (typeof value1 === 'string' && typeof value2 === 'string') {
+                if(actualCol.rangeOption) {
+                    const match1 = this.extractNumberRange(value1)
+                    const match2 = this.extractNumberRange(value2)
+                    result = (match1 < match2) ? -1 : (match1 > match2) ? 1 : 0;
+                } else if (actualCol.type === "EdaColumnPercentage"){
+                    const match1 =  parseFloat(value1.replace('%', '') )
+                    const match2 =  parseFloat(value2.replace('%', '') )
+                    result = (match1 < match2) ? -1 : (match1 > match2) ? 1 : 0;
+                }else    result = value1.localeCompare(value2);
+            }
+            else
+                result = (value1 < value2) ? -1 : (value1 > value2) ? 1 : 0;
+
+            return (event.order * result);
+        };
+
+        let start = 0;
+        for (let i = 0; i <= event.data.length; i++) {
+            const isBoundary = i === event.data.length || event.data[i][this.groupedSubtotalKey] !== undefined;
+            if (isBoundary) {
+                const segment = event.data.slice(start, i).sort(comparator);
+                for (let j = 0; j < segment.length; j++) event.data[start + j] = segment[j];
+                start = i + 1;
+            }
+        }
+
+        this.inject.sortedColumn = { field: event.field, order: event.order };
+    }
+
+    /** Whether the table currently has grouped-subtotal rows — picks customSort() vs customSortGrouped(). */
+    hasGroupedSubtotalRows(): boolean {
+        return (this.inject.value || []).some((row: any) => row[this.groupedSubtotalKey] !== undefined);
+    }
+
     extractNumberRange(input) {
         const regex = /(?:<|<=|>|>=)?\s*(-?\d+)\s*(?:-|<|<=|>|>=)?\s*(-?\d+)?/;
         const match = input.trim().match(regex);

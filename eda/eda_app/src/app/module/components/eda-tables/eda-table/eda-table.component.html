@@ -8,7 +8,7 @@
         [rowsPerPageOptions]="[5, 10, 25, 50, 100]" 
         paginatorDropdownAppendTo="body" 
         (onPage)="inject.onPage($event)" 
-        (sortFunction)="customSort($event, inject.cols)" 
+        (sortFunction)="hasGroupedSubtotalRows() ? customSortGrouped($event, inject.cols) : customSort($event, inject.cols)"
         [customSort]="true"
         [sortField]="inject.sortedColumn ? inject.sortedColumn.field : null"
         [sortOrder]="inject.sortedColumn ? inject.sortedColumn.order : null" 
@@ -84,7 +84,7 @@
                 <tr>
                     <ng-container *ngFor="let col of inject.cols">
                         @if (col.visible === true) {
-                            <td [width]="col.width" [class]="col.type === 'EdaColumnNumber' ? 'sub-total-row' : 'sub-total-row-header'">
+                            <td [width]="col.width" [class]="col.type === 'EdaColumnNumber' ? 'grouped-sub-total-row' : 'grouped-sub-total-row-header'">
                                 {{ lodash.get(rowData, col.field) }}
                             </td>
                         }
