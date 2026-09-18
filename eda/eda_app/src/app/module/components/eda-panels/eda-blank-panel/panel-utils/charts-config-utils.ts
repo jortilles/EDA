@@ -101,6 +101,7 @@ export const ChartsConfigUtils = {
         headerColor: ebp.panelChart.componentRef.instance.inject.headerColor || '',
         bandingColor: ebp.panelChart.componentRef.instance.inject.bandingColor || '',
         colorEnabled: ebp.panelChart.componentRef.instance.inject.colorEnabled !== false,
+        columnWidths: ebp.panelChart.componentRef.instance.inject.columnWidths,
       }
 
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'kpideviation') {

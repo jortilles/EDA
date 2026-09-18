@@ -374,6 +374,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.onSortColEvent.subscribe(data => {
             (<TableConfig>config).sortedColumn = data;
         });
+        this.componentRef.instance.inject.onColumnResizeEvent.subscribe(data => {
+            (<TableConfig>config).columnWidths = data;
+        });
         this.currentConfig = this.componentRef.instance.inject;
         this.componentRef.instance.inject.linkedDashboardProps = this.props.linkedDashboardProps;
 
@@ -2306,7 +2309,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (type === 'table') {
-            return new EdaTableModel({ cols: tableColumns, ...configs });
+            // Untouched tables keep auto-sizing by content; only apply saved widths once the
+            // user has dragged a header border at least once (see EdaTableBase.resizeColumns()).
+            const columnWidths: Record<string, string> = configs?.columnWidths;
+            if (columnWidths) {
+                tableColumns.forEach((col: any) => { if (columnWidths[col.field]) col.width = columnWidths[col.field]; });
+            }
+            return new EdaTableModel({ cols: tableColumns, ...configs, autolayout: columnWidths ? false : true });
         } else if (type === 'crosstable') {
             return new EdaCrosstableModel({ cols: tableColumns, ...configs });
         }

@@ -47,6 +47,7 @@ export abstract class EdaTableBase implements TotalsContext {
   public onNotify: EventEmitter<any> = new EventEmitter();
   public onSortPivotEvent: EventEmitter<any> = new EventEmitter();
   public onSortColEvent: EventEmitter<any> = new EventEmitter();
+  public onColumnResizeEvent: EventEmitter<Record<string, string>> = new EventEmitter();
   public onNavIn: EventEmitter<{ field: string; value: any }> = new EventEmitter();
   public onNavOut: EventEmitter<{ rootKey: string }> = new EventEmitter();
 
@@ -85,6 +86,8 @@ export abstract class EdaTableBase implements TotalsContext {
   public autolayout: boolean = true;
   public sortedSerie: any = null;
   public sortedColumn: any = { field: null, order: null };
+  /** field -> "33.33%", set by resizeColumns() once the user drags a header border. */
+  public columnWidths?: Record<string, string>;
 
   /** Raw color-style CONFIG (input), e.g. `[{col:'amt', max, min}]` — distinct from the
    *  component's own `styles` field (computed ColorEntry map, see eda-table.color.ts). */
@@ -264,6 +267,18 @@ export abstract class EdaTableBase implements TotalsContext {
       this.onSortColEvent.emit($event);
       this.checkTotals(null);
     }
+  }
+
+  /** Applies dragged header-border widths (field -> "33.33%") and switches off auto-layout,
+   *  so the table stops auto-sizing by content and starts respecting these percentages. */
+  public resizeColumns(widths: Record<string, string>) {
+    Object.entries(widths).forEach(([field, width]) => {
+      const col = this.cols.find(c => c.field === field);
+      if (col) col.width = width;
+    });
+    this.autolayout = false;
+    this.columnWidths = widths;
+    this.onColumnResizeEvent.emit(widths);
   }
 
   public sort(serie: any) {
