@@ -420,6 +420,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const inject: any = this.componentRef?.instance?.inject;
         if (!inject || inject instanceof EdaCrosstableModel) return Promise.resolve();
 
+        // Bumped on every call, so a late in-flight fetch can detect it's been superseded.
+        const requestId = (inject.__groupedSubtotalsRequestId = (inject.__groupedSubtotalsRequestId || 0) + 1);
+
         const groupByColumns = config.groupBySubtotalColumns;
         const numericColumns = GroupedSubtotalsUtils.numericColumnsFromFields(this.props.query);
         if (!groupByColumns?.length || !this.props.fetchGroupedSubtotals || !numericColumns.length) {
@@ -494,9 +497,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         this.groupedSubtotalsLoading = true;
         return this.props.fetchGroupedSubtotals(config).then(levels => {
-            // The base render may be gone by the time this resolves (panel re-rendered,
-            // dialog closed) — bail rather than writing into a stale/detached model.
+            // Bail if detached, or if a newer call already superseded this one.
             if (this.componentRef?.instance?.inject !== inject) return;
+            if (inject.__groupedSubtotalsRequestId !== requestId) return;
             const merged = GroupedSubtotalsUtils.mergeRows(
                 cleanRows,
                 inject.cols.map((c: any) => c.field),
