@@ -112,7 +112,9 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
           const matchingField = this.queryTODO.fields.find(
             (f: any) => f.table_id === col.table_id && f.column_name === col.column_name
           );
-          if (matchingField) {
+          if (matchingField?.computed_column === 'computed') {
+            return `${this.getOrderExpression(matchingField)} ${col.ordenation_type}`;
+          } else if (matchingField) {
             return `"${matchingField.display_name}" ${col.ordenation_type}`;
           } else {
             return `"${col.table_id}"."${col.column_name}" ${col.ordenation_type}`;
@@ -122,7 +124,9 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
       orderColumns = this.queryTODO.fields
         .map((col: any) => {
           if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
-            return `"${col.display_name}" ${col.ordenation_type}`;
+            return col.computed_column === 'computed'
+              ? `${this.getOrderExpression(col)} ${col.ordenation_type}`
+              : `"${col.display_name}" ${col.ordenation_type}`;
           }
           return false;
         })
