@@ -14,6 +14,7 @@ import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
 import { DateUtil } from '../../utils/date.util'
 import _ from 'lodash'
+import { getDbErrorMessage, resolveDbLang } from './DbErrorMessages'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
@@ -1451,7 +1452,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
     } catch (err) {
       console.log(err)
-      next(new HttpException(500, DashboardController.parseQueryError(err)))
+      next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
 
@@ -1864,7 +1865,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
     } catch (err) {
       console.log(err)
-      next(new HttpException(500, DashboardController.parseQueryError(err)))
+      next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
 
@@ -1976,6 +1977,115 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         return 'Error querying database';
       }
     }
+  }
+
+  static async isPublicDashboardRequest(req: Request): Promise<boolean> {
+    const anonymousUserId = '135792467811111111111112';
+    const requestUserId = req?.user?._id;
+    const isAnonymous = !req?.user || requestUserId == anonymousUserId;
+    let visibility = req?.body?.dashboard?.config?.visible || req?.body?.dashboard?.visible;
+
+    if (!visibility && req?.body?.dashboard?.dashboard_id) {
+      try {
+        const dashboard = await Dashboard.findById(req.body.dashboard.dashboard_id, 'config.visible').exec();
+        visibility = dashboard?.config?.visible;
+      } catch (e) {
+        visibility = undefined;
+      }
+    }
+
+    const isPublicDashboard = visibility === 'public' || visibility === 'shared';
+
+    return isAnonymous && isPublicDashboard;
+  }
+
+  static async buildDbErrorMessageForRequest(err: any, req: Request): Promise<string> {
+    const lang = DashboardController.resolveDbErrorLangFromRequest(req);
+
+    if (await DashboardController.isPublicDashboardRequest(req)) {
+      return 'Error';
+    }
+
+    return DashboardController.parseDbErrorMySQL(err, lang);
+  }
+
+  static resolveDbErrorLangFromRequest(req: Request): string {
+    const supportedLangs = ['es', 'ca', 'en', 'fr', 'pl', 'gl'];
+    const queryLang = (req?.query as any)?.lang;
+    const paramLang = (req?.params as any)?.lang;
+    const bodyLang = (req?.body as any)?.lang;
+    const headerLang = req?.headers?.['x-sda-lang'];
+    const explicitLang = [queryLang, paramLang, bodyLang, headerLang].find(value => typeof value === 'string') as string | undefined;
+
+    if (explicitLang) {
+      const normalized = explicitLang.toLowerCase();
+      return supportedLangs.includes(normalized) ? normalized : 'en';
+    }
+
+    const refererLike = String(req?.headers?.referer || req?.headers?.referrer || req?.headers?.origin || '').toLowerCase();
+    const match = refererLike.match(/\/(es|ca|en|fr|pl|gl)\//);
+
+    if (match && match[1]) {
+      return supportedLangs.includes(match[1]) ? match[1] : 'en';
+    }
+
+    return 'en';
+  }
+
+  /**
+   * Parses a MySQL/MariaDB error and returns a localized descriptive message for the user.
+   */
+  static parseDbErrorMySQL(err: any, lang?: string | false): string {
+    const msg: string = err?.message || '';
+    const code: string = err?.code || '';
+    const l = resolveDbLang(lang);
+
+    // Error number: 1054; Symbol: ER_BAD_FIELD_ERROR
+    if (code === 'ER_BAD_FIELD_ERROR' || err?.errno === 1054) {
+      const match = msg.match(/Unknown column '([^']+)'/i);
+      return getDbErrorMessage('unknownColumn', l, match ? match[1] : '?');
+    }
+
+    // Error number: 1146; Symbol: ER_NO_SUCH_TABLE; SQLSTATE: 42S02
+    if (code === 'ER_NO_SUCH_TABLE' || err?.errno === 1146) {
+      const match = msg.match(/Table '([^']+)' doesn't exist/i);
+      const tableName = match ? match[1].split('.').pop() : '?';
+      return getDbErrorMessage('unknownTable', l, tableName);
+    }
+
+    // Error number: 1045/1698; Symbol: ER_ACCESS_DENIED_ERROR / ER_ACCESS_DENIED_NO_PASSWORD_ERROR
+    if (code === 'ER_ACCESS_DENIED_ERROR' || code === 'ER_ACCESS_DENIED_NO_PASSWORD_ERROR' ||
+        err?.errno === 1045 || err?.errno === 1698 || /Access denied for user/i.test(msg)) {
+      return getDbErrorMessage('accessDenied', l);
+    }
+
+    // Error number: 1064; Symbol: ER_PARSE_ERROR
+    if (code === 'ER_PARSE_ERROR' || err?.errno === 1064) {
+      return getDbErrorMessage('syntaxError', l);
+    }
+
+    // Error number: 1040; Symbol: ER_CON_COUNT_ERROR
+    if (code === 'ER_CON_COUNT_ERROR' || err?.errno === 1040) {
+      return getDbErrorMessage('tooManyConnections', l);
+    }
+
+    // Error number: 1205; Symbol: ER_LOCK_WAIT_TIMEOUT
+    if (code === 'ER_LOCK_WAIT_TIMEOUT' || err?.errno === 1205) {
+      return getDbErrorMessage('lockTimeout', l);
+    }
+
+    // Node.js connection errors
+    if (code === 'ECONNREFUSED' || code === 'ER_GET_CONNECTION_TIMEOUT') {
+      return getDbErrorMessage('connectionRefused', l);
+    }
+
+    // Generic fallback with the original MySQL/MariaDB message
+    if (msg) {
+      const truncated = msg.length > 500 ? msg.substring(0, 500) + '...' : msg;
+      return getDbErrorMessage('generic', l, truncated);
+    }
+
+    return getDbErrorMessage('fallback', l);
   }
 
   /*
@@ -2113,7 +2223,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       return res.status(200).json(output)
     } catch (err) {
       console.log(err)
-      next(new HttpException(500, DashboardController.parseQueryError(err)))
+      next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
 
