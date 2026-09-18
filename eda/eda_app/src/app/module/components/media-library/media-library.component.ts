@@ -440,7 +440,7 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
         reverseButtons: true
       });
 
-      const action = result.isConfirmed ? 'keep-both' : result.isDenied ? 'replace' : result.dismiss === 'cancel' ? 'skip' : null;
+      const action = result.isConfirmed ? 'keep-both' : result.isDenied ? 'replace' : (result.dismiss as any) === 'cancel' ? 'skip' : null;
       if (!action) return null; // Escape/backdrop on any one of them - abort the whole batch
       actions.set(name.toLowerCase(), action);
     }
