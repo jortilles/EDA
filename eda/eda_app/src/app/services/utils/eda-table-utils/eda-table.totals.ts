@@ -235,6 +235,9 @@ function sumPartialRows(ctx: TotalsContext, offset: number): any {
   const lastValue = ctx.initRows + offset;
 
   for (let i = offset; i < lastValue; i++) {
+    // Grouped-subtotal synthetic rows (see grouped-subtotals-utils.ts) still occupy a slot in
+    // the page window (pagination counts them too), but must not be added to the sum.
+    if (i < rows.length && rows[i]['__groupedSubtotalLevel'] !== undefined) continue;
     for (let j = 0; j < keys.length; j++) {
       const currentCol = cols.find(c => c.field === keys[j]);
       if (i < rows.length && currentCol?.type === 'EdaColumnNumber') {
@@ -247,7 +250,9 @@ function sumPartialRows(ctx: TotalsContext, offset: number): any {
 
 export function coltotals(ctx: TotalsContext): TotalRowCell[] {
   const row = buildTotalRow(ctx);
-  const rows = ctx.getRows();
+  // Grouped-subtotal synthetic rows must not be summed — this total doesn't paginate, so
+  // unlike sumPartialRows() there's no index/offset alignment to preserve here.
+  const rows = ctx.getRows().filter((r: any) => r['__groupedSubtotalLevel'] === undefined);
   const cols = ctx.getCols();
   const keys = cols.map(col => col.field);
 

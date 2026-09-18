@@ -434,6 +434,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 inject.value = inject.__groupedSubtotalsCleanRows;
                 inject.origValues = inject.__groupedSubtotalsCleanRows;
                 inject.__groupedSubtotalsCleanRows = null;
+                inject.checkTotals(null);
             }
             inject.__groupedSubtotalsMergedForColumns = null;
             return Promise.resolve();
@@ -446,6 +447,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             inject.value = this.props.groupedSubtotalsPreview.mergedRows;
             inject.origValues = this.props.groupedSubtotalsPreview.mergedRows;
             inject.__groupedSubtotalsMergedForColumns = groupByColumns;
+            inject.checkTotals(null);
             return Promise.resolve();
         }
 
@@ -492,6 +494,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             inject.value = merged;
             inject.origValues = merged;
             inject.__groupedSubtotalsMergedForColumns = groupByColumns;
+            inject.checkTotals(null);
             return Promise.resolve();
         }
 
@@ -511,6 +514,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             inject.value = merged;
             inject.origValues = merged;
             inject.__groupedSubtotalsMergedForColumns = groupByColumns;
+            inject.checkTotals(null);
         }).catch(err => console.error('No se pudieron cargar los subtotales agrupados', err))
           .finally(() => this.groupedSubtotalsLoading = false);
     }
