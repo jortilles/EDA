@@ -2114,12 +2114,9 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
    * granularities (e.g. "Order date" / "Order date mes" — both column_name 'orderdate') is
    * never ambiguous.
    *
-   * req.body.query.fields is the panel's full field list (same shape/order as any other
-   * query request); req.body.groupBy = { fieldIndexes: number[], numericFieldIndex: number,
-   * aggregation: 'sum'|'avg'|'min'|'max'|'count'|'count_distinct' }. Each level's response
-   * keeps the exact [labels, rows] shape any other query already returns, so the client can
-   * reuse its normal "turn a query response into table rows" path — no separate translation
-   * layer between column identifiers and row keys.
+   * req.body.query.fields is the panel's full field list; req.body.groupBy =
+   * { fieldIndexes: number[], numericFields: { fieldIndex: number, aggregation: string }[] }.
+   * Each level's response keeps the [labels, rows] shape any other query already returns.
    */
   static async getGroupedSubtotalsData(req: Request, res: Response, next: NextFunction) {
     try {
@@ -2168,15 +2165,13 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       const allFields: any[] = req.body.query.fields || [];
       const groupBy = req.body.groupBy || {};
       const fieldIndexes: number[] = groupBy.fieldIndexes;
-      const numericFieldIndex: number = groupBy.numericFieldIndex;
-      const aggregation: string = groupBy.aggregation;
+      const numericFields: { fieldIndex: number, aggregation: string }[] = groupBy.numericFields;
 
-      if (!Array.isArray(fieldIndexes) || fieldIndexes.length === 0 || numericFieldIndex == null || !aggregation) {
-        return next(new HttpException(400, 'groupBy.fieldIndexes, groupBy.numericFieldIndex and groupBy.aggregation are required'));
+      if (!Array.isArray(fieldIndexes) || fieldIndexes.length === 0 || !Array.isArray(numericFields) || numericFields.length === 0) {
+        return next(new HttpException(400, 'groupBy.fieldIndexes and groupBy.numericFields are required'));
       }
-      const numericField = allFields[numericFieldIndex];
-      if (!numericField) {
-        return next(new HttpException(400, `groupBy.numericFieldIndex (${numericFieldIndex}) is out of range for query.fields`));
+      if (numericFields.some(nf => !allFields[nf.fieldIndex])) {
+        return next(new HttpException(400, `groupBy.numericFields contains an out-of-range fieldIndex`));
       }
 
       const levels: [string[], any[][]][] = [];
@@ -2191,11 +2186,15 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
           if (!original) throw new Error(`groupBy.fieldIndexes contains an out-of-range index: ${idx}`);
           return { ...original, aggregation_type: 'none', order: i };
         });
-        const aggField = { ...numericField, aggregation_type: aggregation, order: dimFields.length };
+        const aggFields = numericFields.map((nf, i) => ({
+          ...allFields[nf.fieldIndex],
+          aggregation_type: nf.aggregation,
+          order: dimFields.length + i,
+        }));
 
         const levelQueryData = {
           ...req.body.query,
-          fields: [...dimFields, aggField],
+          fields: [...dimFields, ...aggFields],
           groupByEnabled: true,
           sourceFields: false,
         };
