@@ -1,4 +1,4 @@
-import { Component, ViewChild, Input, ElementRef, OnInit, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { Component, ViewChild, Input, ElementRef, OnInit, AfterViewInit, OnDestroy, Output, EventEmitter, NgZone } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { StyleProviderService, AlertService } from '@eda/services/service.index';
 import { Table } from 'primeng/table';
@@ -46,7 +46,7 @@ import { DialogModule } from 'primeng/dialog';  // <--- import PrimeNG module
         DialogModule,
     ]
 })
-export class EdaTableComponent implements OnInit, AfterViewInit {
+export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('table', { static: false }) table: Table;
     @Input() inject: EdaTableModel;
     @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
@@ -62,7 +62,8 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
         private styleService: StyleService,
         public styleProviderService: StyleProviderService,
         private sanitizer: DomSanitizer,
-        private alertService: AlertService
+        private alertService: AlertService,
+        private ngZone: NgZone
     ) {
         registerLocaleData(es);
     }
@@ -380,5 +381,150 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
 
     getChildRootKey(colField: string): string {
         return (this.inject.childFieldMap || {})[colField] || '';
+    }
+
+    // --- Column resize (drag header border) ---
+
+    private static readonly UTILITY_COL_TYPES = ['EdaColumnContextMenu', 'EdaColumnEditable', 'EdaColumnFunction'];
+    private static readonly MIN_COL_WIDTH_PCT = 5;
+    /** Disables pSortableColumn's click-to-sort while resizing and briefly after. */
+    public suppressSortClick = false;
+
+    private resizeDrag: {
+        leftField: string;
+        rightField: string;
+        startX: number;
+        leftStartPx: number;
+        rightStartPx: number;
+        containerWidthPx: number;
+        leftCol: HTMLElement;
+        rightCol: HTMLElement;
+    } | null = null;
+    private resizeMoveListener = (event: MouseEvent) => this.onColResizeMove(event);
+    private resizeUpListener = () => this.onColResizeEnd();
+
+    /** Data columns only — icon/action columns (fixed 40px) never participate in the % trade. */
+    private get resizableCols() {
+        return (this.inject?.cols || []).filter(c => c.visible && !EdaTableComponent.UTILITY_COL_TYPES.includes(c.type));
+    }
+
+    isResizable(col: any): boolean {
+        return this.resizableCols.includes(col);
+    }
+
+    isLastResizable(col: any): boolean {
+        const resizable = this.resizableCols;
+        return resizable[resizable.length - 1] === col;
+    }
+
+    isResizeActive(col: any): boolean {
+        return this.resizeDrag?.leftField === col.field;
+    }
+
+    onColResizeStart(event: MouseEvent, col: any): void {
+        event.preventDefault();
+        event.stopPropagation();
+        this.suppressSortClick = true;
+
+        const resizable = this.resizableCols;
+        const idx = resizable.indexOf(col);
+        const rightCol = resizable[idx + 1];
+        if (!rightCol) return;
+
+        const table = (event.currentTarget as HTMLElement).closest('table');
+        const visibleThs = Array.from(table.querySelectorAll('tr.header-title th[data-field]')) as HTMLElement[];
+        const cols = Array.from(table.querySelectorAll('col[data-field]')) as HTMLElement[];
+        const widthsPx: Record<string, number> = {};
+        const colEls: Record<string, HTMLElement> = {};
+        let containerWidthPx = 0;
+        resizable.forEach(c => {
+            const th = visibleThs.find(t => t.dataset['field'] === c.field);
+            const colEl = cols.find(t => t.dataset['field'] === c.field);
+            widthsPx[c.field] = th?.getBoundingClientRect().width || 0;
+            if (colEl) colEls[c.field] = colEl;
+            containerWidthPx += widthsPx[c.field];
+        });
+        if (!containerWidthPx || !colEls[col.field] || !colEls[rightCol.field]) return;
+
+        // Pin every column's <col> to its exact current pixel width — the browser's native
+        // mechanism for table-layout:fixed widths, much cheaper to update live than a <th>/<td>.
+        resizable.forEach(c => { colEls[c.field].style.width = widthsPx[c.field] + 'px'; });
+        this.inject.autolayout = false;
+
+        this.resizeDrag = {
+            leftField: col.field,
+            rightField: rightCol.field,
+            startX: event.clientX,
+            leftStartPx: widthsPx[col.field],
+            rightStartPx: widthsPx[rightCol.field],
+            containerWidthPx,
+            leftCol: colEls[col.field],
+            rightCol: colEls[rightCol.field],
+        };
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+        this.ngZone.runOutsideAngular(() => {
+            document.addEventListener('mousemove', this.resizeMoveListener);
+            document.addEventListener('mouseup', this.resizeUpListener);
+        });
+    }
+
+    private onColResizeMove(event: MouseEvent): void {
+        const drag = this.resizeDrag;
+        if (!drag) return;
+
+        const minWidthPx = EdaTableComponent.MIN_COL_WIDTH_PCT / 100 * drag.containerWidthPx;
+        let deltaPx = event.clientX - drag.startX;
+        const minDelta = minWidthPx - drag.leftStartPx;
+        const maxDelta = drag.rightStartPx - minWidthPx;
+        deltaPx = Math.max(minDelta, Math.min(maxDelta, deltaPx));
+
+        drag.leftCol.style.width = (drag.leftStartPx + deltaPx) + 'px';
+        drag.rightCol.style.width = (drag.rightStartPx - deltaPx) + 'px';
+    }
+
+    private onColResizeEnd(): void {
+        document.removeEventListener('mousemove', this.resizeMoveListener);
+        document.removeEventListener('mouseup', this.resizeUpListener);
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        const drag = this.resizeDrag;
+        if (!drag) return;
+        this.resizeDrag = null;
+
+        // Re-enter Angular here: this is the only point that touches the model/config, once.
+        this.ngZone.run(() => {
+            const resizable = this.resizableCols;
+            const table = drag.leftCol.closest('table');
+            const cols = Array.from(table.querySelectorAll('col[data-field]')) as HTMLElement[];
+            const pxByField: Record<string, number> = {};
+            resizable.forEach(c => {
+                const colEl = cols.find(t => t.dataset['field'] === c.field);
+                pxByField[c.field] = colEl ? parseFloat(colEl.style.width) || 0 : 0;
+            });
+
+            // Last column absorbs the rounding remainder so the sum is always exactly 100%.
+            const widths: Record<string, string> = {};
+            let sumPct = 0;
+            resizable.forEach((c, i) => {
+                if (i === resizable.length - 1) {
+                    widths[c.field] = (100 - sumPct).toFixed(2) + '%';
+                } else {
+                    const pct = parseFloat((pxByField[c.field] / drag.containerWidthPx * 100).toFixed(2));
+                    widths[c.field] = pct + '%';
+                    sumPct += pct;
+                }
+            });
+            this.inject.resizeColumns(widths);
+        });
+        // The click that follows mouseup must still see sorting disabled.
+        setTimeout(() => this.suppressSortClick = false, 0);
+    }
+
+    ngOnDestroy(): void {
+        document.removeEventListener('mousemove', this.resizeMoveListener);
+        document.removeEventListener('mouseup', this.resizeUpListener);
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
     }
 }

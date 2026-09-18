@@ -20,6 +20,9 @@ export class TableConfig {
   bandingColor: string;
   /** When false, header and banding are transparent (white/no color). */
   colorEnabled: boolean;
+  /** Column widths as percentages (field -> "33.33%"), set once the user drags a header border.
+   *  Undefined until then, so untouched tables keep auto-sizing by content. */
+  columnWidths?: Record<string, string>;
 
   constructor(
     onlyPercentages: Boolean,
@@ -39,6 +42,7 @@ export class TableConfig {
     headerColor: string = '',
     bandingColor: string = '',
     colorEnabled: boolean = true,
+    columnWidths?: Record<string, string>,
     ) {
       this.onlyPercentages = onlyPercentages;
       this.resultAsPecentage = resultAsPecentage;
@@ -57,6 +61,7 @@ export class TableConfig {
       this.headerColor = headerColor;
       this.bandingColor = bandingColor;
       this.colorEnabled = colorEnabled;
+      this.columnWidths = columnWidths;
   }
 
 }
