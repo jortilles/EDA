@@ -1037,7 +1037,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 // Finding the view to edit:
                 let myViewInEdition;
                 let allViews = this.dataModelService.allViews();
-                myViewInEdition = allViews.find(e => e.table_name === this.tablePanel.technical_name && e.query === this.tablePanel.query && e.table_type === 'view')
+                myViewInEdition = allViews.find(e => e.table_name === this.tablePanel.technical_name && e.table_type === 'view')
                 this.viewInEdition = myViewInEdition;
                 this.viewDialogEdition = true;
             } else {

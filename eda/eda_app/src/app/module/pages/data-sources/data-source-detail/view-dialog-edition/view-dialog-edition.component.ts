@@ -103,9 +103,15 @@ export class ViewDialogEditionComponent implements OnInit {
 	}
 
   buildColumn(column_name: string, column_index: number, data: Array<any>) {
+		// Preserve type/format (html, date, aggregation, roles...) for columns that already existed
+		const existingColumn = this.viewInEdition?.columns?.find(c => c.column_name === column_name);
+		if (existingColumn) {
+			return _.cloneDeep(existingColumn);
+		}
+
 		let type = 'numeric';
 		for (let i = 0; i < data.length; i++) {
-			if (data[i][column_index] !== null && !parseFloat(data[i][column_index])) {
+			if (data[i][column_index] !== null && isNaN(parseFloat(data[i][column_index]))) {
 				type = 'text';
 				break;
 			}
