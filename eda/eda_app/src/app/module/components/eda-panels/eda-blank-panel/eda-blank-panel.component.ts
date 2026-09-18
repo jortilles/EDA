@@ -744,16 +744,15 @@ public tableNodeExpand(event: any): void {
 
         const recoveredConfig = ChartsConfigUtils.recoverConfig(chart, panelContent.query.output.config);
 
-        // Pre-fetch grouped subtotals so the table never paints without them first.
+        // Pre-fetch grouped subtotals so the table never paints without them first. Numeric
+        // columns are always read from the current query, never from the saved config.
         const groupByCols = recoveredConfig.getConfig()?.['groupBySubtotalColumns'];
-        const numericCols: string[] = recoveredConfig.getConfig()?.['groupBySubtotalNumericColumns'];
-        if (chart === 'table' && groupByCols?.length && numericCols?.length) {
-            const aggregations: string[] = recoveredConfig.getConfig()['groupBySubtotalAggregations'] || [];
+        if (chart === 'table' && groupByCols?.length) {
             try {
                 this.pendingGroupedSubtotalsPreloadedLevels = await GroupedSubtotalsUtils.fetchLevels(
                     this,
                     groupByCols,
-                    numericCols.map((displayName, i) => ({ displayName, aggregation: aggregations[i] || 'sum' }))
+                    GroupedSubtotalsUtils.numericColumnsFromFields(this.currentQuery)
                 );
             } catch (err) {
                 console.error('No se pudieron precargar los subtotales agrupados', err);
@@ -883,12 +882,10 @@ public tableNodeExpand(event: any): void {
             // picker, before Confirm) don't update; fetching against it instead of the config
             // actually being merged is what left picker changes fetching stale data.
             fetchGroupedSubtotals: type === 'table' ? (liveConfig: TableConfig) => {
-                const numericCols = liveConfig.groupBySubtotalNumericColumns || [];
-                const aggregations = liveConfig.groupBySubtotalAggregations || [];
                 return GroupedSubtotalsUtils.fetchLevels(
                     this,
                     liveConfig.groupBySubtotalColumns || [],
-                    numericCols.map((displayName, i) => ({ displayName, aggregation: aggregations[i] || 'sum' }))
+                    GroupedSubtotalsUtils.numericColumnsFromFields(this.currentQuery)
                 );
             } : undefined,
             groupedSubtotalsPreview: type === 'table' ? this.pendingGroupedSubtotalsPreview : undefined,

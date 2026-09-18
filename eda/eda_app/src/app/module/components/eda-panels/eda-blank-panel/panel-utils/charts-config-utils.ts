@@ -103,8 +103,6 @@ export const ChartsConfigUtils = {
         colorEnabled: ebp.panelChart.componentRef.instance.inject.colorEnabled !== false,
         // Not mirrored onto inject, read from the current config instead (like assignedColors below).
         groupBySubtotalColumns: ebp.panelChart.props.config?.getConfig()?.['groupBySubtotalColumns'] || [],
-        groupBySubtotalNumericColumns: ebp.panelChart.props.config?.getConfig()?.['groupBySubtotalNumericColumns'] || [],
-        groupBySubtotalAggregations: ebp.panelChart.props.config?.getConfig()?.['groupBySubtotalAggregations'] || [],
       }
 
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'kpideviation') {

@@ -421,9 +421,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (!inject || inject instanceof EdaCrosstableModel) return Promise.resolve();
 
         const groupByColumns = config.groupBySubtotalColumns;
-        if (!groupByColumns?.length || !this.props.fetchGroupedSubtotals) {
-            // Toggled off (or nothing selected yet) — restore the true clean rows instead of
-            // leaving stale subtotal rows (or a stale merged origValues) on screen.
+        const numericColumns = GroupedSubtotalsUtils.numericColumnsFromFields(this.props.query);
+        if (!groupByColumns?.length || !this.props.fetchGroupedSubtotals || !numericColumns.length) {
+            // Toggled off, nothing selected yet, or every numeric column was removed from the
+            // query — forget the grouping choice (not just skip rendering it), so re-adding a
+            // numeric column later loads a plain table instead of resurrecting old subtotals.
+            if (groupByColumns?.length && !numericColumns.length) config.groupBySubtotalColumns = [];
             if (inject.__groupedSubtotalsCleanRows) {
                 inject.value = inject.__groupedSubtotalsCleanRows;
                 inject.origValues = inject.__groupedSubtotalsCleanRows;
@@ -469,11 +472,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             const displayName = col.display_name?.default ?? col.display_name;
             if (edaCol && displayName) displayNameToField[displayName] = edaCol.field;
         });
-
-        const numericColumns = (config.groupBySubtotalNumericColumns || []).map((displayName, i) => ({
-            displayName,
-            aggregation: config.groupBySubtotalAggregations?.[i] || 'sum',
-        }));
 
         // Initial load/reload: levels were already fetched before the table existed, so merge
         // now, synchronously — the table never paints without subtotals in the first place.

@@ -19,6 +19,7 @@ import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/co
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { resolveFieldDisplayName } from '../panel-utils/grouped-subtotals-utils';
 
 @Component({
   standalone: true,
@@ -381,24 +382,6 @@ export class TableDialogComponent{
     this.setItems(); // This is where color modification is requested
   }
 
-  /** display_name shows up as either a plain string or the {default, localized} i18n object
-   *  depending on the source — this panel's SAVED content (read below) has it flattened to a
-   *  string in practice, so a naive `.default` access silently falls through to column_name
-   *  (which breaks grouping when the same column is added twice at different date
-   *  granularities, e.g. "Order date" / "Order date mes"). Handling both shapes here avoids
-   *  that regardless of which shape this particular field happens to be in. */
-  private static resolveDisplayName(f: any): string {
-    return (typeof f.display_name === 'string' ? f.display_name : f.display_name?.default) || f.column_name;
-  }
-
-  /** aggregation_type shows up as either an already-flattened plain string or the full
-   *  [{value, selected}, ...] options array, same split as display_name — the panel's SAVED
-   *  content (below) has it flattened in practice, but this handles both regardless. */
-  private static resolveAggregation(f: any): string {
-    if (typeof f.aggregation_type === 'string') return f.aggregation_type;
-    return f.aggregation_type?.find((a: any) => a.selected)?.value || 'none';
-  }
-
   private get panelQueryFields(): any[] {
     const panelID = this.controller?.params?.panelId;
     if (!panelID || !this.dashboard) return [];
@@ -412,7 +395,7 @@ export class TableDialogComponent{
       .map((f: any) => ({
         column_name: f.column_name,
         table_id: f.table_id,
-        display_name: TableDialogComponent.resolveDisplayName(f)
+        display_name: resolveFieldDisplayName(f)
       }));
   }
 
@@ -425,28 +408,8 @@ export class TableDialogComponent{
       .map((f: any) => ({
         column_name: f.column_name,
         table_id: f.table_id,
-        display_name: TableDialogComponent.resolveDisplayName(f)
+        display_name: resolveFieldDisplayName(f)
       }));
-  }
-
-  /**
-   * Both derived automatically from the table's own query — not user-picked. Every numeric
-   * column already has an aggregation configured (that's how its own cells currently total),
-   * and subtotal rows reuse those same aggregations instead of picking different ones.
-   */
-  get groupBySubtotalNumericColumns(): string[] {
-    return this.panelQueryFields
-      .filter((f: any) => f.column_type === 'numeric')
-      .map((f: any) => TableDialogComponent.resolveDisplayName(f));
-  }
-
-  get groupBySubtotalAggregations(): string[] {
-    return this.panelQueryFields
-      .filter((f: any) => f.column_type === 'numeric')
-      .map((f: any) => {
-        const agg = TableDialogComponent.resolveAggregation(f);
-        return agg === 'none' ? 'sum' : agg;
-      });
   }
 
   toggleGroupedSubtotals(): void {
@@ -457,19 +420,11 @@ export class TableDialogComponent{
     this.refreshGroupedSubtotals();
   }
 
-  /**
-   * Live preview: panel-chart's applyGroupedSubtotals() takes a TableConfig-shaped object and
-   * reads only these 3 fields from it — it doesn't need the persisted TableConfig instance
-   * (that one is only rebuilt at Confirm, in saveChartConfig(); col_totals/etc. only land in
-   * `currentConfig` — the live inject model — on interaction, not in the saved config, and
-   * this follows the same split).
-   */
+  /** Live preview: numeric columns are resolved by panel-chart itself, fresh from the query. */
   refreshGroupedSubtotals(): void {
     this.groupedSubtotalsLoading = true;
     this.myPanelChartComponent.applyGroupedSubtotals({
       groupBySubtotalColumns: this.groupBySubtotalColumns,
-      groupBySubtotalNumericColumns: this.groupBySubtotalNumericColumns,
-      groupBySubtotalAggregations: this.groupBySubtotalAggregations,
     } as TableConfig).finally(() => this.groupedSubtotalsLoading = false);
   }
 
@@ -571,7 +526,7 @@ export class TableDialogComponent{
       this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles,
       this.noRepetitions, this.negativeNumbers, this.ordering, this.crossSortOrder,
       this.headerColor, this.bandingColor, this.colorEnabled,
-      this.groupBySubtotalColumns, this.groupBySubtotalNumericColumns, this.groupBySubtotalAggregations);
+      this.groupBySubtotalColumns);
 
     // Apply prediction changes to the dashboard only on confirm
     const panelID = this.controller?.params?.panelId;

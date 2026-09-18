@@ -21,12 +21,10 @@ export class TableConfig {
   /** When false, header and banding are transparent (white/no color). */
   colorEnabled: boolean;
   /** Ordered column names to group by for nested "grouped subtotals" (e.g. [pais, ciudad] —
-   *  order defines nesting depth). Empty = feature off. */
+   *  order defines nesting depth). Empty = feature off. Which numeric columns get subtotaled
+   *  is never persisted — always every numeric column currently in the query (see
+   *  GroupedSubtotalsUtils.numericColumnsFromFields), so adding one needs no re-save. */
   groupBySubtotalColumns: string[];
-  /** Every numeric column subtotaled at each group level (parallel to groupBySubtotalAggregations). */
-  groupBySubtotalNumericColumns: string[];
-  /** Aggregation per column in groupBySubtotalNumericColumns: 'sum' | 'avg' | 'min' | 'max'. */
-  groupBySubtotalAggregations: string[];
 
   constructor(
     onlyPercentages: Boolean,
@@ -47,8 +45,6 @@ export class TableConfig {
     bandingColor: string = '',
     colorEnabled: boolean = true,
     groupBySubtotalColumns: string[] = [],
-    groupBySubtotalNumericColumns: string[] = [],
-    groupBySubtotalAggregations: string[] = [],
     ) {
       this.onlyPercentages = onlyPercentages;
       this.resultAsPecentage = resultAsPecentage;
@@ -68,8 +64,6 @@ export class TableConfig {
       this.bandingColor = bandingColor;
       this.colorEnabled = colorEnabled;
       this.groupBySubtotalColumns = groupBySubtotalColumns;
-      this.groupBySubtotalNumericColumns = groupBySubtotalNumericColumns;
-      this.groupBySubtotalAggregations = groupBySubtotalAggregations;
   }
 
 }

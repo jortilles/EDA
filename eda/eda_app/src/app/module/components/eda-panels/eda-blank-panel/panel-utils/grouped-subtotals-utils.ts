@@ -19,9 +19,32 @@ export interface GroupedSubtotalNumericColumn {
  *  synthetic (see mergeRows); every other key is EdaColumn.field, matching a real detail row. */
 export const GROUPED_SUBTOTAL_LEVEL_KEY = '__groupedSubtotalLevel';
 
+/** display_name is either a plain string or the {default, localized} i18n object depending on the source. */
+export function resolveFieldDisplayName(f: any): string {
+  return (typeof f.display_name === 'string' ? f.display_name : f.display_name?.default) || f.column_name;
+}
+
+/** aggregation_type is either an already-flattened string or the full [{value, selected}, ...] options array. */
+export function resolveFieldAggregation(f: any): string {
+  if (typeof f.aggregation_type === 'string') return f.aggregation_type;
+  return f.aggregation_type?.find((a: any) => a.selected)?.value || 'none';
+}
+
 const GROUP_KEY_SEP = '␟';
 
 export const GroupedSubtotalsUtils = {
+
+  /** Every numeric field found, each paired with its own already-configured aggregation.
+   *  Always recomputed from the CURRENT query fields, never persisted — a numeric column
+   *  added later is picked up on the very next fetch, with no re-save needed. */
+  numericColumnsFromFields(fields: any[]): GroupedSubtotalNumericColumn[] {
+    return (fields || [])
+      .filter((f: any) => f.column_type === 'numeric')
+      .map((f: any) => {
+        const agg = resolveFieldAggregation(f);
+        return { displayName: resolveFieldDisplayName(f), aggregation: agg === 'none' ? 'sum' : agg };
+      });
+  },
 
   /**
    * Fetches every "grouped subtotals" level in a single request to the dedicated backend
