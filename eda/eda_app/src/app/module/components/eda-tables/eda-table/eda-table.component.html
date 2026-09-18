@@ -41,7 +41,7 @@
             <tr class="header-title">
                 <ng-container *ngFor="let col of inject.cols">
                     @if(col.type && col.visible){
-                        <th [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
+                        <th [pSortableColumn]="col.field" [pSortableColumnDisabled]="suppressSortClick" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
                             [width]="col.width" [attr.rowspan]="col.rowspan" [attr.data-field]="col.field" style="position: relative;">
                             <div class="flex items-center "  [ngStyle]="getTextStyle()">
                                 {{col.header}}

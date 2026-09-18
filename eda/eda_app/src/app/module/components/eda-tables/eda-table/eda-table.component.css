@@ -26,6 +26,14 @@
   opacity: 0.7;
 }
 
+.col-resize-guide {
+  position: fixed;
+  width: 2px;
+  background-color: var(--corporate-primary, #6366f1);
+  z-index: 9999;
+  pointer-events: none;
+}
+
 .col-resize-handle.col-resize-active::after {
   opacity: 1;
 }

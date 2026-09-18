@@ -387,6 +387,8 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private static readonly UTILITY_COL_TYPES = ['EdaColumnContextMenu', 'EdaColumnEditable', 'EdaColumnFunction'];
     private static readonly MIN_COL_WIDTH_PCT = 5;
+    /** Disables pSortableColumn's click-to-sort while resizing and briefly after. */
+    public suppressSortClick = false;
 
     private resizeDrag: {
         leftField: string;
@@ -395,11 +397,10 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
         leftStartPx: number;
         rightStartPx: number;
         containerWidthPx: number;
-        // The hidden sizing row's <th> elements — table-layout:fixed derives every column's
-        // width from this (first) row alone, so updating just these two resizes the whole
-        // column (header + every body cell) natively, with no Angular re-render mid-drag.
-        leftEl: HTMLElement;
-        rightEl: HTMLElement;
+        widthsPxBaseline: Record<string, number>;
+        guideEl: HTMLElement;
+        guideStartLeft: number;
+        lastDeltaPx: number;
     } | null = null;
     private resizeMoveListener = (event: MouseEvent) => this.onColResizeMove(event);
     private resizeUpListener = () => this.onColResizeEnd();
@@ -425,59 +426,50 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
     onColResizeStart(event: MouseEvent, col: any): void {
         event.preventDefault();
         event.stopPropagation();
+        this.suppressSortClick = true;
 
         const resizable = this.resizableCols;
         const idx = resizable.indexOf(col);
         const rightCol = resizable[idx + 1];
         if (!rightCol) return;
 
-        // Both the visible header row and the hidden sizing row have data-field <th>s — read
-        // current widths from the visible one (real rendered size), but drive the live drag
-        // through the hidden one: table-layout:fixed derives every column's width from that
-        // (first) row alone, so updating it resizes the whole column with no Angular involved.
         const table = (event.currentTarget as HTMLElement).closest('table');
         const visibleThs = Array.from(table.querySelectorAll('tr.header-title th[data-field]')) as HTMLElement[];
-        const sizingThs = Array.from(table.querySelectorAll('tr.header-invisible th[data-field]')) as HTMLElement[];
-        // Match by reading the attribute in JS (not interpolated into a CSS selector) so a
-        // field name with quotes/special characters can't break the query.
-        const widthsPx: Record<string, number> = {};
-        const sizingEls: Record<string, HTMLElement> = {};
+        const widthsPxBaseline: Record<string, number> = {};
         let containerWidthPx = 0;
         resizable.forEach(c => {
-            const visibleTh = visibleThs.find(t => t.dataset['field'] === c.field);
-            const sizingTh = sizingThs.find(t => t.dataset['field'] === c.field);
-            const w = visibleTh?.getBoundingClientRect().width || 0;
-            widthsPx[c.field] = w;
-            if (sizingTh) sizingEls[c.field] = sizingTh;
-            containerWidthPx += w;
+            const th = visibleThs.find(t => t.dataset['field'] === c.field);
+            widthsPxBaseline[c.field] = th?.getBoundingClientRect().width || 0;
+            containerWidthPx += widthsPxBaseline[c.field];
         });
-        if (!containerWidthPx || !sizingEls[col.field] || !sizingEls[rightCol.field]) return;
+        if (!containerWidthPx) return;
 
-        // Pin every resizable column to its exact CURRENT pixel width (not a rounded
-        // percentage) — measured values already sum to containerWidthPx exactly, so the
-        // browser has nothing to rescale once table-layout goes fixed. Only the two dragged
-        // columns' widths change from here; every other column's declared width is never
-        // touched again, so it stays put regardless of drag direction.
-        resizable.forEach(c => { sizingEls[c.field].style.width = widthsPx[c.field] + 'px'; });
-        this.inject.autolayout = false;
+        // A thin guide line tracks the mouse live (cheap); the actual table only reflows once,
+        // at drag end. Fixed to the viewport and appended to <body> so it can't affect any
+        // ancestor's layout/scroll (an earlier absolute-positioned version caused a scrollbar).
+        const tableRect = table.getBoundingClientRect();
+        const guideEl = document.createElement('div');
+        guideEl.className = 'col-resize-guide';
+        guideEl.style.height = tableRect.height + 'px';
+        guideEl.style.top = tableRect.top + 'px';
+        const guideStartLeft = event.clientX;
+        guideEl.style.left = guideStartLeft + 'px';
+        document.body.appendChild(guideEl);
 
         this.resizeDrag = {
             leftField: col.field,
             rightField: rightCol.field,
             startX: event.clientX,
-            leftStartPx: widthsPx[col.field],
-            rightStartPx: widthsPx[rightCol.field],
+            leftStartPx: widthsPxBaseline[col.field],
+            rightStartPx: widthsPxBaseline[rightCol.field],
             containerWidthPx,
-            leftEl: sizingEls[col.field],
-            rightEl: sizingEls[rightCol.field],
+            widthsPxBaseline,
+            guideEl,
+            guideStartLeft,
+            lastDeltaPx: 0,
         };
-        // Locked on <body> (not just the handle) so the cursor/selection stay put even when the
-        // mouse briefly leaves the thin 6px handle during a fast drag.
         document.body.style.cursor = 'col-resize';
         document.body.style.userSelect = 'none';
-        // Outside Angular's zone: mousemove fires on every pixel, and a full change-detection
-        // pass per event (across a whole paginated table) is what made the drag feel laggy
-        // instead of tracking the cursor 1:1. The DOM is updated directly instead.
         this.ngZone.runOutsideAngular(() => {
             document.addEventListener('mousemove', this.resizeMoveListener);
             document.addEventListener('mouseup', this.resizeUpListener);
@@ -494,11 +486,8 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
         const maxDelta = drag.rightStartPx - minWidthPx;
         deltaPx = Math.max(minDelta, Math.min(maxDelta, deltaPx));
 
-        // Direct DOM write, no Angular binding involved — this is what makes it track the
-        // mouse instantly, in exact pixels, in either direction. The model (col.width) is
-        // only synced once, converted to percentages, at drag end.
-        drag.leftEl.style.width = (drag.leftStartPx + deltaPx) + 'px';
-        drag.rightEl.style.width = (drag.rightStartPx - deltaPx) + 'px';
+        drag.lastDeltaPx = deltaPx;
+        drag.guideEl.style.left = (drag.guideStartLeft + deltaPx) + 'px';
     }
 
     private onColResizeEnd(): void {
@@ -509,34 +498,31 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
         const drag = this.resizeDrag;
         if (!drag) return;
         this.resizeDrag = null;
+        drag.guideEl.remove();
 
-        // Re-enter Angular here: this is the only point that touches the model/config, once.
+        // Re-enter Angular here: this is the only point that actually resizes the table.
         this.ngZone.run(() => {
             const resizable = this.resizableCols;
-            const table = drag.leftEl.closest('table');
-            const sizingThs = Array.from(table.querySelectorAll('tr.header-invisible th[data-field]')) as HTMLElement[];
-            const pxByField: Record<string, number> = {};
-            resizable.forEach(c => {
-                const th = sizingThs.find(t => t.dataset['field'] === c.field);
-                pxByField[c.field] = th ? parseFloat(th.style.width) || 0 : 0;
-            });
-            const totalPx = Object.values(pxByField).reduce((a, b) => a + b, 0) || 1;
+            const finalPx = { ...drag.widthsPxBaseline };
+            finalPx[drag.leftField] = drag.leftStartPx + drag.lastDeltaPx;
+            finalPx[drag.rightField] = drag.rightStartPx - drag.lastDeltaPx;
 
-            // Convert to percentages that sum to EXACTLY 100% — the last column absorbs the
-            // rounding remainder, so nothing drifts (and rescales the others) on the next render.
+            // Last column absorbs the rounding remainder so the sum is always exactly 100%.
             const widths: Record<string, string> = {};
             let sumPct = 0;
             resizable.forEach((c, i) => {
                 if (i === resizable.length - 1) {
                     widths[c.field] = (100 - sumPct).toFixed(2) + '%';
                 } else {
-                    const pct = parseFloat((pxByField[c.field] / totalPx * 100).toFixed(2));
+                    const pct = parseFloat((finalPx[c.field] / drag.containerWidthPx * 100).toFixed(2));
                     widths[c.field] = pct + '%';
                     sumPct += pct;
                 }
             });
             this.inject.resizeColumns(widths);
         });
+        // The click that follows mouseup must still see sorting disabled.
+        setTimeout(() => this.suppressSortClick = false, 0);
     }
 
     ngOnDestroy(): void {
