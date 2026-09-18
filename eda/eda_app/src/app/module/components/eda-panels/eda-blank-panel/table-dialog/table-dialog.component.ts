@@ -430,23 +430,23 @@ export class TableDialogComponent{
   }
 
   /**
-   * Both derived automatically from the table's own query — not user-picked. The table
-   * already has a numeric column configured with an aggregation (that's how its own cells
-   * currently total), and that's the same aggregation "subtotales agrupados" should use, so
-   * the subtotal rows match what the table already shows instead of picking a different one.
-   * Scope for now: the FIRST numeric field found — a table with several numeric columns still
-   * only totals one, same restriction as before, just automatic instead of a dropdown.
+   * Both derived automatically from the table's own query — not user-picked. Every numeric
+   * column already has an aggregation configured (that's how its own cells currently total),
+   * and subtotal rows reuse those same aggregations instead of picking different ones.
    */
-  get groupBySubtotalNumericColumn(): string {
-    const numericField = this.panelQueryFields.find((f: any) => f.column_type === 'numeric');
-    return numericField ? TableDialogComponent.resolveDisplayName(numericField) : '';
+  get groupBySubtotalNumericColumns(): string[] {
+    return this.panelQueryFields
+      .filter((f: any) => f.column_type === 'numeric')
+      .map((f: any) => TableDialogComponent.resolveDisplayName(f));
   }
 
-  get groupBySubtotalAggregation(): string {
-    const numericField = this.panelQueryFields.find((f: any) => f.column_type === 'numeric');
-    if (!numericField) return 'sum';
-    const agg = TableDialogComponent.resolveAggregation(numericField);
-    return agg === 'none' ? 'sum' : agg;
+  get groupBySubtotalAggregations(): string[] {
+    return this.panelQueryFields
+      .filter((f: any) => f.column_type === 'numeric')
+      .map((f: any) => {
+        const agg = TableDialogComponent.resolveAggregation(f);
+        return agg === 'none' ? 'sum' : agg;
+      });
   }
 
   toggleGroupedSubtotals(): void {
@@ -468,8 +468,8 @@ export class TableDialogComponent{
     this.groupedSubtotalsLoading = true;
     this.myPanelChartComponent.applyGroupedSubtotals({
       groupBySubtotalColumns: this.groupBySubtotalColumns,
-      groupBySubtotalNumericColumn: this.groupBySubtotalNumericColumn,
-      groupBySubtotalAggregation: this.groupBySubtotalAggregation,
+      groupBySubtotalNumericColumns: this.groupBySubtotalNumericColumns,
+      groupBySubtotalAggregations: this.groupBySubtotalAggregations,
     } as TableConfig).finally(() => this.groupedSubtotalsLoading = false);
   }
 
@@ -571,7 +571,7 @@ export class TableDialogComponent{
       this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles,
       this.noRepetitions, this.negativeNumbers, this.ordering, this.crossSortOrder,
       this.headerColor, this.bandingColor, this.colorEnabled,
-      this.groupBySubtotalColumns, this.groupBySubtotalNumericColumn, this.groupBySubtotalAggregation);
+      this.groupBySubtotalColumns, this.groupBySubtotalNumericColumns, this.groupBySubtotalAggregations);
 
     // Apply prediction changes to the dashboard only on confirm
     const panelID = this.controller?.params?.panelId;

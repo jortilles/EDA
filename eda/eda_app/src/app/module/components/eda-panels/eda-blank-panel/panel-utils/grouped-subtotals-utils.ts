@@ -2,11 +2,17 @@ import { EdaBlankPanelComponent } from '../eda-blank-panel.component';
 import { QueryUtils } from './query-utils';
 
 /** One grouping level's result, straight from the backend — same [labels, rows] shape any
- *  other query response already has (dimension columns first, the aggregated numeric column
- *  last), so it's built the same way here as any other query result. */
+ *  other query response already has (dimension columns first, one column per aggregated
+ *  numeric field last), so it's built the same way here as any other query result. */
 export interface GroupedSubtotalLevel {
   labels: string[];
   rows: any[][];
+}
+
+/** One numeric column to subtotal, identified by display_name (see mergeRows for why). */
+export interface GroupedSubtotalNumericColumn {
+  displayName: string;
+  aggregation: string;
 }
 
 /** One row destined for eda-table's row-object model — GROUPED_SUBTOTAL_LEVEL_KEY marks it as
@@ -36,10 +42,9 @@ export const GroupedSubtotalsUtils = {
   fetchLevels: async (
     ebp: EdaBlankPanelComponent,
     groupByDisplayNames: string[],
-    numericDisplayName: string,
-    aggregation: string
+    numericColumns: GroupedSubtotalNumericColumn[]
   ): Promise<GroupedSubtotalLevel[]> => {
-    if (!groupByDisplayNames.length || !numericDisplayName) return [];
+    if (!groupByDisplayNames.length || !numericColumns?.length) return [];
 
     const source: any[] = ebp.currentQuery || [];
     // display_name shows up as either the {default, localized} i18n object or an already-
@@ -52,11 +57,14 @@ export const GroupedSubtotalsUtils = {
       if (idx === -1) throw new Error(`Columna de agrupación "${name}" no encontrada en la consulta actual`);
       return idx;
     });
-    const numericFieldIndex = source.findIndex(f => nameOf(f) === numericDisplayName);
-    if (numericFieldIndex === -1) throw new Error(`Columna numérica "${numericDisplayName}" no encontrada en la consulta actual`);
+    const numericFields = numericColumns.map(nc => {
+      const idx = source.findIndex(f => nameOf(f) === nc.displayName);
+      if (idx === -1) throw new Error(`Columna numérica "${nc.displayName}" no encontrada en la consulta actual`);
+      return { fieldIndex: idx, aggregation: nc.aggregation };
+    });
 
     const query = QueryUtils.initEdaQuery(ebp);
-    const body = { ...query, groupBy: { fieldIndexes, numericFieldIndex, aggregation } };
+    const body = { ...query, groupBy: { fieldIndexes, numericFields } };
 
     const response = await ebp.dashboardService.executeGroupedSubtotalsQuery(body).toPromise();
     return (response?.levels || []).map(([labels, rows]: [string[], any[][]]) => ({ labels, rows }));
@@ -76,20 +84,20 @@ export const GroupedSubtotalsUtils = {
     allFields: string[],
     displayNameToField: Record<string, string>,
     groupByDisplayNames: string[],
-    numericDisplayName: string,
+    numericColumns: GroupedSubtotalNumericColumn[],
     levels: GroupedSubtotalLevel[]
   ): any[] {
     if (!groupByDisplayNames.length || !levels.length) return rows;
 
     const dimFields = groupByDisplayNames.map(name => displayNameToField[name]);
-    const numField = displayNameToField[numericDisplayName];
-    if (dimFields.some(f => !f) || !numField) return rows;
+    const numFields = (numericColumns || []).map(nc => displayNameToField[nc.displayName]);
+    if (dimFields.some(f => !f) || !numFields.length || numFields.some(f => !f)) return rows;
 
-    // [labels, rows] -> {groupValues, value}[], purely positional: dims first, value last.
+    // [labels, rows] -> {groupValues, values}[]: dims first, one value per numeric column last.
     const levelValues = levels.map(({ rows: levelRows }) =>
       levelRows.map(row => ({
-        groupValues: row.slice(0, row.length - 1).map(v => String(v)),
-        value: row[row.length - 1]
+        groupValues: row.slice(0, row.length - numFields.length).map(v => String(v)),
+        values: row.slice(row.length - numFields.length)
       }))
     );
 
@@ -102,8 +110,8 @@ export const GroupedSubtotalsUtils = {
     });
 
     const levelMaps = levelValues.map(levelRows => {
-      const map = new Map<string, number>();
-      levelRows.forEach(r => map.set(r.groupValues.join(GROUP_KEY_SEP), r.value));
+      const map = new Map<string, any[]>();
+      levelRows.forEach(r => map.set(r.groupValues.join(GROUP_KEY_SEP), r.values));
       return map;
     });
 
@@ -112,10 +120,11 @@ export const GroupedSubtotalsUtils = {
 
     const buildSubtotalRow = (level: number, row: any): any => {
       const key = keyFor(row, level);
-      const value = levelMaps[level].get(key) ?? null;
+      const values = levelMaps[level].get(key);
       const subtotalRow: any = { [GROUPED_SUBTOTAL_LEVEL_KEY]: level };
       allFields.forEach(f => {
-        if (f === numField) { subtotalRow[f] = value; return; }
+        const numPos = numFields.indexOf(f);
+        if (numPos !== -1) { subtotalRow[f] = values ? values[numPos] : null; return; }
         const dimPos = dimFields.slice(0, level + 1).indexOf(f);
         subtotalRow[f] = dimPos !== -1 ? `${row[f]} Total` : '';
       });

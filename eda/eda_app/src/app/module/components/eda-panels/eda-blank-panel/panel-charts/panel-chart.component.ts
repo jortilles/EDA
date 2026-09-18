@@ -470,6 +470,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             if (edaCol && displayName) displayNameToField[displayName] = edaCol.field;
         });
 
+        const numericColumns = (config.groupBySubtotalNumericColumns || []).map((displayName, i) => ({
+            displayName,
+            aggregation: config.groupBySubtotalAggregations?.[i] || 'sum',
+        }));
+
         // Initial load/reload: levels were already fetched before the table existed, so merge
         // now, synchronously — the table never paints without subtotals in the first place.
         if (this.props.groupedSubtotalsPreloadedLevels) {
@@ -478,7 +483,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 inject.cols.map((c: any) => c.field),
                 displayNameToField,
                 groupByColumns,
-                config.groupBySubtotalNumericColumn,
+                numericColumns,
                 this.props.groupedSubtotalsPreloadedLevels
             );
             inject.value = merged;
@@ -496,7 +501,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 inject.cols.map((c: any) => c.field),
                 displayNameToField,
                 groupByColumns,
-                config.groupBySubtotalNumericColumn,
+                numericColumns,
                 levels
             );
             inject.value = merged;

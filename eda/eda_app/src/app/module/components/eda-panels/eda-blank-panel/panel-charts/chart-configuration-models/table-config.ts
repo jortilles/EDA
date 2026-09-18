@@ -23,10 +23,10 @@ export class TableConfig {
   /** Ordered column names to group by for nested "grouped subtotals" (e.g. [pais, ciudad] —
    *  order defines nesting depth). Empty = feature off. */
   groupBySubtotalColumns: string[];
-  /** The single numeric column whose value gets aggregated at each group level. */
-  groupBySubtotalNumericColumn: string;
-  /** Aggregation applied per group level: 'sum' | 'avg' | 'min' | 'max'. */
-  groupBySubtotalAggregation: string;
+  /** Every numeric column subtotaled at each group level (parallel to groupBySubtotalAggregations). */
+  groupBySubtotalNumericColumns: string[];
+  /** Aggregation per column in groupBySubtotalNumericColumns: 'sum' | 'avg' | 'min' | 'max'. */
+  groupBySubtotalAggregations: string[];
 
   constructor(
     onlyPercentages: Boolean,
@@ -47,8 +47,8 @@ export class TableConfig {
     bandingColor: string = '',
     colorEnabled: boolean = true,
     groupBySubtotalColumns: string[] = [],
-    groupBySubtotalNumericColumn: string = '',
-    groupBySubtotalAggregation: string = 'sum',
+    groupBySubtotalNumericColumns: string[] = [],
+    groupBySubtotalAggregations: string[] = [],
     ) {
       this.onlyPercentages = onlyPercentages;
       this.resultAsPecentage = resultAsPecentage;
@@ -68,8 +68,8 @@ export class TableConfig {
       this.bandingColor = bandingColor;
       this.colorEnabled = colorEnabled;
       this.groupBySubtotalColumns = groupBySubtotalColumns;
-      this.groupBySubtotalNumericColumn = groupBySubtotalNumericColumn;
-      this.groupBySubtotalAggregation = groupBySubtotalAggregation;
+      this.groupBySubtotalNumericColumns = groupBySubtotalNumericColumns;
+      this.groupBySubtotalAggregations = groupBySubtotalAggregations;
   }
 
 }

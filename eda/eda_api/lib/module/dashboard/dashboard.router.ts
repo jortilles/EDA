@@ -309,7 +309,7 @@ router.post('/source-fields-query', authGuard, DashboardController.getSourceFiel
  *         in: body
  *         required: true
  *         type: object
- *         description: Query configuration plus a groupBy object ({ fieldIndexes, numericFieldIndex, aggregation })
+ *         description: Query configuration plus a groupBy object ({ fieldIndexes, numericFields: [{fieldIndex, aggregation}] })
  *     responses:
  *       200:
  *         description: returns ok

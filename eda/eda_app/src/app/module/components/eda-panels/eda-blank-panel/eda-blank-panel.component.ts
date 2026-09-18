@@ -746,13 +746,14 @@ public tableNodeExpand(event: any): void {
 
         // Pre-fetch grouped subtotals so the table never paints without them first.
         const groupByCols = recoveredConfig.getConfig()?.['groupBySubtotalColumns'];
-        if (chart === 'table' && groupByCols?.length) {
+        const numericCols: string[] = recoveredConfig.getConfig()?.['groupBySubtotalNumericColumns'];
+        if (chart === 'table' && groupByCols?.length && numericCols?.length) {
+            const aggregations: string[] = recoveredConfig.getConfig()['groupBySubtotalAggregations'] || [];
             try {
                 this.pendingGroupedSubtotalsPreloadedLevels = await GroupedSubtotalsUtils.fetchLevels(
                     this,
                     groupByCols,
-                    recoveredConfig.getConfig()['groupBySubtotalNumericColumn'],
-                    recoveredConfig.getConfig()['groupBySubtotalAggregation'] || 'sum'
+                    numericCols.map((displayName, i) => ({ displayName, aggregation: aggregations[i] || 'sum' }))
                 );
             } catch (err) {
                 console.error('No se pudieron precargar los subtotales agrupados', err);
@@ -882,11 +883,12 @@ public tableNodeExpand(event: any): void {
             // picker, before Confirm) don't update; fetching against it instead of the config
             // actually being merged is what left picker changes fetching stale data.
             fetchGroupedSubtotals: type === 'table' ? (liveConfig: TableConfig) => {
+                const numericCols = liveConfig.groupBySubtotalNumericColumns || [];
+                const aggregations = liveConfig.groupBySubtotalAggregations || [];
                 return GroupedSubtotalsUtils.fetchLevels(
                     this,
                     liveConfig.groupBySubtotalColumns || [],
-                    liveConfig.groupBySubtotalNumericColumn,
-                    liveConfig.groupBySubtotalAggregation || 'sum'
+                    numericCols.map((displayName, i) => ({ displayName, aggregation: aggregations[i] || 'sum' }))
                 );
             } : undefined,
             groupedSubtotalsPreview: type === 'table' ? this.pendingGroupedSubtotalsPreview : undefined,
