@@ -556,9 +556,13 @@ export class TableDialogComponent{
       }
     }
 
-    // Hand off the live preview's already-merged rows so Confirm skips a re-fetch.
+    // Hand off the live preview's already-merged rows so Confirm skips a re-fetch — but only if
+    // it was actually merged for the CURRENT selection (a picker change without closing the
+    // dropdown before Confirm leaves the preview stale for a different column set).
     const previewInject: any = this.myPanelChartComponent.componentRef?.instance?.inject;
-    const groupedSubtotalsPreview = (this.groupBySubtotalColumns.length && previewInject?.__groupedSubtotalsCleanRows)
+    const previewMatchesSelection = previewInject?.__groupedSubtotalsCleanRows &&
+      _.isEqual(previewInject.__groupedSubtotalsMergedForColumns, this.groupBySubtotalColumns);
+    const groupedSubtotalsPreview = (this.groupBySubtotalColumns.length && previewMatchesSelection)
       ? { cleanRows: previewInject.__groupedSubtotalsCleanRows, mergedRows: previewInject.value }
       : undefined;
 
