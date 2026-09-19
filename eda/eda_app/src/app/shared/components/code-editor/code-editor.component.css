@@ -1,0 +1,68 @@
+:host {
+  display: block;
+  position: relative;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+  min-height: 2.4em;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+:host(.eda-code-editor--fill) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+:host(:focus-within) {
+  border-color: var(--corporate-primary, #00bfb3);
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb, 0, 191, 179), 0.15);
+}
+
+.eda-code-editor-host {
+  height: 100%;
+}
+
+:host(.eda-code-editor--fill) .eda-code-editor-host {
+  flex: 1;
+  min-height: 0;
+}
+
+.eda-code-editor-zoom {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 5;
+  display: flex;
+  gap: 1px;
+  padding: 1px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #e5e7eb;
+  opacity: 0.45;
+  transition: opacity 0.15s ease;
+}
+:host(:hover) .eda-code-editor-zoom,
+:host(:focus-within) .eda-code-editor-zoom {
+  opacity: 1;
+}
+
+.eda-code-editor-zoom button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1;
+  color: #6b7280;
+  cursor: pointer;
+}
+.eda-code-editor-zoom button:hover {
+  background: rgba(var(--corporate-primary-rgb, 0, 191, 179), 0.14);
+  color: var(--corporate-primary-dark, #007b74);
+}

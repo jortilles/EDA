@@ -163,9 +163,9 @@
                       <i class="pi pi-trash text-sm"></i>
                     </button>
                   </label>
-                  <textarea #subjArea rows="1" [(ngModel)]="mailSubject" (focus)="activeField='subject'"
-                    [edaMailVarSuggest]="kpiVariables" [edaMailVarSuggestValue]="varValueResolver"
-                    class="mail-textarea w-full resize-none rounded-lg border border-gray-300 px-3 py-2 leading-tight"></textarea>
+                  <eda-code-editor #subjArea [(ngModel)]="mailSubject" (focused)="activeField='subject'"
+                    language="text" [highlightTemplateTokens]="true" [completionSource]="tokenCompletionSource"
+                    minHeight="2.4em"></eda-code-editor>
                 </div>
                 <div class="flex flex-col gap-1">
                   <label class="flex items-center gap-1.5 text-sm font-medium text-gray-700">
@@ -173,9 +173,9 @@
                     <i class="pi pi-info-circle cursor-pointer text-gray-400 hover:text-[var(--corporate-primary)]" style="font-size:0.8rem"
                       (click)="openRef()" [pTooltip]="refIconTitle" tooltipPosition="top"></i>
                   </label>
-                  <textarea #msgArea rows="11" [(ngModel)]="mailMessage" (focus)="activeField='message'" [placeholder]="messageExample"
-                    [edaMailVarSuggest]="kpiVariables" [edaMailVarSuggestValue]="varValueResolver"
-                    class="mail-textarea w-full resize-y rounded-lg border border-gray-300 px-3 py-2"></textarea>
+                  <eda-code-editor #msgArea [(ngModel)]="mailMessage" (focused)="activeField='message'" [placeholder]="messageExample"
+                    language="html" [highlightTemplateTokens]="true" [highlightCodeBlocks]="true" [completionSource]="tokenCompletionSource"
+                    minHeight="220px"></eda-code-editor>
                 </div>
               </div>
 
