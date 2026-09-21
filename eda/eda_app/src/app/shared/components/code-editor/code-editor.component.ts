@@ -26,13 +26,40 @@ import {
   CompletionSource, autocompletion, closeBrackets, closeBracketsKeymap, completionKeymap,
 } from '@codemirror/autocomplete';
 import {
-  bracketMatching, defaultHighlightStyle, foldGutter, foldKeymap, foldService,
+  HighlightStyle, bracketMatching, foldGutter, foldKeymap, foldService,
   indentOnInput, syntaxHighlighting,
 } from '@codemirror/language';
+import { tags } from '@lezer/highlight';
 import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { lintKeymap } from '@codemirror/lint';
 import { MSSQL, MySQL, PLSQL, PostgreSQL, SQLDialect, SQLite, StandardSQL, sql } from '@codemirror/lang-sql';
 import { html } from '@codemirror/lang-html';
+import { CODE_EDITOR_SYNTAX_COLORS } from '@eda/configs/customizable/customizable_default';
+
+/** Syntax-highlighting theme built from the (customizable) palette in
+ * `customizable_default.ts` — same tag set and defaults as CodeMirror's own
+ * `defaultHighlightStyle`, just sourced from config instead of hardcoded. */
+const editorHighlightStyle = HighlightStyle.define([
+  { tag: tags.meta, color: CODE_EDITOR_SYNTAX_COLORS.meta },
+  { tag: tags.link, textDecoration: 'underline' },
+  { tag: tags.heading, textDecoration: 'underline', fontWeight: 'bold' },
+  { tag: tags.emphasis, fontStyle: 'italic' },
+  { tag: tags.strong, fontWeight: 'bold' },
+  { tag: tags.strikethrough, textDecoration: 'line-through' },
+  { tag: tags.keyword, color: CODE_EDITOR_SYNTAX_COLORS.keyword },
+  { tag: [tags.atom, tags.bool, tags.url, tags.contentSeparator, tags.labelName], color: CODE_EDITOR_SYNTAX_COLORS.atom },
+  { tag: [tags.literal, tags.inserted], color: CODE_EDITOR_SYNTAX_COLORS.literal },
+  { tag: [tags.string, tags.deleted], color: CODE_EDITOR_SYNTAX_COLORS.string },
+  { tag: [tags.regexp, tags.escape, tags.special(tags.string)], color: CODE_EDITOR_SYNTAX_COLORS.escape },
+  { tag: tags.definition(tags.variableName), color: CODE_EDITOR_SYNTAX_COLORS.variableDef },
+  { tag: tags.local(tags.variableName), color: CODE_EDITOR_SYNTAX_COLORS.variableLocal },
+  { tag: [tags.typeName, tags.namespace], color: CODE_EDITOR_SYNTAX_COLORS.typeName },
+  { tag: tags.className, color: CODE_EDITOR_SYNTAX_COLORS.className },
+  { tag: [tags.special(tags.variableName), tags.macroName], color: CODE_EDITOR_SYNTAX_COLORS.specialVar },
+  { tag: tags.definition(tags.propertyName), color: CODE_EDITOR_SYNTAX_COLORS.propertyDef },
+  { tag: tags.comment, color: CODE_EDITOR_SYNTAX_COLORS.comment },
+  { tag: tags.invalid, color: CODE_EDITOR_SYNTAX_COLORS.invalid },
+]);
 
 /** SQL dialects with a curated (smaller, relevant) keyword set, instead of the generic
  * ANSI-standard one that surfaces obscure keywords (e.g. `current_transform_group_for_type`). */
@@ -67,7 +94,7 @@ const editorSetup: Extension = [
   dropCursor(),
   EditorState.allowMultipleSelections.of(true),
   indentOnInput(),
-  syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+  syntaxHighlighting(editorHighlightStyle, { fallback: true }),
   bracketMatching(),
   closeBrackets(),
   autocompletion(),
