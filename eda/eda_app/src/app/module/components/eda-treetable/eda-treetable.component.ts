@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ElementRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Required for directives
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import * as _ from 'lodash';
@@ -21,7 +21,11 @@ import { FATHER_ID } from '../../../config/customizable/customizable_default'
   standalone: true, // A Standalone component indicates that it does not need to be declared in the modules
   imports: [CommonModule, TreeTableModule],
 })
-export class EdaTreeTable implements OnInit {
+export class EdaTreeTable implements OnInit, OnDestroy {
+
+  private static readonly MIN_COL_WIDTH_PCT = 5;
+  private static readonly BASE_TABLE_STYLE = { 'min-width': '50rem' };
+  private static readonly FIXED_TABLE_STYLE = { 'min-width': '50rem', 'width': '100%', 'table-layout': 'fixed' };
 
   @Input() inject: any; // inject contains two arrays => (labels and values)
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
@@ -47,7 +51,22 @@ export class EdaTreeTable implements OnInit {
   showColumnFilters: boolean = true;
   showChildCount: boolean = false;
 
-  constructor(private sanitizer: DomSanitizer) { }
+  columnWidths: Record<string, string> = {};
+  tableStyle: Record<string, string> = EdaTreeTable.BASE_TABLE_STYLE;
+  private resizeDrag: {
+    leftField: string;
+    rightField: string;
+    startX: number;
+    leftStartPx: number;
+    rightStartPx: number;
+    containerWidthPx: number;
+    colEls: HTMLElement[];
+  } | null = null;
+  private resizeMoveListener = (event: MouseEvent) => this.onColResizeMove(event);
+  private resizeUpListener = () => this.onColResizeEnd();
+
+  constructor(private sanitizer: DomSanitizer, private host: ElementRef, private ngZone: NgZone,
+    private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     // Input data error handling control
@@ -66,6 +85,7 @@ export class EdaTreeTable implements OnInit {
     if (col1.column_type === 'numeric' && col2.column_type === 'numeric') {
       this.isDynamic = false;
       this.prepareColumns();
+      this.applyColumnWidths(cfg.columnWidths);
       this.nodes = this.buildTree();
       this.sortNodes(this.nodes);
     } else {
@@ -84,6 +104,116 @@ export class EdaTreeTable implements OnInit {
       isHtml: c?.column_type === 'html'
     }));
 
+  }
+
+  // Saved widths are ignored unless they cover every visible column (e.g. the query changed)
+  private applyColumnWidths(widths: Record<string, string>) {
+    if (widths && this.leafs.length && this.leafs.every(l => widths[l.field])) {
+      this.columnWidths = widths;
+      this.tableStyle = EdaTreeTable.FIXED_TABLE_STYLE;
+    }
+  }
+
+  isResizeActive(col: { field: string }): boolean {
+    return this.resizeDrag?.leftField === col.field;
+  }
+
+  private colEls(): HTMLElement[] {
+    // The header and body tables each render their own <colgroup>
+    return Array.from(this.host.nativeElement.querySelectorAll('col[data-field]'));
+  }
+
+  onColResizeStart(event: MouseEvent, col: { field: string }): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const idx = this.leafs.findIndex(l => l.field === col.field);
+    const rightCol = this.leafs[idx + 1];
+    if (!rightCol) return;
+
+    const ths: HTMLElement[] = Array.from(this.host.nativeElement.querySelectorAll('th[data-field]'));
+    const widthsPx: Record<string, number> = {};
+    let containerWidthPx = 0;
+    this.leafs.forEach(l => {
+      const th = ths.find(t => t.dataset['field'] === l.field);
+      widthsPx[l.field] = th?.getBoundingClientRect().width || 0;
+      containerWidthPx += widthsPx[l.field];
+    });
+    if (!containerWidthPx) return;
+
+    // Pin every column to its current pixel width so dragging only trades width between two neighbours
+    const colEls = this.colEls();
+    colEls.forEach(c => { c.style.width = widthsPx[c.dataset['field']] + 'px'; });
+    this.tableStyle = EdaTreeTable.FIXED_TABLE_STYLE;
+
+    this.resizeDrag = {
+      leftField: col.field,
+      rightField: rightCol.field,
+      startX: event.clientX,
+      leftStartPx: widthsPx[col.field],
+      rightStartPx: widthsPx[rightCol.field],
+      containerWidthPx,
+      colEls,
+    };
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    this.ngZone.runOutsideAngular(() => {
+      document.addEventListener('mousemove', this.resizeMoveListener);
+      document.addEventListener('mouseup', this.resizeUpListener);
+    });
+  }
+
+  private onColResizeMove(event: MouseEvent): void {
+    const drag = this.resizeDrag;
+    if (!drag) return;
+
+    const minWidthPx = EdaTreeTable.MIN_COL_WIDTH_PCT / 100 * drag.containerWidthPx;
+    const deltaPx = Math.max(minWidthPx - drag.leftStartPx,
+      Math.min(drag.rightStartPx - minWidthPx, event.clientX - drag.startX));
+
+    drag.colEls.forEach(c => {
+      if (c.dataset['field'] === drag.leftField) c.style.width = (drag.leftStartPx + deltaPx) + 'px';
+      if (c.dataset['field'] === drag.rightField) c.style.width = (drag.rightStartPx - deltaPx) + 'px';
+    });
+  }
+
+  private onColResizeEnd(): void {
+    this.removeResizeListeners();
+    const drag = this.resizeDrag;
+    if (!drag) return;
+    this.resizeDrag = null;
+
+    this.ngZone.run(() => {
+      const pxByField: Record<string, number> = {};
+      drag.colEls.forEach(c => { pxByField[c.dataset['field']] = parseFloat(c.style.width) || 0; });
+
+      // Last column absorbs the rounding remainder so the sum is always exactly 100%
+      const widths: Record<string, string> = {};
+      let sumPct = 0;
+      this.leafs.forEach((l, i) => {
+        if (i === this.leafs.length - 1) {
+          widths[l.field] = (100 - sumPct).toFixed(2) + '%';
+        } else {
+          const pct = parseFloat((pxByField[l.field] / drag.containerWidthPx * 100).toFixed(2));
+          widths[l.field] = pct + '%';
+          sumPct += pct;
+        }
+      });
+      this.columnWidths = widths;
+      this.inject.config.config.columnWidths = widths;
+      this.cdr.markForCheck();
+    });
+  }
+
+  private removeResizeListeners() {
+    document.removeEventListener('mousemove', this.resizeMoveListener);
+    document.removeEventListener('mouseup', this.resizeUpListener);
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  }
+
+  ngOnDestroy(): void {
+    this.removeResizeListeners();
   }
 
   // Sorts siblings at every level by the configured column

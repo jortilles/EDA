@@ -162,6 +162,7 @@ export const ChartsConfigUtils = {
         showChildCount: ebp.panelChart.props.config?.getConfig()?.['showChildCount'] ?? false,
         sortOrder: ebp.panelChart.props.config?.getConfig()?.['sortOrder'] ?? 'none',
         sortColumn: ebp.panelChart.props.config?.getConfig()?.['sortColumn'] ?? '',
+        columnWidths: ebp.panelChart.props.config?.getConfig()?.['columnWidths'],
       }
 
     } else if (ebp.panelChart.props.chartType === 'coordinatesMap') {

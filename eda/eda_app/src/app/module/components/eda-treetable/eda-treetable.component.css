@@ -1,5 +1,6 @@
 /* header */
 .tt-header {
+  position: relative;
   background-color: #e0e0e0;
   padding: 6px 8px;
 }
@@ -33,4 +34,46 @@
   margin-left: 4px;
   color: #777;
   font-size: 12px;
+}
+
+/* column resize handle: always-visible separator in the header, highlighted on hover/drag */
+.col-resize-handle {
+  position: absolute;
+  top: 0;
+  right: -4px;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  z-index: 10;
+  user-select: none;
+}
+
+.col-resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  left: 3px;
+  width: 2px;
+  border-radius: 1px;
+  background-color: #9e9e9e;
+  opacity: 0.6;
+  transition: top 0.15s ease, bottom 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.col-resize-handle:hover::after,
+.col-resize-handle.col-resize-active::after {
+  top: 0;
+  bottom: 0;
+  background-color: var(--corporate-primary, #6366f1);
+  opacity: 1;
+}
+
+/* no focus ring after clicking rows or the expand/collapse toggler */
+:host ::ng-deep .p-treetable .p-treetable-tbody > tr:focus,
+:host ::ng-deep .p-treetable .p-treetable-tbody > tr:focus-visible,
+:host ::ng-deep .p-treetable .p-treetable-tbody > tr > td .p-treetable-toggler:focus,
+:host ::ng-deep .p-treetable .p-treetable-tbody > tr > td .p-treetable-toggler:focus-visible {
+  outline: none;
+  box-shadow: none;
 }

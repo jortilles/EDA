@@ -1,13 +1,26 @@
 <div class="container-treetable" style="height: 100%; display: flex; flex-direction: column;">
   <div style="flex: 1; overflow: auto;">
-    <p-treeTable #tt [value]="nodes" [scrollable]="true" [tableStyle]="{'min-width':'50rem'}" selectionMode="single"
+    <p-treeTable #tt [value]="nodes" [scrollable]="true" [tableStyle]="tableStyle" selectionMode="single"
       [filterMode]="filterMode">
+
+      <!-- Column widths: resizing writes to these <col>s, one <colgroup> per rendered table -->
+      <ng-template pTemplate="colgroup">
+        <colgroup>
+          @for(col of leafs; track $index){
+          <col [style.width]="columnWidths[col.field]" [attr.data-field]="col.field">
+          }
+        </colgroup>
+      </ng-template>
 
       <!-- Header -->
       <ng-template pTemplate="header">
         <tr>
           @for(col of leafs; track $index){
-          <th class="tt-header">
+          <th class="tt-header" [attr.data-field]="col.field">
+            @if($index < leafs.length - 1){
+            <div class="col-resize-handle" [class.col-resize-active]="isResizeActive(col)"
+              (mousedown)="onColResizeStart($event, col)"></div>
+            }
             <div class="header-cell">
               <span class="header-title">{{ col.header }}</span>
 

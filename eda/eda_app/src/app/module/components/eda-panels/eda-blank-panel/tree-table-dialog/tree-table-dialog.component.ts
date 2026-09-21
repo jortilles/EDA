@@ -93,6 +93,8 @@ export class TreeTableDialogComponent implements OnInit {
     Object.assign(this.config, this.toggleState);
     this.config.sortOrder = this.sortOrder;
     this.config.sortColumn = this.sortColumn;
+    // Widths dragged in the preview live in its config copy
+    this.config.columnWidths = this.previewProps.config.getConfig().columnWidths;
     this.config.editedTreeTable = true;
     this.config.hierarchyLabels =  _.cloneDeep(this.sourceProducts);
     this.config.leafLabels =  _.cloneDeep(this.targetProducts);
