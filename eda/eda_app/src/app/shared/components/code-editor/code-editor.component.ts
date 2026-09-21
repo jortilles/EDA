@@ -426,7 +426,11 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy, OnChanges,
     else if (this.language === 'html') extensions.push(html());
     if (this.highlightTemplateTokens) extensions.push(templateTokenPlugin);
     if (this.highlightCodeBlocks) extensions.push(codeBlockLinePlugin, codeBlockFold);
-    if (this.completionSource) extensions.push(autocompletion({ override: [this.completionSource] }));
+    // SQL's own keyword/schema completions aren't useful enough to justify the popup noise —
+    // suppress them (via an empty `override`) unless an explicit `completionSource` is set.
+    if (this.language === 'sql' || this.completionSource) {
+      extensions.push(autocompletion({ override: this.completionSource ? [this.completionSource] : [] }));
+    }
     if (this.placeholder) extensions.push(cmPlaceholder(this.placeholder));
     return extensions;
   }
