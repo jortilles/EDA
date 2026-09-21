@@ -78,6 +78,13 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
         // inject is still undefined at this point (set after createComponent returns),
         // so we apply defaults. setTableProperties overrides with saved colors afterwards.
         this.applyBandingColors(this.inject?.headerColor, this.inject?.bandingColor, this.inject?.colorEnabled);
+
+        // Attached once for the component's lifetime (not per-drag, see onColResizeStart/End)
+        // so live dragging keeps working after the first resize.
+        this.ngZone.runOutsideAngular(() => {
+            document.addEventListener('mousemove', this.resizeMoveListener);
+            document.addEventListener('mouseup', this.resizeUpListener);
+        });
     }
 
 
@@ -463,10 +470,7 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
         };
         document.body.style.cursor = 'col-resize';
         document.body.style.userSelect = 'none';
-        this.ngZone.runOutsideAngular(() => {
-            document.addEventListener('mousemove', this.resizeMoveListener);
-            document.addEventListener('mouseup', this.resizeUpListener);
-        });
+        // mousemove/mouseup listeners are already attached for the component's lifetime (ngAfterViewInit)
     }
 
     private onColResizeMove(event: MouseEvent): void {
@@ -484,13 +488,11 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private onColResizeEnd(): void {
-        document.removeEventListener('mousemove', this.resizeMoveListener);
-        document.removeEventListener('mouseup', this.resizeUpListener);
+        const drag = this.resizeDrag;
+        if (!drag) return; // mouseup listener is permanently attached; no-op outside an active drag
+        this.resizeDrag = null;
         document.body.style.cursor = '';
         document.body.style.userSelect = '';
-        const drag = this.resizeDrag;
-        if (!drag) return;
-        this.resizeDrag = null;
 
         // Re-enter Angular here: this is the only point that touches the model/config, once.
         this.ngZone.run(() => {
@@ -516,9 +518,9 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             });
             this.inject.resizeColumns(widths);
+            // The click that follows mouseup must still see sorting disabled.
+            setTimeout(() => this.suppressSortClick = false, 0);
         });
-        // The click that follows mouseup must still see sorting disabled.
-        setTimeout(() => this.suppressSortClick = false, 0);
     }
 
     ngOnDestroy(): void {
