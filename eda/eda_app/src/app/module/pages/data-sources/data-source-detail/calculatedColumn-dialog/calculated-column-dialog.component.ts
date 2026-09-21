@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent,EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent,EdaDialog2Component, CodeEditorComponent } from '@eda/shared/components/shared-components.index';
 import { AlertService, DataSourceService, QueryBuilderService, QueryParams, SpinnerService} from '@eda/services/service.index';
 import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule, FormsModule} from '@angular/forms';
 import { SelectItem } from 'primeng/api';
@@ -14,7 +14,7 @@ import { AGG_COMPUTED } from '../aggregationConstants';
   selector: 'app-calculated-column-dialog',
   templateUrl: './calculated-column-dialog.component.html',
   styleUrls: ['../../../../../../assets/sass/eda-styles/components/dialog-component.css', './calculated-column-dialog.component.css'],
-  imports: [ReactiveFormsModule, EdaDialog2Component, FormsModule, CommonModule]
+  imports: [ReactiveFormsModule, EdaDialog2Component, FormsModule, CommonModule, CodeEditorComponent]
 })
 
 export class CalculatedColumnDialogComponent extends EdaDialogAbstract {

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlertService, DashboardService, DataSourceService, SpinnerService } from '@eda/services/service.index';
-import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { EdaDialog2Component, CodeEditorComponent } from '@eda/shared/components/shared-components.index';
 import { unwrapViewQuery } from '@eda/services/utils/view-query.util';
 import * as _ from 'lodash';
 
@@ -10,7 +10,7 @@ import * as _ from 'lodash';
   selector: 'app-view-dialog-edition',
   templateUrl: './view-dialog-edition.component.html',
   styleUrls: ['./view-dialog-edition.component.css'],
-  imports: [EdaDialog2Component, FormsModule, ReactiveFormsModule]
+  imports: [EdaDialog2Component, FormsModule, ReactiveFormsModule, CodeEditorComponent]
 })
 export class ViewDialogEditionComponent implements OnInit {
 
