@@ -1,6 +1,7 @@
 import { Directive, EventEmitter, Input, OnInit, Output, ViewChild, inject, signal } from "@angular/core";
 import { Observable, lastValueFrom } from "rxjs";
-import { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
+import { Completion, CompletionContext, CompletionResult } from "@codemirror/autocomplete";
+import { EditorView } from "@codemirror/view";
 import { CodeEditorComponent } from "@eda/shared/components/shared-components.index";
 import { AlertService, MailService, UserService } from "@eda/services/service.index";
 import { AssistantService } from "@eda/services/api/assistant.service";
@@ -313,11 +314,6 @@ Un saludo.`;
 
   /** Field the toolbox inserts into: whichever of subject/message was focused last. */
   public activeField: 'subject' | 'message' = 'message';
-  public get activeFieldLabel(): string {
-    return this.activeField === 'subject'
-      ? $localize`:@@mailSubjectShort:Asunto`
-      : $localize`:@@mailMessageLabel:Mensaje`;
-  }
 
   /** Insert a variable token into the active field (subject or message). */
   public insertToken(text: string): void {
@@ -345,7 +341,15 @@ Un saludo.`;
         return {
           label: tk.token,
           detail: val ? `${tk.label} · ${val}` : tk.label,
-          apply: tk.token,
+          apply: (view: EditorView, _c: Completion, from: number, to: number) => {
+            // closeBrackets already put a `}` after the cursor; the token brings its own.
+            const end = view.state.sliceDoc(to, to + 1) === '}' ? to + 1 : to;
+            view.dispatch({
+              changes: { from, to: end, insert: tk.token },
+              selection: { anchor: from + tk.token.length },
+              userEvent: 'input.complete',
+            });
+          },
           type: 'variable',
         };
       });
