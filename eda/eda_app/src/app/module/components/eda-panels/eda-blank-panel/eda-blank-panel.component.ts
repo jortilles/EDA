@@ -34,7 +34,7 @@ import { QueryService } from '@eda/services/api/query.service';
 import { IaFormStateService } from '@eda/services/shared/IaFormState.service'; 
 
 // Standalone components
-import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent} from '@eda/shared/components/shared-components.index';
+import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent, CodeEditorComponent} from '@eda/shared/components/shared-components.index';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
 import { PanelChartComponent } from './panel-charts/panel-chart.component';
@@ -104,7 +104,7 @@ const STANDALONE_COMPONENTS = [
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
     DragDropComponent, ChartTypeSelectorDialogComponent, SourceFieldsDialogComponent,
     IconComponent, FocusOnShowDirective, PromptComponent,
-    FilterAndOrDialogComponent,
+    FilterAndOrDialogComponent, CodeEditorComponent,
 ]
 @Component({
     standalone: true,

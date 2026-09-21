@@ -13,7 +13,8 @@
         [sortField]="inject.sortedColumn ? inject.sortedColumn.field : null"
         [sortOrder]="inject.sortedColumn ? inject.sortedColumn.order : null" 
         [autoLayout]="inject.autolayout"
-        styleClass="p-datatable-striped" 
+        [tableStyle]="{'table-layout': inject.autolayout ? 'auto' : 'fixed'}"
+        styleClass="p-datatable-striped"
         [ngStyle]="getStyle()">
 
         <!-- Colgroup: the browser's native, lightweight mechanism for table-layout:fixed

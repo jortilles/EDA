@@ -918,10 +918,10 @@
                 <div class="space-y-4">
                   <h3 class="font-semibold text-gray-700" i18n="@@sqlExpColumn">Expresión SQL</h3>
                   <div class="relative">
-                    <textarea [(ngModel)]="currentSQLQuery"
-                      class="w-full h-64 p-3 border border-gray-300 rounded-md font-mono text-base resize-none focus:outline-none focus:border-[var(--corporate-primary)]"
+                    <eda-code-editor [(ngModel)]="currentSQLQuery"
+                      language="sql" minHeight="16rem"
                       placeholder="SELECT * FROM customers">
-                    </textarea>
+                    </eda-code-editor>
 
                   </div>
       
