@@ -79,7 +79,6 @@ import { TableDialogComponent } from '@eda/components/component.index';
 import { TableGradientDialogComponent } from '@eda/components/component.index';
 import { KpiEditDialogComponent } from '@eda/components/component.index';
 
-import { CategoryChartDialogComponent } from '@eda/components/component.index';
 import { CategoryChartType, getChartCategoryValues } from './panel-charts/chart-category-values.util';
 export interface IPanelAction {
     code: string;
