@@ -3,7 +3,10 @@
     class="eda-dialog2" [header]="header"
     [(visible)]="display"
     [modal]="true"
-    [closable]="false"
+    [closable]="closable"
+    [dismissableMask]="dismissableMask"
+    [closeOnEscape]="closeOnEscape"
+    (onHide)="onClose()"
     [draggable]="draggable"
     [resizable]="false"
     [header]="header"
@@ -32,7 +35,7 @@
             @if(ifShowClose){
                 <button class="cancel-button" (click)="onClose()">
                     <i class="fa fa-times"></i>
-                    <span i18n="@@cancelarBtn">Cancelar</span>
+                    <span>{{ closeLabel }}</span>
                 </button>
             }
             

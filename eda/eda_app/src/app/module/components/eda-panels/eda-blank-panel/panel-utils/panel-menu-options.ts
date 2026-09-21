@@ -1,5 +1,6 @@
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { PanelInteractionUtils } from './panel-interaction-utils';
+import { SourceFieldsUtils } from '../source-fields-dialog/source-fields-utils';
 import * as _ from 'lodash';
 
 import { EdaContextMenuItem, EdaDialogController, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
@@ -39,27 +40,22 @@ export const PanelOptions = {
 
         if (Object.entries(panelComponent.graficos).length !== 0 && panelComponent.chartData.length !== 0) {
           
-          if (['line', 'area', 'bar', 'horizontalBar', 'barline', 'histogram', 'pyramid', 'radar'].includes(panelComponent.graficos.chartType)) {
+          if (['line', 'area', 'bar', 'horizontalBar', 'barline', 'histogram', 'pyramid', 'radar',
+               'doughnut', 'polarArea', 'sunburst', 'treeMap', 'scatterPlot', 'bubblechart', 'parallelSets', 'funnel', 'raceBar',
+               'knob']
+               .includes(panelComponent.graficos.chartType)) {
 
+            // Single unified chart dialog for every axis + D3 category chart (+ knob) - it resolves
+            // per-type options from CHART_DIALOG_SPECS internally.
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.chartController = new EdaDialogController({
               params: {
                 panelId: _.get(panelComponent.panel, 'id'),
                 chart: panelComponent.graficos,
-                config: panelComponent.panelChartConfig
+                config: panelComponent.panelChartConfig,
+                chartType: panelComponent.graficos.chartType
             },
               close: (event, response) => panelComponent.onCloseChartProperties(event, response)
-            });
-
-          } else if (['doughnut', 'polarArea', 'sunburst', 'treeMap', 'scatterPlot', 'bubblechart', 'parallelSets', 'funnel', 'raceBar'].includes(panelComponent.graficos.chartType)) {
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.categoryChartController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig,
-                chartType: panelComponent.graficos.chartType
-              },
-              close: (event, response) => panelComponent.onCloseCategoryChartProperties(event, response, panelComponent.graficos.chartType)
             });
 
           } else if (['table', 'crosstable'].includes(panelComponent.graficos.chartType)) {
@@ -147,19 +143,6 @@ export const PanelOptions = {
               close: (event, response) => { panelComponent.onCloseTreeTableProperties(event, response) }
             })
 
-
-          }
-
-          else if(panelComponent.graficos.chartType === 'knob'){
-
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.knobController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseKnobProperties(event, response) }
-            });
 
           }
 
@@ -301,6 +284,35 @@ export const PanelOptions = {
       }
     });
   },
+  showSourceFields: (panelComponent: EdaBlankPanelComponent) => {
+    return new EdaContextMenuItem({
+      label: $localize`:@@panelOptionsShowSourceFields:Mostrar campos de origen`,
+      icon: 'mdi mdi-eye-outline',
+      command: async () => {
+        panelComponent.contextMenu.hideContextMenu();
+        panelComponent.spinnerService.on();
+        try {
+          const result = await SourceFieldsUtils.getSourceFieldsResult(panelComponent);
+          const tableInject = panelComponent.panelChart?.componentRef?.instance?.inject;
+          panelComponent.sourceFieldsController = new EdaDialogController({
+            params: {
+              ...result,
+              panelTitle: panelComponent.panel.title,
+              headerColor: tableInject?.headerColor,
+              bandingColor: tableInject?.bandingColor,
+              colorEnabled: tableInject?.colorEnabled,
+            },
+            close: () => { panelComponent.sourceFieldsController = undefined; panelComponent.markDirty(); }
+          });
+        } catch (err) {
+          panelComponent.alertService.addError(err);
+        } finally {
+          panelComponent.spinnerService.off();
+          panelComponent.markDirty();
+        }
+      }
+    });
+  },
   toggleLock: (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
       label: panelComponent.isPanelLocked()
@@ -364,6 +376,10 @@ export const PanelOptions = {
         item: () => PanelOptions.changeChartType(ebp),
       },
       {
+        show: !!ebp.panel.content,
+        item: () => PanelOptions.showSourceFields(ebp),
+      },
+      {
         show: !isRoOrAnonimus && isEditable && isImported,
         item: () => PanelOptions.filtersMapper(ebp),
       },
@@ -384,7 +400,7 @@ export const PanelOptions = {
         item: () => PanelOptions.toggleLock(ebp),
       },
       {
-        show: !isRoOrAnonimus && isEditable,
+        show: !isRoOrAnonimus && isEditable && ebp.selectedQueryMode !== 'SQL',
         item: () => PanelOptions.toggleClickFilter(ebp),
       },
       {

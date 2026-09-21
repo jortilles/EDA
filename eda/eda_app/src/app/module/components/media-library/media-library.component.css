@@ -1,0 +1,1068 @@
+.media-library {
+  position: relative; /* anchors the drag-to-select rectangle, which now spans the whole component */
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  user-select: none;
+}
+
+.media-library--split {
+  flex-direction: row;
+  align-items: stretch;
+  gap: 1.5rem;
+  min-height: 80vh;
+}
+
+.media-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0; /* let this flex item actually shrink to the row's stretched height instead of growing with its content, so the scroll area below works */
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Only the image grid/list scrolls; the paginator and status bar stay pinned below it. */
+.media-files-scroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Left folder tree */
+.media-tree {
+  width: 15rem;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  gap: 0.1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background: #fff;
+  padding: 0.6rem 0;
+  overflow-y: auto;
+}
+
+.media-tree-node {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 1rem;
+  color: #64748b;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.media-tree-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  padding: 0;
+  font-size: 0.65rem;
+  cursor: pointer;
+}
+
+.media-tree-toggle:hover {
+  color: #334155;
+}
+
+.media-tree-toggle-spacer {
+  display: inline-block;
+  width: 1rem;
+  flex-shrink: 0;
+}
+
+/* Drag-and-drop-to-move highlight, shared by folder tiles and tree nodes */
+.media-drop-target--over {
+  background: rgba(var(--corporate-primary-rgb, 0, 191, 179), 0.15) !important;
+  outline: 2px dashed var(--corporate-primary, #00BFB3);
+  outline-offset: -2px;
+}
+
+.media-tree-node:hover {
+  background: rgba(var(--corporate-primary-rgb, 0, 191, 179), 0.08);
+}
+
+.media-tree-node.is-active {
+  color: var(--corporate-primary, #00BFB3);
+  font-weight: 700;
+  background: rgba(var(--corporate-primary-rgb, 0, 191, 179), 0.1);
+}
+
+.media-item-count {
+  color: #cbd5e1;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+/* Header: breadcrumb + tools */
+.media-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.75rem;
+}
+
+.media-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.media-breadcrumb a {
+  cursor: pointer;
+  color: #64748b;
+}
+
+.media-breadcrumb a:hover,
+.media-breadcrumb .is-current {
+  color: var(--corporate-primary, #00BFB3);
+}
+
+.media-breadcrumb-sep {
+  color: #cbd5e1;
+}
+
+.media-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.media-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.4rem;
+  background: #fff;
+  color: #334155;
+  font-size: 0.85rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.media-tool-btn:hover {
+  border-color: var(--corporate-primary, #00BFB3);
+  color: var(--corporate-primary, #00BFB3);
+}
+
+.media-tool-btn--danger:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.media-view-toggle {
+  display: flex;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.4rem;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  flex-shrink: 0;
+}
+
+.media-view-toggle button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 0;
+  background: #fff;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.media-view-toggle button:not(.active):hover {
+  background: #f8fafc;
+  color: #334155;
+}
+
+.media-view-toggle button.active {
+  background: var(--corporate-primary, #00BFB3);
+  color: #fff;
+}
+
+/* Search - deliberately compact, not a full-width bar */
+.media-search-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex: 0 1 16rem;
+  min-width: 10rem;
+  padding: 0 0.85rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.media-search-row:focus-within {
+  border-color: var(--corporate-primary, #00BFB3);
+}
+
+.media-search-icon {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.media-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  padding: 0.5rem 0;
+  font-size: 0.82rem;
+  background: transparent;
+}
+
+/* Inside the "Elegir imagen" picker this input sits under a PrimeNG p-dialog, whose own global
+   theme styles a bare <input>:focus with a box-shadow ring regardless of our component's own
+   styles - !important is the only way to override a third-party global rule from here. */
+.media-search-input:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.media-search-clear {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  border: none;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 0.65rem;
+  cursor: pointer;
+}
+
+.media-search-clear:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+/* Selection toolbar */
+.media-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background: #f8fafc;
+  flex-wrap: wrap;
+}
+
+.media-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid transparent;
+  background: #fff;
+  color: #334155;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.4rem 0.7rem;
+  border-radius: 0.35rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.media-toolbar button:hover:not(:disabled) {
+  background: rgba(var(--corporate-primary-rgb, 0, 191, 179), 0.1);
+  color: var(--corporate-primary, #00BFB3);
+}
+
+.media-toolbar button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.media-toolbar-spacer {
+  flex: 1;
+}
+
+/* Upload zone */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 2rem 1rem;
+  border: 2px dashed #cbd5e1;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, background-color 0.15s;
+  background-color: #fafafa;
+}
+
+.dropzone:hover,
+.dropzone--dragging {
+  border-color: var(--corporate-primary, #00BFB3);
+  background-color: rgba(var(--corporate-primary-rgb, 0, 191, 179), 0.06);
+}
+
+.dropzone-icon {
+  font-size: 1.75rem;
+  color: var(--corporate-primary, #00BFB3);
+}
+
+.dropzone-text {
+  font-weight: 600;
+  color: #334155;
+}
+
+.dropzone-hint {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+/* Pick-mode confirm bar */
+.media-pick-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  background: rgba(var(--corporate-primary-rgb, 0, 191, 179), 0.08);
+  border: 1px solid var(--corporate-primary, #00BFB3);
+  border-radius: 0.4rem;
+  color: #334155;
+  font-weight: 600;
+}
+
+.media-pick-bar span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.media-pick-bar button {
+  flex-shrink: 0;
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: var(--corporate-primary, #00BFB3);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Folder tiles */
+.media-folder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 160px); /* fixed size, see .media-grid comment */
+  gap: 0.75rem;
+}
+
+.media-folder-tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background: #f8fafc;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.media-folder-tile:hover {
+  border-color: var(--corporate-primary, #00BFB3);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+.media-folder-tile .pi-folder {
+  color: var(--corporate-primary, #00BFB3);
+  font-size: 1.1rem;
+}
+
+.media-folder-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  color: #334155;
+}
+
+.media-folder-actions {
+  display: flex;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.media-folder-tile:hover .media-folder-actions {
+  opacity: 1;
+}
+
+.media-folder-actions button {
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.2rem;
+}
+
+.media-folder-actions button:hover {
+  color: #334155;
+}
+
+.media-status {
+  color: #94a3b8;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.media-status-bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.media-status-selected {
+  color: #334155;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.media-count {
+  margin: 0;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+/* Paginator */
+.media-paginator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.25rem;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  border-radius: 0.5rem;
+  color: #64748b;
+}
+
+.paginator-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0 0.15rem;
+  border-radius: 9999px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.paginator-btn:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.paginator-btn:hover {
+  background-color: rgba(var(--corporate-primary-rgb, 0, 191, 179), 0.08);
+  color: var(--corporate-primary, #00BFB3);
+}
+
+.paginator-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--corporate-primary, #00BFB3);
+}
+
+.paginator-dropdown {
+  min-width: 4.5rem;
+}
+
+/* Grid */
+.media-grid {
+  display: grid;
+  /* fixed column size (not minmax(..., 1fr)): tiles must stay the same size regardless of
+     how many columns fit - selecting an image opens/resizes the side panel, which changes
+     the available width and, with 1fr columns, was stretching every tile to fill the row. */
+  grid-template-columns: repeat(auto-fill, 140px);
+  gap: 1rem;
+  user-select: none;
+}
+
+.media-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: #fff;
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.media-card:hover {
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.1);
+  transform: translateY(-1px);
+}
+
+.media-card--selected {
+  border-color: var(--corporate-primary, #00BFB3);
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb, 0, 191, 179), 0.3);
+}
+
+.media-card-thumb-wrap {
+  position: relative;
+  width: 100%;
+  height: 0;
+  /* percentage padding is always relative to the element's own WIDTH, so this forces a real
+     square box no matter what - aspect-ratio alone wasn't resolving to a square here, being a
+     flex child inside .media-card (column flex + aspect-ratio interaction is inconsistent). */
+  padding-bottom: 100%;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.media-thumb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.media-type-badge {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+  background: rgba(15, 23, 42, 0.65);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+.media-card-delete {
+  position: absolute;
+  bottom: 0.35rem;
+  right: 0.35rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: none;
+  border-radius: 0.3rem;
+  background: rgba(15, 23, 42, 0.65);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background-color 0.15s;
+}
+
+.media-card:hover .media-card-delete {
+  opacity: 1;
+}
+
+.media-card-delete:hover {
+  background: #ef4444;
+}
+
+/* Custom checkbox (appearance:none + hand-drawn tick) instead of accent-color: native checkmark
+   rendering isn't reliably white across browsers/OSes, and the tick needs to read clearly on
+   the corporate-color square. */
+.media-card-checkbox {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.4rem;
+  z-index: 2;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1.5px solid #fff;
+  border-radius: 0.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.media-card-checkbox:checked {
+  background: var(--corporate-primary, #00BFB3);
+  border-color: var(--corporate-primary, #00BFB3);
+}
+
+.media-card-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 0.34rem;
+  top: 0.14rem;
+  width: 0.3rem;
+  height: 0.56rem;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.media-card-caption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.45rem 0.55rem;
+  font-size: 0.72rem;
+}
+
+.media-card-name {
+  color: #334155;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.media-card-size {
+  color: #94a3b8;
+}
+
+/* Drag-to-select rectangle */
+.media-marquee {
+  position: absolute;
+  border: 1px dashed var(--corporate-primary, #00BFB3);
+  background: rgba(var(--corporate-primary-rgb, 0, 191, 179), 0.12);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* List view */
+.media-table-wrap {
+  overflow-x: auto;
+}
+
+.media-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.media-table th {
+  text-align: left;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  padding: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.media-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.media-table tr {
+  cursor: pointer;
+}
+
+.media-row--selected {
+  background: rgba(var(--corporate-primary-rgb, 0, 191, 179), 0.08);
+}
+
+.media-row-thumb {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: cover;
+  border-radius: 0.3rem;
+  display: block;
+}
+
+.media-row-name {
+  font-weight: 600;
+  color: #334155;
+  max-width: 20rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Move-to-folder menu */
+.media-move-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem;
+}
+
+.media-move-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.4rem;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.media-move-option:hover {
+  border-color: var(--corporate-primary, #00BFB3);
+  color: var(--corporate-primary, #00BFB3);
+}
+
+/* Side panel - only exists in the DOM while something is selected (see the .html), so this
+   animation plays exactly on that appear/disappear transition, never on image-to-image switches. */
+@keyframes mediaSlideIn {
+  from { transform: translateX(24px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes mediaSlideOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(24px); opacity: 0; }
+}
+
+.media-side-panel {
+  width: 18rem;
+  flex-shrink: 0;
+  align-self: stretch;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background: #fff;
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: #334155;
+  overflow-y: auto;
+  animation: mediaSlideIn 0.28s ease-out;
+}
+
+.media-side-panel--closing {
+  animation: mediaSlideOut 0.28s ease-in forwards;
+}
+
+.side-panel-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  margin-bottom: 0.6rem;
+}
+
+.side-panel-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.side-panel-filename {
+  margin: 0 0 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.side-panel-info {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 0.5rem;
+  margin: 0;
+}
+
+.side-panel-info dt {
+  color: #94a3b8;
+}
+
+.side-panel-info dd {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media-usage-title {
+  margin-top: 1rem;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.media-usage-list {
+  margin: 0.25rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.side-panel-summary-count {
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+}
+
+.side-panel-summary-size {
+  color: #64748b;
+  margin: 0 0 0.75rem;
+}
+
+.media-side-panel .media-tool-btn {
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+}
+
+.side-panel-actions {
+  margin-top: 1.25rem;
+}
+
+/* Slideshow */
+.media-slideshow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  min-height: 60vh;
+  overflow: hidden; /* a very tall/wide image must never grow this box past the dialog - that's
+                        what was pushing the nav arrows out of view */
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.4rem;
+  outline: none;
+}
+
+.slide-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.slide-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.9);
+  color: #334155;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.slide-nav:hover {
+  background: #fff;
+  color: var(--corporate-primary, #00BFB3);
+}
+
+.slide-nav--prev {
+  left: 1rem;
+}
+
+.slide-nav--next {
+  right: 1rem;
+}
+
+.slide-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.75rem;
+  text-align: center;
+  color: #334155;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Custom drag preview (see setDragGhost in the .ts) - built off-screen at dragstart time */
+.media-drag-ghost {
+  position: fixed;
+  top: -150px;
+  left: -150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 0.85rem;
+  background: linear-gradient(135deg, var(--corporate-primary, #00BFB3), var(--corporate-primary-gradient, #009e96));
+  color: #fff;
+  font-size: 1.9rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 255, 255, 0.85);
+}
+
+.media-drag-ghost-badge {
+  display: none; /* toggled to flex from the .ts only when moving more than one file */
+  position: absolute;
+  bottom: -0.4rem;
+  right: -0.4rem;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 0.3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 2px solid #fff;
+}
+
+/* Sort dropdown, next to the view toggle */
+.media-sort-dropdown {
+  min-width: 9rem;
+}
+
+/* Pick-mode confirm bar thumbnail */
+.media-pick-bar-thumb {
+  width: 2.2rem;
+  height: 2.2rem;
+  object-fit: cover;
+  border-radius: 0.3rem;
+  flex-shrink: 0;
+}
+
+/* Loading skeleton, matches the grid's own column layout */
+@keyframes mediaSkeletonPulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+.media-skeleton-card {
+  aspect-ratio: 1 / 1;
+  border-radius: 0.5rem;
+  background: #e2e8f0;
+  animation: mediaSkeletonPulse 1.4s ease-in-out infinite;
+}
+
+/* Empty states (no images yet / no search results) */
+.media-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 3rem 0;
+  color: #94a3b8;
+}
+
+.media-empty-state .pi {
+  font-size: 2.5rem;
+  color: #cbd5e1;
+}
+
+/* Item-count badges: tree nodes and folder tiles */
+.media-tree-count {
+  color: #cbd5e1;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.media-folder-count {
+  flex-shrink: 0;
+  min-width: 1.3rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Overlapping thumbnail stack, multi-selection summary */
+.side-panel-stack {
+  display: flex;
+  margin-bottom: 0.75rem;
+}
+
+.side-panel-stack-thumb {
+  width: 3rem;
+  height: 3rem;
+  object-fit: cover;
+  border-radius: 0.4rem;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  margin-left: -0.75rem;
+}
+
+.side-panel-stack-thumb:first-child {
+  margin-left: 0;
+}
+
+.side-panel-stack-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.4rem;
+  border: 2px solid #fff;
+  background: #e2e8f0;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: -0.75rem;
+}
+
+/* Keyboard focus, for accessibility - buttons, links and inputs across the whole component.
+   The search input is excluded: its own parent (.media-search-row) already shows focus via a
+   border-color change, so it doesn't need this too - that's what was stacking into a thick ring. */
+.media-library button:focus-visible,
+.media-library a:focus-visible,
+.media-library input:focus-visible:not(.media-search-input) {
+  outline: 2px solid var(--corporate-primary, #00BFB3);
+  outline-offset: 2px;
+}

@@ -77,6 +77,31 @@ export abstract class QueryBuilderService {
 
     abstract simpleQuery(columns: string[], origin: string, view:boolean);
 
+    /**
+     * Builds a `SELECT * FROM ... [JOINS] [WHERE ...]` version of the query (no columns list,
+     * grouping, having, order or limit) — used by "Mostrar campos de origen". Not abstract so
+     * existing connection types keep compiling without implementing it; only overridden where
+     * support has actually been added (currently PostgreSQL only).
+     */
+    public sourceFieldsQuery(origin: string, dest: any[], joinTree: any[], filters: any[], tables: Array<any>,
+        joinType: string, valueListJoins: any[], schema?: string, database?: string, sortedFilters?: any[]): string {
+        throw new Error('"Mostrar campos de origen" no está soportado todavía para este tipo de conexión');
+    }
+
+    /**
+     * ORDER BY for a calculated field must use its SQL expression, not its display_name alias -
+     * ordering by the alias fails for computed columns, so every qb-system's ORDER BY building
+     * routes computed fields through here instead of quoting display_name like regular columns.
+     */
+    protected getOrderExpression(field: any): string {
+        if (!field.aggregation_type || field.aggregation_type === 'none') {
+            return `(${field.SQLexpression})`;
+        }
+        return field.aggregation_type === 'count_distinct'
+            ? `count(distinct ${field.SQLexpression})`
+            : `${field.aggregation_type}(${field.SQLexpression})`;
+    }
+
 
 
     public async builder() {
@@ -370,6 +395,11 @@ export abstract class QueryBuilderService {
                 tables, columns, fields, origin, dest, joinTree, grouping, filters, havingFilters,
                 queryLimit, joinType, valueListJoins, schema, database, forSelector
             })
+        } else if (this.queryTODO.sourceFields) {
+            this.query = this.sourceFieldsQuery(
+                origin, dest, joinTree, filters, tables, joinType, valueListJoins, schema, database, sortedFilters
+            );
+            return this.query;
         } else {
             this.query = this.normalQuery(
                 columns, origin, dest, joinTree, grouping,  filters, havingFilters, tables,

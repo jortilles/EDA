@@ -15,6 +15,7 @@ import ArimaRouter from './module/predictions/predictions.router';
 import AuthRouter from './module/auth/auth.router';
 import CustomHTMLRouter from './module/customHTML/customHTML.router';
 import McpRouter from './module/mcp/mcp.router';
+import MediaRouter from './module/media/media.router';
 import { PluginRegistry } from './plugins';
 
 const router = express.Router();
@@ -48,6 +49,8 @@ router.use('/auth', AuthRouter);
 router.use('/customHTML', CustomHTMLRouter);
 
 router.use('/ia', McpRouter);
+
+router.use('/media', MediaRouter);
 
 for (const plugin of PluginRegistry.getAll()) {
     if (plugin.router && plugin.routerPath) {

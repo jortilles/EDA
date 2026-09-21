@@ -79,7 +79,7 @@ export class ViewDialogComponent implements OnInit {
   buildColumn(column_name: string, column_index: number, data: Array<any>) {
     let type = 'numeric';
     for (let i = 0; i < data.length; i++) {
-      if (data[i][column_index] !== null && !parseFloat(data[i][column_index])) {
+      if (data[i][column_index] !== null && isNaN(parseFloat(data[i][column_index]))) {
         type = 'text';
         break;
       }

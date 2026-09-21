@@ -1,0 +1,229 @@
+.col-resize-handle {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  z-index: 10;
+  user-select: none;
+}
+
+.col-resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 2px;
+  width: 2px;
+  background-color: var(--corporate-primary, #6366f1);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.col-resize-handle:hover::after,
+.col-resize-handle.col-resize-active::after {
+  opacity: 0.7;
+}
+
+.col-resize-handle.col-resize-active::after {
+  opacity: 1;
+}
+
+.total-col {
+  background-color: #5ba38b8c !important; 
+  color:var(--panel-font-color)!important;
+  text-align: right!important;
+  font-weight: normal;
+
+}
+
+.trend-col{
+  background-color: #f2f8f634 !important;
+  color: #004d4b !important;
+  text-align: center;
+  font-weight: normal;
+}
+
+/* eda-line-d3 sizes itself via ResizeObserver, not aspect-ratio like the old <p-chart> did - needs an explicit height. */
+.eda-table-sparkline {
+  width: 90%;
+  height: 30px;
+  margin: 0 auto;
+}
+.eda-table-sparkline eda-line-d3 {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sub-total-row {
+
+  background-color: var(--table-total-color) !important;
+  color:var(--panel-font-color)!important;
+  text-align: right;
+  font-weight: bold !important;
+}
+
+.total-row {
+
+  background-color: var(--table-total-color) !important;
+  color:var(--panel-font-color)!important;
+  text-align: right;
+  font-weight: bold !important;
+  border: 1px solid #e9ecef;
+  border-width: 0 0 1px 0;
+}
+.sub-total-row-header {
+
+  background-color: var(--table-total-color) !important;
+  color:var(--panel-font-color)!important;
+  text-align: left;
+  font-weight: bold !important;
+}
+
+.total-row-header{
+
+  background-color: var(--table-total-color) !important;
+  color:var(--panel-font-color)!important;
+  text-align: left;
+  font-weight: bold !important;
+}
+
+
+th{
+  border-radius: 6px;
+  background-color: #F1F0F0;
+  border: 1px solid #fff;
+}
+
+.eda-table {
+    --table-header-color: rgba(228, 228, 228, 0.5);
+    --table-banding-color: rgba(228, 228, 228, 0.5);
+    --table-total-color: rgba(228, 228, 228, 0.5);
+}
+
+/* Header: color configurable via CSS variable */
+.eda-table ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+     background: var(--table-header-color) !important;
+}
+
+/* Row banding: even rows with configurable color — exclude cells with gradient/semaphore color */
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]) {
+     background: var(--table-banding-color) !important;
+}
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
+     background: transparent !important;
+}
+
+/* Odd rows: transparent so the panel background color shows through — exclude colored cells */
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd),
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]) {
+     background: transparent !important;
+}
+
+/* Remove horizontal scroll in all cases (with and without autoLayout) */
+.eda-table:not(.eda-table--pivot) ::ng-deep .p-datatable .p-datatable-wrapper,
+.p-datatable-auto-layout>.p-datatable-wrapper {
+  overflow-x: hidden;
+}
+
+/* Allow text in cells to wrap instead of overflow */
+.eda-table:not(.eda-table--pivot) ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+  word-break: break-word;
+  white-space: normal;
+}
+
+.eda-table:not(.eda-table--pivot) ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  white-space: normal;
+}
+
+::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+    font-weight: bold;          /* Bold */
+    border-radius: 30px;         /* Rounded corners */
+    transition: all 0.2s ease;  /* Smooth transition on page change */
+    
+}
+
+/* Optional: hover for unselected pages */
+::ng-deep .p-paginator .p-paginator-pages .p-paginator-page:not(.p-highlight):hover {
+    cursor: pointer;
+}
+
+::ng-deep .p-paginator .p-paginator-pages .p-paginator-page:focus {
+    outline: none;
+    box-shadow: 0 0 2px 2px rgba(0,0,0,0.1);
+}
+
+
+
+
+
+/* Links inside HTML columns: disable native click so the div handler manages navigation */
+::ng-deep .p-datatable td a {
+    pointer-events: none;
+    color: #007ad9;
+    cursor: pointer;
+}
+
+/* === Transparent mode (background image on dashboard) === */
+.eda-table--transparent ::ng-deep .p-datatable,
+.eda-table--transparent ::ng-deep .p-datatable .p-datatable-wrapper {
+    background: transparent !important;
+}
+
+/* Apply style to the footer container */
+.eda-table ::ng-deep .p-datatable-footer {
+    background-color: inherit;
+}
+/* Apply style to the paginator container */
+.eda-table ::ng-deep .p-paginator{
+    background-color: inherit;
+    color: inherit;
+}
+
+/* Mirror the width of the "N registros" block with an invisible spacer on the
+   other side, so the pagination controls stay centered on the full paginator
+   width. Both stay in normal flex flow (no position:absolute) so they shrink
+   and wrap to their own line instead of overlapping when space is tight. */
+.eda-table ::ng-deep .p-paginator::before {
+    content: "";
+    flex: 1 1 auto;
+}
+
+.eda-table ::ng-deep .p-paginator-right-content {
+    flex: 1 1 auto;
+    margin-left: 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Apply style to the paginator dropdown container */
+.eda-table ::ng-deep .p-paginator .p-dropdown{
+    background-color: inherit; 
+    color: inherit;
+}
+/* Apply style to the paginator dropdown TEXT container */
+.eda-table ::ng-deep .p-paginator .p-dropdown-label{
+    color: inherit;
+}
+/* Apply style to the paginator dropdown ARROW container */
+.eda-table ::ng-deep .p-paginator .p-dropdown-trigger{
+    color: inherit;
+}
+
+/* styles for the + / - toggle of navigable columns */
+.nav-btn {
+  font-size: 1.5rem;
+  line-height: calc(1.75 / 1.125);
+  color: #00bcd4;
+  background: transparent;
+  border: none;
+  cursor: auto;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.nav-btn:hover {
+  color: #007c8a;
+}

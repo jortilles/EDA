@@ -118,13 +118,12 @@
                 <div class="space-y-2 md:col-span-2">
                   <label class="text-sm font-medium" i18n="@@kpiPrefixImage">Imagen prefijo</label>
                   <div class="flex items-center gap-3">
-                    <label class="kpi-upload-btn">
-                      <i class="pi pi-upload"></i>
-                      <span i18n="@@uploadImage">Subir imagen</span>
-                      <input type="file" accept="image/*" class="hidden" (change)="onPrefixImageSelected($event)" />
-                    </label>
+                    <button type="button" class="kpi-upload-btn" (click)="openMediaPicker()">
+                      <i class="pi pi-images"></i>
+                      <span i18n="@@chooseImage">Elegir imagen</span>
+                    </button>
                     @if(prefixImage){
-                      <img [src]="prefixImage" alt="preview"
+                      <img [src]="prefixImage | mediaSrc" alt="preview"
                         (click)="openPrefixImageInNewTab()"
                         class="w-[7rem] h-[3rem] object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity" />
                       <span (click)="prefixImage=''; updatePrefixImage()"
@@ -161,7 +160,7 @@
                       <div class="flex flex-col gap-3 border rounded-lg p-4 bg-white">
                         <div class="flex items-center justify-between">
                           <span class="font-medium">{{ item.value }}</span>
-                          <div class="flex items-center border rounded-md overflow-hidden">
+                          <div class="flex items-center gap-2">
                             <input [(ngModel)]="item.color" (input)="handleInputColor(item)" class="text-sm text-slate-600 font-mono w-20 px-3 py-2 focus:outline-none">
                             <p-colorPicker [(ngModel)]="item.color" (onChange)="handleInputColor(item)" format="hex" appendTo="body"></p-colorPicker>
                           </div>
@@ -430,7 +429,7 @@
                         (click)="labelColorMode = 'custom'; setLabelColor()" i18n="@@labelColorCustom">Personalizado</button>
                     </div>
                     @if (labelColorMode === 'custom') {
-                      <div class="flex items-center border rounded-md overflow-hidden">
+                      <div class="flex items-center gap-2">
                         <input [(ngModel)]="labelCustomColor" (input)="setLabelColor()" class="text-sm text-slate-600 font-mono w-20 px-3 py-1.5 focus:outline-none">
                         <p-colorPicker [(ngModel)]="labelCustomColor" (onChange)="setLabelColor()" format="hex" appendTo="body" />
                       </div>
@@ -470,7 +469,7 @@
                   <div class="flex flex-col gap-3 border rounded-lg p-4 bg-white">
                     <div class="flex items-center justify-between">
                       <span class="font-medium">{{ item.value }}</span>
-                      <div class="flex items-center border rounded-md overflow-hidden">
+                      <div class="flex items-center gap-2">
                         <input [(ngModel)]="item.color" (input)="handleInputColor(item)" class="text-sm text-slate-600 font-mono w-20 px-3 py-2 focus:outline-none">
                         <p-colorPicker [(ngModel)]="item.color" (onChange)="handleInputColor(item)" format="hex" appendTo="body"></p-colorPicker>
                       </div>
@@ -719,4 +718,13 @@
     (apply)="onMailConfigApply($event)"
     (close)="closeMailingConfig()">
   </app-kpi-mail-config>
+}
+
+@if (mediaPickerOpen) {
+  <eda-dialog2 [display]="mediaPickerOpen" header="Elegir imagen" i18n-header="@@chooseImage" width="70vw" height="70vh"
+    [showApply]="false" [overflow]="'auto'" (close)="mediaPickerOpen = false">
+    <div content class="p-4">
+      <app-media-library [pickMode]="true" (select)="onMediaSelected($event)"></app-media-library>
+    </div>
+  </eda-dialog2>
 }

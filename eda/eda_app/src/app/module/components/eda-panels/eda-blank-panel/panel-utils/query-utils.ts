@@ -185,7 +185,9 @@ export const QueryUtils = {
 
     } else {
       ebp.panelChart.NO_DATA = false;
+      ebp.panelChart.markDirty();
       ebp.display_v.minispinner = true;
+      ebp.markDirty();
     }
 
     try {
@@ -255,6 +257,7 @@ export const QueryUtils = {
     // Ensure the dragAndDrop component can be displayed
     ebp.dragAndDropAvailable = !ebp.chartTypes.filter( grafico => grafico.subValue === 'crosstable')[0].ngIf;
 
+    ebp.markDirty();
 
   },
 
@@ -277,10 +280,11 @@ export const QueryUtils = {
 
     if (dataDescription.otherColumns.length > 1 && cumulativeSum) {
 
-      ebp.cumsumAlertController = new EdaDialogController({
-        params: null,
+      ebp.warningController = new EdaDialogController({
+        params: { kind: 'cumsum' },
         close: (event) => {
-          ebp.cumsumAlertController = null;
+          ebp.warningController = null;
+          ebp.markDirty();
         }
       })
     } else {
@@ -322,13 +326,14 @@ export const QueryUtils = {
             &&  ( ( ebp.queryLimit == undefined  )  ||  (  ebp.queryLimit >  MAX_TABLE_ROWS_FOR_ALERT ) )   ) {
 
 
-        ebp.alertController = new EdaDialogController({
-          params: { totalTableCount: totalTableCount },
+        ebp.warningController = new EdaDialogController({
+          params: { kind: 'heavyQuery', totalTableCount: totalTableCount },
           close: (event, response) => {
             if (response) {
               QueryUtils.runQuery(ebp, false);
             }
-            ebp.alertController = null;
+            ebp.warningController = null;
+            ebp.markDirty();
           }
         });
 

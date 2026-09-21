@@ -254,7 +254,9 @@ export class DuckDBBuilderService extends QueryBuilderService {
                     const matchingField = this.queryTODO.fields.find(
                         (f: any) => f.table_id === col.table_id && f.column_name === col.column_name
                     );
-                    if (matchingField) {
+                    if (matchingField?.computed_column === 'computed') {
+                        return `${this.getOrderExpression(matchingField)} ${col.ordenation_type}`;
+                    } else if (matchingField) {
                         return `"${matchingField.display_name}" ${col.ordenation_type}`;
                     } else {
                         return `"${col.table_id}"."${col.column_name}" ${col.ordenation_type}`;
@@ -264,7 +266,9 @@ export class DuckDBBuilderService extends QueryBuilderService {
             orderColumns = this.queryTODO.fields
                 .map((col: any) => {
                     if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
-                        return `"${col.display_name}" ${col.ordenation_type}`;
+                        return col.computed_column === 'computed'
+                            ? `${this.getOrderExpression(col)} ${col.ordenation_type}`
+                            : `"${col.display_name}" ${col.ordenation_type}`;
                     }
                     return false;
                 })
@@ -276,6 +280,58 @@ export class DuckDBBuilderService extends QueryBuilderService {
             myQuery = `${myQuery}\norder by ${orderStr}`;
         }
         if (limit) myQuery += `\nlimit ${limit}`;
+
+        if (alias) {
+            for (const key in alias) {
+                myQuery = myQuery.split(key).join(`"${alias[key]}"`);
+            }
+        }
+
+        return myQuery;
+    }
+
+    /**
+     * Builds `SELECT * FROM <origin> [JOINS] [WHERE ...]` for "Mostrar campos de origen":
+     * same origin/joins/where logic as normalQuery(), without the column list, grouping,
+     * having, order or limit.
+     */
+    public sourceFieldsQuery(origin: string, dest: any[], joinTree: any[], filters: any[], tables: Array<any>,
+        joinType: string, valueListJoins: Array<any>, schema: string, database: string, sortedFilters?: any[]): string {
+        if (!schema || schema === 'null' || schema === '') {
+            schema = 'main';
+        }
+
+        let myQuery = `SELECT * \n`;
+        let o = tables.filter(table => table.name === origin)
+            .map(table => table.query ? this.cleanViewString(table.query) : table.name)[0];
+        let vista = tables.filter(table => table.name === origin)
+            .map(table => !!table.query)[0];
+
+        if (vista) {
+            myQuery += `FROM ${o}`;
+        } else {
+            myQuery += `FROM "${schema}"."${o}"`;
+        }
+
+        // JOINS
+        let joinString: any[];
+        let alias: any;
+        if (this.queryTODO.joined) {
+            const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+            joinString = responseJoins.joinString;
+            alias = responseJoins.aliasTables;
+        } else {
+            joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, schema);
+        }
+
+        joinString.forEach(x => { myQuery = myQuery + '\n' + x; });
+
+        // WHERE
+        if (Array.isArray(sortedFilters) && sortedFilters.length !== 0) {
+            myQuery += this.getSortedFilters(sortedFilters, filters);
+        } else {
+            myQuery += this.getFilters(filters);
+        }
 
         if (alias) {
             for (const key in alias) {

@@ -1,5 +1,5 @@
 // Angular
-import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DragDropModule, CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem, copyArrayItem } from '@angular/cdk/drag-drop';
@@ -52,6 +52,7 @@ import { EdaTitlePanelComponent } from '@eda/components/component.index';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ChartTypeSelectorDialogComponent } from './chart-type-selector-dialog/chart-type-selector-dialog.component';
+import { SourceFieldsDialogComponent } from './source-fields-dialog/source-fields-dialog.component';
 import { PromptComponent } from '@eda/components/prompt/prompt.component';
 import { FilterAndOrDialogComponent } from './filter-and-or-dialog/filter-and-or-dialog.component';
 import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-or.component';
@@ -65,8 +66,7 @@ import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
 import { NavigationUtils } from './panel-utils/navigation-utils';
 
 //
-import { CumSumAlertDialogComponent } from '@eda/components/component.index';
-import { AlertDialogComponent } from '@eda/components/component.index';
+import { WarningDialogComponent } from '@eda/components/component.index';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 
 // Tests
@@ -74,7 +74,6 @@ import { MapEditDialogComponent } from '@eda/components/component.index';
 import { MapCoordDialogComponent } from '@eda/components/component.index';
 import { ChartDialogComponent } from '@eda/components/component.index';
 import { TreeTableDialogComponent } from '@eda/components/component.index';
-import { KnobDialogComponent } from '@eda/components/component.index';
 import { dynamicTextDialogComponent } from '@eda/components/component.index';
 import { TableDialogComponent } from '@eda/components/component.index';
 import { TableGradientDialogComponent } from '@eda/components/component.index';
@@ -96,15 +95,15 @@ interface ChatMessage {
 
 const DIALOGS_COMPONENTS = [
     ChartDialogComponent, MapCoordDialogComponent, MapEditDialogComponent,
-    TreeTableDialogComponent, KnobDialogComponent, dynamicTextDialogComponent, TableDialogComponent,
-    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent, CategoryChartDialogComponent
+    TreeTableDialogComponent, dynamicTextDialogComponent, TableDialogComponent,
+    TableGradientDialogComponent, WarningDialogComponent, KpiEditDialogComponent
 ];
-const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
+const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule, OverlayPanelModule];
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, ChatEdaAIComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
-    DragDropComponent, ChartTypeSelectorDialogComponent,
+    DragDropComponent, ChartTypeSelectorDialogComponent, SourceFieldsDialogComponent,
     IconComponent, FocusOnShowDirective, PromptComponent,
     FilterAndOrDialogComponent,
 ]
@@ -115,6 +114,7 @@ const STANDALONE_COMPONENTS = [
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './eda-blank-panel.component.html',
     styleUrls: ['./eda-blank-panel.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EdaBlankPanelComponent implements OnInit {
     /** Reference to the dashboard root element (used for image capture during Excel export) */
@@ -143,15 +143,12 @@ export class EdaBlankPanelComponent implements OnInit {
     public filterController: EdaDialogController;
     public chartController: EdaDialogController;
     public tableController: EdaDialogController;
-    public alertController: EdaDialogController;
-    public cumsumAlertController : EdaDialogController;
+    public warningController: EdaDialogController;
     public mapController: EdaDialogController;
     public mapCoordController: EdaDialogController;
     public kpiController: EdaDialogController;
     public dynamicTextController: EdaDialogController;
-    public categoryChartController: EdaDialogController;
     public linkDashboardController: EdaDialogController;
-    public knobController: EdaDialogController;
     public treeTableController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
@@ -315,6 +312,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public isVisibleEbpChatGpt = false;
     public dataChatGpt: any;
     public chartTypeSelectorController: EdaDialogController;
+    public sourceFieldsController: EdaDialogController;
 
     // for the drag-drop component
     public axes:any[]=[]; 
@@ -354,9 +352,17 @@ export class EdaBlankPanelComponent implements OnInit {
         this.connectionProperties = computed(() => this.route.snapshot.paramMap.get('cnproperties'));
 
         this.dashboardService.notSaved.subscribe(
-            (data) => this.display_v.notSaved = data,
+            (data) => { this.display_v.notSaved = data; this.cdr.markForCheck(); },
             (err) => this.alertService.addError(err)
         );
+    }
+
+    /** Marca este panel para revisión bajo OnPush. Necesario porque el dashboard padre (y
+     *  utilidades externas como query-utils.ts/panel-menu-options.ts) mutan el estado de este
+     *  panel fuera de cualquier evento de su propia plantilla (tras un await, desde otro
+     *  componente, etc.), lo cual OnPush no detecta por sí solo. */
+    public markDirty(): void {
+        this.cdr.markForCheck();
     }
 
     public async setPanelDataSource() {
@@ -425,8 +431,10 @@ export class EdaBlankPanelComponent implements OnInit {
             {height: '100%', width: '100%'};
         
         if(this.sortedFilters === undefined) this.sortedFilters = []; // Si se trata de un informe antiguo, definimos el informe como vacío.
+
+        this.cdr.markForCheck();
     }
-    
+
     public openContextMenu(event: MouseEvent): void {
         this.contextMenu.contextMenuItems = PanelOptions.generateMenu(this);
         this.contextMenu.showContextMenu(event);
@@ -486,6 +494,7 @@ public tableNodeExpand(event: any): void {
     if (this.tableInput) {
       this.displayedTableNodes = this.filterTreeNodes(this.tableNodes, this.tableInput.toLowerCase());
     }
+    this.cdr.markForCheck();
   });
 }
 
@@ -550,10 +559,14 @@ public tableNodeExpand(event: any): void {
     }
 
     isClickFiltersEnabled(): boolean {
+        // Click-to-filter never fires for SQL panels (onPanelAction requires EDA mode), so
+        // report it as disabled regardless of the saved flag.
+        if (this.selectedQueryMode === 'SQL') return false;
         return (this.panel as any).clickFiltersEnabled ?? true;
     }
 
     toggleClickFilters(): void {
+        if (this.selectedQueryMode === 'SQL') return;
         const panel = this.panel as any;
         panel.clickFiltersEnabled = !this.isClickFiltersEnabled();
         this.dashboardService.setNotSaved(true);
@@ -627,6 +640,7 @@ public tableNodeExpand(event: any): void {
         this.tablesToShow = [].concat(_.cloneDeep(tables.tablesToShow), this.assertedTables);
         this.tablesToShowBase = [...this.tablesToShow];
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
+        this.cdr.markForCheck();
     }
 
     /**
@@ -645,6 +659,7 @@ public tableNodeExpand(event: any): void {
             if (!panelContent?.query) return;
 
             this.display_v.minispinner = true;
+            this.cdr.markForCheck();
 
             PanelInteractionUtils.handleGlobalFilterMapper(this);
             this.setupQueryContext(panelContent);          // 1. build currentQuery + navState
@@ -684,9 +699,11 @@ public tableNodeExpand(event: any): void {
                 })); // We replace nulls and empty strings with a customizable value.
             
             this.buildGlobalconfiguration(panelContent);
+            this.cdr.markForCheck();
         } catch (err) {
             this.alertService.addError(err);
             this.display_v.minispinner = false;
+            this.cdr.markForCheck();
             throw err;
         }
     }
@@ -753,6 +770,7 @@ public tableNodeExpand(event: any): void {
         // Check if the chart is a pivot table.
         const crossTableChart = this.chartTypes.find(g => g.subValue === 'crosstable');
         this.dragAndDropAvailable = !crossTableChart?.ngIf;
+        this.cdr.markForCheck();
     }
 
 
@@ -809,6 +827,7 @@ public tableNodeExpand(event: any): void {
         // Reset the prompt chat.
         this.promptMessages = [];
 
+        this.cdr.markForCheck();
     }
 
     public initObjectQuery() {
@@ -860,6 +879,7 @@ public tableNodeExpand(event: any): void {
             predictionConfig: this.panel.content?.query?.query?.predictionConfig,
             childNavConfig: NavigationUtils.hasNavigation(this) ? this.computeChildNavConfig() : { parentFields: [], childFieldMap: {}, navColumnSubstitution: {} },
         });
+        this.cdr.markForCheck();
     }
 
     /**
@@ -912,6 +932,7 @@ public tableNodeExpand(event: any): void {
                     try {
                         this.changeChartType(type, subType, config);
                         if (hadChildNav) { QueryUtils.runQuery(this, false); }
+                        this.cdr.markForCheck();
                     } catch (err) {
                         this.alertService.addError(err);
                         throw err;
@@ -1269,7 +1290,7 @@ public tableNodeExpand(event: any): void {
                     if (response.duplicated) {
                         this.currentQuery.push(response.column);
                         this.configController = undefined;
-                        setTimeout(() => this.openColumnDialog(response.column), 100);
+                        setTimeout(() => { this.openColumnDialog(response.column); this.cdr.markForCheck(); }, 100);
                     } else if (response.length > 0) {
                         for (const f of response) {
                             if (_.isNil(this.selectedFilters.find(o => o.filter_id === f.filter_id))) {
@@ -1318,6 +1339,7 @@ public tableNodeExpand(event: any): void {
                         this.configController = undefined;
                     }
                     this.configController = undefined;
+                    this.cdr.markForCheck();
 
                 }
             });
@@ -1337,6 +1359,7 @@ public tableNodeExpand(event: any): void {
                     }
 
                     this.filterController = undefined;
+                    this.cdr.markForCheck();
                 }
             });
         }
@@ -1373,6 +1396,7 @@ public tableNodeExpand(event: any): void {
             // filter would never reach the query even though it shows up as a global filter.
             this.addingGlobalFilterEbp(globalFilter);
         }
+        this.cdr.markForCheck();
     }
 
     /** Registers a global filter (even if empty) so it appears in the AND/OR dialog without triggering a query */
@@ -1391,6 +1415,7 @@ public tableNodeExpand(event: any): void {
         } else {
             this.globalFilters.push(globalFilter);
         }
+        this.cdr.markForCheck();
     }
 
     public addingGlobalFilterEbp(_filter: any) {
@@ -1521,9 +1546,12 @@ public tableNodeExpand(event: any): void {
      * @param properties properties to set
      */
  public onCloseChartProperties(event, response): void {
-        // response is already the small typed patch chart-dialog.component.ts's saveChartConfig()
-        // builds (assignedColors + this family's own fields) - no more Chart.js-shaped chartColors/
-        // chartDataset to reconcile, so no per-type recolor step is needed here.
+        // The unified chart dialog tags its response with `family`: 'live' (D3 category charts +
+        // knob) carries a ready-made config patch; 'axis' carries the small custom-fields patch.
+        if (response?.family === 'live') {
+            this.onCloseLiveChartProperties(event, response);
+            return;
+        }
         this.applyDialogChartConfig(event, readCustomFields(response, CUSTOM_CHART_CONFIG_FIELDS), 'chartController');
 }
 
@@ -1541,6 +1569,7 @@ public tableNodeExpand(event: any): void {
             this.dashboardService.setNotSaved(true);
         }
         this.tableController = undefined;
+        this.cdr.markForCheck();
     }
 
     public onCloseMapProperties(event, response: {
@@ -1571,6 +1600,7 @@ public tableNodeExpand(event: any): void {
             this.dashboardService.setNotSaved(true);
         }
         this.mapController = undefined;
+        this.cdr.markForCheck();
     }
         
     public onCloseMapCoordProperties(event, response: { 
@@ -1598,10 +1628,11 @@ public tableNodeExpand(event: any): void {
             this.dashboardService.setNotSaved(true);
         }
         this.mapCoordController = undefined;
+        this.cdr.markForCheck();
     }
 
     /** Shared tail for every onClose*Properties handler: merges into the existing config (not a wholesale replace), re-renders, clears the controller. */
-    private applyDialogChartConfig(event: EdaDialogCloseEvent, configPatch: any, controllerField: 'categoryChartController' | 'chartController'): void {
+    private applyDialogChartConfig(event: EdaDialogCloseEvent, configPatch: any, controllerField: 'chartController'): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config = {
                 ...this.panel.content.query.output.config,
@@ -1626,34 +1657,22 @@ public tableNodeExpand(event: any): void {
         return instance.assignedColors;
     }
 
-    private static readonly RECOLOR_CHART_TYPES: CategoryChartType[] = ['treeMap', 'bubblechart', 'scatterPlot', 'parallelSets', 'sunburst', 'raceBar'];
+    private static readonly RECOLOR_CHART_TYPES: (CategoryChartType | string)[] = ['treeMap', 'bubblechart', 'scatterPlot', 'parallelSets', 'sunburst', 'raceBar'];
 
-    public onCloseCategoryChartProperties(event, response, chartType: CategoryChartType): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            let assignedColors = response.assignedColors;
-            if (EdaBlankPanelComponent.RECOLOR_CHART_TYPES.includes(chartType)) {
-                const chartValues = getChartCategoryValues(chartType, this.panelChart.componentRef.instance);
-                assignedColors = this.recolorLegacyAssignedColors(chartValues, response);
-            }
+    /**
+     * Close handler for the 'live' family (D3 category charts + knob). The dialog already built a
+     * ready-to-merge config patch; here we only re-match the positional colors[] for the few types
+     * that store colours per-row, then merge-patch (never wholesale replace) and re-render.
+     */
+    public onCloseLiveChartProperties(event, response): void {
+        if (_.isEqual(event, EdaDialogCloseEvent.NONE)) { this.chartController = undefined; this.cdr.markForCheck(); return; }
 
-            const configPatch: any = { colors: response.colors, assignedColors };
-            if (response.useGradient !== undefined) configPatch.useGradient = response.useGradient;
-            if (response.chartLegend !== undefined) configPatch.chartLegend = response.chartLegend;
-            if (response.showLabels !== undefined) configPatch.showLabels = response.showLabels;
-            if (response.showLabelsPercent !== undefined) configPatch.showLabelsPercent = response.showLabelsPercent;
-            if (response.showGridLines !== undefined) configPatch.showGridLines = response.showGridLines;
-            if (response.innerRadiusPercent !== undefined) configPatch.innerRadiusPercent = response.innerRadiusPercent;
-            if (response.chartAnimation !== undefined) configPatch.chartAnimation = response.chartAnimation;
-            if (response.labelColorMode !== undefined) configPatch.labelColorMode = response.labelColorMode;
-            if (response.labelCustomColor !== undefined) configPatch.labelCustomColor = response.labelCustomColor;
-            if (response.topNCount !== undefined) configPatch.topNCount = response.topNCount;
-            if (response.showTimeline !== undefined) configPatch.showTimeline = response.showTimeline;
-            if (response.transitionMs !== undefined) configPatch.transitionMs = response.transitionMs;
-
-            this.applyDialogChartConfig(event, configPatch, 'categoryChartController');
-        } else {
-            this.categoryChartController = undefined;
+        const { family, chartType, ...patch } = response ?? {};
+        if (EdaBlankPanelComponent.RECOLOR_CHART_TYPES.includes(chartType)) {
+            const chartValues = getChartCategoryValues(chartType, this.panelChart.componentRef.instance);
+            patch.assignedColors = this.recolorLegacyAssignedColors(chartValues, response);
         }
+        this.applyDialogChartConfig(event, patch, 'chartController');
     }
 
     public onCloseTreeTableProperties(event, response) {
@@ -1665,20 +1684,8 @@ public tableNodeExpand(event: any): void {
         }
 
         this.treeTableController = undefined;
+        this.cdr.markForCheck();
 
-    }
-
-    public onCloseKnobProperties(event, response): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-
-            this.panel.content.query.output.config = response;
-            const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-
-            this.dashboardService.setNotSaved(true);
-
-        }
-        this.knobController = undefined;
     }
 
     public onCloseLinkDashboardProperties(event, response: LinkedDashboardProps): void {
@@ -1697,6 +1704,7 @@ public tableNodeExpand(event: any): void {
         }
 
         this.linkDashboardController = undefined;
+        this.cdr.markForCheck();
     }
 
     public onCloseKpiProperties(event, response): void {
@@ -1721,6 +1729,7 @@ public tableNodeExpand(event: any): void {
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 'kpideviation', 'kpideviation', config);
             this.dashboardService.setNotSaved(true);
             this.kpiController = undefined;
+            this.cdr.markForCheck();
             return;
         }
 
@@ -1775,6 +1784,7 @@ public tableNodeExpand(event: any): void {
         this.dashboardService.setNotSaved(true);
     }
     this.kpiController = undefined;
+    this.cdr.markForCheck();
 }
 
     public onClosedynamicTextProperties(event, response): void {
@@ -1785,6 +1795,7 @@ public tableNodeExpand(event: any): void {
             this.dashboardService.setNotSaved(true);
         }
         this.dynamicTextController = undefined;
+        this.cdr.markForCheck();
     }
 
     public handleTabChange(event: any): void {
@@ -2066,6 +2077,7 @@ public tableNodeExpand(event: any): void {
         }
         this.display_v.minispinnerSQL = false;
         this.queryFromServer = serverQuery;
+        this.cdr.markForCheck();
     }
 
     public migrateQuery() {
@@ -2090,7 +2102,7 @@ public tableNodeExpand(event: any): void {
     private _panelInfoOverlayTimeout: ReturnType<typeof setTimeout> | null = null;
 
     public showPanelInfoOverlay(event: Event, overlay: any): void {
-        this._panelInfoOverlayTimeout = setTimeout(() => overlay.show(event), 1000);
+        this._panelInfoOverlayTimeout = setTimeout(() => { this.cdr.markForCheck(); overlay.show(event); }, 1000);
     }
 
     public hidePanelInfoOverlay(overlay: any): void {

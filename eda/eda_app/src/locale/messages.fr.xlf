@@ -7403,6 +7403,211 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Ver recursos</source>
         <target>Voir les ressources</target>
       </trans-unit>
+          <trans-unit id="adminMedia">
+        <source>Gestor de archivos</source>
+        <target>Gestionnaire de fichiers</target>
+      </trans-unit>
+
+      <trans-unit id="chooseImage">
+        <source>Elegir imagen</source>
+        <target>Choisir une image</target>
+      </trans-unit>
+
+      <trans-unit id="remove">
+        <source>Quitar</source>
+        <target>Retirer</target>
+      </trans-unit>
+
+      <trans-unit id="delete">
+        <source>Eliminar</source>
+        <target>Supprimer</target>
+      </trans-unit>
+
+      <trans-unit id="mediaInvalidExtension">
+        <source>Formato de imagen no válido. Formatos permitidos: PNG, JPG, GIF, WEBP.</source>
+        <target>Format d’image non valide. Formats autorisés : PNG, JPG, GIF, WEBP.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaMaxSizeError">
+        <source>La imagen supera el tamaño máximo permitido de 1MB.</source>
+        <target>L’image dépasse la taille maximale autorisée de 1 Mo.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDeleteConfirmTitle">
+        <source>¿Eliminar esta imagen?</source>
+        <target>Supprimer cette image ?</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUploading">
+        <source>Subiendo imagen...</source>
+        <target>Téléversement de l’image...</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDropHint">
+        <source>Arrastra una imagen aquí o haz clic para subirla</source>
+        <target>Glissez une image ici ou cliquez pour la téléverser</target>
+      </trans-unit>
+
+      <trans-unit id="mediaFormatsHint">
+        <source>PNG, JPG, GIF o WEBP · máximo 1MB</source>
+        <target>PNG, JPG, GIF ou WEBP · 1 Mo maximum</target>
+      </trans-unit>
+
+      <trans-unit id="mediaLoading">
+        <source>Cargando imágenes...</source>
+        <target>Chargement des images...</target>
+      </trans-unit>
+
+      <trans-unit id="mediaEmpty">
+        <source>Todavía no se ha subido ninguna imagen.</source>
+        <target>Aucune image n’a encore été téléversée.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUseImage">
+        <source>Usar esta imagen</source>
+        <target>Utiliser cette image</target>
+      </trans-unit>
+
+      <trans-unit id="mediaFoundCount">
+        <source>imágenes encontradas</source>
+        <target>images trouvées</target>
+      </trans-unit>
+
+      <trans-unit id="mediaHome">
+        <source>Inicio</source>
+        <target>Accueil</target>
+      </trans-unit>
+
+      <trans-unit id="mediaNewFolder">
+        <source>Nueva carpeta</source>
+        <target>Nouveau dossier</target>
+      </trans-unit>
+
+      <trans-unit id="mediaGridView">
+        <source>Cuadrícula</source>
+        <target>Grille</target>
+      </trans-unit>
+
+      <trans-unit id="mediaListView">
+        <source>Lista</source>
+        <target>Liste</target>
+      </trans-unit>
+
+      <trans-unit id="rename">
+        <source>Renombrar</source>
+        <target>Renommer</target>
+      </trans-unit>
+
+      <trans-unit id="mediaFolderNamePlaceholder">
+        <source>Nombre de la carpeta</source>
+        <target>Nom du dossier</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCreate">
+        <source>Crear</source>
+        <target>Créer</target>
+      </trans-unit>
+
+      <trans-unit id="mediaRenameFolder">
+        <source>Renombrar carpeta</source>
+        <target>Renommer le dossier</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSave">
+        <source>Guardar</source>
+        <target>Enregistrer</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDeleteFolderConfirmTitle">
+        <source>¿Eliminar esta carpeta?</source>
+        <target>Supprimer ce dossier ?</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSelectedCount">
+        <source>seleccionadas</source>
+        <target>sélectionnées</target>
+      </trans-unit>
+
+      <trans-unit id="mediaMoveTo">
+        <source>Mover a carpeta</source>
+        <target>Déplacer vers un dossier</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDeleteSelected">
+        <source>Eliminar seleccionadas</source>
+        <target>Supprimer la sélection</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCancelSelection">
+        <source>Cancelar selección</source>
+        <target>Annuler la sélection</target>
+      </trans-unit>
+
+      <trans-unit id="mediaMove">
+        <source>Mover</source>
+        <target>Déplacer</target>
+      </trans-unit>
+
+      <trans-unit id="mediaPreview">
+        <source>Vista previa</source>
+        <target>Aperçu</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSelectAll">
+        <source>Seleccionar todo</source>
+        <target>Tout sélectionner</target>
+      </trans-unit>
+
+      <trans-unit id="mediaRenameTitle">
+        <source>Renombrar imagen</source>
+        <target>Renommer l’image</target>
+      </trans-unit>
+
+      <trans-unit id="mediaBulkDeleteConfirmTitle">
+        <source>¿Eliminar las imágenes seleccionadas?</source>
+        <target>Supprimer les images sélectionnées ?</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSize">
+        <source>Tamaño</source>
+        <target>Taille</target>
+      </trans-unit>
+
+      <trans-unit id="mediaType">
+        <source>Tipo</source>
+        <target>Type</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUploadDate">
+        <source>Subida</source>
+        <target>Téléversée</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUsedIn">
+        <source>Usado en</source>
+        <target>Utilisée dans</target>
+      </trans-unit>
+
+      <trans-unit id="mediaNotUsed">
+        <source>No se usa en ningún dashboard.</source>
+        <target>Non utilisée dans aucun tableau de bord.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaRoot">
+        <source>Raíz</source>
+        <target>Racine</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSelectPrompt">
+        <source>Selecciona una imagen para ver sus detalles</source>
+        <target>Sélectionnez une image pour voir ses détails</target>
+      </trans-unit>
+
+      <trans-unit id="mediaTotalSize">
+        <source>Tamaño total</source>
+        <target>Taille totale</target>
+      </trans-unit>
+
   <trans-unit id="mailRefIconTitle">
     <source>Variables y condicionales</source>
     <target>Variables et conditionnels</target>
@@ -7619,6 +7824,151 @@ Répartition par catégorie :
 
 Cordialement.</target>
   </trans-unit>
-    </body>
+  <trans-unit id="sourceFieldsDialogHeader">
+    <source>Campos de origen para </source>
+    <target>Champs source pour </target>
+  </trans-unit>
+      <trans-unit id="mediaSearchPlaceholder">
+        <source>Buscar por nombre...</source>
+        <target>Rechercher par nom...</target>
+      </trans-unit>
+
+      <trans-unit id="mediaNoSearchResults">
+        <source>Ninguna imagen coincide con la búsqueda.</source>
+        <target>Aucune image ne correspond à la recherche.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCopyUrl">
+        <source>Copiar URL</source>
+        <target>Copier l’URL</target>
+      </trans-unit>
+
+      <trans-unit id="mediaUrlCopied">
+        <source>URL copiada al portapapeles</source>
+        <target>URL copiée dans le presse-papiers</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCopyUrlError">
+        <source>No se pudo copiar la URL</source>
+        <target>Impossible de copier l’URL</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDimensions">
+        <source>Dimensiones</source>
+        <target>Dimensions</target>
+      </trans-unit>
+
+      <trans-unit id="mediaCannotMoveIntoOwnSubfolder">
+        <source>No puedes mover una carpeta dentro de sí misma o de una subcarpeta suya.</source>
+        <target>Vous ne pouvez pas déplacer un dossier dans lui-même ou dans l’un de ses propres sous-dossiers.</target>
+      </trans-unit>
+
+      <trans-unit id="mediaClearSearch">
+        <source>Limpiar</source>
+        <target>Effacer</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDownload">
+        <source>Descargar</source>
+        <target>Télécharger</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDownloadError">
+        <source>No se pudo descargar la imagen</source>
+        <target>Impossible de télécharger l’image</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSortNewest">
+        <source>Más recientes</source>
+        <target>Plus récentes</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSortOldest">
+        <source>Más antiguas</source>
+        <target>Plus anciennes</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSortName">
+        <source>Nombre (A-Z)</source>
+        <target>Nom (A-Z)</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSortSize">
+        <source>Tamaño</source>
+        <target>Taille</target>
+      </trans-unit>
+
+      <trans-unit id="mediaMoveSuccess">
+        <source>Movido correctamente</source>
+        <target>Déplacé avec succès</target>
+      </trans-unit>
+
+      <trans-unit id="mediaDeleteInUseWarning">
+        <source>Atención: se usa en</source>
+        <target>Attention : utilisée dans</target>
+      </trans-unit>
+
+      <trans-unit id="raceBarUseIcons">
+        <source>Añadir imágenes</source>
+        <target>Ajouter des images</target>
+      </trans-unit>
+
+      <trans-unit id="raceBarLoadMatchingIcons">
+        <source>Cargar coincidentes</source>
+        <target>Charger les correspondances</target>
+      </trans-unit>
+
+      <trans-unit id="mediaSelectThisFolder">
+        <source>Seleccionar esta carpeta</source>
+        <target>Sélectionner ce dossier</target>
+      </trans-unit>
+
+      <trans-unit id="raceBarMatchingIconsDone">
+        <source>Iconos asignados por coincidencia de nombre</source>
+        <target>Icônes assignées par correspondance de nom</target>
+      </trans-unit>
+
+<trans-unit id="panelOptionsShowSourceFields">
+<source>Mostrar campos de origen</source>
+<target>Afficher les champs source</target>
+</trans-unit>
+<trans-unit id="sourceFieldsGlobalFilterPlaceholder">
+<source>Buscar en todos los campos</source>
+<target>Rechercher dans tous les champs</target>
+</trans-unit>
+<trans-unit id="sourceFieldsViewQueryTooltip">
+<source>Ver consulta SQL</source>
+<target>Afficher la requête SQL</target>
+</trans-unit>
+<trans-unit id="sourceFieldsRestoreColumn">
+<source>Restaurar columna</source>
+<target>Restaurer la colonne</target>
+</trans-unit>
+<trans-unit id="sourceFieldsFilterPlaceholder">
+<source>Buscar</source>
+<target>Rechercher</target>
+</trans-unit>
+<trans-unit id="sourceFieldsExportExcel">
+<source>Exportar a Excel</source>
+<target>Exporter vers Excel</target>
+</trans-unit>
+<trans-unit id="sourceFieldsCopyQuery">
+<source>Copiar</source>
+<target>Copier</target>
+</trans-unit>
+<trans-unit id="sourceFieldsCopyQueryDone">
+<source>Copiado</source>
+<target>Copié</target>
+</trans-unit>
+<trans-unit id="panelOptionsEnableFilters">
+<source>Click en filtros habilitado</source>
+<target>Cliquez sur les filtres activés</target>
+</trans-unit>
+<trans-unit id="panelOptionsDisableFilters">
+<source>Click en filtros deshabilitado</source>
+<target>Cliquez sur les filtres désactivés</target>
+</trans-unit>
+
+</body>
   </file>
 </xliff>

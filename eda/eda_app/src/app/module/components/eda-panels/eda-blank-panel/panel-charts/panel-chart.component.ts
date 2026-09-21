@@ -9,18 +9,20 @@ import { TreeMap } from './../../../eda-treemap/eda-treeMap';
 import { EdaD3Component } from './../../../eda-d3-sankey/eda-d3-sankey.component';
 import { TableConfig } from './chart-configuration-models/table-config';
 import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
-    OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID, Type } from '@angular/core';
+    OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID, Type, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
-import { EdaTableComponent } from '../../../eda-table/eda-table.component';
+import { EdaTableComponent } from '../../../eda-tables/eda-table/eda-table.component';
+import { EdaCrosstableComponent } from '../../../eda-tables/eda-crosstable/eda-crosstable.component';
 import { PanelChart } from './panel-chart';
 import { ChartUtilsService, StyleConfig, StyleProviderService } from '@eda/services/service.index';
 import { EdaKpiComponent } from '@eda/components/eda-kpi/eda-kpi.component';
 import { Column } from '@eda/models/model.index';
-import { EdaColumnDate } from '@eda/components/eda-table/eda-columns/eda-column-date';
-import { EdaColumnNumber } from '@eda/components/eda-table/eda-columns/eda-column-number';
-import { EdaColumnText } from '@eda/components/eda-table/eda-columns/eda-column-text';
-import { EdaColumnHtml } from '@eda/components/eda-table/eda-columns/eda-column-html';
-import { EdaTable } from '@eda/components/eda-table/eda-table';
+import { EdaColumnDate } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-date';
+import { EdaColumnNumber } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-number';
+import { EdaColumnText } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-text';
+import { EdaColumnHtml } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-html';
+import { EdaTableModel } from '@eda/components/eda-tables/eda-table/eda-table.model';
+import { EdaCrosstableModel } from '@eda/components/eda-tables/eda-crosstable/eda-crosstable.model';
 import { KpiConfig } from './chart-configuration-models/kpi-config';
 import { DynamicTextConfig } from './chart-configuration-models/dynamicText-config';
 import { EdaMapComponent } from '@eda/components/eda-map/eda-map.component';
@@ -31,6 +33,7 @@ import { EdaMap } from '@eda/components/eda-map/eda-map';
 import { EdaD3 } from '@eda/components/eda-d3-sankey/eda-d3-sankey';
 import { EdaFunnelComponent } from '@eda/components/eda-funnel/eda-funnel.component';
 import { EdaBubblechartComponent } from '@eda/components/eda-d3-bubblechart/eda-bubblechart.component';
+import { EdaBubblechart } from '@eda/components/eda-d3-bubblechart/eda-bubblechart';
 import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.component';
 import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
 import { EdaRaceBarComponent } from '@eda/components/eda-race-bar/eda-race-bar.component';
@@ -71,7 +74,14 @@ import { EdaBarlineD3 } from '@eda/components/eda-barline-d3/eda-barline';
     standalone: true,
     selector: 'panel-chart',
     templateUrl: './panel-chart.component.html',
-    imports: [FormsModule, CommonModule]
+    imports: [FormsModule, CommonModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    // Custom elements default to display:inline, which ignores the parent's h-full/w-full
+    // (height/width 100%) classes entirely - without this, the dynamically-created chart inside
+    // (treemap/bubblechart/sunburst/etc.) never gets a definite, live-resizing containing block,
+    // so anything measuring its own size (e.g. eda-chart-legend on panel resize) only reflects
+    // whatever the size happened to be at creation time.
+    styles: `:host { display: block; height: 100%; width: 100%; }`
 })
 
 export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
@@ -109,22 +119,32 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         private chartUtils: ChartUtilsService,
         @Self() private ownRef: ElementRef,
         public styleProviderService: StyleProviderService,
+        private cdr: ChangeDetectorRef,
         @Inject(LOCALE_ID) private locale: string) {
-        
+
         this.fontColor = this.styleProviderService.panelFontColor.source['value'];
         this.paletaActual = this.styleProviderService.ActualChartPalette !== undefined ?
             this.styleProviderService.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
 
-        
+
         this.styleProviderService.panelFontFamily.subscribe(family => {
             this.fontFamily = family;
             if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
+            this.cdr.markForCheck();
         });
 
         this.styleProviderService.panelFontSize.subscribe(size => {
             this.fontSize = size;
             if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line','area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
+            this.cdr.markForCheck();
         });
+    }
+
+    /** Marca este componente para revisión bajo OnPush. Necesario porque otros componentes
+     *  (EdaBlankPanelComponent, query-utils.ts) mutan directamente propiedades de este panel
+     *  (p.ej. NO_DATA) desde fuera de cualquier evento propio de su plantilla. */
+    public markDirty(): void {
+        this.cdr.markForCheck();
     }
 
 
@@ -145,12 +165,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         if (this.props.data && this.props.data.values.length !== 0
             && !this.props.data.values.reduce((a, b) => a && b.every(element => element === null), true)) {
-                requestAnimationFrame(() => {                    
+                requestAnimationFrame(() => {
                 setTimeout(_ => {
                     this.NO_DATA = false;
+                    this.cdr.markForCheck();
                 });
-    
+
                 this.changeChartType();
+                this.cdr.markForCheck();
               });
         }
         /**
@@ -169,6 +191,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     this.NO_DATA_ALLOWED = false;
                     this.NO_FILTER_ALLOWED = true;
                 }
+                this.cdr.markForCheck();
             })
         }
     }
@@ -263,6 +286,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (type === 'kpideviation') {
             this.renderEdaKpiDeviation();
         }
+        this.cdr.markForCheck();
     }
 
     /**
@@ -315,7 +339,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const config = this.props.config.getConfig();
 
-        this.componentRef = this.entry.createComponent(EdaTableComponent);
+        if (type === 'crosstable') {
+            this.componentRef = this.entry.createComponent(EdaCrosstableComponent);
+        } else {
+            this.componentRef = this.entry.createComponent(EdaTableComponent);
+        }
         const rowLen = this.props.data.values?.[0]?.length || 0;
         const queryLen = this.props.query?.length || 0;
         const hasPredictionData = rowLen > queryLen && config?.['showPredictionLines'] === true;
@@ -346,6 +374,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.onSortColEvent.subscribe(data => {
             (<TableConfig>config).sortedColumn = data;
         });
+        this.componentRef.instance.inject.onColumnResizeEvent.subscribe(data => {
+            (<TableConfig>config).columnWidths = data;
+        });
         this.currentConfig = this.componentRef.instance.inject;
         this.componentRef.instance.inject.linkedDashboardProps = this.props.linkedDashboardProps;
 
@@ -374,9 +405,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.sortedSerie = config.sortedSerie;
         this.componentRef.instance.inject.sortedColumn = config.sortedColumn;
         this.componentRef.instance.inject.noRepetitions = config.noRepetitions;
-        this.componentRef.instance.inject.ordering = config.ordering;
+        if (this.componentRef.instance.inject instanceof EdaCrosstableModel) {
+            this.componentRef.instance.inject.ordering = config.ordering;
+            this.componentRef.instance.inject.crossSortOrder = config.crossSortOrder || 'alphabetical';
+        }
         this.componentRef.instance.inject.negativeNumbers = config.negativeNumbers;
-        this.componentRef.instance.inject.crossSortOrder = config.crossSortOrder || 'alphabetical';
         this.componentRef.instance.inject.headerColor = config.headerColor || '';
         this.componentRef.instance.inject.bandingColor = config.bandingColor || '';
         this.componentRef.instance.inject.colorEnabled = config.colorEnabled !== false;
@@ -1258,6 +1291,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartAnimation = cfg.chartAnimation ?? true;
         inject.labelColorMode = cfg.labelColorMode ?? 'series';
         inject.labelCustomColor = cfg.labelCustomColor;
+        inject.assignedIcons = cfg.assignedIcons ?? [];
+        inject.useIcons = cfg.useIcons ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaDoughnut);
@@ -1337,6 +1372,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartAnimation = cfg.chartAnimation ?? true;
         inject.labelColorMode = cfg.labelColorMode ?? 'series';
         inject.labelCustomColor = cfg.labelCustomColor;
+        inject.assignedIcons = cfg.assignedIcons ?? [];
+        inject.useIcons = cfg.useIcons ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaPolarAreaComponent);
@@ -1534,6 +1571,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.useGradient = cfg.useGradient ?? true;
         inject.useRoundedBars = cfg.useRoundedBars ?? true;
         inject.chartAnimation = cfg.chartAnimation ?? true;
+        inject.assignedIcons = cfg.assignedIcons ?? [];
+        inject.useIcons = cfg.useIcons ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaBarD3Component);
@@ -1863,12 +1902,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
         inject.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
+        inject.assignedIcons = this.props.config.getConfig()['assignedIcons'] ?? [];
+        inject.useIcons = this.props.config.getConfig()['useIcons'] ?? false;
         this.createLegacyD3Component(inject, EdaFunnelComponent);
     }
 
     private renderBubblechart() {
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-        let inject: EdaD3 = new EdaD3;
+        let inject: EdaBubblechart = new EdaBubblechart;
         inject.id = this.randomID();
         inject.size = this.props.size;
         inject.data = this.props.data;
@@ -1877,6 +1918,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
+        inject.assignedIcons = this.props.config.getConfig()['assignedIcons'] ?? [];
+        inject.useIcons = this.props.config.getConfig()['useIcons'] ?? false;
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
         inject.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
@@ -1898,6 +1941,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         inject.chartLegend = this.props.config.getConfig()['chartLegend'] ?? true;
         inject.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
+        inject.assignedIcons = this.props.config.getConfig()['assignedIcons'] ?? [];
+        inject.useIcons = this.props.config.getConfig()['useIcons'] ?? false;
 
         this.createLegacyD3Component(inject, EdaTreeMap);
     }
@@ -1951,6 +1996,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const categoryIndex = categoryCol ? categoryCol.index : dataDescription.otherColumns[0]?.index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
+        inject.assignedIcons = this.props.config.getConfig()['assignedIcons'] ?? [];
+        inject.useIcons = this.props.config.getConfig()['useIcons'] ?? false;
         inject.useGradient = this.props.config.getConfig()['useGradient'] ?? true;
         // Off by default (unlike every other D3 category chart) - every bar already carries its own
         // category name, so a separate legend is just duplicated, space-eating chart junk here.
@@ -2030,6 +2077,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 console.error('Error en updateComponent:', err);
             }
         }
+        this.cdr.markForCheck();
     }
 
     public updateKPIColors() {
@@ -2110,6 +2158,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 this.componentRef = null;
             }
             render();
+            this.cdr.markForCheck();
         });
     }
 
@@ -2201,7 +2250,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param type 
      * @param configs 
      */
-    private initializeTable(type: string, configs?: any, tableLabels?: string[]): EdaTable {
+    private initializeTable(type: string, configs?: any, tableLabels?: string[]): EdaTableModel | EdaCrosstableModel {
 
         const labels = tableLabels || this.props.data.labels;
         const tableColumns = [];
@@ -2260,9 +2309,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (type === 'table') {
-            return new EdaTable({ cols: tableColumns, ...configs });
+            // Untouched tables keep auto-sizing by content; only apply saved widths once the
+            // user has dragged a header border at least once (see EdaTableBase.resizeColumns()).
+            const columnWidths: Record<string, string> = configs?.columnWidths;
+            if (columnWidths) {
+                tableColumns.forEach((col: any) => { if (columnWidths[col.field]) col.width = columnWidths[col.field]; });
+            }
+            return new EdaTableModel({ cols: tableColumns, ...configs, autolayout: columnWidths ? false : true });
         } else if (type === 'crosstable') {
-            return new EdaTable({ cols: tableColumns, pivot: true, ...configs });
+            return new EdaCrosstableModel({ cols: tableColumns, ...configs });
         }
 
     }

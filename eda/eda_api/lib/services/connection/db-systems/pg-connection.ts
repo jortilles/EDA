@@ -5,6 +5,11 @@ import { AggregationTypes } from '../../../module/global/model/aggregation-types
 
 var types = require('pg').types;
 types.setTypeParser(1700, 'text', parseFloat);
+// OID 20 = int8/bigint. pg returns it as a string by default (COUNT(*) and bigint
+// sums/aggregates are always int8) - without this, the frontend's SQL-mode type
+// detector (query-utils.ts) sees a string and misclassifies the column as 'text',
+// which blocks KPI-type panels for that data (see getNotAllowedCharts).
+types.setTypeParser(20, parseInt);
 
 
 export class PgConnection extends AbstractConnection {
