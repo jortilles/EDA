@@ -57,8 +57,8 @@ export class ImportPanelDialog implements OnInit {
 
 
   private async initializeOptions() {
-    const { publics, shared, dashboards, group } = await lastValueFrom(this.dashboardService.getDashboards());
-    this.dashboardOptions = [].concat(publics, shared, dashboards, group);
+    const { open, common, private: privateDashboards, group } = await lastValueFrom(this.dashboardService.getDashboards());
+    this.dashboardOptions = [].concat(open, common, privateDashboards, group);
   }
 
   public async onSelectDashboard() {

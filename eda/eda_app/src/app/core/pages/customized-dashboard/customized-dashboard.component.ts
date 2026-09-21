@@ -70,8 +70,8 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
     this.canEdit = isAdmin || isDataSourceCreator;
 
     try {
-      const { publics } = await lastValueFrom(this.dashboardService.getDashboards());
-      this.publicDashboards = (publics || []).sort((a: any, b: any) =>
+      const { open } = await lastValueFrom(this.dashboardService.getDashboards());
+      this.publicDashboards = (open || []).sort((a: any, b: any) =>
         (a.config?.title || '').localeCompare(b.config?.title || '')
       );
     } catch (err) {

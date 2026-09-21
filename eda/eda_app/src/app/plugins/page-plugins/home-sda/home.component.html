@@ -1,0 +1,425 @@
+<div class="flex flex-col h-screen overflow-hidden">
+
+  <!-- Header + Filters (no scroll) -->
+  <div class="shrink-0 max-w-[2000px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4 space-y-4">
+
+    <!-- Title + actions -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        @if (!isObserver) {
+          <button type="button" class="btn-corporate-gradient text-white font-bold px-4 py-2 rounded flex items-center gap-2" (click)="onCreateDashboard()">
+            <eda-icon name="plus" size="sm"></eda-icon>
+            <span i18n="@@newReport">Nuevo informe</span>
+          </button>
+        }
+        <div class="flex rounded-md border border-input overflow-hidden" id="view-mode">
+          <button type="button" class="px-3 py-1.5 text-sm focus:outline-none focus:ring-0" [class.btn-corporate-gradient]="viewMode === 'table'"
+            [class.text-white]="viewMode === 'table'" [class.hover:bg-muted]="viewMode !== 'table'"
+            (click)="setViewMode('table')" i18n-title="@@tableView" title="Vista de tabla">
+            <i class="fa fa-table"></i>
+          </button>
+          <button type="button" class="px-3 py-1.5 text-sm border-l border-input focus:outline-none focus:ring-0" [class.btn-corporate-gradient]="viewMode === 'card'"
+            [class.text-white]="viewMode === 'card'" [class.hover:bg-muted]="viewMode !== 'card'"
+            (click)="setViewMode('card')" i18n-title="@@cardView" title="Vista de fichas">
+            <i class="fa fa-th-large"></i>
+          </button>
+        </div>
+      </div>
+      <!-- Filters bar -->
+      <div class="flex flex-wrap items-center gap-2">
+  
+        <!-- Tags filter -->
+        <div class="relative" id="tag-filter">
+          <button type="button"
+            class="filter-dropdown-toggle flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted"
+            (click)="toggleFilterDropdown('tags', $event)">
+            <i class="fa fa-filter text-muted-foreground"></i>
+            <span i18n="@@tags">Etiquetas</span>
+            <span class="filter-count-badge" [class.invisible]="selectedTags.length === 0">{{ selectedTags.length }}</span>
+          </button>
+          @if (openFilter === 'tags') {
+            <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">
+              <div class="flex items-center gap-2 p-3 pb-2">
+                <input type="text" class="flex-1 min-w-0 rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+                  [(ngModel)]="tagSearchTerm" (input)="filterTags()" i18n-placeholder="@@tagSearch" placeholder="Buscar etiqueta">
+                <button type="button" class="shrink-0 rounded-md p-1.5 hover:bg-muted"
+                  [class.text-corporate-warning]="selectedTags.length > 0" [class.text-muted-foreground]="selectedTags.length === 0"
+                  [disabled]="selectedTags.length === 0" (click)="clearTagFilter()" i18n-title="@@removeFilter" title="Quitar filtro">
+                  <i class="mdi mdi-filter-remove"></i>
+                </button>
+              </div>
+              <div class="max-h-64 overflow-y-auto border-t py-1">
+                @for (tag of filteredTags; track tag.value) {
+                  @if (tag.label != null) {
+                    <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
+                      <input type="checkbox" [checked]="isTagSelected(tag)" (change)="toggleTagSelection(tag)">
+                      <span>{{ tag.label }}</span>
+                    </label>
+                  }
+                }
+              </div>
+            </div>
+          }
+        </div>
+  
+        <!-- Groups filter -->
+        <div class="relative" id="group-filter">
+          <button type="button"
+            class="filter-dropdown-toggle flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted"
+            (click)="toggleFilterDropdown('groups', $event)">
+            <i class="fa fa-filter text-muted-foreground"></i>
+            <span i18n="@@groups">Grupos</span>
+            <span class="filter-count-badge" [class.invisible]="selectedGroups.length === 0">{{ selectedGroups.length }}</span>
+          </button>
+          @if (openFilter === 'groups') {
+            <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">
+              <div class="flex items-center gap-2 p-3 pb-2">
+                <input type="text" class="flex-1 min-w-0 rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+                  [(ngModel)]="groupSearchTerm" (input)="filterGroups()" i18n-placeholder="@@groupSearch" placeholder="Buscar grupo">
+                <button type="button" class="shrink-0 rounded-md p-1.5 hover:bg-muted"
+                  [class.text-corporate-warning]="selectedGroups.length > 0" [class.text-muted-foreground]="selectedGroups.length === 0"
+                  [disabled]="selectedGroups.length === 0" (click)="clearGroupFilter()" i18n-title="@@removeFilter" title="Quitar filtro">
+                  <i class="mdi mdi-filter-remove"></i>
+                </button>
+              </div>
+              <div class="max-h-64 overflow-y-auto border-t py-1">
+                @for (group of filteredGroups; track group.value) {
+                  <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
+                    <input type="checkbox" [checked]="isGroupSelected(group)" (change)="toggleGroupSelection(group)">
+                    <span>{{ group.label }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+          }
+        </div>
+  
+        <!-- Status filter (admin only) -->
+        @if (isAdmin) {
+          <div class="relative" id="active-filter">
+            <button type="button"
+              class="filter-dropdown-toggle flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted"
+              (click)="toggleFilterDropdown('status', $event)">
+              <i class="fa fa-filter text-muted-foreground"></i>
+              <span i18n="@@status">Estado</span>
+              <span class="filter-count-badge" [class.invisible]="selectedStatuses.length !== 1">1</span>
+            </button>
+            @if (openFilter === 'status') {
+              <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-48 rounded-lg border bg-white shadow-lg py-1" (click)="$event.stopPropagation()">
+                <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
+                  <input type="checkbox" [checked]="isStatusSelected('active')" (change)="toggleStatusSelection('active')">
+                  <span i18n="@@active">Activos</span>
+                </label>
+                <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
+                  <input type="checkbox" [checked]="isStatusSelected('inactive')" (change)="toggleStatusSelection('inactive')">
+                  <span i18n="@@inactive">Inactivos</span>
+                </label>
+              </div>
+            }
+          </div>
+        }
+  
+        <!-- Type filter -->
+        <div class="relative" id="type-filter">
+          <button type="button"
+            class="filter-dropdown-toggle flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted"
+            (click)="toggleFilterDropdown('type', $event)">
+            <i class="fa fa-filter text-muted-foreground"></i>
+            <span i18n="@@type">Tipo</span>
+            <span class="filter-count-badge" [class.invisible]="selectedTypes.length === 0">{{ selectedTypes.length }}</span>
+          </button>
+          @if (openFilter === 'type') {
+            <div class="filter-dropdown-panel absolute left-0 z-50 mt-2 w-64 rounded-lg border bg-white shadow-lg" (click)="$event.stopPropagation()">
+              <div class="flex items-center gap-2 p-3 pb-2">
+                <input type="text" class="flex-1 min-w-0 rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+                  [(ngModel)]="typeSearchTerm" (ngModelChange)="filterTypes()" i18n-placeholder="@@typeSearch" placeholder="Buscar tipo">
+                <button type="button" class="shrink-0 rounded-md p-1.5 hover:bg-muted"
+                  [class.text-corporate-warning]="selectedTypes.length > 0" [class.text-muted-foreground]="selectedTypes.length === 0"
+                  [disabled]="selectedTypes.length === 0" (click)="clearTypeFilter()" i18n-title="@@removeFilter" title="Quitar filtro">
+                  <i class="mdi mdi-filter-remove"></i>
+                </button>
+              </div>
+              <div class="max-h-64 overflow-y-auto border-t py-1">
+                @for (type of filteredTypes; track type.type) {
+                  <label class="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-muted cursor-pointer">
+                    <input type="checkbox" [checked]="isTypeSelected(type)" (change)="toggleTypeSelection(type)">
+                    <i class="fa" [ngClass]="type.icon" [style.color]="type.color"></i>
+                    <span>{{ type.label }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Name filter -->
+        <div class="relative flex-1 min-w-[220px] max-w-sm" id="name-filter">
+          <eda-icon name="magnifying-glass" size="sm" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></eda-icon>
+          <input type="text" id="buscador" name="buscador" [(ngModel)]="searchTerm" (keyup)="filterTitle($event)"
+            class="w-full rounded-md border border-input bg-background py-2 !pl-9 !pr-3 text-sm"
+            i18n-placeholder="@@nameFilter" placeholder="Filtrar por nombre del informe">
+        </div>
+  
+        <!-- Clear all filters -->
+        <button type="button" class="rounded-md p-2 border border-transparent text-sm flex items-center justify-center"
+          [class.bg-muted]="!hasActiveFilters()" [class.text-muted-foreground]="!hasActiveFilters()"
+          [class.btn-corporate-warning]="hasActiveFilters()" [class.text-black]="hasActiveFilters()"
+          [disabled]="!hasActiveFilters()" (click)="clearAllFilters()" i18n-title="@@clearAllFilters" title="Eliminar todos los filtros">
+          <i class="mdi mdi-filter-remove"></i>
+        </button>
+
+        <!-- Count indicator -->
+        <span class="ml-auto rounded-md px-3 py-1.5"
+          [class.bg-muted]="!hasActiveFilters()" [class.btn-corporate-warning]="hasActiveFilters()">
+          <span id="count-indicator" class="text-sm font-semibold" [class.text-muted-foreground]="!hasActiveFilters()"
+            [class.text-black]="hasActiveFilters()">
+            {{ visibleDashboards.length }} / {{ allDashboards.length }}
+          </span>
+        </span>
+      </div>
+    </div>
+
+  </div><!-- end header+filters -->
+
+  <!-- Dashboards (scrollable) -->
+  <div class="flex-1 overflow-y-auto">
+    <div class="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
+
+      <!-- Table view -->
+      @if (viewMode === 'table') {
+        <div class="border rounded-lg overflow-hidden">
+          <table class="w-full" id="report-table">
+            <thead class="bg-muted/50">
+              <tr>
+                <th (click)="sortTable('config.title')" class="text-left cursor-pointer p-3"
+                  [ngClass]="{'sort-asc': sortColumn === 'config.title' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.title' && sortDirection === 'desc'}"
+                  i18n="@@reportName" style="min-width: 250px">Nombre del Informe</th>
+                <th (click)="sortTable('type')" class="text-left cursor-pointer p-3"
+                  [ngClass]="{'sort-asc': sortColumn === 'type' && sortDirection === 'asc', 'sort-desc': sortColumn === 'type' && sortDirection === 'desc'}"
+                  i18n="@@reportType" style="min-width: 160px">Tipo</th>
+                <th class="text-left p-3" i18n="@@groups">Grupos</th>
+                <th (click)="sortTable('config.tag')" class="text-left cursor-pointer p-3"
+                  [ngClass]="{'sort-asc': sortColumn === 'config.tag' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.tag' && sortDirection === 'desc'}"
+                  i18n="@@reportTags">Etiquetas</th>
+                <th (click)="sortTable('user.name')" class="text-center cursor-pointer p-3"
+                  [ngClass]="{'sort-asc': sortColumn === 'user.name' && sortDirection === 'asc', 'sort-desc': sortColumn === 'user.name' && sortDirection === 'desc'}"
+                  i18n="@@reportAutor">Autor</th>
+                <th (click)="sortTable('config.createdAt')" class="text-center cursor-pointer p-3"
+                  [ngClass]="{'sort-asc': sortColumn === 'config.createdAt' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.createdAt' && sortDirection === 'desc'}"
+                  i18n="@@reportCreatedAt">Fecha creación</th>
+                <th (click)="sortTable('config.modifiedAt')" class="text-center cursor-pointer p-3"
+                  [ngClass]="{'sort-asc': sortColumn === 'config.modifiedAt' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.modifiedAt' && sortDirection === 'desc'}"
+                  i18n="@@reportModifiedAt">Fecha modificación</th>
+                <th (click)="sortTable('config.onlyIcanEdit')" class="text-center cursor-pointer p-3"
+                  [ngClass]="{'sort-asc': sortColumn === 'config.onlyIcanEdit' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.onlyIcanEdit' && sortDirection === 'desc'}"
+                  i18n="@@reportPrivateEdition">Edición privada</th>
+                <th (click)="sortTable('config.ds.name')" class="text-left cursor-pointer p-3"
+                  [ngClass]="{'sort-asc': sortColumn === 'config.ds.name' && sortDirection === 'asc', 'sort-desc': sortColumn === 'config.ds.name' && sortDirection === 'desc'}"
+                  i18n="@@reportDataSourceName">Fuente de datos</th>
+                @if (isAdmin) { <th class="text-center p-3" i18n="@@status">Estado</th> }
+                <th class="text-left p-3" i18n="@@actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (dashboard of visibleDashboards; track dashboard._id) {
+                <tr [id]="'dashboard-' + dashboard._id" [class.newly-cloned]="dashboard.isNewlyCloned"
+                  class="border-t hover:bg-muted/40" (dblclick)="goToDashboard(dashboard)">
+                  <td class="p-3" pTooltip="{{ dashboard.config.description }}" tooltipPosition="bottom">
+                    <div class="dashboard-title-container" (mouseenter)="showEditIcon = true" (mouseleave)="showEditIcon = false">
+                      <span #titleSpan [attr.contenteditable]="isEditing ? true : null"
+                        (blur)="updateDashboardTitle(dashboard, $event)" (keydown.enter)="$event.target.blur()">
+                        <a class="report-name font-medium cursor-pointer" (click)="goToDashboard(dashboard)">{{ dashboard.config.title }}</a>
+                        @if (dashboard.config.description) { <i class="fa fa-info-circle text-muted-foreground ml-1"></i> }
+                        @if (canIEdit(dashboard) && !isEditing) {
+                          <i class="fa fa-pencil edit-icon ml-1" (click)="startEditing(titleSpan)" i18n-title="@@clickToEditName" title="Pulse para editar el nombre"></i>
+                        }
+                      </span>
+                    </div>
+                  </td>
+                  <td class="p-3 text-left type-container">
+                    <div class="type-row">
+                      <span class="type-indicator" [style.background-color]="getDashboardTypeColor(dashboard.type)"></span>
+                      <span class="type-label">{{ dashboardTypeTranslations[dashboard.type] || dashboard.type | titlecase }}</span>
+                      @if (editingTypeId !== dashboard._id) {
+                        @if (canIEdit(dashboard) && !isEditing) {
+                          <i class="fa fa-pencil edit-type-icon" (click)="startEditingType(dashboard, $event)"></i>
+                        }
+                      } @else {
+                        <div class="type-edit-container">
+                          <p-dropdown [inputId]="'type-dd-' + dashboard._id" [options]="dashboardTypes" optionLabel="label" optionValue="type"
+                            [(ngModel)]="dashboard.type" [style]="{width: '8rem'}" appendTo="body" [autoOptionFocus]="false"
+                            panelStyleClass="type-edit-panel"
+                            (onChange)="updateDashboardType(dashboard, dashboard.type)" (onHide)="cancelEditingType()">
+                            <ng-template let-type pTemplate="selectedItem">
+                              <div class="flex items-center gap-1.5">
+                                <span class="type-indicator" [style.background-color]="type.color"></span>
+                                <span>{{ type.label }}</span>
+                              </div>
+                            </ng-template>
+                            <ng-template let-type pTemplate="item">
+                              <div class="flex items-center gap-1.5">
+                                <span class="type-indicator" [style.background-color]="type.color"></span>
+                                <span>{{ type.label }}</span>
+                              </div>
+                            </ng-template>
+                          </p-dropdown>
+                        </div>
+                      }
+                    </div>
+                  </td>
+                  <td class="p-3 text-sm">
+                    @for (group of dashboard.group; track group.name) {
+                      <span class="group-label">{{ group.name }}</span>
+                    }
+                  </td>
+                  <td class="p-3">
+                    @if (dashboard.config.tag && dashboard.config.tag != '') {
+                      @for (oneTag of dashboard.config.tag; track oneTag) {
+                        <span class="tag-label">{{ oneTag }}</span>
+                      }
+                    }
+                  </td>
+                  <td class="p-3 text-center">{{ dashboard.user?.name }}</td>
+                  <td class="p-3 text-center"><small>{{ dashboard.config.createdAt ? formatDate(dashboard.config.createdAt) : '' }}</small></td>
+                  <td class="p-3 text-center"><small>{{ dashboard.config.modifiedAt ? formatDate(dashboard.config.modifiedAt) : '' }}</small></td>
+                  <td class="p-3 text-center">
+                    @if (dashboard.config.onlyIcanEdit) { <i class="fa fa-check text-corporate-primary"></i> }
+                  </td>
+                  <td class="p-3">{{ dashboard.config.ds.name }}</td>
+                  @if (isAdmin) {
+                    <td class="p-3 text-center">
+                      <input type="checkbox" [checked]="dashboard.active" (change)="toggleDashboardActive(dashboard)"
+                        [disabled]="!canIEdit(dashboard)" [title]="dashboard.active ? titleInactive : titleActive">
+                    </td>
+                  }
+                  <td class="p-3">
+                    <div class="flex items-center gap-1">
+                      <button type="button" class="rounded-md p-2 hover:bg-muted" (click)="goToDashboard(dashboard)" i18n-title="@@goToDashboard" title="Abrir informe">
+                        <i class="fa fa-eye"></i>
+                      </button>
+                      @if (!isObserver) {
+                        <button type="button" class="rounded-md p-2 hover:bg-muted" (click)="cloneDashboard(dashboard)" i18n-title="@@cloneReport" title="Clonar informe">
+                          <eda-icon name="document-duplicated" size="sm"></eda-icon>
+                        </button>
+                      }
+                      @if (!isObserver && canIEdit(dashboard)) {
+                        <button type="button" class="rounded-md p-2 hover:bg-destructive/10 hover:text-destructive" (click)="deleteDashboard(dashboard)" i18n-title="@@deleteReport" title="Eliminar informe">
+                          <eda-icon name="bin" size="sm"></eda-icon>
+                        </button>
+                      }
+                      @if (dashboard.type === 'open') {
+                        <button type="button" class="rounded-md p-2 hover:bg-muted" (click)="copyUrl(dashboard)" i18n-title="@@copyURL" title="Copiar url pública">
+                          <eda-icon name="link" size="sm"></eda-icon>
+                        </button>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <!-- Card view -->
+      @if (viewMode === 'card') {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          @for (dashboard of visibleDashboards; track dashboard._id) {
+            <div [id]="'dashboard-' + dashboard._id" [class.newly-cloned]="dashboard.isNewlyCloned" [ngClass]="getDashboardTypeClass(dashboard.type)"
+              class="report-card relative rounded-lg border bg-background p-4 flex flex-col cursor-pointer transition"
+              (dblclick)="goToDashboard(dashboard)">
+              <span class="datasource-name" title="Fuente de datos">{{ dashboard.config.ds.name }}</span>
+              <h5 class="font-semibold mb-2 pr-2" title="{{ dashboard.config.title }}">
+                <div class="dashboard-title-container" (mouseenter)="showEditIcon = true" (mouseleave)="showEditIcon = false">
+                  <a #titleSpan [attr.contenteditable]="isEditing ? true : null"
+                    (blur)="updateDashboardTitle(dashboard, $event)" (keydown.enter)="$event.target.blur()"
+                    class="report-name cursor-pointer" (click)="goToDashboard(dashboard)">{{ dashboard.config.title }}</a>
+                  @if (canIEdit(dashboard) && !isEditing) {
+                    <i class="fa fa-pencil edit-icon ml-1" (click)="startEditing(titleSpan)" i18n-title="@@clickToEditName" title="Pulse para editar el nombre"></i>
+                  }
+                </div>
+              </h5>
+              <p class="text-sm type-container mb-1 type-row">
+                <span class="type-label">{{ dashboardTypeTranslations[dashboard.type] || dashboard.type }}</span>
+                @if (editingTypeId !== dashboard._id) {
+                  @if (canIEdit(dashboard) && !isEditing) {
+                    <i class="fa fa-pencil edit-type-icon" (click)="startEditingType(dashboard, $event)"></i>
+                  }
+                } @else {
+                  <div class="type-edit-container">
+                    <p-dropdown [inputId]="'type-dd-' + dashboard._id" [options]="dashboardTypes" optionLabel="label" optionValue="type"
+                      [(ngModel)]="dashboard.type" [style]="{width: '8rem'}" appendTo="body" [autoOptionFocus]="false"
+                      panelStyleClass="type-edit-panel"
+                      (onChange)="updateDashboardType(dashboard, dashboard.type)" (onHide)="cancelEditingType()">
+                      <ng-template let-type pTemplate="selectedItem">
+                        <div class="flex items-center gap-1.5">
+                          <span class="type-indicator" [style.background-color]="type.color"></span>
+                          <span>{{ type.label }}</span>
+                        </div>
+                      </ng-template>
+                      <ng-template let-type pTemplate="item">
+                        <div class="flex items-center gap-1.5">
+                          <span class="type-indicator" [style.background-color]="type.color"></span>
+                          <span>{{ type.label }}</span>
+                        </div>
+                      </ng-template>
+                    </p-dropdown>
+                  </div>
+                }
+              </p>
+              <p class="text-sm">
+                @for (group of dashboard.group; track group.name) {
+                  <span class="group-label">{{ group.name }}</span>
+                }
+                <span class="float-right text-xs text-muted-foreground">
+                  <i class="fa fa-plus"></i>
+                  {{ dashboard.config.createdAt ? formatDate(dashboard.config.createdAt) : '' }}
+                </span>
+                <br>
+                <span class="float-right text-xs text-muted-foreground">
+                  <i class="fa fa-pencil"></i>
+                  {{ dashboard.config.modifiedAt ? formatDate(dashboard.config.modifiedAt) : '' }}
+                </span>
+              </p>
+              <div class="text-sm mt-1">
+                @if (dashboard.config.tag) { <span class="tag-label">{{ dashboard.config.tag }}</span> }
+                @if (isAdmin) {
+                  <div class="float-right">
+                    <input type="checkbox" [checked]="dashboard.active" (change)="toggleDashboardActive(dashboard)"
+                      [disabled]="!canIEdit(dashboard)"
+                      [title]="canIEdit(dashboard) ? (dashboard.active ? titleInactive : titleActive) : ''">
+                    <small class="ml-1">
+                      @if (dashboard.active) { <span i18n="@@activeLabel">Activo</span> }
+                      @if (!dashboard.active) { <span i18n="@@inactiveLabel">Inactivo</span> }
+                    </small>
+                  </div>
+                }
+              </div>
+              <div class="mt-auto pt-3 flex items-center gap-1">
+                <button type="button" class="rounded-md p-2 hover:bg-muted" (click)="goToDashboard(dashboard)" i18n-title="@@showReport" title="Mostrar informe">
+                  <i class="fa fa-eye"></i>
+                </button>
+                @if (!isObserver && canIEdit(dashboard)) {
+                  <button type="button" class="rounded-md p-2 hover:bg-destructive/10 hover:text-destructive" (click)="deleteDashboard(dashboard)" i18n-title="@@deleteReport" title="Eliminar informe">
+                    <eda-icon name="bin" size="sm"></eda-icon>
+                  </button>
+                }
+                @if (!isObserver && canIEdit(dashboard)) {
+                  <button type="button" class="rounded-md p-2 hover:bg-muted" (click)="cloneDashboard(dashboard)" i18n-title="@@cloneReport" title="Clonar informe">
+                    <eda-icon name="document-duplicated" size="sm"></eda-icon>
+                  </button>
+                }
+                @if (dashboard.type === 'open') {
+                  <button type="button" class="rounded-md p-2 hover:bg-muted" (click)="copyUrl(dashboard)" i18n-title="@@copyURL" title="Copiar url pública">
+                    <eda-icon name="link" size="sm"></eda-icon>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+  </div>
+</div>

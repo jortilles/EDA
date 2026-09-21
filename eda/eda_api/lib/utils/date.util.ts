@@ -28,29 +28,19 @@ export class DateUtil {
     }
 
     public static convertDashboardDate(date: string | Date | null | undefined) {
-    
-            // Si no hay fecha, usar la actual
+
+        // Si no hay fecha, usar la actual (con hora)
         if (!date) {
-            return new Date().toISOString().split("T")[0];
+            return new Date().toISOString();
         }
 
-        // Si es un objeto Date
+        // Si es un objeto Date, devolver el ISO completo
         if (date instanceof Date) {
-            return date.toISOString().split("T")[0];
+            return date.toISOString();
         }
 
-        // Si es una cadena con formato ISO
-        if (typeof date === "string" && date.includes("T")) {
-            return date.split("T")[0];
-        }
-
-        // Si es una cadena simple 
-        if (typeof date === "string") {
-            return date;
-        }
-
-        // Fallback (por si acaso)
-        return new Date().toISOString().split("T")[0];
+        // Ya es una cadena (ISO u otro formato existente): dejarla tal cual
+        return date;
     }
 
 }

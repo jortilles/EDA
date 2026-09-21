@@ -27,10 +27,10 @@ interface DashboardSummary {
 }
 
 interface DashboardsListResponse {
-  dashboards?: DashboardSummary[];
+  private?: DashboardSummary[];
   group?: DashboardSummary[];
-  publics?: DashboardSummary[];
-  shared?: DashboardSummary[];
+  open?: DashboardSummary[];
+  common?: DashboardSummary[];
 }
 
 interface DashboardDetailResponse {
@@ -161,10 +161,10 @@ export class EmailSettingsPage implements OnInit {
     const list = await lastValueFrom(this.dashboardService.getDashboards()) as DashboardsListResponse;
 
     const allDashboards = [
-      ...(list.dashboards ?? []),
+      ...(list.private ?? []),
       ...(list.group ?? []),
-      ...(list.publics ?? []),
-      ...(list.shared ?? []),
+      ...(list.open ?? []),
+      ...(list.common ?? []),
     ];
 
     const ids = allDashboards.map(d => d._id);

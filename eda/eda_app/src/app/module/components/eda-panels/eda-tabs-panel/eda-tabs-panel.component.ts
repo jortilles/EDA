@@ -87,9 +87,9 @@ export class EdaTabsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
                 }));
 
             this.allDashboards = [
-                ...mapDashboards(response.publics, 'public'),
-                ...mapDashboards(response.shared, 'shared'),
-                ...mapDashboards(response.dashboards, 'private'),
+                ...mapDashboards(response.open, 'open'),
+                ...mapDashboards(response.common, 'common'),
+                ...mapDashboards(response.private, 'private'),
                 ...mapDashboards(response.group, 'group')
             ];
 
