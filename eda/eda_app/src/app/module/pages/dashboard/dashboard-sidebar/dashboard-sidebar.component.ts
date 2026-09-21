@@ -121,6 +121,10 @@ export class DashboardSidebarComponent implements AfterViewInit {
   editingTitle: boolean = false;
   editableTitle: string = '';
 
+  // Panels touched by filters removed from the sidebar during this popover session,
+  // refreshed once when the popover closes instead of after every single deletion
+  private pendingRefreshPanelIds = new Set<string>();
+
   sidebarItems: any[] = [];
 
   ngOnInit(): void {
@@ -375,6 +379,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.mostrarOpciones = false;
     this.mostrarFiltros = false;
     this.mostrarDescargas = false;
+    this.flushPendingFilterRemovalRefresh();
   }
 
   public onAddGlobalFilter(): void {
@@ -1118,11 +1123,21 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.dashboard.globalFilter.onShowGlobalFilter(false, filtro)
   }
 
-  // Removes a global filter directly from the sidebar list, without opening its dialog
+  // Removes a global filter directly from the sidebar list, without opening its dialog.
+  // The affected panels aren't refreshed here so deleting several filters in a row doesn't
+  // re-run a query after every single click - they're refreshed once when the popover closes.
   public removeFilterFromSidebar(filtro: any) {
+    (filtro.panelList || []).forEach((id: string) => this.pendingRefreshPanelIds.add(id));
     this.dashboard.globalFilter.removeGlobalFilterOnClick(filtro, true);
     this.hayFiltros = this.dashboard.globalFilter.globalFilters.length > 0;
     this.initSidebar();
+  }
+
+  // Refreshes only the panels touched by filters removed since the popover was opened
+  private flushPendingFilterRemovalRefresh(): void {
+    if (this.pendingRefreshPanelIds.size === 0) return;
+    this.dashboard.refreshPanels(Array.from(this.pendingRefreshPanelIds));
+    this.pendingRefreshPanelIds.clear();
   }
 
   public renameDashboard() {

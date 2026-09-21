@@ -1169,8 +1169,10 @@ export class DashboardPage implements OnInit {
     }
   }
 
-  refreshPanels() {
+  // panelIds: when provided, only those panels are refreshed instead of every panel in the dashboard
+  refreshPanels(panelIds?: string[]) {
     this.edaPanels.forEach(async (panel) => {
+      if (panelIds && !panelIds.includes(panel.panel.id)) return;
       if (panel.currentQuery.length > 0) {
         panel.display_v.chart = '';
         panel.markDirty();
