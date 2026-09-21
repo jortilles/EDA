@@ -7935,6 +7935,79 @@ Salutacions.</target>
         <source>Iconos asignados por coincidencia de nombre</source>
         <target>Icones assignades per coincidencia de nom</target>
       </trans-unit>
+
+<trans-unit id="panelOptionsShowSourceFields">
+<source>Mostrar campos de origen</source>
+<target>Mostrar camps d'origen</target>
+</trans-unit>
+<trans-unit id="sourceFieldsGlobalFilterPlaceholder">
+<source>Buscar en todos los campos</source>
+<target>Cercar a tots els camps</target>
+</trans-unit>
+<trans-unit id="sourceFieldsViewQueryTooltip">
+<source>Ver consulta SQL</source>
+<target>Veure consulta SQL</target>
+</trans-unit>
+<trans-unit id="sourceFieldsRestoreColumn">
+<source>Restaurar columna</source>
+<target>Restaurar columna</target>
+</trans-unit>
+<trans-unit id="sourceFieldsFilterPlaceholder">
+<source>Buscar</source>
+<target>Cercar</target>
+</trans-unit>
+<trans-unit id="sourceFieldsExportExcel">
+<source>Exportar a Excel</source>
+<target>Exportar a Excel</target>
+</trans-unit>
+<trans-unit id="sourceFieldsCopyQuery">
+<source>Copiar</source>
+<target>Copiar</target>
+</trans-unit>
+<trans-unit id="sourceFieldsCopyQueryDone">
+<source>Copiado</source>
+<target>Copiat</target>
+</trans-unit>
+<trans-unit id="panelOptionsEnableFilters">
+<source>Click en filtros habilitado</source>
+<target>Click en filtres habilitat</target>
+</trans-unit>
+<trans-unit id="panelOptionsDisableFilters">
+<source>Click en filtros deshabilitado</source>
+<target>Click en filtres deshabilitat</target>
+</trans-unit>
+<trans-unit id="treeTableShowFilters">
+  <source>Mostrar filtros de columna</source>
+  <target>Mostrar filtres de columna</target>
+</trans-unit>
+<trans-unit id="treeTableShowChildCount">
+  <source>Mostrar número de hijos</source>
+  <target>Mostrar nombre de fills</target>
+</trans-unit>
+<trans-unit id="treeTableSortNone">
+  <source>Sin ordenar</source>
+  <target>Sense ordenar</target>
+</trans-unit>
+<trans-unit id="treeTableSortAsc">
+  <source>Ascendente (A → Z)</source>
+  <target>Ascendent (A → Z)</target>
+</trans-unit>
+<trans-unit id="treeTableSortDesc">
+  <source>Descendente (Z → A)</source>
+  <target>Descendent (Z → A)</target>
+</trans-unit>
+<trans-unit id="treeTableSortOrder">
+  <source>Ordenar nodos</source>
+  <target>Ordenar nodes</target>
+</trans-unit>
+<trans-unit id="treeTableSortColumn">
+  <source>Ordenar por columna</source>
+  <target>Ordenar per columna</target>
+</trans-unit>
+<trans-unit id="treeTableOptions">
+  <source>Opciones</source>
+  <target>Opcions</target>
+</trans-unit>
 </body>
   </file>
 </xliff>

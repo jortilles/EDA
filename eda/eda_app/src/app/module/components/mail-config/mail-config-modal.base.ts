@@ -1,5 +1,8 @@
-import { Directive, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, inject, signal } from "@angular/core";
+import { Directive, EventEmitter, Input, OnInit, Output, ViewChild, inject, signal } from "@angular/core";
 import { Observable, lastValueFrom } from "rxjs";
+import { Completion, CompletionContext, CompletionResult } from "@codemirror/autocomplete";
+import { EditorView } from "@codemirror/view";
+import { CodeEditorComponent } from "@eda/shared/components/shared-components.index";
 import { AlertService, MailService, UserService } from "@eda/services/service.index";
 import { AssistantService } from "@eda/services/api/assistant.service";
 import { DateUtils } from "@eda/services/utils/date-utils.service";
@@ -296,8 +299,8 @@ Un saludo.`;
 
   // ---- reference dialog + insert toolbox ------------------------------------
 
-  @ViewChild('msgArea') private msgArea?: ElementRef<HTMLTextAreaElement>;
-  @ViewChild('subjArea') private subjArea?: ElementRef<HTMLInputElement>;
+  @ViewChild('msgArea') private msgArea?: CodeEditorComponent;
+  @ViewChild('subjArea') private subjArea?: CodeEditorComponent;
 
   public refOpen = false;
   public openRef(): void { this.refOpen = true; }
@@ -311,41 +314,48 @@ Un saludo.`;
 
   /** Field the toolbox inserts into: whichever of subject/message was focused last. */
   public activeField: 'subject' | 'message' = 'message';
-  public get activeFieldLabel(): string {
-    return this.activeField === 'subject'
-      ? $localize`:@@mailSubjectShort:Asunto`
-      : $localize`:@@mailMessageLabel:Mensaje`;
-  }
-
-  private spliceInto(el: HTMLInputElement | HTMLTextAreaElement | undefined,
-                     current: string, text: string, apply: (v: string) => void): void {
-    const cur = current || '';
-    if (!el) { apply(cur + text); return; }
-    const s = el.selectionStart ?? cur.length;
-    const e = el.selectionEnd ?? cur.length;
-    apply(cur.slice(0, s) + text + cur.slice(e));
-    setTimeout(() => {
-      el.focus();
-      const p = s + text.length;
-      try { el.setSelectionRange(p, p); } catch { /* noop */ }
-    });
-  }
 
   /** Insert a variable token into the active field (subject or message). */
   public insertToken(text: string): void {
-    if (this.activeField === 'subject') {
-      this.spliceInto(this.subjArea?.nativeElement, this.mailSubject, text, v => (this.mailSubject = v));
-    } else {
-      this.spliceInto(this.msgArea?.nativeElement, this.mailMessage, text, v => (this.mailMessage = v));
-    }
+    (this.activeField === 'subject' ? this.subjArea : this.msgArea)?.insertAtCursor(text);
   }
 
   public insertCodeBlock(): void {
     const base = this.kpiVariables[0]?.base || 'p1';
     this.activeField = 'message';
-    this.spliceInto(this.msgArea?.nativeElement, this.mailMessage,
-      `\n""CODE\nif ${base}.value > 0\n  \nelse\n  \nend\nCODE""\n`, v => (this.mailMessage = v));
+    this.msgArea?.insertAtCursor(`\n""CODE\nif ${base}.value > 0\n  \nelse\n  \nend\nCODE""\n`);
   }
+
+  /** CodeMirror completion source for `${pN...}` tokens — pops up while typing `${` in the
+   * subject/message editors, mirroring the "Insertar" toolbox on the side. */
+  public tokenCompletionSource = (context: CompletionContext): CompletionResult | null => {
+    const match = context.matchBefore(/\$\{[a-zA-Z0-9_.]*/);
+    if (!match || (match.from === match.to && !context.explicit)) return null;
+
+    const frag = match.text.slice(2).toLowerCase();
+    const options = this.kpiVariables
+      .flatMap(v => kpiVarTokens(v))
+      .filter(tk => tk.token.slice(2).replace(/\}$/, '').toLowerCase().startsWith(frag))
+      .map(tk => {
+        const val = this.varValueResolver(tk.variable, tk.kind);
+        return {
+          label: tk.token,
+          detail: val ? `${tk.label} · ${val}` : tk.label,
+          apply: (view: EditorView, _c: Completion, from: number, to: number) => {
+            // closeBrackets already put a `}` after the cursor; the token brings its own.
+            const end = view.state.sliceDoc(to, to + 1) === '}' ? to + 1 : to;
+            view.dispatch({
+              changes: { from, to: end, insert: tk.token },
+              selection: { anchor: from + tk.token.length },
+              userEvent: 'input.complete',
+            });
+          },
+          type: 'variable',
+        };
+      });
+
+    return options.length ? { from: match.from, options } : null;
+  };
 
   public get kpiVariables(): MailKpiVariable[] {
     return buildKpiVariables(this.variablePanels);

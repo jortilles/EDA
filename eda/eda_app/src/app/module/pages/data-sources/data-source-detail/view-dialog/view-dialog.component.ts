@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { AlertService, SpinnerService, DashboardService } from '@eda/services/service.index';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { EdaDialog2Component, CodeEditorComponent } from '@eda/shared/components/shared-components.index';
 
 @Component({
   standalone: true,
@@ -10,7 +10,7 @@ import { EdaDialog2Component } from '@eda/shared/components/shared-components.in
   templateUrl: './view-dialog.component.html',
   styleUrls: ['./view-dialog.component.css'],
     imports: [
-      FormsModule, ReactiveFormsModule, EdaDialog2Component
+      FormsModule, ReactiveFormsModule, EdaDialog2Component, CodeEditorComponent
     ]
 })
 
@@ -79,7 +79,7 @@ export class ViewDialogComponent implements OnInit {
   buildColumn(column_name: string, column_index: number, data: Array<any>) {
     let type = 'numeric';
     for (let i = 0; i < data.length; i++) {
-      if (data[i][column_index] !== null && !parseFloat(data[i][column_index])) {
+      if (data[i][column_index] !== null && isNaN(parseFloat(data[i][column_index]))) {
         type = 'text';
         break;
       }

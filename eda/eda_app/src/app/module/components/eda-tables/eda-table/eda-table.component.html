@@ -13,8 +13,21 @@
         [sortField]="inject.sortedColumn ? inject.sortedColumn.field : null"
         [sortOrder]="inject.sortedColumn ? inject.sortedColumn.order : null" 
         [autoLayout]="inject.autolayout"
-        styleClass="p-datatable-striped" 
+        [tableStyle]="{'table-layout': inject.autolayout ? 'auto' : 'fixed'}"
+        styleClass="p-datatable-striped"
         [ngStyle]="getStyle()">
+
+        <!-- Colgroup: the browser's native, lightweight mechanism for table-layout:fixed
+             column widths — resizing writes to these <col>s instead of any <th>/<td>. -->
+        <ng-template pTemplate="colgroup">
+            <colgroup>
+                <ng-container *ngFor="let col of inject.cols">
+                    @if(col.visible === true){
+                        <col [style.width]="col.width" [attr.data-field]="col.field">
+                    }
+                </ng-container>
+            </colgroup>
+        </ng-template>
 
         <!-- Search -->
          @if(inject.search){
@@ -33,7 +46,7 @@
             <tr class="header-invisible" style="visibility: hidden; height: 0; line-height: 0; font-size: 0; padding: 0; border: none;">
                 <ng-container *ngFor="let col of inject.cols">
                     @if(col.visible === true){
-                        <th [width]="col.width" style="height: 0; line-height: 0; font-size: 0; padding: 0; border: none;"></th>
+                        <th [width]="col.width" [attr.data-field]="col.field" style="height: 0; line-height: 0; font-size: 0; padding: 0; border: none;"></th>
                     }
                 </ng-container>
             </tr>
@@ -41,14 +54,17 @@
             <tr class="header-title">
                 <ng-container *ngFor="let col of inject.cols">
                     @if(col.type && col.visible){
-                        <th [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
-                            [width]="col.width" [attr.rowspan]="col.rowspan">
+                        <th [pSortableColumn]="col.field" [pSortableColumnDisabled]="suppressSortClick" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
+                            [width]="col.width" [attr.rowspan]="col.rowspan" [attr.data-field]="col.field" style="position: relative;">
                             <div class="flex items-center "  [ngStyle]="getTextStyle()">
                                 {{col.header}}
                                 @if(col.sortable){
                                     <p-sortIcon [field]="col.field"  [ngStyle]="getTextStyle()"></p-sortIcon>
                                 }
                             </div>
+                            @if(isResizable(col) && !isLastResizable(col)){
+                                <div class="col-resize-handle" [class.col-resize-active]="isResizeActive(col)" (mousedown)="onColResizeStart($event, col)" (click)="$event.stopPropagation()"></div>
+                            }
                         </th>
                     }
                 </ng-container>

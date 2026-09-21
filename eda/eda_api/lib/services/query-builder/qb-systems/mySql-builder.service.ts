@@ -226,11 +226,10 @@ export class MySqlBuilderService extends QueryBuilderService {
     /** IF IT IS A SELECT FOR A SELECTOR I WANT UNIQUE VALUES */
     if (forSelector === true) {
       myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
-    }
-    
-    // If the element is a SQL Expression type
-    if(this.queryTODO.fields[0].computed_column !== undefined && this.queryTODO.fields[0].computed_column == 'computed' ) {
-      myQuery = `SELECT DISTINCT ${this.queryTODO.fields[0].SQLexpression} as \`${this.queryTODO.fields[0].column_name}\` ,   ${this.queryTODO.fields[0].SQLexpression} as \`id\`\nFROM ${o}`;
+
+      if (this.queryTODO.fields[0]?.computed_column === 'computed') {
+        myQuery = `SELECT DISTINCT ${this.queryTODO.fields[0].SQLexpression} as \`${this.queryTODO.fields[0].column_name}\` ,   ${this.queryTODO.fields[0].SQLexpression} as \`id\`\nFROM ${o}`;
+      }
     }
 
     // JOINS
@@ -312,7 +311,9 @@ export class MySqlBuilderService extends QueryBuilderService {
           const matchingField = this.queryTODO.fields.find(
             (f: any) => f.table_id === col.table_id && f.column_name === col.column_name
           );
-          if (matchingField) {
+          if (matchingField?.computed_column === 'computed') {
+            return `${this.getOrderExpression(matchingField)} ${col.ordenation_type}`;
+          } else if (matchingField) {
             return `\`${matchingField.display_name}\` ${col.ordenation_type}`;
           } else {
             return `\`${col.table_id}\`.\`${col.column_name}\` ${col.ordenation_type}`;
@@ -322,7 +323,9 @@ export class MySqlBuilderService extends QueryBuilderService {
       orderColumns = this.queryTODO.fields
         .map((col: any) => {
           if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
-            return `\`${col.display_name}\` ${col.ordenation_type}`;
+            return col.computed_column === 'computed'
+              ? `${this.getOrderExpression(col)} ${col.ordenation_type}`
+              : `\`${col.display_name}\` ${col.ordenation_type}`;
           }
           return false;
         })

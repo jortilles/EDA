@@ -101,6 +101,7 @@ export const ChartsConfigUtils = {
         headerColor: ebp.panelChart.componentRef.instance.inject.headerColor || '',
         bandingColor: ebp.panelChart.componentRef.instance.inject.bandingColor || '',
         colorEnabled: ebp.panelChart.componentRef.instance.inject.colorEnabled !== false,
+        columnWidths: ebp.panelChart.componentRef.instance.inject.columnWidths,
       }
 
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'kpideviation') {
@@ -156,6 +157,12 @@ export const ChartsConfigUtils = {
         editedTreeTable: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['editedTreeTable'] : false,
         hierarchyLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['hierarchyLabels'] : [],
         leafLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['leafLabels'] : [],
+        showOriginField: ebp.panelChart.props.config?.getConfig()?.['showOriginField'] ?? false,
+        showColumnFilters: ebp.panelChart.props.config?.getConfig()?.['showColumnFilters'] ?? true,
+        showChildCount: ebp.panelChart.props.config?.getConfig()?.['showChildCount'] ?? false,
+        sortOrder: ebp.panelChart.props.config?.getConfig()?.['sortOrder'] ?? 'none',
+        sortColumn: ebp.panelChart.props.config?.getConfig()?.['sortColumn'] ?? '',
+        columnWidths: ebp.panelChart.props.config?.getConfig()?.['columnWidths'],
       }
 
     } else if (ebp.panelChart.props.chartType === 'coordinatesMap') {

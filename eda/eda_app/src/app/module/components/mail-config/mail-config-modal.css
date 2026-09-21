@@ -42,17 +42,6 @@
   background: rgba(var(--corporate-primary-rgb), 0.045);
   max-height: 24rem;
 }
-.mail-insert-title {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  color: var(--corporate-primary-dark, #007B74);
-}
-.mail-insert-target {
-  font-size: 11px;
-  color: #6b7280;
-}
 .mail-insert-kpi {
   font-size: 11px;
   font-weight: 600;

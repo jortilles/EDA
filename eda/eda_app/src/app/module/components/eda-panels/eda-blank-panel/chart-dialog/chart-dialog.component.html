@@ -362,8 +362,12 @@
                 </div>
 
                 <!-- Own list when the colour editor has no per-category row: funnel (start/end gradient)
-                     and the axis bar family (colours are per-series, icons per bar/category). -->
-                @if (features.colorEditorShape === 'start-end' || features.family === 'axis') {
+                     and the axis bar family (colours are usually per-series, icons per bar/category) -
+                     except when the colour list currently on screen happens to be keyed by the same
+                     values as the icons anyway (a single/"per-item" series, or the "Colores Únicos"
+                     tab), which already carries its own inline icon button below - showing both would
+                     just duplicate every row. -->
+                @if (features.colorEditorShape === 'start-end' || (features.family === 'axis' && !iconsAlignWithVisibleColorList)) {
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                     @for (item of assignedIcons; track item.value; let idx = $index) {
                       <div class="flex items-center justify-between border rounded-lg p-2 bg-white">
@@ -459,7 +463,7 @@
                       (click)="labelColorMode = 'custom'; setLabelColor()" i18n="@@labelColorCustom">Personalizado</button>
                   </div>
                   @if (labelColorMode === 'custom') {
-                    <div class="flex items-center border rounded-md overflow-hidden">
+                    <div class="flex items-center gap-2">
                       <input [(ngModel)]="labelCustomColor" (input)="setLabelColor()" class="text-sm text-slate-600 font-mono w-20 px-3 py-1.5 focus:outline-none">
                       <p-colorPicker [(ngModel)]="labelCustomColor" (onChange)="setLabelColor()" format="hex" appendTo="body" />
                     </div>
@@ -579,7 +583,10 @@
                         <div class="flex flex-col gap-3 border rounded-lg p-4 bg-white ">
                           <div class="flex items-center justify-between">
                             <span class="font-medium">{{ color.value }}</span>
-                            <div class="flex items-center border rounded-md overflow-hidden">
+                            <div class="flex items-center gap-2">
+                              @if (features.hasIcons && useIcons && iconsAlignWithVisibleColorList) {
+                                <ng-container [ngTemplateOutlet]="iconBtn" [ngTemplateOutletContext]="{ $implicit: assignedIcons[idx], idx }"></ng-container>
+                              }
                               <input
                                 [(ngModel)]="assignedColors[idx].color"
                                 (input)="handleInputColor()"
@@ -666,6 +673,9 @@
                         <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
                           <span class="font-medium">{{ color.value }}</span>
                           <div class="flex items-center gap-2">
+                            @if (features.hasIcons && useIcons && iconsAlignWithVisibleColorList) {
+                              <ng-container [ngTemplateOutlet]="iconBtn" [ngTemplateOutletContext]="{ $implicit: assignedIcons[idx], idx }"></ng-container>
+                            }
                             <input [(ngModel)]="assignedColors[idx].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
                             <p-colorPicker [(ngModel)]="assignedColors[idx].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
                           </div>
@@ -708,6 +718,9 @@
                         <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
                           <span class="font-medium truncate max-w-[60%]" [title]="color.value">{{ color.value }}</span>
                           <div class="flex items-center gap-2">
+                            @if (features.hasIcons && useIcons && iconsAlignWithVisibleColorList) {
+                              <ng-container [ngTemplateOutlet]="iconBtn" [ngTemplateOutletContext]="{ $implicit: assignedIcons[idx], idx }"></ng-container>
+                            }
                             <input [(ngModel)]="uniqueBarColors[idx].color" (input)="handleUniqueColorInput()" class="text-md text-slate-500 font-mono w-[3.5vw]">
                             <p-colorPicker [(ngModel)]="uniqueBarColors[idx].color" (onChange)="handleUniqueColorInput()" format="hex" appendTo="body" />
                           </div>

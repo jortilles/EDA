@@ -524,10 +524,14 @@ export class ChartDialogComponent implements AfterViewChecked {
             return { value: label, color: match?.color || this.getDefaultColor(index) };
         });
 
-        // Icons are per-category (per bar), so keyed by chartLabels - not by series like assignedColors.
+        // Icons are per-category (per bar) by default, so keyed by chartLabels - not by series like
+        // assignedColors. stackedbar/stackedbar100 are the exception (iconsPerSeries): a stacked bar
+        // shows one icon per visible SEGMENT, so its icons are keyed by series label instead, same
+        // list `labels` above already uses for assignedColors.
         if (this.features.hasIcons) {
+            const iconKeys = this.features.iconsPerSeries ? labels : barLabels;
             const savedIcons = this.controller.params.config.config.getConfig()['assignedIcons'] || [];
-            this.assignedIcons = barLabels.map(label => ({
+            this.assignedIcons = iconKeys.map(label => ({
                 value: label,
                 icon: savedIcons.find((c: any) => String(c.value) === String(label))?.icon || '',
             }));
@@ -1019,6 +1023,38 @@ export class ChartDialogComponent implements AfterViewChecked {
     // "Colores por intervalo" is always the last tab, whether or not the unique-colors tab is present.
     get intervalTabIndex(): number {
         return this.showUniqueColorsTab ? 2 : 1;
+    }
+
+    /**
+     * The per-row colour list currently on screen, for the axis bar family only - `null` when
+     * there isn't one to align icons with (the threshold tab has no per-category/per-series rows).
+     * Exists because assignedColors ("per-series") isn't always genuinely per-series: a bar chart
+     * with "per-item" custom colours (one real value per category, see eda-bar.component.ts's
+     * stacking comments) or the dedicated "Colores Únicos" tab both end up keyed by the SAME values
+     * as assignedIcons even though the colour editor is nominally per-series - see
+     * iconsAlignWithVisibleColorList below.
+     */
+    private get currentPerRowColorList(): { value: any }[] | null {
+        if (this.features.family !== 'axis') return null;
+        // No tabs at all in this case (see the template's `@if (!features.hasThresholdColors)`
+        // branch) - assignedColors is the only list, regardless of activeTabIndex's value (which
+        // can be stale/meaningless here if the config still carries a leftover coloredBarsConfig
+        // from a previous chart type that DID have threshold coloring).
+        if (!this.features.hasThresholdColors) return this.assignedColors;
+        if (this.showUniqueColorsTab && this.activeTabIndex === 1) return this.uniqueBarColors;
+        if (this.activeTabIndex === 0) return this.assignedColors;
+        return null;
+    }
+
+    /**
+     * True when the colour list currently visible happens to be keyed by the exact same values as
+     * assignedIcons (in the same order) - i.e. showing both would just duplicate every row. When
+     * true, the icon button is shown inline in that colour list instead of the standalone list above it.
+     */
+    get iconsAlignWithVisibleColorList(): boolean {
+        const list = this.currentPerRowColorList;
+        if (!list || !this.assignedIcons.length || list.length !== this.assignedIcons.length) return false;
+        return this.assignedIcons.every((ic, i) => String(ic.value) === String(list[i]?.value));
     }
 
     setActiveTab(index: number): void {

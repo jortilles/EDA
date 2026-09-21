@@ -22,6 +22,12 @@
   text-decoration: line-through;
 }
 
+/* visibility (not display:none) so the item stays in flow and measurable - required for the
+   count to grow back when the panel is enlarged again, see eda-chart-legend.component.ts. */
+.eda-chart-legend-item-clipped {
+  visibility: hidden;
+}
+
 .eda-chart-legend-swatch {
   display: inline-block;
   border-radius: 2px;

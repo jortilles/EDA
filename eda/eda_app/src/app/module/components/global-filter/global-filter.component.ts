@@ -781,12 +781,11 @@ export class GlobalFilterComponent implements OnInit {
         }
     }
 
-    private async loadGlobalFiltersData(globalFilter?: any): Promise<void> {
-
-        if (!globalFilter) {
-            globalFilter = this.globalFilter;
-        }
-
+    /** Query que rellena los valores del desplegable de un filtro global. Debe mantenerse
+     *  como único punto de construcción: la usan tanto loadGlobalFiltersData (para ejecutarla)
+     *  como getFilterSelectorQueries (para poder borrar su entrada de caché), de forma que
+     *  ambas generen siempre exactamente la misma query. */
+    private buildFilterSelectorQuery(globalFilter: any): any {
         let targetTable: string;
         let targetColumn: any;
         if (globalFilter.selectedTable) {
@@ -808,12 +807,28 @@ export class GlobalFilterComponent implements OnInit {
             filters: []
         };
 
-        try {
-            
-            const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
-            query.query.forSelector = true;
+        const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
+        query.query.forSelector = true;
+        return query;
+    }
 
-            
+    /** Queries (ya cacheadas en el backend) de todos los filtros globales que se rellenan vía
+     *  loadGlobalFiltersData. Usado por el botón "Recargar informe" para poder borrar también
+     *  su entrada de caché, no solo la de los paneles. */
+    public getFilterSelectorQueries(): any[] {
+        return this.globalFilters
+            .filter((f: any) => this.getFilterType(f) !== 'date' && !f.isAutocompleted)
+            .map((f: any) => this.buildFilterSelectorQuery(f).query);
+    }
+
+    private async loadGlobalFiltersData(globalFilter?: any): Promise<void> {
+
+        if (!globalFilter) {
+            globalFilter = this.globalFilter;
+        }
+
+        try {
+            const query = this.buildFilterSelectorQuery(globalFilter);
             const res = await this.dashboardService.executeQuery(query).toPromise();
             const message = res[0][0];
             

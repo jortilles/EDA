@@ -88,6 +88,20 @@ export abstract class QueryBuilderService {
         throw new Error('"Mostrar campos de origen" no está soportado todavía para este tipo de conexión');
     }
 
+    /**
+     * ORDER BY for a calculated field must use its SQL expression, not its display_name alias -
+     * ordering by the alias fails for computed columns, so every qb-system's ORDER BY building
+     * routes computed fields through here instead of quoting display_name like regular columns.
+     */
+    protected getOrderExpression(field: any): string {
+        if (!field.aggregation_type || field.aggregation_type === 'none') {
+            return `(${field.SQLexpression})`;
+        }
+        return field.aggregation_type === 'count_distinct'
+            ? `count(distinct ${field.SQLexpression})`
+            : `${field.aggregation_type}(${field.SQLexpression})`;
+    }
+
 
 
     public async builder() {

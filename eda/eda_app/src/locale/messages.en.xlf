@@ -7629,6 +7629,79 @@ Best regards.</target>
         <target>Icons assigned by name match</target>
       </trans-unit>
 
+<trans-unit id="panelOptionsShowSourceFields">
+<source>Mostrar campos de origen</source>
+<target>Show source fields</target>
+</trans-unit>
+<trans-unit id="sourceFieldsGlobalFilterPlaceholder">
+<source>Buscar en todos los campos</source>
+<target>Search in all fields</target>
+</trans-unit>
+<trans-unit id="sourceFieldsViewQueryTooltip">
+<source>Ver consulta SQL</source>
+<target>View SQL query</target>
+</trans-unit>
+<trans-unit id="sourceFieldsRestoreColumn">
+<source>Restaurar columna</source>
+<target>Restore column</target>
+</trans-unit>
+<trans-unit id="sourceFieldsFilterPlaceholder">
+<source>Buscar</source>
+<target>Search</target>
+</trans-unit>
+<trans-unit id="sourceFieldsExportExcel">
+<source>Exportar a Excel</source>
+<target>Export to Excel</target>
+</trans-unit>
+<trans-unit id="sourceFieldsCopyQuery">
+<source>Copiar</source>
+<target>Copy</target>
+</trans-unit>
+<trans-unit id="sourceFieldsCopyQueryDone">
+<source>Copiado</source>
+<target>Copied</target>
+</trans-unit>
+<trans-unit id="panelOptionsEnableFilters">
+<source>Click en filtros habilitado</source>
+<target>Filter click enabled</target>
+</trans-unit>
+<trans-unit id="panelOptionsDisableFilters">
+<source>Click en filtros deshabilitado</source>
+<target>Filter click disabled</target>
+</trans-unit>
+
+<trans-unit id="treeTableShowFilters">
+  <source>Mostrar filtros de columna</source>
+  <target>Show column filters</target>
+</trans-unit>
+<trans-unit id="treeTableShowChildCount">
+  <source>Mostrar número de hijos</source>
+  <target>Show number of children</target>
+</trans-unit>
+<trans-unit id="treeTableSortNone">
+  <source>Sin ordenar</source>
+  <target>Not sorted</target>
+</trans-unit>
+<trans-unit id="treeTableSortAsc">
+  <source>Ascendente (A → Z)</source>
+  <target>Ascending (A → Z)</target>
+</trans-unit>
+<trans-unit id="treeTableSortDesc">
+  <source>Descendente (Z → A)</source>
+  <target>Descending (Z → A)</target>
+</trans-unit>
+<trans-unit id="treeTableSortOrder">
+  <source>Ordenar nodos</source>
+  <target>Sort nodes</target>
+</trans-unit>
+<trans-unit id="treeTableSortColumn">
+  <source>Ordenar por columna</source>
+  <target>Sort by column</target>
+</trans-unit>
+<trans-unit id="treeTableOptions">
+  <source>Opciones</source>
+  <target>Options</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

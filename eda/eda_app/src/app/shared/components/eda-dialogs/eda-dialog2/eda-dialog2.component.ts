@@ -57,6 +57,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges
     @ViewChild('dialogRef') dialogRef!: Dialog;
     @ViewChild('contentWrapper') contentWrapper!: ElementRef;
     @Input() overflow: string = 'hidden';
+    @Input() fillContent: boolean = false;
     @Input() draggable: string;
 
 

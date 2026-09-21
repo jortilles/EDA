@@ -22,6 +22,7 @@ export * from './eda-date-picker/eda-date-picker.component'
 // Inputs
 export * from './eda-field/eda-field.component';
 export * from './eda-input/eda-input.component';
+export * from './code-editor/code-editor.component';
 
 // Eda Nav && Side
 export { NavbarComponent } from './navbar/navbar.component';

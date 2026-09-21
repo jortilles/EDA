@@ -302,12 +302,13 @@ export const PanelOptions = {
               bandingColor: tableInject?.bandingColor,
               colorEnabled: tableInject?.colorEnabled,
             },
-            close: () => { panelComponent.sourceFieldsController = undefined; }
+            close: () => { panelComponent.sourceFieldsController = undefined; panelComponent.markDirty(); }
           });
         } catch (err) {
           panelComponent.alertService.addError(err);
         } finally {
           panelComponent.spinnerService.off();
+          panelComponent.markDirty();
         }
       }
     });
@@ -399,7 +400,7 @@ export const PanelOptions = {
         item: () => PanelOptions.toggleLock(ebp),
       },
       {
-        show: !isRoOrAnonimus && isEditable,
+        show: !isRoOrAnonimus && isEditable && ebp.selectedQueryMode !== 'SQL',
         item: () => PanelOptions.toggleClickFilter(ebp),
       },
       {
