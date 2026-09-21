@@ -228,11 +228,6 @@ export const PanelOptions = {
       command: () => {
         panelComponent.contextMenu.hideContextMenu();
 
-        let queryMode = panelComponent.panel.content.query.query.queryMode;
-        const modeSQL = panelComponent.panel.content.query.query.modeSQL;
-
-        if (!queryMode) queryMode = modeSQL ? 'SQL' : 'EDA';
-
         panelComponent.linkDashboardController = new EdaDialogController({
           params:{
             query : panelComponent.currentQuery,

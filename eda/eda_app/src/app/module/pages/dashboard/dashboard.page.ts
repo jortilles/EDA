@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, Q
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DateUtils } from '@eda/services/utils/date-utils.service';
-import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
+import { resolveQueryMode, isEdaQueryMode } from '@eda/shared/utils/query-mode.util';
 import { ALLOWED_QUERY_MODES } from '@eda/configs/customizable/customizable_default';
 import * as _ from 'lodash';
 import { ButtonModule } from 'primeng/button';
@@ -699,8 +699,7 @@ export class DashboardPage implements OnInit {
     const isImportedPanel: boolean = panel?.globalFilterMap;
 
     if (panel) {
-      modeEDA = !event?.data.panel.content?.query?.query.modeSQL &&
-        (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA');
+      modeEDA = isEdaQueryMode(panel.content?.query?.query?.queryMode, panel.content?.query?.query?.modeSQL);
     }
 
     // Cancel event if the column is navigable
@@ -742,6 +741,11 @@ export class DashboardPage implements OnInit {
 
   // DYNAMIC FILTER FUNCTIONS
   // DYNAMIC FILTER FUNCTIONS
+
+  // Dynamic filter UI (sidebar/panel toggles) only makes sense if there's at least one EDA panel.
+  public dynamicFiltersAvailable(): boolean {
+    return this.panels.some((p: any) => isEdaQueryMode(p.content?.query?.query?.queryMode, p.content?.query?.query?.modeSQL));
+  }
 
    // Handles the case when a filter already exists
   private async handleExistingFilter(existingFilter: any, data: any, table: any, column: any): Promise<void> {
@@ -1144,11 +1148,11 @@ export class DashboardPage implements OnInit {
 
   /** Selects the mode in which queries will be allowed. EDA and Tree type queries cannot be mixed in the same report. */
   private setPanelsQueryMode(): void {
-    const treeQueryMode = this.panels.some((p) => normalizeQueryMode(p.content?.query?.query?.queryMode) === 'TREE');
-    const standardQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA');
+    const treeQueryMode = this.panels.some((p) => resolveQueryMode(p.content?.query?.query?.queryMode, p.content?.query?.query?.modeSQL) === 'TREE');
+    const standardQueryMode = this.panels.some((p) => isEdaQueryMode(p.content?.query?.query?.queryMode, p.content?.query?.query?.modeSQL));
 
     for (const panel of this.edaPanels) {
-      const ownMode = normalizeQueryMode(panel.panel?.content?.query?.query?.queryMode);
+      const ownMode = resolveQueryMode(panel.panel?.content?.query?.query?.queryMode, panel.panel?.content?.query?.query?.modeSQL);
       let allowedModes = [...ALLOWED_QUERY_MODES];
 
       if (treeQueryMode) {

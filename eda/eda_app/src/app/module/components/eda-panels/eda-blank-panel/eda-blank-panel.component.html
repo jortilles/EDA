@@ -753,25 +753,27 @@
                                 'btn-panel-hover bg-white text-gray-600': !groupByEnabled
                               }"
                               class="px-3 py-1 text-base border rounded-md transition-all min-w-[3rem] text-center">
-                              {{ groupByEnabled ? 'Sí' : 'No' }}
+                              {{ groupByEnabled ? yesText : noText }}
                             </button>
                           </div>
 
                           <!-- Dynamic filters -->
-                          <div class="flex items-center justify-between rounded-lg px-3 py-2">
-                            <span i18n="@@dynamicFiltersText" class="text-base font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" tooltipPosition="top">Filtros dinámicos</span>
-                            <button
-                              type="button"
-                              (click)="dynamicFiltersInteraction()"
-                              [ngClass]="{
-                                'btn-panel-active': dynamicFilters,
-                                'btn-panel-hover bg-white text-gray-600': !dynamicFilters
-                              }"
-                              class="px-3 py-1 text-base border rounded-md transition-all min-w-[3rem] text-center">
-                              {{ dynamicFilters ? 'Sí' : 'No' }}
-                            </button>
-                          </div>
-                          
+                          @if (dynamicFiltersAvailable) {
+                            <div class="flex items-center justify-between rounded-lg px-3 py-2">
+                              <span i18n="@@dynamicFiltersText" class="text-base font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" tooltipPosition="top">Filtros dinámicos</span>
+                              <button
+                                type="button"
+                                (click)="dynamicFiltersInteraction()"
+                                [ngClass]="{
+                                  'btn-panel-active': dynamicFilters,
+                                  'btn-panel-hover bg-white text-gray-600': !dynamicFilters
+                                }"
+                                class="px-3 py-1 text-base border rounded-md transition-all min-w-[3rem] text-center">
+                                {{ dynamicFilters ? yesText : noText }}
+                              </button>
+                            </div>
+                          }
+
                         </div>
 
                         <!-- Instructions -->
@@ -872,27 +874,29 @@
                             </details>
 
                             <!-- Dynamic filters -->
-                            <details class="group" name="sqlIndicationOpenSection">
-                              <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
-                                <div class="flex items-center gap-2">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--corporate-primary)] shrink-0">
-                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                            @if (dynamicFiltersAvailable) {
+                              <details class="group" name="sqlIndicationOpenSection">
+                                <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
+                                  <div class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--corporate-primary)] shrink-0">
+                                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                    </svg>
+                                    <span class="text-base font-medium" i18n="@@dynamicFiltersText">Filtros dinámicos</span>
+                                  </div>
+                                  <svg class="h-4 w-4 text-gray-400 group-open:rotate-180 transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                   </svg>
-                                  <span class="text-base font-medium" i18n="@@dynamicFiltersText">Filtros dinámicos</span>
+                                </summary>
+                                <div class="px-4 pb-4 pt-2 text-base text-gray-600 bg-gray-50">
+                                  <p class="mb-2" i18n="@@dynamicFilters1">Al hacer clic en otros paneles del dashboard se crean <strong>filtros dinámicos</strong> que afectan al resto de paneles. Activar esta opción hace que este panel <strong>ignore</strong> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</p>
+                                  <p class="text-sm font-semibold text-gray-500 mb-1" i18n="@@indicaciones2">Limitaciones:</p>
+                                  <ul class="list-disc pl-4 text-sm space-y-0.5">
+                                    <li i18n="@@dynamicFilters3">Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</li>
+                                    <li i18n="@@dynamicFilters4">Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</li>
+                                  </ul>
                                 </div>
-                                <svg class="h-4 w-4 text-gray-400 group-open:rotate-180 transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                </svg>
-                              </summary>
-                              <div class="px-4 pb-4 pt-2 text-base text-gray-600 bg-gray-50">
-                                <p class="mb-2" i18n="@@dynamicFilters1">Al hacer clic en otros paneles del dashboard se crean <strong>filtros dinámicos</strong> que afectan al resto de paneles. Activar esta opción hace que este panel <strong>ignore</strong> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</p>
-                                <p class="text-sm font-semibold text-gray-500 mb-1" i18n="@@indicaciones2">Limitaciones:</p>
-                                <ul class="list-disc pl-4 text-sm space-y-0.5">
-                                  <li i18n="@@dynamicFilters3">Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</li>
-                                  <li i18n="@@dynamicFilters4">Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</li>
-                                </ul>
-                              </div>
-                            </details>
+                              </details>
+                            }
 
                           </div>
                         </div>
