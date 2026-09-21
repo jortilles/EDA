@@ -193,6 +193,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
           label: f?.selectedColumn?.display_name?.default || f?.column?.value?.description?.default,
           icon: "pi pi-check",
           command: () => this.handleSpecificFilter(f),
+          filter: f,
         }),
         ),
       },
@@ -1115,6 +1116,13 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.hidePopover();
     this.toggleGlobalFilter();
     this.dashboard.globalFilter.onShowGlobalFilter(false, filtro)
+  }
+
+  // Removes a global filter directly from the sidebar list, without opening its dialog
+  public removeFilterFromSidebar(filtro: any) {
+    this.dashboard.globalFilter.removeGlobalFilterOnClick(filtro, true);
+    this.hayFiltros = this.dashboard.globalFilter.globalFilters.length > 0;
+    this.initSidebar();
   }
 
   public renameDashboard() {
