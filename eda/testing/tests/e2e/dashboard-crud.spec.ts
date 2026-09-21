@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/base';
+import { test, expect } from '../fixtures/e2e-base';
 import { createSalesDuckDbDataSource } from '../../utils/duckdb-fixture';
 
 test.describe.configure({ mode: 'serial' });

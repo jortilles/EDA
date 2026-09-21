@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/base';
+import { test, expect } from '../fixtures/e2e-base';
 
 // Esta suite prueba el flujo de login en si mismo, asi que arranca SIN sesion
 // (a diferencia del resto de tests e2e, que reutilizan el storageState ya logueado).

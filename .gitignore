@@ -38,4 +38,5 @@ eda/testing/.auth
 eda/testing/test-results
 eda/testing/playwright-report
 eda/testing/blob-report
+eda/testing/coverage-report
 

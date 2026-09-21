@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/base';
+import { test, expect } from '../fixtures/e2e-base';
 
 test.describe('Asistente de creacion de datasource (/admin/data-source/new)', () => {
     test('el desplegable de motores incluye los conectores principales', async ({ page }) => {

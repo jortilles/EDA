@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/base';
+import { test, expect } from '../fixtures/e2e-base';
 
 test.describe('Perfil de usuario (/profile)', () => {
     test('el perfil carga precargado con los datos del usuario actual', async ({ page, adminSession }) => {

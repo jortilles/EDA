@@ -7,6 +7,7 @@
     "test": "playwright test",
     "test:api": "playwright test --project=api",
     "test:e2e": "playwright test --project=chromium-e2e",
+    "test:coverage": "cross-env COVERAGE=1 playwright test --project=chromium-e2e",
     "test:headed": "playwright test --project=chromium-e2e --headed",
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug",
@@ -17,6 +18,8 @@
   "devDependencies": {
     "@playwright/test": "^1.55.0",
     "@types/node": "^20.14.0",
-    "dotenv": "^16.4.5"
+    "cross-env": "^10.1.0",
+    "dotenv": "^16.4.5",
+    "monocart-coverage-reports": "^2.13.0"
   }
 }

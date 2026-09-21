@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/base';
+import { test, expect } from '../fixtures/e2e-base';
 import { clickUntilSwalConfirm } from '../fixtures/ui-helpers';
 
 test.describe('Administracion de grupos (/admin/groups)', () => {

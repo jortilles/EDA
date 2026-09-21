@@ -1,9 +1,11 @@
 import { test as teardown } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
+import MCR from 'monocart-coverage-reports';
 import { ENV } from '../../utils/env';
 import { ApiClient, Session } from '../../utils/api-client';
 import { readTrackedResources, clearTrackedResourcesLog, ResourceType } from '../../utils/resource-log';
+import { COLLECT_COVERAGE, coverageOptions, COVERAGE_OUTPUT_DIR } from '../../utils/coverage-options';
 
 const AUTH_DIR = path.resolve(__dirname, '..', '..', '.auth');
 
@@ -111,4 +113,23 @@ teardown('cleanup: borrar todos los datos creados por la suite', async ({ reques
     await sweep('usuarios', 'user', '/admin/user', (body) => body ?? [], (u) => u.email ?? '', (u) => u._id);
 
     console.log(`[teardown] Limpieza de datos de test (prefijo ${prefix}):\n${results.length ? results.join('\n') : '- nada que limpiar'}`);
+});
+
+/**
+ * Genera el reporte de cobertura una sola vez, despues de que TODOS los workers de
+ * chromium-e2e hayan terminado (esta suite corre como teardown del proyecto "setup",
+ * que a su vez es dependencia de "api" y "chromium-e2e": Playwright espera a que ambos
+ * terminen antes de correr este archivo). Solo cuando se lanzo con COVERAGE=1
+ * (`npm run test:coverage`); en un `npm test` normal no hace nada.
+ */
+teardown('cobertura: generar reporte final (si COVERAGE=1)', async () => {
+    if (!COLLECT_COVERAGE) return;
+    teardown.setTimeout(2 * 60_000);
+    const mcr = MCR(coverageOptions);
+    const results = await mcr.generate();
+    const pct = results?.summary?.bytes?.pct;
+    console.log(
+        `[teardown] Cobertura JS del frontend: ${pct ?? '?'}% de bytes ejecutados sobre el codigo cargado durante la suite. ` +
+        `Reporte HTML: ${results?.reportPath ?? path.join(COVERAGE_OUTPUT_DIR, 'index.html')}`
+    );
 });

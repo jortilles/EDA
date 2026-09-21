@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/base';
+import { test, expect } from '../fixtures/e2e-base';
 
 /**
  * El asistente IA llama a un LLM real con una API key real (ver assistant-and-mcp.spec.ts

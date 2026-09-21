@@ -20,14 +20,26 @@ npm test                   # corre TODO: API + navegador
   si no, también se arranca solo.
 - Al terminar, `npm run report` abre el informe HTML detallado.
 
-Comandos útiles:
+Los que más se usan en el día a día:
 
 ```bash
-npm run test:api      # solo los tests de API (sin navegador)
-npm run test:e2e      # solo los tests de navegador
-npm run test:headed   # navegador visible, útil para depurar
-npm run test:ui       # modo interactivo de Playwright
-npm run codegen       # grabar interacciones para nuevos tests
+npm test                 # TODO: API + navegador
+npm run test:e2e         # solo los tests de navegador
+npm run test:api         # solo los tests de API (sin navegador)
+npm run report           # sirve el ultimo informe HTML en http://localhost:9323 (tests, videos, trazas, capturas)
+npx playwright test tests/e2e/login.spec.ts   # un archivo concreto
+npx playwright test -g "login con credenciales"   # por nombre (regex)
+```
+
+Resto de comandos disponibles (`package.json`):
+
+```bash
+npm run test:coverage    # tests de navegador + cobertura JS real medida (ver "Cobertura")
+npm run test:headed      # navegador visible, util para depurar
+npm run test:ui          # modo interactivo de Playwright (elegir/relanzar/inspeccionar paso a paso)
+npm run test:debug       # modo debug con inspector paso a paso
+npm run install:browsers # instala/reinstala el Chromium que usa Playwright
+npm run codegen          # grabar interacciones contra localhost:4200 para generar tests nuevos
 ```
 
 ## Cómo está organizado
@@ -144,6 +156,17 @@ fallar y avise de que hay que actualizarlo:
    correspondientes lo compensan (`tests/fixtures/ui-helpers.ts:clickUntilSwalConfirm`),
    pero un usuario real podría experimentar el mismo click "que no hace nada".
 
+7. **[Menor, fiabilidad] "Tabla DataQuality" cierra el editor de consulta antes de
+   confirmar.** A diferencia de TODOS los demás tipos de gráfico, elegir "Tabla
+   DataQuality" en el desplegable cierra el editor de consulta al instante —
+   `eda-blank-panel.component.ts` (`changeChartTypeCheck`, ~L911-940) llama a
+   `this.closeEditarConsulta()` en la misma línea síncrona en la que se abre
+   `Swal.fire(...).then(...)`, sin esperar la respuesta del usuario. Efecto real: si el
+   usuario pulsa "Cancelar" en el Swal de confirmación, el editor se cierra igual,
+   perdiendo la consulta que estuviera configurando sin ningún motivo (para el resto de
+   tipos, cancelar no cierra nada). Test:
+   `tests/e2e/dashboard-charts.spec.ts` (`[hallazgo]`, al final del archivo).
+
 Ningún otro comportamiento inesperado detectado se ha "arreglado" en el código de la
 app — esta suite solo prueba y documenta; los cambios reales quedan a tu criterio.
 
@@ -170,15 +193,63 @@ lateral, hallazgo de `/logs`).
 la prueba más larga de toda la suite. Dentro de un mismo dashboard, usando el editor de
 paneles real (botón "Nuevo panel" -> elegir tabla y campos -> Ejecutar -> elegir tipo de
 gráfico -> Confirmar, exactamente como lo haría una persona), crea **un panel de cada uno
-de los 31 tipos de gráfico que ofrece la aplicación** (tablas, KPIs, circulares, barras,
-líneas, dispersión, embudo, radar, mapas de árbol, etc. — la lista completa vive en
-`services/utils/chart-utils.service.ts:chartTypes`), comprueba que ninguno da error,
-guarda el dashboard entero, recarga la página y confirma que los 31 paneles persisten.
+de 30 de los 31 tipos de gráfico que ofrece la aplicación** (tablas, KPIs, circulares,
+barras, líneas, dispersión, embudo, radar, mapas de árbol, etc. — la lista completa vive
+en `services/utils/chart-utils.service.ts:chartTypes`), comprueba que ninguno da error,
+guarda el dashboard entero, recarga la página y confirma que los 30 paneles persisten.
 Después también edita el tipo de gráfico de un panel ya existente (menú del panel ->
 "Cambiar tipo de gráfico") y borra otro panel, guardando y verificando cada cambio.
-Solo se excluyen los 2 tipos de **mapa** (Mapa de coordenadas / Mapa de Capas): necesitan
-datos geográficos que la datasource de pruebas no tiene y usan un diálogo de
-configuración totalmente distinto, fuera del alcance de esta suite.
+
+Cada tipo usa la combinación de campos que **de verdad** necesita, no una genérica de
+"1 categórico + 1 numérico" para todos — eso no reflejaría lo que cada tipo espera (p.ej.
+ParallelSets pide un numérico y 2+ categóricos para tener una jerarquía real; Histograma
+pide exactamente 1 columna numérica y nada más; KPI Tendencia pide una fecha con un
+formato de agrupación ya asignado). El mapeo exacto por tipo está en `CHART_TYPE_CASES`
+al principio de `dashboard-charts.spec.ts`, y se basa directamente en la validación real
+que usa la propia app (`getNotAllowedCharts()` en `chart-utils.service.ts:634-791`) para
+decidir qué tipos están disponibles según la consulta.
+
+Se excluyen del recorrido masivo:
+- Los 2 tipos de **mapa** (Mapa de coordenadas / Mapa de Capas): necesitan datos
+  geográficos que la datasource de pruebas no tiene y usan un diálogo de configuración
+  totalmente distinto, fuera del alcance de esta suite.
+- **Tabla DataQuality**: tiene un flujo distinto a todos los demás (ver hallazgo #7 más
+  abajo) y tiene su propio test dedicado, separado del recorrido masivo.
+
+### Cobertura de código real (medida), no solo "número de tests"
+
+El listado de arriba dice qué se prueba, pero no cuánto del código del frontend se
+llega a ejecutar de verdad. Para eso:
+
+```
+npm run test:coverage
+```
+
+Corre toda la suite `chromium-e2e` con la cobertura JS de Chromium activada
+(`page.coverage.startJSCoverage`/`stopJSCoverage`, vía CDP) y, al final, genera un
+reporte real con [`monocart-coverage-reports`](https://github.com/cenfun/monocart-coverage-reports):
+usa el sourcemap inline que `ng serve` (Vite) incluye en cada bundle para mapear la
+cobertura de vuelta al TypeScript/HTML fuente real (`src/app/...`), no al bundle
+minificado. Al terminar imprime una tabla en consola y dice dónde queda el reporte
+HTML navegable: `eda/testing/coverage-report/index.html` (no versionado, se
+regenera en cada `npm run test:coverage`).
+
+Verificado en un run real de la suite completa: **31.6% de bytes de JS de la app
+ejecutados**, sobre el código que llega a cargarse durante los tests. El reporte HTML
+permite entrar archivo por archivo y ver línea a línea qué se ejecutó y qué no.
+
+**Qué NO mide esto (para no venderlo como más de lo que es):**
+- **Solo frontend.** No hay cobertura de rutas/controladores del backend (`eda_api`);
+  para eso habría que instrumentar Node con `c8`/`nyc`, que es un mecanismo aparte.
+- **Solo lo que llega a cargarse en el navegador.** Un componente lazy-loaded que
+  ningún test navega a abrir ni siquiera aparece en el reporte (no cuenta como "0%
+  de un archivo", cuenta como archivo ausente) — el % de arriba es sobre el código
+  que SÍ se cargó, no sobre el 100% del repositorio. Coherente con las rutas/paneles
+  que la suite recorre (ver "Cobertura" más arriba): mucho se prueba end-to-end, pero
+  hay pantallas y ramas de código (validaciones de formularios no probadas, estados de
+  error de componentes concretos, etc.) que no se visitan nunca.
+- Solo Chromium tiene esta API de cobertura (`page.coverage`) — no es portable a
+  otros navegadores, pero esta suite ya corre solo en Chromium.
 
 ## Limitaciones conocidas (alcance acordado, no bugs)
 

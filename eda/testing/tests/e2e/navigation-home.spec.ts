@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/base';
+import { test, expect } from '../fixtures/e2e-base';
 
 test.describe('Home y navegacion principal', () => {
     test('home carga y muestra el boton de crear informe para un admin', async ({ page }) => {

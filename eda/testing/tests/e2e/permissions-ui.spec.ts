@@ -1,4 +1,4 @@
-import { test as base, expect } from '@playwright/test';
+import { test as base, expect } from '../fixtures/e2e-base';
 import * as path from 'path';
 
 const USER_STORAGE = path.resolve(__dirname, '..', '..', '.auth', 'user-storage.json');

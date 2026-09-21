@@ -21,7 +21,10 @@ export default defineConfig({
     use: {
         trace: 'retain-on-failure',
         screenshot: 'only-on-failure',
-        video: 'retain-on-failure',
+        // Se guarda el video de TODOS los tests, pasen o fallen (no solo los que fallan).
+        // No se acumula: test-results/ se limpia entera en cada "npm test", asi que en
+        // disco solo queda el video de la ultima ejecucion.
+        video: 'on',
         actionTimeout: 15_000,
     },
     projects: [

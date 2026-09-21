@@ -1,9 +1,11 @@
 import { test as setup, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
+import MCR from 'monocart-coverage-reports';
 import { ENV, EDA_ADMIN_GROUP_ID, testName } from '../../utils/env';
 import { login, Session } from '../../utils/api-client';
 import { clearTrackedResourcesLog } from '../../utils/resource-log';
+import { COLLECT_COVERAGE, coverageOptions } from '../../utils/coverage-options';
 
 const AUTH_DIR = path.resolve(__dirname, '..', '..', '.auth');
 
@@ -19,9 +21,15 @@ const AUTH_DIR = path.resolve(__dirname, '..', '..', '.auth');
  * 4. Se hace login real contra la UI (Angular) con el admin de test y se guarda el
  *    storageState del navegador, para que los tests de navegador arranquen ya autenticados.
  */
-setup('bootstrap: crear usuarios de test y sesiones', async ({ request, browser }) => {
+setup('bootstrap: crear usuarios de test y sesiones', async ({ request, browser }, testInfo) => {
     fs.mkdirSync(AUTH_DIR, { recursive: true });
     clearTrackedResourcesLog();
+
+    // Limpia la cache de cobertura de una ejecucion anterior ANTES de que ningun worker
+    // empiece a añadir datos (ver "Multiprocessing Support" de monocart-coverage-reports).
+    if (COLLECT_COVERAGE) {
+        MCR(coverageOptions).cleanCache();
+    }
 
     const bootstrap = await login(request, ENV.bootstrapAdminEmail, ENV.bootstrapAdminPassword);
     expect(bootstrap.token, 'No se pudo iniciar sesion con el admin de arranque (BOOTSTRAP_ADMIN_EMAIL/PASSWORD)').toBeTruthy();
@@ -59,7 +67,13 @@ setup('bootstrap: crear usuarios de test y sesiones', async ({ request, browser 
 
     // --- Login real por UI para capturar el storageState del navegador (admin y usuario limitado) ---
     async function uiLogin(email: string, password: string, storageFile: string) {
-        const context = await browser.newContext({ baseURL: ENV.appBaseURL });
+        // browser.newContext() manual (no el fixture "page") no hereda use.video de la
+        // config automaticamente, hay que pedirlo explicitamente para que tambien salga
+        // en el reporte HTML.
+        const context = await browser.newContext({
+            baseURL: ENV.appBaseURL,
+            recordVideo: { dir: testInfo.outputPath(`video-${storageFile}`) },
+        });
         const page = await context.newPage();
         await page.goto('/#/login');
         await page.locator('#email').fill(email);
@@ -74,6 +88,11 @@ setup('bootstrap: crear usuarios de test y sesiones', async ({ request, browser 
         await page.waitForFunction(() => localStorage.getItem('isAdmin') !== null, { timeout: 15_000 });
         await context.storageState({ path: path.join(AUTH_DIR, storageFile) });
         await context.close();
+        // El video solo se termina de escribir al cerrar el contexto.
+        const videoPath = await page.video()?.path();
+        if (videoPath) {
+            await testInfo.attach(`video-${storageFile}`, { path: videoPath, contentType: 'video/webm' });
+        }
     }
 
     await uiLogin(adminEmail, adminPassword, 'admin-storage.json');
