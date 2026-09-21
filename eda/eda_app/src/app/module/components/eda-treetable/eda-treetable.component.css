@@ -27,3 +27,10 @@
   border: 1px solid #c1c1c1;
   border-radius: 3px;
 }
+
+/* child count */
+.child-count {
+  margin-left: 4px;
+  color: #777;
+  font-size: 12px;
+}

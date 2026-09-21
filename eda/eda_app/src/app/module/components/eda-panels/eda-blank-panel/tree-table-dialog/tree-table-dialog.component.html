@@ -1,52 +1,82 @@
-<eda-dialog2 width="80vw" height="80vh" [header]="title" (apply)="saveChartConfig()" (close)="closeChartConfig()">
-  <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[70vh]">
+<eda-dialog2 [header]="title" width="90vw" height="90vh" [overflow]="'hidden'" (apply)="saveChartConfig()" (close)="closeChartConfig()">
+  <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[75vh]">
 
-    <div class="flex items-center justify-between w-full p-2 border-b w-[30rem]">
-      <label i18n="@@showField" class="font-medium text-gray-700">
-        Mostrar campo de origen
-      </label>
-
-      <label class="relative inline-flex items-center cursor-pointer">
-        <input type="checkbox" [(ngModel)]="showOriginField" class="sr-only peer">
-        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full
-             peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full
-             peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px]
-             after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all
-             peer-checked:bg-[var(--corporate-primary)]">
-        </div>
-      </label>
+    <!-- Tree Table Preview -->
+    <div class="flex-[3] overflow-auto bg-slate-50 border-r border-gray-200 p-4">
+      <panel-chart
+        #PanelChartComponent
+        [props]="previewProps"
+        class="block w-full h-full">
+      </panel-chart>
     </div>
 
-    @if(config.hierarchyLabels.length > 0){
-      <div class="card picklist-card justify-items-center"
-        [ngClass]="{'picklist-collapsed': !sourceProducts?.length && !targetProducts?.length}">
-        <p-pickList [source]="sourceProducts" [target]="targetProducts" sourceHeader="Etiquetas de jerarquía"
-          targetHeader="Etiquetas de hojas" [dragdrop]="true" [responsive]="true" [sourceStyle]="{ width: '30rem' }"
-          [targetStyle]="{ width: '30rem' }" breakpoint="1400px" [showSourceControls]="false" [showTargetControls]="false"
-          class="picklist-gris-elegante">
-          <ng-template let-product pTemplate="item">
-            <div
-              class="flex flex-wrap items-center p-3 gap-2 bg-gray-50 hover:bg-gray-100 rounded-md border border-gray-200 transition-all duration-200">
-              <div class="flex-1 flex flex-col">
-                <span class="font-medium text-gray-700">{{ product }}</span>
-              </div>
-            </div>
-          </ng-template>
-        </p-pickList>
+    <!-- Settings -->
+    <div class="flex-[1] min-w-[260px] overflow-y-auto p-6 space-y-5">
+
+      <!-- OPTIONS -->
+      <div class="space-y-3">
+        <span class="text-lg font-semibold" i18n="@@treeTableOptions">Opciones</span>
+
+        @for(toggle of toggles; track toggle.key){
+        <div class="flex items-center justify-between">
+          <label class="text-base font-medium text-gray-700">{{ toggle.label }}</label>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" [(ngModel)]="toggleState[toggle.key]" (ngModelChange)="applyPreview()" class="sr-only peer">
+            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle"></div>
+          </label>
+        </div>
+        }
       </div>
-    }
 
-  </div>
+      <div class="border-t border-gray-100"></div>
 
-  <div footer>
-    <div class="flex justify-end p-2 border-t gap-1.5">
-      <button class="cancel-button" (click)="closeChartConfig()">
-        <i class="fa fa-times"></i>
-        <span i18n="@@cancelarBtn">Cancelar</span>
-      </button>
-      <button class="confirm-button" (click)="saveChartConfig()">
-        <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-      </button>
+      <!-- SORTING -->
+      <div class="space-y-3">
+        <span class="text-lg font-semibold">{{ sortOrderLabel }}</span>
+        <div class="flex flex-col gap-2">
+          @for(opt of sortOptions; track opt.value){
+          <label
+            class="flex items-center gap-3 px-3 py-2.5 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors"
+            [style.border-color]="sortOrder === opt.value ? 'var(--corporate-primary)' : ''">
+            <input type="radio" name="treeSortOrder" [value]="opt.value" [(ngModel)]="sortOrder"
+              (ngModelChange)="applyPreview()" class="h-4 w-4 accent-corp">
+            <span class="text-base">{{ opt.label }}</span>
+          </label>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1" [class.opacity-50]="sortOrder === 'none'">
+          <label class="text-base font-medium text-gray-700">{{ sortColumnLabel }}</label>
+          <select [(ngModel)]="sortColumn" (ngModelChange)="applyPreview()" [disabled]="sortOrder === 'none'"
+            class="border border-gray-300 rounded-md px-2 py-1.5 w-full bg-white">
+            @for(col of sortColumns; track col.field){
+            <option [value]="col.field">{{ col.header }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      @if(config.hierarchyLabels.length > 0){
+        <div class="border-t border-gray-100"></div>
+
+        <!-- HIERARCHY / LEAF LABELS -->
+        <div class="card picklist-card"
+          [ngClass]="{'picklist-collapsed': !sourceProducts?.length && !targetProducts?.length}">
+          <p-pickList [source]="sourceProducts" [target]="targetProducts" sourceHeader="Etiquetas de jerarquía"
+            targetHeader="Etiquetas de hojas" [dragdrop]="true" [responsive]="true" breakpoint="9999px"
+            [showSourceControls]="false" [showTargetControls]="false" class="picklist-gris-elegante">
+            <ng-template let-product pTemplate="item">
+              <div
+                class="flex flex-wrap items-center p-3 gap-2 bg-gray-50 hover:bg-gray-100 rounded-md border border-gray-200 transition-all duration-200">
+                <div class="flex-1 flex flex-col">
+                  <span class="font-medium text-gray-700">{{ product }}</span>
+                </div>
+              </div>
+            </ng-template>
+          </p-pickList>
+        </div>
+      }
+
     </div>
   </div>
 </eda-dialog2>
