@@ -1,5 +1,6 @@
 import * as express from 'express';
 import { authGuard } from '../../guards/auth-guard';
+import { roleGuard } from '../../guards/role-guard';
 import { AiController } from './ai.controller';
 
 const router = express.Router();
@@ -122,7 +123,7 @@ router.post('/suggestions', authGuard, AiController.aiSuggestions);
  *     tags:
  *       - AI Assistant Routes
  */
-router.get('/config', authGuard, AiController.aIgetConfig);
+router.get('/config', authGuard, roleGuard, AiController.aIgetConfig);
 
 /**
  * @openapi

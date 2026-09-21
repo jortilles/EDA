@@ -1,0 +1,22 @@
+{
+  "name": "eda-testing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Suite de testing end-to-end (navegador) y de API para EDA/Edalitics, basada en Playwright.",
+  "scripts": {
+    "test": "playwright test",
+    "test:api": "playwright test --project=api",
+    "test:e2e": "playwright test --project=chromium-e2e",
+    "test:headed": "playwright test --project=chromium-e2e --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "report": "playwright show-report",
+    "install:browsers": "playwright install chromium",
+    "codegen": "playwright codegen http://localhost:4200"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^20.14.0",
+    "dotenv": "^16.4.5"
+  }
+}

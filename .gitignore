@@ -30,3 +30,12 @@ eda/eda_app/package-lock.json
 eda/eda_app/src/app/config/config.ts
 eda/eda_mcp/dist
 eda/eda_mcp/node_modules
+
+#Testing (Playwright)
+eda/testing/node_modules
+eda/testing/.env
+eda/testing/.auth
+eda/testing/test-results
+eda/testing/playwright-report
+eda/testing/blob-report
+
