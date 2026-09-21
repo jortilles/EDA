@@ -141,7 +141,7 @@
 </div>
 
 @if(display_v.page_dialog) {
-  <eda-dialog2 [display]="display_v.page_dialog" width="95vw" [ngStyle]="panelContent" [overflow]="'hidden'" height="100vh">
+  <eda-dialog2 [display]="display_v.page_dialog" width="95vw" [ngStyle]="panelContent" [overflow]="'hidden'" [fillContent]="true" height="100vh">
 
     <!-- Header -->
     <div header class="w-full flex items-center px-2 py-0 gap-x-4">
@@ -202,11 +202,11 @@
     </div>
   
     <!-- Main Content -->
-    <div content class="flex w-full flex-col rounded-lg bg-background ">
-      <div class="flex-1 relative ">
+    <div content class="flex w-full h-full flex-col rounded-lg bg-background ">
+      <div class="relative min-h-0 flex flex-col" [class.flex-1]="indextab == 0">
 
         <!-- Tabs -->
-        <div class="flex mb-4 md:mb-1 space-x-4 pl-3">
+        <div class="flex mb-4 md:mb-1 space-x-4 pl-3 shrink-0">
           <h3 
             (click)="indextab = 0" 
             i18n="@@vistaSeleccionador"
@@ -232,10 +232,10 @@
           @if (selectedQueryMode !== 'SQL') {
             <!-- Edit Query View -->
             <!-- Left Sidebar -->
-            <div class="flex w-full border-r h-[68vh] overflow-y-hidden">
+            <div class="flex w-full border-r flex-1 min-h-0 overflow-y-hidden">
 
               <!-- Entities Section -->
-              <div class="w-1/6 border-r ">
+              <div class="w-1/6 border-r flex flex-col min-h-0">
 
                 <div class="border-b p-3 pt-0">
                   <h3 i18n="@@entidadesH4" class="text-lg mb-2 font-bold" i18n-title="@@entidadesTitle" title="Clique sobre un entidad para ver sus atributos.">
@@ -253,7 +253,7 @@
                   </div>
                 </div>
 
-                <div class="overflow-y-auto h-[58vh] text-base">
+                <div class="overflow-y-auto flex-1 min-h-0 text-base">
 
                     <ng-template #entityList>
                       <div class="space-y-1 p-2">
@@ -314,7 +314,7 @@
 
               <!-- ATTRIBUTES -->
               <!-- Attributes Section -->
-              <div class="w-1/6 border-r">
+              <div class="w-1/6 border-r flex flex-col min-h-0">
 
                 @if(userSelectedTable){
                   <div class="border-b p-3 pt-0">
@@ -352,7 +352,7 @@
                   </div>
                 }
 
-                <div class="flex w-full overflow-y-auto h-[58vh] text-base">
+                <div class="flex w-full overflow-y-auto flex-1 min-h-0 text-base">
                   <div class="w-full">
                     <div class="space-y-1 p-2" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
                       [cdkDropListConnectedTo]="[selectList, filterList, 'result-sorting-list']" (cdkDropListDropped)="drop($event)"
@@ -913,7 +913,7 @@
             </div>
           } @else {
             <!-- Edit SQL Query View -->
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-0 md:h-[68vh]">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-0 flex-1 min-h-0">
               <div class="md:col-span-3 p-4 border-r border-gray-200 min-h-0">
                 <div class="flex flex-col gap-4 h-full">
                   <h3 class="font-semibold text-gray-700" i18n="@@sqlExpColumn">Expresión SQL</h3>
