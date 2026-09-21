@@ -12,10 +12,11 @@ Scheduler
  */
 
 
+const applyConfigOverwrite = require('./apply-config-overwrite');
 const MS_PER_MINUTE = 60000;
 const MINUTES = 7 * 24 * 60;
 
-module.exports = {
+module.exports = applyConfigOverwrite('cache_config', {
 
   UPDATING_SCHEDULE: '1 * * * *',               /* Schedule to check updates for cached queries */
   CLEANNING_SCHEDULE: '1 5 * * *',              /* Schedule to check removes for cached queries */
@@ -36,4 +37,4 @@ module.exports = {
   },
   MAX_STORED_ROWS : 5000
 
-}
+});

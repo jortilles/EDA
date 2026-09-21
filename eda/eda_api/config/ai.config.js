@@ -1,4 +1,6 @@
-module.exports = { 
+const applyConfigOverwrite = require('./apply-config-overwrite');
+
+module.exports = applyConfigOverwrite('ai_config', {
     PROVIDER: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
     API_KEY: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
     AWS_ACCESS_KEY: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
@@ -16,4 +18,4 @@ module.exports = {
     //Usuario auxiliar de mcp
     MCP_EMAIL:'XXXXX@XXXXX.com',
     MCP_PASSWORD: 'XXXXXXXX',
-};
+});

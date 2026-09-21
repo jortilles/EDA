@@ -54,7 +54,8 @@ export class MySqlBuilderService extends QueryBuilderService {
           joinTree,
           joinType,
           schema,
-          valueListJoins
+          valueListJoins,
+          dest.length
         );
         joinString = responseJoins.joinString;
         alias = responseJoins.aliasTables;
@@ -65,7 +66,8 @@ export class MySqlBuilderService extends QueryBuilderService {
           tables,
           joinType,
           valueListJoins,
-          schema
+          schema,
+          dest.length
         );
       }
       
@@ -235,15 +237,15 @@ export class MySqlBuilderService extends QueryBuilderService {
     // JOINS
     let joinString: any[];
     let alias: any;
-    // joined == EDA2
+    // joined == TREE
     if (this.queryTODO.joined) {
       /**tree */
-      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins, dest.length);
       joinString = responseJoins.joinString;
       alias = responseJoins.aliasTables;
     } else {
       /*EDA Normal*/
-      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
+      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema, dest.length);
     }
 
     joinString.forEach(x => {
@@ -397,22 +399,30 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   public getFilters(filters, destLongitud, pTable): any {
 
-    /** If We Have permissions And No Destination I Add To Filters */
+    /** If We Have permissions And No Destination I Apply Them As A Separate Grouped Condition
+     * (OR'd within the same table, AND'd across tables) instead of mixing them into `filters`,
+     * where each entry gets ANDed individually and would wrongly exclude rows that satisfy one
+     * security rule (e.g. security group) but not another (e.g. assigned user). */
+    const applicablePermissions = (this.permissions.length > 0 && destLongitud == 0)
+      ? this.permissions
+      : this.permissions.filter(permission => permission.filter_table === pTable);
 
-    if ( this.permissions.length > 0 && destLongitud == 0) this.permissions.forEach( permission => { filters.push(permission); });
-    else { this.permissions.forEach( permission => { if( permission.filter_table === pTable ) filters.push(permission);})}
-
-    if (filters.length) {
+    if (filters.length || applicablePermissions.length) {
 
       let equalfilters = this.getEqualFilters(filters);
       filters = filters.filter(f => !equalfilters.toRemove.includes(f.filter_id));
       let filtersString = `\nwhere 1 = 1 `;
+
+      if (applicablePermissions.length) {
+        filtersString += `\nand ${this.buildPermissionsSqlExpresion(applicablePermissions)} `;
+      }
 
       filters.forEach(f => {
         const column = this.findColumn(f.filter_table, f.filter_column);
         column.autorelation = f.autorelation;
         column.joins = f.joins;
         column.valueListSource = f.valueListSource;
+        column.filter_codes = f.filter_codes;
         const colname = this.getFilterColname(column);
         if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
@@ -441,32 +451,36 @@ export class MySqlBuilderService extends QueryBuilderService {
   public getSqlPermissionsExpresion(permissions: any) {
     let sql = '';
     if(!permissions.some((p: any) => p.toBeUsed)) return sql;
-    
+
     permissions = permissions.filter(p => p.toBeUsed);
 
-    const generarExpresionSQL = (permissions) => {
-      const grupos = {};
+    return this.buildPermissionsSqlExpresion(permissions);
+  }
 
-      for (const filtro of permissions) {
-        const tabla = filtro.filter_table;
-        const columna = filtro.filter_column;
-        const valor = filtro.filter_elements[0].value1[0];
+  /**
+   * Groups permission filters by table (OR within the same table, AND across tables) and
+   * turns each one into SQL via filterToString, so multi-value / dynamic permission rules
+   * (security groups, assigned user, etc.) are rendered consistently wherever permissions
+   * are combined into a WHERE clause.
+   */
+  public buildPermissionsSqlExpresion(permissions: any) {
+    const grupos = {};
 
-        if (!grupos[tabla]) {
-          grupos[tabla] = [];
-        }
+    for (const filtro of permissions) {
+      const tabla = filtro.filter_table;
 
-        grupos[tabla].push(`\`${tabla}\`.\`${columna}\` in (${valor})`);
+      if (!grupos[tabla]) {
+        grupos[tabla] = [];
       }
 
-      const gruposOR = Object.values(grupos).map((columnas: any) => {
-        return `( ${columnas.join(' OR ')} )`;
-      });
-
-      return gruposOR.join(' AND ');
+      grupos[tabla].push(this.filterToString(filtro));
     }
 
-    return generarExpresionSQL(permissions);
+    const gruposOR = Object.values(grupos).map((condiciones: any) => {
+      return `( ${condiciones.join(' OR ')} )`;
+    });
+
+    return gruposOR.join(' AND ');
   }
 
   public getSortedFilters(sortedFilters: any[], filters: any[]): any {
@@ -487,7 +501,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     sortedFilters.sort((a: any, b: any) => a.y - b.y); 
 
     // Calculating global filters and they are empty.
-    const nullSortedFilters  =  sortedFilters.filter((f: any) => ((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+    const nullSortedFilters  =  sortedFilters.filter((f: any) => ((f.isGlobal===true) && (f.filter_elements?.length > 0 && f.filter_elements[0]?.value1?.length === 0)));
 
     // If we have empty values in the filters we define a new sortedFilters
     if(nullSortedFilters.length !==0){
@@ -507,7 +521,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       }  )
   
       // Order in the y axis
-      const newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+      const newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal===true) && (f.filter_elements?.length > 0 && f.filter_elements[0]?.value1?.length === 0)));
       newSortedFilters.forEach( (f,i) => f.y=i );
 
       sortedFilters = _.cloneDeep(newSortedFilters);
@@ -515,7 +529,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     // If we have a global filter with only one empty value selected
     filters.forEach(filter => {
-      if(filter.isGlobal && (filter.filter_type === 'null_or_empty') && (filter.filter_elements[0].value1[0]==='emptyString')) {
+      if(filter.isGlobal && (filter.filter_type === 'null_or_empty') && (filter.filter_elements?.length > 0 && filter.filter_elements[0]?.value1?.[0]==='emptyString')) {
         const selectedFilter = sortedFilters.find(sf => sf.filter_id === filter.filter_id);
 
         if(selectedFilter) {
@@ -557,17 +571,30 @@ export class MySqlBuilderService extends QueryBuilderService {
     let stringQuery = '\nwhere ';
 
     // Adding needed permissions if we have some item in the array of permissions with toBeUsed in true
-    if(sqlPermissionsExpresion !== '') stringQuery += `\n${sqlPermissionsExpresion}\nAND\n`; 
+    if(sqlPermissionsExpresion !== '') stringQuery += `\n${sqlPermissionsExpresion}\nAND\n`;
+
+    // false (EDA) -> value-list filters use the description column | true (SinergiaDA) -> use the internal code column
+    const useCodeForFilters = this.useValueListCodeForFilters();
 
     // Recursive function for the necessary nesting according to the AND/OR filter graph.
     function cadenaRecursiva(item: any) {
       // recursive item
       const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_codes, value, valueListSource, sqlOptional, computed_column, SQLexpression } = item;
 
-      ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
+      // filter_table can be a synthetic joined-path id (e.g. "target_table.target_column.source_column",
+      // built in the frontend's global-filters.service.ts onNodeExpand) instead of a real table name —
+      // strip it down the same way the rest of this file does (col.table_id.split('.')[0]).
+      const filterTableName = filter_table?.split('.')[0];
+
+      // false (EDA) -> compare against the raw selected values | true (SinergiaDA) -> compare against the internal codes
+      const codesOrElements = useCodeForFilters ? filter_codes : filter_elements;
+
+      ////////////////////////////////////////////////// filter_type //////////////////////////////////////////////////
       let filter_type_value = '';
       if(filter_type === 'not_in'){
         filter_type_value = 'not in';
+      } else if(filter_type === 'not_between'){
+        filter_type_value = 'not between';
       } else {
         if(filter_type === 'not_like') {
           filter_type_value = 'not like';
@@ -600,34 +627,34 @@ export class MySqlBuilderService extends QueryBuilderService {
           //Value of type text
           if(filter_column_type === 'text'){
             if(filter_type === 'in' || filter_type === 'not_in'){
-              filter_elements_value = filter_elements_value + `(\'${filter_codes[0].value1[0]}\')`;
+              filter_elements_value = filter_elements_value + `(\'${codesOrElements[0].value1[0]}\')`;
             } else {
-              filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_codes[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
+              filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${codesOrElements[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
             }
           } 
 
           // Numeric type value
           if(filter_column_type === 'numeric'){
-            if(filter_type === 'between') {
-              filter_elements_value = filter_elements_value + ` ${Number(filter_codes[0].value1[0])} and ${Number(filter_codes[1].value2[0])}`;
+            if(filter_type === 'between' || filter_type === 'not_between') {
+              filter_elements_value = filter_elements_value + ` ${Number(codesOrElements[0].value1[0])} and ${Number(codesOrElements[1].value2[0])}`;
             } else {
               if(filter_type === 'in' || filter_type === 'not_in') {
-                filter_elements_value = filter_elements_value + `(${filter_codes[0].value1[0]})`;
+                filter_elements_value = filter_elements_value + `(${codesOrElements[0].value1[0]})`;
               } else {
-                filter_elements_value = filter_elements_value + `${filter_codes[0].value1[0]}`;
+                filter_elements_value = filter_elements_value + `${codesOrElements[0].value1[0]}`;
               }
             }
           } 
 
           // Date type value
           if(filter_column_type === 'date'){
-            if(filter_type === 'between'){
-              filter_elements_value = filter_elements_value + ` STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_codes[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
+            if(filter_type === 'between' || filter_type === 'not_between'){
+              filter_elements_value = filter_elements_value + ` STR_TO_DATE(\'${codesOrElements[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${codesOrElements[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
             } else {
               if(filter_type==='in' || filter_type==='not_in') {
-                filter_elements_value = filter_elements_value + `(STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\'))`;
+                filter_elements_value = filter_elements_value + `(STR_TO_DATE(\'${codesOrElements[0].value1[0]}\',\'%Y-%m-%d\'))`;
               } else {
-                filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\')`;
+                filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${codesOrElements[0].value1[0]}\',\'%Y-%m-%d\')`;
               }
             }
           }
@@ -640,29 +667,29 @@ export class MySqlBuilderService extends QueryBuilderService {
           // Text type values
 
           if(filter_column_type === 'text'){
-            filter_codes[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `'${element}'` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
+            codesOrElements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(codesOrElements[0].value1.length-1)? ')': ','}`;
             })
           }
 
           // Numeric type values
           if(filter_column_type === 'numeric'){
-            filter_codes[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `${element}` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
+            codesOrElements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `${element}` + `${index===(codesOrElements[0].value1.length-1)? ')': ','}`;
             })
           }
 
           // Date type values
           if(filter_column_type === 'date'){
-            filter_codes[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `STR_TO_DATE(\'${element}\',\'%Y-%m-%d\')` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
+            codesOrElements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `STR_TO_DATE(\'${element}\',\'%Y-%m-%d\')` + `${index===(codesOrElements[0].value1.length-1)? ')': ','}`;
             })
           }
 
           // Values ​​that do not have a filter_column_type defined
           if(filter_column_type === undefined){
-            filter_codes[0].value1.forEach((element: any, index: number) => {
-              filter_elements_value += `'${element}'` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
+            codesOrElements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(codesOrElements[0].value1.length-1)? ')': ','}`;
             })
           }
         }
@@ -672,14 +699,18 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       // variable to find filters with valueListSource
       let validador = (valueListSource !== undefined && valueListSource !== null);
-      // Result of the whole string 
+      // SDA CUSTOM - Keep value-list filters on the internal code column when we have codes to compare against (nested AND/OR conditions)
+      const valueListFilterColumn = validador
+        ? ((useCodeForFilters && filter_codes?.length !== undefined && valueListSource.target_id_column) ? valueListSource.target_id_column : valueListSource.target_description_column)
+        : filter_column;
+      // Result of the whole string
 
       let resultado = '';
 
       if(computed_column==='computed') {
         resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} (${SQLexpression}) ${filter_type_value}${filter_elements_value}`;
       } else {
-        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
+        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filterTableName}\`.\`${valueListFilterColumn}\` ${filter_type_value}${filter_elements_value}`;
       }
 
 
@@ -688,7 +719,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         if(computed_column==='computed') {
           resultado = `${resultado} (${SQLexpression}) != '')`;
         } else {
-          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != '')`;
+          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filterTableName}\`.\`${valueListFilterColumn}\` != '')`;
         }
       }
 
@@ -697,7 +728,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         if(computed_column==='computed') {
           resultado = `${resultado} (${SQLexpression}) = '')`;
         } else {
-          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = '')`;
+          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filterTableName}\`.\`${valueListFilterColumn}\` = '')`;
         }
       }
 
@@ -756,7 +787,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     return stringQuery;
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>, schema:string): any {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>, schema:string, destLongitud?: any): any {
 
     let joins = [];
     let joined = [];
@@ -783,44 +814,56 @@ export class MySqlBuilderService extends QueryBuilderService {
           let t = tables.filter(table => table.name === e[j]).map(table => { return table.query ? table.query : `\`${table.name}\`` })[0];
 
           if( valueListJoins.includes(e[j])   ){
-            myJoin = 'left'; // Si es una tabla que ve del multivaluelist aleshores els joins son left per que la consulta tingui sentit.
+            myJoin = 'left'; // If it is a table that sees the multivaluelist, the joins are left so the query is not sent.
           }else{
-            myJoin = joinType; 
+            myJoin = joinType;
           }
+
+          // Security: If the joined table has permissions, they are added as an extra condition for ON.
+          // (Just like getFilters() applies them when the table is the source: each rule with AND)
+          let agregadoPermisos: any = '';
+          if (destLongitud > 0) {
+            this.permissions.forEach((p: any) => {
+              if (p.filter_table == e[j]) {
+                agregadoPermisos += ` and (${this.filterToString(p)})`;
+              }
+            });
+          }
+
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
-              // pero también puede ser que sea una columna calculada
+              // but it could also be a calculated column
               if(joinColumns[2] && joinColumns[2] === 'source' ){
-                //si la columna calculada es el source
-                joinString.push(` ${myJoin} join ${t} on ${joinColumns[1]}  = \`${e[i]}\`.\`${joinColumns[0]}\``);
+                //if the calculated column is the source
+                joinString.push(` ${myJoin} join ${t} on ${joinColumns[1]}  = \`${e[i]}\`.\`${joinColumns[0]}\` ${agregadoPermisos}`);
               }else  if(joinColumns[2] && joinColumns[2] === 'target' ){
-                // Si la columna calculada es el target
-                joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` =  ${joinColumns[0]}`);
-              }else{       
-                // Si no es una columna calculada  
-                joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
-              } 
+                // If the calculated column is the target
+                joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` =  ${joinColumns[0]} ${agregadoPermisos}`);
+              }else{
+                // If it is not a calculated column
+                joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\` ${agregadoPermisos}`);
+              }
           } else {
 
             let join = ` ${myJoin} join ${t} on`;
 
             joinColumns[0].forEach((_, x) => {
-              //  pero también puede ser que sea una columna calculada
+              //  but it could also be a calculated column
               if(joinColumns[2] && joinColumns[2] === 'source' ){
-                // Si la columna calculada es el source
+                // If the calculated column is the source
                 join += `  ${joinColumns[1][x]}  = \`${e[i]}\`.\`${joinColumns[0][x]}\` and`;
               }else  if(joinColumns[2] && joinColumns[2] === 'target' ){
-                // Si la columna calculada es el source
+                // If the calculated column is the source
                 join += ` \`${e[j]}\`.\`${joinColumns[1][x]}\` =  ${joinColumns[0][x]}  and`;
-              }else{   
-                 // Si no es una columna calculada         
+              }else{
+                 // If it is not a calculated column
                 join += ` \`${e[j]}\`.\`${joinColumns[1][x]}\` = \`${e[i]}\`.\`${joinColumns[0][x]}\` and`;
               }
 
             });
 
             join = join.slice(0, join.length - 'and'.length);
-            joinString.push(join);
+            joinString.push(join + agregadoPermisos);
 
           }
 
@@ -836,13 +879,19 @@ export class MySqlBuilderService extends QueryBuilderService {
 
 
   
-  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
+  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[], destLongitud?: any) {
     // Inicialización de variables
     const joinExists = new Set();
     const aliasTables = {};
     const joinString = [];
     const targetTableJoin = [];
 
+    // If there are no joins, all permissions must be applied by another method (getSqlPermissionsExpression in getSortedFilters)
+    if (joinTree.length == 0) {
+      this.permissions.forEach((p: any) => {
+        p.toBeUsed = true;
+      });
+    }
 
     for (const join of joinTree) {
 
@@ -899,6 +948,19 @@ export class MySqlBuilderService extends QueryBuilderService {
             // Si la join no se ha incluido ya, se añade al array
             if (!joinString.includes(joinStr)) {
                 targetTableJoin.push(aliasTargetTable || targetTable);
+
+                if (destLongitud > 0) {
+                  // The permissions of the destination table of this join are added to the ON (with AND, just like getFilters());
+                  // The rest are marked toBeUsed so that they are applied by another method (getSqlPermissionsExpression)
+                  this.permissions.forEach((p: any) => {
+                    if (p.filter_table == targetTable) {
+                      joinStr += ` and (${this.filterToString(p)})`;
+                    } else {
+                      p.toBeUsed = true;
+                    }
+                  });
+                }
+
                 joinString.push(joinStr);
             }
         }
@@ -1048,31 +1110,35 @@ export class MySqlBuilderService extends QueryBuilderService {
       column.autorelation = filterObject.autorelation;
       column.joins = filterObject.joins || [];
       column.valueListSource = filterObject.valueListSource;
+      column.filter_codes = filterObject.filter_codes;
       const colname=this.getFilterColname(column);
       const valueListSource = filterObject.valueListSource;
-      
+      // false (EDA) -> compare against the raw selected values | true (SinergiaDA) -> compare against the internal codes
+      const filterValues = this.useValueListCodeForFilters() ? filterObject.filter_codes : filterObject.filter_elements;
+
       switch (this.setFilterType(filterObject.filter_type)) {
         case 0:
           if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
           if (filterObject.filter_type === 'like') {
-            return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+            return `${colname}  ${filterObject.filter_type} '%${filterValues[0].value1}%' `;
           }
-          if (filterObject.filter_type === 'not_like') { 
+          if (filterObject.filter_type === 'not_like') {
             filterObject.filter_type = 'not like'
-            return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
-          }   
-          return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
+            return `${colname}  ${filterObject.filter_type} '%${filterValues[0].value1}%' `;
+          }
+          return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterValues[0].value1, colType)} `;
           // in values
         case 1:
           if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
           if(valueListSource !== undefined && this.queryTODO.queryMode === 'SQL') {
             return `${colname}  ${filterObject.filter_type} (${this.processFilterValueList(filterObject)}) `;
           } else {
-            return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
+            return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterValues[0].value1, colType)}) `;
           }
         case 2:
-          return `${colname}  ${filterObject.filter_type} 
-                      ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
+          if (filterObject.filter_type === 'not_between') { filterObject.filter_type = 'not between' }
+          return `${colname}  ${filterObject.filter_type}
+                      ${this.processFilter(filterValues[0].value1, colType)} and ${this.processFilterEndRange(filterValues[1].value2, colType)}`;
         case 3:
           if(valueListSource !== undefined && this.queryTODO.queryMode === 'SQL') {
             return `${colname}  ${filterObject.filter_type} (${this.processFilterValueList(filterObject)}) `;
@@ -1111,10 +1177,13 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       if (column.autorelation && !column.valueListSource) {
         colname = `\`${column.joins[column.joins.length-1][0]}\`.\`${column.column_name}\``;
+      } else if (this.useValueListCodeForFilters() && column.valueListSource?.target_id_column && column.filter_codes?.length !== undefined) {
+        // SDA CUSTOM - Keep value-list filters on the internal code column when we have codes to compare against
+        colname = `\`${column.valueListSource.target_table}\`.\`${column.valueListSource.target_id_column}\``;
       } else {
         colname = `\`${column.table_id}\`.\`${column.column_name}\`` ;
       }
-      
+
     }else{
       if(column.column_type == 'numeric'){
         if(column.aggregation_type === 'count_distinct') {
@@ -1243,7 +1312,8 @@ public getHavingColname(column: any){
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
-        return `${colname}  ${filterObject.filter_type} 
+        if (filterObject.filter_type === 'not_between') { filterObject.filter_type = 'not between' }
+        return `${colname}  ${filterObject.filter_type}
                     ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
         return `${colname} is not null`;

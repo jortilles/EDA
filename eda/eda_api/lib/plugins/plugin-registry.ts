@@ -1,5 +1,5 @@
 import { AbstractConnection } from '../services/connection/abstract-connection';
-import { IDatasourcePlugin, IEDAPlugin, IFeaturePlugin, isDatasourcePlugin } from './plugin.interface';
+import { IAuthPlugin, IDatasourcePlugin, IEDAPlugin, IFeaturePlugin, isAuthPlugin, isDatasourcePlugin } from './plugin.interface';
 
 export class PluginRegistry {
     private static plugins = new Map<string, IEDAPlugin>();
@@ -22,7 +22,11 @@ export class PluginRegistry {
     }
 
     static getFeaturePlugins(): IFeaturePlugin[] {
-        return this.getAll().filter((p): p is IFeaturePlugin => !isDatasourcePlugin(p));
+        return this.getAll().filter((p): p is IFeaturePlugin => p.kind === 'feature');
+    }
+
+    static getAuthPlugins(): IAuthPlugin[] {
+        return this.getAll().filter((p): p is IAuthPlugin => isAuthPlugin(p));
     }
 
     static getDatasource(type: string): IDatasourcePlugin | undefined {

@@ -1,14 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import { HttpException } from "../global/model";
 import ManagerConnectionService from "../../services/connection/manager-connection.service";
-import { DashboardController } from "../dashboard/dashboard.controller";
+import { DashboardController, buildPanelQueryErrorType } from "../dashboard/dashboard.controller";
 import formatDate from '../../services/date-format/date-format.service'
+import { QueryModeUtil } from '../../utils/query-mode.util';
+import { insertServerLog } from '../../services/server-log/server-log.service';
 
 
 /** Esta clase sirve para analizar los datos de una consulta si hay duplicados, etc. */
 export class QueryController {
 
     static async execAnalizedQuery(req: Request, res: Response, next: NextFunction) {
+        let builtQuery = '';
         try {
             const connection = await ManagerConnectionService.getConnection(req.body.model_id, req.body.dashboard?.connectionProperties);
             const dataSource = await connection.getDataSource(req.body.model_id, req.qs.properties);
@@ -67,7 +70,7 @@ export class QueryController {
                 }
             }
 
-            myQuery.queryMode = req.body.query.queryMode ? req.body.query.queryMode : 'EDA'; /** lo añado siempre */
+            myQuery.queryMode = QueryModeUtil.normalize(req.body.query.queryMode ? req.body.query.queryMode : 'EDA'); /** lo añado siempre */
             myQuery.rootTable = req.body.query.rootTable ? req.body.query.rootTable : ''; /** lo añado siempre */
             myQuery.simple = req.body.query.simple;
             myQuery.queryLimit = req.body.query.queryLimit;
@@ -112,10 +115,11 @@ export class QueryController {
             for (const column in querys) {
                 results[column] = {};
                 for (const query of querys[column]) {
+                    builtQuery = query;
                     console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${logDate}  for Dashboard:${dashboardId} and Panel:${panelId}`)
                     console.log(query)
                     console.log('\n-------------------------------------------------------------------------------\n');
-                    
+
                     connection.client = await connection.getclient();
                     const getResults = (await connection.execQuery(query))[0];
                     console.log('\n-------------------------------------------------------------------------------\n');
@@ -132,8 +136,10 @@ export class QueryController {
 
             return res.status(200).json(results)
         } catch (err) {
+            insertServerLog(req, 'error', 'PanelQueryFailed', req.user?.name, await buildPanelQueryErrorType(req.body?.dashboard, err, 'EDA', builtQuery));
             throw err;
         }
     }
 
 }
+

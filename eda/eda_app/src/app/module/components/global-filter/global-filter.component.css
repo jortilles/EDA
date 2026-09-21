@@ -21,19 +21,27 @@
 }
 
 /* Date picker - wrapper and input both constrained to same height as multiselect */
-::ng-deep eda-date-picker {
+::ng-deep date-picker {
   display: block;
   height: 32px;
 }
 
-::ng-deep eda-date-picker input {
+::ng-deep date-picker input {
   height: 32px;
   width: 100%;
   padding: 0.25rem 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid #d1d5db;
   box-sizing: border-box;
-  font-size: 0.9rem;
+  font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+::ng-deep date-picker input::placeholder {
+  color: #000000;
+  opacity: 1;
 }
 
 /*****************/
@@ -68,10 +76,19 @@
   color: var(--corporate-primary);
 }
 .filter-tooltip-text{
-    padding: 2px 6px; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
+    padding: 2px 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
+}
+/* Date filter summary joins every "in"/"not_in" value into one string — let it wrap
+   instead of inheriting the nowrap/ellipsis clipping meant for single-value rows. */
+.filter-tooltip-value{
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-break: break-word;
+    text-align: right;
 }
 .filter-tooltip-container{
     display: grid; 
@@ -85,6 +102,12 @@
   transition: background-color 0.2s ease;
   background-color: rgba(var(--corporate-primary-rgb), 0.08);
 }
+
+/* Purely informational row (e.g. date filter summary) — no per-item action to reveal on hover,
+   so it carries the highlighted background from the start instead of only on :hover. */
+.filter-tooltip-container--static{
+  background-color: rgba(var(--corporate-primary-rgb), 0.08);
+}
 /* individual filter - uniform width */
 .filter-card {
   flex: 0 0 auto;
@@ -92,6 +115,51 @@
   width: 10.7vw;
   max-width: 165px;
   box-sizing: border-box;
+  position: relative;
+}
+
+/* Highlighted while the panel-highlight-on-hover effect is active */
+.filter-card.filter-hover-active {
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.02);
+  transition: box-shadow 0.8s ease, background-color 0.8s ease;
+}
+
+/* Tooltip that appears above the filter when highlighting is active */
+.filter-hover-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 6px;
+  font-size: 11px;
+  background-color: #fff;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 4px;
+  line-height: 1.5;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e0e0e0;
+  opacity: 1;
+  animation: filterTooltipFadeIn 0.8s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+::ng-deep .tooltip-green {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+::ng-deep .tooltip-red {
+  color: #bd1913;
+  font-weight: 600;
+}
+
+@keyframes filterTooltipFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* filter without autocomplete (multiselect) - fills the card */

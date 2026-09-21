@@ -1,0 +1,125 @@
+<div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="p-6 border-b border-gray-100 dark:border-gray-700">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center flex-wrap gap-4">
+                <div>
+                    <h2 class="text-xl font-semibold" i18n="@@LogsViewer">Visor de logs</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm" i18n="@@LogsAuditSubtitle">Registro de auditoría de la aplicación</p>
+                </div>
+                <app-log-period-filter (rangeChange)="onDateRangeChange($event)"></app-log-period-filter>
+            </div>
+
+            <div class="flex items-center flex-wrap gap-4">
+                <div class="flex items-center gap-2">
+                    <label for="showDashboardAccessed" class="text-sm text-gray-600 dark:text-gray-300" style="cursor:pointer;white-space:nowrap" i18n="@@HideDashboardAccessed">Mostrar accesos a informes</label>
+                    <p-inputSwitch [(ngModel)]="showDashboardAccessed" (onChange)="onShowDashboardAccessedChange()" inputId="showDashboardAccessed"></p-inputSwitch>
+                </div>
+
+                <div class="relative">
+                    <eda-icon name="search" size="sm" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></eda-icon>
+                    <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()"
+                        [placeholder]="searchPlaceholder"
+                        class="input-corporate pl-9 pr-3 h-10 rounded-md border border-gray-200 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 text-sm w-64" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-6">
+        <div class="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="w-full overflow-auto">
+                <table class="w-full caption-bottom text-sm">
+                    <thead class="bg-gray-50 dark:bg-gray-900/40">
+                        <tr class="border-b border-gray-200 dark:border-gray-700">
+                            <th *ngFor="let col of cols" (click)="handleSort(col.field)"
+                                class="h-11 px-4 text-left align-middle font-medium text-gray-500 dark:text-gray-400 cursor-pointer select-none whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1">
+                                    {{col.header}}
+                                    <eda-icon *ngIf="sortConfig?.field === col.field" size="sm"
+                                        [name]="sortConfig.direction === 'asc' ? 'chevron-up' : 'chevron-down'"></eda-icon>
+                                </span>
+                            </th>
+                        </tr>
+                        <tr class="border-b border-gray-200 dark:border-gray-700">
+                            <th *ngFor="let col of cols" class="px-4 pb-2 align-middle font-normal">
+                                <input type="text" [(ngModel)]="columnFilters[col.field]" (ngModelChange)="onColumnFilterChange()"
+                                    [placeholder]="searchPlaceholder"
+                                    class="input-corporate w-full h-8 rounded-md border border-gray-200 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 px-2 text-xs" />
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let rowData of paginatedLogs" class="border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors">
+                            <td *ngFor="let col of cols" class="px-4 py-3 align-middle text-gray-700 dark:text-gray-200">
+                                <span *ngIf="col.field === 'level'" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
+                                    [ngClass]="{'badge-log-info': rowData[col.field] === 'info', 'badge-log-error': rowData[col.field] === 'error', 'badge-log-warn': rowData[col.field] === 'warn'}">
+                                    {{rowData[col.field]}}
+                                </span>
+                                <span *ngIf="col.field === 'date_str'" class="whitespace-nowrap text-gray-500">{{formatDateForDisplay(rowData[col.field])}}</span>
+                                <span *ngIf="col.field === 'actionLabel'">{{rowData.actionLabel}}</span>
+                                <span *ngIf="col.field === 'typeFilterText'" class="inline-flex items-center gap-2 flex-wrap">
+                                    <span>{{rowData.typeOperationLabel}}</span>
+                                    <a *ngIf="rowData.typeCanLinkDashboard" [routerLink]="['/dashboard', rowData.typeDashboardId]" target="_blank" rel="noopener noreferrer"
+                                        class="link-corporate inline-flex items-center gap-1 rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                        <eda-icon name="link" size="sm"></eda-icon>
+                                        {{rowData.typeDashboardTitle}}
+                                    </a>
+                                    <span *ngIf="!rowData.typeCanLinkDashboard && rowData.typeDashboardTitle" class="text-gray-600 dark:text-gray-300">{{rowData.typeDashboardTitle}}</span>
+                                    <span *ngIf="(rowData.action === 'DashboardDeleted' || rowData.action === 'UserDeleted') && rowData.typeDetail" class="text-gray-400 text-xs">({{rowData.typeDetail}})</span>
+                                    <button *ngIf="rowData.action === 'PanelQueryFailed'" type="button" (click)="openQueryErrorDialog(rowData)"
+                                        class="link-corporate text-xs font-medium text-[var(--corporate-primary)] hover:underline" i18n="@@LogsViewDetails">Ver detalles</button>
+                                </span>
+                                <span *ngIf="col.field !== 'date_str' && col.field !== 'typeFilterText' && col.field !== 'actionLabel' && col.field !== 'level'">{{rowData[col.field]}}</span>
+                            </td>
+                        </tr>
+                        <tr *ngIf="paginatedLogs.length === 0">
+                            <td [attr.colspan]="cols.length" class="text-center text-gray-400 py-10" i18n="@@NoLogsFound">No se encontraron logs para esta fecha.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 items-center gap-3 mt-4">
+            <div></div>
+            <div class="flex items-center justify-center mx-auto bg-white dark:bg-gray-800 px-2 py-1 rounded-md text-gray-500">
+                <button (click)="setPage(1)" [disabled]="currentPage === 1" class="paginator-btn flex items-center justify-center w-9 h-9 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
+                    <eda-icon name="chevron-double-left" size="sm"></eda-icon>
+                </button>
+                <button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 1" class="paginator-btn flex items-center justify-center w-9 h-9 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
+                    <eda-icon name="chevron-left" size="sm"></eda-icon>
+                </button>
+                <p-dropdown class="paginator-dropdown mx-2" [ngModel]="currentPage" (onChange)="setPage($event.value)" [options]="pageNumbers" appendTo="body"></p-dropdown>
+                <span class="text-sm font-semibold px-1">/ {{totalPages()}}</span>
+                <button (click)="setPage(currentPage + 1)" [disabled]="currentPage === totalPages()" class="paginator-btn flex items-center justify-center w-9 h-9 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
+                    <eda-icon name="chevron-right" size="sm"></eda-icon>
+                </button>
+                <button (click)="setPage(totalPages())" [disabled]="currentPage === totalPages()" class="paginator-btn flex items-center justify-center w-9 h-9 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
+                    <eda-icon name="chevron-double-right" size="sm"></eda-icon>
+                </button>
+                <p-dropdown class="paginator-dropdown mx-2 ml-4" [ngModel]="itemsPerPage" (onChange)="itemsPerPage = $event.value; setPage(1)" [options]="pageSizeOptions" appendTo="body"></p-dropdown>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 text-right">{{sortedLogs.length}} <span i18n="@@LogsFoundCount">registros encontrados</span></p>
+        </div>
+
+        <p-dialog [header]="queryFailureTitle" [(visible)]="queryErrorDialogVisible" [modal]="true" [closable]="true" [dismissableMask]="true" [style]="{width: '70vw', maxWidth: '980px'}">
+            <div *ngIf="selectedQueryError" class="space-y-2 text-sm">
+                <p><strong class="font-medium" i18n="@@LogsReportName">Nombre del informe:</strong> {{selectedQueryError.reportName}}</p>
+                <p><strong class="font-medium" i18n="@@LogsReportId">ID del informe:</strong> {{selectedQueryError.reportId}}</p>
+                <p><strong class="font-medium" i18n="@@LogsPanelName">Nombre del panel:</strong> {{selectedQueryError.panelName}}</p>
+                <p><strong class="font-medium" i18n="@@LogsPanelId">ID del panel:</strong> {{selectedQueryError.panelId}}</p>
+                <p><strong class="font-medium" i18n="@@LogsMode">Modo:</strong> {{selectedQueryError.mode}}</p>
+                <p><strong class="font-medium" i18n="@@LogsError">Error:</strong> {{selectedQueryError.error}}</p>
+                <div class="pt-2">
+                    <div class="flex items-center justify-between">
+                        <strong class="font-medium" i18n="@@LogsSql">SQL:</strong>
+                        <button type="button" (click)="copyQuerySqlToClipboard()"
+                            class="link-corporate inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors" i18n="@@LogsCopySql">Copiar SQL</button>
+                    </div>
+                    <small *ngIf="queryErrorCopyStatus" class="text-gray-400 block mt-1">{{queryErrorCopyStatus}}</small>
+                    <pre class="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-md" style="white-space: pre-wrap; max-height: 300px; overflow-y: auto;">{{selectedQueryError.sql}}</pre>
+                </div>
+            </div>
+        </p-dialog>
+    </div>
+</div>

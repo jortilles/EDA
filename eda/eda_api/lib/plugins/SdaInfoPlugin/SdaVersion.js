@@ -1,0 +1,1 @@
+module.exports.SdaVersion = "2.12.0";

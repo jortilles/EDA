@@ -1,0 +1,56 @@
+.calendar-container ::ng-deep p-calendar .ui-datepicker {
+  width: auto !important;
+}
+
+::ng-deep .date-picker-panel {
+  width: 320px;
+}
+
+::ng-deep .hide-calendar-grid .p-datepicker-group-container {
+  display: none;
+}
+
+:host {
+  position: relative;
+  display: block;
+}
+
+.summary-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 0.73rem 0 0.42rem;
+  pointer-events: none;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+}
+
+.summary-operator-badge {
+  flex-shrink: 0;
+  padding: 1px 4px;
+  border-radius: 0.375rem;
+  background: #E5E7EB;
+  color: #000000;
+  font-size: 0.76rem;
+  white-space: nowrap;
+}
+
+.summary-value-text {
+  color: #000000;
+  font-size: 0.81rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.summary-placeholder-text {
+  color: #6b7280;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

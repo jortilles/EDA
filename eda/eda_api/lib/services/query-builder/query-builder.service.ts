@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import Group from '../../module/admin/groups/model/group.model';
+const eda_api_config = require('../../../config/eda_api_config');
 class TreeNode {
     public value: string;
     public child: Array<TreeNode>
@@ -116,14 +117,38 @@ export abstract class QueryBuilderService {
         const valueListList = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
 
-        /** Check dels permisos de columna, si hi ha permisos es posen als filtres PERMISOS RECURSIVOS */
-        /*EDA*/ this.permissions = this.getPermissions(modelPermissions, this.tables, origin ,  this.queryTODO);
+        /** Check the permissions behaviour. If they are recursive get recursive permissions*/
+        if (eda_api_config.custom_behaviour.USE_RECURSIVE_PERMISSIONS) {
+            this.permissions = this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO);
+        } else {
+            this.permissions = this.getFlatPermissions(modelPermissions, this.queryTODO);
+        }
         
         // SI USUARIO ES ADMIN VACIAR EL ARRAY PERMISSIONS
         
         if (this.groups.includes("135792467811111111111110")) {
             this.permissions = [];
         }
+
+        /** A "" in a numeric "in" filter means null. IN doesn't match NULL in SQL,
+         *  so split it into a separate is_null filter to avoid invalid SQL. */
+        this.queryTODO.filters.forEach(e => {
+            if (e.filter_column_type == 'numeric' &&
+                e.filter_type == 'in' &&
+                e.filter_elements[0].value1.includes('')) {
+                let ee = JSON.parse(JSON.stringify(e));
+                ee.filter_id = ee.filter_id.split('-')[0];
+                ee.filter_type = 'is_null';
+                e.filter_elements[0].value1 = e.filter_elements[0].value1.filter(obj => obj !== '');
+
+                this.queryTODO.filters.push(ee);
+                // Original filter is now useless if no values are left (in () is invalid)
+                if (e.filter_elements[0].value1.length == 0) {
+                    this.queryTODO.filters = this.queryTODO.filters.filter(obj => obj !== e);
+                }
+            }
+        });
+
         /** joins per els value list */
         let valueListJoins = [];
 
@@ -720,7 +745,7 @@ export abstract class QueryBuilderService {
 
 
 
-    public getPermissions(modelPermissions, modelTables, originTable, query) {
+    public getRecursivePermissions(modelPermissions, modelTables, originTable, query) {
 
         //console.log('recursively.... SE BUSCA EN LAS TABLAS RELACIONADAS');
         let filters = [];
@@ -786,7 +811,7 @@ export abstract class QueryBuilderService {
         return filters;
     }
 
-    public getTreePermissions(modelPermissions,  query) {
+    public getFlatPermissions(modelPermissions,  query) {
           /**
          * Tento todos los permisos modelPermissions
          * Tengo mi consulta query
@@ -931,6 +956,14 @@ export abstract class QueryBuilderService {
     }
 
 
+    /**
+     * false (EDA default) -> value-list filters compare against the description column (target_description_column).
+     * true (SinergiaDA) -> value-list filters compare against the internal code column (target_id_column) instead.
+     */
+    public useValueListCodeForFilters(): boolean {
+        return !!eda_api_config.custom_behaviour?.USE_VALUE_LIST_CODE_FOR_FILTERS;
+    }
+
     public findColumn(table: string, column: string) {
         const tmpTable = this.tables.find((t: any) => t.table_name === table.split('.')[0]);
         const col =  tmpTable.columns.find((c: any) => c.column_name === column);
@@ -971,7 +1004,7 @@ export abstract class QueryBuilderService {
     public setFilterType(filter: string) {
         if (['=', '!=', '>', '<', '<=', '>=', 'like', 'not_like'].includes(filter)) return 0;
         else if (['not_in', 'in'].includes(filter)) return 1;
-        else if (filter === 'between') return 2;
+        else if (filter === 'between' || filter === 'not_between') return 2;
         else if (filter === 'not_null') return 3;
         else if (filter === 'is_null') return 4;
         else if (filter === 'not_null_nor_empty') return 5;
@@ -1050,7 +1083,15 @@ export abstract class QueryBuilderService {
         const origin = table;
         const dest = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
-        const permissions = this.getPermissions(modelPermissions, this.tables, origin, this.queryTODO);
+
+
+        /** Check the permissions behaviour. If they are recursive get recursive permissions*/
+        const permissions =
+            eda_api_config.custom_behaviour.USE_RECURSIVE_PERMISSIONS?
+            this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO):
+            this.getFlatPermissions(modelPermissions, this.queryTODO)
+            ;
+        
         const joinType = 'inner'; // es per els permisos. Ha de ser així.
         const valueListJoins = []; // anulat
 

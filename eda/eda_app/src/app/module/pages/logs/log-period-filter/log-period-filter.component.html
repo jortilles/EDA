@@ -1,0 +1,13 @@
+<div class="flex flex-col gap-1">
+    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide" i18n="@@FilterByPeriod">Periodo</label>
+    <p-dropdown [options]="periods" [(ngModel)]="selectedPeriod" (onChange)="onPeriodChange()"
+        [autoDisplayFirst]="false" [showClear]="false" [placeholder]="selectPeriodPlaceholder"></p-dropdown>
+</div>
+<div class="flex flex-col gap-1">
+    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide" i18n="@@FilterByDate">Fecha</label>
+    <!-- Restricted to the days where logs may exist (last 10 days) -->
+    <p-calendar styleClass="log-period-filter-calendar" [(ngModel)]="selectedDate" (onSelect)="onDateChange()"
+        dateFormat="yy-mm-dd" [showIcon]="true" [firstDayOfWeek]="firstDayOfWeek"
+        [locale]="calendarLocale" [minDate]="minSelectableDate" [maxDate]="maxSelectableDate"
+        [readonlyInput]="true" [panelStyleClass]="'log-period-filter-calendar-panel'"></p-calendar>
+</div>

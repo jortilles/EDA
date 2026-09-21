@@ -1,0 +1,14 @@
+const applyConfigOverwrite = require('./apply-config-overwrite');
+
+module.exports = applyConfigOverwrite('sinergiacrm_config', {
+  sinergiaConn: {
+    host: 'CHANGE_ME',
+    port: 3306,
+    database: 'CHANGE_ME',
+    user: 'CHANGE_ME',
+    password: 'CHANGE_ME',
+    connectionLimit: 10,
+    waitForConnections: true,
+    queueLimit: 0
+  }
+});

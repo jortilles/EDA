@@ -1,0 +1,43 @@
+.input-corporate:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--corporate-primary);
+}
+
+.link-corporate:hover {
+    color: var(--corporate-primary) !important;
+    border-color: var(--corporate-primary) !important;
+}
+
+.paginator-btn:hover {
+    background-color: rgba(var(--corporate-primary-rgb), 0.08);
+    color: var(--corporate-primary);
+}
+
+.paginator-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--corporate-primary);
+}
+
+.badge-log-info {
+    color: var(--corporate-primary);
+    background-color: rgba(var(--corporate-primary-rgb), 0.1);
+}
+
+.badge-log-error {
+    color: #dc2626;
+    background-color: rgba(220, 38, 38, 0.1);
+}
+
+.badge-log-warn {
+    color: #d97706;
+    background-color: rgba(217, 119, 6, 0.1);
+}
+
+/* Match the pagination dropdowns' height with the paginator buttons (period/date calendar's own
+   dropdown height is handled by app-log-period-filter's own styles) */
+:host ::ng-deep .paginator-dropdown .p-dropdown {
+    height: 2.5rem;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+}

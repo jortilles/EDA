@@ -56,8 +56,8 @@
 </trans-unit>
 
 <trans-unit id="logsManagement" datatype="html">
-  <source>Gestión de logs</source>
-  <target>Gestion des journaux</target>
+  <source>Visor de logs</source>
+  <target>Visionneuse de logs</target>
 </trans-unit>
 
 <trans-unit id="sidebarGroupManagement" datatype="html">
@@ -6751,6 +6751,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Resumen de filtros</source>
         <target>Résumé des filtres</target>
       </trans-unit>
+      <trans-unit id="filterSummarySingular">
+        <source>Resumen de filtros</source>
+        <target>Résumé du filtre</target>
+      </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
         <source>items seleccionados</source>
         <target>articles sélectionnés</target>
@@ -7322,6 +7326,273 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="reportDataSourceName">
         <source>Fuente de datos</source>
         <target>Source de données</target>
+      </trans-unit>
+      <trans-unit id="duplicatePanel">
+        <source>Duplicar panel</source>
+        <target>Dupliquer le panneau</target>
+      </trans-unit>
+      <trans-unit id="PanelOptions">
+        <source>PANEL OPTIONS</source>
+        <target>OPTIONS DU PANNEAU</target>
+      </trans-unit>
+      <trans-unit id="titlePanelOptions">
+        <source>Opciones del panel</source>
+        <target>Options du panneau</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAppearance">
+        <source>Apariencia</source>
+        <target>Apparence</target>
+      </trans-unit>
+      <trans-unit id="titlePanelShowBg">
+        <source>Mostrar fondo del panel</source>
+        <target>Afficher le fond du panneau</target>
+      </trans-unit>
+      <trans-unit id="titlePanelBgColor">
+        <source>Color de fondo</source>
+        <target>Couleur de fond</target>
+      </trans-unit>
+      <trans-unit id="titlePanelShowBorder">
+        <source>Mostrar borde</source>
+        <target>Afficher la bordure</target>
+      </trans-unit>
+      <trans-unit id="titlePanelBorderColor">
+        <source>Color del borde</source>
+        <target>Couleur de la bordure</target>
+      </trans-unit>
+      <trans-unit id="titlePanelVerticalAlign">
+        <source>Alineación vertical</source>
+        <target>Alignement vertical</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignTop">
+        <source>Arriba</source>
+        <target>Haut</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignCenter">
+        <source>Centro</source>
+        <target>Milieu</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignBottom">
+        <source>Abajo</source>
+        <target>Bas</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipSize">
+        <source>Tamaño de letra</source>
+        <target>Taille de police</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipBold">
+        <source>Negrita</source>
+        <target>Gras</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipItalic">
+        <source>Cursiva</source>
+        <target>Italique</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipUnderline">
+        <source>Subrayado</source>
+        <target>Souligné</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipStrike">
+        <source>Tachado</source>
+        <target>Barré</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipTextColor">
+        <source>Color del texto</source>
+        <target>Couleur du texte</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipTextBgColor">
+        <source>Color de resaltado del texto</source>
+        <target>Couleur de surlignage du texte</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipSub">
+        <source>Subíndice</source>
+        <target>Indice</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipSuper">
+        <source>Superíndice</source>
+        <target>Exposant</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipH1">
+        <source>Título 1</source>
+        <target>Titre 1</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipH2">
+        <source>Título 2</source>
+        <target>Titre 2</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipQuote">
+        <source>Cita</source>
+        <target>Citation</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipOrderedList">
+        <source>Lista numerada</source>
+        <target>Liste numérotée</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipBulletList">
+        <source>Lista con viñetas</source>
+        <target>Liste à puces</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipAlignLeft">
+        <source>Alinear a la izquierda</source>
+        <target>Aligner à gauche</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipAlignCenter">
+        <source>Centrar</source>
+        <target>Centrer</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipAlignRight">
+        <source>Alinear a la derecha</source>
+        <target>Aligner à droite</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipLink">
+        <source>Insertar enlace</source>
+        <target>Insérer un lien</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipImage">
+        <source>Insertar imagen desde un archivo</source>
+        <target>Insérer une image depuis un fichier</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipVideo">
+        <source>Insertar vídeo</source>
+        <target>Insérer une vidéo</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipUrlImage">
+        <source>Insertar imagen desde una URL</source>
+        <target>Insérer une image depuis une URL</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipClean">
+        <source>Quitar formato</source>
+        <target>Effacer la mise en forme</target>
+      </trans-unit>
+      <trans-unit id="filterHoverGreen">
+        <source>Verde</source>
+        <target>Vert</target>
+      </trans-unit>
+      <trans-unit id="filterHoverRed">
+        <source>Rojo</source>
+        <target>Rouge</target>
+      </trans-unit>
+      <trans-unit id="filterHoverAffected">
+        <source>Paneles afectados por este filtro</source>
+        <target>Panneaux affectés par ce filtre</target>
+      </trans-unit>
+      <trans-unit id="filterHoverNotAffected">
+        <source>Paneles no afectados por este filtro</source>
+        <target>Panneaux non affectés par ce filtre</target>
+      <trans-unit id="ResetZoom">
+        <source>Restablecer (100%)</source>
+        <target>Réinitialiser (100%)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageTitle">
+        <source>Tutorial</source>
+        <target>Tutoriel</target>
+      </trans-unit>
+      <trans-unit id="LogsActionNewLogin">
+        <source>Login</source>
+        <target>Connexion</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardAccessed">
+        <source>Dashboard Accessed</source>
+        <target>Tableau de bord consulté</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardCreated">
+        <source>Dashboard Created</source>
+        <target>Tableau de bord créé</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardUpdated">
+        <source>Dashboard Updated</source>
+        <target>Tableau de bord mis à jour</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardRenamed">
+        <source>Dashboard Renamed</source>
+        <target>Tableau de bord renommé</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardVisibilityChanged">
+        <source>Dashboard Visibility Changed</source>
+        <target>Visibilité du tableau de bord modifiée</target>
+      </trans-unit>
+      <trans-unit id="LogsActionDashboardDeleted">
+        <source>Dashboard Deleted</source>
+        <target>Tableau de bord supprimé</target>
+      </trans-unit>
+      <trans-unit id="LogsActionPanelQueryFailed">
+        <source>Panel Query Failed</source>
+        <target>Échec de la requête du panneau</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserCreated">
+        <source>User Created</source>
+        <target>Utilisateur créé</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserUpdated">
+        <source>User Updated</source>
+        <target>Utilisateur mis à jour</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserDeleted">
+        <source>User Deleted</source>
+        <target>Utilisateur supprimé</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserRolesChanged">
+        <source>User Roles Changed</source>
+        <target>Rôles de l'utilisateur modifiés</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUserPasswordChanged">
+        <source>User Password Changed</source>
+        <target>Mot de passe de l'utilisateur modifié</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupCreated">
+        <source>Group Created</source>
+        <target>Groupe créé</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupUpdated">
+        <source>Group Updated</source>
+        <target>Groupe mis à jour</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupDeleted">
+        <source>Group Deleted</source>
+        <target>Groupe supprimé</target>
+      </trans-unit>
+      <trans-unit id="LogsActionGroupMembershipChanged">
+        <source>Group Membership Changed</source>
+        <target>Appartenance au groupe modifiée</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelStarted">
+        <source>Update Model Started</source>
+        <target>Mise à jour du modèle démarrée</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelUsersAndGroupsSynced">
+        <source>Update Model Users/Groups Synced</source>
+        <target>Utilisateurs/Groupes synchronisés</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelUsersAndGroupsSyncFailed">
+        <source>Update Model Users/Groups Sync Failed</source>
+        <target>Échec de synchronisation des utilisateurs/groupes</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelRolesMapped">
+        <source>Update Model Roles Mapped</source>
+        <target>Rôles mappés</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelRolesMappingFailed">
+        <source>Update Model Roles Mapping Failed</source>
+        <target>Échec du mappage des rôles</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelDataModelBuilt">
+        <source>Update Model Data Model Built</source>
+        <target>Modèle de données construit</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelDataModelBuildFailed">
+        <source>Update Model Data Model Build Failed</source>
+        <target>Échec de la construction du modèle de données</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelCompleted">
+        <source>Update Model Completed</source>
+        <target>Mise à jour du modèle terminée</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelPushFailed">
+        <source>Update Model Push Failed</source>
+        <target>Échec de l'envoi du modèle</target>
+      </trans-unit>
+      <trans-unit id="LogsActionUpdateModelFailed">
+        <source>Update Model Failed</source>
+        <target>Échec de la mise à jour du modèle</target>
       </trans-unit>
     </body>
       </trans-unit>

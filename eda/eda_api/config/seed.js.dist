@@ -1,0 +1,3 @@
+const applyConfigOverwrite = require('./apply-config-overwrite');
+
+module.exports.SEED = applyConfigOverwrite('seed', 'CHANGE_ME_TO_A_STRONG_RANDOM_SECRET');

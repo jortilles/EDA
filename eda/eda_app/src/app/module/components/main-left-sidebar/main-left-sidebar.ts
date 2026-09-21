@@ -1,11 +1,13 @@
 import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
+import Swal from 'sweetalert2';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { UserService } from '@eda/services/service.index';
 import { LogoSidebar } from '@eda/configs/index';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import { GroupService } from '@eda/services/api/group.service';
+import { DashboardService } from '@eda/services/api/dashboard.service';
 
 interface NavItem {
   path?: string;
@@ -31,6 +33,7 @@ export class MainLeftSidebarComponent {
   public logoSidebar = LogoSidebar;
   private createDashboardService = inject(CreateDashboardService);
   private groupService = inject(GroupService);
+  private dashboardService = inject(DashboardService);
   public queryParams: any = {};
   public hideWheel: boolean = false;
   public panelMode: boolean = false;
@@ -42,6 +45,8 @@ export class MainLeftSidebarComponent {
   public grups: Array<any> = [];
   public isObserver: boolean = false;
 
+  // Tracks whether the dashboard currently open has unsaved changes
+  public notSaved: boolean = false;
 
   ngOnInit(): void {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -53,6 +58,8 @@ export class MainLeftSidebarComponent {
       localStorage.setItem('isObserver', String(this.isObserver));
       this.assignNavItems();
     });
+
+    this.dashboardService.notSaved.subscribe(data => this.notSaved = data);
 
     this.getUrlParams();
   }
@@ -75,7 +82,7 @@ export class MainLeftSidebarComponent {
       {
         path: '/about',
         icon: 'global',
-        label: 'Tutorial'
+        label: $localize`:@@aboutPageTitle:Tutorial`
       },
       { path: '/logout', icon: 'logout' },
     ];
@@ -107,7 +114,7 @@ export class MainLeftSidebarComponent {
       { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de fuentes de datos`, icon: 'rectangle-group' },
       { path: '/admin/models/import-export', label: $localize`:@@dataExportImport:Data Export/Import`, icon: 'arrow-down-on-square-stack' },
       { path: '/admin/email-settings', label: $localize`:@@adminEmail:Gestión de email`, icon: 'at-symbol' },
-      { path: '/logs', label: $localize`:@@logsManagement:Gestión de logs`, icon: 'clipboard-document-list' },
+      { path: '/logs', label: $localize`:@@logsManagement:Visor de logs`, icon: 'clipboard-document-list' },
       { path: '/admin/ai-settings', label: $localize`:@@AIManagement:Gestión del asistente`, icon: 'sparkles-ai' },
       { path: '/portal', label: $localize`:@@adminPortal:Portal de datos`, icon: 'global-mini' },
     );
@@ -152,6 +159,15 @@ menuCommand(item: any, event: MouseEvent) {
     return;
   }
 
+  // Going to home can discard unsaved changes on the current dashboard, so confirm first
+  if (path === '/home' && !item.command) {
+    this.checkNotSavedHome();
+    return;
+  }
+
+  // Any other destination silently drops the unsaved-changes flag (page is left behind)
+  this.ignoreNotSaved();
+
   if (path.includes('logout')) {
 
     const user = JSON.parse(localStorage.getItem('user'));
@@ -159,7 +175,7 @@ menuCommand(item: any, event: MouseEvent) {
     if(user.nameID && user.nameIDFormat && user.sessionIndex) {
       // SAML logout
       this.userService.SAMLlogout();
-    } 
+    }
     else {
       // Default logout
       this.userService.logout();
@@ -172,6 +188,36 @@ menuCommand(item: any, event: MouseEvent) {
 
   }
 }
+
+  /**
+   * Navigates to home, warning the user first if the current dashboard has unsaved changes.
+   */
+  public checkNotSavedHome(): void {
+    if (!this.notSaved) {
+      this.router.navigate(['/home']);
+      return;
+    }
+
+    Swal.fire({
+      text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Seguro que quieres salir?`,
+      icon: 'warning',
+      showDenyButton: true,
+      denyButtonText: $localize`:@@cancelarButton:Cancelar`,
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.dashboardService.setNotSaved(false);
+        this.router.navigate(['/home']);
+      }
+    });
+  }
+
+  /**
+   * Drops the unsaved-changes flag without asking, used when navigating to a page
+   * other than home (the destination isn't the dashboard, so nothing to lose there).
+   */
+  public ignoreNotSaved(): void {
+    this.dashboardService.setNotSaved(false);
+  }
 
   public redirectLocale(lan: string) {
     let baseUrl = window.location.href.split('#')[0];

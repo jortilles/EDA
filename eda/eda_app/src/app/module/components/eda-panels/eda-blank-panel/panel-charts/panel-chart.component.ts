@@ -74,6 +74,7 @@ import { EdaBarlineD3 } from '@eda/components/eda-barline-d3/eda-barline';
     standalone: true,
     selector: 'panel-chart',
     templateUrl: './panel-chart.component.html',
+    styleUrl: './panel-chart.component.css',
     imports: [FormsModule, CommonModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
     // Custom elements default to display:inline, which ignores the parent's h-full/w-full

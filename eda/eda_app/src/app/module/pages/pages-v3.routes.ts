@@ -93,6 +93,8 @@ const CORE_CHILDREN: Routes = [
   },
   {
     path: 'logs',
+    data: { admin: true },
+    canActivate: [RoleGuard],
     loadComponent: () => import('./logs/logs.component').then(c => c.LogsComponent)
   },
   {

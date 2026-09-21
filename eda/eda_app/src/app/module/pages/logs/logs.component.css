@@ -1,24 +1,30 @@
-
-.logs-container {
-    margin: 2rem;
+.logs-page {
+    width: 100%;
+    margin: 0;
+    padding: 1rem 2rem;
 }
 
-.logs-title {
-    font-weight: bold;
+/* No PrimeNG theme is loaded app-wide, so p-tabView ships with no visible selected-tab state by default.
+   Match the active/inactive look already used for the SMTP/Gmail tabs in email-settings.page.css */
+:host ::ng-deep .p-tabview-nav-link {
+    color: var(--gray-500, #6b7280);
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+    transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out, background-color 0.15s ease-in-out;
 }
 
-.logs-button {
-    margin-left: 1rem;
+:host ::ng-deep .p-tabview-nav li:not(.p-highlight) > .p-tabview-nav-link:hover {
+    color: var(--corporate-primary);
+    background-color: rgba(var(--corporate-primary-rgb), 0.06);
 }
 
-.logs-panel{
-    margin-top: 2rem;
+:host ::ng-deep .p-tabview-nav li.p-highlight > .p-tabview-nav-link {
+    color: var(--corporate-primary) !important;
+    border-bottom-color: var(--corporate-primary) !important;
+    background-color: rgba(var(--corporate-primary-rgb), 0.08);
+    font-weight: 600;
 }
 
-.logs-text {
-    font-weight: bold;
+:host ::ng-deep .p-tabview-ink-bar {
+    background-color: var(--corporate-primary);
 }
-
-.btn-corporate-gradient       { background:  var(--corporate-primary); color: white; }
-.btn-corporate-gradient:hover { background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient));;
- }

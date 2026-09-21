@@ -233,9 +233,16 @@ export const  AGG_TYPES  = [
     { label: 'No', value: 'none' }
 ];
 
-
 /** Feature flags variables  */ 
 export const SHOW_LOCK_IN_PANEL_HEADER: boolean = false; // true → lock button visible in panel header | false → lock in context menu
 export const SHOW_HIDDEN_FIELDS_BUTTON: boolean = false; // true → Show the hidden fields button | false → Don't show the hidden fields button
 export const SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY: boolean = false; // true → only admins see the button | false → all users see it
 export const ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: boolean = false; // true → public visibility option shown in dashboard creation/edit UIs | false → hidden
+export const USE_VALUE_LIST_CODE_FOR_FILTERS: boolean = false; // true -> For using the filters with code values.
+export const SHOW_HIDDEN_FIELDS: 'disabled' | 'admin-only' | 'all' = 'admin-only'; // 'disabled' → button hidden for everyone | 'admin-only' → only admins see the button | 'all' → all users see it
+export const ALLOWED_QUERY_MODES: string[] = ['EDA', 'SQL', 'TREE']; // ALLOWED_QUERY_MODES Order matters; the first value "ALLOWED_QUERY_MODES[0]" is considered the default query mode
+export const SHOW_WHAT_IF: boolean = true; // true → "What If?" scenarios button visible | false → hidden
+export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner', 'right']; // subset of 'left' | 'inner' | 'right' shown as join type options
+export const SHOW_CUSTOM_ACTION: boolean = true; // true → "Acción personalizada" visible en el menú del informe | false → oculta
+export const SHOW_ZOOM_IN_SIDEBAR: boolean = true; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
+export const PRIVATE_EDITION_ACTIVATED: boolean =  true;

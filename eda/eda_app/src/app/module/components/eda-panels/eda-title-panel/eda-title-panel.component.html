@@ -1,9 +1,17 @@
-<div class="flex flex-col h-full drag-handler rounded-lg p-2 justify-center bg-white " >
+<div class="flex flex-col h-full drag-handler rounded-lg p-2 bg-white" [ngStyle]="getPanelStyle()">
     <!-- Header -->
-    <div class="flex justify-end place-content-center items-center drag-handler" >
-        <div class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50">
+    <div class="flex justify-end items-center h-full drag-handler" >
+        <div class="flex items-center justify-center flex-grow h-full overflow-y-auto" [ngStyle]="getTitleStyle()" (dblclick)="display.editMode && openEditDialog()">
           <div class="eda-title-panel" [innerHTML]="panel.title | sanitizeHtml"></div>
         </div>
+        @if (showLockInHeader && display.editMode) {
+          <i
+            [class]="isPanelLocked() ? 'pi pi-lock text-red-500' : 'pi pi-lock-open text-green-500'"
+            class="cursor-pointer mr-2 w-[28px] h-[28px] flex items-center justify-center text-center rounded-full content-center"
+            (click)="togglePanelLock()"
+            (mousedown)="$event.stopPropagation()"
+          ></i>
+        }
         <i class="pi pi-ellipsis-v cursor-pointer mr-4" (click)="openContextMenu($event)"></i>
     </div>
 </div>

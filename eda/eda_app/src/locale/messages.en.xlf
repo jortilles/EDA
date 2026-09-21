@@ -5763,8 +5763,8 @@ Once configured you can invoke it whenever you want from the button.</target>
   <target>The group could not be updated</target>
 </trans-unit>
 <trans-unit id="logsManagement">
-<source>Gestión de logs</source>
-<target>Logs management</target>
+<source>Visor de logs</source>
+<target>Log Viewer</target>
 </trans-unit>
 <trans-unit id="logFileBtn">
 <source>Logs</source>
@@ -6476,6 +6476,10 @@ OR<ph id="5"/>
   <source>Resumen de filtros</source>
   <target>Filters Summary</target>
 </trans-unit>
+<trans-unit id="filterSummarySingular">
+  <source>Resumen de filtro</source>
+  <target>Filter summary</target>
+</trans-unit>
 <trans-unit id="globalFilterSelectedItemsLabel">
   <source>items seleccionados</source>
   <target>items selected</target>
@@ -7047,6 +7051,308 @@ OR<ph id="5"/>
 <trans-unit id="reportDataSourceName">
   <source>Fuente de datos</source>
   <target>Data source</target>
+</trans-unit>
+
+<trans-unit id="duplicatePanel">
+<source>Duplicar panel</source>
+<target>Duplicate panel</target>
+</trans-unit>
+
+<trans-unit id="PanelOptions">
+<source>PANEL OPTIONS</source>
+<target>PANEL OPTIONS</target>
+</trans-unit>
+
+<trans-unit id="titlePanelOptions">
+<source>Opciones del panel</source>
+<target>Panel options</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAppearance">
+<source>Apariencia</source>
+<target>Appearance</target>
+</trans-unit>
+
+<trans-unit id="titlePanelShowBg">
+<source>Mostrar fondo del panel</source>
+<target>Show panel background</target>
+</trans-unit>
+
+<trans-unit id="titlePanelBgColor">
+<source>Color de fondo</source>
+<target>Background color</target>
+</trans-unit>
+
+<trans-unit id="titlePanelShowBorder">
+<source>Mostrar borde</source>
+<target>Show border</target>
+</trans-unit>
+
+<trans-unit id="titlePanelBorderColor">
+<source>Color del borde</source>
+<target>Border color</target>
+</trans-unit>
+
+<trans-unit id="titlePanelVerticalAlign">
+<source>Alineación vertical</source>
+<target>Vertical alignment</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignTop">
+<source>Arriba</source>
+<target>Top</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignCenter">
+<source>Centro</source>
+<target>Middle</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignBottom">
+<source>Abajo</source>
+<target>Bottom</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipSize">
+<source>Tamaño de letra</source>
+<target>Font size</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipBold">
+<source>Negrita</source>
+<target>Bold</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipItalic">
+<source>Cursiva</source>
+<target>Italic</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipUnderline">
+<source>Subrayado</source>
+<target>Underline</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipStrike">
+<source>Tachado</source>
+<target>Strikethrough</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipTextColor">
+<source>Color del texto</source>
+<target>Text color</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipTextBgColor">
+<source>Color de resaltado del texto</source>
+<target>Text highlight color</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipSub">
+<source>Subíndice</source>
+<target>Subscript</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipSuper">
+<source>Superíndice</source>
+<target>Superscript</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipH1">
+<source>Título 1</source>
+<target>Heading 1</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipH2">
+<source>Título 2</source>
+<target>Heading 2</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipQuote">
+<source>Cita</source>
+<target>Quote</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipOrderedList">
+<source>Lista numerada</source>
+<target>Numbered list</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipBulletList">
+<source>Lista con viñetas</source>
+<target>Bulleted list</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipAlignLeft">
+<source>Alinear a la izquierda</source>
+<target>Align left</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipAlignCenter">
+<source>Centrar</source>
+<target>Center</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipAlignRight">
+<source>Alinear a la derecha</source>
+<target>Align right</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipLink">
+<source>Insertar enlace</source>
+<target>Insert link</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipImage">
+<source>Insertar imagen desde un archivo</source>
+<target>Insert image from a file</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipVideo">
+<source>Insertar vídeo</source>
+<target>Insert video</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipUrlImage">
+<source>Insertar imagen desde una URL</source>
+<target>Insert image from a URL</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipClean">
+<source>Quitar formato</source>
+<target>Clear formatting</target>
+</trans-unit>
+
+<trans-unit id="filterHoverGreen">
+<source>Verde</source>
+<target>Green</target>
+</trans-unit>
+<trans-unit id="filterHoverRed">
+<source>Rojo</source>
+<target>Red</target>
+</trans-unit>
+<trans-unit id="filterHoverAffected">
+<source>Paneles afectados por este filtro</source>
+<target>Panels affected by this filter</target>
+</trans-unit>
+<trans-unit id="filterHoverNotAffected">
+<source>Paneles no afectados por este filtro</source>
+<target>Panels not affected by this filter</target>
+<trans-unit id="ResetZoom">
+  <source>Restablecer (100%)</source>
+  <target>Reset (100%)</target>
+</trans-unit>
+<trans-unit id="aboutPageTitle">
+  <source>Tutorial</source>
+  <target>Tutorial</target>
+</trans-unit>
+<trans-unit id="LogsActionNewLogin">
+  <source>Login</source>
+  <target>Login</target>
+</trans-unit>
+<trans-unit id="LogsActionDashboardAccessed">
+  <source>Dashboard Accessed</source>
+  <target>Dashboard accessed</target>
+</trans-unit>
+<trans-unit id="LogsActionDashboardCreated">
+  <source>Dashboard Created</source>
+  <target>Dashboard created</target>
+</trans-unit>
+<trans-unit id="LogsActionDashboardUpdated">
+  <source>Dashboard Updated</source>
+  <target>Dashboard updated</target>
+</trans-unit>
+<trans-unit id="LogsActionDashboardRenamed">
+  <source>Dashboard Renamed</source>
+  <target>Dashboard renamed</target>
+</trans-unit>
+<trans-unit id="LogsActionDashboardVisibilityChanged">
+  <source>Dashboard Visibility Changed</source>
+  <target>Dashboard visibility changed</target>
+</trans-unit>
+<trans-unit id="LogsActionDashboardDeleted">
+  <source>Dashboard Deleted</source>
+  <target>Dashboard deleted</target>
+</trans-unit>
+<trans-unit id="LogsActionPanelQueryFailed">
+  <source>Panel Query Failed</source>
+  <target>Panel query failed</target>
+</trans-unit>
+<trans-unit id="LogsActionUserCreated">
+  <source>User Created</source>
+  <target>User created</target>
+</trans-unit>
+<trans-unit id="LogsActionUserUpdated">
+  <source>User Updated</source>
+  <target>User updated</target>
+</trans-unit>
+<trans-unit id="LogsActionUserDeleted">
+  <source>User Deleted</source>
+  <target>User deleted</target>
+</trans-unit>
+<trans-unit id="LogsActionUserRolesChanged">
+  <source>User Roles Changed</source>
+  <target>User roles changed</target>
+</trans-unit>
+<trans-unit id="LogsActionUserPasswordChanged">
+  <source>User Password Changed</source>
+  <target>User password changed</target>
+</trans-unit>
+<trans-unit id="LogsActionGroupCreated">
+  <source>Group Created</source>
+  <target>Group created</target>
+</trans-unit>
+<trans-unit id="LogsActionGroupUpdated">
+  <source>Group Updated</source>
+  <target>Group updated</target>
+</trans-unit>
+<trans-unit id="LogsActionGroupDeleted">
+  <source>Group Deleted</source>
+  <target>Group deleted</target>
+</trans-unit>
+<trans-unit id="LogsActionGroupMembershipChanged">
+  <source>Group Membership Changed</source>
+  <target>Group membership changed</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelStarted">
+  <source>Update Model Started</source>
+  <target>Model update started</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelUsersAndGroupsSynced">
+  <source>Update Model Users/Groups Synced</source>
+  <target>Users/Groups synced</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelUsersAndGroupsSyncFailed">
+  <source>Update Model Users/Groups Sync Failed</source>
+  <target>Users/Groups sync failed</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelRolesMapped">
+  <source>Update Model Roles Mapped</source>
+  <target>Roles mapped</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelRolesMappingFailed">
+  <source>Update Model Roles Mapping Failed</source>
+  <target>Role mapping failed</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelDataModelBuilt">
+  <source>Update Model Data Model Built</source>
+  <target>Data model built</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelDataModelBuildFailed">
+  <source>Update Model Data Model Build Failed</source>
+  <target>Data model build failed</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelCompleted">
+  <source>Update Model Completed</source>
+  <target>Model update completed</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelPushFailed">
+  <source>Update Model Push Failed</source>
+  <target>Model push failed</target>
+</trans-unit>
+<trans-unit id="LogsActionUpdateModelFailed">
+  <source>Update Model Failed</source>
+  <target>Model update failed</target>
 </trans-unit>
 <trans-unit id="aiDashboardDescription">
   <source>(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.</source>

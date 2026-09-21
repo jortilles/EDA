@@ -1,0 +1,13 @@
+<div class="zoom-controls-simple" *ngIf="canIedit()">
+    <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple zoom-step-btn" (mousedown)="zoomState.startContinuousZoom('out')" (mouseup)="zoomState.stopContinuousZoom()" (mouseleave)="zoomState.stopContinuousZoom()" (click)="zoomState.zoomOut()" [disabled]="zoomState.zoomLevel <= 25">
+        <i class="fa fa-minus"></i>
+    </button>
+    <span class="zoom-value">{{zoomState.zoomLevel}}%</span>
+    <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple zoom-step-btn" (mousedown)="zoomState.startContinuousZoom('in')" (mouseup)="zoomState.stopContinuousZoom()" (mouseleave)="zoomState.stopContinuousZoom()" (click)="zoomState.zoomIn()" [disabled]="zoomState.zoomLevel >= 100">
+        <i class="fa fa-plus"></i>
+    </button>
+    <div class="zoom-divider"></div>
+    <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple reset-btn" [class.zoom-step-btn]="layout === 'sidebar'" (click)="zoomState.resetZoom()" [disabled]="zoomState.zoomLevel === 100" i18n-pTooltip="@@ResetZoom" pTooltip="Restablecer (100%)" tooltipPosition="bottom">
+        <i class="fa fa-refresh"></i>
+    </button>
+</div>

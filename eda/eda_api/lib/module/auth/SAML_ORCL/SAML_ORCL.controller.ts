@@ -4,7 +4,7 @@ import { HttpException } from '../../global/model/index';
 import passport from '../SAML.passport';
 import { samlStrategy } from '../SAML.passport';
 
-import ServerLogService from '../../../services/server-log/server-log.service';
+import { insertServerLog } from '../../../services/server-log/server-log.service';
 import { parseStringPromise } from 'xml2js';
 import zlib from 'zlib';
 
@@ -359,16 +359,6 @@ export class SAML_ORCL_Controller {
 
 }
 
-function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
-    const ip = req.headers['x-forwarded-for'] || req.get('origin')
-    var date = new Date();
-    var month =date.getMonth()+1 ;
-    var monthstr=month<10?"0"+month.toString(): month.toString();
-    var day = date.getDate();
-    var daystr=day<10?"0"+day.toString(): day.toString();
-    var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    ServerLogService.log({ level, action, userMail, ip, type, date_str});
-}
 
 async function getRoles(email) {
     if (!util.isDate) {

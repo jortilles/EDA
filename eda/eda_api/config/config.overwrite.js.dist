@@ -1,0 +1,52 @@
+/**
+ * Copy this file to config.overwrite.js (same folder). It is gitignored, so it never touches
+ * the core config files (eda_api_config.js, cache.config.js, etc.) and survives repo updates.
+ *
+ * Only declare the values you actually want to change from the defaults defined in the
+ * matching *.config.js file. Nested objects are merged deeply, so a single nested property
+ * can be overwritten without repeating its whole parent object.
+ *
+ * Each top-level key below matches one base config file/export:
+ */
+module.exports = {
+    // eda_api_config: {
+    //     port: 9001,
+    //     custom_behaviour: {
+    //         ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: true,
+    //     },
+    // },
+    // cache_config: {
+    //     MAX_STORED_ROWS: 10000,
+    // },
+    // mailing_config: {
+    //     server_apiURL: 'https://your-domain.com',
+    // },
+    // ai_config: {
+    //     AVAILABLE: true,
+    // },
+    // saml_config: {
+    //     issuer: 'https://your-idp.example.com',
+    // },
+    // microsoft_config: {
+    //     CLIENT_ID: 'your-client-id',
+    // },
+    // google_analytics_config: {
+    //     CLIENT_ID: 'your-client-id',
+    // },
+    // bbdd_orcl: {
+    //     bbdd_host: 'your-oracle-host',
+    // },
+    // oracle_config: '/custom/oracle/instantclient',
+    // database_config: {
+    //     url: 'mongodb://user:pass@host:port/EDA',
+    // },
+    // seed: 'a-different-jwt-secret',
+    // sinergiacrm_config: {
+    //     sinergiaConn: {
+    //         host: 'your-sinergiacrm-host',
+    //     },
+    // },
+    // activedirectory_config: {
+    //     url: 'ldap://your-ad-host',
+    // },
+};

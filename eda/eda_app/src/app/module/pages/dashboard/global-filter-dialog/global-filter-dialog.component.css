@@ -20,15 +20,25 @@ span {
     font-size: 0.9rem;
 }
 
-/* ── Date picker ────────────────────────────────────────────── */
-::ng-deep eda-date-picker input {
-    height: 40px;
-    width: 100%;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid #d1d5db;
+/* ── Date picker - same height as the other filter value inputs in this dialog (h-[3.2rem]) ── */
+::ng-deep date-picker {
+    display: block;
+    height: 3.2rem;
+}
+
+::ng-deep date-picker .p-calendar,
+::ng-deep date-picker .p-calendar input {
+    height: 3.2rem;
+    box-sizing: border-box;
+}
+
+::ng-deep date-picker .summary-overlay {
+    padding: 0.5rem 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
     box-sizing: border-box;
     font-size: 1rem;
+    height: 3.2rem;
 }
 
 /* ── PrimeNG dropdown / multiselect label ───────────────────── */

@@ -15,7 +15,7 @@ export const PanelOptions = {
         if (panelComponent.panel.content) {
 
           panelComponent.panelDeepCopy = _.cloneDeep(panelComponent.panel.content, true);
-          if (panelComponent.selectedQueryMode == 'EDA2') {
+          if (panelComponent.selectedQueryMode == 'TREE') {
             panelComponent.panelDeepCopy.rootTable = _.cloneDeep(panelComponent.rootTable);
           }
           panelComponent.display_v.disablePreview = false;
@@ -157,11 +157,6 @@ export const PanelOptions = {
       icon:"fa fa-external-link",
       command: () => {
         panelComponent.contextMenu.hideContextMenu();
-
-        let queryMode = panelComponent.panel.content.query.query.queryMode;
-        const modeSQL = panelComponent.panel.content.query.query.modeSQL;
-
-        if (!queryMode) queryMode = modeSQL ? 'SQL' : 'EDA';
 
         panelComponent.linkDashboardController = new EdaDialogController({
           params:{

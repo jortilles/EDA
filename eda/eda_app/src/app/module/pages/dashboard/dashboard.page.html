@@ -25,6 +25,9 @@
 
       <!-- Filters Section -->
       <div class="relative flow-root">
+        @if (!showZoomInSidebar) {
+          <zoom-control [dashboard]="this"></zoom-control>
+        }
         <app-v2-global-filter #globalFilter [dashboard]="this"></app-v2-global-filter>
 
         @if (notSaved) {
@@ -33,6 +36,7 @@
           </div>
         }
       </div>
+
     </div>
 
 
@@ -43,11 +47,15 @@
           @for (panel of panels; track panel) {
           <gridster-item class="gridster-item" [item]="panel" [dragAndDrop]="panel.dragAndDrop"
             [resizable]="panel.resizable" [ngStyle]="gridsterItemStyle"
-            [class.mobile-table-panel]="isTablePanel(panel)">
+            [class.mobile-table-panel]="isTablePanel(panel)"
+            [class.background-transparent]="panel.type === 1 && panel.backgroundTransparent"
+            [class.panel-filter-highlight]="hoveredFilterPanelIds.includes(panel.id)"
+            [class.panel-filter-dimmed]="isFilterHoverActive && !hoveredFilterPanelIds.includes(panel.id)">
 
               @if (panel.type===0) {
                 <eda-blank-panel #edaPanel [dashboard]="this" [panel]="panel" [inject]="injectEdaPanel" [panelContent]="panelContent" [panelText]="panelTitle"
                   (remove)="onRemovePanel($event)" (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)"
+                  (rootTableFirstSet)="onNewPanelRootTableSet($event, panel)" (rootTableCleared)="onNewPanelRootTableCleared(panel)"
                   [availableChatGpt]="availableChatGpt">
                 </eda-blank-panel>
               }

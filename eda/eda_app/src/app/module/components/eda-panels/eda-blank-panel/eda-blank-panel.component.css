@@ -174,7 +174,7 @@ eda-blank-panel :root {
   margin-top: 13px;
 }
 
-/* Árbol EDA2 — scroll lateral */
+/* Árbol TREE — scroll lateral */
 ::ng-deep .eda-tree-scroll {
   overflow-x: auto;
   overflow-y: visible;

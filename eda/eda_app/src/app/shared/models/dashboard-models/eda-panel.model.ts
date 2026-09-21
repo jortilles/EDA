@@ -30,6 +30,8 @@ export class EdaPanel {
     public readonly: boolean = false;
     public globalFilterMap: any[];
     public clickFiltersEnabled: boolean = true;
+    public backgroundTransparent?: boolean;
+    public _isDuplicate?: boolean;
 
     constructor(init?: Partial<EdaPanel>) {
         Object.assign(this, init);

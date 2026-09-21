@@ -1,0 +1,22 @@
+.badge-corporate {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  background-color: var(--corporate-primary);
+  white-space: nowrap;
+}
+
+.about-license a {
+  color: var(--corporate-primary);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.about-license a:hover {
+  color: var(--corporate-primary-gradient, var(--corporate-primary));
+}

@@ -75,28 +75,32 @@
           <!-- Filtros del panel -->
           <div class="mb-3">
             <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenFiltrosPanelH6">Filtros del panel</h4>
-            @if (selectedFilters.length === 0) {
+            @if (!hasActiveFilters(selectedFilters)) {
               <span class="text-sm text-gray-400 italic" i18n="@@noFilters">Sin filtros</span>
             }
             @for (filter of selectedFilters; track filter) {
-              <div class="text-sm py-0.5">
-                <span class="text-gray-400 text-xs" [innerHTML]="getFilterJoins(filter)"></span>
-                <span [innerHTML]="getDisplayFilterStr(filter)"></span>
-              </div>
+              @if (isFilterActive(filter)) {
+                <div class="text-sm py-0.5">
+                  <span class="text-gray-400 text-xs" [innerHTML]="getFilterJoins(filter)"></span>
+                  <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+                </div>
+              }
             }
           </div>
 
           <!-- Filtros del informe -->
           <div>
             <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenFiltrosInformeH6">Filtros del informe</h4>
-            @if (globalFilters.length === 0) {
+            @if (!hasActiveFilters(globalFilters)) {
               <span class="text-sm text-gray-400 italic" i18n="@@noFilters">Sin filtros</span>
             }
             @for (filter of globalFilters; track filter) {
-              <div class="text-sm py-0.5">
-                <span class="text-gray-400 text-xs" [innerHTML]="getFilterJoins(filter)"></span>
-                <span [innerHTML]="getDisplayFilterStr(filter)"></span>
-              </div>
+              @if (isFilterActive(filter)) {
+                <div class="text-sm py-0.5">
+                  <span class="text-gray-400 text-xs" [innerHTML]="getFilterJoins(filter)"></span>
+                  <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+                </div>
+              }
             }
           </div>
 
@@ -275,7 +279,7 @@
                       <ng-container *ngTemplateOutlet="entityList"></ng-container>
                     }
                     <!-- EDA JOINS TREE MODE -->
-                    @if (selectedQueryMode=='EDA2') {
+                    @if (selectedQueryMode=='TREE') {
 
                       @if (currentQuery.length > 0) {
                         <div class="eda-tree-scroll">
@@ -625,10 +629,12 @@
                         <div class="summary-section">
                           <h3 class="summary-section-title text-base font-semibold" i18n="@@resumenFiltrosInformeH6">Resumen de filtros del informe</h3>
                           @for (filter of globalFilters; track filter) {
-                            <div class="summary-item text-base">
-                              <span class="text-sm text-gray-400" [innerHTML]="getFilterJoins(filter)"></span>
-                              <span [innerHTML]="getDisplayFilterStr(filter)"></span>
-                            </div>
+                            @if (isFilterActive(filter)) {
+                              <div class="summary-item text-base">
+                                <span class="text-sm text-gray-400" [innerHTML]="getFilterJoins(filter)"></span>
+                                <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+                              </div>
+                            }
                           }
                         </div>
 
@@ -636,10 +642,12 @@
                         <div class="summary-section border-t border-r border-gray-200">
                           <h3 class="summary-section-title text-base font-semibold" i18n="@@resumenFiltrosPanelH6">Resumen de filtros del panel</h3>
                           @for (filter of selectedFilters; track filter) {
-                            <div class="summary-item text-base">
-                              <span class="text-sm text-gray-400" [innerHTML]="getFilterJoins(filter)"></span>
-                              <span [innerHTML]="getDisplayFilterStr(filter)"></span>
-                            </div>
+                            @if (isFilterActive(filter)) {
+                              <div class="summary-item text-base">
+                                <span class="text-sm text-gray-400" [innerHTML]="getFilterJoins(filter)"></span>
+                                <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+                              </div>
+                            }
                           }
                                 </div>
 
@@ -719,12 +727,14 @@
                           </div>
 
                           <!-- What-If Scenarios -->
-                          <div class="flex items-center justify-between rounded-lg px-3 py-2 ">
-                            <span i18n="@@scenarios" class="text-base font-medium text-gray-700" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios" tooltipPosition="top">Escenarios</span>
-                            <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onWhatIfDialog()">
-                              What If?
-                            </button>
-                          </div>
+                          @if (showWhatIf) {
+                            <div class="flex items-center justify-between rounded-lg px-3 py-2 ">
+                              <span i18n="@@scenarios" class="text-base font-medium text-gray-700" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios" tooltipPosition="top">Escenarios</span>
+                              <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onWhatIfDialog()">
+                                What If?
+                              </button>
+                            </div>
+                          }
 
                           <!-- AND/OR Advanced filters -->
                           <div class="flex items-center justify-between rounded-lg px-3 py-2 ">
@@ -745,25 +755,27 @@
                                 'btn-panel-hover bg-white text-gray-600': !groupByEnabled
                               }"
                               class="px-3 py-1 text-base border rounded-md transition-all min-w-[3rem] text-center">
-                              {{ groupByEnabled ? 'Sí' : 'No' }}
+                              {{ groupByEnabled ? yesText : noText }}
                             </button>
                           </div>
 
                           <!-- Dynamic filters -->
-                          <div class="flex items-center justify-between rounded-lg px-3 py-2">
-                            <span i18n="@@dynamicFiltersText" class="text-base font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" tooltipPosition="top">Filtros dinámicos</span>
-                            <button
-                              type="button"
-                              (click)="dynamicFiltersInteraction()"
-                              [ngClass]="{
-                                'btn-panel-active': dynamicFilters,
-                                'btn-panel-hover bg-white text-gray-600': !dynamicFilters
-                              }"
-                              class="px-3 py-1 text-base border rounded-md transition-all min-w-[3rem] text-center">
-                              {{ dynamicFilters ? 'Sí' : 'No' }}
-                            </button>
-                          </div>
-                          
+                          @if (dynamicFiltersAvailable) {
+                            <div class="flex items-center justify-between rounded-lg px-3 py-2">
+                              <span i18n="@@dynamicFiltersText" class="text-base font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" tooltipPosition="top">Filtros dinámicos</span>
+                              <button
+                                type="button"
+                                (click)="dynamicFiltersInteraction()"
+                                [ngClass]="{
+                                  'btn-panel-active': dynamicFilters,
+                                  'btn-panel-hover bg-white text-gray-600': !dynamicFilters
+                                }"
+                                class="px-3 py-1 text-base border rounded-md transition-all min-w-[3rem] text-center">
+                                {{ dynamicFilters ? yesText : noText }}
+                              </button>
+                            </div>
+                          }
+
                         </div>
 
                         <!-- Instructions -->
@@ -795,6 +807,7 @@
                             </details>
 
                             <!-- What If -->
+                            @if (showWhatIf) {
                             <details class="group" name="sqlIndicationOpenSection">
                               <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
                                 <div class="flex items-center gap-2">
@@ -816,6 +829,7 @@
                                 </ul>
                               </div>
                             </details>
+                            }
 
                             <!-- Advanced Filters -->
                             <details class="group" name="sqlIndicationOpenSection">
@@ -862,27 +876,29 @@
                             </details>
 
                             <!-- Dynamic filters -->
-                            <details class="group" name="sqlIndicationOpenSection">
-                              <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
-                                <div class="flex items-center gap-2">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--corporate-primary)] shrink-0">
-                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                            @if (dynamicFiltersAvailable) {
+                              <details class="group" name="sqlIndicationOpenSection">
+                                <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
+                                  <div class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--corporate-primary)] shrink-0">
+                                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                    </svg>
+                                    <span class="text-base font-medium" i18n="@@dynamicFiltersText">Filtros dinámicos</span>
+                                  </div>
+                                  <svg class="h-4 w-4 text-gray-400 group-open:rotate-180 transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                   </svg>
-                                  <span class="text-base font-medium" i18n="@@dynamicFiltersText">Filtros dinámicos</span>
+                                </summary>
+                                <div class="px-4 pb-4 pt-2 text-base text-gray-600 bg-gray-50">
+                                  <p class="mb-2" i18n="@@dynamicFilters1">Al hacer clic en otros paneles del dashboard se crean <strong>filtros dinámicos</strong> que afectan al resto de paneles. Activar esta opción hace que este panel <strong>ignore</strong> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</p>
+                                  <p class="text-sm font-semibold text-gray-500 mb-1" i18n="@@indicaciones2">Limitaciones:</p>
+                                  <ul class="list-disc pl-4 text-sm space-y-0.5">
+                                    <li i18n="@@dynamicFilters3">Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</li>
+                                    <li i18n="@@dynamicFilters4">Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</li>
+                                  </ul>
                                 </div>
-                                <svg class="h-4 w-4 text-gray-400 group-open:rotate-180 transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                </svg>
-                              </summary>
-                              <div class="px-4 pb-4 pt-2 text-base text-gray-600 bg-gray-50">
-                                <p class="mb-2" i18n="@@dynamicFilters1">Al hacer clic en otros paneles del dashboard se crean <strong>filtros dinámicos</strong> que afectan al resto de paneles. Activar esta opción hace que este panel <strong>ignore</strong> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</p>
-                                <p class="text-sm font-semibold text-gray-500 mb-1" i18n="@@indicaciones2">Limitaciones:</p>
-                                <ul class="list-disc pl-4 text-sm space-y-0.5">
-                                  <li i18n="@@dynamicFilters3">Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</li>
-                                  <li i18n="@@dynamicFilters4">Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</li>
-                                </ul>
-                              </div>
-                            </details>
+                              </details>
+                            }
 
                           </div>
                         </div>

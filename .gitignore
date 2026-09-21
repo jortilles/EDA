@@ -14,6 +14,7 @@ eda/eda_api/config/seed.js
 eda/eda_api/config/seed.js.docker
 eda/eda_api/config/SMPT.config.json
 eda/eda_api/config/SMPT.config.json.sample
+eda/eda_api/config/config.overwrite.js
 eda/eda_api/lib/module/uploads/users
 eda/eda_api/lib/module/media/images
 eda/eda_api/chromium_dependencies.txt
@@ -31,5 +32,6 @@ eda/eda_app/src/app/config/config.ts
 eda/eda_mcp/dist
 eda/eda_mcp/node_modules
 #APP plugin-Registry
+eda/eda_app/src/app/plugins/page-plugins/page-plugin-registry.ts
 eda/eda_api/config/sinergiacrm.config.js
 eda/eda_app/proxy.conf.json

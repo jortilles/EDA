@@ -11,12 +11,66 @@
   color: #13427d !important;
 }
 
+/* Optimal use of vertical space, compact line height for scaled titles */
 .eda-title-panel {
-     width: 100%;
+  width: 100%;
+  line-height: 1.2;
 }
 
+.eda-title-panel p,
+.eda-title-panel h1,
+.eda-title-panel h2,
+.eda-title-panel div {
+  margin: 0;
+  padding: 0;
+}
 
+/* 
+  Keep H1/H2 sizing. Needed because the global stylesheet 
+  resets heading sizes (h2 with !important below 1370px). 
+*/
+.eda-title-panel h1 {
+  font-size: 2em !important;
+  font-weight: bold;
+}
+.eda-title-panel h2 {
+  font-size: 1.5em !important;
+  font-weight: bold;
+}
 
+.eda-title-panel img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.eda-title-panel ol,
+.eda-title-panel ul {
+  margin: 0;
+  padding-left: 0.5em;
+  list-style-position: inside;
+}
+.eda-title-panel ol { list-style-type: decimal; }
+.eda-title-panel ul { list-style-type: disc; }
+.eda-title-panel ol ol { list-style-type: lower-alpha; }
+.eda-title-panel ol ol ol { list-style-type: lower-roman; }
+/* Content saved as raw Quill HTML (has <li data-list> + an empty <span class="ql-ui">) */
+.eda-title-panel .ql-ui { display: none; }
+.eda-title-panel li[data-list='bullet'] { list-style-type: disc; }
+
+/* List number/bullet scales with the font size applied to the line. */
+.eda-title-panel li:has(> [style*="font-size: 10px"]) { font-size: 10px; }
+.eda-title-panel li:has(> [style*="font-size: 12px"]) { font-size: 12px; }
+.eda-title-panel li:has(> [style*="font-size: 14px"]) { font-size: 14px; }
+.eda-title-panel li:has(> [style*="font-size: 16px"]) { font-size: 16px; }
+.eda-title-panel li:has(> [style*="font-size: 18px"]) { font-size: 18px; }
+.eda-title-panel li:has(> [style*="font-size: 20px"]) { font-size: 20px; }
+.eda-title-panel li:has(> [style*="font-size: 24px"]) { font-size: 24px; }
+.eda-title-panel li:has(> [style*="font-size: 28px"]) { font-size: 28px; }
+.eda-title-panel li:has(> [style*="font-size: 32px"]) { font-size: 32px; }
+.eda-title-panel li:has(> [style*="font-size: 36px"]) { font-size: 36px; }
+.eda-title-panel li:has(> [style*="font-size: 42px"]) { font-size: 42px; }
+.eda-title-panel li:has(> [style*="font-size: 48px"]) { font-size: 48px; }
 
 
 p.ql-align-left {
