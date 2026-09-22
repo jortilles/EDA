@@ -1885,6 +1885,18 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
       const dataModelObject = JSON.parse(JSON.stringify(dataModel));
 
+      const includesAdmin = req['user'].role.includes("135792467811111111111110");
+
+      /** Oculta columnas prohibidas para que sourceFieldsQuery() no las incluya en el SELECT. */
+      if (!includesAdmin) {
+        const forbiddenColumns = DashboardController.getForbiddenColumns(dataModelObject, req['user'].role, req.user._id);
+        forbiddenColumns.forEach(fc => {
+          const table = dataModelObject.ds.model.tables.find((t) => t.table_name === fc.table);
+          const column = table?.columns.find((c) => c.column_name === fc.column);
+          if (column) column.visible = false;
+        });
+      }
+
       /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
       /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro.....*/
       if (req.body.query.filters) {
@@ -1908,13 +1920,18 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         req.user
       )
 
+      /** Sin columnas visibles: sourceFieldsQuery() devuelve '' en vez de un SELECT inválido. */
+      if (!query) {
+        console.log('No visible columns for this user in source fields query')
+        return res.status(200).json("[['noDataAllowed'],[]]")
+      }
+
       /** Forbidden tables: block the whole query if it touches a table the user can't see */
       let uniquesForbiddenTables = DashboardController.getForbiddenTables(
         dataModelObject,
         req['user'].role,
         req.user._id
       )
-      const includesAdmin = req['user'].role.includes("135792467811111111111110")
       if (includesAdmin) uniquesForbiddenTables = [];
 
       const notAllowedQuery = uniquesForbiddenTables.some(table => query.indexOf(table) >= 0);
