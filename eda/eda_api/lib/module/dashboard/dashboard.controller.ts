@@ -517,6 +517,62 @@ export class DashboardController {
     }
   }
   /**
+   * Recupera un datasource por id y le aplica el filtrado de seguridad del modelo (tablas y
+   * columnas prohibidas según los permisos del usuario de la petición). Usado tanto por
+   * getDashboard como por getDataSourceModel para no duplicar la lógica de seguridad.
+   */
+  static async getSecuredDataSource(datasourceId: string, req: Request) {
+    const datasource = await DataSource.findById(datasourceId);
+    if (!datasource) {
+      return null;
+    }
+
+    // Convertir a objeto JSON
+    const toJson = JSON.parse(JSON.stringify(datasource));
+
+    const userGroups = req.user.role;
+    const includesAdmin = req.user.role.includes("135792467811111111111110");
+
+    // Filtrar tablas y columnas prohibidas
+    const uniquesForbiddenTables = DashboardController.getForbiddenTables(toJson, userGroups, req.user._id);
+    const uniquesForbiddenColumns = DashboardController.getForbiddenColumns(toJson, userGroups, req.user._id);
+
+    if (!includesAdmin) {
+      // Ocultar tablas prohibidas
+      if (uniquesForbiddenTables.length > 0 && toJson.ds.model.tables) {
+        toJson.ds.model.tables.forEach(table => {
+          if (uniquesForbiddenTables.includes(table.table_name)) {
+            table.visible = false;
+          }
+        });
+      }
+    }
+
+    // Inicializar relaciones de tablas
+    toJson.ds.model.tables.forEach(table => {
+      table.relations.forEach(r => {
+        r.autorelation ??= false;
+        r.bridge ??= false;
+      });
+    });
+
+    // Ocultar columnas prohibidas en modelo
+    uniquesForbiddenColumns.forEach(fc => {
+      const table = toJson.ds.model.tables.find(t => t.table_name === fc.table);
+      const column = table?.columns.find(c => c.column_name === fc.column);
+      if (column) column.visible = false;
+    });
+
+    const ds = {
+      _id: datasource._id,
+      model: toJson.ds.model,
+      name: toJson.ds.metadata.model_name
+    };
+
+    return { datasource, toJson, ds, uniquesForbiddenTables, includesAdmin };
+  }
+
+  /**
    * Retrieves a specific dashboard by ID and user permissions.
    * @param req Express Request with dashboard ID and user
    * @param res Express Response to send the result
@@ -560,62 +616,23 @@ export class DashboardController {
           return next(new HttpException(500, "You don't have permission"));
         }
 
-        // Obtener el datasource asociado
-        const datasource = await DataSource.findById(dashboard.config.ds._id);
-        if (!datasource) {
+        // Obtener el datasource asociado, ya filtrado según los permisos del usuario
+        const securedDataSource = await DashboardController.getSecuredDataSource(dashboard.config.ds._id, req);
+        if (!securedDataSource) {
           return next(new HttpException(400, 'Datasource not found with id'));
         }
+        const { ds, uniquesForbiddenTables, includesAdmin } = securedDataSource;
 
-        // Convertir a objeto JSON
-        const toJson = JSON.parse(JSON.stringify(datasource));
-
-        // Filtrar tablas y columnas prohibidas
-        const uniquesForbiddenTables = DashboardController.getForbiddenTables(toJson, userGroups, req.user._id);
-        const uniquesForbiddenColumns = DashboardController.getForbiddenColumns(toJson, userGroups, req.user._id);
-
-        const includesAdmin = req.user.role.includes("135792467811111111111110");
-
-        if (!includesAdmin) {
-          // Ocultar tablas prohibidas
-          if (uniquesForbiddenTables.length > 0 && toJson.ds.model.tables) {
-            toJson.ds.model.tables.forEach(table => {
-              if (uniquesForbiddenTables.includes(table.table_name)) {
-                table.visible = false;
-              }
-            });
-
-            // Ocultar columnas prohibidas en paneles
-            dashboard.config.panel?.forEach(panel => {
-              if (panel.content?.query?.query?.fields) {
-                panel.content.query.query.fields = panel.content.query.query.fields.filter(
-                  field => !uniquesForbiddenTables.includes(field.table_id)
-                );
-              }
-            });
-          }
-        }
-
-        // Inicializar relaciones de tablas
-        toJson.ds.model.tables.forEach(table => {
-          table.relations.forEach(r => {
-            r.autorelation ??= false;
-            r.bridge ??= false;
+        // Ocultar columnas prohibidas en paneles
+        if (!includesAdmin && uniquesForbiddenTables.length > 0) {
+          dashboard.config.panel?.forEach(panel => {
+            if (panel.content?.query?.query?.fields) {
+              panel.content.query.query.fields = panel.content.query.query.fields.filter(
+                field => !uniquesForbiddenTables.includes(field.table_id)
+              );
+            }
           });
-        });
-
-        // Ocultar columnas prohibidas en modelo
-
-        uniquesForbiddenColumns.forEach(fc => {
-          const table = toJson.ds.model.tables.find(t => t.table_name === fc.table);
-          const column = table?.columns.find(c => c.column_name === fc.column);
-          if (column) column.visible = false;
-        });
-
-        const ds = {
-          _id: datasource._id,
-          model: toJson.ds.model,
-          name: toJson.ds.metadata.model_name
-        };
+        }
 
         insertServerLog(req, 'info', 'DashboardAccessed', req.user.name, dashboard._id + '--' + dashboard.config.title);
 
@@ -633,44 +650,14 @@ export class DashboardController {
   }
 
   static async getDataSourceModel(req: Request, res: Response, next: NextFunction) {
-    const model_id = req.params.id;
-    const user = req['user']._id;
-    const userGroups = req['user'].role;
-
     try {
-      const datasource = await DataSource.findById(req.params.id);
+      const securedDataSource = await DashboardController.getSecuredDataSource(req.params.id, req);
 
-      if (!datasource) {
+      if (!securedDataSource) {
         return next(new HttpException(404, "Datasource not found with id"));
       }
 
-      let toJson = JSON.parse(JSON.stringify(datasource));
-
-      // Filtre de seguretat per les taules
-      const uniquesForbiddenTables = DashboardController.getForbiddenTables(
-        toJson,
-        req.user.groups,
-        req.user._id
-      );
-
-      // Comprobar admin
-      const includesAdmin = req.user.role.includes("135792467811111111111110");
-
-      // Añadir valores por defecto a relaciones
-      toJson.ds.model.tables.forEach(table => {
-        table.relations.forEach(r => {
-          r.autorelation = r.autorelation ?? false;
-          r.bridge = r.bridge ?? false;
-        });
-      });
-
-      const ds = {
-        _id: datasource._id,
-        model: toJson.ds.model,
-        name: toJson.ds.metadata.model_name
-      };
-
-      return res.status(200).json(ds);
+      return res.status(200).json(securedDataSource.ds);
 
     } catch (err) {
       console.error(err);
