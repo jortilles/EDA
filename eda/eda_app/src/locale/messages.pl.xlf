@@ -2687,6 +2687,16 @@ Co widzę?
     <target> Separator dziesiętny</target>
   </trans-unit>
 
+  <trans-unit id="decSeparatorComma">
+    <source>, (coma)</source>
+    <target>, (przecinek)</target>
+  </trans-unit>
+
+  <trans-unit id="decSeparatorDot">
+    <source>. (punto)</source>
+    <target>. (kropka)</target>
+  </trans-unit>
+
   <trans-unit id="viewOk">
     <source> Vista generada correctamente</source>
     <target>  Widok wygenerowany poprawnie</target>
