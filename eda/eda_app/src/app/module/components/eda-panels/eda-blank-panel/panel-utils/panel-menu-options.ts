@@ -376,7 +376,7 @@ export const PanelOptions = {
         item: () => PanelOptions.changeChartType(ebp),
       },
       {
-        show: !!ebp.panel.content,
+        show: !!ebp.panel.content && ebp.selectedQueryMode !== 'SQL',
         item: () => PanelOptions.showSourceFields(ebp),
       },
       {

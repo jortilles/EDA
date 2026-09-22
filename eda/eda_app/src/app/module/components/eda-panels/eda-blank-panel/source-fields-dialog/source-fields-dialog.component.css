@@ -213,10 +213,25 @@
 }
 
 .source-fields-th {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    width: 100%;
+    position: relative;
+}
+
+.source-fields-th-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.source-fields-th-actions {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    position: relative;
+    flex-shrink: 0;
 }
 
 /* Custom filter popup — deliberately never leaves this component's own DOM (no appendTo
@@ -225,7 +240,7 @@
 .source-fields-filter-popup {
     position: absolute;
     top: 100%;
-    left: 0;
+    right: 0;
     z-index: 10;
     margin-top: 4px;
     padding: 0.5rem;
@@ -262,12 +277,12 @@
 }
 .source-fields-content ::ng-deep .source-fields-sort-icon:hover .p-sortable-column-icon,
 .source-fields-filter-icon:hover {
-    color: #16a34a;
+    color: var(--corporate-primary-gradient);
 }
 
-/* Stays green while a filter is actually applied to the column, not just on hover. */
+/* Stays colored while a filter is actually applied to the column, not just on hover. */
 .source-fields-filter-icon.source-fields-filter-active {
-    color: #16a34a;
+    color: var(--corporate-primary-gradient);
 }
 
 /* Red hover, distinguishing this as a destructive action from sort/filter's green. */

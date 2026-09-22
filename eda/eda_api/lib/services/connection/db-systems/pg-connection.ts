@@ -148,19 +148,21 @@ export class PgConnection extends AbstractConnection {
     }
 
     async execQuery(query: string): Promise<any> {
-        let client: { connect: () => void; query: (arg0: string) => any; end: () => void; };
+        const client = this.client;
         try {
-            client = this.client;
-            client.connect();
-            const searchPath = await client.query(`SET search_path TO '${this.config.schema || 'public'}';`)
+            await client.connect();
+            await client.query(`SET search_path TO '${this.config.schema || 'public'}';`);
             const result = await client.query(query);
-            client.end();
             return result.rows;
         } catch (err) {
             console.log(err);
             throw err;
         } finally {
-            client.end();
+            try {
+                await client.end();
+            } catch (endErr) {
+                console.error(endErr);
+            }
         }
     }
 
