@@ -3,7 +3,6 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
-import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { StyleProviderService } from '@eda/services/service.index';
 import { DynamicTextConfig } from '../panel-charts/chart-configuration-models/dynamicText-config';
 import { FormsModule } from '@angular/forms';
@@ -25,7 +24,7 @@ export class dynamicTextDialogComponent implements OnInit {
 
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
-  public chart: EdaChart;
+  public chart: any;
   public value: number;
   public operand: string;
   @Output() color;

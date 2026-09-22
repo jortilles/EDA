@@ -109,12 +109,14 @@
                 <!-- Left column: editable HTML -->
                 <div class="flex-1 flex flex-col p-4 border-r">
                     <h4 class="text-xs text-gray-500 mb-2 font-semibold">HTML del sidebar</h4>
-                    <textarea
+                    <eda-code-editor
                         [(ngModel)]="editingHtml"
                         (ngModelChange)="onEditingHtmlChange($event)"
-                        class="flex-1 w-full font-mono text-xs border rounded p-3 resize-none outline-none focus:ring-1 focus:ring-blue-300"
-                        spellcheck="false">
-                    </textarea>
+                        language="html"
+                        [fillHeight]="true"
+                        fontSize="15px"
+                        class="flex-1">
+                    </eda-code-editor>
                 </div>
 
                 <!-- Right column: live preview -->

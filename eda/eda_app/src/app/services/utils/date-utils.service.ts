@@ -10,6 +10,33 @@ export class DateUtils {
 
     }
 
+    /** Rounds up to the next :00 or :30 mark, matching the mailing check schedule */
+    public roundToNextHalfHour(date: Date): Date {
+        const rounded = new Date(date);
+        const remainder = rounded.getMinutes() % 30;
+        if (remainder !== 0 || rounded.getSeconds() > 0) {
+            rounded.setMinutes(rounded.getMinutes() + (30 - remainder));
+        }
+        rounded.setSeconds(0, 0);
+        return rounded;
+    }
+
+    /** Snaps a manually typed time to the nearest :00 or :30 */
+    public roundToNearestHalfHour(date: Date): Date {
+        const rounded = new Date(date);
+        let nearest = Math.round(rounded.getMinutes() / 30) * 30;
+        if (nearest === 60) {
+            rounded.setHours(rounded.getHours() + 1);
+            nearest = 0;
+        }
+        rounded.setMinutes(nearest, 0, 0);
+        return rounded;
+    }
+
+    public fillWithZeros(n: number): string {
+        return n < 10 ? `0${n}` : `${n}`;
+    }
+
     /**Range dates utils */
 
     public getRange(range: any) {

@@ -3,7 +3,17 @@
 </head>
 <body>
 <script type="text/javascript">
-        window.location.href = window.location.href.replace('/index.html','')+'/ca';
+        var userLang = navigator.language || navigator.userLanguage;
+        var locale = 'en';
+        if(userLang.indexOf('es') >=0){
+                locale = 'es';
+        }else if(userLang === 'ca-ES'){
+                locale = 'ca';
+        }else if(userLang.indexOf('pl') >=0){
+                locale = 'pl';
+        }
+        var base = window.location.href.replace('/index.html','').split('#')[0].replace(/\/$/, '');
+        window.location.href = base + '/' + locale + '/' + window.location.hash;
 </script>
 </body>
 </html>

@@ -1,15 +1,16 @@
-import { EdaTable, EdaColumnText, EdaColumnContextMenu, EdaTableComponent } from '@eda/components/component.index';
+import { EdaColumnText, EdaColumnContextMenu, EdaTableComponent } from '@eda/components/component.index';
+import { EdaTableModel } from '@eda/components/eda-tables/eda-table/eda-table.model';
 import { Component, OnInit, OnDestroy, EventEmitter, Output, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
 import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
 import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
 import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource, Relation } from '@eda/models/data-source-model/data-source-models';
-import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
+import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem, CodeEditorComponent } from '@eda/shared/components/shared-components.index';
 import { AGG_TYPES } from '@eda/configs/customizable/customizable_default';
-import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
+import { EdaColumnFunction } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-function';
 import * as _ from 'lodash';
-import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
+import { EdaColumnEditable } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-editable';
 import Swal from 'sweetalert2';
 import { PrimengModule } from 'app/core/primeng.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -33,6 +34,7 @@ import { AddTagComponent } from '../data-source-list/add-tag/add-tag.component';
 import { CalculatedColumnEditDialogComponent } from './calculated-column-edit-dialog/calculated-column-edit-dialog.component';
 import { AddDuckdbTableDialogComponent } from './add-duckdb-table-dialog/add-duckdb-table-dialog.component';
 import { AGG_COMPUTED } from './aggregationConstants';
+import { unwrapViewQuery } from '@eda/services/utils/view-query.util';
 
 // Angular Modules
 const ANGULAR_MODULES = [
@@ -59,7 +61,8 @@ const STANDALONE_COMPONENTS = [
   AddTagComponent,
   EdaTableComponent,
   CalculatedColumnEditDialogComponent,
-  AddDuckdbTableDialogComponent
+  AddDuckdbTableDialogComponent,
+  CodeEditorComponent
 ];
 
 @Component({
@@ -75,10 +78,10 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     @Output() onTableCreated: EventEmitter<any> = new EventEmitter();
 
     public form: UntypedFormGroup;
-    public permissionsColumn: EdaTable;
-    public permissionTable: EdaTable;
-    public permissionModel: EdaTable;
-    public relationsTable: EdaTable;
+    public permissionsColumn: EdaTableModel;
+    public permissionTable: EdaTableModel;
+    public permissionModel: EdaTableModel;
+    public relationsTable: EdaTableModel;
     public navigationSubscription: any;
     // Properties
     public tablePanel: EditTablePanel;
@@ -248,7 +251,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         );
 
-        this.permissionsColumn = new EdaTable({
+        this.permissionsColumn = new EdaTableModel({
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
                     new EdaContextMenuItem({
@@ -293,7 +296,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         });
 
 
-        this.permissionTable = new EdaTable({
+        this.permissionTable = new EdaTableModel({
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
                     new EdaContextMenuItem({
@@ -334,7 +337,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
 
 
-        this.permissionModel = new EdaTable({
+        this.permissionModel = new EdaTableModel({
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
                     new EdaContextMenuItem({
@@ -363,7 +366,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         });
 
 
-        this.relationsTable = new EdaTable({
+        this.relationsTable = new EdaTableModel({
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
                     new EdaContextMenuItem({
@@ -1017,6 +1020,11 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.dataModelService.hideAllRelations();
     }
 
+    /** SELECT interno de la vista, sin el `( ... ) as <nombre>` con el que se guarda.*/
+    public viewQueryPreview(): string {
+        return unwrapViewQuery(this.tablePanel?.query);
+    }
+
     viewEdition() {
         Swal.fire({
             title: $localize`:@@viewEditionTitle:Edición de la Vista`,
@@ -1030,7 +1038,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 // Finding the view to edit:
                 let myViewInEdition;
                 let allViews = this.dataModelService.allViews();
-                myViewInEdition = allViews.find(e => e.table_name === this.tablePanel.technical_name && e.query === this.tablePanel.query && e.table_type === 'view')
+                myViewInEdition = allViews.find(e => e.table_name === this.tablePanel.technical_name && e.table_type === 'view')
                 this.viewInEdition = myViewInEdition;
                 this.viewDialogEdition = true;
             } else {

@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlertService, DashboardService, DataSourceService, SpinnerService } from '@eda/services/service.index';
-import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { EdaDialog2Component, CodeEditorComponent } from '@eda/shared/components/shared-components.index';
+import { unwrapViewQuery } from '@eda/services/utils/view-query.util';
 import * as _ from 'lodash';
 
 @Component({
@@ -9,7 +10,7 @@ import * as _ from 'lodash';
   selector: 'app-view-dialog-edition',
   templateUrl: './view-dialog-edition.component.html',
   styleUrls: ['./view-dialog-edition.component.css'],
-  imports: [EdaDialog2Component, FormsModule, ReactiveFormsModule]
+  imports: [EdaDialog2Component, FormsModule, ReactiveFormsModule, CodeEditorComponent]
 })
 export class ViewDialogEditionComponent implements OnInit {
 
@@ -46,8 +47,8 @@ export class ViewDialogEditionComponent implements OnInit {
     this.initForm()
 
     this.form = this.formBuilder.group({
-      SQLexpression: [this.viewInEdition.query, Validators.required]
-    });  
+      SQLexpression: [this.SQLexpression, Validators.required]
+    });
 
     // Evaluate initial state
     this.ok = !!this.form.get('SQLexpression').value?.trim();
@@ -64,7 +65,7 @@ export class ViewDialogEditionComponent implements OnInit {
     this.viewName = this.viewInEdition.display_name.default;
     this.description = this.viewInEdition.description.default;
     this.technical_name = this.viewInEdition.table_name;
-    this.SQLexpression = this.viewInEdition.query.match(/^\((.+)\)\s+as\s+/i)?.[1] || "";
+    this.SQLexpression = unwrapViewQuery(this.viewInEdition.query);
   }
 
 
@@ -102,9 +103,15 @@ export class ViewDialogEditionComponent implements OnInit {
 	}
 
   buildColumn(column_name: string, column_index: number, data: Array<any>) {
+		// Preserve type/format (html, date, aggregation, roles...) for columns that already existed
+		const existingColumn = this.viewInEdition?.columns?.find(c => c.column_name === column_name);
+		if (existingColumn) {
+			return _.cloneDeep(existingColumn);
+		}
+
 		let type = 'numeric';
 		for (let i = 0; i < data.length; i++) {
-			if (data[i][column_index] !== null && !parseFloat(data[i][column_index])) {
+			if (data[i][column_index] !== null && isNaN(parseFloat(data[i][column_index]))) {
 				type = 'text';
 				break;
 			}

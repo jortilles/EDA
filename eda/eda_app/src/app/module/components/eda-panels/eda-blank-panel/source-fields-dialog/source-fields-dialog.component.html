@@ -1,0 +1,118 @@
+<eda-dialog2
+  [showApply]="false"
+  [closable]="true"
+  [dismissableMask]="true"
+  [closeOnEscape]="false"
+  [closeLabel]="closeLabel"
+  (close)="onHide()"
+  width="92vw"
+  [height]="dialogHeight"
+  [overflow]="'auto'">
+  <div header class="source-fields-header-content">
+    <div class="source-fields-header-title">
+      <span>{{ header }}</span>
+      @if (sql) {
+        <i class="pi pi-info-circle source-fields-info-icon" tabindex="0" role="button"
+          i18n-title="@@sourceFieldsViewQueryTooltip" title="Ver consulta SQL"
+          (click)="toggleQueryPopup($event)"
+          (keydown.enter)="toggleQueryPopup($event)"></i>
+        @if (showQueryPopup) {
+          <div class="source-fields-query-popup">
+            <div class="source-fields-query-popup-header">
+              <i class="pi pi-code"></i>
+              <span i18n="@@yourQuerySQL">Mi consulta SQL</span>
+              <button type="button" class="source-fields-copy-btn" (click)="copyQuery($event)"
+                [title]="copied ? copiedTooltip : copyTooltip">
+                <i class="pi" [class.pi-copy]="!copied" [class.pi-check]="copied"></i>
+              </button>
+            </div>
+            <pre class="source-fields-query-popup-content">{{ sql }}</pre>
+          </div>
+        }
+      }
+    </div>
+    @if (canRestoreColumn) {
+      <button type="button" class="source-fields-header-restore-btn" (click)="restoreColumn(dt)"
+        i18n-title="@@sourceFieldsRestoreColumn" title="Restaurar columna">
+        <i class="pi pi-undo"></i>
+      </button>
+    }
+  </div>
+  <div content class="source-fields-content"
+    [class.source-fields-dragging-active]="!!dragState"
+    [style.--table-header-color]="headerColorVar"
+    [style.--table-banding-color]="bandingColorVar">
+    <div class="source-fields-global-filter">
+      <i class="pi pi-search"></i>
+      <input type="text" pInputText class="source-fields-global-filter-input"
+        [value]="globalFilterValue"
+        (input)="onGlobalFilterInput($event, dt)"
+        i18n-placeholder="@@sourceFieldsGlobalFilterPlaceholder" placeholder="Buscar en todos los campos" />
+    </div>
+    <p-table #dt [value]="rows" [columns]="headers" [paginator]="true" [rows]="50"
+      [globalFilterFields]="globalFilterFields"
+      [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="{first} - {last} de {totalRecords} registros"
+      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport"
+      [scrollable]="true" [scrollHeight]="tableScrollHeight"
+      [tableStyle]="{'min-width': '100%'}" styleClass="p-datatable-striped p-datatable-sm">
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          @for (header of columns; track $index) {
+            <th #headerCell class="source-fields-header-cell"
+              [class.source-fields-dragging]="dragState?.dragIndex === $index"
+              (mousedown)="onHeaderMouseDown($event, $index, dt)">
+              <div class="source-fields-th">
+                <span class="source-fields-th-title">{{ header }}</span>
+                <div class="source-fields-th-actions">
+                  <span class="source-fields-sort-icon" tabindex="0" role="button"
+                    (click)="dt.sort({ originalEvent: $event, field: $index.toString() })"
+                    (keydown.enter)="dt.sort({ originalEvent: $event, field: $index.toString() })">
+                    <p-sortIcon [field]="$index.toString()"></p-sortIcon>
+                  </span>
+                  <span class="source-fields-filter-icon" tabindex="0" role="button"
+                    [class.source-fields-filter-active]="!!filterValues[$index.toString()]"
+                    (click)="toggleFilter($index.toString())"
+                    (keydown.enter)="toggleFilter($index.toString())">
+                    <i class="pi pi-filter"></i>
+                  </span>
+                  <span class="source-fields-delete-icon" tabindex="0" role="button"
+                    (click)="deleteColumn($index, dt)"
+                    (keydown.enter)="deleteColumn($index, dt)">
+                    <i class="pi pi-times"></i>
+                  </span>
+                  @if (openFilterField === $index.toString()) {
+                    <div class="source-fields-filter-popup">
+                      <input #filterInput type="text" pInputText class="source-fields-filter-input"
+                        [value]="filterValues[$index.toString()] || ''"
+                        (input)="onFilterInput($event, $index.toString(), dt)"
+                        (keydown.escape)="onFilterEscape($event)"
+                        i18n-placeholder="@@sourceFieldsFilterPlaceholder" placeholder="Buscar" />
+                    </div>
+                  }
+                </div>
+              </div>
+            </th>
+          }
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr>
+          @for (header of columns; track $index) {
+            <td>{{ rowData[$index] }}</td>
+          }
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [attr.colspan]="headers.length" i18n="@@noDataAvailable">No hay datos disponibles</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <button footer class="execute-button" (click)="exportToExcel(dt)">
+    <i class="fa fa-file-excel-o"></i>
+    <span i18n="@@sourceFieldsExportExcel">Exportar a Excel</span>
+  </button>
+</eda-dialog2>

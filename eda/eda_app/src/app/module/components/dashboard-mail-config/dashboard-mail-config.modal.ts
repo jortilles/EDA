@@ -1,108 +1,116 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, } from "@angular/forms";
-import { AlertService, UserService } from "@eda/services/service.index";
-import { SharedModule } from "@eda/shared/shared.module";
+import { Component, Input, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
 import { MultiSelectModule } from "primeng/multiselect";
 import { CalendarModule } from 'primeng/calendar';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { SelectButtonModule } from "primeng/selectbutton";
 import { InputSwitchModule } from 'primeng/inputswitch';
-import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
-
-
-import * as _ from 'lodash';
-import { EdaDialog } from "@eda/shared/components/shared-components.index";
+import { DropdownModule } from 'primeng/dropdown';
+import { DialogModule } from 'primeng/dialog';
+import { TooltipModule } from 'primeng/tooltip';
+import { EdaDialog2Component, CodeEditorComponent } from "@eda/shared/components/shared-components.index";
 import { DashboardPage } from "../../pages/dashboard/dashboard.page";
-
+import { MailConfigModalBase } from "../mail-config/mail-config-modal.base";
 
 @Component({
   selector: 'app-dashboard-mail-config',
   standalone: true,
-  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, FloatLabelModule,CalendarModule,InputSwitchModule,EdaDialog2Component],
-  templateUrl: './dashboard-mail-config.modal.html',
-  styleUrls: ['./dashboard-mail-config.modal.css'],
+  imports: [CommonModule, FormsModule, MultiSelectModule, CalendarModule, InputSwitchModule, DropdownModule, DialogModule, TooltipModule, EdaDialog2Component, CodeEditorComponent],
+  templateUrl: '../mail-config/mail-config-modal.html',
+  styleUrls: ['../mail-config/mail-config-modal.css'],
 })
+export class DashboardMailConfigModal extends MailConfigModalBase implements OnInit {
+  @Input() dashboard!: DashboardPage;
 
-export class DashboardMailConfigModal {
-  @Output() close: EventEmitter<any> = new EventEmitter<any>();
-  @Output() apply: EventEmitter<any> = new EventEmitter<any>();
-  @Input() dashboard: DashboardPage;
-  public display: boolean = false;
-  public dialog: EdaDialog;
+  get isAlert(): boolean { return false; }
+  protected get variablePanels(): any[] { return this.dashboard?.panels as any[]; }
+  protected get linkDashboardId(): string { return this.dashboard?.dashboardId ?? ''; }
 
-  /**mail config properties */
-  public units: string;
-  public quantity: number;
-  public hours: any;
-  public hoursSTR = $localize`:@@hours:Hora/s`;
-  public daysSTR = $localize`:@@days:Día/s`;
-  public mailMessage = '';
-  public currentAlert = null;
-  public users: any;
-  public selectedUsers: any = [];
-  public enabled: boolean = false;
+  override get subtitle(): string { return this.dashboard?.dashboard?.config?.title ?? ''; }
+  override get pdfName(): string { return `${this.dashboard?.dashboard?.config?.title || 'informe'}.pdf`; }
+  /** The dashboard dialog lets you save even a barely-filled config (existing behaviour). */
+  override disableApply(): boolean { return false; }
 
-  constructor(private alertService: AlertService, private userService: UserService) { }
+  loadConfig(): void {
+    const c = this.dashboard?.dashboard?.config?.sendViaMailConfig;
+    this.loadSchedule(c);
+    if (!c?.enabled) this.enabled = true;
+  }
 
-  ngOnInit(): void {
-    this.userService.getUsers().subscribe(
-      res => this.users = res.map(user => ({ label: user.name, value: user })),
-      err => console.log(err)
+  save(): void {
+    this.apply.emit({
+      ...this.schedulePayload(),
+      lastUpdated: new Date().toISOString(),
+      dashboard: this.dashboard,
+    });
+  }
+
+  async sendNow(recipients?: { to: string[]; toExternal: string[] }): Promise<void> {
+    await this.runSend(
+      this.mailService.sendDashboardNow({
+        dashboardId: this.dashboard.dashboardId,
+        to: recipients ? recipients.to : this.registeredEmails,
+        toExternal: recipients ? recipients.toExternal : this.parseOtherRecipients(),
+        subject: this.mailSubject,
+        message: this.mailMessage,
+        aiAnalysis: this.aiAvailable && this.aiAnalysis,
+      }),
+      $localize`:@@mailSendNowStarted:Envío iniciado. Los informes se están generando y llegarán en unos minutos.`,
     );
+  }
 
-    const sendViaMailConfig = this.dashboard.dashboard.config?.sendViaMailConfig;
-    if (sendViaMailConfig?.enabled) {
-      this.setConfig();
+  // ---- live values from the panels still rendered behind the dialog ----
+
+  private panelChartComp(panelId: string): any {
+    const arr = (this.dashboard as any)?.edaPanels?.toArray?.() ?? [];
+    return arr.find((p: any) => p?.panel?.id === panelId)?.panelChart;
+  }
+
+  override getPanelCurrentValue(panelId: string): string {
+    try {
+      const v = this.panelChartComp(panelId)?.componentRef?.instance?.inject?.value;
+      if (v === undefined || v === null || v === '') return '—';
+      const n = Number(v);
+      return Number.isFinite(n) ? n.toLocaleString('de-DE') : String(v);
+    } catch {
+      return '—';
     }
   }
 
-  setConfig() {
-    const config = this.dashboard.dashboard.config.sendViaMailConfig;
-    this.hours = `${config.hours || '00'}:${config.minutes || '00'}`;
-    this.units = config.units;
-    this.quantity = config.quantity;
-    this.selectedUsers = config.users;
-    this.mailMessage = config.mailMessage;
-    this.enabled = config.enabled;
-  }
+  override getPanelSeries(panelId: string): { label: string; value: number }[] {
+    try {
+      const pc = this.panelChartComp(panelId);
+      const num = (x: any) => Number(x && typeof x === 'object' ? (x.y ?? x.value ?? x.v) : x) || 0;
 
-  save() {
+      const ec = pc?.componentRef?.instance?.inject?.edaChart;
+      const ecLabels: any[] = ec?.chartLabels ?? [];
+      const dataset: any = (ec?.chartDataset ?? []).find((d: any) => !d?.isTrend) ?? (ec?.chartDataset ?? [])[0];
+      const ecValues: any[] = dataset?.data ?? [];
+      if (ecLabels.length && ecValues.length) {
+        return ecLabels.map((lab, i) => ({ label: String(lab ?? ''), value: num(ecValues[i]) }));
+      }
 
-    const hours = this.hours && typeof this.hours === 'string' ? this.hours.slice(0, 2) :
-      this.hours ? this.fillWithZeros(this.hours.getHours()) : null;
-    const minutes = this.hours && typeof this.hours === 'string' ? this.hours.slice(3, 5) :
-      this.hours ? this.fillWithZeros(this.hours.getMinutes()) : null;
+      const data = pc?.props?.data ?? pc?.data;
+      const labels: string[] = data?.labels ?? [];
+      const rows: any[][] = data?.values ?? [];
+      if (rows.length && labels.length >= 1) {
+        let numIdx = -1;
+        for (let c = labels.length - 1; c >= 0; c--) {
+          if (rows.every(r => r[c] === null || r[c] === '' || Number.isFinite(Number(r[c])))) { numIdx = c; break; }
+        }
+        if (numIdx >= 0) {
+          const labIdx = labels.findIndex((_, i) => i !== numIdx);
+          return rows.map(r => ({ label: labIdx >= 0 ? String(r[labIdx] ?? '') : '', value: Number(r[numIdx]) || 0 }));
+        }
+      }
 
-    const response = {
-      units: this.units,
-      quantity: this.quantity,
-      hours: hours,
-      minutes: minutes,
-      users: this.selectedUsers,
-      mailMessage: this.mailMessage,
-      lastUpdated: new Date().toISOString(),
-      enabled: this.enabled,
-      dashboard: this.dashboard
-    };
-    this.apply.emit(response);
-  }
-
-  fillWithZeros(n: number) {
-    if (n < 10) return `0${n}`
-    else return `${n}`;
-  }
-
-  public onApply() {
-    this.display = false;
-    this.save();
-  }
-
-  public disableApply(): boolean {
-    return false;
-  }
-
-  public onClose(): void {
-    this.display = false;
-    this.close.emit();
+      // Plain kpi panel: no series, just the headline number.
+      const single = pc?.componentRef?.instance?.inject?.value;
+      if (single !== undefined && single !== null && single !== '' && Number.isFinite(Number(single))) {
+        return [{ label: '', value: Number(single) }];
+      }
+      return [];
+    } catch {
+      return [];
+    }
   }
 }

@@ -62,6 +62,10 @@ export class DashboardService extends ApiService {
         return this.post(`${this.route}getQuery`, body);
     }
 
+    executeSourceFieldsQuery(body): Observable<any> {
+        return this.post(`${this.route}source-fields-query`, body);
+    }
+
     cleanCache(body): Observable<any> {
         return this.post(`${this.route}clean-refresh`, body);
     }

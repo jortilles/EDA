@@ -134,8 +134,10 @@
             <!-- Actions -->
             <div class="flex justify-between">
               <button (click)="handleCheckCredentials()" [disabled]="isChecking()"
+                title="Envía un correo de prueba a la cuenta configurada para verificar que la configuración es correcta"
+                i18n-title="@@testMailConfigTitle"
                 class="input-corporate inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 border border-gray-200 bg-white hover:bg-gray-100 h-10 px-4 py-2">
-                {{ isChecking() ? "Checking..." : "Check credentials" }}
+                {{ checkCredentialsLabel() }}
               </button>
               <button (click)="handleSubmit()" [disabled]="isSubmitting()"
                 class="btn-corporate-primary inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2">

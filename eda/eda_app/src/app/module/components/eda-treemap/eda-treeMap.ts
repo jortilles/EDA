@@ -8,4 +8,10 @@ export class TreeMap {
   colors : Array<string>;
   linkedDashboard : LinkedDashboardProps;
   assignedColors: any[];
+  useGradient?: boolean;
+  chartLegend?: boolean;
+  chartAnimation?: boolean;
+  /** per-category media-library images - see category-icons.util.ts */
+  assignedIcons?: any[];
+  useIcons?: boolean;
 }

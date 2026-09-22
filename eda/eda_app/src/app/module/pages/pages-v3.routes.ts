@@ -38,6 +38,12 @@ export const pagesV3Routes: Routes = [
         loadComponent: () => import('./groups-management/group-list/group-list.page').then(c => c.GroupListPage)
       },
       {
+        path: 'admin/media',
+        data: { admin: true },
+        canActivate: [RoleGuard],
+        loadComponent: () => import('./media-management/media-list.page').then(c => c.MediaListPage)
+      },
+      {
         path: 'admin/models/import-export',
         data: { admin: true },
         canActivate: [RoleGuard],

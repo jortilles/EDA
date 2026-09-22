@@ -6,4 +6,10 @@ export class EdaFunnel {
   dataDescription : any;
   linkedDashboard : LinkedDashboardProps;
   assignedColors: any[];
+  useGradient?: boolean;
+  chartLegend?: boolean;
+  chartAnimation?: boolean;
+  /** per-category media-library images - see category-icons.util.ts */
+  assignedIcons?: any[];
+  useIcons?: boolean;
 }

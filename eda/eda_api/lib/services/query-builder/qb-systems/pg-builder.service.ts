@@ -279,7 +279,9 @@ export class PgBuilderService extends QueryBuilderService {
           const matchingField = this.queryTODO.fields.find(
             (f: any) => f.table_id === col.table_id && f.column_name === col.column_name
           );
-          if (matchingField) {
+          if (matchingField?.computed_column === 'computed') {
+            return `${this.getOrderExpression(matchingField)} ${col.ordenation_type}`;
+          } else if (matchingField) {
             return `"${matchingField.display_name}" ${col.ordenation_type}`;
           } else {
             return `"${col.table_id}"."${col.column_name}" ${col.ordenation_type}`;
@@ -289,7 +291,9 @@ export class PgBuilderService extends QueryBuilderService {
       orderColumns = this.queryTODO.fields
         .map((col: any) => {
           if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
-            return `"${col.display_name}" ${col.ordenation_type}`;
+            return col.computed_column === 'computed'
+              ? `${this.getOrderExpression(col)} ${col.ordenation_type}`
+              : `"${col.display_name}" ${col.ordenation_type}`;
           }
           return false;
         })
@@ -301,6 +305,79 @@ export class PgBuilderService extends QueryBuilderService {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     }
     if (limit) myQuery += `\nlimit ${limit}`;
+
+    if (alias) {
+      for (const key in alias) {
+        myQuery = myQuery.split(key).join(`"${alias[key]}"`);
+      }
+    }
+
+    return myQuery;
+  }
+
+  /** Mismo qualifier que getSeparedColumns(): table_id, o el alias de autorelación si aplica. */
+  private getSourceFieldsQualifier(tableName: string): string {
+    const field = (this.queryTODO.fields || []).find((f: any) =>
+      f.table_id === tableName && f.autorelation && !f.valueListSource && !this.queryTODO.forSelector &&
+      Array.isArray(f.joins) && f.joins.length > 0
+    );
+    return field ? field.joins[field.joins.length - 1][0] : tableName;
+  }
+
+  /** Columnas visibles (permisos ya marcados por el controller) de cada tabla implicada. */
+  private getSourceFieldsColumns(tableNames: string[]): string[] {
+    const columns: string[] = [];
+    tableNames.forEach(tableName => {
+      const tableDef = this.tables.find((t: any) => t.table_name === tableName);
+      if (!tableDef || !Array.isArray(tableDef.columns)) return;
+      const qualifier = this.getSourceFieldsQualifier(tableName);
+      tableDef.columns
+        .filter((c: any) => c.visible !== false && c.computed_column !== 'computed')
+        .forEach((c: any) => columns.push(`"${qualifier}"."${c.column_name}"`));
+    });
+    return columns;
+  }
+
+  /** SELECT de columnas visibles FROM origin [JOINS] [WHERE], para "Mostrar campos de origen". */
+  public sourceFieldsQuery(origin: string, dest: any[], joinTree: any[], filters: any[], tables: Array<any>,
+    joinType: string, valueListJoins: Array<any>, schema: string, database: string, sortedFilters?: any[]): string {
+    if (schema === 'null' || schema === '') {
+      schema = 'public';
+    }
+
+    const selectColumns = this.getSourceFieldsColumns([origin, ...dest]);
+    if (selectColumns.length === 0) return '';
+
+    let myQuery = `SELECT ${selectColumns.join(', ')} \n`;
+    let o = tables.filter(table => table.name === origin).map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
+    let vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true : false })[0];
+    if (vista) { // Es una vista. NO la pongo entre comillas
+      myQuery += `FROM ${o}`;
+    } else { // Es una tabla. La pongo entre comillas
+      myQuery += `FROM "${schema}"."${o}"`;
+    }
+
+    // JOINS
+    let joinString: any[];
+    let alias: any;
+    if (this.queryTODO.joined) { /** si es modo arbol */
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+      joinString = responseJoins.joinString;
+      alias = responseJoins.aliasTables;
+    } else {
+      joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, schema);
+    }
+
+    joinString.forEach(x => {
+      myQuery = myQuery + '\n' + x;
+    });
+
+    // WHERE
+    if (Array.isArray(sortedFilters) && sortedFilters.length !== 0) {
+      myQuery += this.getSortedFilters(sortedFilters, filters);
+    } else {
+      myQuery += this.getFilters(filters);
+    }
 
     if (alias) {
       for (const key in alias) {
@@ -564,7 +641,7 @@ export class PgBuilderService extends QueryBuilderService {
 
             }else{
               //Si es una vista
-              joinString.push(` ${myJoin} join ${t} on  "${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+              joinString.push(` ${myJoin} join ${t} on  "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
             }
             
           }
@@ -593,7 +670,7 @@ export class PgBuilderService extends QueryBuilderService {
               //Si tienes que hacer columnas calculadas hazlas en la vista ;)
               let join = ` ${myJoin} join  ${t}  on`;
               joinColumns[0].forEach((_, x) => {
-                join += `  "${e[j]}"."${joinColumns[1][x]}" =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
+                join += `  "${e[j]}"."${joinColumns[1][x]}" =  "${e[i]}"."${joinColumns[0][x]}" and`
               });
               join = join.slice(0, join.length - 'and'.length);
               joinString.push(join);

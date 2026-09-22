@@ -65,7 +65,9 @@
                         (click)="subItem.command()">
                         <i [class]="subItem.icon + ' text-gray-600'"></i>
                         <span>{{ subItem.label }}</span>
-                        <i class="pi" [class.pi-check]="subItem.active" [class.pi-square-o]="!subItem.active" ml-auto></i>
+                        <i class="pi" [class.pi-check]="subItem.active" [class.pi-square-o]="!subItem.active"></i>
+                        <i class="pi pi-times-circle ml-auto text-gray-400 hover:text-[var(--corporate-primary)]"
+                          (click)="$event.stopPropagation(); removeFilterFromSidebar(subItem.filter)"></i>
                       </button>
                       }
                     </div>

@@ -15,6 +15,7 @@ eda/eda_api/config/seed.js.docker
 eda/eda_api/config/SMPT.config.json
 eda/eda_api/config/SMPT.config.json.sample
 eda/eda_api/lib/module/uploads/users
+eda/eda_api/lib/module/media/images
 eda/eda_api/chromium_dependencies.txt
 eda/eda_api/config/SCRM
 

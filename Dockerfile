@@ -1,4 +1,4 @@
-from node:26.2-trixie-slim
+FROM node:26.7-trixie-slim 
 
 
 # instalar

@@ -65,6 +65,25 @@ export const CORPORATE_COLORS = {
     },
 };
 
+/** Code editor syntax-highlighting colors (SQL/HTML expression fields, mail message, etc.).
+ * Defaults match CodeMirror's own out-of-the-box palette — override any entry to re-brand it. */
+export const CODE_EDITOR_SYNTAX_COLORS = {
+    keyword:       '#708',     // SELECT, FROM, WHERE, if / else / end…
+    atom:          '#219',     // booleans, URLs, labels
+    literal:       '#164',     // numbers and other literals
+    string:        '#a11',     // string values
+    escape:        '#e40',     // regexp / escape sequences
+    variableDef:   '#00f',     // a variable at its definition
+    variableLocal: '#30a',     // a variable where it's used/referenced
+    typeName:      '#085',     // type names / namespaces
+    className:     '#167',     // class names
+    specialVar:    '#256',     // special variables / macro names
+    propertyDef:   '#00c',     // a property at its definition
+    comment:       '#940',     // comments
+    invalid:       '#f00',     // invalid/unrecognized tokens
+    meta:          '#404740',  // meta content (e.g. HTML doctype/processing instructions)
+};
+
 export const ChartsPalettes = [
     {
         paleta: [

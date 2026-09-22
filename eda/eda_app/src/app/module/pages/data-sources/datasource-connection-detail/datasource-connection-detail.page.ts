@@ -167,8 +167,8 @@ export class DataSourceConnectionDetailPage implements OnInit {
     ];
 
     this.decSeparators = [
-      { label: ',', value: ',' },
-      { label: '.', value: "." }
+      { label: $localize`:@@decSeparatorComma:, (coma)`, value: ',' },
+      { label: $localize`:@@decSeparatorDot:. (punto)`, value: "." }
     ];
 
   }
@@ -874,6 +874,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
           csvContent: csv.rawContent,
           columnsConfig: csv.columnsConfig
         })),
+        separator: value.separator || ';',
         optimize: value.optimize ? 1 : 0,
         allowCache: value.allowCache ? 1 : 0
       };

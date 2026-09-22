@@ -17,9 +17,17 @@
   transition: stroke .1s ease-in;
 }
 .p-knob-value {
-  animation-name: dash-frame;
-  animation-fill-mode: forwards;
   fill: none;
+  /* Hidden until knob.ts measures the path's real length and sets stroke-dasharray/dashoffset -
+     without this, the full arc would flash visible for a frame before the reveal kicks in. */
+  opacity: 0;
+}
+.p-knob-value-animate {
+  opacity: 1;
+  animation-name: dash-frame;
+  animation-duration: .8s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: forwards;
 }
 .p-knob-text {
   fill:var(--panel-font-color);

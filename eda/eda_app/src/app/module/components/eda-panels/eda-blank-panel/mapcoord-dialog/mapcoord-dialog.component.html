@@ -44,19 +44,19 @@
                             <span class="font-semibold">Color Inicial</span>
                             <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
                                 <div class="flex items-center gap-2">
-                                    <input class="text-md text-slate-500 font-mono">{{ initialColor }}
+                                    <input [(ngModel)]="initialColor" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
                                     <p-colorPicker [(ngModel)]="initialColor" (onChange)="handleInputColor()" format="hex"
                                         appendTo="body"></p-colorPicker>
                                 </div>
                             </div>
                         </div>
-                    
+
                         <!-- Final color block -->
                         <div class="flex flex-col gap-2">
                             <span class="font-semibold">Color Final</span>
                             <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
                                 <div class="flex items-center gap-2">
-                                    <input class="text-md text-slate-500 font-mono">{{ finalColor }}
+                                    <input [(ngModel)]="finalColor" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
                                     <p-colorPicker [(ngModel)]="finalColor" (onChange)="handleInputColor()" format="hex"
                                         appendTo="body"></p-colorPicker>
                                 </div>
