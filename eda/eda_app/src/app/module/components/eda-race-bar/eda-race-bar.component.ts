@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, OnDestroy, NgZone } from '@angular/core';
+import { Component, AfterViewInit, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
 import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -130,7 +130,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   private valueLabelsG: any;
   private valueIconsG: any;
 
-  constructor(private styleProviderService: StyleProviderService, private tooltipService: D3TooltipService, private ngZone: NgZone, private fileUtils: FileUtiles) { }
+  constructor(private styleProviderService: StyleProviderService, private tooltipService: D3TooltipService, private ngZone: NgZone, private fileUtils: FileUtiles, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.id = `raceBar_${this.inject.id}`;
@@ -279,7 +279,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
         const value = from + (to - from) * t;
         if (now - lastFlushAt >= 50 || t >= 1) {
           lastFlushAt = now;
-          this.ngZone.run(() => { this.scrubPosition = value; });
+          this.ngZone.run(() => { this.scrubPosition = value; this.cdr.markForCheck(); });
         }
         this.scrubAnimFrame = t < 1 ? requestAnimationFrame(step) : null;
       };
@@ -547,6 +547,8 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
     // firing its own mouseout, which would otherwise leave a stale tooltip stuck on screen.
     this.tooltipService.hide();
 
+    // Called from autoplay's setTimeout loop, not a DOM event
+    this.cdr.markForCheck();
     const frame = this.frames[index];
     this.periodLabel = frame.label;
     this.tickerFontSizePx = Math.max(14, Math.min(32, height * 0.12));
@@ -812,6 +814,7 @@ export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.playing = false;
       this.finished = true;
       this.timer = null;
+      this.cdr.markForCheck();
       return;
     }
     this.scheduleNext();

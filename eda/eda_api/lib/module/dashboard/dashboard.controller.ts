@@ -38,10 +38,14 @@ export class DashboardController {
       if (isAdmin) {
         [publics, privates, group, shared] = await DashboardController.getAllDashboardToAdmin(req, dataSources)
       } else {
-        privates = await DashboardController.getPrivateDashboards(req, dataSources)
-        group = await DashboardController.getGroupsDashboards(req, dataSources)
-        shared = await DashboardController.getSharedDashboards(req, dataSources)
-        publics = await DashboardController.getPublicsDashboards(req, dataSources)
+        // Un único fetch sin filtro, compartido por shared/publics, en vez de que cada uno lo repita
+        const allDashboards = await DashboardController.findAllDashboardsWithMeta();
+        [privates, group, shared, publics] = await Promise.all([
+          DashboardController.getPrivateDashboards(req, dataSources),
+          DashboardController.getGroupsDashboards(req, dataSources, groups),
+          DashboardController.getSharedDashboards(req, dataSources, allDashboards),
+          DashboardController.getPublicsDashboards(req, dataSources, allDashboards),
+        ])
       }
 
       // Modificación de fecha y adición de autor si no lo tiene (informes viejos)
@@ -49,7 +53,10 @@ export class DashboardController {
 
 
       // Asegurarse de que la información del grupo esté incluida para dashboards de tipo "group"
-      group = await DashboardController.addGroupInfo(group);
+      // (la ruta admin ya la resuelve dentro de getAllDashboardToAdmin)
+      if (!isAdmin) {
+        group = await DashboardController.addGroupInfo(group);
+      }
 
       return res.status(200).json({
         ok: true,
@@ -71,9 +78,23 @@ export class DashboardController {
    * @returns Dashboards with group information added
    */
   static async addGroupInfo(dashboards) {
+    const allGroupIds = new Set<string>();
     for (const dashboard of dashboards) {
       if (dashboard.group && Array.isArray(dashboard.group)) {
-        dashboard.group = await Group.find({ _id: { $in: dashboard.group } }, 'name').exec();
+        dashboard.group.forEach(id => id && allGroupIds.add(id.toString()));
+      }
+    }
+
+    if (allGroupIds.size === 0) return dashboards;
+
+    const groupDocs = await Group.find({ _id: { $in: Array.from(allGroupIds) } }, 'name').exec();
+    const groupsById = new Map(groupDocs.map(g => [g._id.toString(), g]));
+
+    for (const dashboard of dashboards) {
+      if (dashboard.group && Array.isArray(dashboard.group)) {
+        dashboard.group = dashboard.group
+          .map(id => id && groupsById.get(id.toString()))
+          .filter(Boolean);
       }
     }
     return dashboards;
@@ -141,20 +162,15 @@ export class DashboardController {
    * @param req Express Request with user information and possible tags
    * @returns List of group dashboards
    */
-  static async getGroupsDashboards(req: Request, dss:any) {
+  static async getGroupsDashboards(req: Request, dss:any, userGroups: any[]) {
     try {
-      const userGroups = await Group.find({
-        users: { $in: req.user._id }
-      }).exec();
-
-
       const dashboards = await DashboardController.findAllDashboardsWithMeta({ group: { $in: userGroups.map(g => g._id) } });
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
         const dashboard = dashboards[i]
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
-        if( dashboard.group ){
+        if( dashboard.config.visible === 'group' && dashboard.group ){
           for (const dashboardGroup of dashboard.group) {
             for (const userGroup of userGroups) {
               if ( userGroup._id.equals(dashboardGroup) ) {
@@ -218,7 +234,7 @@ export class DashboardController {
    * @param dss List of available datasources
    * @returns List of public dashboards
    */
-  static async getPublicsDashboards(req: Request, dss: any[]) {
+  static async getPublicsDashboards(req: Request, dss: any[], dashboards: any[]) {
     try {
       const dashboards = await DashboardController.findAllDashboardsWithMeta(  /*Edalitics Free */  { user: req.user._id } );
       const publics = []
@@ -274,7 +290,7 @@ export class DashboardController {
    * @param req Express Request with possible tags
    * @returns List of shared dashboards
    */
-  static async getSharedDashboards(req: Request, dss:any) {
+  static async getSharedDashboards(req: Request, dss:any, dashboards: any[]) {
     try {
       const dashboards = await DashboardController.findAllDashboardsWithMeta( /*Edalitics Free */  { user: req.user._id } )
       const shared = []
@@ -456,13 +472,27 @@ export class DashboardController {
             privates.push(dashboard)
             break
           case 'group':
-            dashboard.group = await Group.find({ _id: dashboard.group }).exec()
             groups.push(dashboard)
             break
           case 'common':
             shared.push(dashboard)
             break
         }
+      }
+
+      // Resolver los grupos de todos los dashboards de tipo 'group' en una única query, en vez de una por dashboard
+      if (groups.length > 0) {
+        const allGroupIds = new Set<string>();
+        groups.forEach(dashboard => {
+          const ids: any[] = Array.isArray(dashboard.group) ? dashboard.group : [dashboard.group];
+          ids.forEach(id => id && allGroupIds.add(id.toString()));
+        });
+        const groupDocs = await Group.find({ _id: { $in: Array.from(allGroupIds) } }).exec();
+        const groupsById = new Map(groupDocs.map(g => [g._id.toString(), g]));
+        groups.forEach(dashboard => {
+          const ids: any[] = Array.isArray(dashboard.group) ? dashboard.group : [dashboard.group];
+          dashboard.group = ids.map(id => id && groupsById.get(id.toString())).filter(Boolean);
+        });
       }
 
       //apliquem filtrat per tags desde URL
@@ -527,6 +557,62 @@ export class DashboardController {
     }
   }
   /**
+   * Recupera un datasource por id y le aplica el filtrado de seguridad del modelo (tablas y
+   * columnas prohibidas según los permisos del usuario de la petición). Usado tanto por
+   * getDashboard como por getDataSourceModel para no duplicar la lógica de seguridad.
+   */
+  static async getSecuredDataSource(datasourceId: string, req: Request) {
+    const datasource = await DataSource.findById(datasourceId);
+    if (!datasource) {
+      return null;
+    }
+
+    // Convertir a objeto JSON
+    const toJson = JSON.parse(JSON.stringify(datasource));
+
+    const userGroups = req.user.role;
+    const includesAdmin = req.user.role.includes("135792467811111111111110");
+
+    // Filtrar tablas y columnas prohibidas
+    const uniquesForbiddenTables = DashboardController.getForbiddenTables(toJson, userGroups, req.user._id);
+    const uniquesForbiddenColumns = DashboardController.getForbiddenColumns(toJson, userGroups, req.user._id);
+
+    if (!includesAdmin) {
+      // Ocultar tablas prohibidas
+      if (uniquesForbiddenTables.length > 0 && toJson.ds.model.tables) {
+        toJson.ds.model.tables.forEach(table => {
+          if (uniquesForbiddenTables.includes(table.table_name)) {
+            table.visible = false;
+          }
+        });
+      }
+    }
+
+    // Inicializar relaciones de tablas
+    toJson.ds.model.tables.forEach(table => {
+      table.relations.forEach(r => {
+        r.autorelation ??= false;
+        r.bridge ??= false;
+      });
+    });
+
+    // Ocultar columnas prohibidas en modelo
+    uniquesForbiddenColumns.forEach(fc => {
+      const table = toJson.ds.model.tables.find(t => t.table_name === fc.table);
+      const column = table?.columns.find(c => c.column_name === fc.column);
+      if (column) column.visible = false;
+    });
+
+    const ds = {
+      _id: datasource._id,
+      model: toJson.ds.model,
+      name: toJson.ds.metadata.model_name
+    };
+
+    return { datasource, toJson, ds, uniquesForbiddenTables, includesAdmin };
+  }
+
+  /**
    * Retrieves a specific dashboard by ID and user permissions.
    * @param req Express Request with dashboard ID and user
    * @param res Express Response to send the result
@@ -570,62 +656,23 @@ export class DashboardController {
           return next(new HttpException(500, "You don't have permission"));
         }
 
-        // Obtener el datasource asociado
-        const datasource = await DataSource.findById(dashboard.config.ds._id);
-        if (!datasource) {
+        // Obtener el datasource asociado, ya filtrado según los permisos del usuario
+        const securedDataSource = await DashboardController.getSecuredDataSource(dashboard.config.ds._id, req);
+        if (!securedDataSource) {
           return next(new HttpException(400, 'Datasource not found with id'));
         }
+        const { ds, uniquesForbiddenTables, includesAdmin } = securedDataSource;
 
-        // Convertir a objeto JSON
-        const toJson = JSON.parse(JSON.stringify(datasource));
-
-        // Filtrar tablas y columnas prohibidas
-        const uniquesForbiddenTables = DashboardController.getForbiddenTables(toJson, userGroups, req.user._id);
-        const uniquesForbiddenColumns = DashboardController.getForbiddenColumns(toJson, userGroups, req.user._id);
-
-        const includesAdmin = req.user.role.includes("135792467811111111111110");
-
-        if (!includesAdmin) {
-          // Ocultar tablas prohibidas
-          if (uniquesForbiddenTables.length > 0 && toJson.ds.model.tables) {
-            toJson.ds.model.tables.forEach(table => {
-              if (uniquesForbiddenTables.includes(table.table_name)) {
-                table.visible = false;
-              }
-            });
-
-            // Ocultar columnas prohibidas en paneles
-            dashboard.config.panel?.forEach(panel => {
-              if (panel.content?.query?.query?.fields) {
-                panel.content.query.query.fields = panel.content.query.query.fields.filter(
-                  field => !uniquesForbiddenTables.includes(field.table_id)
-                );
-              }
-            });
-          }
-        }
-
-        // Inicializar relaciones de tablas
-        toJson.ds.model.tables.forEach(table => {
-          table.relations.forEach(r => {
-            r.autorelation ??= false;
-            r.bridge ??= false;
+        // Ocultar columnas prohibidas en paneles
+        if (!includesAdmin && uniquesForbiddenTables.length > 0) {
+          dashboard.config.panel?.forEach(panel => {
+            if (panel.content?.query?.query?.fields) {
+              panel.content.query.query.fields = panel.content.query.query.fields.filter(
+                field => !uniquesForbiddenTables.includes(field.table_id)
+              );
+            }
           });
-        });
-
-        // Ocultar columnas prohibidas en modelo
-
-        uniquesForbiddenColumns.forEach(fc => {
-          const table = toJson.ds.model.tables.find(t => t.table_name === fc.table);
-          const column = table?.columns.find(c => c.column_name === fc.column);
-          if (column) column.visible = false;
-        });
-
-        const ds = {
-          _id: datasource._id,
-          model: toJson.ds.model,
-          name: toJson.ds.metadata.model_name
-        };
+        }
 
         insertServerLog(req, 'info', 'DashboardAccessed', req.user.name, dashboard._id + '--' + dashboard.config.title);
 
@@ -643,44 +690,14 @@ export class DashboardController {
   }
 
   static async getDataSourceModel(req: Request, res: Response, next: NextFunction) {
-    const model_id = req.params.id;
-    const user = req['user']._id;
-    const userGroups = req['user'].role;
-
     try {
-      const datasource = await DataSource.findById(req.params.id);
+      const securedDataSource = await DashboardController.getSecuredDataSource(req.params.id, req);
 
-      if (!datasource) {
+      if (!securedDataSource) {
         return next(new HttpException(404, "Datasource not found with id"));
       }
 
-      let toJson = JSON.parse(JSON.stringify(datasource));
-
-      // Filtre de seguretat per les taules
-      const uniquesForbiddenTables = DashboardController.getForbiddenTables(
-        toJson,
-        req.user.groups,
-        req.user._id
-      );
-
-      // Comprobar admin
-      const includesAdmin = req.user.role.includes("135792467811111111111110");
-
-      // Añadir valores por defecto a relaciones
-      toJson.ds.model.tables.forEach(table => {
-        table.relations.forEach(r => {
-          r.autorelation = r.autorelation ?? false;
-          r.bridge = r.bridge ?? false;
-        });
-      });
-
-      const ds = {
-        _id: datasource._id,
-        model: toJson.ds.model,
-        name: toJson.ds.metadata.model_name
-      };
-
-      return res.status(200).json(ds);
+      return res.status(200).json(securedDataSource.ds);
 
     } catch (err) {
       console.error(err);
@@ -1912,6 +1929,18 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
       const dataModelObject = JSON.parse(JSON.stringify(dataModel));
 
+      const includesAdmin = req['user'].role.includes("135792467811111111111110");
+
+      /** Oculta columnas prohibidas para que sourceFieldsQuery() no las incluya en el SELECT. */
+      if (!includesAdmin) {
+        const forbiddenColumns = DashboardController.getForbiddenColumns(dataModelObject, req['user'].role, req.user._id);
+        forbiddenColumns.forEach(fc => {
+          const table = dataModelObject.ds.model.tables.find((t) => t.table_name === fc.table);
+          const column = table?.columns.find((c) => c.column_name === fc.column);
+          if (column) column.visible = false;
+        });
+      }
+
       /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
       /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro.....*/
       if (req.body.query.filters) {
@@ -1935,13 +1964,18 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         req.user
       )
 
+      /** Sin columnas visibles: sourceFieldsQuery() devuelve '' en vez de un SELECT inválido. */
+      if (!query) {
+        console.log('No visible columns for this user in source fields query')
+        return res.status(200).json("[['noDataAllowed'],[]]")
+      }
+
       /** Forbidden tables: block the whole query if it touches a table the user can't see */
       let uniquesForbiddenTables = DashboardController.getForbiddenTables(
         dataModelObject,
         req['user'].role,
         req.user._id
       )
-      const includesAdmin = req['user'].role.includes("135792467811111111111110")
       if (includesAdmin) uniquesForbiddenTables = [];
 
       const notAllowedQuery = uniquesForbiddenTables.some(table => query.indexOf(table) >= 0);
