@@ -3057,6 +3057,16 @@ Qué estic veient?
     <target>  Separador decimal </target>
   </trans-unit>
 
+  <trans-unit id="decSeparatorComma">
+    <source>, (coma)</source>
+    <target>, (coma)</target>
+  </trans-unit>
+
+  <trans-unit id="decSeparatorDot">
+    <source>. (punto)</source>
+    <target>. (punt)</target>
+  </trans-unit>
+
   <trans-unit id="viewOk">
     <source> Vista generada correctamente</source>
     <target>  Vista generada correctament</target>

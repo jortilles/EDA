@@ -3014,6 +3014,16 @@ Que suis-je en train de voir ?
     <target>  Séparateur décimal </target>
   </trans-unit>
 
+  <trans-unit id="decSeparatorComma">
+    <source>, (coma)</source>
+    <target>, (virgule)</target>
+  </trans-unit>
+
+  <trans-unit id="decSeparatorDot">
+    <source>. (punto)</source>
+    <target>. (point)</target>
+  </trans-unit>
+
   <trans-unit id="viewOk">
     <source> Vista generada correctamente</source>
     <target> Vue générée avec succès</target>

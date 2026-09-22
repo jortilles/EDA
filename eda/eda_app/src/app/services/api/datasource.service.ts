@@ -752,7 +752,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this.delete(`${this.globalDSRoute}/duckdb-table/${datasourceId}/${tableName}`);
     }
 
-    addDuckDbTable(datasourceId: string, body: { fileName: string; csvContent: string; columnsConfig: any[] }): Observable<any> {
+    addDuckDbTable(datasourceId: string, body: { fileName: string; csvContent: string; columnsConfig: any[]; separator?: string }): Observable<any> {
         return this.post(`${this.globalDSRoute}/duckdb-add-table/${datasourceId}`, body);
     }
 

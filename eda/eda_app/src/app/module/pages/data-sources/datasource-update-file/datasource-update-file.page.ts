@@ -64,8 +64,8 @@ export class DataSourceUpdateFilePage implements OnInit {
     ];
 
     public decSeparators: SelectItem[] = [
-        { label: ',', value: ',' },
-        { label: '.', value: '.' }
+        { label: $localize`:@@decSeparatorComma:, (coma)`, value: ',' },
+        { label: $localize`:@@decSeparatorDot:. (punto)`, value: '.' }
     ];
 
     public editFieldsHeaders: Array<string> = [

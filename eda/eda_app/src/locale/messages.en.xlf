@@ -2784,6 +2784,16 @@ What am I seeing?
 <target>  Decimal separator</target>
 </trans-unit>
 
+<trans-unit id="decSeparatorComma">
+<source>, (coma)</source>
+<target>, (comma)</target>
+</trans-unit>
+
+<trans-unit id="decSeparatorDot">
+<source>. (punto)</source>
+<target>. (dot)</target>
+</trans-unit>
+
 <trans-unit id="viewOk">
 <source> Vista generada correctamente</source>
 <target>  View generated correctly</target>
