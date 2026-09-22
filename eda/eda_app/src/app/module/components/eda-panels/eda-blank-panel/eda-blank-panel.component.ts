@@ -627,8 +627,23 @@ public tableNodeExpand(event: any): void {
      */
     mergeFilters(localFilters: any[], globalFilters: any[]) {
         const out = localFilters.filter(f => f.isGlobal !== true);
-        globalFilters.forEach(f => out.push(f));
+        globalFilters
+            .filter(f => !EdaBlankPanelComponent.isValuelessFilter(f))
+            .forEach(f => out.push(f));
         return out;
+    }
+
+    /**
+     * A global filter with no value selected (e.g. cleared on the dashboard, or never set) must not
+     * be sent to the API as an active filter: building an `in`/`like`/... clause from an empty value
+     * list generates invalid SQL such as `in ()`.
+     */
+    private static isValuelessFilter(f: any): boolean {
+        if (['not_null', 'not_null_nor_empty', 'null_or_empty', 'is_null'].includes(f.filter_type)) return false;
+        if (!f.filter_elements || f.filter_elements.length === 0) return true;
+        return f.filter_elements.every((fe: any) =>
+            (!fe.value1 || fe.value1.length === 0) && (!fe.value2 || fe.value2.length === 0)
+        );
     }
 
     public async setTablesData()  {
