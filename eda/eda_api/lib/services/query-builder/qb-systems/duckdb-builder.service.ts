@@ -290,18 +290,40 @@ export class DuckDBBuilderService extends QueryBuilderService {
         return myQuery;
     }
 
-    /**
-     * Builds `SELECT * FROM <origin> [JOINS] [WHERE ...]` for "Mostrar campos de origen":
-     * same origin/joins/where logic as normalQuery(), without the column list, grouping,
-     * having, order or limit.
-     */
+    /** Mismo qualifier que getSeparedColumns(): table_id, o el alias de autorelación si aplica. */
+    private getSourceFieldsQualifier(tableName: string): string {
+        const field = (this.queryTODO.fields || []).find((f: any) =>
+            f.table_id === tableName && f.autorelation && !f.valueListSource && !this.queryTODO.forSelector &&
+            Array.isArray(f.joins) && f.joins.length > 0
+        );
+        return field ? field.joins[field.joins.length - 1][0] : tableName;
+    }
+
+    /** Columnas visibles (permisos ya marcados por el controller) de cada tabla implicada. */
+    private getSourceFieldsColumns(tableNames: string[]): string[] {
+        const columns: string[] = [];
+        tableNames.forEach(tableName => {
+            const tableDef = this.tables.find((t: any) => t.table_name === tableName);
+            if (!tableDef || !Array.isArray(tableDef.columns)) return;
+            const qualifier = this.getSourceFieldsQualifier(tableName);
+            tableDef.columns
+                .filter((c: any) => c.visible !== false && c.computed_column !== 'computed')
+                .forEach((c: any) => columns.push(`"${qualifier}"."${c.column_name}"`));
+        });
+        return columns;
+    }
+
+    /** SELECT de columnas visibles FROM origin [JOINS] [WHERE], para "Mostrar campos de origen". */
     public sourceFieldsQuery(origin: string, dest: any[], joinTree: any[], filters: any[], tables: Array<any>,
         joinType: string, valueListJoins: Array<any>, schema: string, database: string, sortedFilters?: any[]): string {
         if (!schema || schema === 'null' || schema === '') {
             schema = 'main';
         }
 
-        let myQuery = `SELECT * \n`;
+        const selectColumns = this.getSourceFieldsColumns([origin, ...dest]);
+        if (selectColumns.length === 0) return '';
+
+        let myQuery = `SELECT ${selectColumns.join(', ')} \n`;
         let o = tables.filter(table => table.name === origin)
             .map(table => table.query ? this.cleanViewString(table.query) : table.name)[0];
         let vista = tables.filter(table => table.name === origin)

@@ -154,22 +154,44 @@ export class BigQueryBuilderService extends QueryBuilderService {
     return myQuery;
   }
 
-  /**
-   * Builds `SELECT * FROM <origin> [JOINS] [WHERE ...]` for "Mostrar campos de origen":
-   * same origin/joins/where logic as normalQuery(), without the column list, grouping,
-   * having, order or limit.
-   */
+  /** Mismo qualifier que getSeparedColumns(): table_id, o el alias de autorelación si aplica. */
+  private getSourceFieldsQualifier(tableName: string): string {
+    const field = (this.queryTODO.fields || []).find((f: any) =>
+      f.table_id === tableName && f.autorelation && !f.valueListSource && !this.queryTODO.forSelector &&
+      Array.isArray(f.joins) && f.joins.length > 0
+    );
+    return field ? field.joins[field.joins.length - 1][0] : tableName;
+  }
+
+  /** Columnas visibles (permisos ya marcados por el controller) de cada tabla implicada. */
+  private getSourceFieldsColumns(tableNames: string[]): string[] {
+    const columns: string[] = [];
+    tableNames.forEach(tableName => {
+      const tableDef = this.tables.find((t: any) => t.table_name === tableName);
+      if (!tableDef || !Array.isArray(tableDef.columns)) return;
+      const qualifier = this.getSourceFieldsQualifier(tableName);
+      tableDef.columns
+        .filter((c: any) => c.visible !== false && c.computed_column !== 'computed')
+        .forEach((c: any) => columns.push(`\`${qualifier}\`.\`${c.column_name}\``));
+    });
+    return columns;
+  }
+
+  /** SELECT de columnas visibles FROM origin [JOINS] [WHERE], para "Mostrar campos de origen". */
   public sourceFieldsQuery(origin: string, dest: any[], joinTree: any[], filters: any[], tables: Array<any>,
     joinType: string, valueListJoins: Array<any>, schema: string, database: string, sortedFilters?: any[]): string {
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = '';
 
+    const selectColumns = this.getSourceFieldsColumns([origin, ...dest]);
+    if (selectColumns.length === 0) return '';
+
     /**If origin is a view => (select foo from etc.) */
     const reg = new RegExp(/\([^()]+\)/g, "g");
     if (o.match(reg)) {
-      myQuery = `SELECT * \nFROM ${o}`;
+      myQuery = `SELECT ${selectColumns.join(', ')} \nFROM ${o}`;
     } else {
-      myQuery = `SELECT * \nFROM ${schema}.${o}`;
+      myQuery = `SELECT ${selectColumns.join(', ')} \nFROM ${schema}.${o}`;
     }
 
     // JOINS
