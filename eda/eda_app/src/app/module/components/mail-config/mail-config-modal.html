@@ -165,7 +165,7 @@
                   </label>
                   <eda-code-editor #subjArea [(ngModel)]="mailSubject" (focused)="activeField='subject'"
                     language="text" [highlightTemplateTokens]="true" [completionSource]="tokenCompletionSource"
-                    minHeight="2.4em"></eda-code-editor>
+                    minHeight="3.2em"></eda-code-editor>
                 </div>
                 <div class="flex flex-col gap-1">
                   <label class="flex items-center gap-1.5 text-sm font-medium text-gray-700">
@@ -181,10 +181,6 @@
 
               <!-- compact insert toolbox, aligned with the Asunto input -->
               <div class="mail-insert-box mt-6 flex min-w-[240px] flex-1 flex-col gap-2 self-stretch overflow-y-auto rounded-lg p-2.5 text-xs">
-                <div>
-                  <p class="mail-insert-title" i18n="@@mailRefInsertTitle">Insertar</p>
-                  <p class="mail-insert-target">→ {{ activeFieldLabel }}</p>
-                </div>
                 @if (kpiVariables.length) {
                   @for (v of kpiVariables; track v.base) {
                     <div>

@@ -3014,6 +3014,16 @@ Que suis-je en train de voir ?
     <target>  Séparateur décimal </target>
   </trans-unit>
 
+  <trans-unit id="decSeparatorComma">
+    <source>, (coma)</source>
+    <target>, (virgule)</target>
+  </trans-unit>
+
+  <trans-unit id="decSeparatorDot">
+    <source>. (punto)</source>
+    <target>. (point)</target>
+  </trans-unit>
+
   <trans-unit id="viewOk">
     <source> Vista generada correctamente</source>
     <target> Vue générée avec succès</target>
@@ -7969,6 +7979,38 @@ Cordialement.</target>
 <target>Cliquez sur les filtres désactivés</target>
 </trans-unit>
 
+<trans-unit id="treeTableShowFilters">
+  <source>Mostrar filtros de columna</source>
+  <target>Afficher les filtres de colonne</target>
+</trans-unit>
+<trans-unit id="treeTableShowChildCount">
+  <source>Mostrar número de hijos</source>
+  <target>Afficher le nombre d'enfants</target>
+</trans-unit>
+<trans-unit id="treeTableSortNone">
+  <source>Sin ordenar</source>
+  <target>Non trié</target>
+</trans-unit>
+<trans-unit id="treeTableSortAsc">
+  <source>Ascendente (A → Z)</source>
+  <target>Croissant (A → Z)</target>
+</trans-unit>
+<trans-unit id="treeTableSortDesc">
+  <source>Descendente (Z → A)</source>
+  <target>Décroissant (Z → A)</target>
+</trans-unit>
+<trans-unit id="treeTableSortOrder">
+  <source>Ordenar nodos</source>
+  <target>Trier les nœuds</target>
+</trans-unit>
+<trans-unit id="treeTableSortColumn">
+  <source>Ordenar por columna</source>
+  <target>Trier par colonne</target>
+</trans-unit>
+<trans-unit id="treeTableOptions">
+  <source>Opciones</source>
+  <target>Options</target>
+</trans-unit>
 </body>
   </file>
 </xliff>

@@ -1,7 +1,7 @@
 /* --- Main container --- */
 .picklist-card {
-  margin: 3rem 3rem 3rem 3rem;
-  padding: 1.5rem;
+  margin: 0;
+  padding: 0.75rem;
   background: #fafafa;
   border-radius: 10px;
   border: 1px solid #aaaaaa;

@@ -2784,6 +2784,16 @@ What am I seeing?
 <target>  Decimal separator</target>
 </trans-unit>
 
+<trans-unit id="decSeparatorComma">
+<source>, (coma)</source>
+<target>, (comma)</target>
+</trans-unit>
+
+<trans-unit id="decSeparatorDot">
+<source>. (punto)</source>
+<target>. (dot)</target>
+</trans-unit>
+
 <trans-unit id="viewOk">
 <source> Vista generada correctamente</source>
 <target>  View generated correctly</target>
@@ -7694,6 +7704,38 @@ Best regards.</target>
 <target>Filter click disabled</target>
 </trans-unit>
 
+<trans-unit id="treeTableShowFilters">
+  <source>Mostrar filtros de columna</source>
+  <target>Show column filters</target>
+</trans-unit>
+<trans-unit id="treeTableShowChildCount">
+  <source>Mostrar número de hijos</source>
+  <target>Show number of children</target>
+</trans-unit>
+<trans-unit id="treeTableSortNone">
+  <source>Sin ordenar</source>
+  <target>Not sorted</target>
+</trans-unit>
+<trans-unit id="treeTableSortAsc">
+  <source>Ascendente (A → Z)</source>
+  <target>Ascending (A → Z)</target>
+</trans-unit>
+<trans-unit id="treeTableSortDesc">
+  <source>Descendente (Z → A)</source>
+  <target>Descending (Z → A)</target>
+</trans-unit>
+<trans-unit id="treeTableSortOrder">
+  <source>Ordenar nodos</source>
+  <target>Sort nodes</target>
+</trans-unit>
+<trans-unit id="treeTableSortColumn">
+  <source>Ordenar por columna</source>
+  <target>Sort by column</target>
+</trans-unit>
+<trans-unit id="treeTableOptions">
+  <source>Opciones</source>
+  <target>Options</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

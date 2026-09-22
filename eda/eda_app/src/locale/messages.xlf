@@ -4278,6 +4278,20 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
           <context context-type="linenumber">61</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="decSeparatorComma" datatype="html">
+        <source>, (coma)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/pages/data-sources/data-source-list/addCSV/add-csv.component.ts</context>
+          <context context-type="linenumber">95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="decSeparatorDot" datatype="html">
+        <source>. (punto)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/pages/data-sources/data-source-list/addCSV/add-csv.component.ts</context>
+          <context context-type="linenumber">96</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="succesAddTable" datatype="html">
         <source>Tabla creada correctamente</source>
         <context-group purpose="location">

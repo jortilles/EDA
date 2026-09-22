@@ -14,6 +14,7 @@ import _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
 import { AggregationTypes } from '../global/model/aggregation-types';
+import { normalizeCsvDecimalSeparators } from '../../utils/csv-decimal.util';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -751,8 +752,9 @@ export class DataSourceController {
 
     static async AddDuckDBDataSource(req: Request, res: Response, next: NextFunction) {
         try {
-            const { name, description, optimize, allowCache, folderName, csvFiles } = req.body;
+            const { name, description, optimize, allowCache, folderName, csvFiles, separator } = req.body;
             // csvFiles: Array<{ fileName: string, csvContent: string, columnsConfig: any[] }>
+            const fieldDelimiter = separator || ';';
 
             if (!name || !folderName || !csvFiles || !Array.isArray(csvFiles) || csvFiles.length === 0) {
                 return next(new HttpException(400, 'Name, folderName and at least one CSV file are required'));
@@ -779,7 +781,8 @@ export class DataSourceController {
                     .replace(/[^a-zA-Z0-9_\-]/g, '_')
                     .toLowerCase();
 
-                fs.writeFileSync(path.join(targetFolder, `${safeName}.csv`), csvFile.csvContent, 'utf8');
+                const normalizedContent = normalizeCsvDecimalSeparators(csvFile.csvContent, fieldDelimiter, csvFile.columnsConfig || []);
+                fs.writeFileSync(path.join(targetFolder, `${safeName}.csv`), normalizedContent, 'utf8');
 
                 const columns = (csvFile.columnsConfig || []).map((col: any) => {
                     let colType: string;
@@ -863,7 +866,7 @@ export class DataSourceController {
     static async AddDuckDbTable(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const { fileName, csvContent, columnsConfig } = req.body;
+            const { fileName, csvContent, columnsConfig, separator } = req.body;
 
             if (!fileName || !csvContent || !columnsConfig) {
                 return next(new HttpException(400, 'fileName, csvContent and columnsConfig are required'));
@@ -892,7 +895,8 @@ export class DataSourceController {
             if (!fs.existsSync(targetFolder)) {
                 fs.mkdirSync(targetFolder, { recursive: true });
             }
-            fs.writeFileSync(path.join(targetFolder, `${safeName}.csv`), csvContent, 'utf8');
+            const normalizedContent = normalizeCsvDecimalSeparators(csvContent, separator || ';', columnsConfig || []);
+            fs.writeFileSync(path.join(targetFolder, `${safeName}.csv`), normalizedContent, 'utf8');
 
             const columns = (columnsConfig || []).map((col: any) => {
                 let colType: string;

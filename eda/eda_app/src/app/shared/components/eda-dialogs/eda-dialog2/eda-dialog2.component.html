@@ -22,7 +22,7 @@
     }
 
     <ng-template pTemplate="content">
-         <div #contentWrapper>
+         <div #contentWrapper [style.height]="fillContent ? '100%' : null">
              <ng-content select="[content]"></ng-content>
          </div>
     </ng-template>
