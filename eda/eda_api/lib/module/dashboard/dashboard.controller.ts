@@ -1983,16 +1983,17 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       return res.status(200).json([labels, results, query])
     } catch (err) {
       console.log(err)
-      next(new HttpException(500, DashboardController.parseQueryError(err)))
+      next(new HttpException(500, DashboardController.parseQueryError(err, req)))
     }
   }
 
   /**
-   * Parses a DB error to produce a descriptive message when a column is not found.
+   * Parses a DB error to produce a descriptive, localized message when a column is not found.
    * Supports PostgreSQL, MySQL, SQL Server, SQLite and Oracle error formats.
    */
-  static parseQueryError(err: any, fields?: any[]): string {
+  static parseQueryError(err: any, req?: Request): string {
     const errMsg: string = err?.message || String(err);
+    const lang = resolveDbLang(req ? DashboardController.resolveDbErrorLangFromRequest(req) : undefined);
     const patterns: RegExp[] = [
       /column ["']?([^"'\s,]+)["']? does not exist/i,          // PostgreSQL
       /Unknown column ['"]?([^'"]+)['"]? in/i,                  // MySQL
@@ -2004,10 +2005,10 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     for (const pattern of patterns) {
       const match = errMsg.match(pattern);
       if (match) {
-        return `La columna ${match[1]} no existe en la base de datos. Revisa la configuración de columnas de esta tabla en el modelo.`;
+        return getDbErrorMessage('unknownColumn', lang, match[1]);
       }
     }
-    return 'Error querying database';
+    return getDbErrorMessage('fallback', lang);
   }
 
   static async isPublicDashboardRequest(req: Request): Promise<boolean> {
