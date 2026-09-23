@@ -13,6 +13,7 @@
     
           <div class="grid grid-cols-5 items-center">
 
+            @if (globalFilter?.queryMode !== 'TREE') {
             <div class="space-x-2 flex items-center h-max">
               <label i18n="@@aplyToAllPanelsH5" [pTooltip]="tooltipApplyToAll" tooltipPosition="top">¿Aplica a todos los paneles?</label>
               <button type="button" role="switch" [attr.aria-checked]="applyToAll" (click)="applyToAllCheck()"
@@ -23,6 +24,7 @@
                   [ngClass]="{'translate-x-5': applyToAll, 'translate-x-0': !applyToAll}"></span>
               </button>
             </div>
+            }
     
             <div class="space-x-2 flex items-center h-max">
               <label i18n="@@autocompleteFilter" [pTooltip]="tooltipAutocomplete" tooltipPosition="top">¿Filtro autocomplete?</label>
