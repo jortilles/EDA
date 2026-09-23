@@ -1992,23 +1992,22 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
    * Supports PostgreSQL, MySQL, SQL Server, SQLite and Oracle error formats.
    */
   static parseQueryError(err: any, fields?: any[]): string {
-    const errMsg: string = err?.toString() || '';
+    const errMsg: string = err?.message || String(err);
     const patterns: RegExp[] = [
       /column ["']?([^"'\s,]+)["']? does not exist/i,          // PostgreSQL
       /Unknown column ['"]?([^'"]+)['"]? in/i,                  // MySQL
       /Invalid column name ['"]?([^'"]+)['"]?/i,                // SQL Server
       /no such column:\s*([^\s,]+)/i,                           // SQLite
-      /ORA-00904:\s*["']?([^"'\s:]+)["']?/i,                   // Oracle
+      /ORA-00904:\s*(?:"[^"]+"\.)?"([^"]+)"/i,                  // Oracle - skips the "table". qualifier if present
     ];
 
     for (const pattern of patterns) {
-      const match = (err.message || String(err)).match(pattern);
+      const match = errMsg.match(pattern);
       if (match) {
-        return `El campo ${match[1]} está incluido en el informe pero no está disponible`;
-      }else{
-        return 'Error querying database';
+        return `La columna ${match[1]} no existe en la base de datos. Revisa la configuración de columnas de esta tabla en el modelo.`;
       }
     }
+    return 'Error querying database';
   }
 
   static async isPublicDashboardRequest(req: Request): Promise<boolean> {
