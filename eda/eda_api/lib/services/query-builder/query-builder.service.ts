@@ -77,11 +77,16 @@ export abstract class QueryBuilderService {
 
     abstract simpleQuery(columns: string[], origin: string, view:boolean);
 
+    /** Hard cap applied to every "Mostrar campos de origen" query, regardless of dialect —
+     *  this is a preview, not a full export, and an unbounded join (no WHERE, no limit) can
+     *  otherwise return millions of rows and crash the API (OOM) or trip the proxy timeout. */
+    protected static readonly SOURCE_FIELDS_ROW_LIMIT = 50000;
+
     /**
      * Builds a `SELECT * FROM ... [JOINS] [WHERE ...]` version of the query (no columns list,
-     * grouping, having, order or limit) — used by "Mostrar campos de origen". Not abstract so
-     * existing connection types keep compiling without implementing it; only overridden where
-     * support has actually been added (currently PostgreSQL only).
+     * grouping, having or order, but always capped at SOURCE_FIELDS_ROW_LIMIT rows) — used by
+     * "Mostrar campos de origen". Not abstract so existing connection types keep compiling
+     * without implementing it; only overridden where support has actually been added.
      */
     public sourceFieldsQuery(origin: string, dest: any[], joinTree: any[], filters: any[], tables: Array<any>,
         joinType: string, valueListJoins: any[], schema?: string, database?: string, sortedFilters?: any[]): string {

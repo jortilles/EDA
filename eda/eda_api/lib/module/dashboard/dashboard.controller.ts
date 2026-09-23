@@ -38,10 +38,14 @@ export class DashboardController {
       if (isAdmin) {
         [publics, privates, group, shared] = await DashboardController.getAllDashboardToAdmin(req, dataSources)
       } else {
-        privates = await DashboardController.getPrivateDashboards(req, dataSources)
-        group = await DashboardController.getGroupsDashboards(req, dataSources)
-        shared = await DashboardController.getSharedDashboards(req, dataSources)
-        publics = await DashboardController.getPublicsDashboards(req, dataSources)
+        // Un único fetch sin filtro, compartido por shared/publics, en vez de que cada uno lo repita
+        const allDashboards = await DashboardController.findAllDashboardsWithMeta();
+        [privates, group, shared, publics] = await Promise.all([
+          DashboardController.getPrivateDashboards(req, dataSources),
+          DashboardController.getGroupsDashboards(req, dataSources, groups),
+          DashboardController.getSharedDashboards(req, dataSources, allDashboards),
+          DashboardController.getPublicsDashboards(req, dataSources, allDashboards),
+        ])
       }
 
       // Modificación de fecha y adición de autor si no lo tiene (informes viejos)
@@ -49,7 +53,10 @@ export class DashboardController {
 
 
       // Asegurarse de que la información del grupo esté incluida para dashboards de tipo "group"
-      group = await DashboardController.addGroupInfo(group);
+      // (la ruta admin ya la resuelve dentro de getAllDashboardToAdmin)
+      if (!isAdmin) {
+        group = await DashboardController.addGroupInfo(group);
+      }
 
       return res.status(200).json({
         ok: true,
@@ -71,9 +78,23 @@ export class DashboardController {
    * @returns Dashboards with group information added
    */
   static async addGroupInfo(dashboards) {
+    const allGroupIds = new Set<string>();
     for (const dashboard of dashboards) {
       if (dashboard.group && Array.isArray(dashboard.group)) {
-        dashboard.group = await Group.find({ _id: { $in: dashboard.group } }, 'name').exec();
+        dashboard.group.forEach(id => id && allGroupIds.add(id.toString()));
+      }
+    }
+
+    if (allGroupIds.size === 0) return dashboards;
+
+    const groupDocs = await Group.find({ _id: { $in: Array.from(allGroupIds) } }, 'name').exec();
+    const groupsById = new Map(groupDocs.map(g => [g._id.toString(), g]));
+
+    for (const dashboard of dashboards) {
+      if (dashboard.group && Array.isArray(dashboard.group)) {
+        dashboard.group = dashboard.group
+          .map(id => id && groupsById.get(id.toString()))
+          .filter(Boolean);
       }
     }
     return dashboards;
@@ -141,20 +162,15 @@ export class DashboardController {
    * @param req Express Request with user information and possible tags
    * @returns List of group dashboards
    */
-  static async getGroupsDashboards(req: Request, dss:any) {
+  static async getGroupsDashboards(req: Request, dss:any, userGroups: any[]) {
     try {
-      const userGroups = await Group.find({
-        users: { $in: req.user._id }
-      }).exec();
-
-
       const dashboards = await DashboardController.findAllDashboardsWithMeta({ group: { $in: userGroups.map(g => g._id) } });
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
         const dashboard = dashboards[i]
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
-        if( dashboard.group ){
+        if( dashboard.config.visible === 'group' && dashboard.group ){
           for (const dashboardGroup of dashboard.group) {
             for (const userGroup of userGroups) {
               if ( userGroup._id.equals(dashboardGroup) ) {
@@ -218,9 +234,8 @@ export class DashboardController {
    * @param dss List of available datasources
    * @returns List of public dashboards
    */
-  static async getPublicsDashboards(req: Request, dss: any[]) {
+  static async getPublicsDashboards(req: Request, dss: any[], dashboards: any[]) {
     try {
-      const dashboards = await DashboardController.findAllDashboardsWithMeta();
       const publics = []
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
@@ -274,9 +289,8 @@ export class DashboardController {
    * @param req Express Request with possible tags
    * @returns List of shared dashboards
    */
-  static async getSharedDashboards(req: Request, dss:any) {
+  static async getSharedDashboards(req: Request, dss:any, dashboards: any[]) {
     try {
-      const dashboards = await DashboardController.findAllDashboardsWithMeta()
       const shared = []
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
@@ -446,13 +460,27 @@ export class DashboardController {
             privates.push(dashboard)
             break
           case 'group':
-            dashboard.group = await Group.find({ _id: dashboard.group }).exec()
             groups.push(dashboard)
             break
           case 'common':
             shared.push(dashboard)
             break
         }
+      }
+
+      // Resolver los grupos de todos los dashboards de tipo 'group' en una única query, en vez de una por dashboard
+      if (groups.length > 0) {
+        const allGroupIds = new Set<string>();
+        groups.forEach(dashboard => {
+          const ids: any[] = Array.isArray(dashboard.group) ? dashboard.group : [dashboard.group];
+          ids.forEach(id => id && allGroupIds.add(id.toString()));
+        });
+        const groupDocs = await Group.find({ _id: { $in: Array.from(allGroupIds) } }).exec();
+        const groupsById = new Map(groupDocs.map(g => [g._id.toString(), g]));
+        groups.forEach(dashboard => {
+          const ids: any[] = Array.isArray(dashboard.group) ? dashboard.group : [dashboard.group];
+          dashboard.group = ids.map(id => id && groupsById.get(id.toString())).filter(Boolean);
+        });
       }
 
       //apliquem filtrat per tags desde URL

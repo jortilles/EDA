@@ -759,8 +759,12 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('sunburst'), 1);
         }
 
-        // Testing dynamic treetable
-        if(dataDescription.totalColumns > 2) {
+        // treetable: works two ways.
+        // 1) father/child-ID hierarchy - first two columns numeric (ID pair), needs a 3rd column to display.
+        // 2) auto-detected dynamic hierarchy - groups by repeated-value columns, needs at least 2 columns.
+        const treetableIdPair = query.length >= 2 && query[0]?.column_type === 'numeric' && query[1]?.column_type === 'numeric';
+        const treetableAllowed = treetableIdPair ? dataDescription.totalColumns > 2 : dataDescription.totalColumns >= 2;
+        if (treetableAllowed) {
             notAllowed.splice(notAllowed.indexOf('treetable'), 1);
         }
 

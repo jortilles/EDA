@@ -95,8 +95,7 @@ export class HomePage implements OnInit, OnDestroy {
   constructor(private userService: UserService, private groupService: GroupService) { }
 
   ngOnInit(): void {
-    this.initTagSelection();
-    this.loadReports();
+    this.loadReports(true);
     this.ifAnonymousGetOut();
     this.dashboardCreatedSub = this.dashboardService.dashboardCreated$.subscribe(() => this.loadReports());
   }
@@ -127,7 +126,7 @@ export class HomePage implements OnInit, OnDestroy {
       }
   }
 
-  private async loadReports() {
+  private async loadReports(applyDefaultTagSelection = false) {
     const { publics, shared, dashboards, group } = await lastValueFrom(this.dashboardService.getDashboards());
     this.publicReports = shared;
     this.privateReports = dashboards;
@@ -143,10 +142,23 @@ export class HomePage implements OnInit, OnDestroy {
       shared: this.sharedReports
     };
 
+    if (applyDefaultTagSelection) {
+      this.setDefaultTagSelection(this.allDashboards.length);
+    }
+
     this.handleSorting();
     this.loadReportTags();
     this.setIsObserver();
     this.reportsLoaded.set(true);
+  }
+
+  private setDefaultTagSelection(dashboardCount: number): void {
+    const moreThan20Dashboards = dashboardCount > 20;
+    const todoGroupedOption = { label: this.allTagsGroupedLabel, value: this.allTagsValue };
+    const todoFlatOption = { label: this.allTagsFlatLabel, value: this.allTagsFlatValue };
+    this.selectedTags.set(moreThan20Dashboards ? todoGroupedOption : todoFlatOption);
+    sessionStorage.setItem('activeTags', JSON.stringify(moreThan20Dashboards ? todoGroupedOption : todoFlatOption));
+    this.viewMode.set(moreThan20Dashboards ? 'folders' : 'flat');
   }
 
   private async loadReportTags() {
@@ -199,17 +211,6 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.isOpenTags.set(false);
     this.reapplyFilters();
-  }
-
-  private async initTagSelection(): Promise<void> {
-    const dashboards = await lastValueFrom(this.dashboardService.getDashboards());
-    const AllDashboards = [...dashboards.publics, ...dashboards.shared, ...dashboards.dashboards, ...dashboards.group];
-    const moreThan20Dashboards = AllDashboards.length > 20;
-    const todoGroupedOption = { label: this.allTagsGroupedLabel, value: this.allTagsValue };
-    const todoFlatOption = { label: this.allTagsFlatLabel, value: this.allTagsFlatValue };
-    this.selectedTags.set(moreThan20Dashboards ? todoGroupedOption : todoFlatOption);
-    sessionStorage.setItem('activeTags', JSON.stringify(moreThan20Dashboards ? todoGroupedOption : todoFlatOption));
-    this.viewMode.set(moreThan20Dashboards ? 'folders' : 'flat');
   }
 
   public clickFolder(tag: string, colKey: string): void {

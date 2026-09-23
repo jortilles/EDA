@@ -409,6 +409,8 @@ export class MySqlBuilderService extends QueryBuilderService {
       myQuery += this.getFilters(filters, dest.length, o);
     }
 
+    myQuery += `\nlimit ${MySqlBuilderService.SOURCE_FIELDS_ROW_LIMIT}`;
+
     if (alias) {
       for (const key in alias) {
         myQuery = myQuery.split(key).join(`\`${alias[key]}\``);
