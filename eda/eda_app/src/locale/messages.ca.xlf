@@ -8042,6 +8042,10 @@ Salutacions.</target>
   <source>Opciones</source>
   <target>Opcions</target>
 </trans-unit>
+<trans-unit id="sourceFieldsLimitNotice">
+  <source>La consulta está limitada a 50.000 registros</source>
+  <target>La consulta està limitada a 50.000 registres</target>
+</trans-unit>
 </body>
   </file>
 </xliff>

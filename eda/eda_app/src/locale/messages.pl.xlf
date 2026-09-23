@@ -7676,6 +7676,10 @@ Pozdrawiam.</target>
   <source>Opciones</source>
   <target>Opcje</target>
 </trans-unit>
+<trans-unit id="sourceFieldsLimitNotice">
+  <source>La consulta está limitada a 50.000 registros</source>
+  <target>Zapytanie jest ograniczone do 50 000 rekordów</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
