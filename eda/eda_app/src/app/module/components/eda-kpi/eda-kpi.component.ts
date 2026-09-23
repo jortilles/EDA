@@ -126,6 +126,14 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
         this.onNotify.emit({ sufix: this.inject.sufix })
     }
 
+    /** Format string for the value's `number` pipe - fixes it at exactly `inject.decimals`
+     *  fraction digits (matching the column's configured "Número de decimals") when known,
+     *  otherwise keeps the original 0-10 range. */
+    getNumberFormat(): string {
+        const d = this.inject.decimals;
+        return d != null ? `1.${d}-${d}` : '1.0-10';
+    }
+
     getStyle(): any {
         return {
             'font-weight': 'bold',
