@@ -658,6 +658,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.chartType = this.props.chartType;
     chartConfig.value = kpiValue;
     chartConfig.header = kpiLabel;
+    chartConfig.decimals = decimals;
 
     const propsConfig: any = this.props.config;
     const alertLimits = propsConfig?.config?.alertLimits || [];
