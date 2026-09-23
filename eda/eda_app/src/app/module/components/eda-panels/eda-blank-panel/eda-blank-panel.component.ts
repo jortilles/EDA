@@ -968,6 +968,17 @@ public tableNodeExpand(event: any): void {
      * @param content panel content
      */
     public async changeChartType(type: string, subType: string, config?: ChartConfig) {
+        const allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
+
+        // Not allowed for the current data shape: warn and leave the active chart untouched.
+        if (_.isEqual(this.display_v.chart, 'no_data') || !allow || allow.ngIf || allow.tooManyData) {
+            if (allow) {
+                this.alertService.addWarning(allow.tooManyData ? this.getTooManyDataDescription() : this.getOptionDescription(subType));
+            }
+            this.cdr.detectChanges();
+            return;
+        }
+
         // We update the variable type for the drag-and-drop component.
         this.graphicType = type;
         this.graficos = {};
@@ -997,57 +1008,45 @@ public tableNodeExpand(event: any): void {
             }
         }
 
-        const allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
+        const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
-        if (!_.isEqual(this.display_v.chart, 'no_data') && allow && !allow.ngIf && !allow.tooManyData) {
-            const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
+        // Preserve every custom field (same list setConfig() uses to save them) before
+        // merging - setVoidChartConfig() builds a fresh blank config without them, and
+        // _.merge() isn't trusted to carry them over correctly either.
+        const savedCustomFields: Record<string, any> = {};
+        CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+            savedCustomFields[field.name] = config && config.getConfig() ? config.getConfig()[field.name] : null;
+        });
 
-            // Preserve every custom field (same list setConfig() uses to save them) before
-            // merging - setVoidChartConfig() builds a fresh blank config without them, and
-            // _.merge() isn't trusted to carry them over correctly either.
-            const savedCustomFields: Record<string, any> = {};
-            CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
-                savedCustomFields[field.name] = config && config.getConfig() ? config.getConfig()[field.name] : null;
-            });
+        _.merge(_config, config||{});
 
-            _.merge(_config, config||{});
-
-            // Restore every custom field after merging.
-            CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
-                const saved = savedCustomFields[field.name];
-                if (saved != null) {
-                    _config.getConfig()[field.name] = saved;
-                }
-            });
-
-            // Ensure that showPredictionLines is propagated to _config (keep the prediction line when switching between chart types).
-            if (['line', 'area'].includes(type) && this.graficos.showPredictionLines) {
-                _config.getConfig()['showPredictionLines'] = true;
+        // Restore every custom field after merging.
+        CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+            const saved = savedCustomFields[field.name];
+            if (saved != null) {
+                _config.getConfig()[field.name] = saved;
             }
+        });
 
-            if (subType=='tableanalized') {
-                try {
-                    if (!this.display_v.minispinner) this.spinnerService.on();
-                    const data = await QueryUtils.analizedQuery(this);
-                    const transformedData = QueryUtils.transformAnalizedQueryData(this, data);
-                    this.renderChart(this.currentQuery, transformedData.labels, transformedData.values, type, subType, _config);
-                } catch(err) {
-                    console.log(err)
-                    throw err;
-                } finally {
-                    this.spinnerService.off();
-                }
-            } else {
-                this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
-            }
-        }else{
-            try{
-                console.log('no allow');
-                console.log(allow);
-            }catch (e){
-                console.log(e);
-            }
+        // Ensure that showPredictionLines is propagated to _config (keep the prediction line when switching between chart types).
+        if (['line', 'area'].includes(type) && this.graficos.showPredictionLines) {
+            _config.getConfig()['showPredictionLines'] = true;
+        }
 
+        if (subType=='tableanalized') {
+            try {
+                if (!this.display_v.minispinner) this.spinnerService.on();
+                const data = await QueryUtils.analizedQuery(this);
+                const transformedData = QueryUtils.transformAnalizedQueryData(this, data);
+                this.renderChart(this.currentQuery, transformedData.labels, transformedData.values, type, subType, _config);
+            } catch(err) {
+                console.log(err)
+                throw err;
+            } finally {
+                this.spinnerService.off();
+            }
+        } else {
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }
 
         // Check whether a pivot table should be executed

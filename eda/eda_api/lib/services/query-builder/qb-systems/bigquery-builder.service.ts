@@ -216,6 +216,8 @@ export class BigQueryBuilderService extends QueryBuilderService {
       myQuery += this.getFilters(filters, 'where');
     }
 
+    myQuery += `\nlimit ${BigQueryBuilderService.SOURCE_FIELDS_ROW_LIMIT}`;
+
     if (alias) {
       for (const key in alias) {
         myQuery = myQuery.split(key).join(`\`${alias[key]}\``);

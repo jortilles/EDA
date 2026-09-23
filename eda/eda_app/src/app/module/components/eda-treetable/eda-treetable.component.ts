@@ -87,10 +87,11 @@ export class EdaTreeTable implements OnInit, OnDestroy {
       this.prepareColumns();
       this.applyColumnWidths(cfg.columnWidths);
       this.nodes = this.buildTree();
-      this.sortNodes(this.nodes);
+      this.sortNodes(this.nodes, this.leafs.map(l => l.field));
     } else {
       this.isDynamic = true;
-      this.initDynamicTreeTable()
+      this.initDynamicTreeTable();
+      this.sortNodes(this.dynamicFiles, this.dynamicCols.map(c => c.field));
     }
   }
 
@@ -216,12 +217,15 @@ export class EdaTreeTable implements OnInit, OnDestroy {
     this.removeResizeListeners();
   }
 
-  // Sorts siblings at every level by the configured column
-  private sortNodes(nodes: TreeNode[]) {
+  // Sorts siblings at every level by the configured column.
+  // `fields` is the set of valid column keys for the current mode (leafs for the static
+  // father/child-ID tree, dynamicCols for the auto-detected hierarchy) since both share this
+  // node shape ({data, children}) but expose different field names.
+  private sortNodes(nodes: TreeNode[], fields: string[]) {
     const { sortOrder, sortColumn } = this.inject.config.config;
     if (!sortOrder || sortOrder === 'none') return;
 
-    const field = this.leafs.some(l => l.field === sortColumn) ? sortColumn : this.leafs[0]?.field;
+    const field = fields.includes(sortColumn) ? sortColumn : fields[0];
     if (!field) return;
 
     const dir = sortOrder === 'desc' ? -1 : 1;

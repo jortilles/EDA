@@ -60,11 +60,15 @@ export class TreeTableDialogComponent implements OnInit {
     };
     this.sortOrder = this.config.sortOrder ?? 'none';
 
-    // Same column naming as EdaTreeTable: the two ID columns come first and are not displayed
-    this.sortColumns = (this.panelChartConfig.query || []).slice(2).map(c => ({
-      field: c?.name ?? c?.display_name?.default ?? '',
-      header: c?.display_name?.default ?? c?.name ?? ''
-    }));
+    // Dynamic mode (auto-detected hierarchy) has no father/child ID columns to skip and exposes
+    // its own field naming (lowercased labels, see EdaTreeTable.buildDynamicHierarchyTreetable).
+    // Static mode: the two ID columns come first and are not displayed.
+    this.sortColumns = this.config.leafLabels?.length
+      ? this.config.leafLabels.map((label: string) => ({ field: label.toLowerCase(), header: label }))
+      : (this.panelChartConfig.query || []).slice(2).map(c => ({
+        field: c?.name ?? c?.display_name?.default ?? '',
+        header: c?.display_name?.default ?? c?.name ?? ''
+      }));
     this.sortColumn = this.sortColumns.some(c => c.field === this.config.sortColumn)
       ? this.config.sortColumn
       : this.sortColumns[0]?.field ?? '';
