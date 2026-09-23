@@ -214,6 +214,8 @@ export class OracleBuilderService extends QueryBuilderService {
       myQuery += this.getFilters(filters);
     }
 
+    myQuery += ` FETCH FIRST ${OracleBuilderService.SOURCE_FIELDS_ROW_LIMIT} ROWS ONLY `;
+
     if (alias) {
       for (const key in alias) {
         myQuery = myQuery.split(key).join(`"${alias[key]}"`);
