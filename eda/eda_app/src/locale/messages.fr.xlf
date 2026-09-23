@@ -7987,6 +7987,10 @@ Cordialement.</target>
   <source>Opciones</source>
   <target>Options</target>
 </trans-unit>
+<trans-unit id="sourceFieldsLimitNotice">
+  <source>La consulta está limitada a 50.000 registros</source>
+  <target>La requête est limitée à 50 000 enregistrements</target>
+</trans-unit>
 </body>
   </file>
 </xliff>

@@ -7712,6 +7712,10 @@ Best regards.</target>
   <source>Opciones</source>
   <target>Options</target>
 </trans-unit>
+<trans-unit id="sourceFieldsLimitNotice">
+  <source>La consulta está limitada a 50.000 registros</source>
+  <target>The query is limited to 50,000 records</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
