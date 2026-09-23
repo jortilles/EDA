@@ -110,6 +110,10 @@ export const EbpUtils = {
         str = $localize`:@@chartInfoRaceBar:Un gráfico de barras en carrera necesita una categoría, un valor numérico y una fecha`;
         description += `\n${str}`;
         break;
+      case 'treetable':
+        str = $localize`:@@chartInfoTreetable:Una tabla árbol necesita al menos 2 columnas. Si los dos primeros campos son numéricos se usarán como ID padre e ID hijo (se necesita además un campo a mostrar); si no, la jerarquía se agrupará automáticamente por las columnas con valores repetidos.`;
+        description += `\n${str}`;
+        break;
       default:
         description = $localize`:@@chartInfo1:Los datos seleccionados no permiten utilizar este gráfico.`;
         break;

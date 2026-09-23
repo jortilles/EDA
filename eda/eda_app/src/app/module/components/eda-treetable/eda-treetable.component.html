@@ -1,5 +1,6 @@
 <div class="container-treetable" style="height: 100%; display: flex; flex-direction: column;">
   <div style="flex: 1; overflow: auto;">
+    @if(!isDynamic){
     <p-treeTable #tt [value]="nodes" [scrollable]="true" [tableStyle]="tableStyle" selectionMode="single"
       [filterMode]="filterMode">
 
@@ -64,5 +65,45 @@
       </ng-template>
 
     </p-treeTable>
+    }
+
+    <!-- Dynamic tree table: hierarchy levels auto-detected from column uniqueness, no father/child IDs required -->
+    @if(isDynamic){
+    <p-treeTable #ttt [value]="dynamicFiles" [columns]="dynamicCols" [scrollable]="true" [tableStyle]="tableStyle"
+      selectionMode="single" [filterMode]="filterMode">
+
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          @for(col of columns; track $index){
+          <th class="tt-header" [attr.data-field]="col.field">
+            <div class="header-cell">
+              <span class="header-title">{{ col.header }}</span>
+
+              @if(showColumnFilters){
+              <input class="input-filter" type="text" pInputText
+                (input)="ttt.filter($event.target.value, col.field, 'contains')"
+                [placeholder]="filterBy + ' ' + col.header" />
+              }
+            </div>
+          </th>
+          }
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+        <tr [ttRow]="rowNode">
+          @for(col of columns; track $index){
+          <td class="tt-cell-top" (click)="handleClick(rowData[col.field], col.field)">
+            @if($index === 0){
+            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+            }
+            <span [innerHTML]="rowData[col.field]"></span>
+          </td>
+          }
+        </tr>
+      </ng-template>
+
+    </p-treeTable>
+    }
   </div>
 </div>
