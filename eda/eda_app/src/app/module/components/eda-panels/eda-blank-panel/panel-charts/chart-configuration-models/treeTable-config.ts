@@ -10,6 +10,7 @@ export class TreeTableConfig {
   sortOrder: TreeTableSortOrder = 'none';
   sortColumn: string = '';
   columnWidths?: Record<string, string>;
+  rowBanding: boolean = false;
   constructor(editedTreeTable: boolean, hierarchyLabels: Array<string>, leafLabels: Array<string>) {
     this.editedTreeTable = editedTreeTable;
     this.hierarchyLabels = hierarchyLabels;
