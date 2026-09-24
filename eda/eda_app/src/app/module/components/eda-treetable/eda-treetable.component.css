@@ -1,8 +1,22 @@
-/* header */
+.container-treetable {
+    --table-header-color: rgba(228, 228, 228, 0.5);
+    --table-banding-color: rgba(228, 228, 228, 0.5);
+}
+
+/* header: transparent — the color is painted once on the scrollable-header wrapper below,
+   so it isn't double-composited (which made the <th> cells look darker than the gap next to them) */
 .tt-header {
   position: relative;
-  background-color: #e0e0e0;
+  background-color: transparent;
   padding: 6px 8px;
+}
+
+/* Scrollable-mode header wrapper (spans both the <th>s and the strip next to the scrollbar
+   gutter): PrimeNG's theme paints it a fixed gray (custom.css .p-treetable-scrollable-header).
+   Painted only here, not on the nested -header-box too, or the same translucent color would
+   stack on itself and render darker than the single-layer color eda-table uses. */
+:host ::ng-deep .p-treetable-scrollable-header {
+  background: var(--table-header-color) !important;
 }
 
 /* header cont */
@@ -67,6 +81,15 @@
   bottom: 0;
   background-color: var(--corporate-primary, #6366f1);
   opacity: 1;
+}
+
+/* Row banding: a whole hierarchy group (root + all its descendants) shares one band,
+   assigned in EdaTreeTable.assignBands — not a flat nth-child, so children never flip color. */
+:host ::ng-deep .container-treetable.row-banding .p-treetable .p-treetable-tbody > tr.tt-row-band {
+  background: transparent !important;
+}
+:host ::ng-deep .container-treetable.row-banding .p-treetable .p-treetable-tbody > tr.tt-row-band > td {
+  background: var(--table-banding-color) !important;
 }
 
 /* no focus ring after clicking rows or the expand/collapse toggler */
