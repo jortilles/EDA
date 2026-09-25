@@ -47,7 +47,8 @@
                 "node_modules/quill/dist/quill.snow.css",
                 "node_modules/primeicons/primeicons.css",
                 "node_modules/leaflet/dist/leaflet.css",
-                "src/assets/sass/css/style.css"
+                "src/assets/sass/css/style.css",
+                "src/app/config/customizable/custom_extended.css"
             ],
             "scripts": [
                 "node_modules/quill/dist/quill.js"

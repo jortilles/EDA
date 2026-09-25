@@ -1,0 +1,12 @@
+/**
+ * Customization CSS: place here the styles specific to each client installation.
+ *
+ * Loaded last in angular.json "styles", so rules here override EDA's global styles
+ * (including the Tailwind/PrimeNG @layer blocks). Keep this file empty in EDA core.
+ *
+ * Notes:
+ * - Component styles are scoped by Angular ([_ngcontent-*]); to override them use a more
+ *   specific selector or !important.
+ * - Paths in url() are relative to this file and bundled at build time,
+ *   e.g. url('../../../assets/images/...').
+ */
