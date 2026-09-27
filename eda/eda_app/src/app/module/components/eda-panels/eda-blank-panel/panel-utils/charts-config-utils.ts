@@ -80,6 +80,12 @@ export const ChartsConfigUtils = {
       return new ChartConfig(config);
     }
 
+    // The chart is being shown as a plain table (too many data): the rendered component is not the
+    // configured chart, so keep the saved config instead of reading it from that component.
+    if (ebp.panelChart.TOO_MANY_DATA) {
+      return new ChartConfig(ebp.panelChart.props.config?.getConfig() ?? null);
+    }
+
 
     if (ebp.panelChart.componentRef && ['table', 'crosstable'].includes(ebp.panelChart.props.chartType)) {
       tableRows = ebp.panelChart.componentRef.instance.inject.rows || 10;

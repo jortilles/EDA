@@ -4433,6 +4433,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Este panel no está disponible por falta de permisos</source>
         <target>Ce panneau est indisponible en raison d'autorisations insuffisantes</target>
       </trans-unit>
+      <trans-unit id="tooManyValuesForCrosstable">
+        <source>Demasiados valores en el eje horizontal. Cambia la configuración de la tabla para que se pueda representar correctamente.</source>
+        <target>Trop de valeurs sur l'axe horizontal. Modifiez la configuration du tableau pour qu'il puisse être affiché correctement.</target>
+      </trans-unit>
       <trans-unit id="tooManyValuesForChart">
         <source>Demasiados valores para un gráfico. Se muestran los datos en una tabla.</source>
         <target>Trop de valeurs pour un graphique. Les données sont affichées dans un tableau.</target>

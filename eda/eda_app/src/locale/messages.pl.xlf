@@ -3901,6 +3901,10 @@ Co widzę?
     <target>Ten Panel nie jest dostępny ze względu na brak uprawnień</target>
   </trans-unit>
 
+  <trans-unit id="tooManyValuesForCrosstable">
+    <source>Demasiados valores en el eje horizontal. Cambia la configuración de la tabla para que se pueda representar correctamente.</source>
+    <target>Za dużo wartości na osi poziomej. Zmień konfigurację tabeli, aby mogła zostać poprawnie wyświetlona.</target>
+  </trans-unit>
   <trans-unit id="tooManyValuesForChart">
     <source>Demasiados valores para un gráfico. Se muestran los datos en una tabla.</source>
     <target>Za dużo wartości dla wykresu. Dane są wyświetlane w tabeli.</target>
