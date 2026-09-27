@@ -34,6 +34,7 @@ export class TreeTableDialogComponent implements OnInit {
     { key: 'showOriginField', label: $localize`:@@showField:Mostrar campo de origen` },
     { key: 'showColumnFilters', label: $localize`:@@treeTableShowFilters:Mostrar filtros de columna` },
     { key: 'showChildCount', label: $localize`:@@treeTableShowChildCount:Mostrar número de hijos` },
+    { key: 'rowBanding', label: $localize`:@@treeTableRowBanding:Bandas alternas en filas` },
   ];
   public sortOptions: { value: TreeTableSortOrder, label: string }[] = [
     { value: 'none', label: $localize`:@@treeTableSortNone:Sin ordenar` },
@@ -57,6 +58,7 @@ export class TreeTableDialogComponent implements OnInit {
       showOriginField: this.config.showOriginField ?? false,
       showColumnFilters: this.config.showColumnFilters ?? true,
       showChildCount: this.config.showChildCount ?? false,
+      rowBanding: this.config.rowBanding ?? false,
     };
     this.sortOrder = this.config.sortOrder ?? 'none';
 
