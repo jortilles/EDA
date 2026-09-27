@@ -4433,6 +4433,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Este panel no está disponible por falta de permisos</source>
         <target>Ce panneau est indisponible en raison d'autorisations insuffisantes</target>
       </trans-unit>
+      <trans-unit id="tooManyValuesForChart">
+        <source>Demasiados valores para un gráfico. Se muestran los datos en una tabla.</source>
+        <target>Trop de valeurs pour un graphique. Les données sont affichées dans un tableau.</target>
+      </trans-unit>
       <trans-unit id="noFilterAllowed">
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>Ce panneau est indisponible en raison d'autorisations insuffisantes sur un filtre</target>

@@ -3901,6 +3901,10 @@ Co widzę?
     <target>Ten Panel nie jest dostępny ze względu na brak uprawnień</target>
   </trans-unit>
 
+  <trans-unit id="tooManyValuesForChart">
+    <source>Demasiados valores para un gráfico. Se muestran los datos en una tabla.</source>
+    <target>Za dużo wartości dla wykresu. Dane są wyświetlane w tabeli.</target>
+  </trans-unit>
   <trans-unit id="noFilterAllowed">
     <source>Este panel no está disponible por falta de permisos en un filtro</source>
     <target>Ten panel jest niedostępny ze względu na brak uprawnień do filtra</target>

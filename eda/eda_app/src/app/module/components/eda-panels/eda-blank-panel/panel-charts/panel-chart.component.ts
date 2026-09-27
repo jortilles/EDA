@@ -88,6 +88,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     ngOnDestroy(): void {
         this.destroyComponent();
     }
+    /** Above this number of rows, bar/line family charts are rendered as a table */
+    private static readonly MAX_CHART_ROWS = 2000;
     @Input() props: PanelChart;
     @Output() configUpdated: EventEmitter<any> = new EventEmitter<any>(null);
     @Output() onChartClick: EventEmitter<any> = new EventEmitter<any>();
@@ -101,6 +103,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public NO_DATA: boolean;
     public NO_DATA_ALLOWED: boolean;
     public NO_FILTER_ALLOWED: boolean;
+    /** The chart has been replaced by a table because the resultset exceeds MAX_CHART_ROWS */
+    public TOO_MANY_DATA: boolean = false;
 
     /**Styles */
     public fontColor: string;
@@ -180,6 +184,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
          */
         else {
             this.destroyComponent();
+            this.TOO_MANY_DATA = false;
             setTimeout(_ => {
                 this.NO_DATA = true;
                 if( this.props.data?.labels[0]== "noDataAllowed") {
@@ -206,6 +211,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     public changeChartType() {
         const type = this.props.chartType;
+
+        // The resultset may exceed the limit at render time (e.g. filters changed after the chart was configured):
+        // show it as a table instead of drawing a chart the browser can't handle. Only the view changes, the saved config stays.
+        this.TOO_MANY_DATA = this.hasTooManyRowsForChart(type);
+        if (this.TOO_MANY_DATA) {
+            this.createEdatableComponent('table', null);
+            this.cdr.markForCheck();
+            return;
+        }
 
         if (['table', 'crosstable'].includes(type)) {
             this.renderEdaTable(type);
@@ -290,6 +304,21 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
+     * Bar/line family charts whose resultset is too large to be drawn: over the per type limit
+     * (same rules used to disable the chart in the selector) or over MAX_CHART_ROWS.
+     * Histogram is excluded: it bins the data, so it supports any number of rows.
+     */
+    private hasTooManyRowsForChart(type: string): boolean {
+        const rowLimitedCharts = ['bar', 'line', 'radar', 'doughnut', 'polarArea'];
+        if (!rowLimitedCharts.includes(type) || this.props.edaChart === 'histogram') {
+            return false;
+        }
+        const rows = this.props.data?.values?.length || 0;
+        return rows > PanelChartComponent.MAX_CHART_ROWS
+            || this.chartUtils.getTooManyDataForCharts(rows).includes(type);
+    }
+
+    /**
      * renders a table component
      * @param type table or crosstable
      */
@@ -334,10 +363,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
       * Creates a table component
       * @param inject chart configuration
       */
-    private createEdatableComponent(type: string) {
+    private createEdatableComponent(type: string, config: any = this.props.config.getConfig()) {
         this.entry.clear();
 
-        const config = this.props.config.getConfig();
 
         if (type === 'crosstable') {
             this.componentRef = this.entry.createComponent(EdaCrosstableComponent);
@@ -365,18 +393,21 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         }
 
-        this.componentRef.instance.inject.onNotify.subscribe(data => {
-            (<TableConfig>config).visibleRows = data;
-        });
-        this.componentRef.instance.inject.onSortPivotEvent.subscribe(data => {
-            (<TableConfig>config).sortedSerie = data;
-        });
-        this.componentRef.instance.inject.onSortColEvent.subscribe(data => {
-            (<TableConfig>config).sortedColumn = data;
-        });
-        this.componentRef.instance.inject.onColumnResizeEvent.subscribe(data => {
-            (<TableConfig>config).columnWidths = data;
-        });
+        // Without config (table shown in place of a chart) the table state is not persisted
+        if (config) {
+            this.componentRef.instance.inject.onNotify.subscribe(data => {
+                (<TableConfig>config).visibleRows = data;
+            });
+            this.componentRef.instance.inject.onSortPivotEvent.subscribe(data => {
+                (<TableConfig>config).sortedSerie = data;
+            });
+            this.componentRef.instance.inject.onSortColEvent.subscribe(data => {
+                (<TableConfig>config).sortedColumn = data;
+            });
+            this.componentRef.instance.inject.onColumnResizeEvent.subscribe(data => {
+                (<TableConfig>config).columnWidths = data;
+            });
+        }
         this.currentConfig = this.componentRef.instance.inject;
         this.componentRef.instance.inject.linkedDashboardProps = this.props.linkedDashboardProps;
 
@@ -2031,6 +2062,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     public updateComponent() {
+        // The chart has been replaced by a table (too many rows): there is no chart to recolor/re-render
+        if (this.TOO_MANY_DATA) {
+            return;
+        }
         if (this.componentRef && !['table', 'crosstable'].includes(this.props.chartType)) {
             try {
                 // Doughnut (D3)
@@ -2154,6 +2189,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         setTimeout(() => {
+            // The data may have changed in the meantime and the chart replaced by a table
+            if (this.TOO_MANY_DATA) {
+                return;
+            }
             if (this.componentRef) {
                 this.componentRef.destroy();
                 this.componentRef = null;

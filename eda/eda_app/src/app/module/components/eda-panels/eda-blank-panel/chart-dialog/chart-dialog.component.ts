@@ -900,9 +900,10 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.markUnsaved();
         this.applyColorsToChart();
         this.controller.params.config.config.getConfig()['uniqueBarColors'] = [...this.uniqueBarColors];
-        if (this.panelChartComponent?.componentRef?.instance) {
-            this.panelChartComponent.componentRef.instance.inject = this.chart;
-            this.panelChartComponent.componentRef.instance.updateChart();
+        const chartInstance = this.getUpdatableChartInstance();
+        if (chartInstance) {
+            chartInstance.inject = this.chart;
+            chartInstance.updateChart();
         }
 
         this.updateChartView();
@@ -919,9 +920,10 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.applyColorsToChart();
 
         // Re-render
-        if (this.panelChartComponent?.componentRef?.instance) {
-            this.panelChartComponent.componentRef.instance.inject = this.chart;
-            this.panelChartComponent.componentRef.instance.updateChart();
+        const chartInstance = this.getUpdatableChartInstance();
+        if (chartInstance) {
+            chartInstance.inject = this.chart;
+            chartInstance.updateChart();
         }
         this.updateChartView();
 
@@ -934,20 +936,29 @@ export class ChartDialogComponent implements AfterViewChecked {
     }
 
     private updateChartView(): void {
-        if (!this.panelChartComponent?.componentRef?.instance) {
-            console.error('No hay componentRef disponible');
+        const chartInstance = this.getUpdatableChartInstance();
+        if (!chartInstance) {
             return;
         }
-
-        const chartInstance = this.panelChartComponent.componentRef.instance;
 
         // Update inject and force change detection
         chartInstance.inject = { ...this.chart };
 
         // Call the component's cheap partial-update method (no full destroy+recreate).
-        if (chartInstance.updateChart) {
-            chartInstance.updateChart();
+        chartInstance.updateChart();
+    }
+
+    /**
+     * Rendered chart instance that can be refreshed in place, or null when there is none:
+     * no component yet, or the chart was replaced by a table because of too many rows
+     * (its inject must not be overwritten with the chart config).
+     */
+    private getUpdatableChartInstance(): any {
+        const instance = this.panelChartComponent?.componentRef?.instance;
+        if (!instance || this.panelChartComponent.TOO_MANY_DATA || typeof instance.updateChart !== 'function') {
+            return null;
         }
+        return instance;
     }
 
 

@@ -1,4 +1,9 @@
 
+@if(TOO_MANY_DATA){
+  <div class="alert alert-warning text-center py-1 mb-1" style="font-size: 12px;">
+    <span i18n="@@tooManyValuesForChart">Demasiados valores para un gráfico. Se muestran los datos en una tabla.</span>
+  </div>
+}
 <template #chartComponent></template>
 @if(NO_DATA){
   <ng-container>
