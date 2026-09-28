@@ -204,6 +204,18 @@ export class IconService {
         <rect x="2" y="9" width="20" height="6" fill="#FFC400" />
       </svg>
     `,
+    "de-flag": `
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        [attr.class]="className"
+        fill="none"
+      >
+        <rect x="2" y="6" width="20" height="4" fill="#000000" />
+        <rect x="2" y="10" width="20" height="4" fill="#DD0000" />
+        <rect x="2" y="14" width="20" height="4" fill="#FFCE00" />
+      </svg>
+    `,
     "pl-flag": `
       <svg
         xmlns="http://www.w3.org/2000/svg"

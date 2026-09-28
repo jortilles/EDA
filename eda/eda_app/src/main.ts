@@ -8,6 +8,8 @@ import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import localeCa from '@angular/common/locales/ca';
 import localePl from '@angular/common/locales/pl';
+import localeFr from '@angular/common/locales/fr';
+import localeDe from '@angular/common/locales/de';
 import localeEn from '@angular/common/locales/en';
 
 // MSAL
@@ -30,6 +32,8 @@ if (new URLSearchParams(window.location.search).get('pdfExport') === 'true') {
 registerLocaleData(localeEs);
 registerLocaleData(localeCa);
 registerLocaleData(localePl);
+registerLocaleData(localeFr);
+registerLocaleData(localeDe);
 registerLocaleData(localeEn);
 
 // Detect IE
