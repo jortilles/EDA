@@ -4640,6 +4640,10 @@ Un saludo.</source>
         <source>ORDENAR INFORMES:</source>
         <target>BERICHTE SORTIEREN:</target>
       </trans-unit>
+      <trans-unit id="visibilityReports" datatype="html">
+        <source>VISIBILIDAD:</source>
+        <target>SICHTBARKEIT:</target>
+      </trans-unit>
       <trans-unit id="authorTooltipLabel" datatype="html">
         <source>Autor:</source>
         <target>Autor:</target>

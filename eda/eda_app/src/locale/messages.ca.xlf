@@ -4979,6 +4979,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>ORDENAR INFORMES:</source>
         <target>ORDENAR INFORMES:</target>
       </trans-unit>
+      <trans-unit id="visibilityReports" datatype="html">
+        <source>VISIBILIDAD:</source>
+        <target>VISIBILITAT:</target>
+      </trans-unit>
 
       <trans-unit id="createdAt">
         <source>Fecha (asc.)</source>

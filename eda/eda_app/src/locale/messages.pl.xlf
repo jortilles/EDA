@@ -4406,6 +4406,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>ORDENAR INFORMES:</source>
         <target>RAPORTY ZAMÓWIEŃ:</target>
       </trans-unit>
+      <trans-unit id="visibilityReports" datatype="html">
+        <source>VISIBILIDAD:</source>
+        <target>WIDOCZNOŚĆ:</target>
+      </trans-unit>
 
       <trans-unit id="createdAt">
         <source>Fecha (asc.)</source>

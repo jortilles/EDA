@@ -4464,6 +4464,10 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>ORDENAR INFORMES:</source>
 <target>SORT REPORTS:</target>
 </trans-unit>
+<trans-unit id="visibilityReports" datatype="html">
+<source>VISIBILIDAD:</source>
+<target>VISIBILITY:</target>
+</trans-unit>
 
 <trans-unit id="createdAt">
 <source>Fecha (asc.)</source>

@@ -4913,6 +4913,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>ORDENAR INFORMES:</source>
         <target>RAPPORTS DE COMMANDE:</target>
       </trans-unit>
+      <trans-unit id="visibilityReports" datatype="html">
+        <source>VISIBILIDAD:</source>
+        <target>VISIBILITÉ :</target>
+      </trans-unit>
 
       <trans-unit id="createdAt">
         <source>Fecha (asc.)</source>
