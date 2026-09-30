@@ -1521,19 +1521,16 @@ public startCountdown(seconds: number) {
   }
 
   /**
-   * Compacts the layout: reviews every panel in reading order (top-to-bottom, left-to-right)
-   * and drops each one into the first free spot in the grid it fits in (scanning row by row,
-   * left to right) — closing gaps left by deleted or resized panels instead of just rising
-   * within its own column.
+   * Computes, for every panel in reading order (top-to-bottom, left-to-right), the first free
+   * spot in the grid it fits in (scanning row by row, left to right) — closing gaps left by
+   * deleted or resized panels instead of just rising within its own column.
    */
-  public compactPanels(): void {
-    if (!this.panels?.length) return;
+  private computeCompactedLayout(): { panel: any; x: number; y: number }[] {
+    if (!this.panels?.length) return [];
 
     const cols = this.gridsterOptions.minCols || 40;
     const orderedPanels = [...this.panels].sort((a, b) => a.y - b.y || a.x - b.x);
 
-    // occupiedRows[row] is a boolean[cols] marking taken cells; grown on demand, so any
-    // row not yet touched is implicitly free.
     const occupiedRows: boolean[][] = [];
 
     const isFree = (x: number, y: number, w: number, h: number): boolean => {
@@ -1554,7 +1551,7 @@ public startCountdown(seconds: number) {
       }
     };
 
-    orderedPanels.forEach((panel) => {
+    return orderedPanels.map((panel) => {
       const w = Math.min(panel.cols || panel.w || 1, cols);
       const h = panel.rows || panel.h || 1;
 
@@ -1571,14 +1568,27 @@ public startCountdown(seconds: number) {
         }
       }
 
-      panel.x = placedX;
-      panel.y = placedY;
       occupy(placedX, placedY, w, h);
+      return { panel, x: placedX, y: placedY };
+    });
+  }
+
+  public isCompactionNeeded(): boolean {
+    return this.computeCompactedLayout().some(({ panel, x, y }) => panel.x !== x || panel.y !== y);
+  }
+
+  public compactPanels(): void {
+    const layout = this.computeCompactedLayout();
+    if (!layout.length) return;
+
+    layout.forEach(({ panel, x, y }) => {
+      panel.x = x;
+      panel.y = y;
     });
 
     this.gridsterOptions.api?.optionsChanged();
     this.dashboardService.setNotSaved(true);
-    this.onItemChange(orderedPanels[0]);
+    this.onItemChange(layout[0].panel);
   }
 
   // Function to check if the clicked column is navigable
