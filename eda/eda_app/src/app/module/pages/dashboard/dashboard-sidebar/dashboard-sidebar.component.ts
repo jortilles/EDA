@@ -929,20 +929,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
     return container;
   }
 
-  /** Single-panel version of _buildOffscreenCaptureContainer (Excel/Word export captures one
-   *  image per panel, so batching doesn't apply). Caller must `.remove()` the result. */
-  private _cloneOffscreenForCapture(el: HTMLElement): HTMLElement {
-    const clone = this._cloneForCapture(el);
-    clone.style.setProperty('position', 'fixed', 'important');
-    clone.style.setProperty('left', '-99999px', 'important');
-    clone.style.setProperty('top', '0', 'important');
-    clone.style.setProperty('transform', 'none', 'important');
-    clone.style.setProperty('z-index', '-1', 'important');
-    document.body.appendChild(clone);
-    void clone.offsetHeight; // force layout before html2canvas reads it
-    return clone;
-  }
-
   /** Deep-clones `el` for capture: canvas pixels are re-painted (cloneNode doesn't carry them),
    *  and any stroke-dasharray/dashoffset draw-in animation stuck at its start position (PrimeNG's
    *  Knob gauge, among others) is revealed - cloneNode() copies the literal pre-animation inline
@@ -1099,21 +1085,49 @@ export class DashboardSidebarComponent implements AfterViewInit {
     }
   }
 
-  /** Collects every panel's export-ready content. Sequential: chart/kpi panels call html2canvas
-   *  via _captureChartImage, and calling it concurrently isn't safe. */
+  /** Collects every panel's export-ready content. Chart/kpi-with-chart panels need an image;
+   *  all of those are captured in ONE batched html2canvas call (see _captureElementsBatched)
+   *  instead of one call per panel, since each call has a ~4-5s fixed cost regardless of size. */
   private async _collectPanelData(): Promise<DashboardPanelExport[]> {
     const panels = (this.dashboard.edaPanels?.toArray() ?? []).filter(p => p.panel?.content);
-    const panelDataList: DashboardPanelExport[] = [];
+
+    type PanelSpec = { entry: DashboardPanelExport; hostEl?: HTMLElement };
+    const specs: PanelSpec[] = [];
+    const hidden: HTMLElement[] = [];
 
     for (const panelComp of panels) {
-      const result = await this._buildPanelExportData(panelComp);
-      if (result) panelDataList.push(result);
+      const spec = this._prepareExportPanel(panelComp, hidden);
+      if (spec) specs.push(spec);
     }
 
-    return panelDataList;
+    try {
+      const imageTargets = specs.map(s => s.hostEl).filter((el): el is HTMLElement => !!el);
+      const captured = await this._captureElementsBatched(imageTargets, 1.5);
+      for (const spec of specs) {
+        if (!spec.hostEl) continue;
+        const img = captured.get(spec.hostEl);
+        if (img) {
+          spec.entry.imageBase64 = img.dataUrl;
+          spec.entry.imageWidth  = img.width;
+          spec.entry.imageHeight = img.height;
+        } else if (spec.entry.type === 'chart') {
+          spec.entry.type = 'other';
+        }
+      }
+    } finally {
+      hidden.forEach(el => { el.style.visibility = ''; });
+    }
+
+    return specs.map(s => s.entry);
   }
 
-  private async _buildPanelExportData(panelComp: any): Promise<DashboardPanelExport | null> {
+  /** Builds a panel's export entry without capturing anything yet. For chart / kpi-with-chart
+   *  panels, hides the header (and KPI number) now and returns the host element as the image
+   *  target for the caller's single batched capture; `hidden` collects everything to restore. */
+  private _prepareExportPanel(
+    panelComp: any,
+    hidden: HTMLElement[]
+  ): { entry: DashboardPanelExport; hostEl?: HTMLElement } | null {
     const chartType = panelComp.panelChart?.props?.chartType ?? '';
     const title     = panelComp.panel.title ?? '';
     const gridPos   = {
@@ -1125,7 +1139,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
     if (['table', 'crosstable'].includes(chartType)) {
       const tableInstance = panelComp.panelChart?.currentConfig;
-      return tableInstance ? { title, type: chartType as 'table' | 'crosstable', tableData: tableInstance, ...gridPos } : null;
+      return tableInstance ? { entry: { title, type: chartType as 'table' | 'crosstable', tableData: tableInstance, ...gridPos } } : null;
     }
 
     if (['kpi', 'kpibar', 'kpiline', 'kpiarea'].includes(chartType)) {
@@ -1138,67 +1152,87 @@ export class DashboardSidebarComponent implements AfterViewInit {
         kpiColor:           inject.kpiColor           || '',
         modifiedFontPoints: inject.modifiedFontPoints || 0,
       };
-      if (chartType === 'kpi') return { title, type: 'kpi', kpiData, ...gridPos };
+      if (chartType === 'kpi') return { entry: { title, type: 'kpi', kpiData, ...gridPos } };
 
       // KPI with chart: hide the number so the capture only shows the chart
-      const kpiComp   = panelComp.panelChart?.componentRef?.instance;
-      const kpiNumEl  = kpiComp?.kpiContainer?.nativeElement as HTMLElement | undefined;
-      if (kpiNumEl) kpiNumEl.style.visibility = 'hidden';
-      const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
-      if (kpiNumEl) kpiNumEl.style.visibility = '';
-      return {
-        title,
-        type: 'kpi',
-        kpiData,
-        imageBase64:  captured.imageBase64,
-        imageWidth:   captured.imageWidth,
-        imageHeight:  captured.imageHeight,
-        ...gridPos,
-      };
+      const kpiComp  = panelComp.panelChart?.componentRef?.instance;
+      const kpiNumEl = kpiComp?.kpiContainer?.nativeElement as HTMLElement | undefined;
+      if (kpiNumEl) { kpiNumEl.style.visibility = 'hidden'; hidden.push(kpiNumEl); }
+      const hostEl = this._prepareChartHost(panelComp.elRef?.nativeElement, hidden);
+      return { entry: { title, type: 'kpi', kpiData, ...gridPos }, hostEl };
     }
 
-    const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
-    return { ...captured, title, ...gridPos };
+    const hostEl = this._prepareChartHost(panelComp.elRef?.nativeElement, hidden);
+    return { entry: { title, type: 'chart', ...gridPos }, hostEl };
   }
 
-  /**
-   * Captures the chart area as PNG, previously hiding the header
-   * (.drag-handler) so the panel title does not appear in the image.
-   */
-  private async _captureChartImage(
-    hostEl: HTMLElement | undefined,
-    panelTitle: string
-  ): Promise<Pick<DashboardPanelExport, 'type' | 'imageBase64' | 'imageWidth' | 'imageHeight'>> {
-    if (!hostEl) return { type: 'other' };
-
+  /** Hides a panel's header (.drag-handler) so it doesn't appear in the captured image; returns
+   *  the host element to capture, or undefined if there's nothing to capture. */
+  private _prepareChartHost(hostEl: HTMLElement | undefined, hidden: HTMLElement[]): HTMLElement | undefined {
+    if (!hostEl) return undefined;
     const headerEl = hostEl.querySelector('.drag-handler') as HTMLElement | null;
-    if (headerEl) headerEl.style.visibility = 'hidden';
+    if (headerEl) { headerEl.style.visibility = 'hidden'; hidden.push(headerEl); }
+    return hostEl;
+  }
 
-    // See _cloneOffscreenForCapture: avoids html2canvas's scale>1 + CSS-transform bug.
-    const clone = this._cloneOffscreenForCapture(hostEl);
+  /** Captures several elements in ONE html2canvas call (same fixed ~4-5s cost as capturing a
+   *  single one), then crops each element's own region back out of the combined canvas. Reuses
+   *  _buildOffscreenCaptureContainer so every target gets an explicit pinned width/height -
+   *  without it, a panel reparented outside gridster can collapse/clip on percentage-based CSS
+   *  sizing that assumed its original gridster-item ancestor. */
+  private async _captureElementsBatched(
+    elements: HTMLElement[],
+    scale: number
+  ): Promise<Map<HTMLElement, { dataUrl: string; width: number; height: number }>> {
+    const result = new Map<HTMLElement, { dataUrl: string; width: number; height: number }>();
+    if (elements.length === 0) return result;
+
+    type Target = { el: HTMLElement; x: number; y: number; width: number; height: number };
+    const GAP = 20;
+    const targets: Target[] = [];
+    let cursorY = 0;
+    let maxWidth = 0;
+    for (const el of elements) {
+      const rect = el.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) continue;
+      targets.push({ el, x: 0, y: cursorY, width: rect.width, height: rect.height });
+      cursorY += rect.height + GAP;
+      maxWidth = Math.max(maxWidth, rect.width);
+    }
+    if (targets.length === 0) return result;
+
+    const contentWidth  = Math.ceil(maxWidth);
+    const contentHeight = Math.ceil(cursorY - GAP);
+    const container = this._buildOffscreenCaptureContainer(targets, contentWidth, contentHeight);
     try {
-      const SCALE = 1.5;
-      const canvas = await html2canvas(clone, {
+      const canvas = await html2canvas(container, {
         backgroundColor: '#ffffff',
-        // See _captureDashboardCanvas for why this is useCORS:false, not true.
         useCORS: false,
         allowTaint: false,
         logging: false,
-        scale: SCALE,
+        scale,
+        width: contentWidth,
+        height: contentHeight,
       });
-      return {
-        type: 'chart',
-        imageBase64:  canvas.toDataURL('image/png'),
-        imageWidth:   Math.round(canvas.width  / SCALE),
-        imageHeight:  Math.round(canvas.height / SCALE),
-      };
+      for (const t of targets) {
+        const sub = document.createElement('canvas');
+        sub.width  = Math.round(t.width  * scale);
+        sub.height = Math.round(t.height * scale);
+        const ctx = sub.getContext('2d');
+        if (!ctx) continue;
+        ctx.drawImage(
+          canvas,
+          Math.round(t.x * scale), Math.round(t.y * scale), sub.width, sub.height,
+          0, 0, sub.width, sub.height
+        );
+        result.set(t.el, { dataUrl: sub.toDataURL('image/png'), width: Math.round(t.width), height: Math.round(t.height) });
+      }
     } catch (err) {
-      console.warn(`[Export] No se pudo capturar imagen del panel "${panelTitle}":`, err);
-      return { type: 'other' };
+      console.warn('[Export] No se pudieron capturar las imágenes de los paneles:', err);
     } finally {
-      if (headerEl) headerEl.style.visibility = '';
-      clone.remove();
+      container.remove();
     }
+    return result;
   }
 
   public getMailingAlertsEnabled(): boolean {
