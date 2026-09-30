@@ -329,6 +329,21 @@ eda-blank-panel :root {
   position: relative;
 }
 
+/* Attributes / filters drop zones: fixed chip height so the box is the same size empty or filled */
+.select-list,
+.filter-list:not(#result-sorting-list) {
+  --chip-height: 2.5rem;
+  /* chip + chip margins (2px) + list padding (4px) + list border (2px) */
+  min-height: calc(var(--chip-height) + 8px);
+}
+
+.select-list .select-box,
+.filter-list:not(#result-sorting-list) .select-box {
+  height: var(--chip-height);
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .our-table-box {
   display: flex;
   flex-direction: row;
