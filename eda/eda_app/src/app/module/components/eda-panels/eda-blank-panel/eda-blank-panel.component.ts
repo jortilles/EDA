@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 import Swal from 'sweetalert2';
 // PrimeNG
 import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
+import { Dropdown, DropdownModule } from 'primeng/dropdown';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -250,6 +250,11 @@ export class EdaBlankPanelComponent implements OnInit {
     public queryModes: any[] = ALLOWED_QUERY_MODES.map(v => QUERY_MODE_LABELS.find(l => l.value === v));
 
     public selectedQueryMode: string = ALLOWED_QUERY_MODES[0];
+
+    /** Keeps PrimeNG's keyboard focus on the selected mode so it doesn't look like two modes are selected. */
+    public syncQueryModeFocus(dropdown: Dropdown): void {
+        dropdown.focusedOptionIndex.set(dropdown.findSelectedOptionIndex());
+    }
 
     // Depreacted use selectedQueryMode instead of
     // public modeSQL: boolean;

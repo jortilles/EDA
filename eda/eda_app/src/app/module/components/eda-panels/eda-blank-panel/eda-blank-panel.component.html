@@ -208,10 +208,11 @@
         }
       </div>
 
-      <p-dropdown 
-        [(ngModel)]="selectedQueryMode" 
-        [options]="queryModes" 
+      <p-dropdown #queryModeDropdown
+        [(ngModel)]="selectedQueryMode"
+        [options]="queryModes"
         appendTo="body"
+        (onShow)="syncQueryModeFocus(queryModeDropdown)"
         (onChange)="changeQueryMode()"
       ></p-dropdown>
     </div>
