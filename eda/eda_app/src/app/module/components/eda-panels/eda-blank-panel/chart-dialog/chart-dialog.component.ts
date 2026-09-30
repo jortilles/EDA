@@ -73,6 +73,7 @@ export class ChartDialogComponent implements AfterViewChecked {
     public showPredictionLines: boolean = false;
     public chartLegend: boolean = true;
     public showGridLines: boolean = true;
+    public categoryLabelMaxChars: number = 0;
     public useGradient: boolean = true;
     public useRoundedBars: boolean = true;
     public chartAnimation: boolean = true;
@@ -99,6 +100,7 @@ export class ChartDialogComponent implements AfterViewChecked {
     public showLablesTooltip = $localize`:@@showLablesTooltip:Mostrar o ocultar las etiquetas sobre los gráficos`
     public showLablesPercentTooltip = $localize`:@@showLablesPercentTooltip:Mostrar o ocultar las etiquetas en porcentaje sobre los gráficos`
     public columnsTooltip = $localize`:@@columnsTooltip:Elige cuantas columnas quieres mostrar`
+    public categoryLabelCharsTooltip = $localize`:@@categoryLabelCharsTooltip:Número máximo de caracteres de las etiquetas del eje de categorías (por defecto 8). En barras horizontales, déjalo en 0 para que se ajuste automáticamente al ancho disponible`
     public tooltipBlockedByComparative = $localize`:@@tooltipBlockedByComparative:Bloqueado porque comparativa está activa`
     public tooltipBlockedByTrendOrPrediction = $localize`:@@tooltipBlockedByTrendOrPrediction:Bloqueado porque tendencia o predicción está activa`
 
@@ -121,6 +123,7 @@ export class ChartDialogComponent implements AfterViewChecked {
         useRoundedBars: boolean;
         useIcons: boolean;
         chartAnimation: boolean;
+        categoryLabelMaxChars: number;
     };
 
     public drops = {
@@ -205,6 +208,7 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.useRoundedBars = this.controller.params.config.config.getConfig()['useRoundedBars'] ?? true;
         this.chartAnimation = this.controller.params.config.config.getConfig()['chartAnimation'] ?? true;
         this.useIcons = this.controller.params.config.config.getConfig()['useIcons'] ?? false;
+        this.categoryLabelMaxChars = this.controller.params.config.config.getConfig()['categoryLabelMaxChars'] ?? 0;
 
         // NEW: Save original label values
         this.originalLabelValues = {
@@ -224,7 +228,8 @@ export class ChartDialogComponent implements AfterViewChecked {
             showGridLines: this.showGridLines,
             useGradient: this.useGradient,
             useRoundedBars: this.useRoundedBars,
-            chartAnimation: this.chartAnimation
+            chartAnimation: this.chartAnimation,
+            categoryLabelMaxChars: this.categoryLabelMaxChars
         };
 
         this.chart = this.controller.params.chart;
@@ -611,6 +616,7 @@ export class ChartDialogComponent implements AfterViewChecked {
             useRoundedBars: this.useRoundedBars,
             chartAnimation: this.chartAnimation,
             ...(this.features.hasIcons ? { useIcons: this.useIcons, assignedIcons: [...this.assignedIcons] } : {}),
+            ...(this.features.hasLabelCharLimit ? { categoryLabelMaxChars: this.categoryLabelMaxChars } : {}),
         };
     }
 
@@ -732,6 +738,10 @@ export class ChartDialogComponent implements AfterViewChecked {
     }
 
     setShowGridLines() {
+        this.applyOption();
+    }
+
+    setCategoryLabelMaxChars() {
         this.applyOption();
     }
 
@@ -1134,6 +1144,7 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.useRoundedBars = this.originalLabelValues.useRoundedBars;
         this.chartAnimation = this.originalLabelValues.chartAnimation;
         this.useIcons = this.originalLabelValues.useIcons;
+        this.categoryLabelMaxChars = this.originalLabelValues.categoryLabelMaxChars;
         this.assignedColors = _.cloneDeep(this.originalAssignedColors);
         this.uniqueBarColors = _.cloneDeep(this.originalUniqueBarColors);
         this.assignedIcons = _.cloneDeep(this.originalAssignedIcons);

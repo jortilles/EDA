@@ -286,8 +286,19 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly maxCategoryChars = 8;
 
-  private truncateLabel(label: string, maxChars: number = this.maxCategoryChars): string {
+  private truncateLabel(label: string, maxChars: number = this.inject.categoryLabelMaxChars || this.maxCategoryChars): string {
     return label.length > maxChars ? label.slice(0, maxChars - 1) + '…' : label;
+  }
+
+  /** Pixel-budget version of truncateLabel: trims a character at a time until the label (plus
+   * ellipsis) actually measures within maxWidthPx, instead of cutting at a fixed character count*/
+  private truncateLabelToWidth(label: string, maxWidthPx: number, fontSizePx: number = 11): string {
+    if (this.measureTextWidth(label, fontSizePx) <= maxWidthPx) return label;
+    let text = label;
+    while (text.length > 1 && this.measureTextWidth(text + '…', fontSizePx) > maxWidthPx) {
+      text = text.slice(0, -1);
+    }
+    return text.length < label.length ? text + '…' : text;
   }
 
   draw(): void {
@@ -398,6 +409,10 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     // so it can be decided before sizing that margin, and the margin only needs to fit whichever
     // labels actually remain visible instead of the full list.
     let horizontalVisibleCatIndexes: Set<number> = null;
+    // Set (non-zero) by the horizontal branch below and reused by the category axis' tickFormat
+    // further down, so both agree on the same truncation rule for the labels actually drawn.
+    let horizontalLabelCharLimit = 0;
+    let horizontalMaxLabelPx = 0;
     if (horizontal) {
       const innerHeightForSkip = Math.max(height - 16 - 30, 10);
       const skipProbeScale = d3.scaleBand().domain(axisCategories).range([0, innerHeightForSkip]).padding(0.25);
@@ -411,9 +426,12 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
           lastShownY = i * step;
         }
       });
-      const visibleLabels = axisCategories
-        .filter((_, i) => horizontalVisibleCatIndexes.has(i))
-        .map(c => this.truncateLabel(c));
+      const visibleCats = axisCategories.filter((_, i) => horizontalVisibleCatIndexes.has(i));
+      horizontalLabelCharLimit = this.inject.categoryLabelMaxChars ?? 0;
+      horizontalMaxLabelPx = width * 0.4 - 24;
+      const visibleLabels = horizontalLabelCharLimit > 0
+        ? visibleCats.map(c => this.truncateLabel(c, horizontalLabelCharLimit))
+        : visibleCats.map(c => this.truncateLabelToWidth(c, horizontalMaxLabelPx, 11));
       leftMargin = Math.min(Math.max(this.measureMaxLabelWidth(visibleLabels, 11) + 24, 60), width * 0.4);
     } else {
       const probeScale = d3.scaleLinear().domain([valueMin, valueMax]).nice();
@@ -470,7 +488,9 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       // abbreviated (500k, 1M...) purely for display - the underlying scale/data keeps the full
       // values, so click handling, tooltips and datalabels are unaffected.
       const categoryAxis: any = (horizontal ? d3.axisLeft(categoryScale) : d3.axisBottom(categoryScale))
-        .tickFormat((d: string) => this.truncateLabel(d));
+        .tickFormat((d: string) => horizontal
+          ? (horizontalLabelCharLimit > 0 ? this.truncateLabel(d, horizontalLabelCharLimit) : this.truncateLabelToWidth(d, horizontalMaxLabelPx, 11))
+          : this.truncateLabel(d));
       const valueAxis: any = (horizontal ? d3.axisBottom(valueScale).ticks(horizontalTickCount) : d3.axisLeft(valueScale).ticks(verticalTickCount))
         .tickFormat((v: any) => formatAxisValue(v));
 

@@ -37,4 +37,6 @@ export class EdaBarD3 {
   /** Per-category media-library images at each bar's tip - see category-icons.util.ts. */
   assignedIcons?: { value: string | number; icon: string }[];
   useIcons?: boolean;
+  /** hard cap on the category (Y) axis label length, in characters. 0/unset --> all/default **/
+  categoryLabelMaxChars?: number;
 }

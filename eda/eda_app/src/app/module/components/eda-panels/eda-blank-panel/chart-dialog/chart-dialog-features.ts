@@ -33,6 +33,7 @@ export interface ChartDialogFeatures {
     hasNumberOfColumns?: boolean;
     hasLabels?: boolean;
     hasLabelsPercent?: boolean;
+    hasLabelCharLimit?: boolean;
 
     // Colors section
     colorEditorShape: ColorEditorShape;
@@ -79,8 +80,9 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasThresholdColors: true,
         hasUniqueColors: true,
         hasIcons: true,
+        hasLabelCharLimit: true,
     },
-    
+
     horizontalBar: {
         ...(AXIS_BAR_COMMON as ChartDialogFeatures),
         hasComparative: true,
@@ -88,28 +90,33 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasThresholdColors: true,
         hasUniqueColors: true,
         hasIcons: true,
+        hasLabelCharLimit: true,
     },
 
     stackedbar: {
         ...(AXIS_BAR_COMMON as ChartDialogFeatures),
         hasIcons: true,
-        iconsPerSeries: true
+        iconsPerSeries: true,
+        hasLabelCharLimit: true,
     },
 
     stackedbar100: {
         ...(AXIS_BAR_COMMON as ChartDialogFeatures),
         hasIcons: true,
-        iconsPerSeries: true
+        iconsPerSeries: true,
+        hasLabelCharLimit: true,
     },
 
-    pyramid: { 
-        ...(AXIS_BAR_COMMON as ChartDialogFeatures), 
-        hasIcons: true 
+    pyramid: {
+        ...(AXIS_BAR_COMMON as ChartDialogFeatures),
+        hasIcons: true,
+        hasLabelCharLimit: true,
     },
 
     histogram: {
         ...(AXIS_BAR_COMMON as ChartDialogFeatures),
         hasNumberOfColumns: true,
+        hasLabelCharLimit: true,
     },
 
     line: {

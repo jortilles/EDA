@@ -213,6 +213,35 @@
             </div>
             }
 
+            <!-- Category label character limit (horizontalBar only): 0 = auto-fit to panel width -->
+            @if (features.hasLabelCharLimit) {
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@categoryLabelMaxChars" for="categoryLabelMaxChars" class="font-medium">
+                    Caracteres de la etiqueta
+                  </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span>{{ categoryLabelCharsTooltip }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <input type="number" id="categoryLabelMaxChars" name="categoryLabelMaxChars"
+                min="0" max="60" [(ngModel)]="categoryLabelMaxChars" (change)="setCategoryLabelMaxChars()"
+                class="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm">
+            </div>
+            }
+
             <!-- Point markers: line charts and barline's line half -->
             @if (features.hasPointLines) {
             <div class="flex items-center justify-between">
