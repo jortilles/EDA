@@ -602,12 +602,28 @@ span.state-label {
   opacity: 0 !important;
 }
 
+/* The drag placeholder is a clone of the source item (e.g. a taller attribute row from the
+   columns list). Strip its own height so it only stretches to the row of existing chips:
+   the drop zones (attributes, filters, result sorting) no longer grow while dragging. */
 ::ng-deep .select-list .cdk-drag-placeholder,
 ::ng-deep .filter-list .cdk-drag-placeholder {
   opacity: 0 !important;
   flex: 1 1 0;
   min-width: 60px;
   max-width: 27%;
+  align-self: stretch;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  overflow: hidden;
+}
+
+::ng-deep .select-list .cdk-drag-placeholder > *,
+::ng-deep .filter-list .cdk-drag-placeholder > * {
+  display: none !important;
 }
 
 .cdk-drag-animating {
@@ -621,17 +637,6 @@ span.state-label {
 
 #result-sorting-list .select-box:active {
   cursor: pointer !important;
-}
-
-/* The drag placeholder is a clone of the source item (e.g. a taller attribute row);
-   cap it to chip height so the sorting drop zone doesn't grow while dragging */
-::ng-deep #result-sorting-list .cdk-drag-placeholder {
-  height: 1.5rem !important;
-  max-height: 1.5rem;
-  padding: 0 !important;
-  margin: 0 !important;
-  overflow: hidden;
-  align-self: center;
 }
 
 .select-list.cdk-drop-list-dragging .select-box:not(.cdk-drag-placeholder),
