@@ -136,7 +136,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private truncate(label: string): string {
-    return truncateLabel(label, MAX_CATEGORY_CHARS);
+    return truncateLabel(label, this.inject.categoryLabelMaxChars || MAX_CATEGORY_CHARS);
   }
 
   /** Delay (ms) at which the entrance sweep visually reaches a given x position - see eda-line's

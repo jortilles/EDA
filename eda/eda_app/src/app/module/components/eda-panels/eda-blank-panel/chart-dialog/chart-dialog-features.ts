@@ -131,6 +131,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasLabels: true,
         hasLabelsPercent: true,
         colorEditorShape: 'per-series',
+        hasLabelCharLimit: true,
     },
 
     area: {
@@ -147,6 +148,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         colorEditorShape: 'per-series',
         hasUseGradient: true,
         hasOpacity: true,
+        hasLabelCharLimit: true,
     },
 
     barline: {
@@ -154,6 +156,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasGridLines: true,
         hasPointLines: true,
         hasSecondAxis: true,
+        hasLabelCharLimit: true,
     },
 
     radar: {
@@ -166,6 +169,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         colorEditorShape: 'per-series',
         hasUseGradient: true,
         hasOpacity: true,
+        hasLabelCharLimit: true,
     },
 
     // --- live family (D3 category charts + knob) ----------------------------

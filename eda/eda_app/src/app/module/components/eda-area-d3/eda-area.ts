@@ -24,4 +24,6 @@ export class EdaAreaD3 {
   compact?: boolean;
   /** Sequential left-to-right entrance animation on first render. On by default. */
   chartAnimation?: boolean;
+  /** Character cap for the category (X) axis labels. 0/unset = default (8 chars). */
+  categoryLabelMaxChars?: number;
 }

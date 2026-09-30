@@ -171,7 +171,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly maxCategoryChars = 10;
 
-  private truncateLabel(label: string, maxChars: number = this.maxCategoryChars): string {
+  private truncateLabel(label: string, maxChars: number = this.inject.categoryLabelMaxChars || this.maxCategoryChars): string {
     return label.length > maxChars ? label.slice(0, maxChars - 1) + '…' : label;
   }
 

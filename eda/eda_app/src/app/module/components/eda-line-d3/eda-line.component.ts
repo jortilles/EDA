@@ -165,7 +165,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private truncate(label: string): string {
-    return truncateLabel(label, MAX_CATEGORY_CHARS);
+    return truncateLabel(label, this.inject.categoryLabelMaxChars || MAX_CATEGORY_CHARS);
   }
 
   private percentOfSeries(series: LineSeries, catIndex: number): number {
