@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
+import { AfterViewInit, ApplicationRef, Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
@@ -85,6 +85,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
   private dashboardService = inject(DashboardService);
   private fileUtils = inject(FileUtiles);
   private router = inject(Router);
+  private appRef = inject(ApplicationRef);
   private spinner = inject(SpinnerService);
   private alertService = inject(AlertService);
   private stylesProviderService = inject(StyleProviderService)
@@ -764,7 +765,8 @@ export class DashboardSidebarComponent implements AfterViewInit {
       const ratio = pageWidth / imgWidth;
 
       const sliceCanvas = document.createElement('canvas');
-      const ctx = sliceCanvas.getContext('2d')!;
+      // See _captureDashboardCanvas for why willReadFrequently matters here too.
+      const ctx = sliceCanvas.getContext('2d', { willReadFrequently: true })!;
       sliceCanvas.width = imgWidth;
       sliceCanvas.height = Math.round(pageHeight / ratio);
 
@@ -774,7 +776,8 @@ export class DashboardSidebarComponent implements AfterViewInit {
         ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
         ctx.drawImage(canvas, 0, -position, imgWidth, imgHeight);
 
-        pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, pageHeight);
+        // JPEG not PNG: jsPDF embeds PNG uncompressed, producing 50+MB files at 2x scale.
+        pdf.addImage(sliceCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, pageWidth, pageHeight);
 
         position += sliceCanvas.height;
         if (position < imgHeight) pdf.addPage();
@@ -783,6 +786,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
       pdf.save(`${this.dashboard.title}.pdf`);
     } catch (error) {
       console.error('Error exportando como PDF:', error);
+      this.alertService.addError($localize`:@@dashboardExportPdfError:No se ha podido generar el PDF del informe. Inténtalo de nuevo.`);
     } finally {
       this.spinner.off();
     }
@@ -811,17 +815,17 @@ export class DashboardSidebarComponent implements AfterViewInit {
       link.click();
     } catch (error) {
       console.error('Error exportando como imagen:', error);
+      this.alertService.addError($localize`:@@dashboardExportImageError:No se ha podido generar la imagen del informe. Inténtalo de nuevo.`);
     } finally {
       this.spinner.off();
     }
   }
 
-  // Composites the export canvas from a separate html2canvas capture per panel (found via
-  // `gridster-item` so every panel type is included) instead of one dom-to-image pass over the
-  // whole dashboard, which was both unreliable for tall layouts and slow.
+  /** Captures the whole dashboard in one html2canvas() call (each call has a ~4-5s fixed cost
+   *  regardless of panel size, so batching beats one-call-per-panel by ~7x). See
+   *  _buildOffscreenCaptureContainer for the container this renders. */
   private async _captureDashboardCanvas(element: HTMLElement, scale: number): Promise<HTMLCanvasElement> {
     const restore = this._unclipTablesForExport(element);
-
     try {
       const dashboardRect = element.getBoundingClientRect();
 
@@ -852,63 +856,191 @@ export class DashboardSidebarComponent implements AfterViewInit {
       if (headerEl) targets.push(measure(headerEl));
       element.querySelectorAll('gridster-item').forEach(item => targets.push(measure(item as HTMLElement)));
 
-      let contentWidth = dashboardRect.width;
-      let contentHeight = dashboardRect.height;
+      // Sized to actual panel content, not #myDashboard's own box (min-h-screen/gridster row
+      // reservation made it taller than the real content, leaving blank space below).
+      let contentWidth = 0;
+      let contentHeight = 0;
       for (const t of targets) {
         contentWidth = Math.max(contentWidth, t.x + t.width);
         contentHeight = Math.max(contentHeight, t.y + t.height);
       }
+      if (targets.length === 0) {
+        contentWidth = dashboardRect.width;
+        contentHeight = dashboardRect.height;
+      }
       contentWidth = Math.ceil(contentWidth);
       contentHeight = Math.ceil(contentHeight);
 
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.ceil(contentWidth * scale);
-      canvas.height = Math.ceil(contentHeight * scale);
-      const ctx = canvas.getContext('2d')!;
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Batched (not all at once) to cap peak memory when a dashboard has many panels.
-      const BATCH_SIZE = 4;
-      for (let i = 0; i < targets.length; i += BATCH_SIZE) {
-        const batch = targets.slice(i, i + BATCH_SIZE);
-        const captures = await Promise.all(batch.map(async target => {
-          if (target.width === 0 || target.height === 0) return null;
-          try {
-            const targetCanvas = await html2canvas(target.el, {
-              backgroundColor: '#ffffff',
-              useCORS: false,
-              allowTaint: true,
-              logging: false,
-              scale,
-              width: target.width,
-              height: target.height,
-              // windowWidth/windowHeight left at default (real window size) - a narrow per-panel
-              // value here would wrongly trigger the dashboard's own mobile CSS breakpoint.
-            });
-            return { targetCanvas, target };
-          } catch (err) {
-            console.warn('[Export] No se pudo capturar un elemento del dashboard:', err);
-            return null;
-          }
-        }));
-
-        for (const capture of captures) {
-          if (!capture) continue;
-          const { targetCanvas, target } = capture;
-          ctx.drawImage(targetCanvas, target.x * scale, target.y * scale, target.width * scale, target.height * scale);
-        }
+      const container = this._buildOffscreenCaptureContainer(targets, contentWidth, contentHeight);
+      try {
+        return await html2canvas(container, {
+          backgroundColor: '#ffffff',
+          // Map tiles already load with crossOrigin (Leaflet layer config); allowTaint stays
+          // false so any other genuinely-tainting image is skipped, not thrown on.
+          useCORS: false,
+          allowTaint: false,
+          logging: false,
+          scale,
+          width: contentWidth,
+          height: contentHeight,
+        });
+      } finally {
+        container.remove();
       }
-
-      return canvas;
     } finally {
       this._restoreAfterExport(restore);
     }
   }
 
-  // Lets a just-triggered UI update (the export spinner) actually paint before a long capture blocks the main thread.
-  private _waitForPaint(): Promise<void> {
-    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+  /** Builds an off-screen container with an absolutely-positioned (top/left, not CSS transform)
+   *  clone of every target. html2canvas's bounds calc breaks on scale>1 + a transformed element
+   *  (confirmed: only the panel at gridster offset (0,0) ever captured correctly otherwise), so
+   *  this avoids gridster's own `transform: translate3d(...)` positioning. Canvas elements are
+   *  re-painted from their live counterpart since cloneNode() doesn't carry drawn pixels. Caller
+   *  must `.remove()` the returned element once done. */
+  private _buildOffscreenCaptureContainer(
+    targets: { el: HTMLElement; x: number; y: number; width: number; height: number }[],
+    contentWidth: number,
+    contentHeight: number
+  ): HTMLElement {
+    const container = document.createElement('div');
+    container.style.setProperty('position', 'fixed', 'important');
+    container.style.setProperty('left', '-99999px', 'important');
+    container.style.setProperty('top', '0', 'important');
+    container.style.setProperty('z-index', '-1', 'important');
+    container.style.width = `${contentWidth}px`;
+    container.style.height = `${contentHeight}px`;
+    container.style.backgroundColor = '#ffffff';
+
+    for (const target of targets) {
+      if (target.width === 0 || target.height === 0) continue;
+      const clone = this._cloneForCapture(target.el);
+      clone.style.setProperty('position', 'absolute', 'important');
+      clone.style.setProperty('transform', 'none', 'important');
+      clone.style.setProperty('left', `${target.x}px`, 'important');
+      clone.style.setProperty('top', `${target.y}px`, 'important');
+      clone.style.setProperty('width', `${target.width}px`, 'important');
+      clone.style.setProperty('height', `${target.height}px`, 'important');
+      container.appendChild(clone);
+    }
+
+    document.body.appendChild(container);
+    void container.offsetHeight; // force layout before html2canvas reads it
+    return container;
+  }
+
+  /** Single-panel version of _buildOffscreenCaptureContainer (Excel/Word export captures one
+   *  image per panel, so batching doesn't apply). Caller must `.remove()` the result. */
+  private _cloneOffscreenForCapture(el: HTMLElement): HTMLElement {
+    const clone = this._cloneForCapture(el);
+    clone.style.setProperty('position', 'fixed', 'important');
+    clone.style.setProperty('left', '-99999px', 'important');
+    clone.style.setProperty('top', '0', 'important');
+    clone.style.setProperty('transform', 'none', 'important');
+    clone.style.setProperty('z-index', '-1', 'important');
+    document.body.appendChild(clone);
+    void clone.offsetHeight; // force layout before html2canvas reads it
+    return clone;
+  }
+
+  /** Deep-clones `el` for capture: canvas pixels are re-painted (cloneNode doesn't carry them),
+   *  and any stroke-dasharray/dashoffset draw-in animation stuck at its start position (PrimeNG's
+   *  Knob gauge, among others) is revealed - cloneNode() copies the literal pre-animation inline
+   *  style, not the live CSS-animated state, so gauges rendered as a colorless ring otherwise. */
+  private _cloneForCapture(el: HTMLElement): HTMLElement {
+    const clone = el.cloneNode(true) as HTMLElement;
+    const liveCanvases = el.querySelectorAll('canvas');
+    const clonedCanvases = clone.querySelectorAll('canvas');
+    liveCanvases.forEach((liveCanvas, i) => {
+      const clonedCanvas = clonedCanvases[i] as HTMLCanvasElement | undefined;
+      if (!clonedCanvas || !(liveCanvas as HTMLCanvasElement).width) return;
+      clonedCanvas.width = (liveCanvas as HTMLCanvasElement).width;
+      clonedCanvas.height = (liveCanvas as HTMLCanvasElement).height;
+      try { clonedCanvas.getContext('2d')?.drawImage(liveCanvas as HTMLCanvasElement, 0, 0); } catch { /* tainted source canvas - skip */ }
+    });
+    clone.querySelectorAll<HTMLElement>('[style*="stroke-dashoffset"]').forEach(node => {
+      const dasharray = node.style.strokeDasharray;
+      const dashoffset = node.style.strokeDashoffset;
+      if (dasharray && dashoffset && Math.abs(parseFloat(dashoffset) - parseFloat(dasharray)) < 0.01) {
+        node.style.strokeDashoffset = '0';
+      }
+    });
+    this._rasterizeKpiText(el, clone);
+    return clone;
+  }
+
+  // html2canvas's font resolution silently substitutes an unrelated bold @font-face (League
+  // Spartan) for the KPI number regardless of the requested font-family - pre-render the number
+  // onto a canvas (which html2canvas copies as a bitmap) to sidestep its text renderer entirely.
+  private _rasterizeKpiText(el: HTMLElement, clone: HTMLElement): void {
+    const liveSpans = el.querySelectorAll<HTMLElement>('eda-kpi span');
+    const clonedSpans = clone.querySelectorAll<HTMLElement>('eda-kpi span');
+    liveSpans.forEach((liveSpan, i) => {
+      const clonedSpan = clonedSpans[i];
+      const text = liveSpan.textContent?.trim();
+      if (!clonedSpan || !text) return;
+      const rect = liveSpan.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+      const cs = getComputedStyle(liveSpan);
+      const scale = 4;
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.ceil(rect.width * scale);
+      canvas.height = Math.ceil(rect.height * scale);
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
+      canvas.style.display = 'block';
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.scale(scale, scale);
+      ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      ctx.fillStyle = cs.color;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, rect.width / 2, rect.height / 2);
+      if (parseInt(cs.fontWeight, 10) >= 600) {
+        ctx.lineWidth = 0.6;
+        ctx.strokeStyle = cs.color;
+        ctx.strokeText(text, rect.width / 2, rect.height / 2);
+      }
+      clonedSpan.innerHTML = '';
+      clonedSpan.style.setProperty('display', 'flex', 'important');
+      clonedSpan.style.setProperty('justify-content', 'center', 'important');
+      clonedSpan.style.setProperty('align-items', 'center', 'important');
+      clonedSpan.appendChild(canvas);
+    });
+  }
+
+  // Lets the export spinner paint, then waits for fonts and every panel's own query to finish
+  // (each shows `.spinner-panel` while loading) before capture starts.
+  private async _waitForPaint(): Promise<void> {
+    await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    try { await (document as any).fonts?.ready; } catch { /* FontFaceSet unsupported - ignore */ }
+    await this._waitForPanelsReady();
+    this._forceChangeDetection();
+  }
+
+  /** Panels run OnPush, so a loaded panel's DOM can lag its data until something calls
+   *  markForCheck() + a tick - forces that for every panel right before capture. */
+  private _forceChangeDetection(): void {
+    (this.dashboard.edaPanels?.toArray() ?? []).forEach((p: any) => p.markDirty?.());
+    this.appRef.tick();
+  }
+
+  /** Polls for every panel's spinner to clear, up to `timeoutMs` (best-effort, then proceeds anyway). */
+  private _waitForPanelsReady(timeoutMs = 20000): Promise<void> {
+    return new Promise(resolve => {
+      const deadline = Date.now() + timeoutMs;
+      const check = () => {
+        const pending = document.querySelectorAll('.spinner-panel').length;
+        if (pending === 0 || Date.now() > deadline) {
+          if (pending > 0) console.warn(`[Export] ${pending} panel(es) seguían cargando tras ${timeoutMs}ms, se captura igualmente`);
+          resolve();
+        } else {
+          setTimeout(check, 300);
+        }
+      };
+      check();
+    });
   }
 
   // Temporarily clears overflow clipping (panel wrapper, .p-datatable-wrapper, gridster-item) on
@@ -946,6 +1078,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
       await this.fileUtils.exportDashboardToExcel(panelDataList, this.dashboard.title);
     } catch (err) {
       console.error('[ExportExcel] Error exportando dashboard a Excel:', err);
+      this.alertService.addError($localize`:@@dashboardExportExcelError:No se ha podido generar el Excel del informe. Inténtalo de nuevo.`);
     } finally {
       this.spinner.off();
     }
@@ -960,25 +1093,21 @@ export class DashboardSidebarComponent implements AfterViewInit {
       await this.fileUtils.exportDashboardToWord(panelDataList, this.dashboard.title);
     } catch (err) {
       console.error('[ExportWord] Error exportando dashboard a Word:', err);
+      this.alertService.addError($localize`:@@dashboardExportWordError:No se ha podido generar el Word del informe. Inténtalo de nuevo.`);
     } finally {
       this.spinner.off();
     }
   }
 
-  /**
-   * Iterates over all panels and returns their content ready for export. Chart/KPI panels are
-   * captured in parallel batches (same approach as _captureDashboardCanvas) instead of one at a
-   * time - table panels just read already-in-memory data and don't need this.
-   */
+  /** Collects every panel's export-ready content. Sequential: chart/kpi panels call html2canvas
+   *  via _captureChartImage, and calling it concurrently isn't safe. */
   private async _collectPanelData(): Promise<DashboardPanelExport[]> {
     const panels = (this.dashboard.edaPanels?.toArray() ?? []).filter(p => p.panel?.content);
     const panelDataList: DashboardPanelExport[] = [];
 
-    const BATCH_SIZE = 4;
-    for (let i = 0; i < panels.length; i += BATCH_SIZE) {
-      const batch = panels.slice(i, i + BATCH_SIZE);
-      const results = await Promise.all(batch.map(panelComp => this._buildPanelExportData(panelComp)));
-      results.forEach(r => { if (r) panelDataList.push(r); });
+    for (const panelComp of panels) {
+      const result = await this._buildPanelExportData(panelComp);
+      if (result) panelDataList.push(result);
     }
 
     return panelDataList;
@@ -1045,12 +1174,15 @@ export class DashboardSidebarComponent implements AfterViewInit {
     const headerEl = hostEl.querySelector('.drag-handler') as HTMLElement | null;
     if (headerEl) headerEl.style.visibility = 'hidden';
 
+    // See _cloneOffscreenForCapture: avoids html2canvas's scale>1 + CSS-transform bug.
+    const clone = this._cloneOffscreenForCapture(hostEl);
     try {
       const SCALE = 1.5;
-      const canvas = await html2canvas(hostEl, {
+      const canvas = await html2canvas(clone, {
         backgroundColor: '#ffffff',
+        // See _captureDashboardCanvas for why this is useCORS:false, not true.
         useCORS: false,
-        allowTaint: true,
+        allowTaint: false,
         logging: false,
         scale: SCALE,
       });
@@ -1065,6 +1197,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
       return { type: 'other' };
     } finally {
       if (headerEl) headerEl.style.visibility = '';
+      clone.remove();
     }
   }
 
