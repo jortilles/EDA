@@ -623,6 +623,17 @@ span.state-label {
   cursor: pointer !important;
 }
 
+/* The drag placeholder is a clone of the source item (e.g. a taller attribute row);
+   cap it to chip height so the sorting drop zone doesn't grow while dragging */
+::ng-deep #result-sorting-list .cdk-drag-placeholder {
+  height: 1.5rem !important;
+  max-height: 1.5rem;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden;
+  align-self: center;
+}
+
 .select-list.cdk-drop-list-dragging .select-box:not(.cdk-drag-placeholder),
 .select-list.cdk-drop-list-receiving .select-box:not(.cdk-drag-placeholder),
 .filter-list.cdk-drop-list-dragging .select-box:not(.cdk-drag-placeholder),
