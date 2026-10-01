@@ -87,6 +87,15 @@
 }
 
 
+/* Long single words (emails, URLs) wrap instead of overflowing into the next column */
+/* `anywhere` (not break-word) so flex children inside the cell can also shrink */
+.eda-table ::ng-deep .p-datatable th,
+.eda-table ::ng-deep .p-datatable th *,
+.eda-table ::ng-deep .p-datatable td,
+.eda-table ::ng-deep .p-datatable td * {
+  overflow-wrap: anywhere;
+}
+
 th{
   border-radius: 6px;
   background-color: #F1F0F0;
@@ -116,22 +125,6 @@ th{
 .eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd),
 .eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]) {
      background: transparent !important;
-}
-
-/* Remove horizontal scroll in all cases (with and without autoLayout) */
-.eda-table:not(.eda-table--pivot) ::ng-deep .p-datatable .p-datatable-wrapper,
-.p-datatable-auto-layout>.p-datatable-wrapper {
-  overflow-x: hidden;
-}
-
-/* Allow text in cells to wrap instead of overflow */
-.eda-table:not(.eda-table--pivot) ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
-  word-break: break-word;
-  white-space: normal;
-}
-
-.eda-table:not(.eda-table--pivot) ::ng-deep .p-datatable .p-datatable-thead > tr > th {
-  white-space: normal;
 }
 
 ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {

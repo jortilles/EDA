@@ -82,6 +82,16 @@
     color: #374151;
 }
 
+.source-fields-query-popup-limit-notice {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.85rem;
+    border-top: 1px solid #e5e7eb;
+    color: #6b7280;
+    font-size: 0.78rem;
+}
+
 .source-fields-copy-btn {
     display: inline-flex;
     align-items: center;

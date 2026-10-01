@@ -3706,6 +3706,16 @@ What am I seeing?
 <target>Choose how many columns you want to display</target>
 </trans-unit>
 
+<trans-unit id="categoryLabelCharsTooltip">
+<source>Actívalo para fijar manualmente el número de caracteres de las etiquetas del eje de categorías (empieza en 10; 0 = sin texto). Desactivado, se usa el ajuste automático por defecto</source>
+<target>Turn on to manually set the number of characters for the category axis labels (starts at 10; 0 = no text). When off, the automatic default sizing is used</target>
+</trans-unit>
+
+<trans-unit id="categoryLabelCharsEnabled">
+<source>Etiquetas ajustables</source>
+<target>Adjustable labels</target>
+</trans-unit>
+
 <trans-unit id="histogramColumDescription">
 <source>Elige cuántas columnas mostrar en el histograma</source>
 <target>Choose how many columns to display in the histogram</target>
@@ -4189,6 +4199,14 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>Este panel no está disponible por falta de permisos</source>
 <target>This panel is not available due to lack of permissions</target>
 </trans-unit>
+<trans-unit id="tooManyValuesForCrosstable">
+<source>Demasiados valores en el eje horizontal. Cambia la configuración de la tabla para que se pueda representar correctamente.</source>
+<target>Too many values on the horizontal axis. Change the table configuration so it can be displayed correctly.</target>
+</trans-unit>
+<trans-unit id="tooManyValuesForChart">
+<source>Demasiados valores para un gráfico. Se muestran los datos en una tabla.</source>
+<target>Too many values for a chart. Data is shown in a table.</target>
+</trans-unit>
 <trans-unit id="noFilterAllowed">
 <source>Este panel no está disponible por falta de permisos en un filtro</source>
 <target>This panel is not available due to lack of permissions on a filter</target>
@@ -4455,6 +4473,10 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="sortReports">
 <source>ORDENAR INFORMES:</source>
 <target>SORT REPORTS:</target>
+</trans-unit>
+<trans-unit id="visibilityReports" datatype="html">
+<source>VISIBILIDAD:</source>
+<target>VISIBILITY:</target>
 </trans-unit>
 
 <trans-unit id="createdAt">
@@ -7711,6 +7733,10 @@ Best regards.</target>
 <trans-unit id="treeTableOptions">
   <source>Opciones</source>
   <target>Options</target>
+</trans-unit>
+<trans-unit id="sourceFieldsLimitNotice">
+  <source>La consulta está limitada a 50.000 registros</source>
+  <target>The query is limited to 50,000 records</target>
 </trans-unit>
 </body>
 </file>

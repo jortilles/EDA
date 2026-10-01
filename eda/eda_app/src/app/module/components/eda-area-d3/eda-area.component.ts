@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaAreaD3 } from './eda-area';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, opacityFraction, DASH_TREND } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, truncateLabelExact, opacityFraction, DASH_TREND } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface AreaPoint {
@@ -136,7 +136,9 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private truncate(label: string): string {
-    return truncateLabel(label, MAX_CATEGORY_CHARS);
+    return this.inject.categoryLabelCharsEnabled
+      ? truncateLabelExact(label, this.inject.categoryLabelMaxChars ?? 0)
+      : truncateLabel(label, MAX_CATEGORY_CHARS);
   }
 
   /** Delay (ms) at which the entrance sweep visually reaches a given x position - see eda-line's

@@ -335,6 +335,8 @@ export class ClickHouseBuilderService extends QueryBuilderService {
       myQuery += this.getFilters(filters);
     }
 
+    myQuery += `\nLIMIT ${ClickHouseBuilderService.SOURCE_FIELDS_ROW_LIMIT}`;
+
     if (alias) {
       for (const key in alias) {
         myQuery = myQuery.split(key).join(`\`${alias[key]}\``);

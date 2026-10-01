@@ -73,6 +73,8 @@ export class ChartDialogComponent implements AfterViewChecked {
     public showPredictionLines: boolean = false;
     public chartLegend: boolean = true;
     public showGridLines: boolean = true;
+    public categoryLabelMaxChars: number = 0;
+    public categoryLabelCharsEnabled: boolean = false;
     public useGradient: boolean = true;
     public useRoundedBars: boolean = true;
     public chartAnimation: boolean = true;
@@ -99,6 +101,7 @@ export class ChartDialogComponent implements AfterViewChecked {
     public showLablesTooltip = $localize`:@@showLablesTooltip:Mostrar o ocultar las etiquetas sobre los gráficos`
     public showLablesPercentTooltip = $localize`:@@showLablesPercentTooltip:Mostrar o ocultar las etiquetas en porcentaje sobre los gráficos`
     public columnsTooltip = $localize`:@@columnsTooltip:Elige cuantas columnas quieres mostrar`
+    public categoryLabelCharsTooltip = $localize`:@@categoryLabelCharsTooltip:Actívalo para fijar manualmente el número de caracteres de las etiquetas del eje de categorías (empieza en 10; 0 = sin texto). Desactivado, se usa el ajuste automático por defecto`
     public tooltipBlockedByComparative = $localize`:@@tooltipBlockedByComparative:Bloqueado porque comparativa está activa`
     public tooltipBlockedByTrendOrPrediction = $localize`:@@tooltipBlockedByTrendOrPrediction:Bloqueado porque tendencia o predicción está activa`
 
@@ -121,6 +124,8 @@ export class ChartDialogComponent implements AfterViewChecked {
         useRoundedBars: boolean;
         useIcons: boolean;
         chartAnimation: boolean;
+        categoryLabelMaxChars: number;
+        categoryLabelCharsEnabled: boolean;
     };
 
     public drops = {
@@ -205,6 +210,8 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.useRoundedBars = this.controller.params.config.config.getConfig()['useRoundedBars'] ?? true;
         this.chartAnimation = this.controller.params.config.config.getConfig()['chartAnimation'] ?? true;
         this.useIcons = this.controller.params.config.config.getConfig()['useIcons'] ?? false;
+        this.categoryLabelMaxChars = this.controller.params.config.config.getConfig()['categoryLabelMaxChars'] ?? 0;
+        this.categoryLabelCharsEnabled = this.controller.params.config.config.getConfig()['categoryLabelCharsEnabled'] ?? false;
 
         // NEW: Save original label values
         this.originalLabelValues = {
@@ -224,7 +231,9 @@ export class ChartDialogComponent implements AfterViewChecked {
             showGridLines: this.showGridLines,
             useGradient: this.useGradient,
             useRoundedBars: this.useRoundedBars,
-            chartAnimation: this.chartAnimation
+            chartAnimation: this.chartAnimation,
+            categoryLabelMaxChars: this.categoryLabelMaxChars,
+            categoryLabelCharsEnabled: this.categoryLabelCharsEnabled
         };
 
         this.chart = this.controller.params.chart;
@@ -611,6 +620,7 @@ export class ChartDialogComponent implements AfterViewChecked {
             useRoundedBars: this.useRoundedBars,
             chartAnimation: this.chartAnimation,
             ...(this.features.hasIcons ? { useIcons: this.useIcons, assignedIcons: [...this.assignedIcons] } : {}),
+            ...(this.features.hasLabelCharLimit ? { categoryLabelMaxChars: this.categoryLabelMaxChars, categoryLabelCharsEnabled: this.categoryLabelCharsEnabled } : {}),
         };
     }
 
@@ -732,6 +742,19 @@ export class ChartDialogComponent implements AfterViewChecked {
     }
 
     setShowGridLines() {
+        this.applyOption();
+    }
+
+    setCategoryLabelMaxChars() {
+        this.applyOption();
+    }
+
+    setCategoryLabelCharsEnabled() {
+        // First time switching on (no value chosen yet): seed a sensible default instead of 0,
+        // which would otherwise blank out every category label the moment the switch is flipped.
+        if (this.categoryLabelCharsEnabled && !this.categoryLabelMaxChars) {
+            this.categoryLabelMaxChars = 10;
+        }
         this.applyOption();
     }
 
@@ -900,9 +923,10 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.markUnsaved();
         this.applyColorsToChart();
         this.controller.params.config.config.getConfig()['uniqueBarColors'] = [...this.uniqueBarColors];
-        if (this.panelChartComponent?.componentRef?.instance) {
-            this.panelChartComponent.componentRef.instance.inject = this.chart;
-            this.panelChartComponent.componentRef.instance.updateChart();
+        const chartInstance = this.getUpdatableChartInstance();
+        if (chartInstance) {
+            chartInstance.inject = this.chart;
+            chartInstance.updateChart();
         }
 
         this.updateChartView();
@@ -919,9 +943,10 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.applyColorsToChart();
 
         // Re-render
-        if (this.panelChartComponent?.componentRef?.instance) {
-            this.panelChartComponent.componentRef.instance.inject = this.chart;
-            this.panelChartComponent.componentRef.instance.updateChart();
+        const chartInstance = this.getUpdatableChartInstance();
+        if (chartInstance) {
+            chartInstance.inject = this.chart;
+            chartInstance.updateChart();
         }
         this.updateChartView();
 
@@ -934,20 +959,29 @@ export class ChartDialogComponent implements AfterViewChecked {
     }
 
     private updateChartView(): void {
-        if (!this.panelChartComponent?.componentRef?.instance) {
-            console.error('No hay componentRef disponible');
+        const chartInstance = this.getUpdatableChartInstance();
+        if (!chartInstance) {
             return;
         }
-
-        const chartInstance = this.panelChartComponent.componentRef.instance;
 
         // Update inject and force change detection
         chartInstance.inject = { ...this.chart };
 
         // Call the component's cheap partial-update method (no full destroy+recreate).
-        if (chartInstance.updateChart) {
-            chartInstance.updateChart();
+        chartInstance.updateChart();
+    }
+
+    /**
+     * Rendered chart instance that can be refreshed in place, or null when there is none:
+     * no component yet, or the chart was replaced by a table because of too many rows
+     * (its inject must not be overwritten with the chart config).
+     */
+    private getUpdatableChartInstance(): any {
+        const instance = this.panelChartComponent?.componentRef?.instance;
+        if (!instance || this.panelChartComponent.TOO_MANY_DATA || typeof instance.updateChart !== 'function') {
+            return null;
         }
+        return instance;
     }
 
 
@@ -1123,6 +1157,8 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.useRoundedBars = this.originalLabelValues.useRoundedBars;
         this.chartAnimation = this.originalLabelValues.chartAnimation;
         this.useIcons = this.originalLabelValues.useIcons;
+        this.categoryLabelMaxChars = this.originalLabelValues.categoryLabelMaxChars;
+        this.categoryLabelCharsEnabled = this.originalLabelValues.categoryLabelCharsEnabled;
         this.assignedColors = _.cloneDeep(this.originalAssignedColors);
         this.uniqueBarColors = _.cloneDeep(this.originalUniqueBarColors);
         this.assignedIcons = _.cloneDeep(this.originalAssignedIcons);

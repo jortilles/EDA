@@ -190,7 +190,7 @@ export class SQLserviceBuilderService extends QueryBuilderService {
 
     let o = tables.filter(table => table.name === origin)
       .map(table => { return table.query ? `${table.query}` : `"${SCHEMA}"."${table.name}"` })[0];
-    let myQuery = `SELECT ${selectColumns.join(', ')} \nFROM ${o}`;
+    let myQuery = `SELECT TOP ${SQLserviceBuilderService.SOURCE_FIELDS_ROW_LIMIT} ${selectColumns.join(', ')} \nFROM ${o}`;
 
     // JOINS
     let joinString: any[];

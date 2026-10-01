@@ -74,6 +74,8 @@ export class AppComponent implements OnInit {
         let lan_ca = new RegExp('\/ca\/', 'i');
         let lan_es = new RegExp('\/es\/', 'i');
         let lan_pl = new RegExp('\/pl\/', 'i');
+        let lan_de = new RegExp('\/de\/', 'i');
+        let lan_fr = new RegExp('\/fr\/', 'i');
 
         if (lan_ca.test(url)) {
             this.config.setTranslation(
@@ -118,6 +120,34 @@ export class AppComponent implements OnInit {
                      weekHeader: "Tydzień"
 
 
+                }
+            )
+        }
+        else if (lan_fr.test(url)) {
+            this.config.setTranslation(
+                {
+                    dayNames: ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
+                    dayNamesShort: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+                    dayNamesMin: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
+                    monthNames: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"],
+                    monthNamesShort: ["Janv", "Févr", "Mars", "Avr", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc"],
+                    today: "Aujourd'hui",
+                    clear: 'Effacer',
+                    weekHeader: 'Sem'
+                }
+            )
+        }
+        else if (lan_de.test(url)) {
+            this.config.setTranslation(
+                {
+                    dayNames: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+                    dayNamesShort: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+                    dayNamesMin: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+                    monthNames: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+                    monthNamesShort: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
+                    today: 'Heute',
+                    clear: 'Leeren',
+                    weekHeader: 'KW'
                 }
             )
         }

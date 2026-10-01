@@ -60,6 +60,31 @@
 .filter-clear-btn { color: var(--corporate-primary); font-size: 0.75rem; font-weight: 500; }
 .filter-clear-btn:hover { opacity: 0.75; }
 
+/* ---- Tags bar: always wrap. The global style.css forces .flex-wrap to nowrap !important below 768px ---- */
+.tags-bar {
+  flex-wrap: wrap !important;
+}
+
+/* ---- Mobile layout (phones, tablets in portrait): single stacked column even at sm/lg widths ---- */
+.mobile-layout .filters-row {
+  flex-direction: column;
+  align-items: stretch;
+}
+.mobile-layout .search-box {
+  width: 100%;
+}
+.mobile-layout .reports-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* ---- Tags bar on mobile layout: long tags wrap instead of overflowing ---- */
+.tags-bar--mobile .tag,
+.tags-bar--mobile .tag-selected {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
 /* ---- Dashboard report cards ---- */
 .report-card:hover { border-color: var(--folder-border-hover); }
 

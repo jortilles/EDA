@@ -171,8 +171,22 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly maxCategoryChars = 10;
 
-  private truncateLabel(label: string, maxChars: number = this.maxCategoryChars): string {
+  /** Default (categoryLabelCharsEnabled off) truncation: fixed character budget that INCLUDES the
+   * ellipsis itself - unchanged legacy behavior. */
+  private truncateLabelDefault(label: string, maxChars: number = this.maxCategoryChars): string {
     return label.length > maxChars ? label.slice(0, maxChars - 1) + '…' : label;
+  }
+
+  /** categoryLabelCharsEnabled truncation: maxChars is how much of the real text to show - the
+   * ellipsis is added on top of it, not counted against it - and 0 means "show nothing" (no
+   * ellipsis either), rather than a single truncated character. */
+  private truncateLabel(label: string): string {
+    if (this.inject.categoryLabelCharsEnabled) {
+      const maxChars = this.inject.categoryLabelMaxChars ?? 0;
+      if (maxChars <= 0) return '';
+      return label.length > maxChars ? label.slice(0, maxChars) + '…' : label;
+    }
+    return this.truncateLabelDefault(label);
   }
 
   // Multiplies (not replaces) each series' own configured opacity when dimmed, so restoring on

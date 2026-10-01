@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ElementRef, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Input, Output, EventEmitter, ElementRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Required for directives
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import * as _ from 'lodash';
@@ -12,7 +12,7 @@ interface Column {
   header: string;
 }
 
-import { FATHER_ID } from '../../../config/customizable/customizable_default'
+import { FATHER_ID, DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '../../../config/customizable/customizable_default'
 
 @Component({
   selector: 'app-eda-treetable',
@@ -21,7 +21,7 @@ import { FATHER_ID } from '../../../config/customizable/customizable_default'
   standalone: true, // A Standalone component indicates that it does not need to be declared in the modules
   imports: [CommonModule, TreeTableModule],
 })
-export class EdaTreeTable implements OnInit, OnDestroy {
+export class EdaTreeTable implements OnInit, AfterViewInit, OnDestroy {
 
   private static readonly MIN_COL_WIDTH_PCT = 5;
   private static readonly BASE_TABLE_STYLE = { 'min-width': '50rem' };
@@ -50,6 +50,7 @@ export class EdaTreeTable implements OnInit, OnDestroy {
   showField: boolean = false;
   showColumnFilters: boolean = true;
   showChildCount: boolean = false;
+  rowBanding: boolean = false;
 
   columnWidths: Record<string, string> = {};
   tableStyle: Record<string, string> = EdaTreeTable.BASE_TABLE_STYLE;
@@ -74,6 +75,7 @@ export class EdaTreeTable implements OnInit, OnDestroy {
     this.showField = cfg.showOriginField || false;
     this.showColumnFilters = cfg.showColumnFilters ?? true;
     this.showChildCount = cfg.showChildCount ?? false;
+    this.rowBanding = cfg.rowBanding ?? false;
     if (!this.inject || !Array.isArray(this.inject.query) || !Array.isArray(this.inject.data?.values)) {
       console.error('Inject structure incorrecta. Esperado inject.query[] y inject.data.values[]');
       return;
@@ -88,11 +90,30 @@ export class EdaTreeTable implements OnInit, OnDestroy {
       this.applyColumnWidths(cfg.columnWidths);
       this.nodes = this.buildTree();
       this.sortNodes(this.nodes, this.leafs.map(l => l.field));
+      this.assignBands(this.nodes);
     } else {
       this.isDynamic = true;
       this.initDynamicTreeTable();
       this.sortNodes(this.dynamicFiles, this.dynamicCols.map(c => c.field));
+      this.assignBands(this.dynamicFiles);
     }
+  }
+
+  // Row banding is per top-level group, not per rendered row: every descendant shares its
+  // root ancestor's band so an expanded parent's children never flip to the opposite color.
+  private bandByNode = new WeakMap<object, number>();
+
+  private assignBands(roots: TreeNode[]): void {
+    (roots || []).forEach((root, i) => this.setBandRecursive(root, i % 2));
+  }
+
+  private setBandRecursive(node: TreeNode, band: number): void {
+    this.bandByNode.set(node, band);
+    (node.children || []).forEach(child => this.setBandRecursive(child, band));
+  }
+
+  getRowBand(rowNode: any): number {
+    return this.bandByNode.get(rowNode?.node) ?? 0;
   }
 
   // Extract the query and get the visible columns
@@ -115,8 +136,26 @@ export class EdaTreeTable implements OnInit, OnDestroy {
     }
   }
 
+  ngAfterViewInit(): void {
+    this.applyTableColors();
+  }
+
   isResizeActive(col: { field: string }): boolean {
     return this.resizeDrag?.leftField === col.field;
+  }
+
+  // Matches EdaTableComponent.applyBandingColors so tree tables share the regular tables' header/banding colors
+  private hexToRgba(hex: string, alpha: number): string {
+    const clean = (hex || '#ffffff').replace('#', '');
+    const full = clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean;
+    const n = parseInt(full, 16);
+    return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+  }
+
+  private applyTableColors(): void {
+    const el: HTMLElement = this.host.nativeElement.querySelector('.container-treetable') || this.host.nativeElement;
+    el.style.setProperty('--table-header-color', this.hexToRgba(DEFAULT_TABLE_HEADER_COLOR, 0.4));
+    el.style.setProperty('--table-banding-color', this.hexToRgba(DEFAULT_TABLE_BANDING_COLOR, 0.15));
   }
 
   private colEls(): HTMLElement[] {

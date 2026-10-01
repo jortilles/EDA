@@ -1,4 +1,4 @@
-<div class="container-treetable" style="height: 100%; display: flex; flex-direction: column;">
+<div class="container-treetable" [class.row-banding]="rowBanding" style="height: 100%; display: flex; flex-direction: column;">
   <div style="flex: 1; overflow: auto;">
     @if(!isDynamic){
     <p-treeTable #tt [value]="nodes" [scrollable]="true" [tableStyle]="tableStyle" selectionMode="single"
@@ -39,7 +39,7 @@
 
       <!-- Body -->
       <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-        <tr [ttRow]="rowNode">
+        <tr [ttRow]="rowNode" [class.tt-row-band]="rowBanding && getRowBand(rowNode) === 1">
           @for(col of leafs; track $index){
           <td class="tt-cell-top" (click)="handleClick(rowData[col.field], col.field)">
 
@@ -91,7 +91,7 @@
       </ng-template>
 
       <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
-        <tr [ttRow]="rowNode">
+        <tr [ttRow]="rowNode" [class.tt-row-band]="rowBanding && getRowBand(rowNode) === 1">
           @for(col of columns; track $index){
           <td class="tt-cell-top" (click)="handleClick(rowData[col.field], col.field)">
             @if($index === 0){

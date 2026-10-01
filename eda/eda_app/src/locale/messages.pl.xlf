@@ -3628,6 +3628,16 @@ Co widzę?
     <target>Wybierz ile kolumn chcesz wyświetlić</target>
   </trans-unit>
 
+  <trans-unit id="categoryLabelCharsTooltip">
+    <source>Actívalo para fijar manualmente el número de caracteres de las etiquetas del eje de categorías (empieza en 10; 0 = sin texto). Desactivado, se usa el ajuste automático por defecto</source>
+    <target>Włącz, aby ręcznie ustawić liczbę znaków etykiet osi kategorii (zaczyna się od 10; 0 = brak tekstu). Po wyłączeniu używane jest domyślne automatyczne dopasowanie</target>
+  </trans-unit>
+
+  <trans-unit id="categoryLabelCharsEnabled">
+    <source>Etiquetas ajustables</source>
+    <target>Regulowane etykiety</target>
+  </trans-unit>
+
   <trans-unit id="histogramColumDescription">
     <source>Elige cuántas columnas mostrar en el histograma</source>
     <target>Wybierz ile kolumn wyświetlić na histogramie</target>
@@ -3901,6 +3911,14 @@ Co widzę?
     <target>Ten Panel nie jest dostępny ze względu na brak uprawnień</target>
   </trans-unit>
 
+  <trans-unit id="tooManyValuesForCrosstable">
+    <source>Demasiados valores en el eje horizontal. Cambia la configuración de la tabla para que se pueda representar correctamente.</source>
+    <target>Za dużo wartości na osi poziomej. Zmień konfigurację tabeli, aby mogła zostać poprawnie wyświetlona.</target>
+  </trans-unit>
+  <trans-unit id="tooManyValuesForChart">
+    <source>Demasiados valores para un gráfico. Se muestran los datos en una tabla.</source>
+    <target>Za dużo wartości dla wykresu. Dane są wyświetlane w tabeli.</target>
+  </trans-unit>
   <trans-unit id="noFilterAllowed">
     <source>Este panel no está disponible por falta de permisos en un filtro</source>
     <target>Ten panel jest niedostępny ze względu na brak uprawnień do filtra</target>
@@ -4397,6 +4415,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="sortReports">
         <source>ORDENAR INFORMES:</source>
         <target>RAPORTY ZAMÓWIEŃ:</target>
+      </trans-unit>
+      <trans-unit id="visibilityReports" datatype="html">
+        <source>VISIBILIDAD:</source>
+        <target>WIDOCZNOŚĆ:</target>
       </trans-unit>
 
       <trans-unit id="createdAt">
@@ -7651,6 +7673,10 @@ Pozdrawiam.</target>
 <trans-unit id="treeTableOptions">
   <source>Opciones</source>
   <target>Opcje</target>
+</trans-unit>
+<trans-unit id="sourceFieldsLimitNotice">
+  <source>La consulta está limitada a 50.000 registros</source>
+  <target>Zapytanie jest ograniczone do 50 000 rekordów</target>
 </trans-unit>
 </body>
 </file>

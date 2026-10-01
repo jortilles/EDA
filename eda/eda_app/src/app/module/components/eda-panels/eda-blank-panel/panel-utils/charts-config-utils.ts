@@ -58,6 +58,8 @@ export const CUSTOM_CHART_CONFIG_FIELDS: CustomChartConfigField[] = [
   { name: 'chartAnimation', default: true, fallbackIfMissing: true },
   { name: 'useIcons', default: false },
   { name: 'assignedIcons', default: [] },
+  { name: 'categoryLabelMaxChars', default: 0 },
+  { name: 'categoryLabelCharsEnabled', default: false },
 ];
 
 export function readCustomFields(cfg: any, fields: CustomChartConfigField[]): any {
@@ -78,6 +80,12 @@ export const ChartsConfigUtils = {
 
     if (!ebp.panelChart) {
       return new ChartConfig(config);
+    }
+
+    // The chart is being shown as a plain table (too many data): the rendered component is not the
+    // configured chart, so keep the saved config instead of reading it from that component.
+    if (ebp.panelChart.TOO_MANY_DATA) {
+      return new ChartConfig(ebp.panelChart.props.config?.getConfig() ?? null);
     }
 
 

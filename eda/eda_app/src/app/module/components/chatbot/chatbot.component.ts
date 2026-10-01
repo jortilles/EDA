@@ -377,7 +377,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   }
 
   private fixLocaleInUrl(url: string): string {
-    const knownLocales = ['es', 'ca', 'en', 'pl', 'fr'];
+    const knownLocales = ['es', 'ca', 'en', 'pl', 'fr', 'de'];
     const currentLocale = window.location.pathname.split('/').filter(Boolean).find(s => knownLocales.includes(s));
     if (!currentLocale) return url;
     return url.replace(new RegExp(`/(${knownLocales.join('|')})/#/`), `/${currentLocale}/#/`);

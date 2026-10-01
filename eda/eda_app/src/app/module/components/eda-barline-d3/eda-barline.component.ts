@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaBarlineD3 } from './eda-barline';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, roundedTipRectPath } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, truncateLabelExact, roundedTipRectPath } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface BarlineSeriesBase {
@@ -142,7 +142,9 @@ export class EdaBarlineComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private truncate(label: string): string {
-    return truncateLabel(label, MAX_CATEGORY_CHARS);
+    return this.inject.categoryLabelCharsEnabled
+      ? truncateLabelExact(label, this.inject.categoryLabelMaxChars ?? 0)
+      : truncateLabel(label, MAX_CATEGORY_CHARS);
   }
 
   private gradientId(colorHex: string): string {

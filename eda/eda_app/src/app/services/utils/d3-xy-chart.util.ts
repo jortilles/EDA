@@ -23,8 +23,18 @@ export function measureMaxLabelWidth(labels: string[], fontSizePx: number, fontF
   return labels.reduce((max, label) => Math.max(max, measureTextWidth(label, fontSizePx, fontFamily)), 0);
 }
 
+/** Default (categoryLabelCharsEnabled off) truncation: fixed character budget that INCLUDES the
+ * ellipsis itself - unchanged legacy behavior. */
 export function truncateLabel(label: string, maxChars: number): string {
   return label.length > maxChars ? label.slice(0, maxChars - 1) + '…' : label;
+}
+
+/** categoryLabelCharsEnabled truncation: maxChars is how much of the real text to show - the
+ * ellipsis is added on top of it, not counted against it - and 0 means "show nothing" (no
+ * ellipsis either), rather than a single truncated character. */
+export function truncateLabelExact(label: string, maxChars: number): string {
+  if (maxChars <= 0) return '';
+  return label.length > maxChars ? label.slice(0, maxChars) + '…' : label;
 }
 
 /** Dash pattern for a derived trend-line overlay (thinner, straight regression line). */
