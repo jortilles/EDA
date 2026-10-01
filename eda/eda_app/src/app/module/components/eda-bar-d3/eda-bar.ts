@@ -37,6 +37,10 @@ export class EdaBarD3 {
   /** Per-category media-library images at each bar's tip - see category-icons.util.ts. */
   assignedIcons?: { value: string | number; icon: string }[];
   useIcons?: boolean;
-  /** hard cap on the category (Y) axis label length, in characters. 0/unset --> all/default **/
+  /** Manual category-label character limit, in effect only while categoryLabelCharsEnabled is
+   * true: 0 shows no text at all, N>0 keeps N real characters plus an ellipsis on top of them. */
   categoryLabelMaxChars?: number;
+  /** Switch for categoryLabelMaxChars. Off (default): horizontalBar/pyramid auto-fit the label
+   * area to the available width, other bar types use the fixed legacy 8-char limit. */
+  categoryLabelCharsEnabled?: boolean;
 }

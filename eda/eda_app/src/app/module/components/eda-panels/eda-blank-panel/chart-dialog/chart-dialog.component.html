@@ -213,13 +213,14 @@
             </div>
             }
 
-            <!-- Category label character limit (horizontalBar only): 0 = auto-fit to panel width -->
+            <!-- Adjustable labels: switch off = default sizing (per chart type); on = reveals the
+                 character-count input to the LEFT of the switch, so the switch itself never moves. -->
             @if (features.hasLabelCharLimit) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
-                  <label i18n="@@categoryLabelMaxChars" for="categoryLabelMaxChars" class="font-medium">
-                    Caracteres de la etiqueta
+                  <label i18n="@@categoryLabelCharsEnabled" for="categoryLabelCharsEnabled" class="font-medium">
+                    Etiquetas ajustables
                   </label>
                   <div class="relative group">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -236,9 +237,20 @@
                   </div>
                 </div>
               </div>
-              <input type="number" id="categoryLabelMaxChars" name="categoryLabelMaxChars"
-                min="0" max="60" [(ngModel)]="categoryLabelMaxChars" (change)="setCategoryLabelMaxChars()"
-                class="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm">
+              <div class="flex items-center gap-2">
+                @if (categoryLabelCharsEnabled) {
+                <input type="number" id="categoryLabelMaxChars" name="categoryLabelMaxChars"
+                  min="0" max="40" [(ngModel)]="categoryLabelMaxChars" (ngModelChange)="setCategoryLabelMaxChars()"
+                  class="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                }
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="categoryLabelCharsEnabled" [(ngModel)]="categoryLabelCharsEnabled" class="sr-only peer"
+                    (ngModelChange)="setCategoryLabelCharsEnabled()">
+                  <div
+                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                  </div>
+                </label>
+              </div>
             </div>
             }
 

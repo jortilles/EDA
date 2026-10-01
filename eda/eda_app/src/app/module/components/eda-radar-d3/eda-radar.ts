@@ -20,6 +20,9 @@ export class EdaRadar {
   useGradient: boolean;
   chartAnimation?: boolean;
   linkedDashboard: LinkedDashboardProps;
-  /** Character cap for the category (spoke) labels. 0/unset = default (10 chars). */
+  /** Manual category-label character limit, in effect only while categoryLabelCharsEnabled is
+   * true: 0 shows no text at all, N>0 keeps N real characters plus an ellipsis on top of them. */
   categoryLabelMaxChars?: number;
+  /** Switch for categoryLabelMaxChars. Off (default): fixed legacy 10-char limit. */
+  categoryLabelCharsEnabled?: boolean;
 }

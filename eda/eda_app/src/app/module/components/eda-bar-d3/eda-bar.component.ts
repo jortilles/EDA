@@ -286,7 +286,9 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly maxCategoryChars = 8;
 
-  private truncateLabel(label: string, maxChars: number = this.inject.categoryLabelMaxChars || this.maxCategoryChars): string {
+  /** Default (categoryLabelCharsEnabled off) truncation: fixed character budget that INCLUDES the
+   * ellipsis itself - unchanged legacy behavior. */
+  private truncateLabel(label: string, maxChars: number = this.maxCategoryChars): string {
     return label.length > maxChars ? label.slice(0, maxChars - 1) + '…' : label;
   }
 
@@ -299,6 +301,22 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       text = text.slice(0, -1);
     }
     return text.length < label.length ? text + '…' : text;
+  }
+
+  /** categoryLabelCharsEnabled truncation: maxChars is how much of the real text to show - the
+   * ellipsis is added on top of it, not counted against it - and 0 means "show nothing" (no
+   * ellipsis either), rather than a single truncated character. */
+  private truncateLabelExact(label: string, maxChars: number): string {
+    if (maxChars <= 0) return '';
+    return label.length > maxChars ? label.slice(0, maxChars) + '…' : label;
+  }
+
+  /** Category label for the vertical orientation (and compact mode): the manual character limit
+   * when the user has switched it on, the fixed legacy default otherwise. */
+  private resolveCategoryLabel(label: string): string {
+    return this.inject.categoryLabelCharsEnabled
+      ? this.truncateLabelExact(label, this.inject.categoryLabelMaxChars ?? 0)
+      : this.truncateLabel(label);
   }
 
   draw(): void {
@@ -409,10 +427,12 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     // so it can be decided before sizing that margin, and the margin only needs to fit whichever
     // labels actually remain visible instead of the full list.
     let horizontalVisibleCatIndexes: Set<number> = null;
-    // Set (non-zero) by the horizontal branch below and reused by the category axis' tickFormat
-    // further down, so both agree on the same truncation rule for the labels actually drawn.
+    // Set by the horizontal branch below and reused by the category axis' tickFormat further down,
+    // so both agree on the same truncation rule for the labels actually drawn.
+    let horizontalCharsEnabled = false;
     let horizontalLabelCharLimit = 0;
     let horizontalMaxLabelPx = 0;
+    let horizontalExtraGapPx = 0;
     if (horizontal) {
       const innerHeightForSkip = Math.max(height - 16 - 30, 10);
       const skipProbeScale = d3.scaleBand().domain(axisCategories).range([0, innerHeightForSkip]).padding(0.25);
@@ -427,22 +447,71 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
         }
       });
       const visibleCats = axisCategories.filter((_, i) => horizontalVisibleCatIndexes.has(i));
+      // Switch off (default): the label area grows to fit the widest visible label - up to 40% of
+      // the panel width - and each label is trimmed to whatever pixel budget that leaves. Switch on:
+      // the configured character count is used as-is (truncateLabelExact) - the margin still grows
+      // to fit it (same measure-then-cap-at-40% below), it just no longer auto-shrinks the text.
+      horizontalCharsEnabled = this.inject.categoryLabelCharsEnabled === true;
       horizontalLabelCharLimit = this.inject.categoryLabelMaxChars ?? 0;
       horizontalMaxLabelPx = width * 0.4 - 24;
-      const visibleLabels = horizontalLabelCharLimit > 0
-        ? visibleCats.map(c => this.truncateLabel(c, horizontalLabelCharLimit))
+      const visibleLabels = horizontalCharsEnabled
+        ? visibleCats.map(c => this.truncateLabelExact(c, horizontalLabelCharLimit))
         : visibleCats.map(c => this.truncateLabelToWidth(c, horizontalMaxLabelPx, 11));
-      leftMargin = Math.min(Math.max(this.measureMaxLabelWidth(visibleLabels, 11) + 24, 60), width * 0.4);
+      const measuredWidthPx = this.measureMaxLabelWidth(visibleLabels, 11);
+      let reservedWidthPx = measuredWidthPx;
+      // A configured char count past what the real labels actually need wouldn't move the margin
+      // at all otherwise (truncateLabelExact just returns the label unchanged once it already
+      // fits) - estimate a per-character width from the widest visible label and reserve space for
+      // the FULL configured count, so dragging the number up keeps widening the column even once
+      // every label is already shown in full.
+      if (horizontalCharsEnabled && horizontalLabelCharLimit > 0) {
+        const widest = visibleLabels.reduce((a, b) => a.length > b.length ? a : b, '');
+        const perCharPx = widest.length > 0 ? this.measureTextWidth(widest, 11) / widest.length : this.measureTextWidth('0', 11);
+        reservedWidthPx = Math.max(reservedWidthPx, perCharPx * horizontalLabelCharLimit);
+      }
+      leftMargin = Math.min(Math.max(reservedWidthPx + 24, 60), width * 0.4);
+      // That reserved-but-unused space would otherwise sit dead between the panel edge and the
+      // text (D3 renders category labels hugging the axis by default) - push the text itself left
+      // by the leftover instead, so the extra room reads as a gap between the label and the
+      // axis/bars, which is where "more space reserved" should actually show up. Measured against
+      // the final (possibly 40%-capped) margin, not the raw reserve, so it can never push text
+      // past the panel's left edge.
+      horizontalExtraGapPx = Math.max(0, (leftMargin - 24) - measuredWidthPx);
     } else {
       const probeScale = d3.scaleLinear().domain([valueMin, valueMax]).nice();
       const tickLabels = probeScale.ticks(verticalTickCount).map(v => formatAxisValue(v));
       leftMargin = Math.min(Math.max(this.measureMaxLabelWidth(tickLabels, 11) + 16, 40), width * 0.3);
     }
+    // Vertical bars' rotated (-30deg) category labels: same idea as the horizontal branch above,
+    // mirrored onto the bottom margin - sized to the widest ACTUAL (possibly truncated) label's
+    // rotated footprint instead of a flat 50px, then reserved further still for the full configured
+    // character count when that exceeds what the real labels need, with the leftover pushed into
+    // verticalExtraGapPx (applied to the label's own offset below) rather than left unused. Compact
+    // mode keeps its own tiny fixed bottom margin (its labels are capped to 3, non-rotated).
+    let verticalBottomMargin = 50;
+    let verticalExtraGapPx = 0;
+    if (!horizontal && !compact) {
+      const angle = Math.PI / 6; // matches the -30deg rotation applied to this axis' text below
+      const labels = axisCategories.map(c => this.resolveCategoryLabel(c));
+      const widest = labels.reduce((a, b) => a.length > b.length ? a : b, '');
+      const widestPx = this.measureTextWidth(widest, 11);
+      const actualFootprintPx = widestPx * Math.sin(angle) + 11 * Math.cos(angle);
+      let footprintPx = actualFootprintPx;
+      const charsEnabled = this.inject.categoryLabelCharsEnabled === true;
+      const maxChars = this.inject.categoryLabelMaxChars ?? 0;
+      if (charsEnabled && maxChars > 0) {
+        const perCharPx = widest.length > 0 ? widestPx / widest.length : this.measureTextWidth('0', 11);
+        const reservedWidthPx = perCharPx * maxChars;
+        footprintPx = Math.max(footprintPx, reservedWidthPx * Math.sin(angle) + 11 * Math.cos(angle));
+      }
+      verticalBottomMargin = Math.min(Math.max(footprintPx + 20, 50), height * 0.4);
+      verticalExtraGapPx = Math.max(0, (verticalBottomMargin - 20) - actualFootprintPx);
+    }
     const showCompactCategoryAxis = compact && !horizontal && this.inject.showGridLines === true;
     const showCompactLabels = compact && !horizontal && (this.inject.showLabels || this.inject.showLabelsPercent);
     const margin = compact
       ? { top: showCompactLabels ? 20 : 4, right: 4, bottom: showCompactCategoryAxis ? 18 : 4, left: (!horizontal && showGrid) ? leftMargin : 4 }
-      : { top: 16, right: 20, bottom: horizontal ? 30 : 50, left: leftMargin };
+      : { top: 16, right: 20, bottom: horizontal ? 30 : verticalBottomMargin, left: leftMargin };
     const innerWidth = Math.max(width - margin.left - margin.right, 10);
     const innerHeight = Math.max(height - margin.top - margin.bottom, 10);
 
@@ -489,8 +558,8 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       // values, so click handling, tooltips and datalabels are unaffected.
       const categoryAxis: any = (horizontal ? d3.axisLeft(categoryScale) : d3.axisBottom(categoryScale))
         .tickFormat((d: string) => horizontal
-          ? (horizontalLabelCharLimit > 0 ? this.truncateLabel(d, horizontalLabelCharLimit) : this.truncateLabelToWidth(d, horizontalMaxLabelPx, 11))
-          : this.truncateLabel(d));
+          ? (horizontalCharsEnabled ? this.truncateLabelExact(d, horizontalLabelCharLimit) : this.truncateLabelToWidth(d, horizontalMaxLabelPx, 11))
+          : this.resolveCategoryLabel(d));
       const valueAxis: any = (horizontal ? d3.axisBottom(valueScale).ticks(horizontalTickCount) : d3.axisLeft(valueScale).ticks(verticalTickCount))
         .tickFormat((v: any) => formatAxisValue(v));
 
@@ -500,11 +569,18 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
         .call(categoryAxis);
 
       if (!horizontal) {
+        // When the bottom margin reserved more than the actual label needs, drop the text straight
+        // down by the leftover - a separate outer translate, applied in screen space AFTER the
+        // rotation below, so it moves purely vertically (no sideways drift) instead of sliding along
+        // the label's own rotated diagonal - so the unused room becomes visible separation instead
+        // of dead space the text never reaches.
+        const rotation = 'rotate(-30)';
+        const transform = verticalExtraGapPx > 0 ? `translate(0,${verticalExtraGapPx}) ${rotation}` : rotation;
         catAxisG.selectAll('text')
           .style('text-anchor', 'end')
           .attr('dx', '-0.5em')
           .attr('dy', '0.4em')
-          .attr('transform', 'rotate(-30)');
+          .attr('transform', transform);
 
         // Chart.js's category axis auto-skips ticks so rotated labels never overlap; a plain d3
         // axis renders every one regardless of how little room each category gets, so with many
@@ -514,7 +590,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
         // names still get to show up between long ones instead of being skipped needlessly.
         const angle = Math.PI / 6; // matches the -30deg rotation above
         const footprints = axisCategories.map(c => {
-          const w = this.measureTextWidth(this.truncateLabel(c), 11);
+          const w = this.measureTextWidth(this.resolveCategoryLabel(c), 11);
           return w * Math.cos(angle) + 11 * Math.sin(angle);
         });
         const step = categoryScale.step();
@@ -531,6 +607,12 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
         // cut computed above (before the margin was sized), so the left margin - and the visual
         // density of the chart - only ever account for the labels actually shown.
         catAxisG.selectAll('.tick').style('display', (_: any, i: number) => horizontalVisibleCatIndexes.has(i) ? null : 'none');
+        if (horizontalExtraGapPx > 0) {
+          // Margin grew past what the labels themselves need (see horizontalExtraGapPx above) -
+          // shift the text left by the leftover so that space becomes visible separation from the
+          // axis/bars instead of dead space behind the (still axis-hugging) label.
+          catAxisG.selectAll('text').attr('dx', `-${horizontalExtraGapPx}`);
+        }
       }
 
       g.append('g')
@@ -548,7 +630,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     } else if (showCompactCategoryAxis) {
       // Compact mode has no room for the full diagonal collision-avoidance axis above - cap to at
       // most 3 evenly-spaced labels, horizontal instead of rotated.
-      const categoryAxis: any = d3.axisBottom(categoryScale).tickFormat((d: string) => this.truncateLabel(d));
+      const categoryAxis: any = d3.axisBottom(categoryScale).tickFormat((d: string) => this.resolveCategoryLabel(d));
       const catAxisG = g.append('g').attr('class', 'eda-bar-axis')
         .attr('transform', `translate(0,${innerHeight})`).call(categoryAxis);
       catAxisG.selectAll('text').style('text-anchor', 'middle')

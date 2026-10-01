@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaLineD3 } from './eda-line';
-import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, truncateLabelExact, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface LinePoint {
@@ -165,7 +165,9 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private truncate(label: string): string {
-    return truncateLabel(label, this.inject.categoryLabelMaxChars || MAX_CATEGORY_CHARS);
+    return this.inject.categoryLabelCharsEnabled
+      ? truncateLabelExact(label, this.inject.categoryLabelMaxChars ?? 0)
+      : truncateLabel(label, MAX_CATEGORY_CHARS);
   }
 
   private percentOfSeries(series: LineSeries, catIndex: number): number {
