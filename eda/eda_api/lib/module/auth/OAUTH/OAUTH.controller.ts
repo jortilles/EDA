@@ -191,7 +191,8 @@ export class OAUTHController {
                     role_id.push(groupDoc._id);
                 }
 
-                if(companyId !== 'P1700000A') role_id.push(new mongoose.Types.ObjectId('135792467811111111111113'));
+                // EDA_RO solo al crear el usuario; después lo gestiona el admin
+                if(!userEda) role_id.push(new mongoose.Types.ObjectId('135792467811111111111113'));
 
             } catch (err: any) {
                 console.error(`Error creando o actualizando grupo "${companyName}":`, err.message);
