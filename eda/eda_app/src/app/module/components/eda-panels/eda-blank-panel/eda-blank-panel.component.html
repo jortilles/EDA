@@ -116,7 +116,7 @@
           (configUpdated)="setChartProperties($event)"
           (onChartClick)="onChartClick($event)"
           (onNavEvent)="handleNavEvent($event)"
-          [ngStyle]="panelContent"
+          [ngStyle]="effectivePanelContent"
           [ngClass]="isSpecialChart(panelChartConfig.chartType)
             ? 'h-full w-full flex justify-center content-center overflow-hidden flex-wrap'
             : 'h-full w-full block overflow-hidden content-center pb-2'"
@@ -141,7 +141,7 @@
 </div>
 
 @if(display_v.page_dialog) {
-  <eda-dialog2 [display]="display_v.page_dialog" width="95vw" [ngStyle]="panelContent" [overflow]="'hidden'" height="100vh">
+  <eda-dialog2 [display]="display_v.page_dialog" width="95vw" [ngStyle]="effectivePanelContent" [overflow]="'hidden'" height="100vh">
 
     <!-- Header -->
     <div header class="w-full flex items-center px-2 py-0 gap-x-4">

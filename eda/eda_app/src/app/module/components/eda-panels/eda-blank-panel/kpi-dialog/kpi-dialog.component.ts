@@ -54,6 +54,8 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     private resizeObserver: ResizeObserver;
 
     public kpiBackgroundColor: string = '';
+    private kpiBackgroundColorTouched: boolean = false;
+    private originalKpiBackgroundColor: string = '';
     public kpiTextColor: string = '';
     public prefixImage: string = '';  // base64 data URI (legacy) or media library url
     public mediaPickerOpen: boolean = false;
@@ -164,6 +166,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.modifiedFontPoints = config.modifiedFontPoints || 0;
         // '' would show as red in p-colorPicker (its default hue when no valid hex is bound) -
         // fall back to the same defaults the KPI itself actually renders with when unset.
+        this.originalKpiBackgroundColor = config.backgroundColor || '';
         this.kpiBackgroundColor = config.backgroundColor || '#ffffff';
         this.kpiTextColor = config.kpiColor || '#000000';
         this.prefixImage = config.prefixImage || '';
@@ -236,7 +239,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             chartSubType: this.panelChartConfig.edaChart,
             assignedColors: [...this.assignedColors],
             modifiedFontPoints: this.modifiedFontPoints,
-            backgroundColor: this.kpiBackgroundColor,
+            backgroundColor: this.kpiBackgroundColorTouched ? this.kpiBackgroundColor : this.originalKpiBackgroundColor,
             kpiColor: this.kpiTextColor,
             prefixImage: this.prefixImage,
             graphOptions: this.showGraphTab ? this.buildGraphFieldsPatch() : undefined,
@@ -445,6 +448,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     }
 
     updateKpiBackground() {
+        this.kpiBackgroundColorTouched = true;
         const instance = this.panelChartComponent?.componentRef?.instance;
         if (instance) {
             instance.inject.backgroundColor = this.kpiBackgroundColor;
