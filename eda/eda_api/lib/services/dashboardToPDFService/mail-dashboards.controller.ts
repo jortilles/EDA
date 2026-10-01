@@ -71,6 +71,13 @@ export class MailDashboardsController {
       });
 
       await loginPage.goto(loginUrl, { waitUntil: 'networkidle' });
+
+      // Grace window: networkidle doesn't guarantee the 'response' handler's async read finished.
+      const loginDeadline = Date.now() + 5000;
+      while (!authToken && !loginFailureDetail && Date.now() < loginDeadline) {
+        await new Promise(r => setTimeout(r, 100));
+      }
+
       await loginContext.close();
 
       if (!authToken || !authUser) {
@@ -179,23 +186,40 @@ export class MailDashboardsController {
         : box.height;
       console.log(`[Dashboard] Dimensiones: ${cssWidth}x${cssHeight} CSS px`);
 
+      // A 0-sized #myDashboard would otherwise silently produce an empty PDF or a division by
+      // zero below - fail loudly instead so it's retried, not silently sent.
+      if (!cssWidth || cssWidth <= 0 || !cssHeight || cssHeight <= 0) {
+        throw new Error(`[Dashboard] Dimensiones inválidas del informe renderizado (${cssWidth}x${cssHeight}px) - #myDashboard no tiene contenido visible`);
+      }
+
       // 5. Capture element screenshot at 2x resolution (deviceScaleFactor: 2), then trim to content
       const rawScreenshot = await element.screenshot({ type: 'jpeg', quality: 100 });
-      let physicalWidth  = Math.round(cssWidth  * 2);
-      let physicalHeight = Math.round(cssHeight * 2);
+
+      // Real captured size can be a few px off cssWidth/Height*2 (DPI rounding) - the pagination
+      // below extracts by exact pixel size, so an off-by-one here throws "bad extract area".
+      let realWidth = Math.round(cssWidth * 2);
+      let realHeight = Math.round(cssHeight * 2);
+      try {
+        const shotMeta = await sharp(rawScreenshot).metadata();
+        if (shotMeta.width)  realWidth  = shotMeta.width;
+        if (shotMeta.height) realHeight = shotMeta.height;
+      } catch (e: any) {
+        console.warn(`[Dashboard] no se pudo leer metadata del screenshot: ${e?.message || e}`);
+      }
+
+      let physicalWidth  = Math.min(Math.round(cssWidth  * 2), realWidth);
+      let physicalHeight = Math.min(Math.round(cssHeight * 2), realHeight);
       let screenshotBuffer = rawScreenshot;
-      if (cssHeight < box.height) {
+      if (physicalWidth < realWidth || physicalHeight < realHeight) {
         try {
-          const m = await sharp(rawScreenshot).metadata();
-          physicalWidth = m.width || physicalWidth;
-          physicalHeight = Math.min(physicalHeight, m.height || physicalHeight);
           screenshotBuffer = await sharp(rawScreenshot)
             .extract({ left: 0, top: 0, width: physicalWidth, height: physicalHeight })
             .jpeg({ quality: 100 }).toBuffer();
         } catch (e: any) {
           console.warn(`[Dashboard] no se pudo recortar el screenshot: ${e?.message || e}`);
           screenshotBuffer = rawScreenshot;
-          physicalHeight = Math.round(box.height * 2);
+          physicalWidth = realWidth;
+          physicalHeight = realHeight;
         }
       }
       console.log(`[Dashboard] Screenshot capturado (${screenshotBuffer.length} bytes)`);
@@ -205,7 +229,10 @@ export class MailDashboardsController {
       const pageHeightCSS     = A4_HEIGHT_PT / ratio;
       const pageHeightPhysical = Math.floor(pageHeightCSS * 2);
 
-      const filename = `${dashboard}_${userMail}.pdf`;
+      // Unique on-disk name so two overlapping sends to the same recipient don't collide;
+      // the recipient-facing attachment name (below) stays clean.
+      const attachmentName = `${dashboard}_${userMail}.pdf`;
+      const filename = `${dashboard}_${userMail}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.pdf`;
       const filepath = __dirname;
       const fullPath = path.join(filepath, filename);
 
@@ -259,7 +286,7 @@ export class MailDashboardsController {
 
       // The email link is the plain dashboard URL — pdfExport is only for the screenshot render.
       const link = MailingService.dashboardAppUrl(dashboard);
-      await MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail, subject, inlineImage, aiText);
+      await MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail, subject, inlineImage, aiText, attachmentName);
       console.log(`[Dashboard] Email procesado para ${userMail}`);
 
     } catch (err: any) {

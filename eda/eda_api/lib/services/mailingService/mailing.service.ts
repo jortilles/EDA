@@ -29,8 +29,17 @@ export class MailingService {
         console.log(error);
       } else {
         console.log(`\n\x1b[34m=====\x1b[0m \x1b[32mMail server is ready to take our messages\x1b[0m \x1b[34m=====\x1b[0m\n`)
-        this.alertSending(newDate, transporter, senderEmail, updateTimestamp);
-        this.dashboardSending(newDate, transporter, senderEmail, updateTimestamp);
+        // Awaited + caught, not fire-and-forget: an uncaught rejection here would crash the process.
+        try {
+          await this.alertSending(newDate, transporter, senderEmail, updateTimestamp);
+        } catch (err) {
+          console.error('[MailingService] alertSending error:', err);
+        }
+        try {
+          await this.dashboardSending(newDate, transporter, senderEmail, updateTimestamp);
+        } catch (err) {
+          console.error('[MailingService] dashboardSending error:', err);
+        }
       }
     });
   }
@@ -42,9 +51,9 @@ export class MailingService {
       console.log(`[MailingService] alertas KPI activas: ${alerts.length}`);
       let dashboardsToUpdate: any[] = [];
       /**Check alerts  */
-      alerts.forEach((alert) => {
+      for (const alert of alerts) {
         console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${alert.value.mailing.units} | lastUpdated: ${alert.value.mailing.lastUpdated}S`);
-        // para validar se puede forzar la variable. 
+        // para validar se puede forzar la variable.
         // console.log('Forzado del should upddate.....')
         // shouldUpdate = true;
         const mailing = alert.value.mailing;
@@ -56,19 +65,25 @@ export class MailingService {
 
         console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${mailing.units} | lastUpdated: ${mailing.lastUpdated} | shouldUpdate: ${shouldUpdate}`);
         if (shouldUpdate) {
-          const alertDashboard = dashboards.find(d => String(d._id) === String(alert.dashboard_id));
-          MailingService.mailAlertsSending(alert, transporter, senderEmail, alertDashboard);
+          // Isolated per alert: a malformed one must not stop the rest of the batch.
+          try {
+            const alertDashboard = dashboards.find(d => String(d._id) === String(alert.dashboard_id));
+            await MailingService.mailAlertsSending(alert, transporter, senderEmail, alertDashboard);
+          } catch (err) {
+            console.error(`[MailingService] ERROR enviando alerta KPI del dashboard "${alert.dashboard_id}":`, err);
+          }
           if (updateTimestamp) {
             alert.value.mailing.lastUpdated = newDate;
             if (!dashboardsToUpdate.map(d => d._id).includes(alert.dashboard_id)) dashboardsToUpdate.push(dashboards.filter(d => d._id === alert.dashboard_id)[0]);
           }
         }
-      });
+      }
 
       if (updateTimestamp) {
-        dashboardsToUpdate.forEach(d => {
-          Dashboard.replaceOne({ _id: d._id }, d).exec()
-        });
+        for (const d of dashboardsToUpdate) {
+          try { await Dashboard.replaceOne({ _id: d._id }, d).exec(); }
+          catch (err) { console.error(`[MailingService] ERROR guardando lastUpdated de alertas del informe "${d._id}":`, err); }
+        }
       }
 
     } catch (err) {
@@ -83,69 +98,84 @@ export class MailingService {
 
       const dashboards = await Dashboard.find({ 'config.sendViaMailConfig.enabled': true });
       console.log(`[MailingService] dashboards programados: ${dashboards.length}`);
-      const token = await UserController.provideFakeToken();
       let dashboardsToUpdate: any[] = [];
 
       for (const dashboard of dashboards) {
-        const cfg = dashboard.config.sendViaMailConfig;
-        const registeredMails: string[] = Array.from(new Set((cfg.users || []).map((u: any) => u.email).filter(Boolean)));
-        const manualMails: string[] = Array.from(new Set((cfg.otherRecipients || '').split(/\s+/).map((m: string) => m.trim()).filter((m: string) => m.length > 0)));
-        const userMails: string[] = [...registeredMails, ...manualMails];
-        const dashboardID: string = dashboard._id.toString();
+        // Isolated per dashboard: a malformed sendViaMailConfig must not skip the rest of the batch.
+        try {
+          const cfg = dashboard.config.sendViaMailConfig;
+          const registeredMails: string[] = Array.from(new Set((cfg.users || []).map((u: any) => u.email).filter(Boolean)));
+          const manualMails: string[] = Array.from(new Set((cfg.otherRecipients || '').split(/\s+/).map((m: string) => m.trim()).filter((m: string) => m.length > 0)));
+          const userMails: string[] = [...registeredMails, ...manualMails];
+          const dashboardID: string = dashboard._id.toString();
 
-        const now = SchedulerFunctions.totLocalISOTime(new Date());
-        console.log(`[MailingService] dashboard: "${dashboard.config.title}" | ahora: ${now} | units: ${cfg.units} | lastUpdated: ${cfg.lastUpdated} | recipients: ${userMails.join(', ')}`);
-        const shouldUpdate = MailingService.shouldSendNow(cfg);
+          const now = SchedulerFunctions.totLocalISOTime(new Date());
+          console.log(`[MailingService] dashboard: "${dashboard.config.title}" | ahora: ${now} | units: ${cfg.units} | lastUpdated: ${cfg.lastUpdated} | recipients: ${userMails.join(', ')}`);
+          const shouldUpdate = MailingService.shouldSendNow(cfg);
 
-          //console.log('Forzado del should upddate de los dashboards para forzar el envio al inicio.....');
-          //shouldUpdate = true;
+            //console.log('Forzado del should upddate de los dashboards para forzar el envio al inicio.....');
+            //shouldUpdate = true;
 
-        if (shouldUpdate) {
-          const ownerEmail = await MailingService.dashboardOwnerEmail(dashboard);
-          const errLog = (mail: string) => (err: any) => console.error(`[MailingService] ERROR enviando dashboard "${dashboard.config.title}" a ${mail}:`, err);
+          if (shouldUpdate) {
+            const ownerEmail = await MailingService.dashboardOwnerEmail(dashboard);
+            const errLog = (mail: string) => (err: any) => console.error(`[MailingService] ERROR enviando dashboard "${dashboard.config.title}" a ${mail}:`, err);
 
-          // Registered users: rendered with their own permissions; anyone without access is skipped.
-          for (const mail of registeredMails) {
-            const mailUser = await MailingService.resolveMailUser(mail);
-            if (!(await MailingService.canAccessDashboard(dashboard, mailUser))) {
-              console.log(`[MailingService] "${mail}" sin acceso a "${dashboard.config.title}", se omite`);
-              continue;
+            // Registered users: rendered with their own permissions; anyone without access is skipped.
+            await MailingService.runBatched(registeredMails, async (mail) => {
+              const mailUser = await MailingService.resolveMailUser(mail);
+              if (!(await MailingService.canAccessDashboard(dashboard, mailUser))) {
+                console.log(`[MailingService] "${mail}" sin acceso a "${dashboard.config.title}", se omite`);
+                return;
+              }
+              const subject = await MailingService.resolveMailTemplate(cfg.mailSubject || '', dashboard, mailUser);
+              const message = await MailingService.resolveMailTemplate(cfg.mailMessage || '', dashboard, mailUser);
+              const aiText = cfg.aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, mailUser) : '';
+              // Minted per-recipient, not once for the whole batch, so it can't go stale mid-batch.
+              const token = await UserController.provideFakeToken();
+              await MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message, token, senderEmail, subject, aiText, mail).catch(errLog(mail));
+            });
+
+            // Hand-typed external addresses: rendered as the dashboard owner (same content for all).
+            if (manualMails.length && ownerEmail) {
+              const ownerUser = await MailingService.resolveMailUser(ownerEmail);
+              const subject = await MailingService.resolveMailTemplate(cfg.mailSubject || '', dashboard, ownerUser);
+              const message = await MailingService.resolveMailTemplate(cfg.mailMessage || '', dashboard, ownerUser);
+              const aiText = cfg.aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, ownerUser) : '';
+              await MailingService.runBatched(manualMails, async (mail) => {
+                const token = await UserController.provideFakeToken();
+                await MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message, token, senderEmail, subject, aiText, ownerEmail).catch(errLog(mail));
+              });
             }
-            const subject = await MailingService.resolveMailTemplate(cfg.mailSubject || '', dashboard, mailUser);
-            const message = await MailingService.resolveMailTemplate(cfg.mailMessage || '', dashboard, mailUser);
-            const aiText = cfg.aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, mailUser) : '';
-            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message, token, senderEmail, subject, aiText, mail).catch(errLog(mail));
-          }
-
-          // Hand-typed external addresses: rendered as the dashboard owner (same content for all).
-          if (manualMails.length && ownerEmail) {
-            const ownerUser = await MailingService.resolveMailUser(ownerEmail);
-            const subject = await MailingService.resolveMailTemplate(cfg.mailSubject || '', dashboard, ownerUser);
-            const message = await MailingService.resolveMailTemplate(cfg.mailMessage || '', dashboard, ownerUser);
-            const aiText = cfg.aiAnalysis ? await MailingService.generateAiAnalysis(dashboard, ownerUser) : '';
-            for (const mail of manualMails) {
-              MailDashboardsController.sendDashboard(dashboardID, mail, transporter, message, token, senderEmail, subject, aiText, ownerEmail).catch(errLog(mail));
+            if (updateTimestamp) {
+              dashboard.config.sendViaMailConfig.lastUpdated = newDate;
+              if (!dashboardsToUpdate.map(d => d._id).includes(dashboardID)) {
+                dashboardsToUpdate.push(dashboard)
+              }
             }
           }
-          if (updateTimestamp) {
-            dashboard.config.sendViaMailConfig.lastUpdated = newDate;
-            if (!dashboardsToUpdate.map(d => d._id).includes(dashboardID)) {
-              dashboardsToUpdate.push(dashboard)
-            }
-          }
+        } catch (err) {
+          console.error(`[MailingService] ERROR procesando envío programado del informe "${dashboard?.config?.title}" (${dashboard?._id}):`, err);
         }
       }
 
       if (updateTimestamp) {
-        dashboardsToUpdate.forEach(d => {
-          Dashboard.replaceOne({ _id: d._id }, d).exec()
-        });
+        for (const d of dashboardsToUpdate) {
+          try { await Dashboard.replaceOne({ _id: d._id }, d).exec(); }
+          catch (err) { console.error(`[MailingService] ERROR guardando lastUpdated del informe "${d._id}":`, err); }
+        }
       }
 
     } catch (err) {
       throw err;
     }
 
+  }
+
+  /** Runs `worker` over `items` with at most `concurrency` in flight - caps parallel Chromium renders. */
+  private static async runBatched<T>(items: T[], worker: (item: T) => Promise<void>, concurrency = 2): Promise<void> {
+    for (let i = 0; i < items.length; i += concurrency) {
+      await Promise.all(items.slice(i, i + concurrency).map(worker));
+    }
   }
 
   /** Decide whether a sendViaMailConfig is due right now, per its `units` rule. */
@@ -385,7 +415,7 @@ export class MailingService {
       const dashboardLink = MailingService.dashboardAppUrl(alert.query.dashboard.dashboard_id);
       const subject = await MailingService.resolveMailTemplate(mailing.mailSubject || 'EDA - Alerta KPI', dashboard, user);
       const body = await MailingService.resolveMailTemplate(mailing.mailMessage || '', dashboard, user);
-      const fieldName = alert.query.query.fields[0].display_name;
+      const fieldName = alert.query?.query?.fields?.[0]?.display_name || '';
       const aiText = mailing.aiAnalysis && dashboard ? await MailingService.generateAiAnalysis(dashboard, user) : '';
 
       const aiBlock = aiText
@@ -510,10 +540,11 @@ export class MailingService {
       query,
     };
 
-    MailingService.mailAlertsSending(alert, transporter, senderEmail, dashboard, configuredByEmail);
+    // Returned, not fire-and-forget, so the caller's try/catch can report a failure.
+    return MailingService.mailAlertsSending(alert, transporter, senderEmail, dashboard, configuredByEmail);
   }
 
-  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string, subject:string = '', imageBuffer?:Buffer, aiText:string = ''): Promise<void> {
+  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string, subject:string = '', imageBuffer?:Buffer, aiText:string = '', attachmentName?: string): Promise<void> {
 
     const text = `${message}\n-------------------------------------------- \n\n${link}`;
 
@@ -547,7 +578,7 @@ export class MailingService {
       `</div>`;
 
     const attachments: any[] = [{
-      filename: filename,
+      filename: attachmentName || filename,
       path: `${filepath}/${filename}`,
       contentType: 'application/pdf'
     }];
