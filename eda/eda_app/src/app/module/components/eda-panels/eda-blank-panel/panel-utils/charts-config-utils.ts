@@ -58,6 +58,8 @@ export const CUSTOM_CHART_CONFIG_FIELDS: CustomChartConfigField[] = [
   { name: 'chartAnimation', default: true, fallbackIfMissing: true },
   { name: 'useIcons', default: false },
   { name: 'assignedIcons', default: [] },
+  { name: 'categoryLabelMaxChars', default: 0 },
+  { name: 'categoryLabelCharsEnabled', default: false },
 ];
 
 export function readCustomFields(cfg: any, fields: CustomChartConfigField[]): any {

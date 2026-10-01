@@ -683,6 +683,14 @@
         <source>Elige cuantas columnas quieres mostrar</source>
         <target>Wählen Sie, wie viele Spalten angezeigt werden sollen</target>
       </trans-unit>
+      <trans-unit id="categoryLabelCharsTooltip" datatype="html">
+        <source>Actívalo para fijar manualmente el número de caracteres de las etiquetas del eje de categorías (empieza en 10; 0 = sin texto). Desactivado, se usa el ajuste automático por defecto</source>
+        <target>Aktivieren, um die Anzahl der Zeichen der Kategorieachsen-Beschriftungen manuell festzulegen (beginnt bei 10; 0 = kein Text). Deaktiviert wird die automatische Standardanpassung verwendet</target>
+      </trans-unit>
+      <trans-unit id="categoryLabelCharsEnabled" datatype="html">
+        <source>Etiquetas ajustables</source>
+        <target>Anpassbare Beschriftungen</target>
+      </trans-unit>
       <trans-unit id="tooltipBlockedByComparative" datatype="html">
         <source>Bloqueado porque comparativa está activa</source>
         <target>Gesperrt, weil der Vergleich aktiv ist</target>
