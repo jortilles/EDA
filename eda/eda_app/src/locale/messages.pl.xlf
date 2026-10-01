@@ -3901,6 +3901,14 @@ Co widzę?
     <target>Ten Panel nie jest dostępny ze względu na brak uprawnień</target>
   </trans-unit>
 
+  <trans-unit id="tooManyValuesForCrosstable">
+    <source>Demasiados valores en el eje horizontal. Cambia la configuración de la tabla para que se pueda representar correctamente.</source>
+    <target>Za dużo wartości na osi poziomej. Zmień konfigurację tabeli, aby mogła zostać poprawnie wyświetlona.</target>
+  </trans-unit>
+  <trans-unit id="tooManyValuesForChart">
+    <source>Demasiados valores para un gráfico. Se muestran los datos en una tabla.</source>
+    <target>Za dużo wartości dla wykresu. Dane są wyświetlane w tabeli.</target>
+  </trans-unit>
   <trans-unit id="noFilterAllowed">
     <source>Este panel no está disponible por falta de permisos en un filtro</source>
     <target>Ten panel jest niedostępny ze względu na brak uprawnień do filtra</target>
@@ -4401,6 +4409,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="sortReports">
         <source>ORDENAR INFORMES:</source>
         <target>RAPORTY ZAMÓWIEŃ:</target>
+      </trans-unit>
+      <trans-unit id="visibilityReports" datatype="html">
+        <source>VISIBILIDAD:</source>
+        <target>WIDOCZNOŚĆ:</target>
       </trans-unit>
 
       <trans-unit id="createdAt">

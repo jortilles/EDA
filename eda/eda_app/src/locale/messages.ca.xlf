@@ -4497,6 +4497,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Este panel no está disponible por falta de permisos</source>
         <target>Aquest panell no està disponible per manca de permisos</target>
       </trans-unit>
+      <trans-unit id="tooManyValuesForCrosstable">
+        <source>Demasiados valores en el eje horizontal. Cambia la configuración de la tabla para que se pueda representar correctamente.</source>
+        <target>Massa valors a l'eix horitzontal. Canvia la configuració de la taula perquè es pugui representar correctament.</target>
+      </trans-unit>
+      <trans-unit id="tooManyValuesForChart">
+        <source>Demasiados valores para un gráfico. Se muestran los datos en una tabla.</source>
+        <target>Massa valors per a un gràfic. Les dades es mostren en una taula.</target>
+      </trans-unit>
       <trans-unit id="noFilterAllowed">
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>Aquest panell no està disponible per manca de permisos en un filtre</target>
@@ -4974,6 +4982,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="sortReports">
         <source>ORDENAR INFORMES:</source>
         <target>ORDENAR INFORMES:</target>
+      </trans-unit>
+      <trans-unit id="visibilityReports" datatype="html">
+        <source>VISIBILIDAD:</source>
+        <target>VISIBILITAT:</target>
       </trans-unit>
 
       <trans-unit id="createdAt">

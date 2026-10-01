@@ -613,6 +613,37 @@ function buildAxisHeaders(
 }
 
 // ---------------------------------------------------------------------------
+// countCrossTableColumns — cheap pre-check of the size buildCrossTable() would produce
+// ---------------------------------------------------------------------------
+
+/**
+ * Number of columns buildCrossTable() would generate, without building it: the X-axis
+ * columns plus one column per (distinct Y tuple, metric) pair. Lets the caller refuse a
+ * cross table too wide to render before paying for the full build.
+ */
+export function countCrossTableColumns(
+  sourceRows: any[],
+  rawAxis: AxisConfig,
+  navColumnSubstitution: Record<string, string>,
+): number {
+  const navSub = navColumnSubstitution || {};
+  const xNames = new Set(rawAxis.itemX.map(x => navSub[x.column_name] || x.column_name));
+  // Same itemY filtering as buildCrossTable()
+  const yDimNames = rawAxis.itemY
+    .map(y => navSub[y.column_name] || y.column_name)
+    .filter(name => !xNames.has(name));
+
+  let yTupleCount = 1; // no Y dimensions: a single "empty tuple" column group
+  if (yDimNames.length > 0) {
+    const seen = new Set<string>();
+    sourceRows.forEach(row => seen.add(yDimNames.map(name => row[name]).join(TUPLE_SEP)));
+    yTupleCount = seen.size;
+  }
+
+  return rawAxis.itemX.length + yTupleCount * rawAxis.itemZ.length;
+}
+
+// ---------------------------------------------------------------------------
 // buildCrossTable — public entry point, replaces PivotTable()'s two branches
 // ---------------------------------------------------------------------------
 
