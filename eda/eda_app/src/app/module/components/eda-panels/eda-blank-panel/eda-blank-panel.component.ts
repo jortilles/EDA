@@ -773,7 +773,7 @@ public tableNodeExpand(event: any): void {
         this.chartForm.patchValue({ chart: chartOption });
 
         const recoveredConfig = ChartsConfigUtils.recoverConfig(chart, panelContent.query.output.config);
-        this.changeChartType(chart, edaChart, recoveredConfig);
+        this.changeChartType(chart, edaChart, recoveredConfig, true);
 
         // Show panel and configure chart type
         this.display_v.saved_panel = true;
@@ -868,7 +868,7 @@ public tableNodeExpand(event: any): void {
             (config.getConfig() as any)['showUniqueColors'] = output.config.showUniqueColors;
             (config.getConfig() as any)['uniqueBarColors'] = output.config.uniqueBarColors ?? [];
         }
-        this.changeChartType(content.chart, content.edaChart, config);
+        this.changeChartType(content.chart, content.edaChart, config, true);
         this.chartForm.patchValue({ chart: this.chartUtils.chartTypes.find(o => o.subValue === content.edaChart) });
     }
 
@@ -963,15 +963,16 @@ public tableNodeExpand(event: any): void {
 
 
     /**
-     * Changes chart type 
+     * Changes chart type
      * @param type chart type
      * @param content panel content
+     * @param allowTooManyData render a saved chart even with too many rows: PanelChartComponent shows it as a table
      */
-    public async changeChartType(type: string, subType: string, config?: ChartConfig) {
+    public async changeChartType(type: string, subType: string, config?: ChartConfig, allowTooManyData: boolean = false) {
         const allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
 
         // Not allowed for the current data shape: warn and leave the active chart untouched.
-        if (_.isEqual(this.display_v.chart, 'no_data') || !allow || allow.ngIf || allow.tooManyData) {
+        if (_.isEqual(this.display_v.chart, 'no_data') || !allow || allow.ngIf || (allow.tooManyData && !allowTooManyData)) {
             if (allow) {
                 this.alertService.addWarning(allow.tooManyData ? this.getTooManyDataDescription() : this.getOptionDescription(subType));
             }

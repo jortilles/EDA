@@ -1,4 +1,4 @@
-<div class="flex flex-row h-screen overflow-hidden">
+<div class="flex flex-row h-screen overflow-hidden" [class.mobile-layout]="isMobileLayout()">
 
 <!-- Main content -->
 <div class="flex-1 min-w-0 flex flex-col overflow-hidden">
@@ -12,72 +12,9 @@
         <h1 class="text-2xl font-semibold" i18n="@@sidebarMyDashboards">Mis informes</h1>
       </div>
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
-        <div class="flex relative w-full sm:w-[300px]">
-          <eda-icon name="magnifying-glass"
-            class="absolute left-3 top-1/2 h-4 w-4 -translate-y-[65%] text-muted-foreground" />
-          <input type="text" [(ngModel)]="searchQuery" (keyup)="filterByTitle($event)"
-            class="w-full rounded-md border border-input bg-background py-2 !pl-9 !pr-9 text-sm"
-            i18n-placeholder="@@searcherInput" placeholder="Buscador">
-          <eda-icon name="plus" size="sm" (click)="toggleAdvancedFilter($event)"
-            class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer filter-toggle-icon"
-            [class.text-muted-foreground]="!showAdvancedFilter()"
-            [class.filter-toggle-icon--active]="showAdvancedFilter()" />
-
-          @if(showAdvancedFilter()) {
-            <div class="advanced-filter-panel absolute top-full right-0 z-50 mt-2 w-full rounded-lg border bg-white shadow-lg"
-              (click)="$event.stopPropagation()">
-              <!-- Header -->
-              <div class="flex items-center justify-between px-4 py-3 border-b">
-                <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
-                  i18n="@@advancedFilterTitle">Filtro avanzado</span>
-                <button class="filter-clear-btn"
-                  (click)="clearAdvancedFilters()" i18n="@@clearFiltersBtn">Limpiar</button>
-              </div>
-              <div class="p-4 space-y-3">
-                <!-- Author -->
-                <div class="space-y-1">
-                  <label class="text-xs font-medium text-muted-foreground" i18n="@@authorFilterLabel">Propietario</label>
-                  <input type="text" [(ngModel)]="advancedFilters.author" (ngModelChange)="applyAdvancedFilters()"
-                    class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
-                    i18n-placeholder="@@authorFilterPlaceholder" placeholder="Autor...">
-                </div>
-                <!-- Datasource name -->
-                <div class="space-y-1">
-                  <label class="text-xs font-medium text-muted-foreground" i18n="@@datasourceFilterLabel">Datasource</label>
-                  <input type="text" [(ngModel)]="advancedFilters.datasource" (ngModelChange)="applyAdvancedFilters()"
-                    class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
-                    i18n-placeholder="@@datasourceFilterPlaceholder" placeholder="Nombre del datasource...">
-                </div>
-                
-                <!-- Created at -->
-                <div class="space-y-1">
-                  <label class="text-xs font-medium text-muted-foreground" i18n="@@createdFilterLabel">Creado en</label>
-                  <eda-date-picker class="block w-full" [inject]="createdPickerConfig"  (onDatesChanges)="onCreatedDatesChange($event)" />
-                </div>
-                <!-- Modified at -->
-                <div class="space-y-1">
-                  <label class="text-xs font-medium text-muted-foreground" i18n="@@modifiedFilterLabel">Modificado en</label>
-                  <eda-date-picker class="block w-full" [inject]="modifiedPickerConfig"  (onDatesChanges)="onModifiedDatesChange($event)" />
-                </div>
-                <!-- Tags[] -->
-                <div class="space-y-1">
-                  <label class="text-xs font-medium text-muted-foreground" i18n="@@tagsFilterLabel">Tags</label>
-                  <p-multiSelect
-                    [options]="tags | slice:0:-2"
-                    [(ngModel)]="advancedTags"
-                    (ngModelChange)="applyAdvancedFilters()"
-                    optionLabel="label"
-                    optionValue="value"
-                    appendTo="body"
-                    [style]="{width: '100%'}"
-                    i18n-placeholder="@@tagsFilterPlaceholder"
-                    placeholder="Selecciona tags...">
-                  </p-multiSelect>
-                </div>
-              </div>
-            </div>
-          }
-        </div>
+        @if (!isMobileLayout()) {
+          <ng-container *ngTemplateOutlet="searchBox"></ng-container>
+        }
         @if(!isObserver){
           <button
             class="btn-corporate-gradient text-white font-bold px-4 py-2 rounded flex items-center"
@@ -89,15 +26,21 @@
     </div>
 
     <!-- Filters -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style="overflow-wrap:anywhere"> <!-- Filters -->
+    <div class="filters-row flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style="overflow-wrap:anywhere"> <!-- Filters -->
       <div class="flex-1 min-w-0 w-full">
         <div class="text-sm text-muted-foreground"> <span i18n="@@filterReports">FILTRAR INFORMES:</span> </div>
         <!-- Tags container -->
-        <div class="flex flex-wrap items-center gap-2 overflow-hidden"> <span
-            class="flex items-center px-4 py-2 text-sm text-gray-700">Tags:</span> @for (option of filteredTags(); track
+        <div class="tags-bar flex flex-wrap items-center gap-2 overflow-hidden" [class.tags-bar--mobile]="isMobileLayout()"> <span
+            class="flex items-center shrink-0 whitespace-nowrap py-2 text-sm text-gray-700"
+            [class.px-4]="!isMobileLayout()" [class.pr-2]="isMobileLayout()">Tags:</span> @for (option of filteredTags(); track
           option.value) { <div [ngClass]="isTagSelected(option.value) ? 'tag-selected' : 'tag'"
             (click)="handleTagSelect(option)"> {{ option.label }} </div> } </div>
-      </div> <!-- Sort reports -->
+      </div>
+      <!-- Search (mobile layout: placed just above sorting) -->
+      @if (isMobileLayout()) {
+        <ng-container *ngTemplateOutlet="searchBox"></ng-container>
+      }
+      <!-- Sort reports -->
       <div class="w-full sm:w-auto flex-shrink-0">
         <div class="text-base text-muted-foreground" i18n="@@sortReports">ORDENAR INFORMES:</div>
         <p-dropdown class="sort-dropdown"
@@ -106,6 +49,17 @@
           appendTo="body" [style]="{'width': '180px'}">
         </p-dropdown>
       </div>
+      <!-- Visibility selector (mobile layout only: one column at a time) -->
+      @if (isMobileLayout()) {
+        <div class="w-full">
+          <div class="text-base text-muted-foreground" i18n="@@visibilityReports">VISIBILIDAD:</div>
+          <p-dropdown class="sort-dropdown"
+            [ngModel]="mobileColumn()" (ngModelChange)="onMobileColumnChange($event)"
+            [options]="mobileColumnOptions" optionLabel="label" optionValue="value"
+            appendTo="body" [style]="{'width': '100%'}">
+          </p-dropdown>
+        </div>
+      }
     </div>
 
   </div><!-- end header+filters -->
@@ -118,19 +72,27 @@
           <eda-getting-started></eda-getting-started>
         </div>
       }
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="reports-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Public Reports -->
-        <ng-container
-          *ngTemplateOutlet="reportsTemplate; context: { reports: sharedReports, title: publicTitle, colKey: 'shared' }"></ng-container>
+        @if (isColumnVisible('shared')) {
+          <ng-container
+            *ngTemplateOutlet="reportsTemplate; context: { reports: sharedReports, title: publicTitle, colKey: 'shared' }"></ng-container>
+        }
         <!-- Commons -->
-        <ng-container
-          *ngTemplateOutlet="reportsTemplate; context: { reports: publicReports, title: commonTitle, colKey: 'public' }"></ng-container>
+        @if (isColumnVisible('public')) {
+          <ng-container
+            *ngTemplateOutlet="reportsTemplate; context: { reports: publicReports, title: commonTitle, colKey: 'public' }"></ng-container>
+        }
         <!-- Groups -->
-        <ng-container
-          *ngTemplateOutlet="reportsTemplate; context: { reports: roleReports, title: groupTitle, colKey: 'group' }"></ng-container>
+        @if (isColumnVisible('group')) {
+          <ng-container
+            *ngTemplateOutlet="reportsTemplate; context: { reports: roleReports, title: groupTitle, colKey: 'group' }"></ng-container>
+        }
         <!-- Private -->
-        <ng-container
-          *ngTemplateOutlet="reportsTemplate; context: { reports: privateReports, title: privateTitle, colKey: 'private' }"></ng-container>
+        @if (isColumnVisible('private')) {
+          <ng-container
+            *ngTemplateOutlet="reportsTemplate; context: { reports: privateReports, title: privateTitle, colKey: 'private' }"></ng-container>
+        }
       </div>
     </div>
   </div><!-- end dashboards -->
@@ -141,6 +103,76 @@
 
 </div><!-- end flex-row wrapper -->
 
+
+<!-- Template: report search box with advanced filter panel -->
+<ng-template #searchBox>
+  <div class="search-box flex relative w-full sm:w-[300px]">
+    <eda-icon name="magnifying-glass"
+      class="absolute left-3 top-1/2 h-4 w-4 -translate-y-[65%] text-muted-foreground" />
+    <input type="text" [(ngModel)]="searchQuery" (keyup)="filterByTitle($event)"
+      class="w-full rounded-md border border-input bg-background py-2 !pl-9 !pr-9 text-sm"
+      i18n-placeholder="@@searcherInput" placeholder="Buscador">
+    <eda-icon name="plus" size="sm" (click)="toggleAdvancedFilter($event)"
+      class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer filter-toggle-icon"
+      [class.text-muted-foreground]="!showAdvancedFilter()"
+      [class.filter-toggle-icon--active]="showAdvancedFilter()" />
+
+    @if(showAdvancedFilter()) {
+      <div class="advanced-filter-panel absolute top-full right-0 z-50 mt-2 w-full rounded-lg border bg-white shadow-lg"
+        (click)="$event.stopPropagation()">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-4 py-3 border-b">
+          <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+            i18n="@@advancedFilterTitle">Filtro avanzado</span>
+          <button class="filter-clear-btn"
+            (click)="clearAdvancedFilters()" i18n="@@clearFiltersBtn">Limpiar</button>
+        </div>
+        <div class="p-4 space-y-3">
+          <!-- Author -->
+          <div class="space-y-1">
+            <label class="text-xs font-medium text-muted-foreground" i18n="@@authorFilterLabel">Propietario</label>
+            <input type="text" [(ngModel)]="advancedFilters.author" (ngModelChange)="applyAdvancedFilters()"
+              class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+              i18n-placeholder="@@authorFilterPlaceholder" placeholder="Autor...">
+          </div>
+          <!-- Datasource name -->
+          <div class="space-y-1">
+            <label class="text-xs font-medium text-muted-foreground" i18n="@@datasourceFilterLabel">Datasource</label>
+            <input type="text" [(ngModel)]="advancedFilters.datasource" (ngModelChange)="applyAdvancedFilters()"
+              class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+              i18n-placeholder="@@datasourceFilterPlaceholder" placeholder="Nombre del datasource...">
+          </div>
+          
+          <!-- Created at -->
+          <div class="space-y-1">
+            <label class="text-xs font-medium text-muted-foreground" i18n="@@createdFilterLabel">Creado en</label>
+            <eda-date-picker class="block w-full" [inject]="createdPickerConfig"  (onDatesChanges)="onCreatedDatesChange($event)" />
+          </div>
+          <!-- Modified at -->
+          <div class="space-y-1">
+            <label class="text-xs font-medium text-muted-foreground" i18n="@@modifiedFilterLabel">Modificado en</label>
+            <eda-date-picker class="block w-full" [inject]="modifiedPickerConfig"  (onDatesChanges)="onModifiedDatesChange($event)" />
+          </div>
+          <!-- Tags[] -->
+          <div class="space-y-1">
+            <label class="text-xs font-medium text-muted-foreground" i18n="@@tagsFilterLabel">Tags</label>
+            <p-multiSelect
+              [options]="tags | slice:0:-2"
+              [(ngModel)]="advancedTags"
+              (ngModelChange)="applyAdvancedFilters()"
+              optionLabel="label"
+              optionValue="value"
+              appendTo="body"
+              [style]="{width: '100%'}"
+              i18n-placeholder="@@tagsFilterPlaceholder"
+              placeholder="Selecciona tags...">
+            </p-multiSelect>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</ng-template>
 
 <!-- Template: single dashboard card -->
 <ng-template #reportCard let-report>
@@ -251,7 +283,10 @@
 <!-- Template: column of reports with folder/flat view -->
 <ng-template #reportsTemplate let-reports="reports" let-title="title" let-colKey="colKey">
   <div class="space-y-4">
-    <h2 class="text-lg font-semibold">{{ title }}</h2>
+    <!-- On mobile layout the selector already shows the column title -->
+    @if (!isMobileLayout()) {
+      <h2 class="text-lg font-semibold">{{ title }}</h2>
+    }
 
     @if (expandedFolder(); as exp) {
       @if (exp.colKey !== colKey) {
