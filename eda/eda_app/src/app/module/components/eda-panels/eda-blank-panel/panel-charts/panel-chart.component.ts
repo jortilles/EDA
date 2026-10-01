@@ -1483,6 +1483,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.useGradient = cfg.useGradient ?? true;
         inject.chartAnimation = cfg.chartAnimation ?? true;
+        inject.categoryLabelMaxChars = cfg.categoryLabelMaxChars ?? 0;
+        inject.categoryLabelCharsEnabled = cfg.categoryLabelCharsEnabled ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaRadarComponent);
@@ -1621,6 +1623,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartAnimation = cfg.chartAnimation ?? true;
         inject.assignedIcons = cfg.assignedIcons ?? [];
         inject.useIcons = cfg.useIcons ?? false;
+        inject.categoryLabelMaxChars = cfg.categoryLabelMaxChars ?? 0;
+        inject.categoryLabelCharsEnabled = cfg.categoryLabelCharsEnabled ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaBarD3Component);
@@ -1738,6 +1742,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showLabels = cfg.showLabels ?? false;
         inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
         inject.chartAnimation = cfg.chartAnimation ?? true;
+        inject.categoryLabelMaxChars = cfg.categoryLabelMaxChars ?? 0;
+        inject.categoryLabelCharsEnabled = cfg.categoryLabelCharsEnabled ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaLineComponent);
@@ -1838,6 +1844,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showPointLines = cfg.showPointLines ?? false;
         inject.useGradient = cfg.useGradient ?? true;
         inject.chartAnimation = cfg.chartAnimation ?? true;
+        inject.categoryLabelMaxChars = cfg.categoryLabelMaxChars ?? 0;
+        inject.categoryLabelCharsEnabled = cfg.categoryLabelCharsEnabled ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaAreaComponent);
@@ -1900,6 +1908,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showPointLines = cfg.showPointLines ?? false;
         inject.secondAxis = cfg.secondAxis ?? false;
         inject.chartAnimation = cfg.chartAnimation ?? true;
+        inject.categoryLabelMaxChars = cfg.categoryLabelMaxChars ?? 0;
+        inject.categoryLabelCharsEnabled = cfg.categoryLabelCharsEnabled ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaBarlineComponent);

@@ -3706,6 +3706,16 @@ What am I seeing?
 <target>Choose how many columns you want to display</target>
 </trans-unit>
 
+<trans-unit id="categoryLabelCharsTooltip">
+<source>Actívalo para fijar manualmente el número de caracteres de las etiquetas del eje de categorías (empieza en 10; 0 = sin texto). Desactivado, se usa el ajuste automático por defecto</source>
+<target>Turn on to manually set the number of characters for the category axis labels (starts at 10; 0 = no text). When off, the automatic default sizing is used</target>
+</trans-unit>
+
+<trans-unit id="categoryLabelCharsEnabled">
+<source>Etiquetas ajustables</source>
+<target>Adjustable labels</target>
+</trans-unit>
+
 <trans-unit id="histogramColumDescription">
 <source>Elige cuántas columnas mostrar en el histograma</source>
 <target>Choose how many columns to display in the histogram</target>

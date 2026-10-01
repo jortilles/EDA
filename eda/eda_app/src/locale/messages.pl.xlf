@@ -3628,6 +3628,16 @@ Co widzę?
     <target>Wybierz ile kolumn chcesz wyświetlić</target>
   </trans-unit>
 
+  <trans-unit id="categoryLabelCharsTooltip">
+    <source>Actívalo para fijar manualmente el número de caracteres de las etiquetas del eje de categorías (empieza en 10; 0 = sin texto). Desactivado, se usa el ajuste automático por defecto</source>
+    <target>Włącz, aby ręcznie ustawić liczbę znaków etykiet osi kategorii (zaczyna się od 10; 0 = brak tekstu). Po wyłączeniu używane jest domyślne automatyczne dopasowanie</target>
+  </trans-unit>
+
+  <trans-unit id="categoryLabelCharsEnabled">
+    <source>Etiquetas ajustables</source>
+    <target>Regulowane etykiety</target>
+  </trans-unit>
+
   <trans-unit id="histogramColumDescription">
     <source>Elige cuántas columnas mostrar en el histograma</source>
     <target>Wybierz ile kolumn wyświetlić na histogramie</target>

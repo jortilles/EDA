@@ -3965,6 +3965,16 @@ Que suis-je en train de voir ?
     <target>Choisissez le nombre de colonnes que vous souhaitez afficher</target>
   </trans-unit>
 
+  <trans-unit id="categoryLabelCharsTooltip">
+    <source>Actívalo para fijar manualmente el número de caracteres de las etiquetas del eje de categorías (empieza en 10; 0 = sin texto). Desactivado, se usa el ajuste automático por defecto</source>
+    <target>Activez pour définir manuellement le nombre de caractères des étiquettes de l'axe des catégories (commence à 10 ; 0 = aucun texte). Désactivé, l'ajustement automatique par défaut est utilisé</target>
+  </trans-unit>
+
+  <trans-unit id="categoryLabelCharsEnabled">
+    <source>Etiquetas ajustables</source>
+    <target>Étiquettes ajustables</target>
+  </trans-unit>
+
   <trans-unit id="histogramColumDescription">
     <source>Elige cuántas columnas mostrar en el histograma</source>
     <target>Choisissez le nombre de colonnes à afficher dans l'histogramme</target>
