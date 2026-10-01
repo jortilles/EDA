@@ -87,6 +87,15 @@
 }
 
 
+/* Long single words (emails, URLs) wrap instead of overflowing into the next column */
+/* `anywhere` (not break-word) so flex children inside the cell can also shrink */
+.eda-table ::ng-deep .p-datatable th,
+.eda-table ::ng-deep .p-datatable th *,
+.eda-table ::ng-deep .p-datatable td,
+.eda-table ::ng-deep .p-datatable td * {
+  overflow-wrap: anywhere;
+}
+
 th{
   border-radius: 6px;
   background-color: #F1F0F0;
