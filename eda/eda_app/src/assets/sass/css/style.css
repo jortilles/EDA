@@ -2082,3 +2082,36 @@ body .swal2-textarea:focus {
   box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.2) !important;
   outline: none !important;
 }
+
+/* D3 charts tooltip (treemap, bubble chart, parallel sets, scatter).
+   The div is appended by D3 outside the components, so it needs a global style.
+   Moved from assets/sass/prime-styles/custom.css, which is no longer loaded in 3.x. */
+body .d3tooltip {
+  position: absolute;
+  text-align: center;
+  cursor: pointer;
+  padding: 8px;
+  font: 12px ;
+  color: #fbfbfb;
+  background: #010913ea;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+body .d3tooltip > h6{
+  color: white;
+  font-weight: bold;
+}
+
+.d3tooltip:after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -10px;
+  border-width: 7px;
+  border-style: solid;
+  border-color: #041429cf transparent transparent transparent;
+}
