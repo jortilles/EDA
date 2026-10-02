@@ -56,7 +56,7 @@
                     @if(col.type && col.visible){
                         <th [pSortableColumn]="col.field" [pSortableColumnDisabled]="suppressSortClick" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
                             [width]="col.width" [attr.rowspan]="col.rowspan" [attr.data-field]="col.field" style="position: relative;">
-                            <div class="flex items-center "  [ngStyle]="getTextStyle()">
+                            <div class="flex items-center" [class.justify-end]="col.type === 'EdaColumnNumber' || col.type === 'EdaColumnPercentage'" [ngStyle]="getTextStyle()">
                                 {{col.header}}
                                 @if(col.sortable){
                                     <p-sortIcon [field]="col.field"  [ngStyle]="getTextStyle()"></p-sortIcon>
