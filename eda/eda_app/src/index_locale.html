@@ -11,6 +11,10 @@
                 locale = 'ca';
         }else if(userLang.indexOf('pl') >=0){
                 locale = 'pl';
+        }else if(userLang.indexOf('fr') >=0){
+                locale = 'fr';
+        }else if(userLang.indexOf('de') >=0){
+                locale = 'de';
         }
         var base = window.location.href.replace('/index.html','').split('#')[0].replace(/\/$/, '');
         window.location.href = base + '/' + locale + '/' + window.location.hash;

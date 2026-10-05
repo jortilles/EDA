@@ -1,3 +1,12 @@
+/* Custom elements default to display:inline, which ignores height/width entirely - without this,
+   .eda-bar-wrapper's height:100% below has no definite containing block to resolve against, so
+   anything measuring the panel's live size (e.g. eda-chart-legend on panel resize) never updates. */
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
 .eda-bar-wrapper {
   height: 100%;
   display: flex;

@@ -2,6 +2,16 @@
   visibility: hidden;
 }
 
+/* Custom elements default to display:inline, which ignores height/width entirely - without this,
+   .eda-bubblechart-wrapper's height:100% below has no definite containing block to resolve
+   against, so the wrapper (and anything measuring it, e.g. eda-chart-legend's resize handling)
+   never reflects the panel's real live size, only whatever it happened to be at creation time. */
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
 .eda-bubblechart-wrapper {
   height: 100%;
   display: flex;

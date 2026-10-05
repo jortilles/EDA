@@ -92,8 +92,8 @@ export class AddCsvComponent implements OnInit {
     ];
 
     this.decSeparators = [
-      { label: ',', value: ',' },
-      { label: '.', value: "." }
+      { label: $localize`:@@decSeparatorComma:, (coma)`, value: ',' },
+      { label: $localize`:@@decSeparatorDot:. (punto)`, value: "." }
     ];
   }
 

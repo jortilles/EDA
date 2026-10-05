@@ -9,7 +9,7 @@ import { TreeMap } from './../../../eda-treemap/eda-treeMap';
 import { EdaD3Component } from './../../../eda-d3-sankey/eda-d3-sankey.component';
 import { TableConfig } from './chart-configuration-models/table-config';
 import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
-    OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID, Type } from '@angular/core';
+    OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID, Type, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
 import { EdaTableComponent } from '../../../eda-tables/eda-table/eda-table.component';
 import { EdaCrosstableComponent } from '../../../eda-tables/eda-crosstable/eda-crosstable.component';
@@ -76,13 +76,24 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     standalone: true,
     selector: 'panel-chart',
     templateUrl: './panel-chart.component.html',
-    imports: [FormsModule, CommonModule, ProgressSpinnerModule]
+    imports: [FormsModule, CommonModule, ProgressSpinnerModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    // Custom elements default to display:inline, which ignores the parent's h-full/w-full
+    // (height/width 100%) classes entirely - without this, the dynamically-created chart inside
+    // (treemap/bubblechart/sunburst/etc.) never gets a definite, live-resizing containing block,
+    // so anything measuring its own size (e.g. eda-chart-legend on panel resize) only reflects
+    // whatever the size happened to be at creation time.
+    styles: `:host { display: block; height: 100%; width: 100%; }`
 })
 
 export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     ngOnDestroy(): void {
         this.destroyComponent();
     }
+    /** Above this number of rows, bar/line family charts are rendered as a table */
+    private static readonly MAX_CHART_ROWS = 2000;
+    /** Above this number of generated columns, cross tables are rendered as a plain table */
+    private static readonly MAX_CROSSTABLE_COLUMNS = 50;
     @Input() props: PanelChart;
     @Output() configUpdated: EventEmitter<any> = new EventEmitter<any>(null);
     @Output() onChartClick: EventEmitter<any> = new EventEmitter<any>();
@@ -97,6 +108,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public NO_DATA_ALLOWED: boolean;
     public NO_FILTER_ALLOWED: boolean;
     public groupedSubtotalsLoading: boolean = false;
+    /** The chart has been replaced by a plain table: too many rows (MAX_CHART_ROWS) or cross table columns (MAX_CROSSTABLE_COLUMNS) */
+    public TOO_MANY_DATA: boolean = false;
+    /** TOO_MANY_DATA was caused by a cross table with too many generated columns (shows its own message) */
+    public TOO_MANY_CROSSTABLE_COLUMNS: boolean = false;
 
     /**Styles */
     public fontColor: string;
@@ -115,22 +130,32 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         private chartUtils: ChartUtilsService,
         @Self() private ownRef: ElementRef,
         public styleProviderService: StyleProviderService,
+        private cdr: ChangeDetectorRef,
         @Inject(LOCALE_ID) private locale: string) {
-        
+
         this.fontColor = this.styleProviderService.panelFontColor.source['value'];
         this.paletaActual = this.styleProviderService.ActualChartPalette !== undefined ?
             this.styleProviderService.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
 
-        
+
         this.styleProviderService.panelFontFamily.subscribe(family => {
             this.fontFamily = family;
             if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
+            this.cdr.markForCheck();
         });
 
         this.styleProviderService.panelFontSize.subscribe(size => {
             this.fontSize = size;
             if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line','area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
+            this.cdr.markForCheck();
         });
+    }
+
+    /** Marca este componente para revisión bajo OnPush. Necesario porque otros componentes
+     *  (EdaBlankPanelComponent, query-utils.ts) mutan directamente propiedades de este panel
+     *  (p.ej. NO_DATA) desde fuera de cualquier evento propio de su plantilla. */
+    public markDirty(): void {
+        this.cdr.markForCheck();
     }
 
 
@@ -151,12 +176,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         if (this.props.data && this.props.data.values.length !== 0
             && !this.props.data.values.reduce((a, b) => a && b.every(element => element === null), true)) {
-                requestAnimationFrame(() => {                    
+                requestAnimationFrame(() => {
                 setTimeout(_ => {
                     this.NO_DATA = false;
+                    this.cdr.markForCheck();
                 });
-    
+
                 this.changeChartType();
+                this.cdr.markForCheck();
               });
         }
         /**
@@ -164,6 +191,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
          */
         else {
             this.destroyComponent();
+            this.TOO_MANY_DATA = false;
+            this.TOO_MANY_CROSSTABLE_COLUMNS = false;
             setTimeout(_ => {
                 this.NO_DATA = true;
                 if( this.props.data?.labels[0]== "noDataAllowed") {
@@ -175,6 +204,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     this.NO_DATA_ALLOWED = false;
                     this.NO_FILTER_ALLOWED = true;
                 }
+                this.cdr.markForCheck();
             })
         }
     }
@@ -189,6 +219,16 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     public changeChartType() {
         const type = this.props.chartType;
+
+        // The resultset may exceed the limit at render time (e.g. filters changed after the chart was configured):
+        // show it as a table instead of drawing a chart the browser can't handle. Only the view changes, the saved config stays.
+        this.TOO_MANY_CROSSTABLE_COLUMNS = false;
+        this.TOO_MANY_DATA = this.hasTooManyRowsForChart(type);
+        if (this.TOO_MANY_DATA) {
+            this.createEdatableComponent('table', null);
+            this.cdr.markForCheck();
+            return;
+        }
 
         if (['table', 'crosstable'].includes(type)) {
             this.renderEdaTable(type);
@@ -269,6 +309,22 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (type === 'kpideviation') {
             this.renderEdaKpiDeviation();
         }
+        this.cdr.markForCheck();
+    }
+
+    /**
+     * Bar/line family charts whose resultset is too large to be drawn: over the per type limit
+     * (same rules used to disable the chart in the selector) or over MAX_CHART_ROWS.
+     * Histogram is excluded: it bins the data, so it supports any number of rows.
+     */
+    private hasTooManyRowsForChart(type: string): boolean {
+        const rowLimitedCharts = ['bar', 'line', 'radar', 'doughnut', 'polarArea'];
+        if (!rowLimitedCharts.includes(type) || this.props.edaChart === 'histogram') {
+            return false;
+        }
+        const rows = this.props.data?.values?.length || 0;
+        return rows > PanelChartComponent.MAX_CHART_ROWS
+            || this.chartUtils.getTooManyDataForCharts(rows).includes(type);
     }
 
     /**
@@ -316,28 +372,37 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
       * Creates a table component
       * @param inject chart configuration
       */
-    private createEdatableComponent(type: string) {
+    private createEdatableComponent(type: string, config: any = this.props.config.getConfig()) {
         this.entry.clear();
 
-        const config = this.props.config.getConfig();
-
-        if (type === 'crosstable') {
-            this.componentRef = this.entry.createComponent(EdaCrosstableComponent);
-        } else {
-            this.componentRef = this.entry.createComponent(EdaTableComponent);
-        }
         const rowLen = this.props.data.values?.[0]?.length || 0;
         const queryLen = this.props.query?.length || 0;
         const hasPredictionData = rowLen > queryLen && config?.['showPredictionLines'] === true;
         const { tableLabels, tableValues } = hasPredictionData
             ? this._prepareTablePredictionData(this.props.data.labels, this.props.data.values, queryLen)
             : { tableLabels: this.props.data.labels, tableValues: this.props.data.values };
-        this.componentRef.instance.inject = this.initializeTable(type, config, tableLabels);
+        const inject = this.initializeTable(type, config, tableLabels);
         // Must be set before inject.value triggers PivotTable(), which reads navColumnSubstitution
         if (this.props.childNavConfig) {
-            this.componentRef.instance.inject.navColumnSubstitution = this.props.childNavConfig.navColumnSubstitution || {};
+            inject.navColumnSubstitution = this.props.childNavConfig.navColumnSubstitution || {};
         }
-        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(tableLabels, tableValues);
+        const tableRows = this.chartUtils.transformDataQueryForTable(tableLabels, tableValues);
+
+        // A cross table with too many generated columns can't be rendered: show the plain table instead
+        if (inject instanceof EdaCrosstableModel && inject.countColumns(tableRows) > PanelChartComponent.MAX_CROSSTABLE_COLUMNS) {
+            this.TOO_MANY_DATA = true;
+            this.TOO_MANY_CROSSTABLE_COLUMNS = true;
+            this.createEdatableComponent('table', null);
+            return;
+        }
+
+        if (type === 'crosstable') {
+            this.componentRef = this.entry.createComponent(EdaCrosstableComponent);
+        } else {
+            this.componentRef = this.entry.createComponent(EdaTableComponent);
+        }
+        this.componentRef.instance.inject = inject;
+        this.componentRef.instance.inject.value = tableRows;
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
 
         if (config) {
@@ -347,15 +412,21 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         }
 
-        this.componentRef.instance.inject.onNotify.subscribe(data => {
-            (<TableConfig>config).visibleRows = data;
-        });
-        this.componentRef.instance.inject.onSortPivotEvent.subscribe(data => {
-            (<TableConfig>config).sortedSerie = data;
-        });
-        this.componentRef.instance.inject.onSortColEvent.subscribe(data => {
-            (<TableConfig>config).sortedColumn = data;
-        });
+        // Without config (table shown in place of a chart) the table state is not persisted
+        if (config) {
+            this.componentRef.instance.inject.onNotify.subscribe(data => {
+                (<TableConfig>config).visibleRows = data;
+            });
+            this.componentRef.instance.inject.onSortPivotEvent.subscribe(data => {
+                (<TableConfig>config).sortedSerie = data;
+            });
+            this.componentRef.instance.inject.onSortColEvent.subscribe(data => {
+                (<TableConfig>config).sortedColumn = data;
+            });
+            this.componentRef.instance.inject.onColumnResizeEvent.subscribe(data => {
+                (<TableConfig>config).columnWidths = data;
+            });
+        }
         this.currentConfig = this.componentRef.instance.inject;
         this.componentRef.instance.inject.linkedDashboardProps = this.props.linkedDashboardProps;
 
@@ -760,6 +831,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.chartType = this.props.chartType;
     chartConfig.value = kpiValue;
     chartConfig.header = kpiLabel;
+    chartConfig.decimals = decimals;
 
     const propsConfig: any = this.props.config;
     const alertLimits = propsConfig?.config?.alertLimits || [];
@@ -1393,6 +1465,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartAnimation = cfg.chartAnimation ?? true;
         inject.labelColorMode = cfg.labelColorMode ?? 'series';
         inject.labelCustomColor = cfg.labelCustomColor;
+        inject.assignedIcons = cfg.assignedIcons ?? [];
+        inject.useIcons = cfg.useIcons ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaDoughnut);
@@ -1472,6 +1546,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartAnimation = cfg.chartAnimation ?? true;
         inject.labelColorMode = cfg.labelColorMode ?? 'series';
         inject.labelCustomColor = cfg.labelCustomColor;
+        inject.assignedIcons = cfg.assignedIcons ?? [];
+        inject.useIcons = cfg.useIcons ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaPolarAreaComponent);
@@ -1533,6 +1609,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.useGradient = cfg.useGradient ?? true;
         inject.chartAnimation = cfg.chartAnimation ?? true;
+        inject.categoryLabelMaxChars = cfg.categoryLabelMaxChars ?? 0;
+        inject.categoryLabelCharsEnabled = cfg.categoryLabelCharsEnabled ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaRadarComponent);
@@ -1671,6 +1749,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.chartAnimation = cfg.chartAnimation ?? true;
         inject.assignedIcons = cfg.assignedIcons ?? [];
         inject.useIcons = cfg.useIcons ?? false;
+        inject.categoryLabelMaxChars = cfg.categoryLabelMaxChars ?? 0;
+        inject.categoryLabelCharsEnabled = cfg.categoryLabelCharsEnabled ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaBarD3Component);
@@ -1788,6 +1868,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showLabels = cfg.showLabels ?? false;
         inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
         inject.chartAnimation = cfg.chartAnimation ?? true;
+        inject.categoryLabelMaxChars = cfg.categoryLabelMaxChars ?? 0;
+        inject.categoryLabelCharsEnabled = cfg.categoryLabelCharsEnabled ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaLineComponent);
@@ -1888,6 +1970,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showPointLines = cfg.showPointLines ?? false;
         inject.useGradient = cfg.useGradient ?? true;
         inject.chartAnimation = cfg.chartAnimation ?? true;
+        inject.categoryLabelMaxChars = cfg.categoryLabelMaxChars ?? 0;
+        inject.categoryLabelCharsEnabled = cfg.categoryLabelCharsEnabled ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaAreaComponent);
@@ -1950,6 +2034,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.showPointLines = cfg.showPointLines ?? false;
         inject.secondAxis = cfg.secondAxis ?? false;
         inject.chartAnimation = cfg.chartAnimation ?? true;
+        inject.categoryLabelMaxChars = cfg.categoryLabelMaxChars ?? 0;
+        inject.categoryLabelCharsEnabled = cfg.categoryLabelCharsEnabled ?? false;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createD3Component(inject, EdaBarlineComponent);
@@ -2128,6 +2214,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     public updateComponent() {
+        // The chart has been replaced by a table (too many rows): there is no chart to recolor/re-render
+        if (this.TOO_MANY_DATA) {
+            return;
+        }
         if (this.componentRef && !['table', 'crosstable'].includes(this.props.chartType)) {
             try {
                 // Doughnut (D3)
@@ -2175,6 +2265,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 console.error('Error en updateComponent:', err);
             }
         }
+        this.cdr.markForCheck();
     }
 
     public updateKPIColors() {
@@ -2250,11 +2341,16 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         setTimeout(() => {
+            // The data may have changed in the meantime and the chart replaced by a table
+            if (this.TOO_MANY_DATA) {
+                return;
+            }
             if (this.componentRef) {
                 this.componentRef.destroy();
                 this.componentRef = null;
             }
             render();
+            this.cdr.markForCheck();
         });
     }
 
@@ -2405,7 +2501,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (type === 'table') {
-            return new EdaTableModel({ cols: tableColumns, ...configs });
+            // Untouched tables keep auto-sizing by content; only apply saved widths once the
+            // user has dragged a header border at least once (see EdaTableBase.resizeColumns()).
+            const columnWidths: Record<string, string> = configs?.columnWidths;
+            if (columnWidths) {
+                tableColumns.forEach((col: any) => { if (columnWidths[col.field]) col.width = columnWidths[col.field]; });
+            }
+            return new EdaTableModel({ cols: tableColumns, ...configs, autolayout: columnWidths ? false : true });
         } else if (type === 'crosstable') {
             return new EdaCrosstableModel({ cols: tableColumns, ...configs });
         }

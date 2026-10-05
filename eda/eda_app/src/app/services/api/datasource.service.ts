@@ -545,8 +545,13 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     editView(table) {
         let tmp_model = this._databaseModel.getValue();
-        let elemento = tmp_model.find(e => e.table_name === table.technical_name && e.query === table.query && e.table_type === 'view')
-        if(elemento) elemento.query = table.query;
+        // Match by table_name only: table.query is already the NEW query at this point,
+        // so matching on query as well would never find the (still old) stored entry.
+        let elemento = tmp_model.find(e => e.table_name === table.technical_name && e.table_type === 'view')
+        if(elemento) {
+            elemento.query = table.query;
+            elemento.columns = table.columns;
+        }
         this._databaseModel.next(tmp_model);
         this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
     }
@@ -747,7 +752,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this.delete(`${this.globalDSRoute}/duckdb-table/${datasourceId}/${tableName}`);
     }
 
-    addDuckDbTable(datasourceId: string, body: { fileName: string; csvContent: string; columnsConfig: any[] }): Observable<any> {
+    addDuckDbTable(datasourceId: string, body: { fileName: string; csvContent: string; columnsConfig: any[]; separator?: string }): Observable<any> {
         return this.post(`${this.globalDSRoute}/duckdb-add-table/${datasourceId}`, body);
     }
 

@@ -44,14 +44,14 @@
 
       <div class="">
         <label for="sqlExpression" class="font-medium" i18n="@@sqlExpColumn">SQL Expression</label>
-        <textarea
+        <eda-code-editor
           id="sqlExpression"
           formControlName="SQLexpression"
-          rows="5"
+          language="sql"
+          minHeight="110px"
           i18n-placeholder="@@enterSQLExpression"
           placeholder="'Enter your SQL query here'"
-          class="view-input w-full border rounded-md p-2 font-mono text-sm"
-        ></textarea>
+        ></eda-code-editor>
       </div>
 
       <div>

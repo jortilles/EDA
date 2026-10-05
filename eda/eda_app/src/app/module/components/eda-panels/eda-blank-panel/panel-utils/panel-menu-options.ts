@@ -214,10 +214,10 @@ export const PanelOptions = {
     if (!panelComponent.panel.content) {
         return panelComponent.alertService.addError($localize`:@@noContentToExport:No tienes contenido para exportar`);
     }
-    const { exportLabels, predLabel } = PanelOptions._buildPredictionLabels(panelComponent);
+    const { exportLabels, predLabels } = PanelOptions._buildPredictionLabels(panelComponent);
     const cols = panelComponent.chartUtils.transformDataQueryForTable(exportLabels, panelComponent.chartData);
     const headers = panelComponent.currentQuery.map(o => o.display_name.default);
-    if (predLabel) headers.push(predLabel);
+    headers.push(...predLabels);
 
     if (_.isEqual(fileType, 'excel')) {
       panelComponent.fileUtiles.exportToExcel(headers, cols, panelComponent.panel.title);
@@ -228,18 +228,27 @@ export const PanelOptions = {
 
     panelComponent.contextMenu.hideContextMenu();
   },
-  _buildPredictionLabels: (panelComponent: EdaBlankPanelComponent): { exportLabels: string[], predLabel: string | null } => {
+  _buildPredictionLabels: (panelComponent: EdaBlankPanelComponent): { exportLabels: string[], predLabels: string[] } => {
     const queryLen = panelComponent.currentQuery.length;
     const rowLen = panelComponent.chartData[0]?.length || 0;
     const prediction = panelComponent.panel?.content?.query?.query?.prediction;
     if (!prediction || prediction === 'None' || rowLen <= queryLen)
-        return { exportLabels: panelComponent.chartLabels, predLabel: null };
+        return { exportLabels: panelComponent.chartLabels, predLabels: [] };
     const numericCol = panelComponent.currentQuery.find((q: any) => q.column_type === 'numeric');
-    const predLabel = numericCol?.display_name?.default
+    const baseLabel = numericCol?.display_name?.default
         ? `${$localize`:@@Prediction:Predicción`} - ${numericCol.display_name.default}`
         : $localize`:@@Prediction:Predicción`;
-    const exportLabels = [...panelComponent.chartLabels.slice(0, queryLen), ...Array.from({ length: rowLen - queryLen }, () => predLabel)];
-    return { exportLabels, predLabel };
+    const predCount = rowLen - queryLen;
+    // Index-suffix when there's more than one, so they don't collapse into the same object key.
+    const rawPredLabels = predCount === 1
+        ? [baseLabel]
+        : Array.from({ length: predCount }, (_, i) => `${baseLabel} (${i + 1})`);
+    // Safety net against colliding with a user-renamed query column.
+    const combined = panelComponent.chartUtils.uniqueLabels([
+        ...panelComponent.chartLabels.slice(0, queryLen),
+        ...rawPredLabels,
+    ]);
+    return { exportLabels: combined, predLabels: combined.slice(queryLen) };
   },
   askToIA : (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
@@ -302,12 +311,13 @@ export const PanelOptions = {
               bandingColor: tableInject?.bandingColor,
               colorEnabled: tableInject?.colorEnabled,
             },
-            close: () => { panelComponent.sourceFieldsController = undefined; }
+            close: () => { panelComponent.sourceFieldsController = undefined; panelComponent.markDirty(); }
           });
         } catch (err) {
           panelComponent.alertService.addError(err);
         } finally {
           panelComponent.spinnerService.off();
+          panelComponent.markDirty();
         }
       }
     });
@@ -375,7 +385,7 @@ export const PanelOptions = {
         item: () => PanelOptions.changeChartType(ebp),
       },
       {
-        show: !!ebp.panel.content,
+        show: !!ebp.panel.content && ebp.selectedQueryMode !== 'SQL',
         item: () => PanelOptions.showSourceFields(ebp),
       },
       {
@@ -399,7 +409,7 @@ export const PanelOptions = {
         item: () => PanelOptions.toggleLock(ebp),
       },
       {
-        show: !isRoOrAnonimus && isEditable,
+        show: !isRoOrAnonimus && isEditable && ebp.selectedQueryMode !== 'SQL',
         item: () => PanelOptions.toggleClickFilter(ebp),
       },
       {

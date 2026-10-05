@@ -1,5 +1,6 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Input, Output, EventEmitter, ElementRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Required for directives
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import * as _ from 'lodash';
 
 // Modules for the Treetable
@@ -11,7 +12,7 @@ interface Column {
   header: string;
 }
 
-import { FATHER_ID } from '../../../config/customizable/customizable_default'
+import { FATHER_ID, DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '../../../config/customizable/customizable_default'
 
 @Component({
   selector: 'app-eda-treetable',
@@ -20,7 +21,11 @@ import { FATHER_ID } from '../../../config/customizable/customizable_default'
   standalone: true, // A Standalone component indicates that it does not need to be declared in the modules
   imports: [CommonModule, TreeTableModule],
 })
-export class EdaTreeTable implements OnInit {
+export class EdaTreeTable implements OnInit, AfterViewInit, OnDestroy {
+
+  private static readonly MIN_COL_WIDTH_PCT = 5;
+  private static readonly BASE_TABLE_STYLE = { 'min-width': '50rem' };
+  private static readonly FIXED_TABLE_STYLE = { 'min-width': '50rem', 'width': '100%', 'table-layout': 'fixed' };
 
   @Input() inject: any; // inject contains two arrays => (labels and values)
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
@@ -41,14 +46,36 @@ export class EdaTreeTable implements OnInit {
   isDynamic: Boolean = false; // Ask if dynamic table is used
 
   nodes: TreeNode[] = [];
-  leafs: { field: string; header: string }[] = [];
+  leafs: { field: string; header: string; isHtml?: boolean }[] = [];
   showField: boolean = false;
+  showColumnFilters: boolean = true;
+  showChildCount: boolean = false;
+  rowBanding: boolean = false;
 
-  constructor() { }
+  columnWidths: Record<string, string> = {};
+  tableStyle: Record<string, string> = EdaTreeTable.BASE_TABLE_STYLE;
+  private resizeDrag: {
+    leftField: string;
+    rightField: string;
+    startX: number;
+    leftStartPx: number;
+    rightStartPx: number;
+    containerWidthPx: number;
+    colEls: HTMLElement[];
+  } | null = null;
+  private resizeMoveListener = (event: MouseEvent) => this.onColResizeMove(event);
+  private resizeUpListener = () => this.onColResizeEnd();
+
+  constructor(private sanitizer: DomSanitizer, private host: ElementRef, private ngZone: NgZone,
+    private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     // Input data error handling control
-    this.showField = this.inject.config.config.showOriginField || false;
+    const cfg = this.inject.config.config;
+    this.showField = cfg.showOriginField || false;
+    this.showColumnFilters = cfg.showColumnFilters ?? true;
+    this.showChildCount = cfg.showChildCount ?? false;
+    this.rowBanding = cfg.rowBanding ?? false;
     if (!this.inject || !Array.isArray(this.inject.query) || !Array.isArray(this.inject.data?.values)) {
       console.error('Inject structure incorrecta. Esperado inject.query[] y inject.data.values[]');
       return;
@@ -60,11 +87,33 @@ export class EdaTreeTable implements OnInit {
     if (col1.column_type === 'numeric' && col2.column_type === 'numeric') {
       this.isDynamic = false;
       this.prepareColumns();
+      this.applyColumnWidths(cfg.columnWidths);
       this.nodes = this.buildTree();
+      this.sortNodes(this.nodes, this.leafs.map(l => l.field));
+      this.assignBands(this.nodes);
     } else {
       this.isDynamic = true;
-      this.initDynamicTreeTable()
+      this.initDynamicTreeTable();
+      this.sortNodes(this.dynamicFiles, this.dynamicCols.map(c => c.field));
+      this.assignBands(this.dynamicFiles);
     }
+  }
+
+  // Row banding is per top-level group, not per rendered row: every descendant shares its
+  // root ancestor's band so an expanded parent's children never flip to the opposite color.
+  private bandByNode = new WeakMap<object, number>();
+
+  private assignBands(roots: TreeNode[]): void {
+    (roots || []).forEach((root, i) => this.setBandRecursive(root, i % 2));
+  }
+
+  private setBandRecursive(node: TreeNode, band: number): void {
+    this.bandByNode.set(node, band);
+    (node.children || []).forEach(child => this.setBandRecursive(child, band));
+  }
+
+  getRowBand(rowNode: any): number {
+    return this.bandByNode.get(rowNode?.node) ?? 0;
   }
 
   // Extract the query and get the visible columns
@@ -73,9 +122,165 @@ export class EdaTreeTable implements OnInit {
     // I extract columns after the IDs
     this.leafs = this.inject.query.slice(2).map(c => ({
       field: c?.name ?? c?.display_name?.default ?? '',
-      header: c?.display_name?.default ?? c?.name ?? ''
+      header: c?.display_name?.default ?? c?.name ?? '',
+      isHtml: c?.column_type === 'html'
     }));
 
+  }
+
+  // Saved widths are ignored unless they cover every visible column (e.g. the query changed)
+  private applyColumnWidths(widths: Record<string, string>) {
+    if (widths && this.leafs.length && this.leafs.every(l => widths[l.field])) {
+      this.columnWidths = widths;
+      this.tableStyle = EdaTreeTable.FIXED_TABLE_STYLE;
+    }
+  }
+
+  ngAfterViewInit(): void {
+    this.applyTableColors();
+  }
+
+  isResizeActive(col: { field: string }): boolean {
+    return this.resizeDrag?.leftField === col.field;
+  }
+
+  // Matches EdaTableComponent.applyBandingColors so tree tables share the regular tables' header/banding colors
+  private hexToRgba(hex: string, alpha: number): string {
+    const clean = (hex || '#ffffff').replace('#', '');
+    const full = clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean;
+    const n = parseInt(full, 16);
+    return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+  }
+
+  private applyTableColors(): void {
+    const el: HTMLElement = this.host.nativeElement.querySelector('.container-treetable') || this.host.nativeElement;
+    el.style.setProperty('--table-header-color', this.hexToRgba(DEFAULT_TABLE_HEADER_COLOR, 0.4));
+    el.style.setProperty('--table-banding-color', this.hexToRgba(DEFAULT_TABLE_BANDING_COLOR, 0.15));
+  }
+
+  private colEls(): HTMLElement[] {
+    // The header and body tables each render their own <colgroup>
+    return Array.from(this.host.nativeElement.querySelectorAll('col[data-field]'));
+  }
+
+  onColResizeStart(event: MouseEvent, col: { field: string }): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const idx = this.leafs.findIndex(l => l.field === col.field);
+    const rightCol = this.leafs[idx + 1];
+    if (!rightCol) return;
+
+    const ths: HTMLElement[] = Array.from(this.host.nativeElement.querySelectorAll('th[data-field]'));
+    const widthsPx: Record<string, number> = {};
+    let containerWidthPx = 0;
+    this.leafs.forEach(l => {
+      const th = ths.find(t => t.dataset['field'] === l.field);
+      widthsPx[l.field] = th?.getBoundingClientRect().width || 0;
+      containerWidthPx += widthsPx[l.field];
+    });
+    if (!containerWidthPx) return;
+
+    // Pin every column to its current pixel width so dragging only trades width between two neighbours
+    const colEls = this.colEls();
+    colEls.forEach(c => { c.style.width = widthsPx[c.dataset['field']] + 'px'; });
+    this.tableStyle = EdaTreeTable.FIXED_TABLE_STYLE;
+
+    this.resizeDrag = {
+      leftField: col.field,
+      rightField: rightCol.field,
+      startX: event.clientX,
+      leftStartPx: widthsPx[col.field],
+      rightStartPx: widthsPx[rightCol.field],
+      containerWidthPx,
+      colEls,
+    };
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    this.ngZone.runOutsideAngular(() => {
+      document.addEventListener('mousemove', this.resizeMoveListener);
+      document.addEventListener('mouseup', this.resizeUpListener);
+    });
+  }
+
+  private onColResizeMove(event: MouseEvent): void {
+    const drag = this.resizeDrag;
+    if (!drag) return;
+
+    const minWidthPx = EdaTreeTable.MIN_COL_WIDTH_PCT / 100 * drag.containerWidthPx;
+    const deltaPx = Math.max(minWidthPx - drag.leftStartPx,
+      Math.min(drag.rightStartPx - minWidthPx, event.clientX - drag.startX));
+
+    drag.colEls.forEach(c => {
+      if (c.dataset['field'] === drag.leftField) c.style.width = (drag.leftStartPx + deltaPx) + 'px';
+      if (c.dataset['field'] === drag.rightField) c.style.width = (drag.rightStartPx - deltaPx) + 'px';
+    });
+  }
+
+  private onColResizeEnd(): void {
+    this.removeResizeListeners();
+    const drag = this.resizeDrag;
+    if (!drag) return;
+    this.resizeDrag = null;
+
+    this.ngZone.run(() => {
+      const pxByField: Record<string, number> = {};
+      drag.colEls.forEach(c => { pxByField[c.dataset['field']] = parseFloat(c.style.width) || 0; });
+
+      // Last column absorbs the rounding remainder so the sum is always exactly 100%
+      const widths: Record<string, string> = {};
+      let sumPct = 0;
+      this.leafs.forEach((l, i) => {
+        if (i === this.leafs.length - 1) {
+          widths[l.field] = (100 - sumPct).toFixed(2) + '%';
+        } else {
+          const pct = parseFloat((pxByField[l.field] / drag.containerWidthPx * 100).toFixed(2));
+          widths[l.field] = pct + '%';
+          sumPct += pct;
+        }
+      });
+      this.columnWidths = widths;
+      this.inject.config.config.columnWidths = widths;
+      this.cdr.markForCheck();
+    });
+  }
+
+  private removeResizeListeners() {
+    document.removeEventListener('mousemove', this.resizeMoveListener);
+    document.removeEventListener('mouseup', this.resizeUpListener);
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  }
+
+  ngOnDestroy(): void {
+    this.removeResizeListeners();
+  }
+
+  // Sorts siblings at every level by the configured column.
+  // `fields` is the set of valid column keys for the current mode (leafs for the static
+  // father/child-ID tree, dynamicCols for the auto-detected hierarchy) since both share this
+  // node shape ({data, children}) but expose different field names.
+  private sortNodes(nodes: TreeNode[], fields: string[]) {
+    const { sortOrder, sortColumn } = this.inject.config.config;
+    if (!sortOrder || sortOrder === 'none') return;
+
+    const field = fields.includes(sortColumn) ? sortColumn : fields[0];
+    if (!field) return;
+
+    const dir = sortOrder === 'desc' ? -1 : 1;
+    const compare = (a: any, b: any): number => {
+      if (typeof a === 'number' && typeof b === 'number') return a - b;
+      return String(a ?? '').localeCompare(String(b ?? ''), undefined, { numeric: true, sensitivity: 'base' });
+    };
+    const sortLevel = (level: TreeNode[]) => {
+      level.sort((a, b) => dir * compare(a.data[field], b.data[field]));
+      level.forEach(n => sortLevel(n.children));
+    };
+    sortLevel(nodes);
+  }
+
+  getSafeHtml(html: string): SafeHtml {
+    return html ? this.sanitizer.bypassSecurityTrustHtml(html) : '';
   }
 
   // EXPL hierarchy construction ==>
@@ -94,7 +299,8 @@ export class EdaTreeTable implements OnInit {
   */
   buildTree(): TreeNode[] {
     const values: any[][] = this.inject.data.values; // All rows [ParentID, ItemID, valueN, ...]
-    const nodesMap: Record<string, TreeNode> = {}; // Node map by ID.
+    // A Map keeps the query row order; a plain object would reorder numeric-like keys by ID
+    const nodesMap = new Map<string, { node: TreeNode, parentString: string }>();
 
     // Iterate over all values and store all nodes to display without IDs
     values.forEach(row => {
@@ -106,23 +312,18 @@ export class EdaTreeTable implements OnInit {
       });
 
       const key = String(row[1]); // ItemID
-      nodesMap[key] = { key, data: dataObj, children: [] };
+      // parentKey may arrive as a string (e.g. cached/DECIMAL values), so compare as strings
+      nodesMap.set(key, { node: { key, data: dataObj, children: [] }, parentString: String(row[0]) });
     });
 
     // Root is the table structure:
     const root: TreeNode[] = [];
     // Shape and link the node list to build the treeNode
-    Object.values(nodesMap).forEach(node => {
-      const id = node.key;
-
-      // Find the row for this node in queryvalue and get the ParentID
-      const parentKey = values.find(r => String(r[1]) === id)?.[0];
-      const parentString = String(parentKey); // parentKey may arrive as a string (e.g. cached/DECIMAL values), so compare as strings
-
+    nodesMap.forEach(({ node, parentString }) => {
       if (parentString === String(FATHER_ID)) { // its parent is FATHER_ID ==> root
         root.push(node);
-      } else if (nodesMap[parentString]) { // has a parent and is in the list ==> child
-        nodesMap[parentString].children.push(node);
+      } else if (nodesMap.has(parentString)) { // has a parent and is in the list ==> child
+        nodesMap.get(parentString).node.children.push(node);
       } else { /* has a parent but is not in the list ==> orphan */}
     });
     return root;
@@ -230,6 +431,7 @@ export class EdaTreeTable implements OnInit {
   }
 
   handleClick(item: any, colname: string) {
+    if (typeof item === 'string' && item.trim().startsWith('<')) return;
     if (this.inject.linkedDashboardProps && this.inject.linkedDashboardProps.sourceCol === colname) {
       const props = this.inject.linkedDashboardProps;
       const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;

@@ -26,6 +26,13 @@ export function resolveIconHref(raw: string, fileUtils: FileUtiles): string {
     return fileUtils.connection(raw);
 }
 
+/** Fits an image inside a pie/donut/polar-area slice: bounded by its own angular span (arc length
+ * at the slice's mid-radius) and by the radial room available (ring thickness / wedge length). */
+export function arcIconSize(startAngle: number, endAngle: number, midRadius: number, radialRoom: number, cap = 90): number {
+    const span = Math.max(0, endAngle - startAngle);
+    return Math.min(span * midRadius * 0.85, radialRoom * 0.85, cap);
+}
+
 export interface RenderCategoryIconsOptions<D> {
     /** the <g> to render the icons into (created/owned by the caller). */
     group: any;
@@ -44,6 +51,11 @@ export interface RenderCategoryIconsOptions<D> {
     /** how the image sits inside its box - default 'xMidYMid meet' (centred, fitted). Use e.g.
      * 'xMidYMin meet' to top-align it so it sits flush against something above it. */
     align?: string | ((d: D) => string);
+    /** when set, newly-entering icons start hidden and fade in `delay` ms later (e.g. once the
+     * chart's own entrance animation - radial sweep, bar grow... - has finished), instead of
+     * popping in immediately alongside it. Only affects icons entering on THIS call (a legend
+     * toggle or resize on an already-rendered chart won't replay it, since those icons already exist). */
+    entrance?: { delay: number; duration?: number };
 }
 
 /**
@@ -55,14 +67,15 @@ export interface RenderCategoryIconsOptions<D> {
  * centred on (x, y).
  */
 export function renderCategoryIcons<D>(opts: RenderCategoryIconsOptions<D>): void {
-    const { group, data, key, x, y, size, href, align = 'xMidYMid meet' } = opts;
+    const { group, data, key, x, y, size, href, align = 'xMidYMid meet', entrance } = opts;
     const sizeOf = typeof size === 'function' ? size : () => size;
     const alignOf = typeof align === 'function' ? align : () => align;
 
     const sel = group.selectAll('g.cat-icon').data(data.filter(d => !!href(d)), key as any);
     sel.exit().remove();
 
-    const enter = sel.enter().append('g').attr('class', 'cat-icon');
+    const enter = sel.enter().append('g').attr('class', 'cat-icon')
+        .style('opacity', entrance ? 0 : null);
     enter.append('image')
         .attr('class', 'cat-icon-img')
         // A dead/unreachable url degrades to "no image" instead of the browser's broken-image glyph.
@@ -78,4 +91,8 @@ export function renderCategoryIcons<D>(opts: RenderCategoryIconsOptions<D>): voi
         .attr('x', (d: D) => -sizeOf(d) / 2).attr('y', (d: D) => -sizeOf(d) / 2)
         .attr('width', (d: D) => sizeOf(d)).attr('height', (d: D) => sizeOf(d))
         .attr('href', (d: D) => href(d));
+
+    if (entrance) {
+        enter.transition().delay(entrance.delay).duration(entrance.duration ?? 350).style('opacity', 1);
+    }
 }

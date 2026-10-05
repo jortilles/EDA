@@ -33,6 +33,7 @@ export interface ChartDialogFeatures {
     hasNumberOfColumns?: boolean;
     hasLabels?: boolean;
     hasLabelsPercent?: boolean;
+    hasLabelCharLimit?: boolean;
 
     // Colors section
     colorEditorShape: ColorEditorShape;
@@ -52,6 +53,11 @@ export interface ChartDialogFeatures {
     hasLimits?: boolean;           // knob - min/max numeric range of the gauge
     hasSemaphore?: boolean;        // knob - red→amber→green gradient toggle; when on it hides the manual colour editor
     hasIcons?: boolean;            // raceBar / bubblechart - assign a media-library image per category
+    /** stackedbar / stackedbar100: icons are assigned per SERIES (like colors, one per legend entry)
+     * instead of per category - each bar shows one icon per visible segment, not one for the whole
+     * bar, since a stacked bar's real "value" is the segment. Unset (default) = per category, the
+     * plain bar/horizontalBar/pyramid behaviour (one icon per bar, at its tip). */
+    iconsPerSeries?: boolean;
 }
 
 const AXIS_BAR_COMMON: Partial<ChartDialogFeatures> = {
@@ -74,7 +80,9 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasThresholdColors: true,
         hasUniqueColors: true,
         hasIcons: true,
+        hasLabelCharLimit: true,
     },
+
     horizontalBar: {
         ...(AXIS_BAR_COMMON as ChartDialogFeatures),
         hasComparative: true,
@@ -82,14 +90,35 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasThresholdColors: true,
         hasUniqueColors: true,
         hasIcons: true,
+        hasLabelCharLimit: true,
     },
-    stackedbar: { ...(AXIS_BAR_COMMON as ChartDialogFeatures) },
-    stackedbar100: { ...(AXIS_BAR_COMMON as ChartDialogFeatures) },
-    pyramid: { ...(AXIS_BAR_COMMON as ChartDialogFeatures), hasIcons: true },
+
+    stackedbar: {
+        ...(AXIS_BAR_COMMON as ChartDialogFeatures),
+        hasIcons: true,
+        iconsPerSeries: true,
+        hasLabelCharLimit: true,
+    },
+
+    stackedbar100: {
+        ...(AXIS_BAR_COMMON as ChartDialogFeatures),
+        hasIcons: true,
+        iconsPerSeries: true,
+        hasLabelCharLimit: true,
+    },
+
+    pyramid: {
+        ...(AXIS_BAR_COMMON as ChartDialogFeatures),
+        hasIcons: true,
+        hasLabelCharLimit: true,
+    },
+
     histogram: {
         ...(AXIS_BAR_COMMON as ChartDialogFeatures),
         hasNumberOfColumns: true,
+        hasLabelCharLimit: true,
     },
+
     line: {
         family: 'axis',
         hasTrend: true,
@@ -102,7 +131,9 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasLabels: true,
         hasLabelsPercent: true,
         colorEditorShape: 'per-series',
+        hasLabelCharLimit: true,
     },
+
     area: {
         family: 'axis',
         hasTrend: true,
@@ -117,20 +148,17 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         colorEditorShape: 'per-series',
         hasUseGradient: true,
         hasOpacity: true,
+        hasLabelCharLimit: true,
     },
+
     barline: {
-        family: 'axis',
-        hasAnimation: true,
-        hasLegend: true,
+        ...(AXIS_BAR_COMMON as ChartDialogFeatures),
         hasGridLines: true,
         hasPointLines: true,
-        hasRoundedBars: true,
         hasSecondAxis: true,
-        hasLabels: true,
-        hasLabelsPercent: true,
-        colorEditorShape: 'per-series',
-        hasUseGradient: true,
+        hasLabelCharLimit: true,
     },
+
     radar: {
         family: 'axis',
         hasAnimation: true,
@@ -141,6 +169,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         colorEditorShape: 'per-series',
         hasUseGradient: true,
         hasOpacity: true,
+        hasLabelCharLimit: true,
     },
 
     // --- live family (D3 category charts + knob) ----------------------------
@@ -153,7 +182,9 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         colorEditorShape: 'category-list',
         hasUseGradient: true,
         hasInnerRadius: true,
+        hasIcons: true,
     },
+
     polarArea: {
         family: 'live',
         hasAnimation: true,
@@ -163,7 +194,9 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasLabelsPercent: true,
         colorEditorShape: 'category-list',
         hasUseGradient: true,
+        hasIcons: true,
     },
+
     sunburst: {
         family: 'live',
         hasAnimation: true,
@@ -171,6 +204,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         colorEditorShape: 'category-list',
         hasUseGradient: true,
     },
+
     treeMap: {
         family: 'live',
         hasAnimation: true,
@@ -179,6 +213,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasUseGradient: true,
         hasIcons: true,
     },
+
     scatterPlot: {
         family: 'live',
         hasAnimation: true,
@@ -186,6 +221,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         colorEditorShape: 'category-list',
         hasUseGradient: true,
     },
+
     bubblechart: {
         family: 'live',
         hasAnimation: true,
@@ -194,6 +230,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasUseGradient: true,
         hasIcons: true,
     },
+
     parallelSets: {
         family: 'live',
         hasAnimation: true,
@@ -201,6 +238,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         colorEditorShape: 'category-list',
         hasUseGradient: true,
     },
+
     funnel: {
         family: 'live',
         hasAnimation: true,
@@ -208,6 +246,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         colorEditorShape: 'start-end',
         hasIcons: true,
     },
+
     raceBar: {
         family: 'live',
         hasAnimation: true,

@@ -1,3 +1,35 @@
+.col-resize-handle {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  z-index: 10;
+  user-select: none;
+}
+
+.col-resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 2px;
+  width: 2px;
+  background-color: var(--corporate-primary, #6366f1);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.col-resize-handle:hover::after,
+.col-resize-handle.col-resize-active::after {
+  opacity: 0.7;
+}
+
+.col-resize-handle.col-resize-active::after {
+  opacity: 1;
+}
+
 .total-col {
   background-color: #5ba38b8c !important; 
   color:var(--panel-font-color)!important;
@@ -71,6 +103,15 @@
 }
 
 
+/* Long single words (emails, URLs) wrap instead of overflowing into the next column */
+/* `anywhere` (not break-word) so flex children inside the cell can also shrink */
+.eda-table ::ng-deep .p-datatable th,
+.eda-table ::ng-deep .p-datatable th *,
+.eda-table ::ng-deep .p-datatable td,
+.eda-table ::ng-deep .p-datatable td * {
+  overflow-wrap: anywhere;
+}
+
 th{
   border-radius: 6px;
   background-color: #F1F0F0;
@@ -100,22 +141,6 @@ th{
 .eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd),
 .eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]) {
      background: transparent !important;
-}
-
-/* Remove horizontal scroll in all cases (with and without autoLayout) */
-.eda-table:not(.eda-table--pivot) ::ng-deep .p-datatable .p-datatable-wrapper,
-.p-datatable-auto-layout>.p-datatable-wrapper {
-  overflow-x: hidden;
-}
-
-/* Allow text in cells to wrap instead of overflow */
-.eda-table:not(.eda-table--pivot) ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
-  word-break: break-word;
-  white-space: normal;
-}
-
-.eda-table:not(.eda-table--pivot) ::ng-deep .p-datatable .p-datatable-thead > tr > th {
-  white-space: normal;
 }
 
 ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {

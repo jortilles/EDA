@@ -2784,6 +2784,16 @@ What am I seeing?
 <target>  Decimal separator</target>
 </trans-unit>
 
+<trans-unit id="decSeparatorComma">
+<source>, (coma)</source>
+<target>, (comma)</target>
+</trans-unit>
+
+<trans-unit id="decSeparatorDot">
+<source>. (punto)</source>
+<target>. (dot)</target>
+</trans-unit>
+
 <trans-unit id="viewOk">
 <source> Vista generada correctamente</source>
 <target>  View generated correctly</target>
@@ -3696,6 +3706,16 @@ What am I seeing?
 <target>Choose how many columns you want to display</target>
 </trans-unit>
 
+<trans-unit id="categoryLabelCharsTooltip">
+<source>Actívalo para fijar manualmente el número de caracteres de las etiquetas del eje de categorías (empieza en 10; 0 = sin texto). Desactivado, se usa el ajuste automático por defecto</source>
+<target>Turn on to manually set the number of characters for the category axis labels (starts at 10; 0 = no text). When off, the automatic default sizing is used</target>
+</trans-unit>
+
+<trans-unit id="categoryLabelCharsEnabled">
+<source>Etiquetas ajustables</source>
+<target>Adjustable labels</target>
+</trans-unit>
+
 <trans-unit id="histogramColumDescription">
 <source>Elige cuántas columnas mostrar en el histograma</source>
 <target>Choose how many columns to display in the histogram</target>
@@ -4179,6 +4199,14 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>Este panel no está disponible por falta de permisos</source>
 <target>This panel is not available due to lack of permissions</target>
 </trans-unit>
+<trans-unit id="tooManyValuesForCrosstable">
+<source>Demasiados valores en el eje horizontal. Cambia la configuración de la tabla para que se pueda representar correctamente.</source>
+<target>Too many values on the horizontal axis. Change the table configuration so it can be displayed correctly.</target>
+</trans-unit>
+<trans-unit id="tooManyValuesForChart">
+<source>Demasiados valores para un gráfico. Se muestran los datos en una tabla.</source>
+<target>Too many values for a chart. Data is shown in a table.</target>
+</trans-unit>
 <trans-unit id="noFilterAllowed">
 <source>Este panel no está disponible por falta de permisos en un filtro</source>
 <target>This panel is not available due to lack of permissions on a filter</target>
@@ -4445,6 +4473,10 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="sortReports">
 <source>ORDENAR INFORMES:</source>
 <target>SORT REPORTS:</target>
+</trans-unit>
+<trans-unit id="visibilityReports" datatype="html">
+<source>VISIBILIDAD:</source>
+<target>VISIBILITY:</target>
 </trans-unit>
 
 <trans-unit id="createdAt">
@@ -7628,6 +7660,84 @@ Best regards.</target>
         <source>Iconos asignados por coincidencia de nombre</source>
         <target>Icons assigned by name match</target>
       </trans-unit>
+
+<trans-unit id="panelOptionsShowSourceFields">
+<source>Mostrar campos de origen</source>
+<target>Show source fields</target>
+</trans-unit>
+<trans-unit id="sourceFieldsGlobalFilterPlaceholder">
+<source>Buscar en todos los campos</source>
+<target>Search in all fields</target>
+</trans-unit>
+<trans-unit id="sourceFieldsViewQueryTooltip">
+<source>Ver consulta SQL</source>
+<target>View SQL query</target>
+</trans-unit>
+<trans-unit id="sourceFieldsRestoreColumn">
+<source>Restaurar columna</source>
+<target>Restore column</target>
+</trans-unit>
+<trans-unit id="sourceFieldsFilterPlaceholder">
+<source>Buscar</source>
+<target>Search</target>
+</trans-unit>
+<trans-unit id="sourceFieldsExportExcel">
+<source>Exportar a Excel</source>
+<target>Export to Excel</target>
+</trans-unit>
+<trans-unit id="sourceFieldsCopyQuery">
+<source>Copiar</source>
+<target>Copy</target>
+</trans-unit>
+<trans-unit id="sourceFieldsCopyQueryDone">
+<source>Copiado</source>
+<target>Copied</target>
+</trans-unit>
+<trans-unit id="panelOptionsEnableFilters">
+<source>Click en filtros habilitado</source>
+<target>Filter click enabled</target>
+</trans-unit>
+<trans-unit id="panelOptionsDisableFilters">
+<source>Click en filtros deshabilitado</source>
+<target>Filter click disabled</target>
+</trans-unit>
+
+<trans-unit id="treeTableShowFilters">
+  <source>Mostrar filtros de columna</source>
+  <target>Show column filters</target>
+</trans-unit>
+<trans-unit id="treeTableShowChildCount">
+  <source>Mostrar número de hijos</source>
+  <target>Show number of children</target>
+</trans-unit>
+<trans-unit id="treeTableSortNone">
+  <source>Sin ordenar</source>
+  <target>Not sorted</target>
+</trans-unit>
+<trans-unit id="treeTableSortAsc">
+  <source>Ascendente (A → Z)</source>
+  <target>Ascending (A → Z)</target>
+</trans-unit>
+<trans-unit id="treeTableSortDesc">
+  <source>Descendente (Z → A)</source>
+  <target>Descending (Z → A)</target>
+</trans-unit>
+<trans-unit id="treeTableSortOrder">
+  <source>Ordenar nodos</source>
+  <target>Sort nodes</target>
+</trans-unit>
+<trans-unit id="treeTableSortColumn">
+  <source>Ordenar por columna</source>
+  <target>Sort by column</target>
+</trans-unit>
+<trans-unit id="treeTableOptions">
+  <source>Opciones</source>
+  <target>Options</target>
+</trans-unit>
+<trans-unit id="sourceFieldsLimitNotice">
+  <source>La consulta está limitada a 50.000 registros</source>
+  <target>The query is limited to 50,000 records</target>
+</trans-unit>
       
       <trans-unit id="groupedSubtotalsTitle">
         <source>Subtotales de grupo</source>

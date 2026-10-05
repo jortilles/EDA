@@ -38,7 +38,7 @@ export class HomePage implements OnInit, OnDestroy {
   privateReports: any[] = [];
   roleReports: any[] = [];
   sharedReports: any[] = [];
-  reportMap: any = {};
+  reportMap: any = { public: [], shared: [], private: [], group: [] };
 
   tags: any[] = [];
   selectedTags = signal<any>(JSON.parse(sessionStorage.getItem('activeTags') ? sessionStorage.getItem('activeTags') : '[]'));
@@ -92,18 +92,55 @@ export class HomePage implements OnInit, OnDestroy {
   public groupTitle: string = $localize`:@@tituloGrupoMisGrupos:MIS GRUPOS`;
   public privateTitle: string = $localize`:@@tituloGrupoPersonales:PRIVADOS`;
 
+  // Mobile layout: only one visibility column is shown, chosen with a selector.
+  // Touch devices in portrait (phones and tablets) and phones in landscape (low height).
+  // Tablets in landscape keep the normal multi-column layout.
+  private readonly mobileLayoutQuery = window.matchMedia(
+    '(pointer: coarse) and (orientation: portrait), (pointer: coarse) and (orientation: landscape) and (max-height: 500px)'
+  );
+  private readonly onMobileLayoutChange = (e: MediaQueryListEvent) => this.isMobileLayout.set(e.matches);
+  isMobileLayout = signal(this.mobileLayoutQuery.matches);
+  mobileColumn = signal<string>(sessionStorage.getItem('homeMobileColumn') || '');
+  readonly mobileColumnOptions = [
+    { label: this.publicTitle, value: 'shared' },
+    { label: this.commonTitle, value: 'public' },
+    { label: this.groupTitle, value: 'group' },
+    { label: this.privateTitle, value: 'private' },
+  ];
+
   constructor(private userService: UserService, private groupService: GroupService) { }
 
   ngOnInit(): void {
-    this.initTagSelection();
-    this.loadReports();
+    this.mobileLayoutQuery.addEventListener('change', this.onMobileLayoutChange);
+    this.loadReports(true);
     this.ifAnonymousGetOut();
     this.dashboardCreatedSub = this.dashboardService.dashboardCreated$.subscribe(() => this.loadReports());
   }
 
   ngOnDestroy(): void {
+    this.mobileLayoutQuery.removeEventListener('change', this.onMobileLayoutChange);
     this.outsideClickSub?.unsubscribe();
     this.dashboardCreatedSub?.unsubscribe();
+  }
+
+  public isColumnVisible(colKey: string): boolean {
+    return !this.isMobileLayout() || this.mobileColumn() === colKey;
+  }
+
+  public onMobileColumnChange(colKey: string): void {
+    this.mobileColumn.set(colKey);
+    sessionStorage.setItem('homeMobileColumn', colKey);
+    // An open folder in another column would leave the selected one empty
+    const exp = this.expandedFolder();
+    if (exp && exp.colKey !== colKey) {
+      this.closeFolder();
+    }
+  }
+
+  private setDefaultMobileColumn(): void {
+    if (this.mobileColumn()) return;
+    const firstWithReports = ['private', 'group', 'public', 'shared'].find(key => this.reportMap[key]?.length > 0);
+    this.mobileColumn.set(firstWithReports || 'private');
   }
 
   private setIsObserver = async () => {
@@ -127,7 +164,7 @@ export class HomePage implements OnInit, OnDestroy {
       }
   }
 
-  private async loadReports() {
+  private async loadReports(applyDefaultTagSelection = false) {
     const { publics, shared, dashboards, group } = await lastValueFrom(this.dashboardService.getDashboards());
     this.publicReports = shared;
     this.privateReports = dashboards;
@@ -143,10 +180,24 @@ export class HomePage implements OnInit, OnDestroy {
       shared: this.sharedReports
     };
 
+    if (applyDefaultTagSelection) {
+      this.setDefaultTagSelection(this.allDashboards.length);
+    }
+    this.setDefaultMobileColumn();
+
     this.handleSorting();
     this.loadReportTags();
     this.setIsObserver();
     this.reportsLoaded.set(true);
+  }
+
+  private setDefaultTagSelection(dashboardCount: number): void {
+    const moreThan20Dashboards = dashboardCount > 20;
+    const todoGroupedOption = { label: this.allTagsGroupedLabel, value: this.allTagsValue };
+    const todoFlatOption = { label: this.allTagsFlatLabel, value: this.allTagsFlatValue };
+    this.selectedTags.set(moreThan20Dashboards ? todoGroupedOption : todoFlatOption);
+    sessionStorage.setItem('activeTags', JSON.stringify(moreThan20Dashboards ? todoGroupedOption : todoFlatOption));
+    this.viewMode.set(moreThan20Dashboards ? 'folders' : 'flat');
   }
 
   private async loadReportTags() {
@@ -199,17 +250,6 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.isOpenTags.set(false);
     this.reapplyFilters();
-  }
-
-  private async initTagSelection(): Promise<void> {
-    const dashboards = await lastValueFrom(this.dashboardService.getDashboards());
-    const AllDashboards = [...dashboards.publics, ...dashboards.shared, ...dashboards.dashboards, ...dashboards.group];
-    const moreThan20Dashboards = AllDashboards.length > 20;
-    const todoGroupedOption = { label: this.allTagsGroupedLabel, value: this.allTagsValue };
-    const todoFlatOption = { label: this.allTagsFlatLabel, value: this.allTagsFlatValue };
-    this.selectedTags.set(moreThan20Dashboards ? todoGroupedOption : todoFlatOption);
-    sessionStorage.setItem('activeTags', JSON.stringify(moreThan20Dashboards ? todoGroupedOption : todoFlatOption));
-    this.viewMode.set(moreThan20Dashboards ? 'folders' : 'flat');
   }
 
   public clickFolder(tag: string, colKey: string): void {

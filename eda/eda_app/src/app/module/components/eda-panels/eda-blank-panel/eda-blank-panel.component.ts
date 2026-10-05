@@ -1,5 +1,5 @@
 // Angular
-import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DragDropModule, CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem, copyArrayItem } from '@angular/cdk/drag-drop';
@@ -34,7 +34,7 @@ import { QueryService } from '@eda/services/api/query.service';
 import { IaFormStateService } from '@eda/services/shared/IaFormState.service'; 
 
 // Standalone components
-import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent} from '@eda/shared/components/shared-components.index';
+import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent, CodeEditorComponent} from '@eda/shared/components/shared-components.index';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
 import { PanelChartComponent } from './panel-charts/panel-chart.component';
@@ -104,7 +104,7 @@ const STANDALONE_COMPONENTS = [
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
     DragDropComponent, ChartTypeSelectorDialogComponent, SourceFieldsDialogComponent,
     IconComponent, FocusOnShowDirective, PromptComponent,
-    FilterAndOrDialogComponent,
+    FilterAndOrDialogComponent, CodeEditorComponent,
 ]
 @Component({
     standalone: true,
@@ -113,6 +113,7 @@ const STANDALONE_COMPONENTS = [
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './eda-blank-panel.component.html',
     styleUrls: ['./eda-blank-panel.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EdaBlankPanelComponent implements OnInit {
     /** Reference to the dashboard root element (used for image capture during Excel export) */
@@ -353,9 +354,17 @@ export class EdaBlankPanelComponent implements OnInit {
         this.connectionProperties = computed(() => this.route.snapshot.paramMap.get('cnproperties'));
 
         this.dashboardService.notSaved.subscribe(
-            (data) => this.display_v.notSaved = data,
+            (data) => { this.display_v.notSaved = data; this.cdr.markForCheck(); },
             (err) => this.alertService.addError(err)
         );
+    }
+
+    /** Marca este panel para revisión bajo OnPush. Necesario porque el dashboard padre (y
+     *  utilidades externas como query-utils.ts/panel-menu-options.ts) mutan el estado de este
+     *  panel fuera de cualquier evento de su propia plantilla (tras un await, desde otro
+     *  componente, etc.), lo cual OnPush no detecta por sí solo. */
+    public markDirty(): void {
+        this.cdr.markForCheck();
     }
 
     public async setPanelDataSource() {
@@ -425,9 +434,9 @@ export class EdaBlankPanelComponent implements OnInit {
         
         if(this.sortedFilters === undefined) this.sortedFilters = []; // Si se trata de un informe antiguo, definimos el informe como vacío.
 
-
+        this.cdr.markForCheck();
     }
-    
+
     public openContextMenu(event: MouseEvent): void {
         this.contextMenu.contextMenuItems = PanelOptions.generateMenu(this);
         this.contextMenu.showContextMenu(event);
@@ -487,6 +496,7 @@ public tableNodeExpand(event: any): void {
     if (this.tableInput) {
       this.displayedTableNodes = this.filterTreeNodes(this.tableNodes, this.tableInput.toLowerCase());
     }
+    this.cdr.markForCheck();
   });
 }
 
@@ -551,10 +561,14 @@ public tableNodeExpand(event: any): void {
     }
 
     isClickFiltersEnabled(): boolean {
+        // Click-to-filter never fires for SQL panels (onPanelAction requires EDA mode), so
+        // report it as disabled regardless of the saved flag.
+        if (this.selectedQueryMode === 'SQL') return false;
         return (this.panel as any).clickFiltersEnabled ?? true;
     }
 
     toggleClickFilters(): void {
+        if (this.selectedQueryMode === 'SQL') return;
         const panel = this.panel as any;
         panel.clickFiltersEnabled = !this.isClickFiltersEnabled();
         this.dashboardService.setNotSaved(true);
@@ -616,8 +630,23 @@ public tableNodeExpand(event: any): void {
      */
     mergeFilters(localFilters: any[], globalFilters: any[]) {
         const out = localFilters.filter(f => f.isGlobal !== true);
-        globalFilters.forEach(f => out.push(f));
+        globalFilters
+            .filter(f => !EdaBlankPanelComponent.isValuelessFilter(f))
+            .forEach(f => out.push(f));
         return out;
+    }
+
+    /**
+     * A global filter with no value selected (e.g. cleared on the dashboard, or never set) must not
+     * be sent to the API as an active filter: building an `in`/`like`/... clause from an empty value
+     * list generates invalid SQL such as `in ()`.
+     */
+    private static isValuelessFilter(f: any): boolean {
+        if (['not_null', 'not_null_nor_empty', 'null_or_empty', 'is_null'].includes(f.filter_type)) return false;
+        if (!f.filter_elements || f.filter_elements.length === 0) return true;
+        return f.filter_elements.every((fe: any) =>
+            (!fe.value1 || fe.value1.length === 0) && (!fe.value2 || fe.value2.length === 0)
+        );
     }
 
     public async setTablesData()  {
@@ -628,6 +657,7 @@ public tableNodeExpand(event: any): void {
         this.tablesToShow = [].concat(_.cloneDeep(tables.tablesToShow), this.assertedTables);
         this.tablesToShowBase = [...this.tablesToShow];
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
+        this.cdr.markForCheck();
     }
 
     /**
@@ -646,6 +676,7 @@ public tableNodeExpand(event: any): void {
             if (!panelContent?.query) return;
 
             this.display_v.minispinner = true;
+            this.cdr.markForCheck();
 
             PanelInteractionUtils.handleGlobalFilterMapper(this);
             this.setupQueryContext(panelContent);          // 1. build currentQuery + navState
@@ -685,9 +716,11 @@ public tableNodeExpand(event: any): void {
                 })); // We replace nulls and empty strings with a customizable value.
             
             await this.buildGlobalconfiguration(panelContent);
+            this.cdr.markForCheck();
         } catch (err) {
             this.alertService.addError(err);
             this.display_v.minispinner = false;
+            this.cdr.markForCheck();
             throw err;
         }
     }
@@ -759,7 +792,7 @@ public tableNodeExpand(event: any): void {
             }
         }
 
-        this.changeChartType(chart, edaChart, recoveredConfig);
+        this.changeChartType(chart, edaChart, recoveredConfig, true);
 
         // Show panel and configure chart type
         this.display_v.saved_panel = true;
@@ -770,6 +803,7 @@ public tableNodeExpand(event: any): void {
         // Check if the chart is a pivot table.
         const crossTableChart = this.chartTypes.find(g => g.subValue === 'crosstable');
         this.dragAndDropAvailable = !crossTableChart?.ngIf;
+        this.cdr.markForCheck();
     }
 
 
@@ -826,6 +860,7 @@ public tableNodeExpand(event: any): void {
         // Reset the prompt chat.
         this.promptMessages = [];
 
+        this.cdr.markForCheck();
     }
 
     public initObjectQuery() {
@@ -852,7 +887,7 @@ public tableNodeExpand(event: any): void {
             (config.getConfig() as any)['showUniqueColors'] = output.config.showUniqueColors;
             (config.getConfig() as any)['uniqueBarColors'] = output.config.uniqueBarColors ?? [];
         }
-        this.changeChartType(content.chart, content.edaChart, config);
+        this.changeChartType(content.chart, content.edaChart, config, true);
         this.chartForm.patchValue({ chart: this.chartUtils.chartTypes.find(o => o.subValue === content.edaChart) });
     }
 
@@ -893,6 +928,7 @@ public tableNodeExpand(event: any): void {
         });
         this.pendingGroupedSubtotalsPreview = undefined;
         this.pendingGroupedSubtotalsPreloadedLevels = undefined;
+        this.cdr.markForCheck();
     }
 
     /**
@@ -945,6 +981,7 @@ public tableNodeExpand(event: any): void {
                     try {
                         this.changeChartType(type, subType, config);
                         if (hadChildNav) { QueryUtils.runQuery(this, false); }
+                        this.cdr.markForCheck();
                     } catch (err) {
                         this.alertService.addError(err);
                         throw err;
@@ -961,11 +998,23 @@ public tableNodeExpand(event: any): void {
 
 
     /**
-     * Changes chart type 
+     * Changes chart type
      * @param type chart type
      * @param content panel content
+     * @param allowTooManyData render a saved chart even with too many rows: PanelChartComponent shows it as a table
      */
-    public async changeChartType(type: string, subType: string, config?: ChartConfig) {
+    public async changeChartType(type: string, subType: string, config?: ChartConfig, allowTooManyData: boolean = false) {
+        const allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
+
+        // Not allowed for the current data shape: warn and leave the active chart untouched.
+        if (_.isEqual(this.display_v.chart, 'no_data') || !allow || allow.ngIf || (allow.tooManyData && !allowTooManyData)) {
+            if (allow) {
+                this.alertService.addWarning(allow.tooManyData ? this.getTooManyDataDescription() : this.getOptionDescription(subType));
+            }
+            this.cdr.detectChanges();
+            return;
+        }
+
         // We update the variable type for the drag-and-drop component.
         this.graphicType = type;
         this.graficos = {};
@@ -995,57 +1044,45 @@ public tableNodeExpand(event: any): void {
             }
         }
 
-        const allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
+        const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
-        if (!_.isEqual(this.display_v.chart, 'no_data') && allow && !allow.ngIf && !allow.tooManyData) {
-            const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
+        // Preserve every custom field (same list setConfig() uses to save them) before
+        // merging - setVoidChartConfig() builds a fresh blank config without them, and
+        // _.merge() isn't trusted to carry them over correctly either.
+        const savedCustomFields: Record<string, any> = {};
+        CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+            savedCustomFields[field.name] = config && config.getConfig() ? config.getConfig()[field.name] : null;
+        });
 
-            // Preserve every custom field (same list setConfig() uses to save them) before
-            // merging - setVoidChartConfig() builds a fresh blank config without them, and
-            // _.merge() isn't trusted to carry them over correctly either.
-            const savedCustomFields: Record<string, any> = {};
-            CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
-                savedCustomFields[field.name] = config && config.getConfig() ? config.getConfig()[field.name] : null;
-            });
+        _.merge(_config, config||{});
 
-            _.merge(_config, config||{});
-
-            // Restore every custom field after merging.
-            CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
-                const saved = savedCustomFields[field.name];
-                if (saved != null) {
-                    _config.getConfig()[field.name] = saved;
-                }
-            });
-
-            // Ensure that showPredictionLines is propagated to _config (keep the prediction line when switching between chart types).
-            if (['line', 'area'].includes(type) && this.graficos.showPredictionLines) {
-                _config.getConfig()['showPredictionLines'] = true;
+        // Restore every custom field after merging.
+        CUSTOM_CHART_CONFIG_FIELDS.forEach(field => {
+            const saved = savedCustomFields[field.name];
+            if (saved != null) {
+                _config.getConfig()[field.name] = saved;
             }
+        });
 
-            if (subType=='tableanalized') {
-                try {
-                    if (!this.display_v.minispinner) this.spinnerService.on();
-                    const data = await QueryUtils.analizedQuery(this);
-                    const transformedData = QueryUtils.transformAnalizedQueryData(this, data);
-                    this.renderChart(this.currentQuery, transformedData.labels, transformedData.values, type, subType, _config);
-                } catch(err) {
-                    console.log(err)
-                    throw err;
-                } finally {
-                    this.spinnerService.off();
-                }
-            } else {
-                this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
-            }
-        }else{
-            try{
-                console.log('no allow');
-                console.log(allow);
-            }catch (e){
-                console.log(e);
-            }
+        // Ensure that showPredictionLines is propagated to _config (keep the prediction line when switching between chart types).
+        if (['line', 'area'].includes(type) && this.graficos.showPredictionLines) {
+            _config.getConfig()['showPredictionLines'] = true;
+        }
 
+        if (subType=='tableanalized') {
+            try {
+                if (!this.display_v.minispinner) this.spinnerService.on();
+                const data = await QueryUtils.analizedQuery(this);
+                const transformedData = QueryUtils.transformAnalizedQueryData(this, data);
+                this.renderChart(this.currentQuery, transformedData.labels, transformedData.values, type, subType, _config);
+            } catch(err) {
+                console.log(err)
+                throw err;
+            } finally {
+                this.spinnerService.off();
+            }
+        } else {
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }
 
         // Check whether a pivot table should be executed
@@ -1302,7 +1339,7 @@ public tableNodeExpand(event: any): void {
                     if (response.duplicated) {
                         this.currentQuery.push(response.column);
                         this.configController = undefined;
-                        setTimeout(() => this.openColumnDialog(response.column), 100);
+                        setTimeout(() => { this.openColumnDialog(response.column); this.cdr.markForCheck(); }, 100);
                     } else if (response.length > 0) {
                         for (const f of response) {
                             if (_.isNil(this.selectedFilters.find(o => o.filter_id === f.filter_id))) {
@@ -1351,6 +1388,7 @@ public tableNodeExpand(event: any): void {
                         this.configController = undefined;
                     }
                     this.configController = undefined;
+                    this.cdr.markForCheck();
 
                 }
             });
@@ -1370,6 +1408,7 @@ public tableNodeExpand(event: any): void {
                     }
 
                     this.filterController = undefined;
+                    this.cdr.markForCheck();
                 }
             });
         }
@@ -1406,6 +1445,7 @@ public tableNodeExpand(event: any): void {
             // filter would never reach the query even though it shows up as a global filter.
             this.addingGlobalFilterEbp(globalFilter);
         }
+        this.cdr.markForCheck();
     }
 
     /** Registers a global filter (even if empty) so it appears in the AND/OR dialog without triggering a query */
@@ -1424,6 +1464,7 @@ public tableNodeExpand(event: any): void {
         } else {
             this.globalFilters.push(globalFilter);
         }
+        this.cdr.markForCheck();
     }
 
     public addingGlobalFilterEbp(_filter: any) {
@@ -1578,6 +1619,7 @@ public tableNodeExpand(event: any): void {
             this.dashboardService.setNotSaved(true);
         }
         this.tableController = undefined;
+        this.cdr.markForCheck();
     }
 
     public onCloseMapProperties(event, response: {
@@ -1608,6 +1650,7 @@ public tableNodeExpand(event: any): void {
             this.dashboardService.setNotSaved(true);
         }
         this.mapController = undefined;
+        this.cdr.markForCheck();
     }
         
     public onCloseMapCoordProperties(event, response: { 
@@ -1635,6 +1678,7 @@ public tableNodeExpand(event: any): void {
             this.dashboardService.setNotSaved(true);
         }
         this.mapCoordController = undefined;
+        this.cdr.markForCheck();
     }
 
     /** Shared tail for every onClose*Properties handler: merges into the existing config (not a wholesale replace), re-renders, clears the controller. */
@@ -1671,7 +1715,7 @@ public tableNodeExpand(event: any): void {
      * that store colours per-row, then merge-patch (never wholesale replace) and re-render.
      */
     public onCloseLiveChartProperties(event, response): void {
-        if (_.isEqual(event, EdaDialogCloseEvent.NONE)) { this.chartController = undefined; return; }
+        if (_.isEqual(event, EdaDialogCloseEvent.NONE)) { this.chartController = undefined; this.cdr.markForCheck(); return; }
 
         const { family, chartType, ...patch } = response ?? {};
         if (EdaBlankPanelComponent.RECOLOR_CHART_TYPES.includes(chartType)) {
@@ -1690,6 +1734,7 @@ public tableNodeExpand(event: any): void {
         }
 
         this.treeTableController = undefined;
+        this.cdr.markForCheck();
 
     }
 
@@ -1709,6 +1754,7 @@ public tableNodeExpand(event: any): void {
         }
 
         this.linkDashboardController = undefined;
+        this.cdr.markForCheck();
     }
 
     public onCloseKpiProperties(event, response): void {
@@ -1733,6 +1779,7 @@ public tableNodeExpand(event: any): void {
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 'kpideviation', 'kpideviation', config);
             this.dashboardService.setNotSaved(true);
             this.kpiController = undefined;
+            this.cdr.markForCheck();
             return;
         }
 
@@ -1787,6 +1834,7 @@ public tableNodeExpand(event: any): void {
         this.dashboardService.setNotSaved(true);
     }
     this.kpiController = undefined;
+    this.cdr.markForCheck();
 }
 
     public onClosedynamicTextProperties(event, response): void {
@@ -1797,6 +1845,7 @@ public tableNodeExpand(event: any): void {
             this.dashboardService.setNotSaved(true);
         }
         this.dynamicTextController = undefined;
+        this.cdr.markForCheck();
     }
 
     public handleTabChange(event: any): void {
@@ -2078,6 +2127,7 @@ public tableNodeExpand(event: any): void {
         }
         this.display_v.minispinnerSQL = false;
         this.queryFromServer = serverQuery;
+        this.cdr.markForCheck();
     }
 
     public migrateQuery() {
@@ -2102,7 +2152,7 @@ public tableNodeExpand(event: any): void {
     private _panelInfoOverlayTimeout: ReturnType<typeof setTimeout> | null = null;
 
     public showPanelInfoOverlay(event: Event, overlay: any): void {
-        this._panelInfoOverlayTimeout = setTimeout(() => overlay.show(event), 1000);
+        this._panelInfoOverlayTimeout = setTimeout(() => { this.cdr.markForCheck(); overlay.show(event); }, 1000);
     }
 
     public hidePanelInfoOverlay(overlay: any): void {

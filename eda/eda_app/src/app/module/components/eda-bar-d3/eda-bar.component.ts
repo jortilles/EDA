@@ -286,8 +286,37 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly maxCategoryChars = 8;
 
+  /** Default (categoryLabelCharsEnabled off) truncation: fixed character budget that INCLUDES the
+   * ellipsis itself - unchanged legacy behavior. */
   private truncateLabel(label: string, maxChars: number = this.maxCategoryChars): string {
     return label.length > maxChars ? label.slice(0, maxChars - 1) + '…' : label;
+  }
+
+  /** Pixel-budget version of truncateLabel: trims a character at a time until the label (plus
+   * ellipsis) actually measures within maxWidthPx, instead of cutting at a fixed character count*/
+  private truncateLabelToWidth(label: string, maxWidthPx: number, fontSizePx: number = 11): string {
+    if (this.measureTextWidth(label, fontSizePx) <= maxWidthPx) return label;
+    let text = label;
+    while (text.length > 1 && this.measureTextWidth(text + '…', fontSizePx) > maxWidthPx) {
+      text = text.slice(0, -1);
+    }
+    return text.length < label.length ? text + '…' : text;
+  }
+
+  /** categoryLabelCharsEnabled truncation: maxChars is how much of the real text to show - the
+   * ellipsis is added on top of it, not counted against it - and 0 means "show nothing" (no
+   * ellipsis either), rather than a single truncated character. */
+  private truncateLabelExact(label: string, maxChars: number): string {
+    if (maxChars <= 0) return '';
+    return label.length > maxChars ? label.slice(0, maxChars) + '…' : label;
+  }
+
+  /** Category label for the vertical orientation (and compact mode): the manual character limit
+   * when the user has switched it on, the fixed legacy default otherwise. */
+  private resolveCategoryLabel(label: string): string {
+    return this.inject.categoryLabelCharsEnabled
+      ? this.truncateLabelExact(label, this.inject.categoryLabelMaxChars ?? 0)
+      : this.truncateLabel(label);
   }
 
   draw(): void {
@@ -303,6 +332,9 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     const stacked = ['stackedbar', 'stackedbar100', 'pyramid'].includes(edaChart);
     const stacked100 = edaChart === 'stackedbar100';
     const isPyramid = edaChart === 'pyramid';
+    // stackedbar/stackedbar100 show one icon per visible SEGMENT (see renderSegmentIcons) instead
+    // of one per whole bar - pyramid keeps the older per-category, tip-anchored behaviour.
+    const useSegmentIcons = stacked && !isPyramid;
     const linkedDashboard = this.inject.linkedDashboard;
     const compact = this.inject.compact ?? false;
 
@@ -395,6 +427,12 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     // so it can be decided before sizing that margin, and the margin only needs to fit whichever
     // labels actually remain visible instead of the full list.
     let horizontalVisibleCatIndexes: Set<number> = null;
+    // Set by the horizontal branch below and reused by the category axis' tickFormat further down,
+    // so both agree on the same truncation rule for the labels actually drawn.
+    let horizontalCharsEnabled = false;
+    let horizontalLabelCharLimit = 0;
+    let horizontalMaxLabelPx = 0;
+    let horizontalExtraGapPx = 0;
     if (horizontal) {
       const innerHeightForSkip = Math.max(height - 16 - 30, 10);
       const skipProbeScale = d3.scaleBand().domain(axisCategories).range([0, innerHeightForSkip]).padding(0.25);
@@ -408,20 +446,72 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
           lastShownY = i * step;
         }
       });
-      const visibleLabels = axisCategories
-        .filter((_, i) => horizontalVisibleCatIndexes.has(i))
-        .map(c => this.truncateLabel(c));
-      leftMargin = Math.min(Math.max(this.measureMaxLabelWidth(visibleLabels, 11) + 24, 60), width * 0.4);
+      const visibleCats = axisCategories.filter((_, i) => horizontalVisibleCatIndexes.has(i));
+      // Switch off (default): the label area grows to fit the widest visible label - up to 40% of
+      // the panel width - and each label is trimmed to whatever pixel budget that leaves. Switch on:
+      // the configured character count is used as-is (truncateLabelExact) - the margin still grows
+      // to fit it (same measure-then-cap-at-40% below), it just no longer auto-shrinks the text.
+      horizontalCharsEnabled = this.inject.categoryLabelCharsEnabled === true;
+      horizontalLabelCharLimit = this.inject.categoryLabelMaxChars ?? 0;
+      horizontalMaxLabelPx = width * 0.4 - 24;
+      const visibleLabels = horizontalCharsEnabled
+        ? visibleCats.map(c => this.truncateLabelExact(c, horizontalLabelCharLimit))
+        : visibleCats.map(c => this.truncateLabelToWidth(c, horizontalMaxLabelPx, 11));
+      const measuredWidthPx = this.measureMaxLabelWidth(visibleLabels, 11);
+      let reservedWidthPx = measuredWidthPx;
+      // A configured char count past what the real labels actually need wouldn't move the margin
+      // at all otherwise (truncateLabelExact just returns the label unchanged once it already
+      // fits) - estimate a per-character width from the widest visible label and reserve space for
+      // the FULL configured count, so dragging the number up keeps widening the column even once
+      // every label is already shown in full.
+      if (horizontalCharsEnabled && horizontalLabelCharLimit > 0) {
+        const widest = visibleLabels.reduce((a, b) => a.length > b.length ? a : b, '');
+        const perCharPx = widest.length > 0 ? this.measureTextWidth(widest, 11) / widest.length : this.measureTextWidth('0', 11);
+        reservedWidthPx = Math.max(reservedWidthPx, perCharPx * horizontalLabelCharLimit);
+      }
+      leftMargin = Math.min(Math.max(reservedWidthPx + 24, 60), width * 0.4);
+      // That reserved-but-unused space would otherwise sit dead between the panel edge and the
+      // text (D3 renders category labels hugging the axis by default) - push the text itself left
+      // by the leftover instead, so the extra room reads as a gap between the label and the
+      // axis/bars, which is where "more space reserved" should actually show up. Measured against
+      // the final (possibly 40%-capped) margin, not the raw reserve, so it can never push text
+      // past the panel's left edge.
+      horizontalExtraGapPx = Math.max(0, (leftMargin - 24) - measuredWidthPx);
     } else {
       const probeScale = d3.scaleLinear().domain([valueMin, valueMax]).nice();
       const tickLabels = probeScale.ticks(verticalTickCount).map(v => formatAxisValue(v));
       leftMargin = Math.min(Math.max(this.measureMaxLabelWidth(tickLabels, 11) + 16, 40), width * 0.3);
     }
+    // Vertical bars' rotated (-30deg) category labels: same idea as the horizontal branch above,
+    // mirrored onto the bottom margin - sized to the widest ACTUAL (possibly truncated) label's
+    // rotated footprint instead of a flat 50px, then reserved further still for the full configured
+    // character count when that exceeds what the real labels need, with the leftover pushed into
+    // verticalExtraGapPx (applied to the label's own offset below) rather than left unused. Compact
+    // mode keeps its own tiny fixed bottom margin (its labels are capped to 3, non-rotated).
+    let verticalBottomMargin = 50;
+    let verticalExtraGapPx = 0;
+    if (!horizontal && !compact) {
+      const angle = Math.PI / 6; // matches the -30deg rotation applied to this axis' text below
+      const labels = axisCategories.map(c => this.resolveCategoryLabel(c));
+      const widest = labels.reduce((a, b) => a.length > b.length ? a : b, '');
+      const widestPx = this.measureTextWidth(widest, 11);
+      const actualFootprintPx = widestPx * Math.sin(angle) + 11 * Math.cos(angle);
+      let footprintPx = actualFootprintPx;
+      const charsEnabled = this.inject.categoryLabelCharsEnabled === true;
+      const maxChars = this.inject.categoryLabelMaxChars ?? 0;
+      if (charsEnabled && maxChars > 0) {
+        const perCharPx = widest.length > 0 ? widestPx / widest.length : this.measureTextWidth('0', 11);
+        const reservedWidthPx = perCharPx * maxChars;
+        footprintPx = Math.max(footprintPx, reservedWidthPx * Math.sin(angle) + 11 * Math.cos(angle));
+      }
+      verticalBottomMargin = Math.min(Math.max(footprintPx + 20, 50), height * 0.4);
+      verticalExtraGapPx = Math.max(0, (verticalBottomMargin - 20) - actualFootprintPx);
+    }
     const showCompactCategoryAxis = compact && !horizontal && this.inject.showGridLines === true;
     const showCompactLabels = compact && !horizontal && (this.inject.showLabels || this.inject.showLabelsPercent);
     const margin = compact
       ? { top: showCompactLabels ? 20 : 4, right: 4, bottom: showCompactCategoryAxis ? 18 : 4, left: (!horizontal && showGrid) ? leftMargin : 4 }
-      : { top: 16, right: 20, bottom: horizontal ? 30 : 50, left: leftMargin };
+      : { top: 16, right: 20, bottom: horizontal ? 30 : verticalBottomMargin, left: leftMargin };
     const innerWidth = Math.max(width - margin.left - margin.right, 10);
     const innerHeight = Math.max(height - margin.top - margin.bottom, 10);
 
@@ -467,7 +557,9 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       // abbreviated (500k, 1M...) purely for display - the underlying scale/data keeps the full
       // values, so click handling, tooltips and datalabels are unaffected.
       const categoryAxis: any = (horizontal ? d3.axisLeft(categoryScale) : d3.axisBottom(categoryScale))
-        .tickFormat((d: string) => this.truncateLabel(d));
+        .tickFormat((d: string) => horizontal
+          ? (horizontalCharsEnabled ? this.truncateLabelExact(d, horizontalLabelCharLimit) : this.truncateLabelToWidth(d, horizontalMaxLabelPx, 11))
+          : this.resolveCategoryLabel(d));
       const valueAxis: any = (horizontal ? d3.axisBottom(valueScale).ticks(horizontalTickCount) : d3.axisLeft(valueScale).ticks(verticalTickCount))
         .tickFormat((v: any) => formatAxisValue(v));
 
@@ -477,11 +569,18 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
         .call(categoryAxis);
 
       if (!horizontal) {
+        // When the bottom margin reserved more than the actual label needs, drop the text straight
+        // down by the leftover - a separate outer translate, applied in screen space AFTER the
+        // rotation below, so it moves purely vertically (no sideways drift) instead of sliding along
+        // the label's own rotated diagonal - so the unused room becomes visible separation instead
+        // of dead space the text never reaches.
+        const rotation = 'rotate(-30)';
+        const transform = verticalExtraGapPx > 0 ? `translate(0,${verticalExtraGapPx}) ${rotation}` : rotation;
         catAxisG.selectAll('text')
           .style('text-anchor', 'end')
           .attr('dx', '-0.5em')
           .attr('dy', '0.4em')
-          .attr('transform', 'rotate(-30)');
+          .attr('transform', transform);
 
         // Chart.js's category axis auto-skips ticks so rotated labels never overlap; a plain d3
         // axis renders every one regardless of how little room each category gets, so with many
@@ -491,7 +590,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
         // names still get to show up between long ones instead of being skipped needlessly.
         const angle = Math.PI / 6; // matches the -30deg rotation above
         const footprints = axisCategories.map(c => {
-          const w = this.measureTextWidth(this.truncateLabel(c), 11);
+          const w = this.measureTextWidth(this.resolveCategoryLabel(c), 11);
           return w * Math.cos(angle) + 11 * Math.sin(angle);
         });
         const step = categoryScale.step();
@@ -508,6 +607,12 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
         // cut computed above (before the margin was sized), so the left margin - and the visual
         // density of the chart - only ever account for the labels actually shown.
         catAxisG.selectAll('.tick').style('display', (_: any, i: number) => horizontalVisibleCatIndexes.has(i) ? null : 'none');
+        if (horizontalExtraGapPx > 0) {
+          // Margin grew past what the labels themselves need (see horizontalExtraGapPx above) -
+          // shift the text left by the leftover so that space becomes visible separation from the
+          // axis/bars instead of dead space behind the (still axis-hugging) label.
+          catAxisG.selectAll('text').attr('dx', `-${horizontalExtraGapPx}`);
+        }
       }
 
       g.append('g')
@@ -525,7 +630,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     } else if (showCompactCategoryAxis) {
       // Compact mode has no room for the full diagonal collision-avoidance axis above - cap to at
       // most 3 evenly-spaced labels, horizontal instead of rotated.
-      const categoryAxis: any = d3.axisBottom(categoryScale).tickFormat((d: string) => this.truncateLabel(d));
+      const categoryAxis: any = d3.axisBottom(categoryScale).tickFormat((d: string) => this.resolveCategoryLabel(d));
       const catAxisG = g.append('g').attr('class', 'eda-bar-axis')
         .attr('transform', `translate(0,${innerHeight})`).call(categoryAxis);
       catAxisG.selectAll('text').style('text-anchor', 'middle')
@@ -787,6 +892,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
               d3.select(target).attr('stroke', hex).attr('stroke-width', 1.5);
               d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', hoverD(d));
               nudgeNeighbors(d.data.cat, sIdx, hoverExtra, true);
+              if (useSegmentIcons) this.scaleSegIcon(d.data.cat, sIdx, 1.18, HOVER_MS);
               if (labelSel) {
                 labelSel.filter((ld: any) => ld === d)
                   .interrupt('labelGrow').transition('labelGrow').duration(HOVER_MS)
@@ -812,6 +918,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             if (chartAnimOn) {
               d3.select(target).interrupt('widen').transition('widen').duration(HOVER_MS).attr('d', finalD(d));
               nudgeNeighbors(d.data.cat, sIdx, hoverExtra, false);
+              if (useSegmentIcons) this.scaleSegIcon(d.data.cat, sIdx, 1, HOVER_MS);
               d3.select(target).attr('stroke', null).attr('stroke-width', null);
               if (labelSel) {
                 labelSel.filter((ld: any) => ld === d)
@@ -1032,18 +1139,31 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     }
     }
 
-    // Per-category media-library image inside each bar, near its tip.
-    this.renderCategoryImages(
-      g, visibleCategories, horizontal, stacked, categoryScale, valueScale,
-      (cat: string) => { const ci = this.categories.indexOf(cat); return visibleSeries.map(s => s.data[ci] || 0); },
-      animateEntrance, (cat: string) => visibleCategories.indexOf(cat) * perCatDelay + perCatDelay,
-    );
+    if (useSegmentIcons) {
+      // stackedbar/stackedbar100: one media-library image per visible SEGMENT (see chart-dialog:
+      // icons are per-series here, like colors), not one per whole bar.
+      const segmentDurationForIcons = perCatDelay / Math.max(visibleSeries.length, 1);
+      this.renderSegmentIcons(
+        g, stackedSeriesData, visibleSeries, horizontal, categoryScale, valueScale,
+        animateEntrance, (cat: string, sIdx: number) => visibleCategories.indexOf(cat) * perCatDelay + sIdx * segmentDurationForIcons,
+      );
+      // Per-segment hover-scale is wired directly into each segment's own mouseover/mouseout above
+      // (scaleSegIcon) - unlike the per-category case below, hovering one segment must NOT grow its
+      // neighbours' icons too.
+    } else {
+      // Per-category media-library image inside each bar, near its tip (plain bar/horizontalBar/pyramid).
+      this.renderCategoryImages(
+        g, visibleCategories, horizontal, stacked, isPyramid, categoryScale, valueScale,
+        (cat: string) => { const ci = this.categories.indexOf(cat); return visibleSeries.map(s => s.data[ci] || 0); },
+        animateEntrance, (cat: string) => visibleCategories.indexOf(cat) * perCatDelay + perCatDelay,
+      );
 
-    // Grow a category's image while any of its bars is hovered (namespaced listeners, so the
-    // existing bar darken/widen handlers are left untouched).
-    barsGroup.selectAll('path')
-      .on('mouseover.iconscale', (_e: any, d: any) => this.scaleCatIcon(String(d?.cat ?? d?.data?.cat ?? ''), chartAnimOn ? 1.18 : 1, HOVER_MS))
-      .on('mouseout.iconscale', (_e: any, d: any) => this.scaleCatIcon(String(d?.cat ?? d?.data?.cat ?? ''), 1, HOVER_MS));
+      // Grow a category's image while any of its bars is hovered (namespaced listeners, so the
+      // existing bar darken/widen handlers are left untouched).
+      barsGroup.selectAll('path')
+        .on('mouseover.iconscale', (_e: any, d: any) => this.scaleCatIcon(String(d?.cat ?? d?.data?.cat ?? ''), chartAnimOn ? 1.18 : 1, HOVER_MS))
+        .on('mouseout.iconscale', (_e: any, d: any) => this.scaleCatIcon(String(d?.cat ?? d?.data?.cat ?? ''), 1, HOVER_MS));
+    }
 
     this.hasRendered = true;
   }
@@ -1055,7 +1175,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   private iconShift = new Map<string, { dx: number; dy: number; f: number }>();
 
   private renderCategoryImages(
-    hostG: any, visibleCategories: string[], horizontal: boolean, stacked: boolean,
+    hostG: any, visibleCategories: string[], horizontal: boolean, stacked: boolean, isPyramid: boolean,
     categoryScale: any, valueScale: any, seriesValsForCat: (cat: string) => number[],
     animateEntrance: boolean, entranceDelay: (cat: string) => number,
   ): void {
@@ -1075,20 +1195,27 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       }
       return vals.reduce((best, v) => Math.abs(v) > Math.abs(best) ? v : best, 0);
     };
+    // stackedbar/stackedbar100 anchor at the category axis (base), not the stack's tip: the tip's
+    // height (and which segment ends up outermost there) varies per category and carries no useful
+    // anchor - the base is always at the same spot, giving a consistent row of images. Pyramid keeps
+    // anchoring at the tip (left/right by sign) since it genuinely diverges from a shared centre.
+    const baseAnchored = stacked && !isPyramid;
+    const anchorVal = (cat: string) => baseAnchored ? 0 : tipValue(cat);
+    const farVal = (cat: string) => baseAnchored ? tipValue(cat) : 0;
     const barLen = (cat: string) => Math.abs(valueScale(tipValue(cat)) - valueScale(0));
     // Image fits inside the bar: bounded by the band's cross-size (bar thickness) and by the bar's length.
     const sizeFor = (cat: string) => Math.min(categoryScale.bandwidth() * 0.9, 130, barLen(cat) - 8);
-    const dirOf = (cat: string) => Math.sign(valueScale(0) - valueScale(tipValue(cat))) || 1;
-    // Gap between the image's tip-side edge and the bar tip. Vertical bars: a small NEGATIVE value
-    // (overshoot) so the artwork - which usually has its own transparent margin - lands near the top
-    // edge. Horizontal bars: sit the image well inside, centred, so it doesn't hug the very end.
-    const gap = horizontal ? 12 : -6;
+    const dirOf = (cat: string) => Math.sign(valueScale(farVal(cat)) - valueScale(anchorVal(cat))) || 1;
+    // Gap between the image and its anchor edge, moving INTO the bar. Tip-anchored vertical bars use
+    // a small NEGATIVE value (overshoot) so artwork with its own transparent margin still lands near
+    // the edge; base-anchored and horizontal ones sit centred, comfortably inside.
+    const gap = baseAnchored ? 10 : (horizontal ? 12 : -6);
     const inward = (cat: string) => dirOf(cat) * (gap + sizeFor(cat) / 2);
-    const alignFor = (cat: string) => horizontal
+    const alignFor = (cat: string) => (horizontal || baseAnchored)
       ? 'xMidYMid meet'
       : (dirOf(cat) > 0 ? 'xMidYMin meet' : 'xMidYMax meet');
-    const baseX = (cat: string) => horizontal ? valueScale(tipValue(cat)) + inward(cat) : (categoryScale(cat) || 0) + categoryScale.bandwidth() / 2;
-    const baseY = (cat: string) => horizontal ? (categoryScale(cat) || 0) + categoryScale.bandwidth() / 2 : valueScale(tipValue(cat)) + inward(cat);
+    const baseX = (cat: string) => horizontal ? valueScale(anchorVal(cat)) + inward(cat) : (categoryScale(cat) || 0) + categoryScale.bandwidth() / 2;
+    const baseY = (cat: string) => horizontal ? (categoryScale(cat) || 0) + categoryScale.bandwidth() / 2 : valueScale(anchorVal(cat)) + inward(cat);
 
     const iconG = hostG.append('g').attr('class', 'eda-bar-icons').style('pointer-events', 'none');
     visibleCategories.forEach(cat => {
@@ -1141,5 +1268,99 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
     if (!st) return;
     st.f = f;
     this.applyCatIconTransform(cat, ms);
+  }
+
+  // --- Per-segment media-library images for STACKED bars (stackedbar/stackedbar100) - one per
+  // visible series inside each bar instead of one per whole category, since a stacked bar's real
+  // "value" is the segment (see chart-dialog: icons are keyed by series label here, iconsPerSeries).
+  // Nudging still moves a whole category's icons together, so this reuses iconNodeByCat/iconBaseXY/
+  // iconShift/shiftCatIcon above unchanged - renderSegmentIcons just registers ONE wrapping <g> per
+  // category there (holding every one of that category's segment icons as children) instead of a
+  // single image. Only the hover-scale is genuinely new/separate (per segment, not per category).
+  private segIconNode = new Map<string, any>();       // key `${cat}::${sIdx}` -> the segment's own <g>
+  private segIconBaseXY = new Map<string, { x: number; y: number }>();
+
+  private renderSegmentIcons(
+    hostG: any, stackedSeriesData: any[], visibleSeries: any[], horizontal: boolean,
+    categoryScale: any, valueScale: any, animateEntrance: boolean, entranceDelay: (cat: string, sIdx: number) => number,
+  ): void {
+    this.iconNodeByCat.clear();
+    this.iconBaseXY.clear();
+    this.iconShift.clear();
+    this.segIconNode.clear();
+    this.segIconBaseXY.clear();
+    const iconMap = buildIconMap(this.inject.assignedIcons, this.inject.useIcons);
+    if (!iconMap.size || categoryScale.bandwidth() < 14) return;
+
+    const iconG = hostG.append('g').attr('class', 'eda-bar-seg-icons').style('pointer-events', 'none');
+    // One wrapping <g> per category, registered into the SAME maps renderCategoryImages/shiftCatIcon
+    // use - its own transform only ever carries the nudge offset (never scaled), each child segment
+    // icon below carries its own absolute position + independent hover-scale.
+    const catGroups = new Map<string, any>();
+    const catGroup = (cat: string) => {
+      let node = catGroups.get(cat);
+      if (!node) {
+        node = iconG.append('g').attr('transform', 'translate(0,0)');
+        catGroups.set(cat, node);
+        this.iconNodeByCat.set(cat, node);
+        this.iconBaseXY.set(cat, { x: 0, y: 0 });
+        this.iconShift.set(cat, { dx: 0, dy: 0, f: 1 });
+      }
+      return node;
+    };
+
+    visibleSeries.forEach((series, sIdx) => {
+      const href = resolveIconHref(iconMap.get(String(series.label)) || '', this.fileUtils);
+      if (!href) return;
+      const layer = stackedSeriesData[sIdx];
+      layer.forEach((d: any) => {
+        const cat = d.data.cat;
+        let x: number, y: number, w: number, h: number;
+        if (horizontal) {
+          x = valueScale(Math.min(d[0], d[1]));
+          y = categoryScale(cat);
+          w = Math.abs(valueScale(d[1]) - valueScale(d[0]));
+          h = categoryScale.bandwidth();
+        } else {
+          x = categoryScale(cat);
+          y = valueScale(Math.max(d[0], d[1]));
+          w = categoryScale.bandwidth();
+          h = Math.abs(valueScale(d[1]) - valueScale(d[0]));
+        }
+        const size = Math.min(w, h) * 0.8;
+        if (size < 12) return; // segment too thin/short (or zero-value) to hold a visible icon
+        const cx = x + w / 2, cy = y + h / 2;
+        const key = `${cat}::${sIdx}`;
+
+        const segNode = catGroup(cat).append('g').attr('class', 'seg-icon');
+        segNode.append('image')
+          .attr('preserveAspectRatio', 'xMidYMid meet')
+          .attr('x', -size / 2).attr('y', -size / 2).attr('width', size).attr('height', size)
+          .attr('href', href)
+          .on('error', (e: any) => { const p = e?.target?.parentNode; if (p?.style) p.style.display = 'none'; });
+        this.segIconNode.set(key, segNode);
+        this.segIconBaseXY.set(key, { x: cx, y: cy });
+
+        if (animateEntrance) {
+          segNode.style('opacity', 0).attr('transform', `translate(${cx},${cy}) scale(0.3)`)
+            .transition('segiconenter').delay(entranceDelay(cat, sIdx)).duration(300)
+            .style('opacity', 1).attr('transform', `translate(${cx},${cy}) scale(1)`);
+        } else {
+          segNode.attr('transform', `translate(${cx},${cy}) scale(1)`);
+        }
+      });
+    });
+  }
+
+  /** Called from a stacked segment's own mouseover/mouseout - grows/returns JUST that segment's
+   *  icon, independent from its category wrapping group's nudge transform (see renderSegmentIcons). */
+  private scaleSegIcon(cat: string, sIdx: number, f: number, ms: number): void {
+    const key = `${cat}::${sIdx}`;
+    const node = this.segIconNode.get(key);
+    const base = this.segIconBaseXY.get(key);
+    if (!node || !base) return;
+    node.interrupt('segiconenter');
+    const t = `translate(${base.x},${base.y}) scale(${f})`;
+    (ms > 0 ? node.interrupt('segiconhover').transition('segiconhover').duration(ms) : node).attr('transform', t);
   }
 }

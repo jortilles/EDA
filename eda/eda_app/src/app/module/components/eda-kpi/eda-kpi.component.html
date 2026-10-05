@@ -34,7 +34,7 @@
               <img [src]="inject.prefixImage | mediaSrc" alt=""
                    style="height: 1em; width: auto; vertical-align: middle; object-fit: contain; display: inline;" />
             }
-            {{inject.value | number:'1.0-10':'es' }} {{inject.sufix}}
+            {{inject.value | number:getNumberFormat():'es' }} {{inject.sufix}}
         </span>
 
         @if(!!sufixClick){

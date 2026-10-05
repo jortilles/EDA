@@ -25,6 +25,9 @@ export class TableConfig {
    *  is never persisted — always every numeric column currently in the query (see
    *  GroupedSubtotalsUtils.numericColumnsFromFields), so adding one needs no re-save. */
   groupBySubtotalColumns: string[];
+  /** Column widths as percentages (field -> "33.33%"), set once the user drags a header border.
+   *  Undefined until then, so untouched tables keep auto-sizing by content. */
+  columnWidths?: Record<string, string>;
 
   constructor(
     onlyPercentages: Boolean,
@@ -45,6 +48,7 @@ export class TableConfig {
     bandingColor: string = '',
     colorEnabled: boolean = true,
     groupBySubtotalColumns: string[] = [],
+    columnWidths?: Record<string, string>,
     ) {
       this.onlyPercentages = onlyPercentages;
       this.resultAsPecentage = resultAsPecentage;
@@ -64,6 +68,7 @@ export class TableConfig {
       this.bandingColor = bandingColor;
       this.colorEnabled = colorEnabled;
       this.groupBySubtotalColumns = groupBySubtotalColumns;
+      this.columnWidths = columnWidths;
   }
 
 }

@@ -110,13 +110,13 @@
       (dragover)="onDragOver($event)"
       (dragleave)="onDragLeave($event)"
       (drop)="onDrop($event)">
-      <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" class="hidden" (change)="onFileSelected($event)" />
+      <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple class="hidden" (change)="onFileSelected($event)" />
       @if (uploading()) {
-        <span class="dropzone-text" i18n="@@mediaUploading">Subiendo imagen...</span>
+        <span class="dropzone-text" i18n="@@mediaUploading">Subiendo imágenes...</span>
       } @else {
         <i class="pi pi-cloud-upload dropzone-icon"></i>
-        <span class="dropzone-text" i18n="@@mediaDropHint">Arrastra una imagen aquí o haz clic para subirla</span>
-        <span class="dropzone-hint" i18n="@@mediaFormatsHint">PNG, JPG, GIF o WEBP · máximo 1MB</span>
+        <span class="dropzone-text" i18n="@@mediaDropHint">Arrastra una o varias imágenes aquí o haz clic para subirlas</span>
+        <span class="dropzone-hint" i18n="@@mediaFormatsHint">PNG, JPG, GIF o WEBP · máximo 1MB por imagen</span>
       }
     </label>
 

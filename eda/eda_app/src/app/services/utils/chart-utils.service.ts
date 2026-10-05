@@ -759,8 +759,12 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('sunburst'), 1);
         }
 
-        // Testing dynamic treetable
-        if(dataDescription.totalColumns > 2) {
+        // treetable: works two ways.
+        // 1) father/child-ID hierarchy - first two columns numeric (ID pair), needs a 3rd column to display.
+        // 2) auto-detected dynamic hierarchy - groups by repeated-value columns, needs at least 2 columns.
+        const treetableIdPair = query.length >= 2 && query[0]?.column_type === 'numeric' && query[1]?.column_type === 'numeric';
+        const treetableAllowed = treetableIdPair ? dataDescription.totalColumns > 2 : dataDescription.totalColumns >= 2;
+        if (treetableAllowed) {
             notAllowed.splice(notAllowed.indexOf('treetable'), 1);
         }
 
@@ -827,14 +831,14 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
         }
         // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
-        if (dataSize < 2500) {
+        if (dataSize < 2000) {
             notAllowed.splice(notAllowed.indexOf('bar'), 1);
             notAllowed.splice(notAllowed.indexOf('kpibar'), 1);
             notAllowed.splice(notAllowed.indexOf('radar'), 1);
             notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
         }
         // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
-        if (dataSize < 150000) {
+        if (dataSize < 5000) {
             notAllowed.splice(notAllowed.indexOf('line'), 1);
             notAllowed.splice(notAllowed.indexOf('kpiline'), 1);
             notAllowed.splice(notAllowed.indexOf('area'), 1);

@@ -1,4 +1,13 @@
 
+@if(TOO_MANY_DATA){
+  <div class="alert alert-warning text-center py-1 mb-1" style="font-size: 12px;">
+    @if(TOO_MANY_CROSSTABLE_COLUMNS){
+      <span i18n="@@tooManyValuesForCrosstable">Demasiados valores en el eje horizontal. Cambia la configuración de la tabla para que se pueda representar correctamente.</span>
+    } @else {
+      <span i18n="@@tooManyValuesForChart">Demasiados valores para un gráfico. Se muestran los datos en una tabla.</span>
+    }
+  </div>
+}
 <div class="relative w-full h-full">
   <template #chartComponent></template>
   @if (groupedSubtotalsLoading) {

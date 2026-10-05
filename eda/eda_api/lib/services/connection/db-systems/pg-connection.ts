@@ -5,6 +5,11 @@ import { AggregationTypes } from '../../../module/global/model/aggregation-types
 
 var types = require('pg').types;
 types.setTypeParser(1700, 'text', parseFloat);
+// OID 20 = int8/bigint. pg returns it as a string by default (COUNT(*) and bigint
+// sums/aggregates are always int8) - without this, the frontend's SQL-mode type
+// detector (query-utils.ts) sees a string and misclassifies the column as 'text',
+// which blocks KPI-type panels for that data (see getNotAllowedCharts).
+types.setTypeParser(20, parseInt);
 
 
 export class PgConnection extends AbstractConnection {
@@ -143,19 +148,21 @@ export class PgConnection extends AbstractConnection {
     }
 
     async execQuery(query: string): Promise<any> {
-        let client: { connect: () => void; query: (arg0: string) => any; end: () => void; };
+        const client = this.client;
         try {
-            client = this.client;
-            client.connect();
-            const searchPath = await client.query(`SET search_path TO '${this.config.schema || 'public'}';`)
+            await client.connect();
+            await client.query(`SET search_path TO '${this.config.schema || 'public'}';`);
             const result = await client.query(query);
-            client.end();
             return result.rows;
         } catch (err) {
             console.log(err);
             throw err;
         } finally {
-            client.end();
+            try {
+                await client.end();
+            } catch (endErr) {
+                console.error(endErr);
+            }
         }
     }
 

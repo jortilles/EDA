@@ -58,6 +58,8 @@ export const CUSTOM_CHART_CONFIG_FIELDS: CustomChartConfigField[] = [
   { name: 'chartAnimation', default: true, fallbackIfMissing: true },
   { name: 'useIcons', default: false },
   { name: 'assignedIcons', default: [] },
+  { name: 'categoryLabelMaxChars', default: 0 },
+  { name: 'categoryLabelCharsEnabled', default: false },
 ];
 
 export function readCustomFields(cfg: any, fields: CustomChartConfigField[]): any {
@@ -78,6 +80,12 @@ export const ChartsConfigUtils = {
 
     if (!ebp.panelChart) {
       return new ChartConfig(config);
+    }
+
+    // The chart is being shown as a plain table (too many data): the rendered component is not the
+    // configured chart, so keep the saved config instead of reading it from that component.
+    if (ebp.panelChart.TOO_MANY_DATA) {
+      return new ChartConfig(ebp.panelChart.props.config?.getConfig() ?? null);
     }
 
 
@@ -103,6 +111,7 @@ export const ChartsConfigUtils = {
         colorEnabled: ebp.panelChart.componentRef.instance.inject.colorEnabled !== false,
         // Not mirrored onto inject, read from the current config instead (like assignedColors below).
         groupBySubtotalColumns: ebp.panelChart.props.config?.getConfig()?.['groupBySubtotalColumns'] || [],
+        columnWidths: ebp.panelChart.componentRef.instance.inject.columnWidths,
       }
 
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'kpideviation') {
@@ -158,6 +167,12 @@ export const ChartsConfigUtils = {
         editedTreeTable: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['editedTreeTable'] : false,
         hierarchyLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['hierarchyLabels'] : [],
         leafLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['leafLabels'] : [],
+        showOriginField: ebp.panelChart.props.config?.getConfig()?.['showOriginField'] ?? false,
+        showColumnFilters: ebp.panelChart.props.config?.getConfig()?.['showColumnFilters'] ?? true,
+        showChildCount: ebp.panelChart.props.config?.getConfig()?.['showChildCount'] ?? false,
+        sortOrder: ebp.panelChart.props.config?.getConfig()?.['sortOrder'] ?? 'none',
+        sortColumn: ebp.panelChart.props.config?.getConfig()?.['sortColumn'] ?? '',
+        columnWidths: ebp.panelChart.props.config?.getConfig()?.['columnWidths'],
       }
 
     } else if (ebp.panelChart.props.chartType === 'coordinatesMap') {

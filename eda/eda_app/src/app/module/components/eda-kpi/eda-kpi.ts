@@ -1,6 +1,10 @@
 export class EdaKpi {
     header: string;
     value: number;
+    /** From the numeric column's configured "Número de decimals" - drives the display pipe's
+     *  fraction digits in eda-kpi.component.html. Undefined when no numeric column config is
+     *  available, in which case the template falls back to its original 0-10 range. */
+    decimals?: number;
     sufix: string;
     styleClass: any;
     style: any;

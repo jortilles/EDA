@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { EdaDialog2Component, CodeEditorComponent } from '@eda/shared/components/shared-components.index';
 import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
 import * as _ from 'lodash';
 import Swal from 'sweetalert2';
@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
   selector: 'app-calculated-column-edit-dialog',
   templateUrl: './calculated-column-edit-dialog.component.html',
   styleUrls: ['./calculated-column-edit-dialog.component.css'],
-  imports: [EdaDialog2Component, FormsModule, ReactiveFormsModule, CommonModule]
+  imports: [EdaDialog2Component, FormsModule, ReactiveFormsModule, CommonModule, CodeEditorComponent]
 })
 export class CalculatedColumnEditDialogComponent implements OnInit {
 
@@ -198,6 +198,11 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
       ctrl.reset();
       ctrl.disable();
     }
+  }
+
+  onSqlExpressionChange(value: string) {
+    this.sqlExpressionString = value;
+    this.update();
   }
 
   update() {

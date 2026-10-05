@@ -22,7 +22,7 @@
     }
 
     <ng-template pTemplate="content">
-         <div #contentWrapper>
+         <div #contentWrapper [style.height]="fillContent ? '100%' : null">
              <ng-content select="[content]"></ng-content>
          </div>
     </ng-template>
@@ -35,7 +35,7 @@
             @if(ifShowClose){
                 <button class="cancel-button" (click)="onClose()">
                     <i class="fa fa-times"></i>
-                    <span i18n="@@cancelarBtn">Cancelar</span>
+                    <span>{{ closeLabel }}</span>
                 </button>
             }
             

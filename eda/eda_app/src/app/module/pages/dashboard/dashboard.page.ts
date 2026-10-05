@@ -98,6 +98,7 @@ export class DashboardPage implements OnInit {
   public gridsterOptions: GridsterConfig;
   public gridsterDashboard: GridsterItem[];
   private edaPanelsSubscription: Subscription;
+  private notSavedSubscription: Subscription;
   
   public reportTitle: any;
   public reportPanel: any;
@@ -162,7 +163,7 @@ export class DashboardPage implements OnInit {
     this.initializeResponsiveSizes();
     this.initializeGridsterOptions();
     this.loadDashboard();
-    this.dashboardService.notSaved.subscribe(
+    this.notSavedSubscription = this.dashboardService.notSaved.subscribe(
       (data) => this.notSaved = data
     );
 
@@ -208,12 +209,17 @@ export class DashboardPage implements OnInit {
     this.stylesProviderService.setDefaultBackgroundColor();
     this.stylesProviderService.loadingFromPalette = false;
     this.stopRefresh = true;
-    this.dashboard.config.stopRefresh = true;
+    if (this.dashboard) this.dashboard.config.stopRefresh = true;
     clearInterval(this.countdownInterval);
     this.mobileResizeObserver?.disconnect();
     if (this.edaPanelsSubscription) {
         this.edaPanelsSubscription.unsubscribe();
     }
+    if (this.notSavedSubscription) {
+        this.notSavedSubscription.unsubscribe();
+    }
+    // Don't let this dashboard's "unsaved changes" state leak into the next dashboard navigated to.
+    this.dashboardService.setNotSaved(false);
   }
 
 
@@ -278,6 +284,9 @@ export class DashboardPage implements OnInit {
   }
 
   public async loadDashboard() {
+    // Reset before loading so a leftover "unsaved changes" flag from a previously viewed
+    // dashboard (the service-level flag is shared/global) never leaks into this one.
+    this.dashboardService.setNotSaved(false);
     const dashboardId = this.route.snapshot.paramMap.get('id');
     const data = await lastValueFrom(this.dashboardService.getDashboard(dashboardId));
     const dashboard = data.dashboard;
@@ -290,14 +299,18 @@ export class DashboardPage implements OnInit {
       this.applyToAllfilter = dashboard.config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
       this.globalFilter?.initOrderDependentFilters(dashboard.config.orderDependentFilters || []); // Dependent filters
       //this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Dashboard filters
-      this.globalFilter?.initGlobalFilters( this.checkFiltersVisibility( dashboard.config.filters , data.datasource.model.tables ) ||[]);// Dashboard filters
+      try {
+        // A failure loading one filter's data must not prevent the rest of the dashboard (panels) from loading.
+        await this.globalFilter?.initGlobalFilters( this.checkFiltersVisibility( dashboard.config.filters , data.datasource.model.tables ) ||[]);// Dashboard filters
+      } catch (err) {
+        console.error('Error initializing dashboard filters: ', err);
+      }
       this.initPanels(dashboard);
       this.sortPanelsForMobile();
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
       this.getUrlParams();
       this.globalFilter.findGlobalFilterByUrlParams(this.queryParams);
-      this.globalFilter.fillFiltersData();
-      
+
       if (this.styles.palette !== undefined) {
         this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
       }
@@ -663,6 +676,7 @@ export class DashboardPage implements OnInit {
     const tasks = this.edaPanels.map(async (panel) => {
       if (panel.currentQuery.length > 0) {
         panel.display_v.chart = '';
+        panel.markDirty();
 
         await panel.runQueryFromDashboard(true);
 
@@ -1151,13 +1165,17 @@ export class DashboardPage implements OnInit {
           { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
         ];
       }
+      panel.markDirty();
     }
   }
 
-  refreshPanels() {
+  // panelIds: when provided, only those panels are refreshed instead of every panel in the dashboard
+  refreshPanels(panelIds?: string[]) {
     this.edaPanels.forEach(async (panel) => {
+      if (panelIds && !panelIds.includes(panel.panel.id)) return;
       if (panel.currentQuery.length > 0) {
         panel.display_v.chart = '';
+        panel.markDirty();
         await panel.runQueryFromDashboard(true);
         setTimeout(() => panel.panelChart?.updateComponent(), 100);
       }
@@ -1171,6 +1189,7 @@ export class DashboardPage implements OnInit {
         const isChartJS = ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar', 'knob'].includes(chartType);
         if (!isChartJS) {
           panel.display_v.chart = '';
+          panel.markDirty();
           await panel.runQueryFromDashboard(true);
         }
         setTimeout(() => panel.panelChart?.updateComponent(), 100);

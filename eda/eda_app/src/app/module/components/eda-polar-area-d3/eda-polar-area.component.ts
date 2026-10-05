@@ -3,8 +3,9 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaPolarArea } from './eda-polar-area';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureRadialGradient, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureRadialGradient, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, FileUtiles } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
+import { buildIconMap, resolveIconHref, renderCategoryIcons, arcIconSize } from '../eda-panels/eda-blank-panel/panel-charts/category-icons.util';
 
 interface PolarAreaSlice {
   label: string;
@@ -50,8 +51,10 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   // The <g> holding the value-label groups, so mouseover/mouseout can find and scale the label
   // matching the hovered slice (kept live/up-to-date the same way as the arc generators above).
   private currentLabelsContainer: any;
+  // Same "always live" convention as the other current* fields above, for the per-category images.
+  private currentIconsContainer: any;
 
-  constructor(private styleProviderService: StyleProviderService, private tooltipService: D3TooltipService) { }
+  constructor(private styleProviderService: StyleProviderService, private tooltipService: D3TooltipService, private fileUtils: FileUtiles) { }
 
   ngOnInit(): void {
     this.id = `polarArea_${this.inject.id}`;
@@ -177,6 +180,12 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
               .interrupt('labelScale').transition('labelScale').duration(this.hoverMs())
               .attr('transform', `translate(${this.currentHoverArcGen.centroid(d)}) scale(1.25)`);
           }
+          if (this.currentIconsContainer) {
+            this.currentIconsContainer.selectAll('g.cat-icon')
+              .filter((ld: any) => ld.data.label === d.data.label)
+              .interrupt('iconScale').transition('iconScale').duration(this.hoverMs())
+              .attr('transform', `translate(${this.currentHoverArcGen.centroid(d)}) scale(1.18)`);
+          }
         }
 
         const percentage = total > 0 ? (d.data.value / total) * 100 : 0;
@@ -214,6 +223,12 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
             this.currentLabelsContainer.selectAll('g.polar-area-label')
               .filter((ld: any) => ld.data.label === d.data.label)
               .interrupt('labelScale').transition('labelScale').duration(this.hoverMs())
+              .attr('transform', `translate(${this.currentArcGen.centroid(d)}) scale(1)`);
+          }
+          if (this.currentIconsContainer) {
+            this.currentIconsContainer.selectAll('g.cat-icon')
+              .filter((ld: any) => ld.data.label === d.data.label)
+              .interrupt('iconScale').transition('iconScale').duration(this.hoverMs())
               .attr('transform', `translate(${this.currentArcGen.centroid(d)}) scale(1)`);
           }
         }
@@ -453,5 +468,29 @@ export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
           .attr('stroke-width', 2);
       });
     }
+
+    // Per-slice media-library image, centred the same way as the value-label pills above.
+    // Unlike doughnut's fixed ring, each wedge here has its own radius (radiusScale(d.data.value)),
+    // so the available room for the icon is computed per-datum instead of once.
+    let iconG = this.svg.select('g.polar-area-icons');
+    if (iconG.empty()) iconG = this.svg.append('g').attr('class', 'polar-area-icons').style('pointer-events', 'none');
+    iconG.attr('transform', `translate(${width / 2},${height / 2})`);
+    this.currentIconsContainer = iconG;
+    const iconMap = buildIconMap(this.inject.assignedIcons, this.inject.useIcons);
+    renderCategoryIcons<any>({
+      group: iconG,
+      data: iconMap.size ? arcs : [],
+      key: (d: any) => String(d.data.label),
+      x: (d: any) => arcGen.centroid(d)[0],
+      y: (d: any) => arcGen.centroid(d)[1],
+      size: (d: any) => {
+        const r = radiusScale(d.data.value);
+        return arcIconSize(d.startAngle, d.endAngle, r / 2, r);
+      },
+      href: (d: any) => resolveIconHref(iconMap.get(String(d.data.label)) || '', this.fileUtils),
+      // Icons pop in only once the radial-grow entrance (above) has finished, instead of sitting
+      // there fully visible while the wedges are still growing out underneath them.
+      entrance: animateEntrance ? { delay: 800 } : undefined,
+    });
   }
 }

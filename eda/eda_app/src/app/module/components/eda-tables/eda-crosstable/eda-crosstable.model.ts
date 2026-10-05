@@ -7,7 +7,7 @@ import { EdaColumn } from '../eda-table/eda-columns/eda-column';
 import { EdaTableBase } from '../eda-table-core/eda-table.base';
 import { HeaderModel, MatrixHeaderModel } from '@eda/services/utils/eda-table-utils/eda-table.header';
 import { CellAggregationStrategy, MatrixCellAggregation } from '@eda/services/utils/eda-table-utils/eda-table.totals';
-import { AxisConfig, AxisItem, buildCrossTable, synthesizeLegacyAxis } from './eda-crosstable.engine';
+import { AxisConfig, AxisItem, buildCrossTable, countCrossTableColumns, synthesizeLegacyAxis } from './eda-crosstable.engine';
 
 export class EdaCrosstableModel extends EdaTableBase {
   public readonly cellAggregation: CellAggregationStrategy = new MatrixCellAggregation();
@@ -43,11 +43,27 @@ export class EdaCrosstableModel extends EdaTableBase {
     this.sourceCols = [...this.cols];
   }
 
-  protected onValueAssigned(): void {
-    const hasConfiguredAxis = this.ordering != undefined && this.ordering.length !== 0;
-    const axis: AxisConfig = hasConfiguredAxis
+  private isAxisConfigured(): boolean {
+    return this.ordering != undefined && this.ordering.length !== 0;
+  }
+
+  private resolveAxis(): AxisConfig {
+    return this.isAxisConfigured()
       ? this.filterConfiguredAxis(this.ordering[0].axes[0])
       : synthesizeLegacyAxis(this.sourceCols);
+  }
+
+  /**
+   * Number of columns the cross table would have for these rows (same shape as the
+   * `value` setter expects), computed without building it.
+   */
+  public countColumns(rows: any[]): number {
+    return countCrossTableColumns(rows, this.resolveAxis(), this.navColumnSubstitution);
+  }
+
+  protected onValueAssigned(): void {
+    const hasConfiguredAxis = this.isAxisConfigured();
+    const axis: AxisConfig = this.resolveAxis();
 
     const result = buildCrossTable(this._value, this.sourceCols, axis, {
       crossSortOrder: this.crossSortOrder as 'alphabetical' | 'value' | 'valueAsc',

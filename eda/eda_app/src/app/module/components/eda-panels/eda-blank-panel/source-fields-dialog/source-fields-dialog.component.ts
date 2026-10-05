@@ -34,6 +34,10 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
 
     visible = true;
 
+    // This dialog only ever closes (view-only, no Apply button), so "Cerrar"/"Close" reads
+    // better than eda-dialog2's default "Cancelar"/"Cancel".
+    readonly closeLabel = $localize`:@@cerrarBtn:Cerrar`;
+
     constructor(private fileUtiles: FileUtiles) { }
 
     get header(): string {
@@ -401,14 +405,26 @@ export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
             ? table.filteredValue
             : table.value;
         const headers = this.headers;
+        // Dedupe keys: source fields from joined tables can share a name (e.g. two "id" columns).
+        const uniqueKeys = this._dedupeHeaders(headers);
         const cols = displayedRows.map((row: any[]) => {
             const obj: Record<string, any> = {};
-            headers.forEach((h, i) => { obj[h] = row[i]; });
+            uniqueKeys.forEach((h, i) => { obj[h] = row[i]; });
             return obj;
         });
         const panelTitle = this.controller?.params?.panelTitle || '';
         const fileName = panelTitle ? `Campos de origen - ${panelTitle}` : 'Campos de origen';
         this.fileUtiles.exportToExcel(headers, cols, fileName);
+    }
+
+    /** Same rule as ChartUtilsService.uniqueLabels: suffix repeats with their index so they can be used as unique object keys. */
+    private _dedupeHeaders(headers: string[]): string[] {
+        const seen: string[] = [];
+        return headers.map((h, i) => {
+            const key = seen.includes(h) ? `${h}_${i}` : h;
+            seen.push(h);
+            return key;
+        });
     }
 
     ngAfterViewInit(): void {
