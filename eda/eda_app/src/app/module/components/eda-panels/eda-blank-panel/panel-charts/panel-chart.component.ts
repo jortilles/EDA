@@ -69,6 +69,7 @@ import { EdaAreaComponent } from '@eda/components/eda-area-d3/eda-area.component
 import { EdaAreaD3 } from '@eda/components/eda-area-d3/eda-area';
 import { EdaBarlineComponent } from '@eda/components/eda-barline-d3/eda-barline.component';
 import { EdaBarlineD3 } from '@eda/components/eda-barline-d3/eda-barline';
+import { CHART_RENDER_LIMITS } from '@eda/configs/customizable/customizable_default';
 
 @Component({
     standalone: true,
@@ -88,10 +89,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     ngOnDestroy(): void {
         this.destroyComponent();
     }
-    /** Above this number of rows, bar/line family charts are rendered as a table */
-    private static readonly MAX_CHART_ROWS = 2000;
-    /** Above this number of generated columns, cross tables are rendered as a plain table */
-    private static readonly MAX_CROSSTABLE_COLUMNS = 50;
     @Input() props: PanelChart;
     @Output() configUpdated: EventEmitter<any> = new EventEmitter<any>(null);
     @Output() onChartClick: EventEmitter<any> = new EventEmitter<any>();
@@ -105,7 +102,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public NO_DATA: boolean;
     public NO_DATA_ALLOWED: boolean;
     public NO_FILTER_ALLOWED: boolean;
-    /** The chart has been replaced by a plain table: too many rows (MAX_CHART_ROWS) or cross table columns (MAX_CROSSTABLE_COLUMNS) */
+    /** The chart has been replaced by a plain table: too many rows or cross table columns (CHART_RENDER_LIMITS) */
     public TOO_MANY_DATA: boolean = false;
     /** TOO_MANY_DATA was caused by a cross table with too many generated columns (shows its own message) */
     public TOO_MANY_CROSSTABLE_COLUMNS: boolean = false;
@@ -310,18 +307,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Bar/line family charts whose resultset is too large to be drawn: over the per type limit
-     * (same rules used to disable the chart in the selector) or over MAX_CHART_ROWS.
-     * Histogram is excluded: it bins the data, so it supports any number of rows.
+     * Charts whose resultset is too large to be drawn: over the per subtype limit in CHART_RENDER_LIMITS
+     * (same rules used to disable the chart in the selector). Tables and histogram have no limit.
      */
     private hasTooManyRowsForChart(type: string): boolean {
-        const rowLimitedCharts = ['bar', 'line', 'radar', 'doughnut', 'polarArea'];
-        if (!rowLimitedCharts.includes(type) || this.props.edaChart === 'histogram') {
+        if (['table', 'crosstable', 'treetable'].includes(type)) {
             return false;
         }
         const rows = this.props.data?.values?.length || 0;
-        return rows > PanelChartComponent.MAX_CHART_ROWS
-            || this.chartUtils.getTooManyDataForCharts(rows).includes(type);
+        return this.chartUtils.exceedsChartMaxRows(this.props.edaChart, rows);
     }
 
     /**
@@ -386,7 +380,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const tableRows = this.chartUtils.transformDataQueryForTable(tableLabels, tableValues);
 
         // A cross table with too many generated columns can't be rendered: show the plain table instead
-        if (inject instanceof EdaCrosstableModel && inject.countColumns(tableRows) > PanelChartComponent.MAX_CROSSTABLE_COLUMNS) {
+        if (inject instanceof EdaCrosstableModel && inject.countColumns(tableRows) > CHART_RENDER_LIMITS.maxCrosstableColumns) {
             this.TOO_MANY_DATA = true;
             this.TOO_MANY_CROSSTABLE_COLUMNS = true;
             this.createEdatableComponent('table', null);
