@@ -587,7 +587,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             inject.__groupedSubtotalsMergedForColumns = groupByColumns;
             inject.checkTotals(null);
         }).catch(err => console.error('No se pudieron cargar los subtotales agrupados', err))
-          .finally(() => this.groupedSubtotalsLoading = false);
+          .finally(() => {
+              this.groupedSubtotalsLoading = false;
+              // OnPush: async result must explicitly trigger a repaint (spinner + merged rows)
+              this.cdr.markForCheck();
+          });
     }
 
     /** Render knob */

@@ -1,6 +1,6 @@
 import { EdaDialogController } from './../../../../../shared/components/eda-dialogs/eda-dialog/eda-dialog-controller';
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
-import { Component, ViewChild, Input } from '@angular/core';
+import { Component, ViewChild, Input, ChangeDetectorRef } from '@angular/core';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog';
 import { MenuItem } from 'primeng/api';
 import * as _ from 'lodash';
@@ -112,7 +112,7 @@ export class TableDialogComponent{
   public addPrediction: string = $localize`:@@showLinesPrediction:Mostrar Predicción`;
   public removePrediction: string = $localize`:@@removePrediction:Quitar Predicción`;
 
-  constructor(private styleProviderService: StyleProviderService, private spinnerService: SpinnerService) {}
+  constructor(private styleProviderService: StyleProviderService, private spinnerService: SpinnerService, private cdr: ChangeDetectorRef) {}
 
   setChartProperties() {
     this.setCols();
@@ -425,7 +425,11 @@ export class TableDialogComponent{
     this.groupedSubtotalsLoading = true;
     this.myPanelChartComponent.applyGroupedSubtotals({
       groupBySubtotalColumns: this.groupBySubtotalColumns,
-    } as TableConfig).finally(() => this.groupedSubtotalsLoading = false);
+    } as TableConfig).finally(() => {
+      this.groupedSubtotalsLoading = false;
+      // Parent eda-blank-panel is OnPush: async result must explicitly trigger a repaint
+      this.cdr.markForCheck();
+    });
   }
 
   setPredictionCol() {

@@ -8044,7 +8044,6 @@ Salutacions.</target>
   <source>La consulta está limitada a 50.000 registros</source>
   <target>La consulta està limitada a 50.000 registres</target>
 </trans-unit>
-      </trans-unit>
 
       <trans-unit id="groupedSubtotalsTitle">
         <source>Subtotales de grupo</source>
