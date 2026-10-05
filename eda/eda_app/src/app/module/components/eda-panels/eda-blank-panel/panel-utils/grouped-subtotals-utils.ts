@@ -148,8 +148,8 @@ export const GroupedSubtotalsUtils = {
       allFields.forEach(f => {
         const numPos = numFields.indexOf(f);
         if (numPos !== -1) { subtotalRow[f] = values ? values[numPos] : null; return; }
-        const dimPos = dimFields.slice(0, level + 1).indexOf(f);
-        subtotalRow[f] = dimPos !== -1 ? `${row[f]} Total` : '';
+        // Only the column of this level is labeled; parent group columns stay empty
+        subtotalRow[f] = dimFields.indexOf(f) === level ? `${row[f]} Total` : '';
       });
       return subtotalRow;
     };
