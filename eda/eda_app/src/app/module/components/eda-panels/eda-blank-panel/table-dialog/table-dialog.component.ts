@@ -1,6 +1,6 @@
 import { EdaDialogController } from './../../../../../shared/components/eda-dialogs/eda-dialog/eda-dialog-controller';
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
-import { Component, ViewChild, Input } from '@angular/core';
+import { Component, ViewChild, Input, ChangeDetectorRef } from '@angular/core';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog';
 import { MenuItem } from 'primeng/api';
 import * as _ from 'lodash';
@@ -17,13 +17,16 @@ import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../pre
 import { QueryUtils } from '../panel-utils/query-utils';
 import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_default';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { resolveFieldDisplayName } from '../panel-utils/grouped-subtotals-utils';
 
 @Component({
   standalone: true,
   selector: 'app-table-dialog',
   templateUrl: './table-dialog.component.html',
   styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css'],
-  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent, PredictionDialogComponent, ColorPickerModule]
+  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent, PredictionDialogComponent, ColorPickerModule, MultiSelectModule, ProgressSpinnerModule]
 })
 
 export class TableDialogComponent{
@@ -56,6 +59,18 @@ export class TableDialogComponent{
   public headerColor: string = '';
   public bandingColor: string = '';
   public colorEnabled: boolean = true;
+
+  /** Ordered column names to nest grouped subtotals by (e.g. [pais, ciudad]) — see
+   *  TableConfig.groupBySubtotalColumns. Purely a UI/config concern here: this only builds
+   *  and persists the selection, the actual subtotal rows aren't rendered yet. */
+  public groupBySubtotalColumns: string[] = [];
+  /** Whether the picker section is expanded — independent of whether any column is chosen
+   *  yet, so turning it on doesn't need a column selected first. */
+  public groupedSubtotalsOpen: boolean = false;
+  public groupedSubtotalsLoading: boolean = false;
+
+  public groupedSubtotalsTitle: string = $localize`:@@groupedSubtotalsTitle:Subtotales de grupo`;
+  public groupedSubtotalsGroupByLabel: string = $localize`:@@groupedSubtotalsGroupByLabel:Agrupar por (en orden)`;
 
   /**Strings */
   public addTotals: string = $localize`:@@addTotals:Totales`;
@@ -97,7 +112,7 @@ export class TableDialogComponent{
   public addPrediction: string = $localize`:@@showLinesPrediction:Mostrar Predicción`;
   public removePrediction: string = $localize`:@@removePrediction:Quitar Predicción`;
 
-  constructor(private styleProviderService: StyleProviderService, private spinnerService: SpinnerService) {}
+  constructor(private styleProviderService: StyleProviderService, private spinnerService: SpinnerService, private cdr: ChangeDetectorRef) {}
 
   setChartProperties() {
     this.setCols();
@@ -124,6 +139,8 @@ export class TableDialogComponent{
       this.headerColor = config.headerColor || DEFAULT_TABLE_HEADER_COLOR;
       this.bandingColor = config.bandingColor || DEFAULT_TABLE_BANDING_COLOR;
       this.colorEnabled = config.colorEnabled !== false;
+      this.groupBySubtotalColumns = config.groupBySubtotalColumns || [];
+      this.groupedSubtotalsOpen = this.groupBySubtotalColumns.length > 0;
     } else {
       this.panelChartConfig.config = new ChartConfig(
         new TableConfig(false, false, 5, false, false, false, false, null, null, null, false, false, [])
@@ -365,19 +382,54 @@ export class TableDialogComponent{
     this.setItems(); // This is where color modification is requested
   }
 
-  get queryNumericColumns(): QueryColumn[] {
+  private get panelQueryFields(): any[] {
     const panelID = this.controller?.params?.panelId;
     if (!panelID || !this.dashboard) return [];
     const dashboardPanel = this.dashboard.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
-    const fields: any[] = dashboardPanel?.panel?.content?.query?.query?.fields;
-    if (!fields) return [];
-    return fields
+    return dashboardPanel?.panel?.content?.query?.query?.fields || [];
+  }
+
+  get queryNumericColumns(): QueryColumn[] {
+    return this.panelQueryFields
       .filter((f: any) => f.column_type === 'numeric')
       .map((f: any) => ({
         column_name: f.column_name,
         table_id: f.table_id,
-        display_name: f.display_name?.default || f.column_name
+        display_name: resolveFieldDisplayName(f)
       }));
+  }
+
+  /** Text and date columns alike — the app already handles date granularity (year/month/day)
+   *  as separate columns via col.format, so there's no special casing needed here: whichever
+   *  granularity the user added to the table, they group by it the same way as any text column. */
+  get queryGroupableColumns(): QueryColumn[] {
+    return this.panelQueryFields
+      .filter((f: any) => f.column_type !== 'numeric')
+      .map((f: any) => ({
+        column_name: f.column_name,
+        table_id: f.table_id,
+        display_name: resolveFieldDisplayName(f)
+      }));
+  }
+
+  toggleGroupedSubtotals(): void {
+    this.groupedSubtotalsOpen = !this.groupedSubtotalsOpen;
+    if (!this.groupedSubtotalsOpen) {
+      this.groupBySubtotalColumns = [];
+    }
+    this.refreshGroupedSubtotals();
+  }
+
+  /** Live preview: numeric columns are resolved by panel-chart itself, fresh from the query. */
+  refreshGroupedSubtotals(): void {
+    this.groupedSubtotalsLoading = true;
+    this.myPanelChartComponent.applyGroupedSubtotals({
+      groupBySubtotalColumns: this.groupBySubtotalColumns,
+    } as TableConfig).finally(() => {
+      this.groupedSubtotalsLoading = false;
+      // Parent eda-blank-panel is OnPush: async result must explicitly trigger a repaint
+      this.cdr.markForCheck();
+    });
   }
 
   setPredictionCol() {
@@ -462,9 +514,9 @@ export class TableDialogComponent{
     }
   }
 
-  onClose(event: EdaDialogCloseEvent, response?: any): void {
+  onClose(event: EdaDialogCloseEvent, response?: any, extra?: any): void {
     this.myPanelChartComponent.componentRef.instance.inject.styles = this.styles;
-    return this.controller.close(event, response);
+    return this.controller.close(event, response, extra);
   }
 
   async saveChartConfig() {
@@ -477,7 +529,8 @@ export class TableDialogComponent{
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows,
       this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles,
       this.noRepetitions, this.negativeNumbers, this.ordering, this.crossSortOrder,
-      this.headerColor, this.bandingColor, this.colorEnabled);
+      this.headerColor, this.bandingColor, this.colorEnabled,
+      this.groupBySubtotalColumns);
 
     // Apply prediction changes to the dashboard only on confirm
     const panelID = this.controller?.params?.panelId;
@@ -507,7 +560,17 @@ export class TableDialogComponent{
       }
     }
 
-    this.onClose(EdaDialogCloseEvent.UPDATE, properties);
+    // Hand off the live preview's already-merged rows so Confirm skips a re-fetch — but only if
+    // it was actually merged for the CURRENT selection (a picker change without closing the
+    // dropdown before Confirm leaves the preview stale for a different column set).
+    const previewInject: any = this.myPanelChartComponent.componentRef?.instance?.inject;
+    const previewMatchesSelection = previewInject?.__groupedSubtotalsCleanRows &&
+      _.isEqual(previewInject.__groupedSubtotalsMergedForColumns, this.groupBySubtotalColumns);
+    const groupedSubtotalsPreview = (this.groupBySubtotalColumns.length && previewMatchesSelection)
+      ? { cleanRows: previewInject.__groupedSubtotalsCleanRows, mergedRows: previewInject.value }
+      : undefined;
+
+    this.onClose(EdaDialogCloseEvent.UPDATE, properties, groupedSubtotalsPreview);
   }
 
   closeChartConfig() {

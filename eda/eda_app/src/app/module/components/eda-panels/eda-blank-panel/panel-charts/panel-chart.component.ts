@@ -23,6 +23,7 @@ import { EdaColumnText } from '@eda/components/eda-tables/eda-table/eda-columns/
 import { EdaColumnHtml } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-html';
 import { EdaTableModel } from '@eda/components/eda-tables/eda-table/eda-table.model';
 import { EdaCrosstableModel } from '@eda/components/eda-tables/eda-crosstable/eda-crosstable.model';
+import { GroupedSubtotalsUtils } from '../panel-utils/grouped-subtotals-utils';
 import { KpiConfig } from './chart-configuration-models/kpi-config';
 import { DynamicTextConfig } from './chart-configuration-models/dynamicText-config';
 import { EdaMapComponent } from '@eda/components/eda-map/eda-map.component';
@@ -69,13 +70,14 @@ import { EdaAreaComponent } from '@eda/components/eda-area-d3/eda-area.component
 import { EdaAreaD3 } from '@eda/components/eda-area-d3/eda-area';
 import { EdaBarlineComponent } from '@eda/components/eda-barline-d3/eda-barline.component';
 import { EdaBarlineD3 } from '@eda/components/eda-barline-d3/eda-barline';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CHART_RENDER_LIMITS } from '@eda/configs/customizable/customizable_default';
 
 @Component({
     standalone: true,
     selector: 'panel-chart',
     templateUrl: './panel-chart.component.html',
-    imports: [FormsModule, CommonModule],
+    imports: [FormsModule, CommonModule, ProgressSpinnerModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
     // Custom elements default to display:inline, which ignores the parent's h-full/w-full
     // (height/width 100%) classes entirely - without this, the dynamically-created chart inside
@@ -102,7 +104,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public NO_DATA: boolean;
     public NO_DATA_ALLOWED: boolean;
     public NO_FILTER_ALLOWED: boolean;
-    /** The chart has been replaced by a plain table: too many rows or cross table columns (CHART_RENDER_LIMITS) */
+    public groupedSubtotalsLoading: boolean = false;
+    /** The chart has been replaced by a plain table: too many rows (MAX_CHART_ROWS) or cross table columns (MAX_CROSSTABLE_COLUMNS) */
     public TOO_MANY_DATA: boolean = false;
     /** TOO_MANY_DATA was caused by a cross table with too many generated columns (shows its own message) */
     public TOO_MANY_CROSSTABLE_COLUMNS: boolean = false;
@@ -456,6 +459,133 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.colorEnabled = config.colorEnabled !== false;
         this.componentRef.instance.applyBandingColors(config.headerColor, config.bandingColor, config.colorEnabled !== false);
         this.configUpdated.emit(this.currentConfig);;
+        this.applyGroupedSubtotals(config);
+    }
+
+    /**
+     * Plain table only (fetchGroupedSubtotals is undefined for every other chart type/
+     * crosstable, so this is a no-op there). Fetches every level via the closure
+     * EdaBlankPanelComponent built (this component never touches currentQuery/services
+     * itself) and merges the result into inject.value once it resolves. Public so table-dialog
+     * can call it directly on every picker interaction for a live preview — the same way
+     * colTotals()/colSubTotals() call inject.checkTotals(null) directly — since this needs an
+     * async fetch checkTotals() was never built for.
+     *
+     * IMPORTANT: EdaTableModel.checkTotals() (run on every page turn — see eda-table.base.ts's
+     * onPage()) calls noRepeatedRows(), which — with no "ocultar repetidos"/percentage flags
+     * active, the normal case — unconditionally does `ctx.replaceRows(cloneDeep(origValues))`.
+     * That silently wiped every subtotal row back out on the very next page turn, since nothing
+     * re-ran the merge afterward. Fixed by keeping inject.origValues itself pointed at the
+     * MERGED (detail + subtotal) rows once merged, so that reset lands on the right data — the
+     * TRUE clean rows (needed as the merge input, and to restore when subtotals are turned
+     * back off) are kept separately on inject.__groupedSubtotalsCleanRows instead, captured
+     * once and left untouched.
+     */
+    public applyGroupedSubtotals(config: TableConfig): Promise<void> {
+        const inject: any = this.componentRef?.instance?.inject;
+        if (!inject || inject instanceof EdaCrosstableModel) return Promise.resolve();
+
+        // Bumped on every call, so a late in-flight fetch can detect it's been superseded.
+        const requestId = (inject.__groupedSubtotalsRequestId = (inject.__groupedSubtotalsRequestId || 0) + 1);
+
+        const groupByColumns = config.groupBySubtotalColumns;
+        const numericColumns = GroupedSubtotalsUtils.numericColumnsFromFields(this.props.query);
+        if (!groupByColumns?.length || !this.props.fetchGroupedSubtotals || !numericColumns.length) {
+            // Toggled off, nothing selected yet, or every numeric column was removed from the
+            // query — forget the grouping choice (not just skip rendering it), so re-adding a
+            // numeric column later loads a plain table instead of resurrecting old subtotals.
+            if (groupByColumns?.length && !numericColumns.length) config.groupBySubtotalColumns = [];
+            if (inject.__groupedSubtotalsCleanRows) {
+                inject.value = inject.__groupedSubtotalsCleanRows;
+                inject.origValues = inject.__groupedSubtotalsCleanRows;
+                inject.__groupedSubtotalsCleanRows = null;
+                inject.checkTotals(null);
+            }
+            inject.__groupedSubtotalsMergedForColumns = null;
+            return Promise.resolve();
+        }
+
+        // Confirm handoff: reuse table-dialog's already-merged preview instead of re-fetching.
+        if (this.props.groupedSubtotalsPreview) {
+            inject.sortedColumn = { field: null, order: null };
+            inject.__groupedSubtotalsCleanRows = this.props.groupedSubtotalsPreview.cleanRows;
+            inject.value = this.props.groupedSubtotalsPreview.mergedRows;
+            inject.origValues = this.props.groupedSubtotalsPreview.mergedRows;
+            inject.__groupedSubtotalsMergedForColumns = groupByColumns;
+            inject.checkTotals(null);
+            return Promise.resolve();
+        }
+
+        // "El grupo manda": a column-header sort re-orders inject.value by VALUE across the
+        // WHOLE array (p-table's [customSort] + eda-table's customSort()), which has no idea
+        // subtotal rows exist — it happily scatters a "Classic Cars Total" row wherever its
+        // number falls in the new order, away from the end of its group. Clearing the sort here
+        // (only when subtotals are turned ON, not when turning them off) keeps the grouped
+        // order — the one thing this feature is actually for — as something PrimeNG won't undo.
+        inject.sortedColumn = { field: null, order: null };
+
+        // Captured once — every subsequent call (picker interaction, page-turn-triggered
+        // re-merge) merges from this same clean baseline, never from whatever inject.value/
+        // origValues currently hold (which may already be a previous merge result).
+        if (!inject.__groupedSubtotalsCleanRows) {
+            inject.__groupedSubtotalsCleanRows = inject.origValues;
+        }
+        const cleanRows = inject.__groupedSubtotalsCleanRows;
+
+        // EdaColumn.field is keyed by the response label (display_name), not column_name — see
+        // initializeTable(): tableColumns[i].field is built by matching this.props.query[i]
+        // positionally against the query response labels. Keying this map by display_name
+        // matches the picker/fetch side, which also identifies columns by display_name — the
+        // only thing that's actually unique when the same column is added twice at different
+        // date granularities (e.g. "Order date" / "Order date mes").
+        const displayNameToField: Record<string, string> = {};
+        this.props.query.forEach((col: any, i: number) => {
+            const edaCol = inject.cols[i];
+            const displayName = col.display_name?.default ?? col.display_name;
+            if (edaCol && displayName) displayNameToField[displayName] = edaCol.field;
+        });
+
+        // Initial load/reload: levels were already fetched before the table existed, so merge
+        // now, synchronously — the table never paints without subtotals in the first place.
+        if (this.props.groupedSubtotalsPreloadedLevels) {
+            const merged = GroupedSubtotalsUtils.mergeRows(
+                cleanRows,
+                inject.cols.map((c: any) => c.field),
+                displayNameToField,
+                groupByColumns,
+                numericColumns,
+                this.props.groupedSubtotalsPreloadedLevels
+            );
+            inject.value = merged;
+            inject.origValues = merged;
+            inject.__groupedSubtotalsMergedForColumns = groupByColumns;
+            inject.checkTotals(null);
+            return Promise.resolve();
+        }
+
+        this.groupedSubtotalsLoading = true;
+        return this.props.fetchGroupedSubtotals(config).then(levels => {
+            // Bail if detached, or if a newer call already superseded this one.
+            if (this.componentRef?.instance?.inject !== inject) return;
+            if (inject.__groupedSubtotalsRequestId !== requestId) return;
+            const merged = GroupedSubtotalsUtils.mergeRows(
+                cleanRows,
+                inject.cols.map((c: any) => c.field),
+                displayNameToField,
+                groupByColumns,
+                numericColumns,
+                levels
+            );
+            inject.value = merged;
+            inject.origValues = merged;
+            inject.__groupedSubtotalsMergedForColumns = groupByColumns;
+            inject.checkTotals(null);
+        }).catch(err => console.error('No se pudieron cargar los subtotales agrupados', err))
+          .finally(() => {
+              this.groupedSubtotalsLoading = false;
+              // OnPush: async result must explicitly trigger a repaint (spinner + merged rows)
+              this.cdr.markForCheck();
+          });
     }
 
     /** Render knob */

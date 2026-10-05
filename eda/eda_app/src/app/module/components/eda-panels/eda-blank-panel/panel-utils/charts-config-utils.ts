@@ -109,6 +109,8 @@ export const ChartsConfigUtils = {
         headerColor: ebp.panelChart.componentRef.instance.inject.headerColor || '',
         bandingColor: ebp.panelChart.componentRef.instance.inject.bandingColor || '',
         colorEnabled: ebp.panelChart.componentRef.instance.inject.colorEnabled !== false,
+        // Not mirrored onto inject, read from the current config instead (like assignedColors below).
+        groupBySubtotalColumns: ebp.panelChart.props.config?.getConfig()?.['groupBySubtotalColumns'] || [],
         columnWidths: ebp.panelChart.componentRef.instance.inject.columnWidths,
       }
 

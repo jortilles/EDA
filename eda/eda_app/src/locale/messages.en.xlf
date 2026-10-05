@@ -7738,6 +7738,26 @@ Best regards.</target>
   <source>La consulta está limitada a 50.000 registros</source>
   <target>The query is limited to 50,000 records</target>
 </trans-unit>
+      
+      <trans-unit id="groupedSubtotalsTitle">
+        <source>Subtotales de grupo</source>
+        <target>Group subtotals</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsGroupByLabel">
+        <source>Agrupar por (en orden)</source>
+        <target>Group by (in order)</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsSearchPlaceholder">
+        <source>Buscar...</source>
+        <target>Search...</target>
+      </trans-unit>      
+
+      <trans-unit id="groupedSubtotalsAddPlaceholder">
+        <source>Seleccionar columnas...</source>
+        <target>Select columns...</target>
+      </trans-unit>      
 </body>
 </file>
 </xliff>
