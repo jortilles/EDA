@@ -7945,6 +7945,16 @@ Salutacions.</target>
         <source>Agrupar por (en orden)</source>
         <target>Agrupar per (en ordre)</target>
       </trans-unit>
+
+      <trans-unit id="groupedSubtotalsSearchPlaceholder">
+        <source>Buscar...</source>
+        <target>Cerca...</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsAddPlaceholder">
+        <source>Seleccionar columnas...</source>
+        <target>Seleccionar columnes...</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>

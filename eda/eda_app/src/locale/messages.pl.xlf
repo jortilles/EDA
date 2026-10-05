@@ -7579,6 +7579,15 @@ Pozdrawiam.</target>
         <target>Grupuj według (w kolejności)</target>
       </trans-unit>
 
+      <trans-unit id="groupedSubtotalsSearchPlaceholder">
+        <source>Buscar...</source>
+        <target>Szukaj...</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsAddPlaceholder">
+        <source>Seleccionar columnas...</source>
+        <target>Wybierz kolumny...</target>
+      </trans-unit>          
 </body>
 </file>
 </xliff>

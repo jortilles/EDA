@@ -7638,6 +7638,16 @@ Best regards.</target>
         <source>Agrupar por (en orden)</source>
         <target>Group by (in order)</target>
       </trans-unit>
+
+      <trans-unit id="groupedSubtotalsSearchPlaceholder">
+        <source>Buscar...</source>
+        <target>Search...</target>
+      </trans-unit>      
+
+      <trans-unit id="groupedSubtotalsAddPlaceholder">
+        <source>Seleccionar columnas...</source>
+        <target>Select columns...</target>
+      </trans-unit>      
 </body>
 </file>
 </xliff>

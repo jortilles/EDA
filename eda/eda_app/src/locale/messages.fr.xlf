@@ -7914,6 +7914,15 @@ Cordialement.</target>
         <target>Regrouper par (dans l'ordre)</target>
       </trans-unit>
 
+      <trans-unit id="groupedSubtotalsSearchPlaceholder">
+        <source>Buscar...</source>
+        <target>Rechercher...</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsAddPlaceholder">
+        <source>Seleccionar columnas...</source>
+        <target>Sélectionner les colonnes...</target>
+      </trans-unit>     
 </body>
   </file>
 </xliff>
