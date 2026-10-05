@@ -7569,6 +7569,16 @@ Pozdrawiam.</target>
         <target>Ikony przypisane przez dopasowanie nazwy</target>
       </trans-unit>
 
+      <trans-unit id="groupedSubtotalsTitle">
+        <source>Subtotales de grupo</source>
+        <target>Sumy częściowe grupy</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsGroupByLabel">
+        <source>Agrupar por (en orden)</source>
+        <target>Grupuj według (w kolejności)</target>
+      </trans-unit>
+
 </body>
 </file>
 </xliff>

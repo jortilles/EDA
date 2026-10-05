@@ -69,7 +69,7 @@ export class TableDialogComponent{
   public groupedSubtotalsOpen: boolean = false;
   public groupedSubtotalsLoading: boolean = false;
 
-  public groupedSubtotalsTitle: string = $localize`:@@groupedSubtotalsTitle:Subtotales agrupados`;
+  public groupedSubtotalsTitle: string = $localize`:@@groupedSubtotalsTitle:Subtotales de grupo`;
   public groupedSubtotalsGroupByLabel: string = $localize`:@@groupedSubtotalsGroupByLabel:Agrupar por (en orden)`;
 
   /**Strings */

@@ -7935,6 +7935,16 @@ Salutacions.</target>
         <source>Iconos asignados por coincidencia de nombre</source>
         <target>Icones assignades per coincidencia de nom</target>
       </trans-unit>
+
+      <trans-unit id="groupedSubtotalsTitle">
+        <source>Subtotales de grupo</source>
+        <target>Subtotals de grup</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsGroupByLabel">
+        <source>Agrupar por (en orden)</source>
+        <target>Agrupar per (en ordre)</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>
