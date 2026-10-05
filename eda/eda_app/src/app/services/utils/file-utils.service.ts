@@ -217,8 +217,11 @@ export class FileUtiles {
             // ── Second pass: render each panel ────────────────────────
             for (let i = 0; i < group.length; i++) {
                 const panel    = group[i];
-                const colStart = panel.gridX * FileUtiles.EXCEL_SCALE + 1;   // 1-indexed
-                const colEnd   = (panel.gridX + panel.gridCols) * FileUtiles.EXCEL_SCALE; // inclusive
+                // EXCEL_SCALE halves the 40-col dashboard grid into 20 Excel columns, so an odd
+                // gridX/gridCols yields a fractional column - ExcelJS throws ("A Cell needs a
+                // Row") on a non-integer column index, so both ends are rounded to the grid.
+                const colStart = Math.round(panel.gridX * FileUtiles.EXCEL_SCALE) + 1;   // 1-indexed
+                const colEnd   = Math.max(colStart, Math.round((panel.gridX + panel.gridCols) * FileUtiles.EXCEL_SCALE)); // inclusive
 
                 let panelRow = bandStartRow;
 

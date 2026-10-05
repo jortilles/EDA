@@ -31,4 +31,9 @@ export class EdaBarlineD3 {
   compact?: boolean;
   /** Sequential left-to-right entrance animation on first render. On by default. */
   chartAnimation?: boolean;
+  /** Manual category-label character limit, in effect only while categoryLabelCharsEnabled is
+   * true: 0 shows no text at all, N>0 keeps N real characters plus an ellipsis on top of them. */
+  categoryLabelMaxChars?: number;
+  /** Switch for categoryLabelMaxChars. Off (default): fixed legacy 8-char limit. */
+  categoryLabelCharsEnabled?: boolean;
 }

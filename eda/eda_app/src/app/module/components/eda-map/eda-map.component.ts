@@ -88,6 +88,7 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
           maxZoom: 19,
           maxNativeZoom: 16,
           attribution: 'Tiles &copy; <a href="https://www.esri.com" target="_blank">Esri</a> &mdash; Esri, DeLorme, NAVTEQ',
+          crossOrigin: true,
         }
       );
 
