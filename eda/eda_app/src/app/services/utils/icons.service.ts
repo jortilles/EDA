@@ -349,6 +349,14 @@ export class IconService {
   </svg>
 `,
 
+"grip-dots": `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="9" cy="5" r="1.5" /><circle cx="15" cy="5" r="1.5" />
+    <circle cx="9" cy="12" r="1.5" /><circle cx="15" cy="12" r="1.5" />
+    <circle cx="9" cy="19" r="1.5" /><circle cx="15" cy="19" r="1.5" />
+  </svg>
+`,
+
 "engranaje": `
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
     <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3h4.5l.75 3h3.75v4.5l-3 1.5 3 1.5V18h-3.75l-.75 3h-4.5l-.75-3H5.25v-4.5l3-1.5-3-1.5V6h3.75l.75-3zM12 9.75a2.25 2.25 0 110 4.5 2.25 2.25 0 010-4.5z" />

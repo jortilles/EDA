@@ -72,7 +72,7 @@
           <eda-getting-started></eda-getting-started>
         </div>
       }
-      <div class="reports-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="reports-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" cdkDropListGroup>
         <!-- Public Reports -->
         @if (isColumnVisible('shared')) {
           <ng-container
@@ -175,14 +175,30 @@
 </ng-template>
 
 <!-- Template: single dashboard card -->
-<ng-template #reportCard let-report>
-  <div class="report-card rounded-lg border bg-card text-card-foreground shadow-sm transition-colors" [attr.id]="'dashboard-' + report._id">
-    <div class="px-4 py-2 cursor-pointer" (mousedown)="openReport(report, $event)">
+<ng-template #reportCard let-report let-colKey="colKey" let-folderTag="folderTag">
+  <div class="report-card rounded-lg border bg-card text-card-foreground shadow-sm transition-colors relative"
+    [attr.id]="'dashboard-' + report._id"
+    cdkDrag
+    [cdkDragData]="{ type: 'report', report: report, fromColKey: colKey, fromTag: folderTag }"
+    [cdkDragDisabled]="isEditing"
+    (cdkDragStarted)="onCdkDragStarted()"
+    (cdkDragMoved)="onCdkDragMoved($event)"
+    (cdkDragEnded)="onCdkDragEnded()">
+    <ng-template cdkDragPreview>
+      <div class="drag-preview-chip">
+        <eda-icon name="grip-dots" size="sm"></eda-icon>
+        <span class="truncate">{{ report.config?.title }}</span>
+      </div>
+    </ng-template>
+    <span class="drag-handle absolute left-1 top-2 text-muted-foreground" title="Arrastrar" i18n-title="@@dragHandleTooltip">
+      <eda-icon name="grip-dots" size="sm"></eda-icon>
+    </span>
+    <div class="px-4 py-2 pl-6 cursor-pointer" (click)="openReport(report, $event)" (auxclick)="openReport(report, $event)">
       @if(!isEditing || editingReportId !== report._id){
       <h3 class="text-base font-semibold flex items-center justify-between gap-1">
         <span>{{ report.config?.title }}</span>
         <!-- Info icon with tooltip -->
-        <span class="relative group/info inline-flex shrink-0 ml-auto" (mousedown)="$event.stopPropagation()">
+        <span class="relative group/info inline-flex shrink-0 ml-auto" (click)="$event.stopPropagation()" (mousedown)="$event.stopPropagation()">
           <i class="pi pi-info-circle cursor-pointer text-gray-500"></i>
           <div class="absolute z-50 right-0 bottom-full mb-1 w-[32rem] rounded-md border bg-popover p-3 shadow-lg text-sm text-popover-foreground opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-200 pointer-events-none">
             <div class="font-semibold text-base mb-2 break-words">{{ report.config?.title }}</div>
@@ -282,7 +298,10 @@
 
 <!-- Template: column of reports with folder/flat view -->
 <ng-template #reportsTemplate let-reports="reports" let-title="title" let-colKey="colKey">
-  <div class="space-y-4">
+  <div class="space-y-4 column-dropzone rounded-lg transition-colors"
+    cdkDropList
+    [attr.data-col-key]="colKey"
+    (cdkDropListDropped)="onColumnCdkDrop($event, colKey)">
     <!-- On mobile layout the selector already shows the column title -->
     @if (!isMobileLayout()) {
       <h2 class="text-lg font-semibold">{{ title }}</h2>
@@ -297,7 +316,22 @@
       } @else {
         <!-- Active folder (same format as closed, open icon + chevron down) -->
         <div class="folder-card-open rounded-lg border text-card-foreground shadow-sm cursor-pointer transition-colors flex items-center gap-3 px-4 min-h-[calc(5.75rem)]"
+          cdkDrag
+          [cdkDragData]="{ type: 'folder', tag: exp.tag, fromColKey: colKey }"
+          (cdkDragStarted)="onCdkDragStarted()"
+          (cdkDragMoved)="onCdkDragMoved($event)"
+          (cdkDragEnded)="onCdkDragEnded()"
+          [attr.data-folder-tag]="exp.tag"
+          [attr.data-folder-colkey]="colKey"
           (click)="clickFolder(exp.tag, colKey)">
+          <ng-template cdkDragPreview>
+            <div class="drag-preview-chip">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M2 6a2 2 0 012-2h5l2 2h7a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
+              </svg>
+              <span class="truncate">{{ exp.tag }}</span>
+            </div>
+          </ng-template>
           <!-- Icon square (open) -->
           <div class="folder-icon-wrap-open shrink-0 flex items-center justify-center w-12 h-12 rounded-lg">
             <svg xmlns="http://www.w3.org/2000/svg" class="folder-icon-open w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -316,7 +350,7 @@
         </div>
         <!-- Reports in the active folder -->
         @for (report of getReportsByTag(reports, exp.tag); track report._id) {
-          <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report }"></ng-container>
+          <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report, colKey: colKey, folderTag: exp.tag }"></ng-container>
         }
         @empty {
           <div class="rounded-lg bg-muted p-4 text-center text-muted-foreground">
@@ -328,7 +362,22 @@
       <!-- Folder cards (closed) -->
       @for (tag of getTagsInReports(reports); track tag) {
         <div class="folder-card rounded-lg border bg-card text-card-foreground shadow-sm cursor-pointer transition-colors flex items-center gap-3 px-4 min-h-[calc(5.75rem)]"
+          cdkDrag
+          [cdkDragData]="{ type: 'folder', tag: tag, fromColKey: colKey }"
+          (cdkDragStarted)="onCdkDragStarted()"
+          (cdkDragMoved)="onCdkDragMoved($event)"
+          (cdkDragEnded)="onCdkDragEnded()"
+          [attr.data-folder-tag]="tag"
+          [attr.data-folder-colkey]="colKey"
           (click)="clickFolder(tag, colKey)">
+          <ng-template cdkDragPreview>
+            <div class="drag-preview-chip">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M2 6a2 2 0 012-2h5l2 2h7a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
+              </svg>
+              <span class="truncate">{{ tag }}</span>
+            </div>
+          </ng-template>
           <!-- Icon square -->
           <div class="folder-icon-wrap shrink-0 flex items-center justify-center w-12 h-12 rounded-lg">
             <svg xmlns="http://www.w3.org/2000/svg" class="folder-icon w-10 h-10 pl-[4px]" viewBox="0 0 24 24" fill="currentColor">
@@ -349,7 +398,7 @@
 
       <!-- Untagged dashboards below folders -->
       @for (report of getUntaggedReports(reports); track report._id) {
-        <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report }"></ng-container>
+        <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report, colKey: colKey, folderTag: null }"></ng-container>
       }
 
       @if (reports.length === 0) {
@@ -360,7 +409,7 @@
     } @else {
       <!-- Flat view (specific tag selected in filter bar) -->
       @for (report of reports; track report._id) {
-        <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report }"></ng-container>
+        <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report, colKey: colKey, folderTag: null }"></ng-container>
       }
       @empty {
         <div class="mt-4 rounded-lg bg-muted p-4 text-center text-muted-foreground">

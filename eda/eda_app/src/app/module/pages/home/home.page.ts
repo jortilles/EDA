@@ -18,11 +18,16 @@ import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ChatbotComponent } from '@eda/components/chatbot/chatbot.component';
 import { GettingStartedComponent } from '@eda/shared/components/getting-started/getting-started.component';
+import { DragDropModule, CdkDragDrop, CdkDragMove } from '@angular/cdk/drag-drop';
+
+type DragPayload =
+  | { type: 'report'; report: any; fromColKey: string; fromTag: string | null }
+  | { type: 'folder'; tag: string; fromColKey: string };
 
 @Component({
   selector: 'app-v2-home-page',
   standalone: true,
-  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule, EdaDatePickerComponent, DropdownModule, MultiSelectModule, ChatbotComponent, GettingStartedComponent],
+  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule, EdaDatePickerComponent, DropdownModule, MultiSelectModule, ChatbotComponent, GettingStartedComponent, DragDropModule],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.css']
 })
@@ -78,6 +83,18 @@ export class HomePage implements OnInit, OnDestroy {
   ];
 
   isArray = Array.isArray;
+
+  // ---- Drag & drop: dashboards/folders across visibility columns and tag folders ----
+  private isCdkDragging = false;
+  private currentHighlightEl: HTMLElement | null = null;
+  private lastDragMoveCheck = 0;
+
+  private readonly colKeyToVisible: { [key: string]: string } = {
+    shared: 'open',
+    public: 'common',
+    group: 'group',
+    private: 'private'
+  };
 
   formatDate(value: string): string {
     if (!value) return '';
@@ -219,7 +236,8 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   public openReport(report: any, event: MouseEvent) {
-    if(this.isEditing){return;}
+    if (this.isEditing || this.isCdkDragging) { return; }
+    if (event.button === 2) { return; } // right-click: let the context menu show, don't navigate
     const urlTree = this.router.createUrlTree(['/dashboard', report._id]);
     const relativeUrl = this.router.serializeUrl(urlTree);
 
@@ -252,7 +270,225 @@ export class HomePage implements OnInit, OnDestroy {
     this.reapplyFilters();
   }
 
+  // ---- Drag & drop (Angular CDK): live hover highlight + the actual drop ----
+  // The hover highlight is applied by mutating DOM classes directly (no Angular bindings, no
+  // change detection) so it stays smooth even while CDK's own pointer tracking runs outside the zone.
+
+  /** Finds the folder card (if any) under a viewport point, via its data-folder-* attributes. */
+  private folderElementAt(x: number, y: number): HTMLElement | null {
+    const el = document.elementFromPoint(x, y);
+    return el?.closest('[data-folder-tag]') as HTMLElement | null;
+  }
+
+  private setHighlight(el: HTMLElement | null): void {
+    if (this.currentHighlightEl === el) return;
+    this.currentHighlightEl?.classList.remove('drop-zone-active');
+    el?.classList.add('drop-zone-active');
+    this.currentHighlightEl = el;
+  }
+
+  public onCdkDragStarted(): void {
+    this.isCdkDragging = true;
+  }
+
+  public onCdkDragMoved(event: CdkDragMove<any>): void {
+    const now = performance.now();
+    if (now - this.lastDragMoveCheck < 100) return;
+    this.lastDragMoveCheck = now;
+
+    const { x, y } = event.pointerPosition;
+    const payload = event.source.data as DragPayload;
+    const colEl = document.elementFromPoint(x, y)?.closest('[data-col-key]') as HTMLElement | null;
+
+    if (!colEl) { this.setHighlight(null); return; }
+
+    const overColKey = colEl.dataset.colKey!;
+    const exp = this.expandedFolder();
+
+    if (exp && exp.colKey === overColKey) {
+      this.setHighlight(payload.type === 'folder' ? null : colEl);
+      return;
+    }
+
+    const folderEl = payload.type === 'report' ? this.folderElementAt(x, y) : null;
+    this.setHighlight(folderEl ?? colEl);
+  }
+
+  public onCdkDragEnded(): void {
+    this.setHighlight(null);
+    // 'click' fires right after 'mouseup', synchronously before this timeout runs, so the
+    // next click handler still sees isCdkDragging === true and can ignore a drag-triggered click.
+    setTimeout(() => { this.isCdkDragging = false; }, 0);
+  }
+
+  public onColumnCdkDrop(event: CdkDragDrop<any, any, any>, colKey: string): void {
+    this.setHighlight(null);
+    const payload = event.item.data as DragPayload;
+    if (!payload) return;
+    const dropPoint = event.dropPoint;
+
+    // Let CDK finish animating/removing its own drag preview before running the (heavier)
+    // state update + change detection, so the preview doesn't appear to hang mid-air.
+    requestAnimationFrame(() => this.processColumnDrop(payload, colKey, dropPoint));
+  }
+
+  private processColumnDrop(payload: DragPayload, colKey: string, dropPoint: { x: number; y: number }): void {
+    const exp = this.expandedFolder();
+    if (exp && exp.colKey === colKey) {
+      // The whole column is showing one open folder: dropping anywhere in it means "into this folder"
+      if (payload.type === 'report') {
+        this.handleReportDroppedOnFolder(payload.report, payload.fromColKey, payload.fromTag, colKey, exp.tag);
+      }
+      return;
+    }
+
+    if (payload.type === 'report') {
+      const folderEl = this.folderElementAt(dropPoint.x, dropPoint.y);
+      if (folderEl) {
+        this.handleReportDroppedOnFolder(payload.report, payload.fromColKey, payload.fromTag, colKey, folderEl.dataset.folderTag!);
+      } else {
+        this.handleReportDroppedOnColumn(payload.report, payload.fromColKey, payload.fromTag, colKey);
+      }
+    } else {
+      this.handleFolderDroppedOnColumn(payload.tag, payload.fromColKey, colKey);
+    }
+  }
+
+  // ---- Drag & drop business logic ----
+
+  private columnTitle(colKey: string): string {
+    switch (colKey) {
+      case 'shared': return this.publicTitle;
+      case 'public': return this.commonTitle;
+      case 'group': return this.groupTitle;
+      case 'private': return this.privateTitle;
+      default: return colKey;
+    }
+  }
+
+  private persistReportField(report: any, key: string, newValue: any): void {
+    this.dashboardService.updateDashboardSpecific(report._id.toString(), { data: { key, newValue } }).subscribe(
+      () => {},
+      err => { this.alertService.addError(err); this.loadReports(); }
+    );
+  }
+
+  private async pickGroupForAssignment(): Promise<string[] | null> {
+    if (!this.grups || this.grups.length === 0) {
+      this.alertService.addError($localize`:@@noGroupsToAssignDrag:No perteneces a ningún grupo al que asignar el informe.`);
+      return null;
+    }
+    if (this.grups.length === 1) return [this.grups[0]['_id']];
+
+    const inputOptions: Record<string, string> = {};
+    this.grups.forEach(g => inputOptions[g['_id']] = g['name']);
+
+    const result = await Swal.fire({
+      title: $localize`:@@selectGroupDragTitle:Selecciona el grupo`,
+      input: 'select',
+      inputOptions,
+      showCancelButton: true,
+      confirmButtonText: $localize`:@@moveFolderConfirmBtn:Sí, mover`,
+      cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
+    });
+    return result.value ? [result.value] : null;
+  }
+
+  private applyVisibilityChange(report: any, fromColKey: string, toColKey: string, newGroupIds: string[] | null): void {
+    const fromArr = this.reportMap[fromColKey];
+    const idx = fromArr ? fromArr.findIndex((r: any) => r._id === report._id) : -1;
+    if (idx !== -1) fromArr.splice(idx, 1);
+    this.reportMap[toColKey].push(report);
+
+    report.config.visible = this.colKeyToVisible[toColKey];
+    report.group = toColKey === 'group' ? newGroupIds : [];
+
+    this.persistReportField(report, 'config.visible', report.config.visible);
+    if (toColKey === 'group') this.persistReportField(report, 'group', newGroupIds);
+  }
+
+  private async handleReportDroppedOnColumn(report: any, fromColKey: string, fromTag: string | null, toColKey: string): Promise<void> {
+    if (fromColKey === toColKey) return; // dropped back where it already was
+
+    let newGroupIds: string[] | null = null;
+    if (toColKey === 'group') {
+      newGroupIds = await this.pickGroupForAssignment();
+      if (!newGroupIds) return;
+    }
+
+    this.applyVisibilityChange(report, fromColKey, toColKey, newGroupIds);
+
+    if (fromTag) {
+      // Dragged out of a tag-folder into a different column: that tag no longer applies
+      const newTags = this.normTagArr(report.config).filter(t => t !== fromTag);
+      report.config.tag = newTags;
+      this.persistReportField(report, 'config.tag', newTags);
+    }
+
+    this.loadReportTags();
+  }
+
+  private async handleReportDroppedOnFolder(report: any, fromColKey: string, fromTag: string | null, toColKey: string, toTag: string): Promise<void> {
+    const sameColumn = fromColKey === toColKey;
+    if (sameColumn && fromTag === toTag) return; // dropped back into the same folder
+
+    let newGroupIds: string[] | null = null;
+    if (!sameColumn && toColKey === 'group') {
+      newGroupIds = await this.pickGroupForAssignment();
+      if (!newGroupIds) return;
+    }
+
+    if (!sameColumn) {
+      this.applyVisibilityChange(report, fromColKey, toColKey, newGroupIds);
+    }
+
+    const newTags = this.normTagArr(report.config).filter(t => t !== fromTag);
+    if (!newTags.includes(toTag)) newTags.push(toTag);
+    report.config.tag = newTags;
+    this.persistReportField(report, 'config.tag', newTags);
+
+    this.loadReportTags();
+  }
+
+  private handleFolderDroppedOnColumn(tag: string, fromColKey: string, toColKey: string): void {
+    if (fromColKey === toColKey) return;
+
+    const fromArr = this.reportMap[fromColKey];
+    const affected = fromArr.filter((r: any) => this.normTagArr(r.config).includes(tag));
+    if (affected.length === 0) return;
+
+    const dashboardsLabel = $localize`:@@folderReportCount:informes`;
+    Swal.fire({
+      title: $localize`:@@moveFolderConfirmTitle:¿Mover carpeta?`,
+      text: `"${tag}": ${affected.length} ${dashboardsLabel} → ${this.columnTitle(toColKey)}`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: $localize`:@@moveFolderConfirmBtn:Sí, mover`,
+      cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
+    }).then(async res => {
+      if (!res.value) return;
+
+      let newGroupIds: string[] | null = null;
+      if (toColKey === 'group') {
+        newGroupIds = await this.pickGroupForAssignment();
+        if (!newGroupIds) return;
+      }
+
+      for (const report of [...affected]) {
+        this.applyVisibilityChange(report, fromColKey, toColKey, newGroupIds);
+      }
+
+      const exp = this.expandedFolder();
+      if (exp && exp.tag === tag && exp.colKey === fromColKey) {
+        this.closeFolder();
+      }
+
+      this.loadReportTags();
+    });
+  }
+
   public clickFolder(tag: string, colKey: string): void {
+    if (this.isCdkDragging) { return; }
     const current = this.expandedFolder();
     if (current?.tag === tag && current?.colKey === colKey) {
       this.closeFolder();

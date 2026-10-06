@@ -105,3 +105,65 @@
 .folder-icon-open               { color: var(--folder-icon-color-hover); }
 .folder-label-open              { color: var(--folder-label-open); }
 .folder-chevron-open            { color: var(--folder-icon-color-hover); }
+
+/* ---- Drag & drop (Angular CDK) ---- */
+.report-card, .folder-card, .folder-card-open { cursor: grab; }
+
+.drag-handle {
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+.report-card:hover .drag-handle { opacity: 0.5; }
+
+::ng-deep body:has(.cdk-drag-dragging),
+::ng-deep body:has(.cdk-drag-dragging) * {
+  cursor: grabbing !important;
+}
+
+/* The floating card that follows the cursor while dragging: just the dragged card/folder itself, lifted */
+::ng-deep .cdk-drag-preview {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18), 0 3px 6px rgba(0, 0, 0, 0.12);
+  opacity: 0.95;
+}
+
+/* Lightweight stand-in for the dragged card/folder: cheap to paint and move every frame,
+   unlike cloning the full card (tooltip markup, action buttons, borders...). */
+.drag-preview-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 16rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--folder-border-hover);
+  background-color: hsl(var(--background));
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18), 0 3px 6px rgba(0, 0, 0, 0.12);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--folder-icon-color-hover);
+}
+
+/* The empty slot left behind in the original spot: hidden, the preview is the only visible copy */
+::ng-deep .cdk-drag-placeholder {
+  opacity: 0 !important;
+}
+
+.cdk-drag-animating {
+  transition: transform 180ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* A column area that will accept the drop (visibility change, or "into this folder" when expanded) */
+.column-dropzone.drop-zone-active {
+  outline: 2px dashed rgba(var(--corporate-primary-rgb), 0.5);
+  outline-offset: 4px;
+  background-color: rgba(var(--corporate-primary-rgb), 0.04);
+}
+
+/* A specific tag-folder bucket that will receive the dropped dashboard */
+.folder-card.drop-zone-active,
+.folder-card-open.drop-zone-active {
+  border-color: var(--corporate-primary) !important;
+  background-color: rgba(var(--corporate-primary-rgb), 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(var(--corporate-primary-rgb), 0.25);
+}
