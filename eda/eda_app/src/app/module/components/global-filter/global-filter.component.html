@@ -16,7 +16,8 @@
 
     <!-- Clears the selection of all global filters (filters themselves are kept) -->
     <button class="flex-shrink-0 flex items-center px-2 py-2 bg-gray-200 text-gray-700 rounded-r-md border border-l-0 hover:bg-gray-300 filter-btn-responsive relative focus:z-10"
-      [style]="styleButton" (click)="clearAllGlobalFilters()">
+      [style]="styleButton" (click)="clearAllGlobalFilters()"
+      pTooltip="Limpiar todos los filtros globales" i18n-pTooltip="@@clearAllGlobalFilters" tooltipPosition="top">
       <i class="pi pi-times-circle"></i>
     </button>
   </div>

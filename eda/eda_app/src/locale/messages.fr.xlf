@@ -8500,6 +8500,10 @@ Cordialement.</target>
         <source>Seleccionar columnas...</source>
         <target>Sélectionner les colonnes...</target>
       </trans-unit>     
+      <trans-unit id="clearAllGlobalFilters" datatype="html">
+        <source>Limpiar todos los filtros globales</source>
+        <target>Effacer tous les filtres globaux</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>

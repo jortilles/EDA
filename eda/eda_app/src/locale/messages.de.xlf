@@ -5768,6 +5768,10 @@ Un saludo.</source>
         <source>elementos disponibles</source>
         <target>Elemente verfügbar</target>
       </trans-unit>
+      <trans-unit id="clearAllGlobalFilters" datatype="html">
+        <source>Limpiar todos los filtros globales</source>
+        <target>Alle globalen Filter löschen</target>
+      </trans-unit>
   </body>
   </file>
 </xliff>
