@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit, ChangeDetectorRef } from "@angular/core";
+import { Component, inject, Input, OnInit, ChangeDetectorRef, ViewChildren, QueryList } from "@angular/core";
 import { AlertService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import { EdaDialogController } from "@eda/shared/components/shared-components.index";
@@ -56,6 +56,7 @@ export class GlobalFilterComponent implements OnInit {
     public globalFilters: any[] = [];
     public globalFilter: any;
     public styleButton: any = {};
+    @ViewChildren(EdaDatePickerComponent) private datePickers: QueryList<EdaDatePickerComponent>;
     public orderDependentFilters: any[] = [];
     loading: boolean = true;
     placeholderText = this.loading ? $localize`:@@Cargando:Cargando...` : '';
@@ -1071,6 +1072,31 @@ export class GlobalFilterComponent implements OnInit {
     public removeAllFilterItems(filter: any): void {
         filter.selectedItems = [];
         this.setGlobalFilterItems(filter);
+    }
+
+    // Clears the selection of every global filter (keeps the filters) and refreshes affected panels once
+    public clearAllGlobalFilters(): void {
+        const affectedPanelIds = new Set<string>();
+        this.globalFilters
+            .filter((f: any) => f.selectedItems?.length > 0)
+            .forEach((f: any) => (f.panelList || []).forEach((id: string) => affectedPanelIds.add(id)));
+
+        // Visible date pickers reset their own UI and emit -> processPickerEvent clears the filter
+        this.datePickers?.forEach(picker => picker.clearRangeDates());
+
+        // Text/number filters, and any date filter without a rendered picker
+        this.globalFilters.filter((f: any) => f.selectedItems?.length > 0).forEach((f: any) => {
+            f.selectedItems = [];
+            if (this.getFilterType(f) === 'date') {
+                f.selectedRange = null;
+                this.loadDatesFromFilter(f);
+                this.applyGlobalFilter(f);
+            }
+            this.setGlobalFilterItems(f);
+        });
+
+        if (affectedPanelIds.size) this.dashboard.refreshPanels(Array.from(affectedPanelIds));
+        this.cdr.markForCheck();
     }
 
     public onSingleSelectChange(filter: any): void {

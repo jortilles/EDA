@@ -6,11 +6,20 @@
 
   <!-- Filter button -->
   @if (globalFilters.length > 0 && (isAdmin || isDashboardCreator || filterButtonVisibility.public)) {
-  <button class="flex-shrink-0 flex items-center gap-2 px-2 py-2 bg-gray-200 text-gray-700 rounded-md border hover:bg-gray-300 filter-btn-responsive"
-    [style]="styleButton" (click)="validateFilter()">
-    <i class="pi pi-filter"></i>
-    <span i18n="@@filtrarH4">Filtrar</span>
-  </button>
+  <!-- Button group: no gap, outer corners rounded only; stays together with flex-row-reverse -->
+  <div class="flex-shrink-0 flex items-stretch">
+    <button class="flex-shrink-0 flex items-center gap-2 px-2 py-2 bg-gray-200 text-gray-700 rounded-l-md border hover:bg-gray-300 filter-btn-responsive relative focus:z-10"
+      [style]="styleButton" (click)="validateFilter()">
+      <i class="pi pi-filter"></i>
+      <span i18n="@@filtrarH4">Filtrar</span>
+    </button>
+
+    <!-- Clears the selection of all global filters (filters themselves are kept) -->
+    <button class="flex-shrink-0 flex items-center px-2 py-2 bg-gray-200 text-gray-700 rounded-r-md border border-l-0 hover:bg-gray-300 filter-btn-responsive relative focus:z-10"
+      [style]="styleButton" (click)="clearAllGlobalFilters()">
+      <i class="pi pi-times-circle"></i>
+    </button>
+  </div>
   }
 
     <!-- Main container with scroll -->
