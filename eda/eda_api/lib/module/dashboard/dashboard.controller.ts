@@ -1816,10 +1816,10 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
             results.push(output)
           } else {
             const output = Object.keys(r).map(i => r[i]);
+            // resultsRollback receives this same array below, so it also gets the null replacement
             output.forEach((val, index) => {
               if (val === null) {
                 output[index] = eda_api_config.null_value;// los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
-                resultsRollback[i][index] = eda_api_config.null_value; // los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
               }
             })
             results.push(output)
