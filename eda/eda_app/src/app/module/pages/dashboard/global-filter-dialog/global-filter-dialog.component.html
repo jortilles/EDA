@@ -49,12 +49,10 @@
             </div>
 
             <div class="space-x-2 flex items-center h-max">
+              <!-- Etiqueta fija 'Selección múltiple': no alternar a 'Selección única' según el estado,
+                   para evitar confusión. OFF = selección única. -->
               <div class="min-w-[9rem]">
-                @if(multipleSelection) {
-                  <label i18n="@@multipleSelectionText" [pTooltip]="multipleSelectionDescription" tooltipPosition="top">Selección múltiple</label>
-                } @else {
-                  <label i18n="@@uniqueSelectionText" [pTooltip]="uniqueSelectionDescription" tooltipPosition="top">Selección única</label>
-                }
+                <label i18n="@@multipleSelectionText" [pTooltip]="multipleSelectionDescription" tooltipPosition="top">Selección múltiple</label>
               </div>
               <button type="button" role="switch" [attr.aria-checked]="isMandatory"
                 (click)="multipleSelectionCheck()"
