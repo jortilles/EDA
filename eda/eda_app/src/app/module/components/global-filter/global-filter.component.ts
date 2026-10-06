@@ -1076,24 +1076,47 @@ export class GlobalFilterComponent implements OnInit {
         this.setGlobalFilterItems(filter);
     }
 
-    // Clears the selection of every global filter (keeps the filters) and refreshes affected panels once
+    // Same rule as the template: admin/creator edit all; others only visible, non-readOnly filters
+    private canClearGlobalFilter(filter: any): boolean {
+        if (this.isAdmin || this.isDashboardCreator) return true;
+        return filter.visible === 'public' && !!(filter.selectedColumn?.visible || filter.column?.value?.visible);
+    }
+
+    private getClearableSelectedFilters(): any[] {
+        return this.globalFilters.filter((f: any) => f.selectedItems?.length > 0 && this.canClearGlobalFilter(f));
+    }
+
+    public hasClearableGlobalFilters(): boolean {
+        return this.getClearableSelectedFilters().length > 0;
+    }
+
+    // Clears the selection of the filters this user may edit (keeps the filters) and refreshes affected panels once
     public clearAllGlobalFilters(): void {
-        const affectedPanelIds = new Set<string>();
-        this.globalFilters
-            .filter((f: any) => f.selectedItems?.length > 0)
-            .forEach((f: any) => (f.panelList || []).forEach((id: string) => affectedPanelIds.add(id)));
+        const filtersToClear = this.getClearableSelectedFilters();
+        if (!filtersToClear.length) return;
 
-        // Visible date pickers reset their own UI and emit -> processPickerEvent clears the filter
-        this.datePickers?.forEach(picker => picker.clearRangeDates());
-
-        // Text/number filters, and any date filter without a rendered picker
-        this.globalFilters.filter((f: any) => f.selectedItems?.length > 0).forEach((f: any) => {
+        // Phase 1: empty every selection first, so dependent filters never reload against stale parents
+        filtersToClear.forEach((f: any) => {
             f.selectedItems = [];
             if (this.getFilterType(f) === 'date') {
                 f.selectedRange = null;
                 this.loadDatesFromFilter(f);
-                this.applyGlobalFilter(f);
             }
+        });
+
+        // Reset the date pickers' own UI without emitting (avoids applying the filter twice)
+        this.datePickers?.forEach(picker => {
+            if (filtersToClear.includes(picker.inject?.filter)) {
+                picker.rangeDates = null;
+                picker.selectedRange = null;
+            }
+        });
+
+        // Phase 2: propagate to panels
+        const affectedPanelIds = new Set<string>();
+        filtersToClear.forEach((f: any) => {
+            (f.panelList || []).forEach((id: string) => affectedPanelIds.add(id));
+            if (this.getFilterType(f) === 'date') this.applyGlobalFilter(f);
             this.setGlobalFilterItems(f);
         });
 
