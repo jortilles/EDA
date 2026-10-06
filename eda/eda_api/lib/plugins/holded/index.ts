@@ -23,6 +23,5 @@ export const HoldedPlugin: IEDAPlugin = {
         linkTables(tables, 'invoice_lines', 'invoice_id',  'invoices', 'id');
         linkTables(tables, 'invoices',      'contact_id',  'contacts', 'id');
         linkTables(tables, 'invoice_lines', 'product_id',  'products', 'id');
-        linkTables(tables, 'ledger',        'document_id', 'invoices', 'id');
     },
 };
