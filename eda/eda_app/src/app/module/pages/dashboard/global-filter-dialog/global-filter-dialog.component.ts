@@ -87,7 +87,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public tooltipAutocomplete: string = $localize`:@@tooltipAutocomplete:Si está activado, los valores se buscan dinámicamente mediante autocompletado.`;
     public tooltipMandatory: string = $localize`:@@tooltipMandatory:Si está activado, el filtro debe tener un valor seleccionado para poder visualizar el informe.`;
     public uniqueSelectionDescription: string = $localize`:@@uniqueSelectionDescription:Active esta opción para permitir la selección múltiple.`;
-    public multipleSelectionDescription: string = $localize`:@@multipleSelectionDescription:Desactive esta opción para permitir la selección única.`;
+    public multipleSelectionDescription: string = $localize`:@@multipleSelectionDescription:Si está activado, el filtro permite la selección de múltiples valores.`;
     public tooltipVisibility: string = $localize`:@@tooltipVisibility:Público: todos pueden usarlo. Deshabilitado: otros usuarios pueden ver el filtro pero no modificarlo. Oculto: no visible para otros pero se aplica igualmente.`;
 
     public tables: any[] = [];
