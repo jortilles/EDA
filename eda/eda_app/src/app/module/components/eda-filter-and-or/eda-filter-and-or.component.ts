@@ -105,6 +105,11 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     if (this.sortedFilters === undefined) this.sortedFilters = [];
 
+    // Cada filtro lleva siempre AND u OR (por defecto AND); corrige los guardados sin valor
+    this.sortedFilters.forEach((f: any) => {
+      if (f.value !== 'and' && f.value !== 'or') f.value = 'and';
+    });
+
     if(this.sortedFilters.length===0){
       this.initAndOrFilters();
     } else {
