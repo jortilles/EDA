@@ -7697,6 +7697,10 @@ Pozdrawiam.</target>
         <source>Seleccionar columnas...</source>
         <target>Wybierz kolumny...</target>
       </trans-unit>          
+      <trans-unit id="clearAllGlobalFilters" datatype="html">
+        <source>Limpiar todos los filtros globales</source>
+        <target>Wyczyść wszystkie filtry globalne</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

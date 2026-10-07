@@ -8064,6 +8064,10 @@ Salutacions.</target>
         <source>Seleccionar columnas...</source>
         <target>Seleccionar columnes...</target>
       </trans-unit>
+      <trans-unit id="clearAllGlobalFilters" datatype="html">
+        <source>Limpiar todos los filtros globales</source>
+        <target>Netejar tots els filtres globals</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>
