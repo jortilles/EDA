@@ -5178,6 +5178,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <source>Muestra la leyenda del gráfico</source>
   <target>Mostra la llegenda del gràfic</target>
 </trans-unit>
+<trans-unit id="sortLegendAlphabetically">
+  <source>Ordenar Leyenda Alfabéticamente</source>
+  <target>Ordena la llegenda alfabèticament</target>
+</trans-unit>
+<trans-unit id="sortLegendAlphabeticallyOptionDescription">
+  <source>Ordena alfabéticamente los elementos de la leyenda</source>
+  <target>Ordena alfabèticament els elements de la llegenda</target>
+</trans-unit>
 
 <trans-unit id="showGridLines">
   <source>Mostrar Líneas Guía</source>

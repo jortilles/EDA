@@ -10,6 +10,7 @@ export class EdaDoughnutD3 {
   chartColors: any[];
   assignedColors: any[];
   chartLegend: boolean;
+  sortLegendAlphabetically?: boolean;
   showLabels: boolean;
   showLabelsPercent: boolean;
   innerRadiusPercent: number;

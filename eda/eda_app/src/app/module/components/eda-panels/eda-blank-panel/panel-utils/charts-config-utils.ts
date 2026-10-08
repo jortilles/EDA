@@ -48,6 +48,7 @@ export const CUSTOM_CHART_CONFIG_FIELDS: CustomChartConfigField[] = [
   { name: 'numberOfColumns', default: null },
   { name: 'assignedColors', default: [] },
   { name: 'chartLegend', default: true, fallbackIfMissing: true },
+  { name: 'sortLegendAlphabetically', default: false, fallbackIfMissing: true },
   { name: 'coloredBarsConfig', default: null },
   { name: 'showUniqueColors', default: null },
   { name: 'uniqueBarColors', default: null },
@@ -204,6 +205,7 @@ export const ChartsConfigUtils = {
         useIcons: savedConfig?.['useIcons'] ?? inst?.inject?.useIcons ?? false,
         useGradient: inst ? inst.inject?.useGradient ?? true : true,
         chartLegend: inst ? inst.chartLegend ?? true : true,
+        sortLegendAlphabetically: savedConfig?.['sortLegendAlphabetically'] ?? inst?.inject?.sortLegendAlphabetically ?? false,
         // Without this, every requery (initEdaQuery/initSqlQuery call setConfig() on every
         // filter change/refresh/reload) silently dropped chartAnimation back to its default,
         // undoing both the per-panel dialog checkbox and the dashboard-wide animations toggle.

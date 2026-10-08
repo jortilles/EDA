@@ -28,7 +28,7 @@
       </div>
     }
     @if (chartLegend) {
-      <eda-chart-legend [items]="legendItems" (toggle)="toggleLegend($event)"></eda-chart-legend>
+      <eda-chart-legend [items]="legendItems" [sortAlphabetically]="inject?.sortLegendAlphabetically ?? false" (toggle)="toggleLegend($event)"></eda-chart-legend>
     }
   } @else {
     <div class="eda-race-bar-no-data" i18n="@@raceBarNoData">No hay suficientes datos temporales para animar este gráfico.</div>

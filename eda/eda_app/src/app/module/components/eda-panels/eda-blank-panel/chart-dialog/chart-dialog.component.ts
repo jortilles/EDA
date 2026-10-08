@@ -72,6 +72,7 @@ export class ChartDialogComponent implements AfterViewChecked {
     public secondAxis: boolean = false;
     public showPredictionLines: boolean = false;
     public chartLegend: boolean = true;
+    public sortLegendAlphabetically: boolean = false;
     public showGridLines: boolean = true;
     public categoryLabelMaxChars: number = 0;
     public categoryLabelCharsEnabled: boolean = false;
@@ -119,6 +120,7 @@ export class ChartDialogComponent implements AfterViewChecked {
         numberOfColumns: number;
         addComparative: boolean;
         chartLegend: boolean;
+        sortLegendAlphabetically: boolean;
         showGridLines: boolean;
         useGradient: boolean;
         useRoundedBars: boolean;
@@ -205,6 +207,7 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] ?? undefined;
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
         this.chartLegend = this.controller.params.config.config.getConfig()['chartLegend'] ?? true;
+        this.sortLegendAlphabetically = this.controller.params.config.config.getConfig()['sortLegendAlphabetically'] ?? false;
         this.showGridLines = this.controller.params.config.config.getConfig()['showGridLines'] ?? true;
         this.useGradient = this.controller.params.config.config.getConfig()['useGradient'] ?? true;
         this.useRoundedBars = this.controller.params.config.config.getConfig()['useRoundedBars'] ?? true;
@@ -228,6 +231,7 @@ export class ChartDialogComponent implements AfterViewChecked {
             numberOfColumns: this.numberOfColumns,
             addComparative: this.addComparative,
             chartLegend: this.chartLegend,
+            sortLegendAlphabetically: this.sortLegendAlphabetically,
             showGridLines: this.showGridLines,
             useGradient: this.useGradient,
             useRoundedBars: this.useRoundedBars,
@@ -271,7 +275,7 @@ export class ChartDialogComponent implements AfterViewChecked {
     // ---------------------------------------------------------------------------
 
     private readonly LIVE_FIELDS = [
-        'chartLegend', 'showGridLines', 'showLabels', 'showLabelsPercent', 'showTimeline',
+        'chartLegend', 'sortLegendAlphabetically', 'showGridLines', 'showLabels', 'showLabelsPercent', 'showTimeline',
         'innerRadiusPercent', 'useGradient', 'chartAnimation', 'labelColorMode', 'labelCustomColor',
         'topNCount', 'transitionMs', 'min', 'max', 'semaphoreColor', 'useIcons',
     ] as const;
@@ -280,6 +284,7 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.liveChartType = (this.chart?.chartType ?? this.controller.params.chartType) as CategoryChartType | 'knob';
         const cfg = this.controller.params.config.config.getConfig();
         this.chartLegend = cfg['chartLegend'] ?? true;
+        this.sortLegendAlphabetically = cfg['sortLegendAlphabetically'] ?? false;
         this.showGridLines = cfg['showGridLines'] ?? true;
         this.showLabels = cfg['showLabels'] ?? false;
         this.showLabelsPercent = cfg['showLabelsPercent'] ?? false;
@@ -356,7 +361,10 @@ export class ChartDialogComponent implements AfterViewChecked {
         const s = this.features;
         cfg['assignedColors'] = [...this.assignedColors];
         cfg['chartAnimation'] = this.chartAnimation;
-        if (s.hasLegend) cfg['chartLegend'] = this.chartLegend;
+        if (s.hasLegend) {
+            cfg['chartLegend'] = this.chartLegend;
+            cfg['sortLegendAlphabetically'] = this.sortLegendAlphabetically;
+        }
         if (s.hasGridLines) cfg['showGridLines'] = this.showGridLines;
         if (s.hasLabels) cfg['showLabels'] = this.showLabels;
         if (s.hasLabelsPercent) cfg['showLabelsPercent'] = this.showLabelsPercent;
@@ -401,7 +409,7 @@ export class ChartDialogComponent implements AfterViewChecked {
         const cfg = this.panelChartComponent.props.config.getConfig();
         const s = this.features;
         const r: any = { assignedColors: [...this.assignedColors], colors: cfg['colors'], chartAnimation: this.chartAnimation };
-        if (s.hasLegend) r.chartLegend = this.chartLegend;
+        if (s.hasLegend) { r.chartLegend = this.chartLegend; r.sortLegendAlphabetically = this.sortLegendAlphabetically; }
         if (s.hasGridLines) r.showGridLines = this.showGridLines;
         if (s.hasLabels) r.showLabels = this.showLabels;
         if (s.hasLabelsPercent) r.showLabelsPercent = this.showLabelsPercent;
@@ -603,6 +611,7 @@ export class ChartDialogComponent implements AfterViewChecked {
             numberOfColumns: this.numberOfColumns,
             assignedColors: [...this.assignedColors],
             chartLegend: this.chartLegend,
+            sortLegendAlphabetically: this.sortLegendAlphabetically,
             labelColorMode: this.labelColorMode,
             labelCustomColor: this.labelCustomColor,
             coloredBarsConfig: {
@@ -738,6 +747,10 @@ export class ChartDialogComponent implements AfterViewChecked {
     }
 
     setChartLegend() {
+        this.applyOption();
+    }
+
+    setSortLegendAlphabetically() {
         this.applyOption();
     }
 
@@ -1152,6 +1165,7 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.numberOfColumns = this.originalLabelValues.numberOfColumns;
         this.addComparative = this.originalLabelValues.addComparative;
         this.chartLegend = this.originalLabelValues.chartLegend;
+        this.sortLegendAlphabetically = this.originalLabelValues.sortLegendAlphabetically;
         this.showGridLines = this.originalLabelValues.showGridLines;
         this.useGradient = this.originalLabelValues.useGradient;
         this.useRoundedBars = this.originalLabelValues.useRoundedBars;

@@ -4757,6 +4757,14 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>Muestra la leyenda del gráfico</source>
 <target>Show chart legend</target>
 </trans-unit>
+<trans-unit id="sortLegendAlphabetically">
+<source>Ordenar Leyenda Alfabéticamente</source>
+<target>Sort Legend Alphabetically</target>
+</trans-unit>
+<trans-unit id="sortLegendAlphabeticallyOptionDescription">
+<source>Ordena alfabéticamente los elementos de la leyenda</source>
+<target>Sorts the legend items alphabetically</target>
+</trans-unit>
 
 <trans-unit id="showGridLines">
 <source>Mostrar Líneas Guía</source>
