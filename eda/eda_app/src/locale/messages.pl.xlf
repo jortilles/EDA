@@ -8177,6 +8177,10 @@ Pozdrawiam.</target>
         <source>Abrir en MISMA pestaña</source>
         <target>Otwórz w TEJ SAMEJ karcie</target>
       </trans-unit>
+      <trans-unit id="clearAllGlobalFilters" datatype="html">
+        <source>Limpiar todos los filtros globales</source>
+        <target>Wyczyść wszystkie filtry globalne</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

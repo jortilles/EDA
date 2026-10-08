@@ -5800,6 +5800,11 @@ Un saludo.</source>
         <source>No se ha podido generar el Word del informe. Inténtalo de nuevo.</source>
         <target>Das Word-Dokument des Berichts konnte nicht erstellt werden. Bitte versuchen Sie es erneut.</target>
       </trans-unit>
+      <trans-unit id="clearAllGlobalFilters" datatype="html">
+        <source>Limpiar todos los filtros globales</source>
+        <target>Alle globalen Filter löschen</target>
+      </trans-unit>
+     
   </body>
   </file>
 </xliff>

@@ -7758,6 +7758,10 @@ Best regards.</target>
         <source>Seleccionar columnas...</source>
         <target>Select columns...</target>
       </trans-unit>      
+      <trans-unit id="clearAllGlobalFilters" datatype="html">
+        <source>Limpiar todos los filtros globales</source>
+        <target>Clear all global filters</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
