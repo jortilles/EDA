@@ -21,6 +21,9 @@ export class EdaChartLegendComponent implements OnInit, OnChanges, AfterViewInit
   @Input() items: EdaLegendItem[] = [];
   /** Max height the legend can take, as a percentage of the chart's total height (SVG + legend). */
   @Input() maxHeightPercent = 25;
+  /** Show the items alphabetically instead of in the parent's own order (chart option
+   *  sortLegendAlphabetically, off by default). */
+  @Input() sortAlphabetically = false;
   @Output() toggle: EventEmitter<number> = new EventEmitter<number>();
 
   // Bound on the host itself (not an inner div) because its containing block is the chart
@@ -36,6 +39,12 @@ export class EdaChartLegendComponent implements OnInit, OnChanges, AfterViewInit
   @HostBinding('style.max-height.%') get hostMaxHeight(): number { return this.maxHeightPercent; }
 
   @ViewChildren('legendItemEl') legendItemEls?: QueryList<ElementRef<HTMLDivElement>>;
+
+  /** items in display order - the parent's own order, or alphabetical by label (natural sort, so
+   *  "Serie 2" goes before "Serie 10") when sortAlphabetically is on - each paired with its index
+   *  in the parent's items array, which is what the toggle output emits so every chart keeps
+   *  resolving the series by its own index. */
+  sortedItems: { item: EdaLegendItem; index: number }[] = [];
 
   fontSize = '14px';
   boxSize = '10px';
@@ -55,7 +64,15 @@ export class EdaChartLegendComponent implements OnInit, OnChanges, AfterViewInit
   }
 
   ngOnChanges(): void {
+    this.sortItems();
     this.updateSizing();
+  }
+
+  private sortItems(): void {
+    const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+    const entries = (this.items ?? []).map((item, index) => ({ item, index }));
+    if (!this.sortAlphabetically) { this.sortedItems = entries; return; }
+    this.sortedItems = entries.sort((a, b) => collator.compare(String(a.item.label ?? ''), String(b.item.label ?? '')));
   }
 
   ngAfterViewInit(): void {

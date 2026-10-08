@@ -15,6 +15,7 @@ export class RaceBar {
   useIcons?: boolean;
   useGradient?: boolean;
   chartLegend?: boolean;
+  sortLegendAlphabetically?: boolean;
   /** Autoplay the race on load - also doubles as the play/pause toggle's initial state. */
   chartAnimation?: boolean;
   /** How many bars to show at once - recomputed every frame from whoever's currently biggest.

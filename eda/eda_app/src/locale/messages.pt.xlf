@@ -507,6 +507,14 @@
         <source>Muestra la leyenda del gráfico</source>
         <target>Mostra a legenda do gráfico</target>
       </trans-unit>
+      <trans-unit id="sortLegendAlphabetically" datatype="html">
+        <source>Ordenar Leyenda Alfabéticamente</source>
+        <target>Ordenar legenda alfabeticamente</target>
+      </trans-unit>
+      <trans-unit id="sortLegendAlphabeticallyOptionDescription" datatype="html">
+        <source>Ordena alfabéticamente los elementos de la leyenda</source>
+        <target>Ordena alfabeticamente os elementos da legenda</target>
+      </trans-unit>
       <trans-unit id="showGridLines" datatype="html">
         <source> Mostrar Líneas Guía </source>
         <target> Mostrar linhas de grelha </target>

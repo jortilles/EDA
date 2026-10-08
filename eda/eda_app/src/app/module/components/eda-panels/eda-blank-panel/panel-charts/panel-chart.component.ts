@@ -1474,6 +1474,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     // its click output. Identical for all three except which Angular component class gets
     // instantiated.
     private createD3Component(inject: any, componentType: Type<any>) {
+        inject.sortLegendAlphabetically = this.props.config.getConfig()?.['sortLegendAlphabetically'] ?? false;
         this.currentConfig = inject;
         this.entry.clear();
         this.componentRef = this.entry.createComponent(componentType);
@@ -2044,6 +2045,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     // createD3Component() (doughnut/polarArea/bar), these don't track currentConfig or emit
     // configUpdated - preserved exactly as they already behaved, not changed as part of this.
     private createLegacyD3Component(inject: any, componentType: Type<any>) {
+        inject.sortLegendAlphabetically = this.props.config.getConfig()?.['sortLegendAlphabetically'] ?? false;
         this.entry.clear();
         this.componentRef = this.entry.createComponent(componentType);
         this.componentRef.instance.inject = inject;

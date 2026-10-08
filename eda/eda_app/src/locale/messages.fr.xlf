@@ -5123,6 +5123,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <source>Muestra la leyenda del gráfico</source>
   <target>Afficher la légende du graphique</target>
 </trans-unit>
+<trans-unit id="sortLegendAlphabetically">
+  <source>Ordenar Leyenda Alfabéticamente</source>
+  <target>Trier la légende par ordre alphabétique</target>
+</trans-unit>
+<trans-unit id="sortLegendAlphabeticallyOptionDescription">
+  <source>Ordena alfabéticamente los elementos de la leyenda</source>
+  <target>Trie les éléments de la légende par ordre alphabétique</target>
+</trans-unit>
 
 <trans-unit id="showGridLines">
   <source>Mostrar Líneas Guía</source>

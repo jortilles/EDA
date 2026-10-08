@@ -11,6 +11,7 @@ export class EdaLineD3 {
   chartColors: any[];
   assignedColors: any[];
   chartLegend: boolean;
+  sortLegendAlphabetically?: boolean;
   showLabels: boolean;
   showLabelsPercent: boolean;
   /** Data label text color: 'black' | 'white' | 'custom' (uses labelCustomColor). Defaults to black. */

@@ -11,5 +11,6 @@ export class SunBurst {
     assignedColors: any[];
   useGradient?: boolean;
   chartLegend?: boolean;
+  sortLegendAlphabetically?: boolean;
   chartAnimation?: boolean;
 }
