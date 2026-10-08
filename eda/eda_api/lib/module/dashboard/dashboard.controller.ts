@@ -2164,7 +2164,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
   }
 
   static resolveDbErrorLangFromRequest(req: Request): string {
-    const supportedLangs = ['es', 'ca', 'en', 'fr', 'pl', 'gl', 'de'];
+    const supportedLangs = ['es', 'ca', 'en', 'fr', 'pl', 'gl', 'de', 'pt'];
     const queryLang = (req?.query as any)?.lang;
     const paramLang = (req?.params as any)?.lang;
     const bodyLang = (req?.body as any)?.lang;

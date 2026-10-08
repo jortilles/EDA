@@ -68,9 +68,10 @@ export class MainLeftSidebarComponent {
           { lang: 'EN', label: 'English', icon: 'en-flag' },
           { lang: 'ES', label: 'Español', icon: 'es-flag' },
           { lang: 'CA', label: 'Català', icon: 'cat-flag' },
-          { lang: 'FR', label: 'Francés', icon: 'fr-flag' },
+          { lang: 'FR', label: 'Français', icon: 'fr-flag' },
           { lang: 'PL', label: 'Polski', icon: 'pl-flag' },
           { lang: 'DE', label: 'Deutsch', icon: 'de-flag' },
+          { lang: 'PT', label: 'Português', icon: 'pt-flag' },
         ]
       },
       {
@@ -182,6 +183,7 @@ menuCommand(item: any, event: MouseEvent) {
         baseUrl.slice(-4) == '/pl/' ||
         baseUrl.slice(-4) == '/fr/' ||
         baseUrl.slice(-4) == '/de/' ||
+        baseUrl.slice(-4) == '/pt/' ||
         baseUrl.slice(-4) == '/en/') {
         baseUrl = baseUrl.slice(0, baseUrl.length - 3)
     }
@@ -192,6 +194,7 @@ menuCommand(item: any, event: MouseEvent) {
       case 'FR': window.location.href = baseUrl + 'fr/#/home'; break;
       case 'PL'  : window.location.href = baseUrl + 'pl/#/home'; break;
       case 'DE': window.location.href = baseUrl + 'de/#/home'; break;
+      case 'PT': window.location.href = baseUrl + 'pt/#/home'; break;
     }
   }
   private getUrlParams(): void {
