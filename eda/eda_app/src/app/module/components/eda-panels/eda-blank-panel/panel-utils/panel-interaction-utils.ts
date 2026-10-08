@@ -778,7 +778,7 @@ export const PanelInteractionUtils = {
   tooManyDataForCharts(ebp: EdaBlankPanelComponent, tooManyDataForCharts: any[]) {
     for (const myElem of tooManyDataForCharts) {
       for (const chart of ebp.chartTypes) {
-        if (myElem === chart.value) {
+        if (myElem === chart.subValue) {
           chart.tooManyData = true;
         }
       }

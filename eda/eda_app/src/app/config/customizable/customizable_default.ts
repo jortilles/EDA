@@ -221,7 +221,16 @@ export const EMPTY_VALUE: string = ''; // $localize`:@@EmptyValueMessage:Sin Inf
 export const NULL_VALUE: string = '';// null Agregado de null_value en diferentes idiomas  if you want to leave the null you can put this value: LEAVE_THE_NULL . THIS LEAVE_THE_NULL will leave the null value as null
 export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === "Gradiente");
 export const FATHER_ID: number = 0; // Parent ID value for the Treetable component
-export const GLOBAL_FILTER_BUTTON_POSITION: string = 'left'; // By default the is left but you be modified to 'right' 
+export const GLOBAL_FILTER_BUTTON_POSITION: string = 'left'; // By default the is left but you be modified to 'right'
+
+/** Chart rendering limits: above them a chart is disabled in the selector and, if already saved, rendered as a plain table
+ * so the browser does not collapse. Tables and histogram have no limit (histogram bins the data). */
+export const CHART_RENDER_LIMITS = {
+    pieMaxRows:            100,   // doughnut, polarArea: allowed while rows < value
+    lineMaxRows:           8000,  // line, kpiline, area, kpiarea, barline: allowed while rows < value
+    chartMaxRows:          5000,  // any other chart (bars, radar, sankey, treemap, sunburst, scatter, bubble, funnel, race bar, kpi trend, maps): allowed while rows < value
+    maxCrosstableColumns:  50,    // cross tables generating more columns than this are rendered as a plain table
+};
 
 export const  AGG_TYPES  = [
     { label: $localize`:@@aggTsum:Suma`, value: 'sum' },

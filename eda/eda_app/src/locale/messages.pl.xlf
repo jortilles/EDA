@@ -5160,7 +5160,7 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 
 <trans-unit id="dashboardSidebarSave">
   <source>Guardar</source>
-  <target>Ratować</target>
+  <target>Zapisz</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarSaveAs">
@@ -7678,6 +7678,509 @@ Pozdrawiam.</target>
   <source>La consulta está limitada a 50.000 registros</source>
   <target>Zapytanie jest ograniczone do 50 000 rekordów</target>
 </trans-unit>
+      <trans-unit id="groupedSubtotalsTitle">
+        <source>Subtotales de grupo</source>
+        <target>Sumy częściowe grupy</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsGroupByLabel">
+        <source>Agrupar por (en orden)</source>
+        <target>Grupuj według (w kolejności)</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsSearchPlaceholder">
+        <source>Buscar...</source>
+        <target>Szukaj...</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsAddPlaceholder">
+        <source>Seleccionar columnas...</source>
+        <target>Wybierz kolumny...</target>
+      </trans-unit>          
+      <trans-unit id="noInitialDashboard" datatype="html">
+        <source>No hay ningún dashboard inicial configurado.</source>
+        <target>Nie skonfigurowano żadnego dashboardu początkowego.</target>
+      </trans-unit>
+      <trans-unit id="configureInitialDashboard" datatype="html">
+        <source>Edita el portal para seleccionar uno.</source>
+        <target>Edytuj portal, aby go wybrać.</target>
+      </trans-unit>
+      <trans-unit id="initialDashboardLabel" datatype="html">
+        <source> Dashboard inicial: </source>
+        <target> Dashboard początkowy: </target>
+      </trans-unit>
+      <trans-unit id="noneOption" datatype="html">
+        <source>— Ninguno —</source>
+        <target>— Brak —</target>
+      </trans-unit>
+      <trans-unit id="noPublicDashboards" datatype="html">
+        <source>No hay dashboards públicos disponibles.</source>
+        <target>Brak dostępnych publicznych dashboardów.</target>
+      </trans-unit>
+      <trans-unit id="chatResetBtn" datatype="html">
+        <source>Nueva conversación</source>
+        <target>Nowa rozmowa</target>
+      </trans-unit>
+      <trans-unit id="chatGeneratingDashboard" datatype="html">
+        <source>Generando dashboard...</source>
+        <target>Generowanie dashboardu...</target>
+      </trans-unit>
+      <trans-unit id="chatScrollDown" datatype="html">
+        <source>Ir al final</source>
+        <target>Przejdź na koniec</target>
+      </trans-unit>
+      <trans-unit id="chatStopBtn" datatype="html">
+        <source>Parar generación</source>
+        <target>Zatrzymaj generowanie</target>
+      </trans-unit>
+      <trans-unit id="chatStatusConnecting" datatype="html">
+        <source>Conectando con las fuentes de datos...</source>
+        <target>Łączenie ze źródłami danych...</target>
+      </trans-unit>
+      <trans-unit id="chatStatusAnalyzing" datatype="html">
+        <source>Analizando tu pregunta...</source>
+        <target>Analizowanie pytania...</target>
+      </trans-unit>
+      <trans-unit id="chatStatusSearching" datatype="html">
+        <source>Buscando datos...</source>
+        <target>Wyszukiwanie danych...</target>
+      </trans-unit>
+      <trans-unit id="chatStatusProcessing" datatype="html">
+        <source>Procesando resultados...</source>
+        <target>Przetwarzanie wyników...</target>
+      </trans-unit>
+      <trans-unit id="chatStatusPreparing" datatype="html">
+        <source>Preparando respuesta...</source>
+        <target>Przygotowywanie odpowiedzi...</target>
+      </trans-unit>
+      <trans-unit id="edaBarUnitBillion" datatype="html">
+        <source>MM</source>
+        <target>mld</target>
+      </trans-unit>
+      <trans-unit id="edaBarUnitMillion" datatype="html">
+        <source>M</source>
+        <target>mln</target>
+      </trans-unit>
+      <trans-unit id="edaBarUnitThousand" datatype="html">
+        <source>K</source>
+        <target>tys.</target>
+      </trans-unit>
+      <trans-unit id="globalFilter" datatype="html">
+        <source>Filtro de informe</source>
+        <target>Filtr raportu</target>
+      </trans-unit>
+      <trans-unit id="panelFilter" datatype="html">
+        <source>Filtro de panel</source>
+        <target>Filtr panelu</target>
+      </trans-unit>
+      <trans-unit id="iconsNoCategories" datatype="html">
+        <source>Sin categorías disponibles todavía.</source>
+        <target>Brak dostępnych kategorii.</target>
+      </trans-unit>
+      <trans-unit id="innerRadius" datatype="html">
+        <source>Radio interno</source>
+        <target>Promień wewnętrzny</target>
+      </trans-unit>
+      <trans-unit id="raceBarTopN" datatype="html">
+        <source>Barras a mostrar (Top N)</source>
+        <target>Liczba wyświetlanych słupków (Top N)</target>
+      </trans-unit>
+      <trans-unit id="raceBarTransitionMs" datatype="html">
+        <source>Duración de la transición (ms)</source>
+        <target>Czas przejścia (ms)</target>
+      </trans-unit>
+      <trans-unit id="raceBarShowTimeline" datatype="html">
+        <source>Mostrar línea de tiempo</source>
+        <target>Pokaż oś czasu</target>
+      </trans-unit>
+      <trans-unit id="knobSemaphoreLabel" datatype="html">
+        <source>Color semafórico</source>
+        <target>Kolory sygnalizacji świetlnej</target>
+      </trans-unit>
+      <trans-unit id="knobSemaphoreDesc" datatype="html">
+        <source>Rojo → amarillo → verde según el valor</source>
+        <target>Czerwony → żółty → zielony w zależności od wartości</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionTitle" datatype="html">
+        <source>¿Quieres quitar la predicción?</source>
+        <target>Czy chcesz usunąć prognozę?</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionText" datatype="html">
+        <source>Se quitará la predicción y se ejecutará la consulta del gráfico.</source>
+        <target>Prognoza zostanie usunięta, a zapytanie wykresu zostanie wykonane.</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionYes" datatype="html">
+        <source>Sí, quitar</source>
+        <target>Tak, usuń</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionNo" datatype="html">
+        <source>No, mantener</source>
+        <target>Nie, zachowaj</target>
+      </trans-unit>
+      <trans-unit id="rangeTitle" datatype="html">
+        <source>Rangos</source>
+        <target>Zakresy</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionB" datatype="html">
+        <source>• Rango:</source>
+        <target>• Zakres:</target>
+      </trans-unit>
+      <trans-unit id="dateNavLabel" datatype="html">
+        <source>Navegación por fecha</source>
+        <target>Nawigacja po dacie</target>
+      </trans-unit>
+      <trans-unit id="whereHavingLabel" datatype="html">
+        <source>Ámbito del filtro</source>
+        <target>Zakres filtra</target>
+      </trans-unit>
+      <trans-unit id="panelTitlePlaceholder" datatype="html">
+        <source>Título del panel</source>
+        <target>Tytuł panelu</target>
+      </trans-unit>
+      <trans-unit id="panelDescriptionPlaceholder" datatype="html">
+        <source>Descripción (opcional)</source>
+        <target>Opis (opcjonalnie)</target>
+      </trans-unit>
+      <trans-unit id="hiddenAttributes" datatype="html">
+        <source>Mostrar/ocultar campos ocultos</source>
+        <target>Pokaż/ukryj ukryte pola</target>
+      </trans-unit>
+      <trans-unit id="configurarFiltrosAvanzados" datatype="html">
+        <source>Configurar</source>
+        <target>Konfiguruj</target>
+      </trans-unit>
+      <trans-unit id="selectOriginTable" datatype="html">
+        <source>Seleccionar tabla</source>
+        <target>Wybierz tabelę</target>
+      </trans-unit>
+      <trans-unit id="globalFilterSettingsReboot" datatype="html">
+        <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
+        <target>Konfiguracja filtrów danego panelu została zresetowana</target>
+      </trans-unit>
+      <trans-unit id="filterSettingsReboot" datatype="html">
+        <source>La configuración de filtros se ha reiniciado</source>
+        <target>Konfiguracja filtrów została zresetowana</target>
+      </trans-unit>
+      <trans-unit id="withoutFilters" datatype="html">
+        <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
+        <target>Nie skonfigurowano jeszcze filtrów. Użyj panelu filtrów lub filtrów globalnych</target>
+      </trans-unit>
+      <trans-unit id="filterSettingsHeader" datatype="html">
+        <source>Configuración de filtros</source>
+        <target>Konfiguracja filtrów</target>
+      </trans-unit>
+      <trans-unit id="descriptionFilterSettings" datatype="html">
+        <source>Configuración avanzada de todos los filtros</source>
+        <target>Zaawansowana konfiguracja wszystkich filtrów</target>
+      </trans-unit>
+      <trans-unit id="kpiAspecto" datatype="html">
+        <source> KPI </source>
+        <target> KPI </target>
+      </trans-unit>
+      <trans-unit id="kpiVisualStyle" datatype="html">
+        <source>Estilo visual del KPI</source>
+        <target>Styl wizualny KPI</target>
+      </trans-unit>
+      <trans-unit id="kpiBgColor" datatype="html">
+        <source>Color de fondo</source>
+        <target>Kolor tła</target>
+      </trans-unit>
+      <trans-unit id="kpiTextColor" datatype="html">
+        <source>Color del texto</source>
+        <target>Kolor tekstu</target>
+      </trans-unit>
+      <trans-unit id="kpiPrefixImage" datatype="html">
+        <source>Imagen prefijo</source>
+        <target>Obraz przedrostka</target>
+      </trans-unit>
+      <trans-unit id="mpa" datatype="html">
+        <source>Aplica escala logarítmica a los valores del mapa</source>
+        <target>Stosuje skalę logarytmiczną do wartości mapy</target>
+      </trans-unit>
+      <trans-unit id="chartInfoRaceBar" datatype="html">
+        <source>Un gráfico de barras en carrera necesita una categoría, un valor numérico y una fecha</source>
+        <target>Wykres wyścigu słupków wymaga jednej kategorii, jednej wartości liczbowej i jednej daty</target>
+      </trans-unit>
+      <trans-unit id="chartInfoTreetable" datatype="html">
+        <source>Una tabla árbol necesita al menos 2 columnas. Si los dos primeros campos son numéricos se usarán como ID padre e ID hijo (se necesita además un campo a mostrar); si no, la jerarquía se agrupará automáticamente por las columnas con valores repetidos.</source>
+        <target>Tabela drzewiasta wymaga co najmniej 2 kolumn. Jeśli dwa pierwsze pola są liczbowe, zostaną użyte jako ID rodzica i ID dziecka (wymagane jest również pole do wyświetlenia); w przeciwnym razie hierarchia zostanie automatycznie pogrupowana według kolumn z powtarzającymi się wartościami.</target>
+      </trans-unit>
+      <trans-unit id="treeTableRowBanding" datatype="html">
+        <source>Bandas alternas en filas</source>
+        <target>Naprzemienne pasy wierszy</target>
+      </trans-unit>
+      <trans-unit id="selectMeasure" datatype="html">
+        <source>Seleccionar mesura</source>
+        <target>Wybierz miarę</target>
+      </trans-unit>
+      <trans-unit id="selectOperation" datatype="html">
+        <source>Seleccionar operació</source>
+        <target>Wybierz operację</target>
+      </trans-unit>
+      <trans-unit id="generateAliasTooltip" datatype="html">
+        <source> Generar alias automático </source>
+        <target> Wygeneruj alias automatycznie </target>
+      </trans-unit>
+      <trans-unit id="raceBarNoData" datatype="html">
+        <source>No hay suficientes datos temporales para animar este gráfico.</source>
+        <target>Brak wystarczających danych czasowych, aby animować ten wykres.</target>
+      </trans-unit>
+      <trans-unit id="raceBarMonthJan" datatype="html">
+        <source>Ene</source>
+        <target>Sty</target>
+      </trans-unit>
+      <trans-unit id="raceBarMonthFeb" datatype="html">
+        <source>Feb</source>
+        <target>Lut</target>
+      </trans-unit>
+      <trans-unit id="raceBarMonthMar" datatype="html">
+        <source>Mar</source>
+        <target>Mar</target>
+      </trans-unit>
+      <trans-unit id="raceBarMonthApr" datatype="html">
+        <source>Abr</source>
+        <target>Kwi</target>
+      </trans-unit>
+      <trans-unit id="raceBarMonthMay" datatype="html">
+        <source>May</source>
+        <target>Maj</target>
+      </trans-unit>
+      <trans-unit id="raceBarMonthJun" datatype="html">
+        <source>Jun</source>
+        <target>Cze</target>
+      </trans-unit>
+      <trans-unit id="raceBarMonthJul" datatype="html">
+        <source>Jul</source>
+        <target>Lip</target>
+      </trans-unit>
+      <trans-unit id="raceBarMonthAug" datatype="html">
+        <source>Ago</source>
+        <target>Sie</target>
+      </trans-unit>
+      <trans-unit id="raceBarMonthSep" datatype="html">
+        <source>Sep</source>
+        <target>Wrz</target>
+      </trans-unit>
+      <trans-unit id="raceBarMonthOct" datatype="html">
+        <source>Oct</source>
+        <target>Paź</target>
+      </trans-unit>
+      <trans-unit id="raceBarMonthNov" datatype="html">
+        <source>Nov</source>
+        <target>Lis</target>
+      </trans-unit>
+      <trans-unit id="raceBarMonthDec" datatype="html">
+        <source>Dic</source>
+        <target>Gru</target>
+      </trans-unit>
+      <trans-unit id="raceBarQuarterPrefix" datatype="html">
+        <source>T</source>
+        <target>K</target>
+      </trans-unit>
+      <trans-unit id="raceBarWeekPrefix" datatype="html">
+        <source>Sem</source>
+        <target>Tydz.</target>
+      </trans-unit>
+      <trans-unit id="raceBarPlayAria" datatype="html">
+        <source>Reproducir</source>
+        <target>Odtwórz</target>
+      </trans-unit>
+      <trans-unit id="raceBarPauseAria" datatype="html">
+        <source>Pausa</source>
+        <target>Wstrzymaj</target>
+      </trans-unit>
+      <trans-unit id="raceBarTimelineAria" datatype="html">
+        <source>Línea de tiempo</source>
+        <target>Oś czasu</target>
+      </trans-unit>
+      <trans-unit id="raceBarPrevAria" datatype="html">
+        <source>Periodo anterior</source>
+        <target>Poprzedni okres</target>
+      </trans-unit>
+      <trans-unit id="raceBarNextAria" datatype="html">
+        <source>Periodo siguiente</source>
+        <target>Następny okres</target>
+      </trans-unit>
+      <trans-unit id="raceBarSpeedAria" datatype="html">
+        <source>Velocidad de reproducción</source>
+        <target>Prędkość odtwarzania</target>
+      </trans-unit>
+      <trans-unit id="cancel" datatype="html">
+        <source>Cancelar</source>
+        <target>Anuluj</target>
+      </trans-unit>
+      <trans-unit id="mediaInvalidBatchError" datatype="html">
+        <source>No se pudieron subir estas imágenes (formato no válido o superan 1MB): <x id="PH" equiv-text="detail"/></source>
+        <target>Nie udało się przesłać tych obrazów (nieprawidłowy format lub rozmiar powyżej 1MB): <x id="PH" equiv-text="detail"/></target>
+      </trans-unit>
+      <trans-unit id="mediaDuplicateProgress" datatype="html">
+        <source>Archivo</source>
+        <target>Plik</target>
+      </trans-unit>
+      <trans-unit id="mediaDuplicateTitleSingle" datatype="html">
+        <source>Ya existe una imagen con este nombre</source>
+        <target>Obraz o tej nazwie już istnieje</target>
+      </trans-unit>
+      <trans-unit id="mediaDuplicateKeepBoth" datatype="html">
+        <source>Mantener ambas</source>
+        <target>Zachowaj oba</target>
+      </trans-unit>
+      <trans-unit id="mediaDuplicateReplace" datatype="html">
+        <source>Reemplazar</source>
+        <target>Zastąp</target>
+      </trans-unit>
+      <trans-unit id="mediaDuplicateSkip" datatype="html">
+        <source>Omitir esta</source>
+        <target>Pomiń ten</target>
+      </trans-unit>
+      <trans-unit id="mediaUploadErrorSingle" datatype="html">
+        <source>No se pudo subir una de las imágenes.</source>
+        <target>Nie udało się przesłać jednego z obrazów.</target>
+      </trans-unit>
+      <trans-unit id="mediaUploadErrorMultiple" datatype="html">
+        <source>No se pudieron subir <x id="PH" equiv-text="failedCount"/> imágenes.</source>
+        <target>Nie udało się przesłać <x id="PH" equiv-text="failedCount"/> obrazów.</target>
+      </trans-unit>
+      <trans-unit id="aiBaseUrl" datatype="html">
+        <source>BASE URL</source>
+        <target>BASE URL</target>
+      </trans-unit>
+      <trans-unit id="aiConfigSaved" datatype="html">
+        <source>Configuración de IA guardada correctamente</source>
+        <target>Konfiguracja AI została zapisana</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadWord" datatype="html">
+        <source>Descargar Word</source>
+        <target>Pobierz Word</target>
+      </trans-unit>
+      <trans-unit id="dashboardExportPdfError" datatype="html">
+        <source>No se ha podido generar el PDF del informe. Inténtalo de nuevo.</source>
+        <target>Nie udało się wygenerować pliku PDF raportu. Spróbuj ponownie.</target>
+      </trans-unit>
+      <trans-unit id="dashboardExportImageError" datatype="html">
+        <source>No se ha podido generar la imagen del informe. Inténtalo de nuevo.</source>
+        <target>Nie udało się wygenerować obrazu raportu. Spróbuj ponownie.</target>
+      </trans-unit>
+      <trans-unit id="dashboardExportExcelError" datatype="html">
+        <source>No se ha podido generar el Excel del informe. Inténtalo de nuevo.</source>
+        <target>Nie udało się wygenerować pliku Excel raportu. Spróbuj ponownie.</target>
+      </trans-unit>
+      <trans-unit id="dashboardExportWordError" datatype="html">
+        <source>No se ha podido generar el Word del informe. Inténtalo de nuevo.</source>
+        <target>Nie udało się wygenerować dokumentu Word raportu. Spróbuj ponownie.</target>
+      </trans-unit>
+      <trans-unit id="panelColHeader" datatype="html">
+        <source>Panel</source>
+        <target>Panel</target>
+      </trans-unit>
+      <trans-unit id="filterPathColHeader" datatype="html">
+        <source>Ruta del filtro</source>
+        <target>Ścieżka filtra</target>
+      </trans-unit>
+      <trans-unit id="addDuckdbTableTitle" datatype="html">
+        <source>Añadir tabla CSV a DuckDB</source>
+        <target>Dodaj tabelę CSV do DuckDB</target>
+      </trans-unit>
+      <trans-unit id="duckdbTableAdded" datatype="html">
+        <source>Tabla añadida correctamente</source>
+        <target>Tabela została dodana</target>
+      </trans-unit>
+      <trans-unit id="deleteDuckdbTable" datatype="html">
+        <source>Eliminar tabla CSV</source>
+        <target>Usuń tabelę CSV</target>
+      </trans-unit>
+      <trans-unit id="addDuckdbTable" datatype="html">
+        <source>Añadir tabla CSV</source>
+        <target>Dodaj tabelę CSV</target>
+      </trans-unit>
+      <trans-unit id="unsupportedGeoJsonType" datatype="html">
+        <source>El tipo de geometría &quot;<x id="PH" equiv-text="unsupportedType"/>&quot; no está admitido. Solo se admiten &quot;Polygon&quot; y &quot;MultiPolygon&quot;.</source>
+        <target>Typ geometrii "<x id="PH" equiv-text="unsupportedType"/>" nie jest obsługiwany. Obsługiwane są tylko "Polygon" i "MultiPolygon".</target>
+      </trans-unit>
+      <trans-unit id="buscarTabla" datatype="html">
+        <source>Buscar...</source>
+        <target>Szukaj...</target>
+      </trans-unit>
+      <trans-unit id="duckdbFolderExistsError" datatype="html">
+        <source>Este nombre ya existe. Escribe un nombre diferente.</source>
+        <target>Ta nazwa już istnieje. Wpisz inną nazwę.</target>
+      </trans-unit>
+      <trans-unit id="updateFileTitle" datatype="html">
+        <source>Actualizar fichero de datos</source>
+        <target>Zaktualizuj plik danych</target>
+      </trans-unit>
+      <trans-unit id="updateFileDescription" datatype="html">
+        <source> Sube un nuevo fichero para reemplazar los datos de esta fuente </source>
+        <target> Prześlij nowy plik, aby zastąpić dane tego źródła </target>
+      </trans-unit>
+      <trans-unit id="goBack" datatype="html">
+        <source>Volver</source>
+        <target>Wstecz</target>
+      </trans-unit>
+      <trans-unit id="lockedType" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ connectionType }}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ connectionType }}"/></target>
+      </trans-unit>
+      <trans-unit id="excelFile" datatype="html">
+        <source>Archivo Excel</source>
+        <target>Plik Excel</target>
+      </trans-unit>
+      <trans-unit id="noExcelFile" datatype="html">
+        <source>Debe cargar un archivo Excel primero</source>
+        <target>Najpierw musisz wczytać plik Excel</target>
+      </trans-unit>
+      <trans-unit id="tagsTooltipLabel" datatype="html">
+        <source>Tags:</source>
+        <target>Tagi:</target>
+      </trans-unit>
+      <trans-unit id="folderReportCount" datatype="html">
+        <source>informes</source>
+        <target>raporty</target>
+      </trans-unit>
+      <trans-unit id="testMailConfigTitle" datatype="html">
+        <source>Envía un correo de prueba a la cuenta configurada para verificar que la configuración es correcta</source>
+        <target>Wysyła wiadomość testową na skonfigurowane konto, aby sprawdzić poprawność konfiguracji</target>
+      </trans-unit>
+      <trans-unit id="testingMailConfig" datatype="html">
+        <source>Enviando prueba...</source>
+        <target>Wysyłanie wiadomości testowej...</target>
+      </trans-unit>
+      <trans-unit id="testMailConfig" datatype="html">
+        <source>Probar y enviar correo de prueba</source>
+        <target>Przetestuj i wyślij wiadomość testową</target>
+      </trans-unit>
+      <trans-unit id="holdedFolderRequired" datatype="html">
+        <source>Debe indicar el nombre de la carpeta</source>
+        <target>Musisz podać nazwę folderu</target>
+      </trans-unit>
+      <trans-unit id="holdedApiKeyRequired" datatype="html">
+        <source>Debe proporcionar la API Key de Holded</source>
+        <target>Musisz podać klucz API Holded</target>
+      </trans-unit>
+      <trans-unit id="chartTypesRaceBar" datatype="html">
+        <source>Barras en carrera</source>
+        <target>Wyścig słupków</target>
+      </trans-unit>
+      <trans-unit id="codeEditorZoomOut" datatype="html">
+        <source>Reducir tamaño de letra</source>
+        <target>Zmniejsz rozmiar czcionki</target>
+      </trans-unit>
+      <trans-unit id="codeEditorZoomIn" datatype="html">
+        <source>Aumentar tamaño de letra</source>
+        <target>Zwiększ rozmiar czcionki</target>
+      </trans-unit>
+      <trans-unit id="openInNewTabBtn" datatype="html">
+        <source>Abrir en NUEVA pestaña</source>
+        <target>Otwórz w NOWEJ karcie</target>
+      </trans-unit>
+      <trans-unit id="openInSameTabBtn" datatype="html">
+        <source>Abrir en MISMA pestaña</source>
+        <target>Otwórz w TEJ SAMEJ karcie</target>
+      </trans-unit>
+      <trans-unit id="clearAllGlobalFilters" datatype="html">
+        <source>Limpiar todos los filtros globales</source>
+        <target>Wyczyść wszystkie filtry globalne</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

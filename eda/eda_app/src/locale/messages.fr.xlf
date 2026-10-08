@@ -8481,6 +8481,29 @@ Cordialement.</target>
   <source>El archivo no tiene un formato GeoJson válido.</source>
   <target>Le fichier n'a pas un format GeoJSON valide.</target>
 </trans-unit>
+      <trans-unit id="groupedSubtotalsTitle">
+        <source>Subtotales de grupo</source>
+        <target>Sous-totaux de groupe</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsGroupByLabel">
+        <source>Agrupar por (en orden)</source>
+        <target>Regrouper par (dans l'ordre)</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsSearchPlaceholder">
+        <source>Buscar...</source>
+        <target>Rechercher...</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsAddPlaceholder">
+        <source>Seleccionar columnas...</source>
+        <target>Sélectionner les colonnes...</target>
+      </trans-unit>     
+      <trans-unit id="clearAllGlobalFilters" datatype="html">
+        <source>Limpiar todos los filtros globales</source>
+        <target>Effacer tous les filtres globaux</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>

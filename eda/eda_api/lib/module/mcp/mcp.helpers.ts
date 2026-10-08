@@ -7,7 +7,7 @@ const bcrypt = require('bcryptjs');
 const jwt    = require('jsonwebtoken');
 const SEED   = require('../../../config/seed').SEED;
 
-const LOCALES = ['/es', '/ca', '/en', '/pl', '/fr', '/de'];
+const LOCALES = ['/es', '/ca', '/en', '/pl', '/fr', '/de', '/pt'];
 
 // ============================================================
 // CONFIGURACIÓN

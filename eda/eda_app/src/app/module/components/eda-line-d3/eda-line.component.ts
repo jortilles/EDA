@@ -495,12 +495,26 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     });
 
-    // Per-category invisible hover column - highlights every visible real series' point at that
-    // category at once and shows one combined tooltip (mirrors Chart.js's mode:'nearest',
-    // intersect:false), useful once there are enough categories that hitting one exact point is
-    // fiddly. No click handler here - clicking still requires hitting an actual point.
+    // Per-category invisible hover column - picks, at that category, the visible real series
+    // whose point is vertically closest to the pointer and shows a tooltip for that single
+    // point only (instead of every series at once), so the user doesn't have to hit an exact
+    // point once there are many categories. No click handler here - clicking still requires
+    // hitting an actual point.
     if (realVisible.length > 0 && !compact) {
+      const restingRadius = (d: any) => (d.series.isPrediction || (this.inject.showPointLines ?? false)) ? (d.series.isPrediction ? 3 : 3.5) : 0;
+
       axisCategories.forEach((cat, catIdx) => {
+        let hovered: LineSeries | null = null;
+
+        const resetDots = () => {
+          if (!chartAnimOn || !hovered) return;
+          const prev = hovered;
+          pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
+            .filter((d: any) => d.point.catIndex === catIdx && d.series === prev)
+            .interrupt('colGrow').transition('colGrow').duration(hoverMs(100))
+            .attr('r', restingRadius);
+        };
+
         hoverGroup.append('rect')
           .attr('x', categoryScale(cat) ?? 0)
           .attr('y', 0)
@@ -508,30 +522,35 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
           .attr('height', innerHeight)
           .style('fill', 'transparent')
           .on('mouseover mousemove', (event: any) => {
-            const rows = realVisible
+            // @types/d3 is pinned to v5, which predates d3.pointer - runtime d3 is v7, hence the cast.
+            const [, mouseY] = (d3 as any).pointer(event, hoverGroup.node());
+            const nearest = realVisible
               .map(s => ({ s, p: s.points.find(p => p.catIndex === catIdx) }))
-              .filter(r => r.p && r.p.value !== null);
-            if (rows.length === 0) return;
+              .filter(r => r.p && r.p.value !== null)
+              .reduce((best: { s: LineSeries; p: LinePoint; dist: number } | null, r) => {
+                const dist = Math.abs(valueScale(r.p.value as number) - mouseY);
+                return !best || dist < best.dist ? { ...r, dist } : best;
+              }, null);
+            if (!nearest) return;
 
-            if (chartAnimOn) {
-              pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
-                .filter((d: any) => d.point.catIndex === catIdx)
-                .interrupt('colGrow').transition('colGrow').duration(hoverMs(100)).attr('r', 5);
+            if (nearest.s !== hovered) {
+              resetDots();
+              hovered = nearest.s;
+              if (chartAnimOn) {
+                pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
+                  .filter((d: any) => d.point.catIndex === catIdx && d.series === nearest.s)
+                  .interrupt('colGrow').transition('colGrow').duration(hoverMs(100)).attr('r', 5);
+              }
             }
 
             const title = `${this.inject.categoryFieldName ? this.inject.categoryFieldName + ' : ' : ''}${cat}`;
-            const rowsHtml = rows.map(r =>
-              `<div class="eda-line-tooltip-row"><span class="eda-line-tooltip-swatch" style="background-color:${r.s.color};"></span><strong>${r.s.label}</strong> : ${formatDeNumber(r.p.value as number)}</div>`
-            ).join('');
-            this.tooltipService.show(event, `<div class="eda-line-tooltip-title">${title}</div>${rowsHtml}`, 'eda-line-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
+            const seriesPrefix = realVisible.length > 1 ? `<strong>${nearest.s.label}</strong> : ` : '';
+            const rowHtml = `<div class="eda-line-tooltip-row"><span class="eda-line-tooltip-swatch" style="background-color:${nearest.s.color};"></span>${seriesPrefix}${formatDeNumber(nearest.p.value as number)}</div>`;
+            this.tooltipService.show(event, `<div class="eda-line-tooltip-title">${title}</div>${rowHtml}`, 'eda-line-tooltip', TOOLTIP_OFFSET_X, TOOLTIP_OFFSET_Y, true);
           })
           .on('mouseout', () => {
-            if (chartAnimOn) {
-              pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
-                .filter((d: any) => d.point.catIndex === catIdx)
-                .interrupt('colGrow').transition('colGrow').duration(hoverMs(100))
-                .attr('r', (d: any) => (d.series.isPrediction || (this.inject.showPointLines ?? false)) ? (d.series.isPrediction ? 3 : 3.5) : 0);
-            }
+            resetDots();
+            hovered = null;
             this.tooltipService.hide();
           });
       });

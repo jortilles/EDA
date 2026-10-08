@@ -1832,10 +1832,10 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
             results.push(output)
           } else {
             const output = Object.keys(r).map(i => r[i]);
+            // resultsRollback receives this same array below, so it also gets the null replacement
             output.forEach((val, index) => {
               if (val === null) {
                 output[index] = eda_api_config.null_value;// los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
-                resultsRollback[i][index] = eda_api_config.null_value; // los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
               }
             })
             results.push(output)
@@ -2004,6 +2004,128 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
   }
 
   /**
+   * "Subtotales agrupados": for a table configured to group by N columns (in order) and
+   * total a single numeric column, runs one plain GROUP BY + aggregate query per nesting
+   * level (level 0 = grouped by the first column only, level 1 = first two, etc.) — the exact
+   * same query-building path any panel with grouping already uses (see getSeparedColumns in
+   * each connection's builder service), just orchestrated here instead of client-side, and
+   * requested by field INDEX rather than name so a column added twice at different date
+   * granularities (e.g. "Order date" / "Order date mes" — both column_name 'orderdate') is
+   * never ambiguous.
+   *
+   * req.body.query.fields is the panel's full field list; req.body.groupBy =
+   * { fieldIndexes: number[], numericFields: { fieldIndex: number, aggregation: string }[] }.
+   * Each level's response keeps the [labels, rows] shape any other query already returns.
+   */
+  static async getGroupedSubtotalsData(req: Request, res: Response, next: NextFunction) {
+    try {
+      let connectionProps: any;
+      if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
+      const dataModel = await connection.getDataSource(req.body.model_id)
+
+      /**Security check */
+      const allowed = DashboardController.securityCheck(dataModel, req.user)
+      if (!allowed) {
+        return next(
+          new HttpException(
+            500,
+            `Sorry, you are not allowed here, contact your administrator`
+          )
+        )
+      }
+
+      const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+
+      if (req.body.query.filters) {
+        for (const filter of req.body.query.filters) {
+          if (!filter.filter_column_type) {
+            const filterTable = dataModelObject.ds.model.tables.find((t) => t.table_name == filter.filter_table.split('.')[0]);
+            if (filterTable) {
+              const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
+              filter.filter_column_type = filterColumn?.column_type || 'text';
+            }
+          }
+          if (!filter.hasOwnProperty('filterBeforeGrouping')) {
+            filter.filterBeforeGrouping = true;
+          }
+        }
+      }
+
+      let uniquesForbiddenTables = DashboardController.getForbiddenTables(
+        dataModelObject,
+        req['user'].role,
+        req.user._id
+      )
+      const includesAdmin = req['user'].role.includes("135792467811111111111110")
+      if (includesAdmin) uniquesForbiddenTables = [];
+
+      const allFields: any[] = req.body.query.fields || [];
+      const groupBy = req.body.groupBy || {};
+      const fieldIndexes: number[] = groupBy.fieldIndexes;
+      const numericFields: { fieldIndex: number, aggregation: string }[] = groupBy.numericFields;
+
+      if (!Array.isArray(fieldIndexes) || fieldIndexes.length === 0 || !Array.isArray(numericFields) || numericFields.length === 0) {
+        return next(new HttpException(400, 'groupBy.fieldIndexes and groupBy.numericFields are required'));
+      }
+      if (numericFields.some(nf => !allFields[nf.fieldIndex])) {
+        return next(new HttpException(400, `groupBy.numericFields contains an out-of-range fieldIndex`));
+      }
+
+      const levels: [string[], any[][]][] = [];
+
+      for (let level = 0; level < fieldIndexes.length; level++) {
+        // A fresh client per level, not one reused across the whole loop: execQuery() always
+        // calls client.end() after running (see pg-connection.ts — every other caller only
+        // ever runs one query per request), and a pg Client can't be reconnected once ended —
+        // reusing the same client threw "Client was closed and is not queryable" on level 1.
+        const dimFields = fieldIndexes.slice(0, level + 1).map((idx: number, i: number) => {
+          const original = allFields[idx];
+          if (!original) throw new Error(`groupBy.fieldIndexes contains an out-of-range index: ${idx}`);
+          return { ...original, aggregation_type: 'none', order: i };
+        });
+        const aggFields = numericFields.map((nf, i) => ({
+          ...allFields[nf.fieldIndex],
+          aggregation_type: nf.aggregation,
+          order: dimFields.length + i,
+        }));
+
+        const levelQueryData = {
+          ...req.body.query,
+          fields: [...dimFields, ...aggFields],
+          groupByEnabled: true,
+          sourceFields: false,
+        };
+
+        const query = await connection.getQueryBuilded(levelQueryData, dataModelObject, req.user);
+
+        const notAllowedQuery = uniquesForbiddenTables.some(table => query.indexOf(table) >= 0);
+        if (notAllowedQuery) {
+          console.log('Not allowed table in grouped subtotals query')
+          levels.push([['noDataAllowed'], []]);
+          continue;
+        }
+
+        console.log('\x1b[32m%s\x1b[0m', `GROUPED SUBTOTALS QUERY (level ${level}) for user ${req.user.name}, with ID: ${req.user._id}, at: ${formatDate(new Date())} `);
+        console.log(query)
+        console.log('\n-------------------------------------------------------------------------------\n');
+
+        connection.client = await connection.getclient();
+        const getResults = await connection.execSqlQuery(query);
+        const labels = getResults.length > 0 ? Object.keys(getResults[0]) : ['NoData'];
+        const rows = getResults.map(r => Object.keys(r).map(k => r[k] === null ? eda_api_config.null_value : r[k]));
+        levels.push([labels, rows]);
+      }
+
+      return res.status(200).json({ levels })
+    } catch (err) {
+      console.log(err)
+      next(new HttpException(500, DashboardController.parseQueryError(err, req)))
+    }
+  }
+
+  /**
    * Parses a DB error to produce a descriptive, localized message when a column is not found.
    * Supports PostgreSQL, MySQL, SQL Server, SQLite and Oracle error formats.
    */
@@ -2058,7 +2180,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
   }
 
   static resolveDbErrorLangFromRequest(req: Request): string {
-    const supportedLangs = ['es', 'ca', 'en', 'fr', 'pl', 'gl', 'de'];
+    const supportedLangs = ['es', 'ca', 'en', 'fr', 'pl', 'gl', 'de', 'pt'];
     const queryLang = (req?.query as any)?.lang;
     const paramLang = (req?.params as any)?.lang;
     const bodyLang = (req?.body as any)?.lang;
