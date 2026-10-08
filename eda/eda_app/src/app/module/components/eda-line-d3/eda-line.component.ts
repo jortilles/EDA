@@ -312,6 +312,23 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     const chartAnimOn = this.inject.chartAnimation ?? true;
     const hoverMs = (ms: number) => chartAnimOn ? ms : 0;
 
+    // Hovered-line highlight, same feel as eda-bar-d3's hovered bar: the stroke darkens and (only
+    // with chartAnimation on, like the bar's widen) gets thicker. Only real series' strokes are
+    // registered - trend/prediction overlays never highlight.
+    const LINE_WIDTH = 2;
+    const LINE_HOVER_WIDTH = 4;
+    const linePaths = new Map<LineSeries, any>();
+    const highlightLine = (series: LineSeries, on: boolean) => {
+      const path = linePaths.get(series);
+      if (!path) return;
+      path.interrupt('hlColor').transition('hlColor').duration(hoverMs(150))
+        .attr('stroke', on ? darkenHex(series.color, 40) : series.color);
+      if (chartAnimOn) {
+        path.interrupt('hlWidth').transition('hlWidth').duration(hoverMs(150))
+          .attr('stroke-width', on ? LINE_HOVER_WIDTH : LINE_WIDTH);
+      }
+    };
+
     // Real (non-derived) series first, so trend/prediction overlays paint on top of their source.
     const drawOrder = [...visibleSeries.filter(s => !s.isTrend && !s.isPrediction), ...visibleSeries.filter(s => s.isTrend || s.isPrediction)];
 
@@ -335,9 +352,11 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         .attr('class', series.isTrend ? 'eda-line-trend' : series.isPrediction ? 'eda-line-prediction' : 'eda-line-stroke')
         .attr('fill', 'none')
         .attr('stroke', series.color)
-        .attr('stroke-width', series.isTrend ? 1.5 : 2)
+        .attr('stroke-width', series.isTrend ? 1.5 : LINE_WIDTH)
         .attr('stroke-dasharray', series.isTrend ? DASH_TREND : series.isPrediction ? DASH_PREDICTION : null)
         .attr('d', gen(points));
+
+      if (!series.isTrend && !series.isPrediction) linePaths.set(series, path);
 
       // Computed unconditionally (cheap) rather than only inside the animateEntrance branch below,
       // since the dots' own pop-in timing further down also needs this path's geometry to know
@@ -463,6 +482,8 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
             dot.interrupt('grow').transition('grow').duration(hoverMs(150)).attr('r', 6);
           }
 
+          highlightLine(series, true);
+
           const category = this.categories[d.point.catIndex];
           const title = `${this.inject.categoryFieldName ? this.inject.categoryFieldName + ' : ' : ''}${category}`;
           const swatch = `<span class="eda-line-tooltip-swatch" style="background-color:${series.color};"></span>`;
@@ -481,6 +502,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
           if (chartAnimOn) {
             dot.interrupt('grow').transition('grow').duration(hoverMs(150)).attr('r', baseRadius);
           }
+          highlightLine(series, false);
           this.tooltipService.hide();
         })
         .on('click', (event: any, d: any) => {
@@ -507,7 +529,9 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         let hovered: LineSeries | null = null;
 
         const resetDots = () => {
-          if (!chartAnimOn || !hovered) return;
+          if (!hovered) return;
+          highlightLine(hovered, false);
+          if (!chartAnimOn) return;
           const prev = hovered;
           pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
             .filter((d: any) => d.point.catIndex === catIdx && d.series === prev)
@@ -536,6 +560,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
             if (nearest.s !== hovered) {
               resetDots();
               hovered = nearest.s;
+              highlightLine(nearest.s, true);
               if (chartAnimOn) {
                 pointsGroup.selectAll('.eda-line-point-group').select('.eda-line-point-dot')
                   .filter((d: any) => d.point.catIndex === catIdx && d.series === nearest.s)
