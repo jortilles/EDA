@@ -3258,8 +3258,8 @@ Cumprimentos.</target>
         <target>MODELO DE DADOS</target>
       </trans-unit>
       <trans-unit id="publicDashboardTitle" datatype="html">
-        <source> Informe público EDA</source>
-        <target> Relatório público EDA</target>
+        <source> Informe público Edalitics</source>
+        <target> Relatório público Edalitics</target>
       </trans-unit>
       <trans-unit id="secondsToRefresh" datatype="html">
         <source>Segundos para refrescar</source>

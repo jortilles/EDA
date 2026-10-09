@@ -3197,8 +3197,8 @@ Un saludo.</source>
         <target>DATENMODELL</target>
       </trans-unit>
       <trans-unit id="publicDashboardTitle" datatype="html">
-        <source> Informe público EDA</source>
-        <target> Öffentlicher EDA-Bericht</target>
+        <source> Informe público Edalitics</source>
+        <target> Öffentlicher Edalitics-Bericht</target>
       </trans-unit>
       <trans-unit id="secondsToRefresh" datatype="html">
         <source>Segundos para refrescar</source>
