@@ -322,8 +322,8 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     const mainSeries = this.inject.mainSeries
       ? visibleSeries.find(s => !s.isTrend && !s.isPrediction && s.label === this.inject.mainSeries) ?? null
       : null;
-    const lineWidthFor = (s: LineSeries) => s === mainSeries ? LINE_WIDTH * 2 : LINE_WIDTH;
-    const lineHoverWidthFor = (s: LineSeries) => s === mainSeries ? LINE_HOVER_WIDTH * 2 : LINE_HOVER_WIDTH;
+    const lineWidthFor = (s: LineSeries) => s === mainSeries ? LINE_WIDTH * 3 : LINE_WIDTH;
+    const lineHoverWidthFor = (s: LineSeries) => s === mainSeries ? LINE_HOVER_WIDTH * 3 : LINE_HOVER_WIDTH;
     const linePaths = new Map<LineSeries, any>();
     const highlightLine = (series: LineSeries, on: boolean) => {
       const path = linePaths.get(series);
