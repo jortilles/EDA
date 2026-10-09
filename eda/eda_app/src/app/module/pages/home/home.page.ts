@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { Router } from '@angular/router';
@@ -18,7 +18,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ChatbotComponent } from '@eda/components/chatbot/chatbot.component';
 import { GettingStartedComponent } from '@eda/shared/components/getting-started/getting-started.component';
-import { DragDropModule, CdkDragDrop, CdkDragMove } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 
 type DragPayload =
   | { type: 'report'; report: any; fromColKey: string; fromTag: string | null }
@@ -36,6 +36,7 @@ export class HomePage implements OnInit, OnDestroy {
   private dashboardService = inject(DashboardService);
   private alertService = inject(AlertService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   allDashboards: any[] = [];
   reportsLoaded = signal(false);
@@ -86,8 +87,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   // ---- Drag & drop: dashboards/folders across visibility columns and tag folders ----
   private isCdkDragging = false;
-  private currentHighlightEl: HTMLElement | null = null;
-  private lastDragMoveCheck = 0;
+  private draggedEl: HTMLElement | null = null;
 
   private readonly colKeyToVisible: { [key: string]: string } = {
     shared: 'open',
@@ -270,69 +270,59 @@ export class HomePage implements OnInit, OnDestroy {
     this.reapplyFilters();
   }
 
-  // ---- Drag & drop (Angular CDK): live hover highlight + the actual drop ----
-  // The hover highlight is applied by mutating DOM classes directly (no Angular bindings, no
-  // change detection) so it stays smooth even while CDK's own pointer tracking runs outside the zone.
+  // ---- Drag & drop (Angular CDK, free-dragging) ----
+  // Cards/folders are plain standalone cdkDrag items — deliberately NOT inside a cdkDropList.
+  // cdkDropList (even with sortingDisabled and no connected siblings) unconditionally measures
+  // getBoundingClientRect() for every single item in the list the instant a drag starts, as part
+  // of its own internal bookkeeping for sortable lists — there's no input to turn that off, and
+  // with a long column that synchronous measuring pass is exactly what caused the freeze-then-jump
+  // right at pickup. Free dragging skips all of that: CDK just translates the real element with the
+  // pointer, and the only hit-testing happens once, by hand, at drop time (see onCdkDragEnded).
 
-  /** Finds the folder card (if any) under a viewport point, via its data-folder-* attributes. */
+  /** Finds the folder card (if any) under a viewport point. Only called once, at drop time. */
   private folderElementAt(x: number, y: number): HTMLElement | null {
     const el = document.elementFromPoint(x, y);
     return el?.closest('[data-folder-tag]') as HTMLElement | null;
   }
 
-  private setHighlight(el: HTMLElement | null): void {
-    if (this.currentHighlightEl === el) return;
-    this.currentHighlightEl?.classList.remove('drop-zone-active');
-    el?.classList.add('drop-zone-active');
-    this.currentHighlightEl = el;
-  }
-
-  public onCdkDragStarted(): void {
+  public onCdkDragStarted(event: CdkDragStart<any>): void {
     this.isCdkDragging = true;
+    // Plain DOM class on just the dragged element (not a wildcard selector over the whole grid,
+    // which was itself forcing a costly style recalculation the instant it got toggled) for the
+    // "lifted card" look + grabbing cursor while dragging.
+    this.draggedEl = event.source.getRootElement();
+    this.draggedEl.classList.add('is-dragging');
+
+    // CDK kicks this off inside ngZone.run(), which means Angular would otherwise run a full
+    // change-detection pass over this entire page (every binding on every card, in every column)
+    // at the exact instant the card is picked up. Nothing Angular-bound needs to update while
+    // dragging, so change detection for this component is paused for the drag's duration and
+    // resumed once it ends, right before the drop is actually processed.
+    this.cdr.detach();
   }
 
-  public onCdkDragMoved(event: CdkDragMove<any>): void {
-    const now = performance.now();
-    if (now - this.lastDragMoveCheck < 100) return;
-    this.lastDragMoveCheck = now;
-
-    const { x, y } = event.pointerPosition;
-    const payload = event.source.data as DragPayload;
-    const colEl = document.elementFromPoint(x, y)?.closest('[data-col-key]') as HTMLElement | null;
-
-    if (!colEl) { this.setHighlight(null); return; }
-
-    const overColKey = colEl.dataset.colKey!;
-    const exp = this.expandedFolder();
-
-    if (exp && exp.colKey === overColKey) {
-      this.setHighlight(payload.type === 'folder' ? null : colEl);
-      return;
-    }
-
-    const folderEl = payload.type === 'report' ? this.folderElementAt(x, y) : null;
-    this.setHighlight(folderEl ?? colEl);
-  }
-
-  public onCdkDragEnded(): void {
-    this.setHighlight(null);
+  public onCdkDragEnded(event: CdkDragEnd<any>): void {
+    this.draggedEl?.classList.remove('is-dragging');
+    this.draggedEl = null;
+    this.cdr.reattach();
+    // Snap the real element back to its normal (static) position now; if the drop actually moves
+    // it to a different column/folder, the business logic below re-renders it there right after.
+    event.source.reset();
     // 'click' fires right after 'mouseup', synchronously before this timeout runs, so the
     // next click handler still sees isCdkDragging === true and can ignore a drag-triggered click.
     setTimeout(() => { this.isCdkDragging = false; }, 0);
-  }
 
-  public onColumnCdkDrop(event: CdkDragDrop<any, any, any>, colKey: string): void {
-    this.setHighlight(null);
-    const payload = event.item.data as DragPayload;
+    const payload = event.source.data as DragPayload;
     if (!payload) return;
-    const dropPoint = event.dropPoint;
-
-    // Let CDK finish animating/removing its own drag preview before running the (heavier)
-    // state update + change detection, so the preview doesn't appear to hang mid-air.
-    requestAnimationFrame(() => this.processColumnDrop(payload, colKey, dropPoint));
+    const { x, y } = event.dropPoint;
+    requestAnimationFrame(() => this.processDrop(payload, x, y));
   }
 
-  private processColumnDrop(payload: DragPayload, colKey: string, dropPoint: { x: number; y: number }): void {
+  private processDrop(payload: DragPayload, x: number, y: number): void {
+    const colEl = document.elementFromPoint(x, y)?.closest('[data-col-key]') as HTMLElement | null;
+    if (!colEl) return; // dropped outside every column: no-op
+    const colKey = colEl.dataset.colKey!;
+
     const exp = this.expandedFolder();
     if (exp && exp.colKey === colKey) {
       // The whole column is showing one open folder: dropping anywhere in it means "into this folder"
@@ -343,7 +333,7 @@ export class HomePage implements OnInit, OnDestroy {
     }
 
     if (payload.type === 'report') {
-      const folderEl = this.folderElementAt(dropPoint.x, dropPoint.y);
+      const folderEl = this.folderElementAt(x, y);
       if (folderEl) {
         this.handleReportDroppedOnFolder(payload.report, payload.fromColKey, payload.fromTag, colKey, folderEl.dataset.folderTag!);
       } else {
@@ -423,9 +413,10 @@ export class HomePage implements OnInit, OnDestroy {
       const newTags = this.normTagArr(report.config).filter(t => t !== fromTag);
       report.config.tag = newTags;
       this.persistReportField(report, 'config.tag', newTags);
+      this.loadReportTags(); // the set of tags in use may have shrunk
+    } else {
+      this.reapplyFilters(); // only the visibility/column changed, the tag list itself didn't
     }
-
-    this.loadReportTags();
   }
 
   private async handleReportDroppedOnFolder(report: any, fromColKey: string, fromTag: string | null, toColKey: string, toTag: string): Promise<void> {
@@ -483,7 +474,7 @@ export class HomePage implements OnInit, OnDestroy {
         this.closeFolder();
       }
 
-      this.loadReportTags();
+      this.reapplyFilters(); // moving a folder only changes visibility, never any tags
     });
   }
 

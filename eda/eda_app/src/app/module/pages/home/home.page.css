@@ -116,41 +116,16 @@
 }
 .report-card:hover .drag-handle { opacity: 0.5; }
 
-::ng-deep body:has(.cdk-drag-dragging),
-::ng-deep body:has(.cdk-drag-dragging) * {
-  cursor: grabbing !important;
-}
-
-/* The floating card that follows the cursor while dragging: just the dragged card/folder itself, lifted */
-::ng-deep .cdk-drag-preview {
+/* Free-dragging (no cdkDropList): the real card/folder is what moves, translated by CDK. Applied
+   imperatively to just this one element (not a wildcard selector toggled on an ancestor, which was
+   itself forcing a costly style recalculation over the whole grid the instant it got toggled).
+   Promotes it to its own compositor layer and lifts it visually while it's being dragged. */
+.is-dragging {
+  cursor: grabbing;
+  will-change: transform;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18), 0 3px 6px rgba(0, 0, 0, 0.12);
   opacity: 0.95;
-}
-
-/* Lightweight stand-in for the dragged card/folder: cheap to paint and move every frame,
-   unlike cloning the full card (tooltip markup, action buttons, borders...). */
-.drag-preview-chip {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  max-width: 16rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.375rem;
-  border: 1px solid var(--folder-border-hover);
-  background-color: hsl(var(--background));
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18), 0 3px 6px rgba(0, 0, 0, 0.12);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--folder-icon-color-hover);
-}
-
-/* The empty slot left behind in the original spot: hidden, the preview is the only visible copy */
-::ng-deep .cdk-drag-placeholder {
-  opacity: 0 !important;
-}
-
-.cdk-drag-animating {
-  transition: transform 180ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 1000;
 }
 
 /* A column area that will accept the drop (visibility change, or "into this folder" when expanded) */
