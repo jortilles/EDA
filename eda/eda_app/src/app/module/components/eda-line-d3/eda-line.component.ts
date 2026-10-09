@@ -317,6 +317,13 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     // registered - trend/prediction overlays never highlight.
     const LINE_WIDTH = 2;
     const LINE_HOVER_WIDTH = 4;
+    // "Serie principal": the real series the user chose to stand out - twice as thick as the rest
+    // (hover grows it by the same factor) and painted last, so no other line can cover it.
+    const mainSeries = this.inject.mainSeries
+      ? visibleSeries.find(s => !s.isTrend && !s.isPrediction && s.label === this.inject.mainSeries) ?? null
+      : null;
+    const lineWidthFor = (s: LineSeries) => s === mainSeries ? LINE_WIDTH * 3 : LINE_WIDTH;
+    const lineHoverWidthFor = (s: LineSeries) => s === mainSeries ? LINE_HOVER_WIDTH * 3 : LINE_HOVER_WIDTH;
     const linePaths = new Map<LineSeries, any>();
     const highlightLine = (series: LineSeries, on: boolean) => {
       const path = linePaths.get(series);
@@ -325,12 +332,17 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         .attr('stroke', on ? darkenHex(series.color, 40) : series.color);
       if (chartAnimOn) {
         path.interrupt('hlWidth').transition('hlWidth').duration(hoverMs(150))
-          .attr('stroke-width', on ? LINE_HOVER_WIDTH : LINE_WIDTH);
+          .attr('stroke-width', on ? lineHoverWidthFor(series) : lineWidthFor(series));
       }
     };
 
-    // Real (non-derived) series first, so trend/prediction overlays paint on top of their source.
-    const drawOrder = [...visibleSeries.filter(s => !s.isTrend && !s.isPrediction), ...visibleSeries.filter(s => s.isTrend || s.isPrediction)];
+    // Real (non-derived) series first, so trend/prediction overlays paint on top of their source;
+    // the main series (if any) goes last of all, so both its line and its points stay on top.
+    const drawOrder = [
+      ...visibleSeries.filter(s => !s.isTrend && !s.isPrediction && s !== mainSeries),
+      ...visibleSeries.filter(s => s.isTrend || s.isPrediction),
+      ...(mainSeries ? [mainSeries] : []),
+    ];
 
     drawOrder.forEach(series => {
       let d3attr: string;
@@ -352,7 +364,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         .attr('class', series.isTrend ? 'eda-line-trend' : series.isPrediction ? 'eda-line-prediction' : 'eda-line-stroke')
         .attr('fill', 'none')
         .attr('stroke', series.color)
-        .attr('stroke-width', series.isTrend ? 1.5 : LINE_WIDTH)
+        .attr('stroke-width', series.isTrend ? 1.5 : lineWidthFor(series))
         .attr('stroke-dasharray', series.isTrend ? DASH_TREND : series.isPrediction ? DASH_PREDICTION : null)
         .attr('d', gen(points));
 

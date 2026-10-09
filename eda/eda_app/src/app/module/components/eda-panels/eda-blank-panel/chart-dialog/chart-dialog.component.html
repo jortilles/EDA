@@ -319,6 +319,53 @@
             </div>
             }
 
+            <!-- Main series: line charts - one series drawn thicker and on top of the rest -->
+            @if (features.hasMainSeries) {
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@mainSeries" for="seriePrincipal" class="font-medium">
+                    Serie principal
+                  </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@mainSeriesOptionDescription">Destaca una serie dibujándola el doble de gruesa y por encima del resto de líneas</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="seriePrincipal" name="seriePrincipal" [(ngModel)]="highlightMainSeries" class="sr-only peer"
+                  (ngModelChange)="setHighlightMainSeries()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
+                </div>
+              </label>
+            </div>
+            @if (highlightMainSeries) {
+            <div class="flex items-center justify-between">
+              <label i18n="@@mainSeriesSelect" class="font-medium">Serie a destacar</label>
+              <p-dropdown
+                [(ngModel)]="mainSeries"
+                [options]="mainSeriesOptions"
+                i18n-placeholder="@@mainSeriesPlaceholder"
+                placeholder="-- Seleccione una serie --"
+                (ngModelChange)="setMainSeries()"
+                [style]="{'width':'180px'}"
+                appendTo="body">
+              </p-dropdown>
+            </div>
+            }
+            }
+
             <!-- Round Bars -->
             @if (features.hasRoundedBars) {
             <div class="flex items-center justify-between">

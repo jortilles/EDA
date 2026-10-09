@@ -43,6 +43,8 @@ export const CUSTOM_CHART_CONFIG_FIELDS: CustomChartConfigField[] = [
   { name: 'labelColorMode', default: 'series', fallbackIfMissing: true },
   { name: 'labelCustomColor', default: '#000000' },
   { name: 'showPointLines', default: false },
+  { name: 'highlightMainSeries', default: false },
+  { name: 'mainSeries', default: null },
   { name: 'secondAxis', default: false },
   { name: 'showPredictionLines', default: false },
   { name: 'numberOfColumns', default: null },

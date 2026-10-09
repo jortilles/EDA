@@ -69,6 +69,8 @@ export class ChartDialogComponent implements AfterViewChecked {
     public labelCustomColor: string = '#000000';
     public showUniqueColors: boolean = false;
     public showPointLines: boolean = false;
+    public highlightMainSeries: boolean = false;
+    public mainSeries: string | null = null;
     public secondAxis: boolean = false;
     public showPredictionLines: boolean = false;
     public chartLegend: boolean = true;
@@ -115,6 +117,8 @@ export class ChartDialogComponent implements AfterViewChecked {
         labelCustomColor: string;
         showUniqueColors: boolean;
         showPointLines: boolean;
+        highlightMainSeries: boolean;
+        mainSeries: string | null;
         secondAxis: boolean;
         showPredictionLines: boolean;
         numberOfColumns: number;
@@ -196,6 +200,8 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.labelCustomColor = this.controller.params.config.config.getConfig()['labelCustomColor'] || '#000000';
         this.showUniqueColors = this.controller.params.config.config.getConfig()['showUniqueColors'] || false;
         this.showPointLines = this.controller.params.config.config.getConfig()['showPointLines'] || false;
+        this.highlightMainSeries = this.controller.params.config.config.getConfig()['highlightMainSeries'] ?? false;
+        this.mainSeries = this.controller.params.config.config.getConfig()['mainSeries'] ?? null;
         this.secondAxis = this.controller.params.config.config.getConfig()['secondAxis'] || false;
         this.showPredictionLines = this.controller.params.config.config.getConfig()['showPredictionLines'] || false;
         this.predictionMethod = this.controller.params.config.config.getConfig()['predictionMethod'] || 'Arima'; // Initial value in the dropdown
@@ -226,6 +232,8 @@ export class ChartDialogComponent implements AfterViewChecked {
             labelCustomColor: this.labelCustomColor,
             showUniqueColors: this.showUniqueColors,
             showPointLines: this.showPointLines,
+            highlightMainSeries: this.highlightMainSeries,
+            mainSeries: this.mainSeries,
             secondAxis: this.secondAxis,
             showPredictionLines: this.showPredictionLines,
             numberOfColumns: this.numberOfColumns,
@@ -606,6 +614,8 @@ export class ChartDialogComponent implements AfterViewChecked {
             showLabels: this.showLabels,
             showLabelsPercent: this.showLabelsPercent,
             showPointLines: this.showPointLines,
+            highlightMainSeries: this.highlightMainSeries,
+            mainSeries: this.mainSeries,
             secondAxis: this.secondAxis,
             showPredictionLines: this.showPredictionLines,
             numberOfColumns: this.numberOfColumns,
@@ -773,6 +783,35 @@ export class ChartDialogComponent implements AfterViewChecked {
 
     setShowLines() {
         this.applyOption(true);
+    }
+
+    /** Real (non trend/prediction) series of the chart - the candidates for "Serie principal".
+     * Cached per chartDataset reference so the dropdown doesn't get a new array on every change
+     * detection pass. */
+    private mainSeriesOptionsCache: { source: any[]; options: string[] } | null = null;
+    get mainSeriesOptions(): string[] {
+        const source = this.chart?.chartDataset || [];
+        if (this.mainSeriesOptionsCache?.source !== source) {
+            this.mainSeriesOptionsCache = {
+                source,
+                options: source.filter((d: any) => !d.isTrend && !d.isPrediction).map((d: any) => String(d.label ?? '')),
+            };
+        }
+        return this.mainSeriesOptionsCache.options;
+    }
+
+    setHighlightMainSeries() {
+        // First time switching on (or the saved series no longer exists): preselect the first one
+        // so the toggle has a visible effect right away instead of doing nothing until a pick.
+        const options = this.mainSeriesOptions;
+        if (this.highlightMainSeries && !options.includes(this.mainSeries)) {
+            this.mainSeries = options[0] ?? null;
+        }
+        this.applyOption();
+    }
+
+    setMainSeries() {
+        this.applyOption();
     }
 
     setSecondAxis() {
@@ -1160,6 +1199,8 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.labelCustomColor = this.originalLabelValues.labelCustomColor;
         this.showUniqueColors = this.originalLabelValues.showUniqueColors;
         this.showPointLines = this.originalLabelValues.showPointLines;
+        this.highlightMainSeries = this.originalLabelValues.highlightMainSeries;
+        this.mainSeries = this.originalLabelValues.mainSeries;
         this.secondAxis = this.originalLabelValues.secondAxis;
         this.showPredictionLines = this.originalLabelValues.showPredictionLines;
         this.numberOfColumns = this.originalLabelValues.numberOfColumns;

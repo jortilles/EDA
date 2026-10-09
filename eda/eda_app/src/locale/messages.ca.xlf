@@ -5186,6 +5186,22 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <source>Ordena alfabéticamente los elementos de la leyenda</source>
   <target>Ordena alfabèticament els elements de la llegenda</target>
 </trans-unit>
+<trans-unit id="mainSeries">
+  <source>Serie principal</source>
+  <target>Sèrie principal</target>
+</trans-unit>
+<trans-unit id="mainSeriesOptionDescription">
+  <source>Destaca una serie dibujándola el doble de gruesa y por encima del resto de líneas</source>
+  <target>Destaca una sèrie dibuixant-la el doble de gruixuda i per sobre de la resta de línies</target>
+</trans-unit>
+<trans-unit id="mainSeriesSelect">
+  <source>Serie a destacar</source>
+  <target>Sèrie a destacar</target>
+</trans-unit>
+<trans-unit id="mainSeriesPlaceholder">
+  <source>-- Seleccione una serie --</source>
+  <target>-- Seleccioneu una sèrie --</target>
+</trans-unit>
 
 <trans-unit id="showGridLines">
   <source>Mostrar Líneas Guía</source>

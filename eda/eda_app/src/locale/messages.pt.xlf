@@ -515,6 +515,22 @@
         <source>Ordena alfabéticamente los elementos de la leyenda</source>
         <target>Ordena alfabeticamente os elementos da legenda</target>
       </trans-unit>
+      <trans-unit id="mainSeries" datatype="html">
+        <source>Serie principal</source>
+        <target>Série principal</target>
+      </trans-unit>
+      <trans-unit id="mainSeriesOptionDescription" datatype="html">
+        <source>Destaca una serie dibujándola el doble de gruesa y por encima del resto de líneas</source>
+        <target>Destaca uma série desenhando-a com o dobro da espessura e por cima das restantes linhas</target>
+      </trans-unit>
+      <trans-unit id="mainSeriesSelect" datatype="html">
+        <source>Serie a destacar</source>
+        <target>Série a destacar</target>
+      </trans-unit>
+      <trans-unit id="mainSeriesPlaceholder" datatype="html">
+        <source>-- Seleccione una serie --</source>
+        <target>-- Selecione uma série --</target>
+      </trans-unit>
       <trans-unit id="showGridLines" datatype="html">
         <source> Mostrar Líneas Guía </source>
         <target> Mostrar linhas de grelha </target>

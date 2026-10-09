@@ -4632,6 +4632,22 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <source>Ordena alfabéticamente los elementos de la leyenda</source>
   <target>Sortuje elementy legendy alfabetycznie</target>
 </trans-unit>
+<trans-unit id="mainSeries">
+  <source>Serie principal</source>
+  <target>Seria główna</target>
+</trans-unit>
+<trans-unit id="mainSeriesOptionDescription">
+  <source>Destaca una serie dibujándola el doble de gruesa y por encima del resto de líneas</source>
+  <target>Wyróżnia serię, rysując ją dwa razy grubszą i nad pozostałymi liniami</target>
+</trans-unit>
+<trans-unit id="mainSeriesSelect">
+  <source>Serie a destacar</source>
+  <target>Seria do wyróżnienia</target>
+</trans-unit>
+<trans-unit id="mainSeriesPlaceholder">
+  <source>-- Seleccione una serie --</source>
+  <target>-- Wybierz serię --</target>
+</trans-unit>
 
 <trans-unit id="showGridLines">
   <source>Mostrar Líneas Guía</source>
