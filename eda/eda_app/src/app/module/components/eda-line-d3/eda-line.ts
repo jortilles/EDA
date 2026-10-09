@@ -19,6 +19,9 @@ export class EdaLineD3 {
   labelCustomColor?: string;
   showGridLines: boolean;
   showPointLines: boolean;
+  /** Label of the highlighted "serie principal": drawn twice as thick and on top of every other
+   * line. null/undefined (default) = no highlighted series. */
+  mainSeries?: string | null;
   linkedDashboard: LinkedDashboardProps;
   /** KPI mini-chart mode: no axes, no grid, no legend, shorter entrance. */
   compact?: boolean;

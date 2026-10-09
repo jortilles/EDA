@@ -5131,6 +5131,22 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <source>Ordena alfabéticamente los elementos de la leyenda</source>
   <target>Trie les éléments de la légende par ordre alphabétique</target>
 </trans-unit>
+<trans-unit id="mainSeries">
+  <source>Serie principal</source>
+  <target>Série principale</target>
+</trans-unit>
+<trans-unit id="mainSeriesOptionDescription">
+  <source>Destaca una serie dibujándola el doble de gruesa y por encima del resto de líneas</source>
+  <target>Met en évidence une série en la dessinant deux fois plus épaisse et au-dessus des autres lignes</target>
+</trans-unit>
+<trans-unit id="mainSeriesSelect">
+  <source>Serie a destacar</source>
+  <target>Série à mettre en évidence</target>
+</trans-unit>
+<trans-unit id="mainSeriesPlaceholder">
+  <source>-- Seleccione una serie --</source>
+  <target>-- Sélectionnez une série --</target>
+</trans-unit>
 
 <trans-unit id="showGridLines">
   <source>Mostrar Líneas Guía</source>

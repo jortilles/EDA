@@ -4765,6 +4765,22 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>Ordena alfabéticamente los elementos de la leyenda</source>
 <target>Sorts the legend items alphabetically</target>
 </trans-unit>
+<trans-unit id="mainSeries">
+<source>Serie principal</source>
+<target>Main series</target>
+</trans-unit>
+<trans-unit id="mainSeriesOptionDescription">
+<source>Destaca una serie dibujándola el doble de gruesa y por encima del resto de líneas</source>
+<target>Highlights a series by drawing it twice as thick and above the other lines</target>
+</trans-unit>
+<trans-unit id="mainSeriesSelect">
+<source>Serie a destacar</source>
+<target>Series to highlight</target>
+</trans-unit>
+<trans-unit id="mainSeriesPlaceholder">
+<source>-- Seleccione una serie --</source>
+<target>-- Select a series --</target>
+</trans-unit>
 
 <trans-unit id="showGridLines">
 <source>Mostrar Líneas Guía</source>

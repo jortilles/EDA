@@ -1864,6 +1864,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.labelCustomColor = cfg.labelCustomColor;
         inject.showGridLines = cfg.showGridLines ?? true;
         inject.showPointLines = cfg.showPointLines ?? false;
+        inject.mainSeries = cfg.highlightMainSeries ? (cfg.mainSeries ?? null) : null;
         inject.showLabels = cfg.showLabels ?? false;
         inject.showLabelsPercent = cfg.showLabelsPercent ?? false;
         inject.chartAnimation = cfg.chartAnimation ?? true;
