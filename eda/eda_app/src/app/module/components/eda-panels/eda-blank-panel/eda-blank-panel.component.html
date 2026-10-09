@@ -527,7 +527,6 @@
                           >
                             Mi consulta SQL
                           </h3>
-                          <i class="pi pi-info-circle cursor-pointer text-gray-400 mb-2 text-sm" [pTooltip]="ptooltipViewQuery" (click)="getQuery($event)"></i>
                         </div>
                         <!-- Query container -->
                         @if(display_v.showQueryContainer) {
@@ -725,7 +724,19 @@
 
                           <div class="flex flex-row justify-between w-full">
                             
-                            <div class="flex flex-col justify-between">
+                            <div class="flex flex-col w-1/2">
+
+                              <!-- View SQL query -->
+                              <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
+                                <div class="flex items-center gap-2">
+                                  <span i18n="@@sqlQueryLabel" class="text-base font-medium text-gray-700 cursor-default">Consulta SQL</span>
+                                  <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" [pTooltip]="ptooltipViewQuery"></i>
+                                </div>
+                                <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="getQuery($event)">
+                                  <span i18n="@@showQueryBtn">Mostrar</span>
+                                </button>
+                              </div>
+
                               <!-- Intersection type -->
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
                                 <span i18n="@@joinTypeH4" class="text-base font-medium text-gray-700" pTooltip="Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN" i18n-pTooltip="@@tooltipJoinType" tooltipPosition="top">Tipo de intersección</span>
