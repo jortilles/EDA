@@ -8481,6 +8481,74 @@ Cordialement.</target>
   <source>El archivo no tiene un formato GeoJson válido.</source>
   <target>Le fichier n'a pas un format GeoJSON valide.</target>
 </trans-unit>
+<trans-unit id="dragHandleTooltip">
+  <source>Arrastrar</source>
+  <target>Glisser</target>
+</trans-unit>
+<trans-unit id="noGroupsToAssignDrag">
+  <source>No perteneces a ningún grupo al que asignar el informe.</source>
+  <target>Vous n'appartenez à aucun groupe auquel attribuer le rapport.</target>
+</trans-unit>
+<trans-unit id="selectGroupDragTitle">
+  <source>Selecciona el grupo</source>
+  <target>Sélectionnez le groupe</target>
+</trans-unit>
+<trans-unit id="moveFolderConfirmBtn">
+  <source>Sí, mover</source>
+  <target>Oui, déplacer</target>
+</trans-unit>
+<trans-unit id="moveFolderConfirmTitle">
+  <source>¿Mover carpeta?</source>
+  <target>Déplacer le dossier ?</target>
+</trans-unit>
+<trans-unit id="confirmBtn">
+  <source>Confirmar</source>
+  <target>Confirmer</target>
+</trans-unit>
+<trans-unit id="ofGroupSuffix">
+  <source>grupo</source>
+  <target>groupe</target>
+</trans-unit>
+<trans-unit id="reportMovedToFolderText">
+  <source>se ha movido a la carpeta</source>
+  <target>a été déplacé vers le dossier</target>
+</trans-unit>
+<trans-unit id="reportMovedInColumnWord">
+  <source>en</source>
+  <target>dans</target>
+</trans-unit>
+<trans-unit id="reportMovedToColumnText">
+  <source>se ha movido a</source>
+  <target>a été déplacé vers</target>
+</trans-unit>
+<trans-unit id="dashboardMovedTitle">
+  <source>Informe movido</source>
+  <target>Rapport déplacé</target>
+</trans-unit>
+<trans-unit id="multiSelectGroupHint">
+  <source>Mantén Ctrl (o Cmd) para seleccionar varios</source>
+  <target>Maintenez Ctrl (ou Cmd) pour en sélectionner plusieurs</target>
+</trans-unit>
+<trans-unit id="selectGroupRequired">
+  <source>Selecciona al menos un grupo</source>
+  <target>Sélectionnez au moins un groupe</target>
+</trans-unit>
+<trans-unit id="mergeFolderConfirmTitle">
+  <source>¿Fusionar carpetas?</source>
+  <target>Fusionner les dossiers ?</target>
+</trans-unit>
+<trans-unit id="folderMovedTitle">
+  <source>Carpeta movida</source>
+  <target>Dossier déplacé</target>
+</trans-unit>
+<trans-unit id="foldersMergedTitle">
+  <source>Carpetas fusionadas</source>
+  <target>Dossiers fusionnés</target>
+</trans-unit>
+<trans-unit id="foldersMergedText">
+  <source>se ha fusionado con</source>
+  <target>a été fusionné avec</target>
+</trans-unit>
 </body>
   </file>
 </xliff>

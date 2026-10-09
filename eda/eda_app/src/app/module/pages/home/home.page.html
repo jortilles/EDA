@@ -103,6 +103,22 @@
 
 </div><!-- end flex-row wrapper -->
 
+@if (groupPickerVisible()) {
+  <eda-dialog2 [display]="true"
+    header="Selecciona el grupo" i18n-header="@@selectGroupDragTitle"
+    width="30vw" height="auto"
+    [disableApply]="groupPickerSelection.length === 0"
+    (apply)="confirmGroupPicker()"
+    (close)="cancelGroupPicker()">
+    <div content class="p-6">
+      <p-multiSelect [(ngModel)]="groupPickerSelection" [options]="grups" [filter]="true"
+        optionLabel="name" optionValue="_id"
+        i18n-defaultLabel="@@multiSelectDefaultLabel" defaultLabel="Selecciona un grupo *"
+        [style]="{width: '100%'}" appendTo="body">
+      </p-multiSelect>
+    </div>
+  </eda-dialog2>
+}
 
 <!-- Template: report search box with advanced filter panel -->
 <ng-template #searchBox>
@@ -182,11 +198,12 @@
     [cdkDragData]="{ type: 'report', report: report, fromColKey: colKey, fromTag: folderTag }"
     [cdkDragDisabled]="isEditing"
     (cdkDragStarted)="onCdkDragStarted($event)"
+    (cdkDragMoved)="onCdkDragMoved($event)"
     (cdkDragEnded)="onCdkDragEnded($event)">
     <span class="drag-handle absolute left-1 top-2 text-muted-foreground" title="Arrastrar" i18n-title="@@dragHandleTooltip">
       <eda-icon name="grip-dots" size="sm"></eda-icon>
     </span>
-    <div class="px-4 py-2 pl-6 cursor-pointer" (click)="openReport(report, $event)" (auxclick)="openReport(report, $event)">
+    <div class="px-4 py-2 pl-6 cursor-pointer" (click)="openReport(report, $event)" (mousedown)="onCardMouseDown(report, $event)">
       @if(!isEditing || editingReportId !== report._id){
       <h3 class="text-base font-semibold flex items-center justify-between gap-1">
         <span>{{ report.config?.title }}</span>
@@ -310,6 +327,7 @@
           cdkDrag
           [cdkDragData]="{ type: 'folder', tag: exp.tag, fromColKey: colKey }"
           (cdkDragStarted)="onCdkDragStarted($event)"
+          (cdkDragMoved)="onCdkDragMoved($event)"
           (cdkDragEnded)="onCdkDragEnded($event)"
           [attr.data-folder-tag]="exp.tag"
           [attr.data-folder-colkey]="colKey"
@@ -343,14 +361,18 @@
     } @else if (viewMode() === 'folders') {
       <!-- Folder cards (closed) -->
       @for (tag of getTagsInReports(reports); track tag) {
-        <div class="folder-card rounded-lg border bg-card text-card-foreground shadow-sm cursor-pointer transition-colors flex items-center gap-3 px-4 min-h-[calc(5.75rem)]"
+        <div class="folder-card rounded-lg border bg-card text-card-foreground shadow-sm cursor-pointer transition-colors flex items-center gap-3 px-4 min-h-[calc(5.75rem)] relative"
           cdkDrag
           [cdkDragData]="{ type: 'folder', tag: tag, fromColKey: colKey }"
           (cdkDragStarted)="onCdkDragStarted($event)"
+          (cdkDragMoved)="onCdkDragMoved($event)"
           (cdkDragEnded)="onCdkDragEnded($event)"
           [attr.data-folder-tag]="tag"
           [attr.data-folder-colkey]="colKey"
           (click)="clickFolder(tag, colKey)">
+          <span class="drag-handle absolute left-1 top-2 text-muted-foreground" title="Arrastrar" i18n-title="@@dragHandleTooltip">
+            <eda-icon name="grip-dots" size="sm"></eda-icon>
+          </span>
           <!-- Icon square -->
           <div class="folder-icon-wrap shrink-0 flex items-center justify-center w-12 h-12 rounded-lg">
             <svg xmlns="http://www.w3.org/2000/svg" class="folder-icon w-10 h-10 pl-[4px]" viewBox="0 0 24 24" fill="currentColor">

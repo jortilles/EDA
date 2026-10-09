@@ -18,7 +18,8 @@ import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ChatbotComponent } from '@eda/components/chatbot/chatbot.component';
 import { GettingStartedComponent } from '@eda/shared/components/getting-started/getting-started.component';
-import { DragDropModule, CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragEnd, CdkDragMove, CdkDragStart } from '@angular/cdk/drag-drop';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 
 type DragPayload =
   | { type: 'report'; report: any; fromColKey: string; fromTag: string | null }
@@ -27,7 +28,7 @@ type DragPayload =
 @Component({
   selector: 'app-v2-home-page',
   standalone: true,
-  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule, EdaDatePickerComponent, DropdownModule, MultiSelectModule, ChatbotComponent, GettingStartedComponent, DragDropModule],
+  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule, EdaDatePickerComponent, DropdownModule, MultiSelectModule, ChatbotComponent, GettingStartedComponent, DragDropModule, EdaDialog2Component],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.css']
 })
@@ -88,6 +89,9 @@ export class HomePage implements OnInit, OnDestroy {
   // ---- Drag & drop: dashboards/folders across visibility columns and tag folders ----
   private isCdkDragging = false;
   private draggedEl: HTMLElement | null = null;
+  private currentHighlightEl: HTMLElement | null = null;
+  private dragZoneCache: { el: HTMLElement; rect: DOMRect; kind: 'col' | 'folder' }[] = [];
+  private lastDragMoveCheck = 0;
 
   private readonly colKeyToVisible: { [key: string]: string } = {
     shared: 'open',
@@ -235,6 +239,15 @@ export class HomePage implements OnInit, OnDestroy {
     this.reapplyFilters();
   }
 
+  // Middle-click on a plain <div> triggers the browser's own autoscroll gesture instead of a
+  // reliable click/auxclick, so it's handled here on mousedown (before autoscroll can engage)
+  // rather than relying on the click handler below, which only covers the left button.
+  public onCardMouseDown(report: any, event: MouseEvent): void {
+    if (event.button !== 1) return;
+    event.preventDefault();
+    this.openReport(report, event);
+  }
+
   public openReport(report: any, event: MouseEvent) {
     if (this.isEditing || this.isCdkDragging) { return; }
     if (event.button === 2) { return; } // right-click: let the context menu show, don't navigate
@@ -285,6 +298,15 @@ export class HomePage implements OnInit, OnDestroy {
     return el?.closest('[data-folder-tag]') as HTMLElement | null;
   }
 
+  // Live "you'll drop here" highlight: a single DOM class toggle, never an Angular binding, so it
+  // costs nothing CD-wise even though change detection is detached for the whole drag anyway.
+  private setHighlight(el: HTMLElement | null): void {
+    if (this.currentHighlightEl === el) return;
+    this.currentHighlightEl?.classList.remove('drop-zone-active');
+    el?.classList.add('drop-zone-active');
+    this.currentHighlightEl = el;
+  }
+
   public onCdkDragStarted(event: CdkDragStart<any>): void {
     this.isCdkDragging = true;
     // Plain DOM class on just the dragged element (not a wildcard selector over the whole grid,
@@ -292,6 +314,15 @@ export class HomePage implements OnInit, OnDestroy {
     // "lifted card" look + grabbing cursor while dragging.
     this.draggedEl = event.source.getRootElement();
     this.draggedEl.classList.add('is-dragging');
+
+    // Measure every potential drop target once, here, instead of calling elementFromPoint() on
+    // every move tick (that forces a layout recompute and was a big source of the earlier lag).
+    const folders = Array.from(document.querySelectorAll<HTMLElement>('[data-folder-tag]'));
+    const cols = Array.from(document.querySelectorAll<HTMLElement>('[data-col-key]'));
+    this.dragZoneCache = [
+      ...folders.map(el => ({ el, rect: el.getBoundingClientRect(), kind: 'folder' as const })),
+      ...cols.map(el => ({ el, rect: el.getBoundingClientRect(), kind: 'col' as const })),
+    ];
 
     // CDK kicks this off inside ngZone.run(), which means Angular would otherwise run a full
     // change-detection pass over this entire page (every binding on every card, in every column)
@@ -301,9 +332,40 @@ export class HomePage implements OnInit, OnDestroy {
     this.cdr.detach();
   }
 
+  public onCdkDragMoved(event: CdkDragMove<any>): void {
+    const now = performance.now();
+    if (now - this.lastDragMoveCheck < 80) return;
+    this.lastDragMoveCheck = now;
+
+    const { x, y } = event.pointerPosition;
+
+    let folderZone: typeof this.dragZoneCache[0] | null = null;
+    let colZone: typeof this.dragZoneCache[0] | null = null;
+    for (const zone of this.dragZoneCache) {
+      if (x < zone.rect.left || x > zone.rect.right || y < zone.rect.top || y > zone.rect.bottom) continue;
+      if (zone.kind === 'folder') folderZone ??= zone;
+      else colZone ??= zone;
+      if (folderZone && colZone) break;
+    }
+
+    if (!colZone) { this.setHighlight(null); return; }
+
+    const exp = this.expandedFolder();
+    if (exp && exp.colKey === colZone.el.dataset.colKey) {
+      // Whole column is one open folder: valid target for both a report (adds the tag) and
+      // another folder (merges it into this one)
+      this.setHighlight(colZone.el);
+      return;
+    }
+
+    this.setHighlight(folderZone?.el ?? colZone.el);
+  }
+
   public onCdkDragEnded(event: CdkDragEnd<any>): void {
     this.draggedEl?.classList.remove('is-dragging');
     this.draggedEl = null;
+    this.setHighlight(null);
+    this.dragZoneCache = [];
     this.cdr.reattach();
     // Snap the real element back to its normal (static) position now; if the drop actually moves
     // it to a different column/folder, the business logic below re-renders it there right after.
@@ -328,19 +390,25 @@ export class HomePage implements OnInit, OnDestroy {
       // The whole column is showing one open folder: dropping anywhere in it means "into this folder"
       if (payload.type === 'report') {
         this.handleReportDroppedOnFolder(payload.report, payload.fromColKey, payload.fromTag, colKey, exp.tag);
+      } else {
+        this.handleFolderMergedIntoFolder(payload.tag, payload.fromColKey, exp.tag, colKey);
       }
       return;
     }
 
+    const folderEl = this.folderElementAt(x, y);
     if (payload.type === 'report') {
-      const folderEl = this.folderElementAt(x, y);
       if (folderEl) {
         this.handleReportDroppedOnFolder(payload.report, payload.fromColKey, payload.fromTag, colKey, folderEl.dataset.folderTag!);
       } else {
         this.handleReportDroppedOnColumn(payload.report, payload.fromColKey, payload.fromTag, colKey);
       }
     } else {
-      this.handleFolderDroppedOnColumn(payload.tag, payload.fromColKey, colKey);
+      if (folderEl) {
+        this.handleFolderMergedIntoFolder(payload.tag, payload.fromColKey, folderEl.dataset.folderTag!, colKey);
+      } else {
+        this.handleFolderDroppedOnColumn(payload.tag, payload.fromColKey, colKey);
+      }
     }
   }
 
@@ -363,32 +431,49 @@ export class HomePage implements OnInit, OnDestroy {
     );
   }
 
-  private async pickGroupForAssignment(): Promise<string[] | null> {
+  // A dashboard can belong to more than one group, so picking one here uses the exact same
+  // p-multiSelect as the "privacidad del informe" dialog, not a one-off input. Shown/resolved
+  // through a signal + a stashed Promise resolver, since this needs to be awaited from several
+  // call sites exactly like the old Swal.fire(...)-based version was.
+  groupPickerVisible = signal(false);
+  groupPickerSelection: string[] = [];
+  private groupPickerResolve: ((value: string[] | null) => void) | null = null;
+
+  private pickGroupForAssignment(): Promise<string[] | null> {
     if (!this.grups || this.grups.length === 0) {
       this.alertService.addError($localize`:@@noGroupsToAssignDrag:No perteneces a ningún grupo al que asignar el informe.`);
-      return null;
+      return Promise.resolve(null);
     }
-    if (this.grups.length === 1) return [this.grups[0]['_id']];
+    if (this.grups.length === 1) return Promise.resolve([this.grups[0]['_id']]);
 
-    const inputOptions: Record<string, string> = {};
-    this.grups.forEach(g => inputOptions[g['_id']] = g['name']);
+    this.groupPickerSelection = [];
+    this.groupPickerVisible.set(true);
+    return new Promise(resolve => { this.groupPickerResolve = resolve; });
+  }
 
-    const result = await Swal.fire({
-      title: $localize`:@@selectGroupDragTitle:Selecciona el grupo`,
-      input: 'select',
-      inputOptions,
-      showCancelButton: true,
-      confirmButtonText: $localize`:@@moveFolderConfirmBtn:Sí, mover`,
-      cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
-    });
-    return result.value ? [result.value] : null;
+  public confirmGroupPicker(): void {
+    if (this.groupPickerSelection.length === 0) {
+      this.alertService.addError($localize`:@@selectGroupRequired:Selecciona al menos un grupo`);
+      return;
+    }
+    this.groupPickerVisible.set(false);
+    this.groupPickerResolve?.(this.groupPickerSelection);
+    this.groupPickerResolve = null;
+  }
+
+  public cancelGroupPicker(): void {
+    this.groupPickerVisible.set(false);
+    this.groupPickerResolve?.(null);
+    this.groupPickerResolve = null;
   }
 
   private applyVisibilityChange(report: any, fromColKey: string, toColKey: string, newGroupIds: string[] | null): void {
     const fromArr = this.reportMap[fromColKey];
     const idx = fromArr ? fromArr.findIndex((r: any) => r._id === report._id) : -1;
     if (idx !== -1) fromArr.splice(idx, 1);
-    this.reportMap[toColKey].push(report);
+    const toArr = this.reportMap[toColKey];
+    toArr.push(report);
+    toArr.sort(this.getSortCompareFn()); // land in the right spot for the active sort order, not just at the end
 
     report.config.visible = this.colKeyToVisible[toColKey];
     report.group = toColKey === 'group' ? newGroupIds : [];
@@ -417,6 +502,8 @@ export class HomePage implements OnInit, OnDestroy {
     } else {
       this.reapplyFilters(); // only the visibility/column changed, the tag list itself didn't
     }
+
+    this.notifyReportMoved(report.config.title, toColKey, null, this.groupNameFor(newGroupIds));
   }
 
   private async handleReportDroppedOnFolder(report: any, fromColKey: string, fromTag: string | null, toColKey: string, toTag: string): Promise<void> {
@@ -439,6 +526,26 @@ export class HomePage implements OnInit, OnDestroy {
     this.persistReportField(report, 'config.tag', newTags);
 
     this.loadReportTags();
+    this.notifyReportMoved(report.config.title, toColKey, toTag, this.groupNameFor(newGroupIds));
+  }
+
+  private groupNameFor(groupIds: string[] | null): string | undefined {
+    if (!groupIds || groupIds.length === 0) return undefined;
+    const names = groupIds.map(id => this.grups.find(g => g['_id'] === id)?.['name']).filter(Boolean);
+    return names.length ? names.join(', ') : undefined;
+  }
+
+  private notifyReportMoved(reportTitle: string, colKey: string, tag: string | null, groupName?: string): void {
+    const colTitle = this.columnTitle(colKey);
+    const destination = groupName
+      ? `${colTitle} (${$localize`:@@ofGroupSuffix:grupo`} ${groupName})`
+      : colTitle;
+
+    const text = tag
+      ? `"${reportTitle}" ${$localize`:@@reportMovedToFolderText:se ha movido a la carpeta`} "${tag}" ${$localize`:@@reportMovedInColumnWord:en`} ${destination}.`
+      : `"${reportTitle}" ${$localize`:@@reportMovedToColumnText:se ha movido a`} ${destination}.`;
+
+    this.alertService.addSuccess(text);
   }
 
   private handleFolderDroppedOnColumn(tag: string, fromColKey: string, toColKey: string): void {
@@ -454,7 +561,8 @@ export class HomePage implements OnInit, OnDestroy {
       text: `"${tag}": ${affected.length} ${dashboardsLabel} → ${this.columnTitle(toColKey)}`,
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: $localize`:@@moveFolderConfirmBtn:Sí, mover`,
+      reverseButtons: true,
+      confirmButtonText: $localize`:@@confirmBtn:Confirmar`,
       cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
     }).then(async res => {
       if (!res.value) return;
@@ -475,7 +583,83 @@ export class HomePage implements OnInit, OnDestroy {
       }
 
       this.reapplyFilters(); // moving a folder only changes visibility, never any tags
+      this.notifyFolderMoved(tag, affected.length, toColKey, this.groupNameFor(newGroupIds));
     });
+  }
+
+  private notifyFolderMoved(tag: string, count: number, toColKey: string, groupName?: string): void {
+    const colTitle = this.columnTitle(toColKey);
+    const destination = groupName
+      ? `${colTitle} (${$localize`:@@ofGroupSuffix:grupo`} ${groupName})`
+      : colTitle;
+    const dashboardsLabel = $localize`:@@folderReportCount:informes`;
+    const text = `"${tag}" (${count} ${dashboardsLabel}) ${$localize`:@@reportMovedToColumnText:se ha movido a`} ${destination}.`;
+    this.alertService.addSuccess(text);
+  }
+
+  /** Dragging a folder onto another folder merges it in: every dashboard tagged with `fromTag`
+   * is retagged to `toTag` (and moved to `toColKey`'s column, if different). `fromTag` disappears
+   * once nothing carries it anymore — there's no nested/hierarchical folder structure, just a flat
+   * tag merge. */
+  private handleFolderMergedIntoFolder(fromTag: string, fromColKey: string, toTag: string, toColKey: string): void {
+    if (fromTag === toTag && fromColKey === toColKey) return; // dropped onto itself
+
+    const fromArr = this.reportMap[fromColKey];
+    const affected = fromArr.filter((r: any) => this.normTagArr(r.config).includes(fromTag));
+    if (affected.length === 0) return;
+
+    const sameColumn = fromColKey === toColKey;
+    const dashboardsLabel = $localize`:@@folderReportCount:informes`;
+    const text = sameColumn
+      ? `"${fromTag}" → "${toTag}" (${affected.length} ${dashboardsLabel})`
+      : `"${fromTag}" (${this.columnTitle(fromColKey)}) → "${toTag}" (${this.columnTitle(toColKey)}) · ${affected.length} ${dashboardsLabel}`;
+
+    Swal.fire({
+      title: $localize`:@@mergeFolderConfirmTitle:¿Fusionar carpetas?`,
+      text,
+      icon: 'question',
+      showCancelButton: true,
+      reverseButtons: true,
+      confirmButtonText: $localize`:@@confirmBtn:Confirmar`,
+      cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
+    }).then(async res => {
+      if (!res.value) return;
+
+      let newGroupIds: string[] | null = null;
+      if (!sameColumn && toColKey === 'group') {
+        newGroupIds = await this.pickGroupForAssignment();
+        if (!newGroupIds) return;
+      }
+
+      for (const report of [...affected]) {
+        if (!sameColumn) {
+          this.applyVisibilityChange(report, fromColKey, toColKey, newGroupIds);
+        }
+        const newTags = this.normTagArr(report.config).filter(t => t !== fromTag);
+        if (!newTags.includes(toTag)) newTags.push(toTag);
+        report.config.tag = newTags;
+        this.persistReportField(report, 'config.tag', newTags);
+      }
+
+      const exp = this.expandedFolder();
+      if (exp && exp.tag === fromTag && exp.colKey === fromColKey) {
+        this.closeFolder();
+      }
+
+      this.loadReportTags(); // fromTag may have disappeared entirely
+      this.notifyFoldersMerged(fromTag, toTag, affected.length, toColKey, this.groupNameFor(newGroupIds));
+    });
+  }
+
+  private notifyFoldersMerged(fromTag: string, toTag: string, count: number, toColKey: string, groupName?: string): void {
+    const colTitle = this.columnTitle(toColKey);
+    const destination = groupName
+      ? `${colTitle} (${$localize`:@@ofGroupSuffix:grupo`} ${groupName})`
+      : colTitle;
+    const dashboardsLabel = $localize`:@@folderReportCount:informes`;
+
+    const text = `"${fromTag}" ${$localize`:@@foldersMergedText:se ha fusionado con`} "${toTag}" ${$localize`:@@reportMovedInColumnWord:en`} ${destination} (${count} ${dashboardsLabel}).`;
+    this.alertService.addSuccess(text);
   }
 
   public clickFolder(tag: string, colKey: string): void {
@@ -803,20 +987,28 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   handleSorting() {
-    switch (this.sortingType) {
-      case 'dateAsc':
-        this.sortingReports('modifiedAt', this.reportMap, 'asc');
-        sessionStorage.setItem('homeSorting', 'dateAsc');
-        break;
-      case 'dateDesc':
-        this.sortingReports('modifiedAt', this.reportMap, 'desc');
-        sessionStorage.setItem('homeSorting', 'dateDesc');
-        break;
-      default:
-        this.sortingReports('title', this.reportMap, 'asc');
-        sessionStorage.setItem('homeSorting', 'name');
-        break;
-    }
+    sessionStorage.setItem('homeSorting', this.sortingType);
+    const compareFn = this.getSortCompareFn();
+    this.publicReports = this.reportMap.public.sort(compareFn);
+    this.privateReports = this.reportMap.private.sort(compareFn);
+    this.roleReports = this.reportMap.group.sort(compareFn);
+    this.sharedReports = this.reportMap.shared.sort(compareFn);
+  }
+
+  /** Comparator for the active sort dropdown selection (name / date asc / date desc). */
+  private getSortCompareFn(): (a: any, b: any) => number {
+    const type = this.sortingType === 'name' ? 'title' : 'modifiedAt';
+    const direction = this.sortingType === 'dateDesc' ? 'desc' : 'asc';
+    return (a: any, b: any) => {
+      const valA = a.config[type];
+      const valB = b.config[type];
+      if (type === 'modifiedAt') {
+        const diff = new Date(valA).getTime() - new Date(valB).getTime();
+        return direction === 'asc' ? diff : -diff;
+      }
+      const comparison = valA.localeCompare(valB);
+      return direction === 'asc' ? comparison : -comparison;
+    };
   }
 
   toggleAdvancedFilter(event: Event) {
@@ -927,26 +1119,4 @@ export class HomePage implements OnInit, OnDestroy {
     this.filterByTags();
   }
 
-  sortingReports(type: string, reports: any, direction: string) {
-    const compareFn = (a: any, b: any) => {
-      const valA = a.config[type];
-      const valB = b.config[type];
-      if (type === 'modifiedAt') {
-        const dateA = new Date(valA);
-        const dateB = new Date(valB);
-
-        return direction === 'asc'
-          ? dateA.getTime() - dateB.getTime()
-          : dateB.getTime() - dateA.getTime();
-      }
-
-      const comparison = valA.localeCompare(valB);
-      return direction === 'asc' ? comparison : -comparison;
-    };
-
-    this.publicReports = reports.public.sort(compareFn);
-    this.privateReports = reports.private.sort(compareFn);
-    this.roleReports = reports.group.sort(compareFn);
-    this.sharedReports = reports.shared.sort(compareFn);
-  }
 }

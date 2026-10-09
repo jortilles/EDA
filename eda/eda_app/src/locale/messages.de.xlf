@@ -5768,6 +5768,74 @@ Un saludo.</source>
         <source>elementos disponibles</source>
         <target>Elemente verfügbar</target>
       </trans-unit>
+      <trans-unit id="dragHandleTooltip">
+        <source>Arrastrar</source>
+        <target>Ziehen</target>
+      </trans-unit>
+      <trans-unit id="noGroupsToAssignDrag">
+        <source>No perteneces a ningún grupo al que asignar el informe.</source>
+        <target>Sie gehören keiner Gruppe an, der der Bericht zugewiesen werden kann.</target>
+      </trans-unit>
+      <trans-unit id="selectGroupDragTitle">
+        <source>Selecciona el grupo</source>
+        <target>Gruppe auswählen</target>
+      </trans-unit>
+      <trans-unit id="moveFolderConfirmBtn">
+        <source>Sí, mover</source>
+        <target>Ja, verschieben</target>
+      </trans-unit>
+      <trans-unit id="moveFolderConfirmTitle">
+        <source>¿Mover carpeta?</source>
+        <target>Ordner verschieben?</target>
+      </trans-unit>
+      <trans-unit id="confirmBtn">
+        <source>Confirmar</source>
+        <target>Bestätigen</target>
+      </trans-unit>
+      <trans-unit id="ofGroupSuffix">
+        <source>grupo</source>
+        <target>Gruppe</target>
+      </trans-unit>
+      <trans-unit id="reportMovedToFolderText">
+        <source>se ha movido a la carpeta</source>
+        <target>wurde in den Ordner verschoben</target>
+      </trans-unit>
+      <trans-unit id="reportMovedInColumnWord">
+        <source>en</source>
+        <target>in</target>
+      </trans-unit>
+      <trans-unit id="reportMovedToColumnText">
+        <source>se ha movido a</source>
+        <target>wurde verschoben nach</target>
+      </trans-unit>
+      <trans-unit id="dashboardMovedTitle">
+        <source>Informe movido</source>
+        <target>Bericht verschoben</target>
+      </trans-unit>
+      <trans-unit id="multiSelectGroupHint">
+        <source>Mantén Ctrl (o Cmd) para seleccionar varios</source>
+        <target>Halten Sie Strg (oder Cmd) gedrückt, um mehrere auszuwählen</target>
+      </trans-unit>
+      <trans-unit id="selectGroupRequired">
+        <source>Selecciona al menos un grupo</source>
+        <target>Wählen Sie mindestens eine Gruppe aus</target>
+      </trans-unit>
+      <trans-unit id="mergeFolderConfirmTitle">
+        <source>¿Fusionar carpetas?</source>
+        <target>Ordner zusammenführen?</target>
+      </trans-unit>
+      <trans-unit id="folderMovedTitle">
+        <source>Carpeta movida</source>
+        <target>Ordner verschoben</target>
+      </trans-unit>
+      <trans-unit id="foldersMergedTitle">
+        <source>Carpetas fusionadas</source>
+        <target>Ordner zusammengeführt</target>
+      </trans-unit>
+      <trans-unit id="foldersMergedText">
+        <source>se ha fusionado con</source>
+        <target>wurde zusammengeführt mit</target>
+      </trans-unit>
   </body>
   </file>
 </xliff>

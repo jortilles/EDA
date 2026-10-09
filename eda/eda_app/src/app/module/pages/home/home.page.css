@@ -107,14 +107,17 @@
 .folder-chevron-open            { color: var(--folder-icon-color-hover); }
 
 /* ---- Drag & drop (Angular CDK) ---- */
-.report-card, .folder-card, .folder-card-open { cursor: grab; }
 
 .drag-handle {
   opacity: 0;
   transition: opacity 0.15s;
-  pointer-events: none;
+  cursor: grab;
 }
-.report-card:hover .drag-handle { opacity: 0.5; }
+.report-card:hover .drag-handle,
+.folder-card:hover .drag-handle {
+  opacity: 0.5;
+}
+.is-dragging .drag-handle { opacity: 1; }
 
 /* Free-dragging (no cdkDropList): the real card/folder is what moves, translated by CDK. Applied
    imperatively to just this one element (not a wildcard selector toggled on an ancestor, which was
@@ -126,6 +129,12 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18), 0 3px 6px rgba(0, 0, 0, 0.12);
   opacity: 0.95;
   z-index: 1000;
+}
+/* Inner elements (the title's cursor-pointer click area, the drag-handle's own cursor: grab,
+   action buttons...) each set their own cursor, which otherwise wins over the inherited grabbing
+   from .is-dragging above. Force it on the small subtree of just this one dragged card. */
+.is-dragging, .is-dragging * {
+  cursor: grabbing !important;
 }
 
 /* A column area that will accept the drop (visibility change, or "into this folder" when expanded) */
