@@ -168,6 +168,21 @@
               placeholder="Selecciona tags...">
             </p-multiSelect>
           </div>
+          <!-- Groups -->
+          <div class="space-y-1">
+            <label class="text-xs font-medium text-muted-foreground" i18n="@@groupFilterLabel">Grupo</label>
+            <p-multiSelect
+              [options]="groupOptions"
+              [(ngModel)]="advancedGroups"
+              (ngModelChange)="applyAdvancedFilters()"
+              optionLabel="label"
+              optionValue="value"
+              appendTo="body"
+              [style]="{width: '100%'}"
+              i18n-placeholder="@@groupFilterPlaceholder"
+              placeholder="Selecciona grupos...">
+            </p-multiSelect>
+          </div>
         </div>
       </div>
     }
