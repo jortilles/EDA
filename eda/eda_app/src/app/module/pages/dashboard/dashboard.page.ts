@@ -1132,7 +1132,13 @@ export class DashboardPage implements OnInit {
   private setPanelsToFilter(panel: any): any {
     const newPanel = this.panels.find(p => p.id === panel.id);
     const panels = this.globalFiltersService.panelsToDisplay(this.dataSource.model.tables, this.panels, newPanel);
-    const panelsToFilter = panels.filter(p => p.avaliable === true);
+    let panelsToFilter = panels.filter(p => p.avaliable === true);
+
+    // Respect this panel's own click-filter configuration (which panels its click affects)
+    if (newPanel?.clickFilterApplyToAll === false) {
+      const targets = newPanel.clickFilterTargets || [];
+      panelsToFilter = panelsToFilter.filter(p => p.id === newPanel.id || targets.includes(p.id));
+    }
 
     return {
         panelList: panelsToFilter,
