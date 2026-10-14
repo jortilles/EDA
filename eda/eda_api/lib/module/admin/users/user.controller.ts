@@ -13,6 +13,7 @@ import { GroupController } from '../groups/group.controller';
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+import { randomSsoPasswordHash } from '../../../utils/sso-password.util';
 const SEED = require('../../../../config/seed').SEED;
 const crypto = require('crypto');
 
@@ -72,7 +73,7 @@ export class UserController {
                         const userToSave: IUser = new User({
                             name: userAD.displayName,
                             email: userAD.username,
-                            password: bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10),
+                            password: randomSsoPasswordHash(),
                             img: body.img,
                             role: adGroupsInMongo,
                             creation_date: new Date()
