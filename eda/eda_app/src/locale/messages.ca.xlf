@@ -178,8 +178,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="publicDashboardTitle" datatype="html">
-<source> Informe público EDA</source>
-<target> Informe públic EDA</target>
+<source> Informe público Edalitics</source>
+<target> Informe públic Edalitics</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/anonimous-login/anonymous-login.component.html</context>
 <context context-type="linenumber">1</context>
@@ -5182,6 +5182,30 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <source>Muestra la leyenda del gráfico</source>
   <target>Mostra la llegenda del gràfic</target>
 </trans-unit>
+<trans-unit id="sortLegendAlphabetically">
+  <source>Ordenar Leyenda Alfabéticamente</source>
+  <target>Ordena la llegenda alfabèticament</target>
+</trans-unit>
+<trans-unit id="sortLegendAlphabeticallyOptionDescription">
+  <source>Ordena alfabéticamente los elementos de la leyenda</source>
+  <target>Ordena alfabèticament els elements de la llegenda</target>
+</trans-unit>
+<trans-unit id="mainSeries">
+  <source>Serie principal</source>
+  <target>Sèrie principal</target>
+</trans-unit>
+<trans-unit id="mainSeriesOptionDescription">
+  <source>Destaca una serie dibujándola el doble de gruesa y por encima del resto de líneas</source>
+  <target>Destaca una sèrie dibuixant-la el doble de gruixuda i per sobre de la resta de línies</target>
+</trans-unit>
+<trans-unit id="mainSeriesSelect">
+  <source>Serie a destacar</source>
+  <target>Sèrie a destacar</target>
+</trans-unit>
+<trans-unit id="mainSeriesPlaceholder">
+  <source>-- Seleccione una serie --</source>
+  <target>-- Seleccioneu una sèrie --</target>
+</trans-unit>
 
 <trans-unit id="showGridLines">
   <source>Mostrar Líneas Guía</source>
@@ -8067,6 +8091,128 @@ Salutacions.</target>
 <trans-unit id="sourceFieldsLimitNotice">
   <source>La consulta está limitada a 50.000 registros</source>
   <target>La consulta està limitada a 50.000 registres</target>
+</trans-unit>
+
+      <trans-unit id="groupedSubtotalsTitle">
+        <source>Subtotales de grupo</source>
+        <target>Subtotals de grup</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsGroupByLabel">
+        <source>Agrupar por (en orden)</source>
+        <target>Agrupar per (en ordre)</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsSearchPlaceholder">
+        <source>Buscar...</source>
+        <target>Cerca...</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsAddPlaceholder">
+        <source>Seleccionar columnas...</source>
+        <target>Seleccionar columnes...</target>
+      </trans-unit>
+      <trans-unit id="clearAllGlobalFilters" datatype="html">
+        <source>Limpiar todos los filtros globales</source>
+        <target>Netejar tots els filtres globals</target>
+      </trans-unit>
+<trans-unit id="clickFiltersConfigText" datatype="html">
+<source>Filtros en click</source>
+<target>Filtres en clic</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="configurarClickFilters" datatype="html">
+<source>Configurar</source>
+<target>Configurar</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="resumenPanelesAfectanH6" datatype="html">
+<source>Paneles que me afectan</source>
+<target>Panells que m'afecten</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="noAffectingPanels" datatype="html">
+<source>Sin paneles</source>
+<target>Sense panells</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterDialogHeader" datatype="html">
+<source>Filtros en click</source>
+<target>Filtres en clic</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterDialogCloseBtn" datatype="html">
+<source>Cerrar</source>
+<target>Tancar</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterEnabledLabel" datatype="html">
+<source>¿Este panel es clicable?</source>
+<target>Aquest panell és clicable?</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterAffectsH5" datatype="html">
+<source>A qué paneles afecta</source>
+<target>A quins panells afecta</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="applyToAllPanelsLabel" datatype="html">
+<source>Aplicar a todos</source>
+<target>Aplicar a tots</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="noOtherPanels" datatype="html">
+<source>No hay otros paneles en este dashboard</source>
+<target>No hi ha altres panells en aquest tauler</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterAffectedByH5" datatype="html">
+<source>Qué paneles me afectan</source>
+<target>Quins panells m'afecten</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="searchPanelPlaceholder" datatype="html">
+<source>Buscar panel...</source>
+<target>Cercar panell...</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="selectPanelsPlaceholder" datatype="html">
+<source>Añadir panel...</source>
+<target>Afegir panell...</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="panelsSelectedLabel" datatype="html">
+<source>{0} paneles seleccionados</source>
+<target>{0} panells seleccionats</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
 </trans-unit>
 </body>
   </file>

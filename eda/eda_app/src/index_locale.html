@@ -15,6 +15,8 @@
                 locale = 'fr';
         }else if(userLang.indexOf('de') >=0){
                 locale = 'de';
+        }else if(userLang.indexOf('pt') >=0){
+                locale = 'pt';
         }
         var base = window.location.href.replace('/index.html','').split('#')[0].replace(/\/$/, '');
         window.location.href = base + '/' + locale + '/' + window.location.hash;

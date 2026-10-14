@@ -93,11 +93,11 @@ export class HoldedController {
                 ].join(' · '),
                 counts: result,
                 files: [
-                    `duckdb/${folderName}/facturas.csv`,
-                    `duckdb/${folderName}/facturas_lineas.csv`,
-                    `duckdb/${folderName}/contactos.csv`,
-                    `duckdb/${folderName}/productos.csv`,
-                    `duckdb/${folderName}/asientos.csv`
+                    `duckdb/${folderName}/invoices.csv`,
+                    `duckdb/${folderName}/invoice_lines.csv`,
+                    `duckdb/${folderName}/contacts.csv`,
+                    `duckdb/${folderName}/products.csv`,
+                    `duckdb/${folderName}/ledger.csv`
                 ]
             });
 

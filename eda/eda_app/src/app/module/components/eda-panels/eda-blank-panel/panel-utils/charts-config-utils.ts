@@ -43,11 +43,14 @@ export const CUSTOM_CHART_CONFIG_FIELDS: CustomChartConfigField[] = [
   { name: 'labelColorMode', default: 'series', fallbackIfMissing: true },
   { name: 'labelCustomColor', default: '#000000' },
   { name: 'showPointLines', default: false },
+  { name: 'highlightMainSeries', default: false },
+  { name: 'mainSeries', default: null },
   { name: 'secondAxis', default: false },
   { name: 'showPredictionLines', default: false },
   { name: 'numberOfColumns', default: null },
   { name: 'assignedColors', default: [] },
   { name: 'chartLegend', default: true, fallbackIfMissing: true },
+  { name: 'sortLegendAlphabetically', default: false, fallbackIfMissing: true },
   { name: 'coloredBarsConfig', default: null },
   { name: 'showUniqueColors', default: null },
   { name: 'uniqueBarColors', default: null },
@@ -109,6 +112,8 @@ export const ChartsConfigUtils = {
         headerColor: ebp.panelChart.componentRef.instance.inject.headerColor || '',
         bandingColor: ebp.panelChart.componentRef.instance.inject.bandingColor || '',
         colorEnabled: ebp.panelChart.componentRef.instance.inject.colorEnabled !== false,
+        // Not mirrored onto inject, read from the current config instead (like assignedColors below).
+        groupBySubtotalColumns: ebp.panelChart.props.config?.getConfig()?.['groupBySubtotalColumns'] || [],
         columnWidths: ebp.panelChart.componentRef.instance.inject.columnWidths,
       }
 
@@ -202,6 +207,7 @@ export const ChartsConfigUtils = {
         useIcons: savedConfig?.['useIcons'] ?? inst?.inject?.useIcons ?? false,
         useGradient: inst ? inst.inject?.useGradient ?? true : true,
         chartLegend: inst ? inst.chartLegend ?? true : true,
+        sortLegendAlphabetically: savedConfig?.['sortLegendAlphabetically'] ?? inst?.inject?.sortLegendAlphabetically ?? false,
         // Without this, every requery (initEdaQuery/initSqlQuery call setConfig() on every
         // filter change/refresh/reload) silently dropped chartAnimation back to its default,
         // undoing both the per-panel dialog checkbox and the dashboard-wide animations toggle.

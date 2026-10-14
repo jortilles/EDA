@@ -8,7 +8,7 @@
         [rowsPerPageOptions]="[5, 10, 25, 50, 100]" 
         paginatorDropdownAppendTo="body" 
         (onPage)="inject.onPage($event)" 
-        (sortFunction)="customSort($event, inject.cols)" 
+        (sortFunction)="hasGroupedSubtotalRows() ? customSortGrouped($event, inject.cols) : customSort($event, inject.cols)"
         [customSort]="true"
         [sortField]="inject.sortedColumn ? inject.sortedColumn.field : null"
         [sortOrder]="inject.sortedColumn ? inject.sortedColumn.order : null" 
@@ -56,7 +56,7 @@
                     @if(col.type && col.visible){
                         <th [pSortableColumn]="col.field" [pSortableColumnDisabled]="suppressSortClick" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
                             [width]="col.width" [attr.rowspan]="col.rowspan" [attr.data-field]="col.field" style="position: relative;">
-                            <div class="flex items-center "  [ngStyle]="getTextStyle()">
+                            <div class="flex items-center" [class.justify-end]="col.type === 'EdaColumnNumber' || col.type === 'EdaColumnPercentage'" [ngStyle]="getTextStyle()">
                                 {{col.header}}
                                 @if(col.sortable){
                                     <p-sortIcon [field]="col.field"  [ngStyle]="getTextStyle()"></p-sortIcon>
@@ -92,6 +92,21 @@
         <!-- COLUMN CONTENT -->
 
         <ng-template pTemplate="body" let-rowData let-columns="columns">
+            @if (rowData[groupedSubtotalKey] !== undefined) {
+                <!-- Grouped subtotal row (see grouped-subtotals-utils.ts) — a synthetic row
+                     spliced into inject.value, not a real query result, so it skips the
+                     per-column-type switch below (no nav buttons, tooltips, HTML rendering)
+                     and just shows the plain "X Total" / aggregated-value text, bold. -->
+                <tr>
+                    <ng-container *ngFor="let col of inject.cols">
+                        @if (col.visible === true) {
+                            <td [width]="col.width" [class]="col.type === 'EdaColumnNumber' ? 'grouped-sub-total-row' : 'grouped-sub-total-row-header'">
+                                {{ lodash.get(rowData, col.field) }}
+                            </td>
+                        }
+                    </ng-container>
+                </tr>
+            } @else {
             <tr>
                 <ng-container *ngFor="let col of inject.cols">
                     @if(col.visible===true){
@@ -256,6 +271,7 @@
                     }
                 </ng-container>
             </tr>
+            }
         </ng-template>
 
         <ng-template pTemplate="footer" id="totalsFooter" >

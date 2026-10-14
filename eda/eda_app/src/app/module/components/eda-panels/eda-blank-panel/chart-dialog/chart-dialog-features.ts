@@ -28,6 +28,8 @@ export interface ChartDialogFeatures {
     hasLegend?: boolean;
     hasGridLines?: boolean;
     hasPointLines?: boolean;
+    /** line: "Serie principal" - pick one series to draw thicker and on top of the rest. */
+    hasMainSeries?: boolean;
     hasRoundedBars?: boolean;
     hasSecondAxis?: boolean;
     hasNumberOfColumns?: boolean;
@@ -128,6 +130,7 @@ export const CHART_DIALOG_FEATURES: Record<string, ChartDialogFeatures> = {
         hasLegend: true,
         hasGridLines: true,
         hasPointLines: true,
+        hasMainSeries: true,
         hasLabels: true,
         hasLabelsPercent: true,
         colorEditorShape: 'per-series',

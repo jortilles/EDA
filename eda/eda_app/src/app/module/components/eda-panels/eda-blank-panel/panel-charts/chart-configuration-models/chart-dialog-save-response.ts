@@ -5,6 +5,7 @@ export interface ChartDialogSaveResponseBase {
   colors?: string[];
   useGradient?: boolean;
   chartLegend?: boolean;
+  sortLegendAlphabetically?: boolean;
   showLabels?: boolean;
   showLabelsPercent?: boolean;
   showGridLines?: boolean;

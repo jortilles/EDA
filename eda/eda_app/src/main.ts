@@ -11,6 +11,7 @@ import localePl from '@angular/common/locales/pl';
 import localeFr from '@angular/common/locales/fr';
 import localeDe from '@angular/common/locales/de';
 import localeEn from '@angular/common/locales/en';
+import localePt from '@angular/common/locales/pt-PT';
 
 // MSAL
 import { MsalModule, MSAL_INSTANCE, MsalService } from '@azure/msal-angular';
@@ -35,6 +36,8 @@ registerLocaleData(localePl);
 registerLocaleData(localeFr);
 registerLocaleData(localeDe);
 registerLocaleData(localeEn);
+// European Portuguese formats under the 'pt' locale id (Angular's default 'pt' data is pt-BR)
+registerLocaleData(localePt, 'pt');
 
 // Detect IE
 const isIE =

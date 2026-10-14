@@ -20,6 +20,11 @@ export class TableConfig {
   bandingColor: string;
   /** When false, header and banding are transparent (white/no color). */
   colorEnabled: boolean;
+  /** Ordered column names to group by for nested "grouped subtotals" (e.g. [pais, ciudad] —
+   *  order defines nesting depth). Empty = feature off. Which numeric columns get subtotaled
+   *  is never persisted — always every numeric column currently in the query (see
+   *  GroupedSubtotalsUtils.numericColumnsFromFields), so adding one needs no re-save. */
+  groupBySubtotalColumns: string[];
   /** Column widths as percentages (field -> "33.33%"), set once the user drags a header border.
    *  Undefined until then, so untouched tables keep auto-sizing by content. */
   columnWidths?: Record<string, string>;
@@ -42,6 +47,7 @@ export class TableConfig {
     headerColor: string = '',
     bandingColor: string = '',
     colorEnabled: boolean = true,
+    groupBySubtotalColumns: string[] = [],
     columnWidths?: Record<string, string>,
     ) {
       this.onlyPercentages = onlyPercentages;
@@ -61,6 +67,7 @@ export class TableConfig {
       this.headerColor = headerColor;
       this.bandingColor = bandingColor;
       this.colorEnabled = colorEnabled;
+      this.groupBySubtotalColumns = groupBySubtotalColumns;
       this.columnWidths = columnWidths;
   }
 

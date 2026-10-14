@@ -12,7 +12,7 @@ import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
 import { KpiConfig } from '@eda/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/kpi-config';
-import { DEFAULT_PALETTE_COLOR } from '@eda/configs/index';
+import { DEFAULT_PALETTE_COLOR, CHART_RENDER_LIMITS } from '@eda/configs/index';
 import { StyleProviderService } from '@eda/services/service.index';
 import { color } from 'd3';
 
@@ -796,57 +796,53 @@ export class ChartUtilsService {
 
 
     /**
+     * Max number of rows a chart subtype can draw, or null when it has no row limit
+     * (tables, histogram, which bins the data, and charts with shape rules: kpi, dynamicText, knob, kpideviation).
+     * @param subType chart subtype (subValue / edaChart)
+     */
+    public getChartMaxRows(subType: string): number | null {
+        if (['doughnut', 'polarArea'].includes(subType)) {
+            return CHART_RENDER_LIMITS.pieMaxRows;
+        }
+        if (['line', 'kpiline', 'area', 'kpiarea', 'barline'].includes(subType)) {
+            return CHART_RENDER_LIMITS.lineMaxRows;
+        }
+        if (['bar', 'kpibar', 'stackedbar', 'stackedbar100', 'horizontalBar', 'pyramid', 'radar',
+            'parallelSets', 'treeMap', 'sunburst', 'scatterPlot', 'bubblechart', 'funnel', 'raceBar', 'kpitrend',
+            'geoJsonMap', 'coordinatesMap'].includes(subType)) {
+            return CHART_RENDER_LIMITS.chartMaxRows;
+        }
+        return null;
+    }
+
+    /**
+     * Chart subtype whose resultset is too large to be drawn (dataSize reaches its CHART_RENDER_LIMITS limit)
+     * @param subType chart subtype (subValue / edaChart)
+     * @param dataSize number of rows
+     */
+    public exceedsChartMaxRows(subType: string, dataSize: number): boolean {
+        const maxRows = this.getChartMaxRows(subType);
+        return maxRows !== null && dataSize >= maxRows;
+    }
+
+    /**
      * Check the resultset size for every chart and return the ones you can not have because you have too many data
      * @param dataSize
-     * @return [] notAllowed chart types
+     * @return [] notAllowed chart subtypes
      */
     public getTooManyDataForCharts(dataSize: number): any[] {
-        let notAllowed =
-            ['table', 'crosstable', 'kpi', 'dynamicText', 'knob', 'kpideviation', 'doughnut', 'polarArea', 'line', 'kpiline', 'bar', 'kpibar','histogram',
-                'horizontalBar', 'barline', 'area', 'kpiarea', 'geoJsonMap', 'coordinateMap', 'radar'];
+        const notAllowed = this.chartTypes
+            .map(chart => chart.subValue)
+            .filter(subType => this.exceedsChartMaxRows(subType, dataSize));
 
-        //table (at least one column)
-        notAllowed.splice(notAllowed.indexOf('table'), 1);
-        // Crosstable (At least three columns, one numeric)
-        notAllowed.splice(notAllowed.indexOf('crosstable'), 1);
-
-        notAllowed.splice(notAllowed.indexOf('geoJsonMap'), 1);
-        // Crosstable (At least three columns, one numeric)
-        notAllowed.splice(notAllowed.indexOf('coordinateMap'), 1);
-
-        // KPI (only one numeric column)
-
-        if (dataSize === 1) {
-            notAllowed.splice(notAllowed.indexOf('kpi'), 1);
-            notAllowed.splice(notAllowed.indexOf('dynamicText'), 1);
+        // KPI / dynamicText: only one row allowed
+        if (dataSize !== 1) {
+            notAllowed.push('kpi', 'dynamicText');
         }
         // Knob / kpideviation: only 2 rows allowed
-        if (dataSize <= 2) {
-            notAllowed.splice(notAllowed.indexOf('knob'), 1);
-            notAllowed.splice(notAllowed.indexOf('kpideviation'), 1);
+        if (dataSize > 2) {
+            notAllowed.push('knob', 'kpideviation');
         }
-        // Pie && Polar (Only one numeric column and one char/date column)
-        if (dataSize < 100) {
-            notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
-            notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
-        }
-        // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
-        if (dataSize < 2000) {
-            notAllowed.splice(notAllowed.indexOf('bar'), 1);
-            notAllowed.splice(notAllowed.indexOf('kpibar'), 1);
-            notAllowed.splice(notAllowed.indexOf('radar'), 1);
-            notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
-        }
-        // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
-        if (dataSize < 5000) {
-            notAllowed.splice(notAllowed.indexOf('line'), 1);
-            notAllowed.splice(notAllowed.indexOf('kpiline'), 1);
-            notAllowed.splice(notAllowed.indexOf('area'), 1);
-            notAllowed.splice(notAllowed.indexOf('kpiarea',), 1);
-            notAllowed.splice(notAllowed.indexOf('barline'), 1);
-        }
-        //Histogram as many as you want.
-        notAllowed.splice(notAllowed.indexOf('histogram'), 1);
 
         return notAllowed;
     }

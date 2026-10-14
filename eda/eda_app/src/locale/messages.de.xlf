@@ -507,6 +507,30 @@
         <source>Muestra la leyenda del gráfico</source>
         <target>Zeigt die Legende des Diagramms an</target>
       </trans-unit>
+      <trans-unit id="sortLegendAlphabetically" datatype="html">
+        <source>Ordenar Leyenda Alfabéticamente</source>
+        <target>Legende alphabetisch sortieren</target>
+      </trans-unit>
+      <trans-unit id="sortLegendAlphabeticallyOptionDescription" datatype="html">
+        <source>Ordena alfabéticamente los elementos de la leyenda</source>
+        <target>Sortiert die Elemente der Legende alphabetisch</target>
+      </trans-unit>
+      <trans-unit id="mainSeries" datatype="html">
+        <source>Serie principal</source>
+        <target>Hauptreihe</target>
+      </trans-unit>
+      <trans-unit id="mainSeriesOptionDescription" datatype="html">
+        <source>Destaca una serie dibujándola el doble de gruesa y por encima del resto de líneas</source>
+        <target>Hebt eine Reihe hervor, indem sie doppelt so dick und über allen anderen Linien gezeichnet wird</target>
+      </trans-unit>
+      <trans-unit id="mainSeriesSelect" datatype="html">
+        <source>Serie a destacar</source>
+        <target>Hervorzuhebende Reihe</target>
+      </trans-unit>
+      <trans-unit id="mainSeriesPlaceholder" datatype="html">
+        <source>-- Seleccione una serie --</source>
+        <target>-- Reihe auswählen --</target>
+      </trans-unit>
       <trans-unit id="showGridLines" datatype="html">
         <source> Mostrar Líneas Guía </source>
         <target> Hilfslinien anzeigen </target>
@@ -3189,8 +3213,8 @@ Un saludo.</source>
         <target>DATENMODELL</target>
       </trans-unit>
       <trans-unit id="publicDashboardTitle" datatype="html">
-        <source> Informe público EDA</source>
-        <target> Öffentlicher EDA-Bericht</target>
+        <source> Informe público Edalitics</source>
+        <target> Öffentlicher Edalitics-Bericht</target>
       </trans-unit>
       <trans-unit id="secondsToRefresh" datatype="html">
         <source>Segundos para refrescar</source>
@@ -5768,6 +5792,141 @@ Un saludo.</source>
         <source>elementos disponibles</source>
         <target>Elemente verfügbar</target>
       </trans-unit>
+      <trans-unit id="groupedSubtotalsSearchPlaceholder" datatype="html">
+        <source>Buscar...</source>
+        <target>Suchen...</target>
+      </trans-unit>
+      <trans-unit id="groupedSubtotalsAddPlaceholder" datatype="html">
+        <source>Seleccionar columnas...</source>
+        <target>Spalten auswählen...</target>
+      </trans-unit>
+      <trans-unit id="groupedSubtotalsTitle" datatype="html">
+        <source>Subtotales de grupo</source>
+        <target>Gruppenzwischensummen</target>
+      </trans-unit>
+      <trans-unit id="groupedSubtotalsGroupByLabel" datatype="html">
+        <source>Agrupar por (en orden)</source>
+        <target>Gruppieren nach (in Reihenfolge)</target>
+      </trans-unit>
+      <trans-unit id="dashboardExportPdfError" datatype="html">
+        <source>No se ha podido generar el PDF del informe. Inténtalo de nuevo.</source>
+        <target>Das PDF des Berichts konnte nicht erstellt werden. Bitte versuchen Sie es erneut.</target>
+      </trans-unit>
+      <trans-unit id="dashboardExportImageError" datatype="html">
+        <source>No se ha podido generar la imagen del informe. Inténtalo de nuevo.</source>
+        <target>Das Bild des Berichts konnte nicht erstellt werden. Bitte versuchen Sie es erneut.</target>
+      </trans-unit>
+      <trans-unit id="dashboardExportExcelError" datatype="html">
+        <source>No se ha podido generar el Excel del informe. Inténtalo de nuevo.</source>
+        <target>Die Excel-Datei des Berichts konnte nicht erstellt werden. Bitte versuchen Sie es erneut.</target>
+      </trans-unit>
+      <trans-unit id="dashboardExportWordError" datatype="html">
+        <source>No se ha podido generar el Word del informe. Inténtalo de nuevo.</source>
+        <target>Das Word-Dokument des Berichts konnte nicht erstellt werden. Bitte versuchen Sie es erneut.</target>
+      </trans-unit>
+      <trans-unit id="clearAllGlobalFilters" datatype="html">
+        <source>Limpiar todos los filtros globales</source>
+        <target>Alle globalen Filter löschen</target>
+      </trans-unit>
+     
+<trans-unit id="clickFiltersConfigText" datatype="html">
+<source>Filtros en click</source>
+<target>Klickfilter</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="configurarClickFilters" datatype="html">
+<source>Configurar</source>
+<target>Konfigurieren</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="resumenPanelesAfectanH6" datatype="html">
+<source>Paneles que me afectan</source>
+<target>Panels, die mich betreffen</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="noAffectingPanels" datatype="html">
+<source>Sin paneles</source>
+<target>Keine Panels</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterDialogHeader" datatype="html">
+<source>Filtros en click</source>
+<target>Klickfilter</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterDialogCloseBtn" datatype="html">
+<source>Cerrar</source>
+<target>Schließen</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterEnabledLabel" datatype="html">
+<source>¿Este panel es clicable?</source>
+<target>Ist dieses Panel klickbar?</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterAffectsH5" datatype="html">
+<source>A qué paneles afecta</source>
+<target>Welche Panels es betrifft</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="applyToAllPanelsLabel" datatype="html">
+<source>Aplicar a todos</source>
+<target>Auf alle anwenden</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="noOtherPanels" datatype="html">
+<source>No hay otros paneles en este dashboard</source>
+<target>Es gibt keine weiteren Panels in diesem Dashboard</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterAffectedByH5" datatype="html">
+<source>Qué paneles me afectan</source>
+<target>Welche Panels mich betreffen</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="searchPanelPlaceholder" datatype="html">
+<source>Buscar panel...</source>
+<target>Panel suchen...</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="selectPanelsPlaceholder" datatype="html">
+<source>Añadir panel...</source>
+<target>Panel hinzufügen...</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="panelsSelectedLabel" datatype="html">
+<source>{0} paneles seleccionados</source>
+<target>{0} Panels ausgewählt</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
   </body>
   </file>
 </xliff>
