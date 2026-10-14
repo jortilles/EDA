@@ -8,12 +8,12 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { QueryOptions } from 'mongoose';
 import { GroupController } from '../groups/group.controller';
+import { randomSsoPasswordHash } from '../../../utils/sso-password.util';
 
 
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-import { randomSsoPasswordHash } from '../../../utils/sso-password.util';
 const SEED = require('../../../../config/seed').SEED;
 const crypto = require('crypto');
 
