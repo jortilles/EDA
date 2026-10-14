@@ -1075,11 +1075,16 @@ export class MySqlBuilderService extends QueryBuilderService {
       column.valueListSource = filterObject.valueListSource;
       const colname=this.getFilterColname(column);
       const valueListSource = filterObject.valueListSource;
-      
+
       switch (this.setFilterType(filterObject.filter_type)) {
         case 0:
           if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
           if (filterObject.filter_type === 'like') {
+            // Autocomplete search: don't depend on the DB collation, compare both sides in upper case
+            if (filterObject.caseInsensitive) {
+              const value = String(filterObject.filter_elements[0].value1).replace(/'/g, "''");
+              return `UPPER(${colname}) like UPPER('%${value}%') `;
+            }
             return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
           }
           if (filterObject.filter_type === 'not_like') { 

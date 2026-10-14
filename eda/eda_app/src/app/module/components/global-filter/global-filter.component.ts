@@ -1010,6 +1010,8 @@ export class GlobalFilterComponent implements OnInit {
                     filter_id:filtro.id,
                     filter_table:filtro.selectedTable.table_name,
                     filter_type:"like",
+                    // Autocomplete search must match regardless of letter case
+                    caseInsensitive: true,
                     isGlobal:filtro.isGlobal,
                     joins:[],
                 }]
