@@ -8,6 +8,7 @@ export class EdaFunnel {
   assignedColors: any[];
   useGradient?: boolean;
   chartLegend?: boolean;
+  sortLegendAlphabetically?: boolean;
   chartAnimation?: boolean;
   /** per-category media-library images - see category-icons.util.ts */
   assignedIcons?: any[];

@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { HttpException } from '../../global/model/index';
 import axios from 'axios';
 import qs from 'qs';
+import { randomSsoPasswordHash } from '../../../utils/sso-password.util';
 // import { userDataValue, authenticationEvidenceValue, userPermissionsValue, userPermissionsRolesValue } from './dataTest'
 
 import ServerLogService from '../../../services/server-log/server-log.service';
@@ -214,7 +215,7 @@ export class OAUTHController {
                 const userToSave: IUser = new User({
                     name: fullname,
                     email: email,
-                    password: bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10),
+                    password: randomSsoPasswordHash(),
                     img: 'imagen', // Agregar la imagen
                     role: role_id,
                     creation_date: new Date()
@@ -226,7 +227,7 @@ export class OAUTHController {
             } else {
                 userEda.name = fullname;
                 userEda.email = email;
-                userEda.password = bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10); 
+                userEda.password = randomSsoPasswordHash(); 
                 userEda.role = role_id;
                 const userSaved = await userEda.save(); 
                 Object.assign(user, userSaved);

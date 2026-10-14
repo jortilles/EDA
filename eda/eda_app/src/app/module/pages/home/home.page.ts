@@ -62,6 +62,8 @@ export class HomePage implements OnInit, OnDestroy {
   searchQuery = '';
   advancedFilters = { author: '', datasource: '' };
   advancedTags: string[] = [];
+  advancedGroups: string[] = [];
+  groupOptions: any[] = [];
   createdPickerConfig: EdaDatePickerConfig = { dateRange: [], range: null, filter: null };
   modifiedPickerConfig: EdaDatePickerConfig = { dateRange: [], range: null, filter: null };
   createdRange: Date[] = [];
@@ -150,9 +152,22 @@ export class HomePage implements OnInit, OnDestroy {
               const userID = JSON.parse(user)._id;
               this.grups = res;
               this.isObserver = this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0;
+              this.loadGroupOptions();
           },
           (err) => this.alertService.addError(err)
       );
+  }
+
+  // Admins pueden filtrar por cualquier grupo; el resto, solo por los suyos propios.
+  private loadGroupOptions(): void {
+    if (this.userService.isAdmin) {
+      this.groupService.getGroups().subscribe(
+        res => this.groupOptions = res.map(group => ({ label: group.name, value: group._id })),
+        (err) => this.alertService.addError(err)
+      );
+    } else {
+      this.groupOptions = this.grups.map(group => ({ label: group.name, value: group._id }));
+    }
   }
 
   private ifAnonymousGetOut(): void {
@@ -435,6 +450,7 @@ export class HomePage implements OnInit, OnDestroy {
   private reapplyFilters(): void {
     const hasAdvanced = this.advancedFilters.author || this.advancedFilters.datasource
       || this.advancedTags.length > 0
+      || this.advancedGroups.length > 0
       || (this.createdRange?.length >= 1 && this.createdRange[0])
       || (this.modifiedRange?.length >= 1 && this.modifiedRange[0]);
 
@@ -617,7 +633,8 @@ export class HomePage implements OnInit, OnDestroy {
     const hasCreated  = this.createdRange?.length >= 1 && this.createdRange[0];
     const hasModified = this.modifiedRange?.length >= 1 && this.modifiedRange[0];
     const hasTags     = this.advancedTags.length > 0;
-    const hasFilters  = author || datasource || hasCreated || hasModified || hasTags;
+    const hasGroups   = this.advancedGroups.length > 0;
+    const hasFilters  = author || datasource || hasCreated || hasModified || hasTags || hasGroups;
 
     if (!hasFilters) {
       this.filterByTags();
@@ -648,11 +665,19 @@ export class HomePage implements OnInit, OnDestroy {
       return true;
     });
 
+    // El filtro de grupo solo tiene sentido dentro de la columna "Mis grupos":
+    // públicos/comunes/privados no llevan grupo asignado.
+    const groupFilterFn = (reports: any[]) => filterFn(reports).filter(db => {
+      if (!hasGroups) return true;
+      const dbGroupIds = (db.group || []).map(g => (g?._id ?? g)?.toString());
+      return this.advancedGroups.some(gid => dbGroupIds.includes(gid));
+    });
+
     const base = this.getActiveTagBase();
     this.publicReports  = filterFn(base.public);
     this.sharedReports  = filterFn(base.shared);
     this.privateReports = filterFn(base.private);
-    this.roleReports    = filterFn(base.group);
+    this.roleReports    = groupFilterFn(base.group);
     if (updateSearchBar) this.buildSearchQuery();
   }
 
@@ -692,6 +717,7 @@ export class HomePage implements OnInit, OnDestroy {
   clearAdvancedFilters() {
     this.advancedFilters = { author: '', datasource: '' };
     this.advancedTags = [];
+    this.advancedGroups = [];
     this.createdRange = [];
     this.modifiedRange = [];
     this.createdPickerConfig  = { dateRange: [], range: null, filter: null };

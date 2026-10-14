@@ -167,8 +167,8 @@
 </context-group>
 </trans-unit>
 <trans-unit id="publicDashboardTitle" datatype="html">
-<source> Informe público EDA</source>
-<target> Rapport public de l'EDA</target>
+<source> Informe público Edalitics</source>
+<target> Rapport public de l'Edalitics</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/anonimous-login/anonymous-login.component.html</context>
 <context context-type="linenumber">1</context>
@@ -5127,6 +5127,30 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <source>Muestra la leyenda del gráfico</source>
   <target>Afficher la légende du graphique</target>
 </trans-unit>
+<trans-unit id="sortLegendAlphabetically">
+  <source>Ordenar Leyenda Alfabéticamente</source>
+  <target>Trier la légende par ordre alphabétique</target>
+</trans-unit>
+<trans-unit id="sortLegendAlphabeticallyOptionDescription">
+  <source>Ordena alfabéticamente los elementos de la leyenda</source>
+  <target>Trie les éléments de la légende par ordre alphabétique</target>
+</trans-unit>
+<trans-unit id="mainSeries">
+  <source>Serie principal</source>
+  <target>Série principale</target>
+</trans-unit>
+<trans-unit id="mainSeriesOptionDescription">
+  <source>Destaca una serie dibujándola el doble de gruesa y por encima del resto de líneas</source>
+  <target>Met en évidence une série en la dessinant deux fois plus épaisse et au-dessus des autres lignes</target>
+</trans-unit>
+<trans-unit id="mainSeriesSelect">
+  <source>Serie a destacar</source>
+  <target>Série à mettre en évidence</target>
+</trans-unit>
+<trans-unit id="mainSeriesPlaceholder">
+  <source>-- Seleccione una serie --</source>
+  <target>-- Sélectionnez une série --</target>
+</trans-unit>
 
 <trans-unit id="showGridLines">
   <source>Mostrar Líneas Guía</source>
@@ -8504,6 +8528,127 @@ Cordialement.</target>
 <trans-unit id="wrongGeoJsonFormat">
   <source>El archivo no tiene un formato GeoJson válido.</source>
   <target>Le fichier n'a pas un format GeoJSON valide.</target>
+</trans-unit>
+      <trans-unit id="groupedSubtotalsTitle">
+        <source>Subtotales de grupo</source>
+        <target>Sous-totaux de groupe</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsGroupByLabel">
+        <source>Agrupar por (en orden)</source>
+        <target>Regrouper par (dans l'ordre)</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsSearchPlaceholder">
+        <source>Buscar...</source>
+        <target>Rechercher...</target>
+      </trans-unit>
+
+      <trans-unit id="groupedSubtotalsAddPlaceholder">
+        <source>Seleccionar columnas...</source>
+        <target>Sélectionner les colonnes...</target>
+      </trans-unit>     
+      <trans-unit id="clearAllGlobalFilters" datatype="html">
+        <source>Limpiar todos los filtros globales</source>
+        <target>Effacer tous les filtres globaux</target>
+      </trans-unit>
+<trans-unit id="clickFiltersConfigText" datatype="html">
+<source>Filtros en click</source>
+<target>Filtres au clic</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="configurarClickFilters" datatype="html">
+<source>Configurar</source>
+<target>Configurer</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="resumenPanelesAfectanH6" datatype="html">
+<source>Paneles que me afectan</source>
+<target>Panneaux qui m'affectent</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="noAffectingPanels" datatype="html">
+<source>Sin paneles</source>
+<target>Aucun panneau</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterDialogHeader" datatype="html">
+<source>Filtros en click</source>
+<target>Filtres au clic</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterDialogCloseBtn" datatype="html">
+<source>Cerrar</source>
+<target>Fermer</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterEnabledLabel" datatype="html">
+<source>¿Este panel es clicable?</source>
+<target>Ce panneau est-il cliquable ?</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterAffectsH5" datatype="html">
+<source>A qué paneles afecta</source>
+<target>Quels panneaux il affecte</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="applyToAllPanelsLabel" datatype="html">
+<source>Aplicar a todos</source>
+<target>Appliquer à tous</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="noOtherPanels" datatype="html">
+<source>No hay otros paneles en este dashboard</source>
+<target>Il n'y a pas d'autres panneaux dans ce tableau de bord</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterAffectedByH5" datatype="html">
+<source>Qué paneles me afectan</source>
+<target>Quels panneaux m'affectent</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="searchPanelPlaceholder" datatype="html">
+<source>Buscar panel...</source>
+<target>Rechercher un panneau...</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="selectPanelsPlaceholder" datatype="html">
+<source>Añadir panel...</source>
+<target>Ajouter un panneau...</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="panelsSelectedLabel" datatype="html">
+<source>{0} paneles seleccionados</source>
+<target>{0} panneaux sélectionnés</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
 </trans-unit>
 </body>
   </file>

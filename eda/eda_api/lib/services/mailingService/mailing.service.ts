@@ -324,7 +324,7 @@ export class MailingService {
   /** App URL for a dashboard. Tolerates a server_baseURL that already ends in a locale segment
    * (e.g. ".../ca") so we don't build ".../ca/es/#/...". */
   static dashboardAppUrl(dashboardId: string, query = ''): string {
-    const KNOWN_LOCALES = ['es', 'en', 'ca', 'fr', 'pl', 'gl', 'eu', 'de'];
+    const KNOWN_LOCALES = ['es', 'en', 'ca', 'fr', 'pl', 'gl', 'eu', 'de', 'pt'];
     const base = String(mailConfig.server_baseURL || '').replace(/\/+$/, '');
     const hasLocale = KNOWN_LOCALES.includes(base.split('/').pop() || '');
     const localePath = hasLocale ? '' : `/${mailConfig.locale || 'es'}`;
@@ -383,7 +383,7 @@ export class MailingService {
 
   /** Absolute URL of a frontend static asset (locale-independent, served from the app root). */
   static appAssetUrl(relPath: string): string {
-    const KNOWN_LOCALES = ['es', 'en', 'ca', 'fr', 'pl', 'gl', 'eu', 'de'];
+    const KNOWN_LOCALES = ['es', 'en', 'ca', 'fr', 'pl', 'gl', 'eu', 'de', 'pt'];
     let base = String(mailConfig.server_baseURL || '').replace(/\/+$/, '');
     if (KNOWN_LOCALES.includes(base.split('/').pop() || '')) base = base.replace(/\/[^/]+$/, '');
     return `${base}/${String(relPath).replace(/^\/+/, '')}`;

@@ -13,5 +13,6 @@ export class EdaBubblechart {
   useIcons?: boolean;
   useGradient?: boolean;
   chartLegend?: boolean;
+  sortLegendAlphabetically?: boolean;
   chartAnimation?: boolean;
 }

@@ -10,5 +10,6 @@ export class ScatterPlot {
   assignedColors: any[];
   useGradient?: boolean;
   chartLegend?: boolean;
+  sortLegendAlphabetically?: boolean;
   chartAnimation?: boolean;
 }

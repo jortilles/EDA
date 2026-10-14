@@ -7,6 +7,7 @@ import { samlStrategy } from '../SAML.passport';
 import ServerLogService from '../../../services/server-log/server-log.service';
 import { parseStringPromise } from 'xml2js';
 import zlib from 'zlib';
+import { randomSsoPasswordHash } from '../../../utils/sso-password.util';
 
 // Importaciones necesarias de usuario
 import User, { IUser } from '../../admin/users/model/user.model';
@@ -98,7 +99,7 @@ static async acs(req: Request, res: Response, next: NextFunction) {
             const userToSave: IUser = new User({
             name,
             email,
-            password: bcrypt.hashSync('135792467811111111111115', 10),
+            password: randomSsoPasswordHash(),
             img: picture,
             role: [],
             creation_date: new Date()
@@ -111,7 +112,7 @@ static async acs(req: Request, res: Response, next: NextFunction) {
             // console.log(' ----------- EL USUARIO YA EXISTE ----------- ')
             userEda.name = name;
             userEda.email = email;
-            userEda.password = bcrypt.hashSync('135792467811111111111115', 10);
+            userEda.password = randomSsoPasswordHash();
             const userSaved = await userEda.save();
             Object.assign(userSAML, userSaved);
         }

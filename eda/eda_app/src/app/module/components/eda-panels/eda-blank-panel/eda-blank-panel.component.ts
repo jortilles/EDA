@@ -55,15 +55,18 @@ import { ChartTypeSelectorDialogComponent } from './chart-type-selector-dialog/c
 import { SourceFieldsDialogComponent } from './source-fields-dialog/source-fields-dialog.component';
 import { PromptComponent } from '@eda/components/prompt/prompt.component';
 import { FilterAndOrDialogComponent } from './filter-and-or-dialog/filter-and-or-dialog.component';
+import { ClickFilterConfigDialog } from './click-filter-config-dialog/click-filter-config.dialog';
 import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-or.component';
 
 // Panel Utils
 import { TableUtils } from './panel-utils/tables-utils';
 import { QueryUtils } from './panel-utils/query-utils';
+import { GroupedSubtotalsUtils } from './panel-utils/grouped-subtotals-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils, CUSTOM_CHART_CONFIG_FIELDS, readCustomFields } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
 import { NavigationUtils } from './panel-utils/navigation-utils';
+import { ClickFilterUtils } from './panel-utils/click-filter-utils';
 
 //
 import { WarningDialogComponent } from '@eda/components/component.index';
@@ -104,7 +107,7 @@ const STANDALONE_COMPONENTS = [
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
     DragDropComponent, ChartTypeSelectorDialogComponent, SourceFieldsDialogComponent,
     IconComponent, FocusOnShowDirective, PromptComponent,
-    FilterAndOrDialogComponent, CodeEditorComponent,
+    FilterAndOrDialogComponent, CodeEditorComponent, ClickFilterConfigDialog,
 ]
 @Component({
     standalone: true,
@@ -142,6 +145,10 @@ export class EdaBlankPanelComponent implements OnInit {
     public filterController: EdaDialogController;
     public chartController: EdaDialogController;
     public tableController: EdaDialogController;
+    /** Read once by renderChart() then cleared — see PanelChart.groupedSubtotalsPreview. */
+    private pendingGroupedSubtotalsPreview?: { cleanRows: any[], mergedRows: any[] };
+    /** Read once by renderChart() then cleared — see PanelChart.groupedSubtotalsPreloadedLevels. */
+    private pendingGroupedSubtotalsPreloadedLevels?: any[];
     public warningController: EdaDialogController;
     public mapController: EdaDialogController;
     public mapCoordController: EdaDialogController;
@@ -191,6 +198,7 @@ export class EdaBlankPanelComponent implements OnInit {
         filterMapperDialog: false,
         showQueryContainer: false,
         filterAndOr_dialog: false,
+        clickFilterConfigDialog: false,
     };
 
     public index: number;
@@ -571,6 +579,20 @@ public tableNodeExpand(event: any): void {
         this.dashboardService.setNotSaved(true);
     }
 
+    /** Panels whose click currently affects this one (bilateral click-filter config). */
+    getAffectingPanels(): any[] {
+        return ClickFilterUtils.getAffectingPanels(this.dashboard?.panels || [], this.panel.id);
+    }
+
+    public onClickFilterConfig(): void {
+        this.display_v.clickFilterConfigDialog = true;
+    }
+
+    public onCloseClickFilterConfigDialog(): void {
+        this.display_v.clickFilterConfigDialog = false;
+        this.dashboardService.setNotSaved(true);
+    }
+
     public showWhatIfSection(): boolean {
         return this.currentQuery.some((query: any) => query.whatif_column);
     }
@@ -712,7 +734,7 @@ public tableNodeExpand(event: any): void {
                 
                 })); // We replace nulls and empty strings with a customizable value.
             
-            this.buildGlobalconfiguration(panelContent);
+            await this.buildGlobalconfiguration(panelContent);
             this.cdr.markForCheck();
         } catch (err) {
             this.alertService.addError(err);
@@ -726,7 +748,7 @@ public tableNodeExpand(event: any): void {
      * Sets configuration dialog and chart
      * @param panelContent Panel content to build configuration
      */
-    public buildGlobalconfiguration(panelContent: any): void {
+    public async buildGlobalconfiguration(panelContent: any): Promise<void> {
         const { query, chart, edaChart } = panelContent;
         const { modeSQL, fields, filters, queryLimit, groupByEnabled, config } = query.query;
         const queryMode = this.selectedQueryMode;
@@ -773,6 +795,22 @@ public tableNodeExpand(event: any): void {
         this.chartForm.patchValue({ chart: chartOption });
 
         const recoveredConfig = ChartsConfigUtils.recoverConfig(chart, panelContent.query.output.config);
+
+        // Pre-fetch grouped subtotals so the table never paints without them first. Numeric
+        // columns are always read from the current query, never from the saved config.
+        const groupByCols = recoveredConfig.getConfig()?.['groupBySubtotalColumns'];
+        if (chart === 'table' && groupByCols?.length) {
+            try {
+                this.pendingGroupedSubtotalsPreloadedLevels = await GroupedSubtotalsUtils.fetchLevels(
+                    this,
+                    groupByCols,
+                    GroupedSubtotalsUtils.numericColumnsFromFields(this.currentQuery)
+                );
+            } catch (err) {
+                console.error('No se pudieron precargar los subtotales agrupados', err);
+            }
+        }
+
         this.changeChartType(chart, edaChart, recoveredConfig, true);
 
         // Show panel and configure chart type
@@ -892,7 +930,23 @@ public tableNodeExpand(event: any): void {
             linkedDashboardProps: this.panel.linkedDashboardProps,
             predictionConfig: this.panel.content?.query?.query?.predictionConfig,
             childNavConfig: NavigationUtils.hasNavigation(this) ? this.computeChildNavConfig() : { parentFields: [], childFieldMap: {}, navColumnSubstitution: {} },
+            // Takes the config the caller is about to merge with, instead of reading
+            // chartConfig.getConfig() itself — that closure-captured reference is the
+            // PERSISTED config, which panel-chart's live-preview callers (table-dialog's
+            // picker, before Confirm) don't update; fetching against it instead of the config
+            // actually being merged is what left picker changes fetching stale data.
+            fetchGroupedSubtotals: type === 'table' ? (liveConfig: TableConfig) => {
+                return GroupedSubtotalsUtils.fetchLevels(
+                    this,
+                    liveConfig.groupBySubtotalColumns || [],
+                    GroupedSubtotalsUtils.numericColumnsFromFields(this.currentQuery)
+                );
+            } : undefined,
+            groupedSubtotalsPreview: type === 'table' ? this.pendingGroupedSubtotalsPreview : undefined,
+            groupedSubtotalsPreloadedLevels: type === 'table' ? this.pendingGroupedSubtotalsPreloadedLevels : undefined,
         });
+        this.pendingGroupedSubtotalsPreview = undefined;
+        this.pendingGroupedSubtotalsPreloadedLevels = undefined;
         this.cdr.markForCheck();
     }
 
@@ -1570,12 +1624,13 @@ public tableNodeExpand(event: any): void {
 }
 
 
-    public onCloseTableProperties(event, properties: TableConfig): void {
+    public onCloseTableProperties(event, properties: TableConfig, groupedSubtotalsPreview?: { cleanRows: any[], mergedRows: any[] }): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             if (properties) {
                 this.panel.content.query.output.config = properties;
                 const config = new ChartConfig(properties);
 
+                this.pendingGroupedSubtotalsPreview = groupedSubtotalsPreview;
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
             }
@@ -2428,9 +2483,6 @@ public tableNodeExpand(event: any): void {
         this.groupByEnabled = !this.groupByEnabled;
     }
 
-    dynamicFiltersInteraction(): void {
-        this.dynamicFilters = !this.dynamicFilters;
-    }
 
     newCurrentQueryUpdate(event: any) {
         this.currentQuery = event;
