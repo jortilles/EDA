@@ -8036,6 +8036,14 @@ Best regards.</target>
         <source>La barra de acceso rápido admite como máximo <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> acciones. Quita alguna antes de añadir otra.</source>
         <target>The quick access bar allows up to <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> actions. Remove one before adding another.</target>
       </trans-unit>
+      <trans-unit id="quickActionsKeepVisible" datatype="html">
+        <source>Mantener la barra siempre visible</source>
+        <target>Keep the bar always visible</target>
+      </trans-unit>
+      <trans-unit id="quickActionsAutoHide" datatype="html">
+        <source>Ocultar la barra cuando no se use</source>
+        <target>Hide the bar when not in use</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

@@ -6248,6 +6248,12 @@ Un saludo.</source>
       <trans-unit id="dashboardSidebarPinLimit" datatype="html">
         <source>La barra de acceso rápido admite como máximo <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> acciones. Quita alguna antes de añadir otra.</source>
       </trans-unit>
+      <trans-unit id="quickActionsKeepVisible" datatype="html">
+        <source>Mantener la barra siempre visible</source>
+      </trans-unit>
+      <trans-unit id="quickActionsAutoHide" datatype="html">
+        <source>Ocultar la barra cuando no se use</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

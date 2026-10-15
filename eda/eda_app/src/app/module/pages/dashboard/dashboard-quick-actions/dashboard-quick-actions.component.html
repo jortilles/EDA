@@ -25,6 +25,16 @@
     }
   }
 
+  <!-- Bar mode: always visible (filled) or only on hover (empty). Shown on hover in both modes -->
+  @if (actions.length) {
+    <button class="qa-mode-toggle w-5 h-7 flex items-center justify-center text-xs text-gray-400 hover:text-[var(--corporate-primary)]"
+      (click)="toggleAlwaysVisible()"
+      [pTooltip]="alwaysVisible ? labels.autoHide : labels.keepVisible" tooltipPosition="bottom"
+      [attr.aria-label]="alwaysVisible ? labels.autoHide : labels.keepVisible" [attr.aria-pressed]="alwaysVisible">
+      <i class="pi" [class.pi-bookmark-fill]="alwaysVisible" [class.pi-bookmark]="!alwaysVisible"></i>
+    </button>
+  }
+
   <!-- "Save" unpinned: keep signalling unsaved changes; clicking it saves -->
   @if (showStandaloneUnsavedDot) {
     <button class="w-4 h-7 flex items-center justify-center" (click)="save()"

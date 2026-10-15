@@ -8774,6 +8774,14 @@ Cordialement.</target>
         <source>La barra de acceso rápido admite como máximo <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> acciones. Quita alguna antes de añadir otra.</source>
         <target>La barre d&apos;accès rapide accepte au maximum <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> actions. Retirez-en une avant d&apos;en ajouter une autre.</target>
       </trans-unit>
+      <trans-unit id="quickActionsKeepVisible" datatype="html">
+        <source>Mantener la barra siempre visible</source>
+        <target>Garder la barre toujours visible</target>
+      </trans-unit>
+      <trans-unit id="quickActionsAutoHide" datatype="html">
+        <source>Ocultar la barra cuando no se use</source>
+        <target>Masquer la barre lorsqu&apos;elle n&apos;est pas utilisée</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>

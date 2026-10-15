@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostBinding, inject, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { TooltipModule } from 'primeng/tooltip';
@@ -22,18 +22,31 @@ import { QuickActionsPrefsService } from '../quick-actions-prefs.service';
       transition: opacity 0.15s ease;
     }
     :host-context(.dashboard-header:hover) .qa-fade,
-    :host:focus-within .qa-fade {
+    :host:focus-within .qa-fade,
+    :host(.qa-always-visible) .qa-fade {
+      opacity: 1;
+    }
+    /* The "keep visible" toggle itself only shows on hover/focus, whatever the mode */
+    .qa-mode-toggle {
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    :host-context(.dashboard-header:hover) .qa-mode-toggle,
+    .qa-mode-toggle:focus {
       opacity: 1;
     }
     /* Touch screens have no hover: always visible */
     @media (hover: none) {
-      .qa-fade { opacity: 1; }
+      .qa-fade, .qa-mode-toggle { opacity: 1; }
     }
   `,
 })
 export class DashboardQuickActionsComponent implements OnInit, OnDestroy {
   private prefs = inject(QuickActionsPrefsService);
-  private pinnedSubscription: Subscription;
+  private subscriptions = new Subscription();
+
+  /** Bar mode chosen by the user: always visible, or only while the header is hovered */
+  @HostBinding('class.qa-always-visible') alwaysVisible = false;
 
   @Input() dashboard: DashboardPage;
   @Input() notSaved = false;
@@ -48,6 +61,8 @@ export class DashboardQuickActionsComponent implements OnInit, OnDestroy {
 
   labels = {
     notSaved: $localize`:@@notSavedChanges:Hay cambios sin guardar...`,
+    keepVisible: $localize`:@@quickActionsKeepVisible:Mantener la barra siempre visible`,
+    autoHide: $localize`:@@quickActionsAutoHide:Ocultar la barra cuando no se use`,
   };
 
   private perms = { readOnly: true, editable: false };
@@ -58,15 +73,20 @@ export class DashboardQuickActionsComponent implements OnInit, OnDestroy {
     this.canEdit = !readOnly && this.perms.editable;
 
     this.prefs.reloadForCurrentUser();
-    this.pinnedSubscription = this.prefs.pinned$.subscribe(ids => {
+    this.subscriptions.add(this.prefs.pinned$.subscribe(ids => {
       this.actions = ids
         .map(id => getDashboardAction(id))
         .filter(action => action?.pinnable && canUseDashboardAction(action.id, this.perms));
-    });
+    }));
+    this.subscriptions.add(this.prefs.alwaysVisible$.subscribe(value => this.alwaysVisible = value));
   }
 
   ngOnDestroy(): void {
-    this.pinnedSubscription?.unsubscribe();
+    this.subscriptions.unsubscribe();
+  }
+
+  toggleAlwaysVisible(): void {
+    this.prefs.toggleAlwaysVisible();
   }
 
   /** Unsaved changes must stay visible even if the user unpinned "Save" */

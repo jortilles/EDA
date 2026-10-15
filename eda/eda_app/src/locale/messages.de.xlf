@@ -6075,6 +6075,14 @@ Un saludo.</source>
         <source>La barra de acceso rápido admite como máximo <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> acciones. Quita alguna antes de añadir otra.</source>
         <target>Die Schnellzugriffsleiste erlaubt höchstens <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> Aktionen. Entfernen Sie eine, bevor Sie eine weitere hinzufügen.</target>
       </trans-unit>
+      <trans-unit id="quickActionsKeepVisible" datatype="html">
+        <source>Mantener la barra siempre visible</source>
+        <target>Leiste immer anzeigen</target>
+      </trans-unit>
+      <trans-unit id="quickActionsAutoHide" datatype="html">
+        <source>Ocultar la barra cuando no se use</source>
+        <target>Leiste ausblenden, wenn sie nicht verwendet wird</target>
+      </trans-unit>
   </body>
   </file>
 </xliff>

@@ -11,6 +11,10 @@ export class QuickActionsPrefsService {
   private readonly pinnedSubject = new BehaviorSubject<string[]>(this.load());
   public readonly pinned$ = this.pinnedSubject.asObservable();
 
+  // Bar mode: true = always visible, false = only while the dashboard header is hovered (default)
+  private readonly alwaysVisibleSubject = new BehaviorSubject<boolean>(this.loadAlwaysVisible());
+  public readonly alwaysVisible$ = this.alwaysVisibleSubject.asObservable();
+
   public get pinned(): string[] {
     return this.pinnedSubject.value;
   }
@@ -18,6 +22,15 @@ export class QuickActionsPrefsService {
   /** Re-reads the preferences, in case another user logged in since the service was created */
   public reloadForCurrentUser(): void {
     this.pinnedSubject.next(this.load());
+    this.alwaysVisibleSubject.next(this.loadAlwaysVisible());
+  }
+
+  public toggleAlwaysVisible(): void {
+    const alwaysVisible = !this.alwaysVisibleSubject.value;
+    this.alwaysVisibleSubject.next(alwaysVisible);
+    try {
+      localStorage.setItem(this.storageKey('alwaysVisible'), JSON.stringify(alwaysVisible));
+    } catch { /* storage unavailable: keep it for this session only */ }
   }
 
   public isPinned(id: string): boolean {
@@ -35,12 +48,19 @@ export class QuickActionsPrefsService {
     return true;
   }
 
-  private storageKey(): string {
+  private storageKey(suffix = ''): string {
+    let userId = 'anonymous';
     try {
-      const userId = JSON.parse(localStorage.getItem('user'))?._id ?? 'anonymous';
-      return `eda.quickActions.${userId}`;
+      userId = JSON.parse(localStorage.getItem('user'))?._id ?? 'anonymous';
+    } catch { /* unreadable user: shared anonymous key */ }
+    return `eda.quickActions${suffix ? '.' + suffix : ''}.${userId}`;
+  }
+
+  private loadAlwaysVisible(): boolean {
+    try {
+      return JSON.parse(localStorage.getItem(this.storageKey('alwaysVisible'))) === true;
     } catch {
-      return 'eda.quickActions.anonymous';
+      return false;
     }
   }
 
