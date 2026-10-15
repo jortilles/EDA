@@ -5889,6 +5889,46 @@ Cumprimentos.</target>
         <source>Configuración</source>
         <target>Configurações</target>
       </trans-unit>
+      <trans-unit id="dashboardOptionsTitle" datatype="html">
+        <source>Opciones del informe</source>
+        <target>Opções do relatório</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarReportOptions" datatype="html">
+        <source>Opciones del informe...</source>
+        <target>Opções do relatório...</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsClickFilters" datatype="html">
+        <source>Click en filtros</source>
+        <target>Clique para filtrar</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsClickFiltersDesc" datatype="html">
+        <source>Al hacer clic en un gráfico se filtran los demás paneles</source>
+        <target>Clicar num gráfico filtra os outros painéis</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPanelLock" datatype="html">
+        <source>Bloquear los paneles</source>
+        <target>Bloquear os painéis</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPanelLockDesc" datatype="html">
+        <source>Impide mover y redimensionar los paneles</source>
+        <target>Impede mover e redimensionar os painéis</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAnimations" datatype="html">
+        <source>Animaciones</source>
+        <target>Animações</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAnimationsDesc" datatype="html">
+        <source>Animar los gráficos al cargarse</source>
+        <target>Animar os gráficos ao carregar</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPrivateEdit" datatype="html">
+        <source>Edición privada</source>
+        <target>Edição privada</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPrivateEditDesc" datatype="html">
+        <source>Solo el propietario puede editar el informe; el resto puede usar Guardar como</source>
+        <target>Só o proprietário pode editar o relatório; os restantes podem usar Guardar como</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

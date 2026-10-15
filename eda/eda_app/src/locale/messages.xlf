@@ -6200,6 +6200,39 @@ Un saludo.</source>
       <trans-unit id="dashboardSidebarSectionSettings" datatype="html">
         <source>Configuración</source>
       </trans-unit>
+      <trans-unit id="dashboardOptionsTitle" datatype="html">
+        <source>Opciones del informe</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarReportOptions" datatype="html">
+        <source>Opciones del informe...</source>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsClickFilters" datatype="html">
+        <source>Click en filtros</source>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsClickFiltersDesc" datatype="html">
+        <source>Al hacer clic en un gráfico se filtran los demás paneles</source>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPanelLock" datatype="html">
+        <source>Bloquear los paneles</source>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPanelLockDesc" datatype="html">
+        <source>Impide mover y redimensionar los paneles</source>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAnimations" datatype="html">
+        <source>Animaciones</source>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAnimationsDesc" datatype="html">
+        <source>Animar los gráficos al cargarse</source>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPrivateEdit" datatype="html">
+        <source>Edición privada</source>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPrivateEditDesc" datatype="html">
+        <source>Solo el propietario puede editar el informe; el resto puede usar Guardar como</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadWord" datatype="html">
+        <source>Descargar Word</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

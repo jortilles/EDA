@@ -8278,6 +8278,50 @@ Salutacions.</target>
         <source>Configuración</source>
         <target>Configuració</target>
       </trans-unit>
+      <trans-unit id="dashboardOptionsTitle" datatype="html">
+        <source>Opciones del informe</source>
+        <target>Opcions de l&apos;informe</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarReportOptions" datatype="html">
+        <source>Opciones del informe...</source>
+        <target>Opcions de l&apos;informe...</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsClickFilters" datatype="html">
+        <source>Click en filtros</source>
+        <target>Clic en filtres</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsClickFiltersDesc" datatype="html">
+        <source>Al hacer clic en un gráfico se filtran los demás paneles</source>
+        <target>En fer clic en un gràfic es filtren els altres panells</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPanelLock" datatype="html">
+        <source>Bloquear los paneles</source>
+        <target>Bloquejar els panells</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPanelLockDesc" datatype="html">
+        <source>Impide mover y redimensionar los paneles</source>
+        <target>Impedeix moure i redimensionar els panells</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAnimations" datatype="html">
+        <source>Animaciones</source>
+        <target>Animacions</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAnimationsDesc" datatype="html">
+        <source>Animar los gráficos al cargarse</source>
+        <target>Animar els gràfics en carregar-se</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPrivateEdit" datatype="html">
+        <source>Edición privada</source>
+        <target>Edició privada</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPrivateEditDesc" datatype="html">
+        <source>Solo el propietario puede editar el informe; el resto puede usar Guardar como</source>
+        <target>Només el propietari pot editar l&apos;informe; la resta pot fer servir Guardar com</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadWord" datatype="html">
+        <source>Descargar Word</source>
+        <target>Descarregar Word</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>

@@ -8391,6 +8391,46 @@ Pozdrawiam.</target>
         <source>Configuración</source>
         <target>Ustawienia</target>
       </trans-unit>
+      <trans-unit id="dashboardOptionsTitle" datatype="html">
+        <source>Opciones del informe</source>
+        <target>Opcje raportu</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarReportOptions" datatype="html">
+        <source>Opciones del informe...</source>
+        <target>Opcje raportu...</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsClickFilters" datatype="html">
+        <source>Click en filtros</source>
+        <target>Filtrowanie kliknięciem</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsClickFiltersDesc" datatype="html">
+        <source>Al hacer clic en un gráfico se filtran los demás paneles</source>
+        <target>Kliknięcie wykresu filtruje pozostałe panele</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPanelLock" datatype="html">
+        <source>Bloquear los paneles</source>
+        <target>Zablokuj panele</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPanelLockDesc" datatype="html">
+        <source>Impide mover y redimensionar los paneles</source>
+        <target>Uniemożliwia przesuwanie i zmianę rozmiaru paneli</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAnimations" datatype="html">
+        <source>Animaciones</source>
+        <target>Animacje</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAnimationsDesc" datatype="html">
+        <source>Animar los gráficos al cargarse</source>
+        <target>Animuj wykresy podczas ładowania</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPrivateEdit" datatype="html">
+        <source>Edición privada</source>
+        <target>Edycja prywatna</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPrivateEditDesc" datatype="html">
+        <source>Solo el propietario puede editar el informe; el resto puede usar Guardar como</source>
+        <target>Tylko właściciel może edytować raport; pozostali mogą użyć Zapisz jako</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

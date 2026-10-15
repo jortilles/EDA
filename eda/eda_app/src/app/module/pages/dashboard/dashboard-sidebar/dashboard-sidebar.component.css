@@ -24,6 +24,24 @@
     color: #9ca3af;
 }
 
+/* Download formats: round icon buttons in a single row */
+.sidebar-download-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    border: 1px solid #e5e7eb;
+    background-color: #ffffff;
+    transition: background-color 0.1s ease, border-color 0.1s ease;
+}
+
+.sidebar-download-btn:hover {
+    background-color: rgba(var(--corporate-primary-rgb), 0.12);
+    border-color: rgba(var(--corporate-primary-rgb), 0.4);
+}
+
 /* Delete dashboard: kept apart and in red */
 .sidebar-danger {
     color: #dc2626;

@@ -1,0 +1,37 @@
+<eda-dialog2 [header]="title" width="40vw" height="auto" (apply)="onApply()" (close)="onClose()">
+  <div content class="p-6 flex flex-col divide-y">
+
+    <div class="flex items-center justify-between gap-4 py-3">
+      <div>
+        <div class="font-semibold" i18n="@@dashboardOptionsClickFilters">Click en filtros</div>
+        <div class="text-sm text-gray-500" i18n="@@dashboardOptionsClickFiltersDesc">Al hacer clic en un gráfico se filtran los demás paneles</div>
+      </div>
+      <p-inputSwitch [(ngModel)]="values.clickFilters"></p-inputSwitch>
+    </div>
+
+    <div class="flex items-center justify-between gap-4 py-3">
+      <div>
+        <div class="font-semibold" i18n="@@dashboardOptionsPanelLock">Bloquear los paneles</div>
+        <div class="text-sm text-gray-500" i18n="@@dashboardOptionsPanelLockDesc">Impide mover y redimensionar los paneles</div>
+      </div>
+      <p-inputSwitch [(ngModel)]="values.panelsLocked"></p-inputSwitch>
+    </div>
+
+    <div class="flex items-center justify-between gap-4 py-3">
+      <div>
+        <div class="font-semibold" i18n="@@dashboardOptionsAnimations">Animaciones</div>
+        <div class="text-sm text-gray-500" i18n="@@dashboardOptionsAnimationsDesc">Animar los gráficos al cargarse</div>
+      </div>
+      <p-inputSwitch [(ngModel)]="values.animations"></p-inputSwitch>
+    </div>
+
+    <div class="flex items-center justify-between gap-4 py-3">
+      <div>
+        <div class="font-semibold" i18n="@@dashboardOptionsPrivateEdit">Edición privada</div>
+        <div class="text-sm text-gray-500" i18n="@@dashboardOptionsPrivateEditDesc">Solo el propietario puede editar el informe; el resto puede usar Guardar como</div>
+      </div>
+      <p-inputSwitch [(ngModel)]="values.privateEdit"></p-inputSwitch>
+    </div>
+
+  </div>
+</eda-dialog2>

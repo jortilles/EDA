@@ -2,6 +2,7 @@ import { AfterViewInit, ApplicationRef, Component, EventEmitter, inject, Input, 
 import { FormsModule } from "@angular/forms";
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
+import { TooltipModule } from "primeng/tooltip";
 import { DashboardPage } from "../dashboard.page";
 import { AlertService, DashboardService, FileUtiles, SpinnerService, StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
 import { DashboardPanelExport } from "@eda/services/utils/file-utils.service";
@@ -27,6 +28,7 @@ import { DashboardMailConfigModal } from "../../../components/dashboard-mail-con
 import { ImportPanelDialog } from "../../../components/import-panel/import-panel.dialog";
 import { DependentFilters } from "../../../components/dependent-filters/dependent-filters.component";
 import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
+import { DashboardOptions, DashboardOptionsModal } from "../../../components/dashboard-options/dashboard-options.modal";
 import { GlobalFilterDialogComponent } from "../../../pages/dashboard/global-filter-dialog/global-filter-dialog.component";
 import { GlobalFilterComponent } from "@eda/components/global-filter/global-filter.component";
 import { isDashboardEditable, isDashboardReadOnly } from "../dashboard-permissions.util";
@@ -38,6 +40,7 @@ const STANDALONE_COMPONENTS = [
     DashboardTagModal,
     DashboardMailConfigModal,
     DashboardVisibleModal,
+    DashboardOptionsModal,
     ImportPanelDialog,
     DependentFilters,
     GlobalFilterDialogComponent,
@@ -47,6 +50,7 @@ const STANDALONE_COMPONENTS = [
 const ANGULAR_MODULES = [
   OverlayModule,
   OverlayPanelModule,
+  TooltipModule,
   IconComponent,
   DragDropModule,
   FormsModule,
@@ -105,6 +109,8 @@ export class DashboardSidebarComponent implements AfterViewInit {
   isMailConfigDialogVisible = false;
   isVisibleModalVisible = false;
   isTagModalVisible = false;
+  isReportOptionsVisible = false;
+  reportOptionsSnapshot: DashboardOptions; // State when the options dialog was opened
   inputVisible: boolean = false;
   refreshTime: number = null;
   clickFiltersEnabled: boolean = true;
@@ -114,7 +120,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
   isReadOnly: boolean = false; // this is a read-only dashboard
   isEditable: boolean = false; // can edit the dashboard
   mostrarFiltros = false;
-  mostrarDescargas = false;
   hayFiltros;
 
   isImportPanelVisible = false;
@@ -278,24 +283,28 @@ export class DashboardSidebarComponent implements AfterViewInit {
             id: 'downloadPDF',
             label: $localize`:@@dashboardSidebarDownloadPDF: Descargar PDF`,
             icon: "pi pi-file-pdf",
+            color: "text-red-600",
             command: () => this.exportAsPDF()
           },
           {
             id: 'downloadImage',
             label: $localize`:@@dashboardSidebarDownloadImage:Descargar Imagen`,
             icon: "pi pi-image",
+            color: "text-sky-600",
             command: () => this.exportAsJPEG()
           },
           {
             id: 'downloadExcel',
             label: $localize`:@@dashboardSidebarDownloadExcel:Descargar Excel`,
             icon: "pi pi-file-excel",
+            color: "text-green-600",
             command: () => this.exportDashboardAsExcel()
           },
           {
             id: 'downloadWord',
             label: $localize`:@@dashboardSidebarDownloadWord:Descargar Word`,
             icon: "pi pi-file-word",
+            color: "text-blue-700",
             command: () => this.exportDashboardAsWord()
           },
         ]
@@ -342,42 +351,15 @@ export class DashboardSidebarComponent implements AfterViewInit {
         }
       },
       {
-        id: 'enableFilters',
+        // Click on filters, panel lock, animations and private edit, as switches in a dialog
+        id: 'reportOptions',
         section: 'settings',
-        label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado`
-          : $localize`:@@disableFilters:Click en filtros deshabilitado`,
-        icon: this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban",
+        label: $localize`:@@dashboardSidebarReportOptions:Opciones del informe...`,
+        icon: "pi pi-sliders-v",
         command: () => {
-          this.toggleClickFilters();
-        }
-      },
-      {
-        id: 'enablePanelLock',
-        section: 'settings',
-        label: this.clickPanelLockButton ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
-          : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
-        icon: this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock",
-        command: () => {
-          this.panelLockButton();
-        }
-      },
-      {
-        id: 'enablePanelAnimations',
-        section: 'settings',
-        label: this.clickPanelAnimationsButton ? $localize`:@@disablePanelAnimationsButton:Desactivar animaciones`
-          : $localize`:@@enablePanelAnimationsButton:Activar animaciones`,
-        icon: this.clickPanelAnimationsButton ? "pi pi-bolt" : "pi pi-ban",
-        command: () => {
-          this.panelAnimationsButton();
-        }
-      },
-      {
-        id: 'enableEdition',
-        section: 'settings',
-        label: this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
-        icon: this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
-        command: () => {
-          this.toggleEdit();
+          this.reportOptionsSnapshot = this.currentReportOptions();
+          this.isReportOptionsVisible = true;
+          this.hidePopover();
         }
       },
       {
@@ -412,7 +394,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.isPopoverVisible = false;
     this.popover.hide();
     this.mostrarFiltros = false;
-    this.mostrarDescargas = false;
     this.flushPendingFilterRemovalRefresh();
   }
 
@@ -1361,9 +1342,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
   }
 
   toggleClickFilters() {
-    // Find the item once
-    const clickItem = this.sidebarItems.find(item => item.id === 'enableFilters');
-
     // Toggle the state
     this.clickFiltersEnabled = !this.clickFiltersEnabled;
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
@@ -1373,16 +1351,9 @@ export class DashboardSidebarComponent implements AfterViewInit {
       (panel as any).clickFiltersEnabled = this.clickFiltersEnabled;
     }
     this.dashboardService.setNotSaved(true);
-
-    // Update label and icon based on state
-    clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
-    clickItem.icon = this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban";
-
   }
 
   panelLockButton() {
-    const lockItem = this.sidebarItems.find(item => item.id === 'enablePanelLock');
-
     this.clickPanelLockButton = !this.clickPanelLockButton;
     const locked = !this.clickPanelLockButton;
 
@@ -1394,16 +1365,9 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.dashboard.gridsterOptions.api?.optionsChanged();
     this.dashboard.dashboard.config.panelLockEnabled = this.clickPanelLockButton;
     this.dashboardService.setNotSaved(true);
-
-    lockItem.label = this.clickPanelLockButton
-      ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
-      : $localize`:@@disablePanelLockButton:Desbloquear los paneles`;
-    lockItem.icon = this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock";
   }
 
   panelAnimationsButton() {
-    const animItem = this.sidebarItems.find(item => item.id === 'enablePanelAnimations');
-
     this.clickPanelAnimationsButton = !this.clickPanelAnimationsButton;
     this.dashboard.dashboard.config.panelAnimationsEnabled = this.clickPanelAnimationsButton;
     this.dashboardService.setNotSaved(true);
@@ -1423,28 +1387,38 @@ export class DashboardSidebarComponent implements AfterViewInit {
         }
       }
     });
-
-    animItem.label = this.clickPanelAnimationsButton
-      ? $localize`:@@disablePanelAnimationsButton:Desactivar animaciones`
-      : $localize`:@@enablePanelAnimationsButton:Activar animaciones`;
-    animItem.icon = this.clickPanelAnimationsButton ? "pi pi-bolt" : "pi pi-ban";
   }
 
   toggleEdit() {
-    // Find the item once
-    const clickItem = this.sidebarItems.find(item => item.id === 'enableEdition');
-
-    // Toggle the state
+    // Saved into the dashboard config on the next save (see saveDashboard)
     this.onlyIcanEdit = !this.onlyIcanEdit;
-
-    // Update label and icon based on state
-    clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`;
-    clickItem.icon = this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban";
   }
 
-  toggleDownload() {
-    // Open downloads dropdown
-    this.mostrarDescargas = !this.mostrarDescargas;
+  // Report options dialog: re-uses each toggle so every side effect stays exactly the same
+  public currentReportOptions(): DashboardOptions {
+    return {
+      clickFilters: this.clickFiltersEnabled,
+      panelsLocked: !this.clickPanelLockButton,
+      animations: this.clickPanelAnimationsButton,
+      privateEdit: this.onlyIcanEdit,
+    };
+  }
+
+  public saveReportOptions(options: DashboardOptions) {
+    this.isReportOptionsVisible = false;
+    const current = this.currentReportOptions();
+
+    if (options.clickFilters !== current.clickFilters) this.toggleClickFilters();
+    if (options.panelsLocked !== current.panelsLocked) this.panelLockButton();
+    if (options.animations !== current.animations) this.panelAnimationsButton();
+    if (options.privateEdit !== current.privateEdit) {
+      this.toggleEdit();
+      this.dashboardService.setNotSaved(true);
+    }
+  }
+
+  public closeReportOptions() {
+    this.isReportOptionsVisible = false;
   }
 
   // EVENT FUNCTIONS THAT CONTROL FILTER DRAG AND DROP

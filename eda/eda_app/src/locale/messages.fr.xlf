@@ -8714,6 +8714,46 @@ Cordialement.</target>
         <source>Configuración</source>
         <target>Paramètres</target>
       </trans-unit>
+      <trans-unit id="dashboardOptionsTitle" datatype="html">
+        <source>Opciones del informe</source>
+        <target>Options du rapport</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarReportOptions" datatype="html">
+        <source>Opciones del informe...</source>
+        <target>Options du rapport...</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsClickFilters" datatype="html">
+        <source>Click en filtros</source>
+        <target>Clic pour filtrer</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsClickFiltersDesc" datatype="html">
+        <source>Al hacer clic en un gráfico se filtran los demás paneles</source>
+        <target>Cliquer sur un graphique filtre les autres panneaux</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPanelLock" datatype="html">
+        <source>Bloquear los paneles</source>
+        <target>Verrouiller les panneaux</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPanelLockDesc" datatype="html">
+        <source>Impide mover y redimensionar los paneles</source>
+        <target>Empêche de déplacer et de redimensionner les panneaux</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAnimations" datatype="html">
+        <source>Animaciones</source>
+        <target>Animations</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAnimationsDesc" datatype="html">
+        <source>Animar los gráficos al cargarse</source>
+        <target>Animer les graphiques au chargement</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPrivateEdit" datatype="html">
+        <source>Edición privada</source>
+        <target>Édition privée</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPrivateEditDesc" datatype="html">
+        <source>Solo el propietario puede editar el informe; el resto puede usar Guardar como</source>
+        <target>Seul le propriétaire peut modifier le rapport ; les autres peuvent utiliser Enregistrer sous</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>

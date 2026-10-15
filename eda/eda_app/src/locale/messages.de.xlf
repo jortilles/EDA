@@ -6015,6 +6015,46 @@ Un saludo.</source>
         <source>Configuración</source>
         <target>Einstellungen</target>
       </trans-unit>
+      <trans-unit id="dashboardOptionsTitle" datatype="html">
+        <source>Opciones del informe</source>
+        <target>Berichtsoptionen</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarReportOptions" datatype="html">
+        <source>Opciones del informe...</source>
+        <target>Berichtsoptionen...</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsClickFilters" datatype="html">
+        <source>Click en filtros</source>
+        <target>Klick zum Filtern</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsClickFiltersDesc" datatype="html">
+        <source>Al hacer clic en un gráfico se filtran los demás paneles</source>
+        <target>Ein Klick auf ein Diagramm filtert die anderen Panels</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPanelLock" datatype="html">
+        <source>Bloquear los paneles</source>
+        <target>Panels sperren</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPanelLockDesc" datatype="html">
+        <source>Impide mover y redimensionar los paneles</source>
+        <target>Verhindert das Verschieben und Ändern der Größe von Panels</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAnimations" datatype="html">
+        <source>Animaciones</source>
+        <target>Animationen</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAnimationsDesc" datatype="html">
+        <source>Animar los gráficos al cargarse</source>
+        <target>Diagramme beim Laden animieren</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPrivateEdit" datatype="html">
+        <source>Edición privada</source>
+        <target>Private Bearbeitung</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsPrivateEditDesc" datatype="html">
+        <source>Solo el propietario puede editar el informe; el resto puede usar Guardar como</source>
+        <target>Nur der Eigentümer kann den Bericht bearbeiten; andere können Speichern unter verwenden</target>
+      </trans-unit>
   </body>
   </file>
 </xliff>
