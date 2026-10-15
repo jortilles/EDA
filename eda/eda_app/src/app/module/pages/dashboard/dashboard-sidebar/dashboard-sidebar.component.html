@@ -54,7 +54,8 @@
                   <button class="sidebarLabels" (click)="item.command()">
                     <i [class]="item.icon + ' text-gray-600'"></i>
                     <span>{{ item.label }}</span>
-                    <i class="pi pi-chevron-down ml-auto text-gray-400"
+                    <span class="ml-auto"><ng-container *ngTemplateOutlet="pinTpl; context: { $implicit: item }"></ng-container></span>
+                    <i class="pi pi-chevron-down text-gray-400"
                       [style.transform]="mostrarFiltros ? 'rotate(180deg)' : 'rotate(0deg)'"
                       style="transition: transform 0.3s"></i>
                   </button>
@@ -74,18 +75,20 @@
                   }
                 } @else if (item.id === 'download') {
                   <!-- Download formats as a row of round icon buttons (PDF, image, Excel, Word) -->
-                  <div class="flex items-center justify-center gap-3 py-1">
+                  <div class="sidebar-download-row relative flex items-center justify-center gap-3 py-1">
                     @for (subItem of item.items; track subItem.id) {
                       <button class="sidebar-download-btn" (click)="subItem.command()"
                         [pTooltip]="subItem.label" tooltipPosition="top" [attr.aria-label]="subItem.label">
                         <i [class]="subItem.icon + ' ' + subItem.color"></i>
                       </button>
                     }
+                    <span class="absolute right-2"><ng-container *ngTemplateOutlet="pinTpl; context: { $implicit: item }"></ng-container></span>
                   </div>
                 } @else {
                   <button class="sidebarLabels" (click)="item.command()">
                     <i [class]="item.icon + ' text-gray-600'"></i>
                     <span>{{ item.label }}</span>
+                    <span class="ml-auto"><ng-container *ngTemplateOutlet="pinTpl; context: { $implicit: item }"></ng-container></span>
                   </button>
                 }
               }
@@ -105,6 +108,17 @@
     </div>
   </div>
 </p-overlayPanel>
+
+<!-- Pin/unpin a menu action in the quick actions bar (filled bookmark = pinned) -->
+<ng-template #pinTpl let-item>
+  @if (item.pinnable) {
+    <i class="sidebar-pin pi" role="button" tabindex="0"
+      [class.pi-bookmark-fill]="isPinned(item.id)" [class.pi-bookmark]="!isPinned(item.id)" [class.is-pinned]="isPinned(item.id)"
+      [pTooltip]="isPinned(item.id) ? pinLabels.unpin : pinLabels.pin" tooltipPosition="left"
+      [attr.aria-label]="isPinned(item.id) ? pinLabels.unpin : pinLabels.pin"
+      (click)="togglePin(item.id, $event)" (keydown.enter)="togglePin(item.id, $event)"></i>
+  }
+</ng-template>
 
 <!-- Overlay Backdrop -->
 @if (isPopoverVisible) {

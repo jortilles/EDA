@@ -42,6 +42,32 @@
     border-color: rgba(var(--corporate-primary-rgb), 0.4);
 }
 
+/* Pin to the quick actions bar: shown on row hover, always shown once pinned */
+.sidebar-pin {
+    opacity: 0;
+    padding: 0.15rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.85rem;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: opacity 0.1s ease, color 0.1s ease;
+}
+
+.sidebarLabels:hover .sidebar-pin,
+.sidebar-download-row:hover .sidebar-pin,
+.sidebar-pin:focus,
+.sidebar-pin.is-pinned {
+    opacity: 1;
+}
+
+.sidebar-pin:hover {
+    color: var(--corporate-primary);
+}
+
+.sidebar-pin.is-pinned {
+    color: var(--corporate-primary);
+}
+
 /* Delete dashboard: kept apart and in red */
 .sidebar-danger {
     color: #dc2626;

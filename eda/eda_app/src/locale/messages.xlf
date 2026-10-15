@@ -6239,6 +6239,15 @@ Un saludo.</source>
       <trans-unit id="dashboardOptionsAutoRefreshDesc" datatype="html">
         <source>Recarga los paneles cada N segundos. Vacío = desactivado. Se aplica al guardar el informe</source>
       </trans-unit>
+      <trans-unit id="dashboardSidebarPin" datatype="html">
+        <source>Fijar en la barra de acceso rápido</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarUnpin" datatype="html">
+        <source>Quitar de la barra de acceso rápido</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarPinLimit" datatype="html">
+        <source>La barra de acceso rápido admite como máximo <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> acciones. Quita alguna antes de añadir otra.</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

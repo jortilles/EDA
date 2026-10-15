@@ -4,7 +4,8 @@
 
 
       <!-- Header -->
-      <div class="flex items-center relative w-full items-start ml-1 my-2" [ngStyle]="reportPanel">
+      <!-- 'dashboard-header': hovering it reveals the quick actions bar -->
+      <div class="dashboard-header flex items-center relative w-full items-start ml-1 my-2" [ngStyle]="reportPanel">
 
         <div class="flex-1">
           @if (!titleClick) {

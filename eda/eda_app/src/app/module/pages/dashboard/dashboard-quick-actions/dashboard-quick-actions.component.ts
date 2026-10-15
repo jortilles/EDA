@@ -1,73 +1,122 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgStyle } from '@angular/common';
+import { Subscription } from 'rxjs';
 import { TooltipModule } from 'primeng/tooltip';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import type { DashboardPage } from '../dashboard.page';
 import { isDashboardEditable, isDashboardReadOnly } from '../dashboard-permissions.util';
+import { canUseDashboardAction, DASHBOARD_DOWNLOAD_FORMATS, DashboardAction, getDashboardAction } from '../dashboard-actions';
+import { QuickActionsPrefsService } from '../quick-actions-prefs.service';
 
-// Always-visible shortcuts next to the dashboard ⋮ menu (same actions and permissions as the menu)
+// Always-visible shortcuts next to the dashboard ⋮ menu: the actions each user pinned from the menu
 @Component({
   selector: 'app-dashboard-quick-actions',
   standalone: true,
   imports: [NgStyle, TooltipModule, MenuModule],
   templateUrl: './dashboard-quick-actions.component.html',
+  styles: `
+    /* Hidden until the dashboard header is hovered or a button gets keyboard focus */
+    .qa-fade {
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    :host-context(.dashboard-header:hover) .qa-fade,
+    :host:focus-within .qa-fade {
+      opacity: 1;
+    }
+    /* Touch screens have no hover: always visible */
+    @media (hover: none) {
+      .qa-fade { opacity: 1; }
+    }
+  `,
 })
-export class DashboardQuickActionsComponent implements OnInit {
+export class DashboardQuickActionsComponent implements OnInit, OnDestroy {
+  private prefs = inject(QuickActionsPrefsService);
+  private pinnedSubscription: Subscription;
+
   @Input() dashboard: DashboardPage;
   @Input() notSaved = false;
   @Input() buttonStyle: any = {};
 
-  @ViewChild('filtersMenu') filtersMenu: Menu;
+  @ViewChild('actionMenu') actionMenu: Menu;
 
+  /** Pinned actions the current user is allowed to use, in pinned order */
+  actions: DashboardAction[] = [];
   canEdit = false;
-  canRefresh = false;
-  filtersMenuItems: MenuItem[] = [];
+  menuItems: MenuItem[] = [];
 
-  // Same i18n ids and texts as the sidebar menu items
   labels = {
-    save: $localize`:@@dashboardSidebarSave: Guardar`.trim(),
     notSaved: $localize`:@@notSavedChanges:Hay cambios sin guardar...`,
-    newPanel: $localize`:@@newPanelTitle:Nuevo panel`.trim(),
-    refresh: $localize`:@@dashboardSidebarRefreshDashboard: Recargar informe`.trim(),
-    filters: $localize`:@@dashboardSidebarEditFilter:Editar filtros`.trim(),
-    newFilter: $localize`:@@dashboardSidebarNewFilter:Nuevo filtro`.trim(),
-    dependentFilters: $localize`:@@dashboardSidebarDependentFilters:Filtros dependientes`.trim(),
   };
+
+  private perms = { readOnly: true, editable: false };
 
   ngOnInit(): void {
     const readOnly = isDashboardReadOnly(this.dashboard.dashboard);
-    this.canEdit = !readOnly && isDashboardEditable(this.dashboard.dashboard);
-    this.canRefresh = !readOnly;
+    this.perms = { readOnly, editable: isDashboardEditable(this.dashboard.dashboard) };
+    this.canEdit = !readOnly && this.perms.editable;
+
+    this.prefs.reloadForCurrentUser();
+    this.pinnedSubscription = this.prefs.pinned$.subscribe(ids => {
+      this.actions = ids
+        .map(id => getDashboardAction(id))
+        .filter(action => action?.pinnable && canUseDashboardAction(action.id, this.perms));
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.pinnedSubscription?.unsubscribe();
+  }
+
+  /** Unsaved changes must stay visible even if the user unpinned "Save" */
+  get showStandaloneUnsavedDot(): boolean {
+    return this.notSaved && this.canEdit && !this.actions.some(action => action.id === 'save');
+  }
+
+  hasDropdown(id: string): boolean {
+    return id === 'editFilters' || id === 'download';
+  }
+
+  run(action: DashboardAction, event: Event): void {
+    if (action.id === 'editFilters') return this.openMenu(this.buildFiltersMenu(), event);
+    if (action.id === 'download') return this.openMenu(this.buildDownloadMenu(), event);
+    this.dashboard.sidebar?.runAction(action.id);
   }
 
   save(): void {
-    this.dashboard.sidebar?.saveDashboard();
+    this.dashboard.sidebar?.runAction('save');
   }
 
-  newPanel(): void {
-    this.dashboard.sidebar?.onAddWidget();
-  }
-
-  refresh(): void {
-    this.dashboard.sidebar?.cleanPanelsCache();
+  private openMenu(items: MenuItem[], event: Event): void {
+    this.menuItems = items;
+    this.actionMenu.toggle(event);
   }
 
   // Built on every open so it always lists the dashboard's current filters
-  toggleFiltersMenu(event: Event): void {
+  private buildFiltersMenu(): MenuItem[] {
     const globalFilter = this.dashboard.globalFilter;
     const existingFilters: MenuItem[] = globalFilter.globalFilters.map((f: any) => ({
       label: f?.selectedColumn?.display_name?.default || f?.column?.value?.description?.default,
       icon: 'pi pi-pencil',
       command: () => globalFilter.onShowGlobalFilter(false, f),
     }));
+    const newFilter = getDashboardAction('newFilter');
+    const dependentFilters = getDashboardAction('dependentFilters');
 
-    this.filtersMenuItems = [
-      { label: this.labels.newFilter, icon: 'pi pi-plus-circle', command: () => this.dashboard.sidebar?.onAddGlobalFilter() },
+    return [
+      { label: newFilter.label, icon: 'pi pi-plus-circle', command: () => this.dashboard.sidebar?.runAction(newFilter.id) },
       ...(existingFilters.length ? [{ separator: true }, ...existingFilters] : []),
       { separator: true },
-      { label: this.labels.dependentFilters, icon: 'pi pi-sitemap', command: () => this.dashboard.sidebar?.dependentFilters() },
+      { label: dependentFilters.label, icon: dependentFilters.icon, command: () => this.dashboard.sidebar?.runAction(dependentFilters.id) },
     ];
-    this.filtersMenu.toggle(event);
+  }
+
+  private buildDownloadMenu(): MenuItem[] {
+    return DASHBOARD_DOWNLOAD_FORMATS.map(format => ({
+      label: format.label,
+      icon: `${format.icon} ${format.color}`,
+      command: () => this.dashboard.sidebar?.runAction(format.id),
+    }));
   }
 }

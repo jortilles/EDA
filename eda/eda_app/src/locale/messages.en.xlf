@@ -8024,6 +8024,18 @@ Best regards.</target>
         <source>Recarga los paneles cada N segundos. Vacío = desactivado. Se aplica al guardar el informe</source>
         <target>Reloads the panels every N seconds. Empty = off. Applied when the report is saved</target>
       </trans-unit>
+      <trans-unit id="dashboardSidebarPin" datatype="html">
+        <source>Fijar en la barra de acceso rápido</source>
+        <target>Pin to the quick access bar</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarUnpin" datatype="html">
+        <source>Quitar de la barra de acceso rápido</source>
+        <target>Remove from the quick access bar</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarPinLimit" datatype="html">
+        <source>La barra de acceso rápido admite como máximo <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> acciones. Quita alguna antes de añadir otra.</source>
+        <target>The quick access bar allows up to <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> actions. Remove one before adding another.</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

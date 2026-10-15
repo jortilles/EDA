@@ -6063,6 +6063,18 @@ Un saludo.</source>
         <source>Recarga los paneles cada N segundos. Vacío = desactivado. Se aplica al guardar el informe</source>
         <target>Lädt die Panels alle N Sekunden neu. Leer = aus. Wird beim Speichern des Berichts angewendet</target>
       </trans-unit>
+      <trans-unit id="dashboardSidebarPin" datatype="html">
+        <source>Fijar en la barra de acceso rápido</source>
+        <target>An die Schnellzugriffsleiste anheften</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarUnpin" datatype="html">
+        <source>Quitar de la barra de acceso rápido</source>
+        <target>Von der Schnellzugriffsleiste entfernen</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarPinLimit" datatype="html">
+        <source>La barra de acceso rápido admite como máximo <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> acciones. Quita alguna antes de añadir otra.</source>
+        <target>Die Schnellzugriffsleiste erlaubt höchstens <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> Aktionen. Entfernen Sie eine, bevor Sie eine weitere hinzufügen.</target>
+      </trans-unit>
   </body>
   </file>
 </xliff>

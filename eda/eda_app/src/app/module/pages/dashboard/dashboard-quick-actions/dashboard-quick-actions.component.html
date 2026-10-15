@@ -1,32 +1,38 @@
-<div class="flex items-center gap-1">
-  @if (canEdit) {
-    <button class="quick-action relative w-7 h-7 rounded-md flex items-center justify-center hover:bg-gray-200"
-      [ngStyle]="buttonStyle" (click)="save()" [pTooltip]="notSaved ? labels.notSaved : labels.save" tooltipPosition="bottom">
-      <i class="pi pi-save"></i>
-      <!-- Unsaved changes indicator -->
-      @if (notSaved) {
-        <span class="absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-orange-500"></span>
-      }
-    </button>
-
-    <button class="quick-action w-7 h-7 rounded-md flex items-center justify-center hover:bg-gray-200"
-      [ngStyle]="buttonStyle" (click)="newPanel()" [pTooltip]="labels.newPanel" tooltipPosition="bottom">
-      <i class="pi pi-plus-circle"></i>
-    </button>
-
-    <!-- Filters: new filter, edit an existing one, dependent filters -->
-    <button class="quick-action h-7 px-1 rounded-md flex items-center justify-center gap-0.5 hover:bg-gray-200"
-      [ngStyle]="buttonStyle" (click)="toggleFiltersMenu($event)" [pTooltip]="labels.filters" tooltipPosition="bottom">
-      <i class="pi pi-filter"></i>
-      <i class="pi pi-angle-down text-xs"></i>
-    </button>
-    <p-menu #filtersMenu [model]="filtersMenuItems" [popup]="true" appendTo="body"></p-menu>
+<!-- Buttons fade in when hovering the dashboard header ('dashboard-header' in dashboard.page.html).
+     data-html2canvas-ignore: never part of the PDF/image exports, which capture the header -->
+<div class="flex items-center gap-1" data-html2canvas-ignore>
+  @for (action of actions; track action.id) {
+    @if (action.id === 'save') {
+      <!-- Wrapper is not faded, so the unsaved changes dot is always visible -->
+      <span class="relative flex">
+        <button class="qa-fade w-7 h-7 rounded-md flex items-center justify-center hover:bg-gray-200"
+          [ngStyle]="buttonStyle" (click)="save()" [pTooltip]="notSaved ? labels.notSaved : action.label" tooltipPosition="bottom">
+          <i [class]="action.icon"></i>
+        </button>
+        @if (notSaved) {
+          <span class="pointer-events-none absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-orange-500"></span>
+        }
+      </span>
+    } @else {
+      <button class="qa-fade h-7 min-w-[1.75rem] px-1 rounded-md flex items-center justify-center gap-0.5 hover:bg-gray-200"
+        [ngStyle]="buttonStyle" (click)="run(action, $event)" [pTooltip]="action.label" tooltipPosition="bottom"
+        [attr.aria-label]="action.label">
+        <i [class]="action.icon"></i>
+        @if (hasDropdown(action.id)) {
+          <i class="pi pi-angle-down text-xs"></i>
+        }
+      </button>
+    }
   }
 
-  @if (canRefresh) {
-    <button class="quick-action w-7 h-7 rounded-md flex items-center justify-center hover:bg-gray-200"
-      [ngStyle]="buttonStyle" (click)="refresh()" [pTooltip]="labels.refresh" tooltipPosition="bottom">
-      <i class="pi pi-refresh"></i>
+  <!-- "Save" unpinned: keep signalling unsaved changes; clicking it saves -->
+  @if (showStandaloneUnsavedDot) {
+    <button class="w-4 h-7 flex items-center justify-center" (click)="save()"
+      [pTooltip]="labels.notSaved" tooltipPosition="bottom" [attr.aria-label]="labels.notSaved">
+      <span class="w-2 h-2 rounded-full bg-orange-500"></span>
     </button>
   }
 </div>
+
+<!-- Dropdown shared by "Edit filters" and "Download" -->
+<p-menu #actionMenu [model]="menuItems" [popup]="true" appendTo="body"></p-menu>

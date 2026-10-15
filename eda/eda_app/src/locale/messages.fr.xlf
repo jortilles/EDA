@@ -8762,6 +8762,18 @@ Cordialement.</target>
         <source>Recarga los paneles cada N segundos. Vacío = desactivado. Se aplica al guardar el informe</source>
         <target>Recharge les panneaux toutes les N secondes. Vide = désactivé. S&apos;applique à l&apos;enregistrement du rapport</target>
       </trans-unit>
+      <trans-unit id="dashboardSidebarPin" datatype="html">
+        <source>Fijar en la barra de acceso rápido</source>
+        <target>Épingler dans la barre d&apos;accès rapide</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarUnpin" datatype="html">
+        <source>Quitar de la barra de acceso rápido</source>
+        <target>Retirer de la barre d&apos;accès rapide</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarPinLimit" datatype="html">
+        <source>La barra de acceso rápido admite como máximo <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> acciones. Quita alguna antes de añadir otra.</source>
+        <target>La barre d&apos;accès rapide accepte au maximum <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> actions. Retirez-en une avant d&apos;en ajouter une autre.</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>

@@ -8330,6 +8330,18 @@ Salutacions.</target>
         <source>Recarga los paneles cada N segundos. Vacío = desactivado. Se aplica al guardar el informe</source>
         <target>Recarrega els panells cada N segons. Buit = desactivat. S&apos;aplica en guardar l&apos;informe</target>
       </trans-unit>
+      <trans-unit id="dashboardSidebarPin" datatype="html">
+        <source>Fijar en la barra de acceso rápido</source>
+        <target>Fixa a la barra d&apos;accés ràpid</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarUnpin" datatype="html">
+        <source>Quitar de la barra de acceso rápido</source>
+        <target>Treu de la barra d&apos;accés ràpid</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarPinLimit" datatype="html">
+        <source>La barra de acceso rápido admite como máximo <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> acciones. Quita alguna antes de añadir otra.</source>
+        <target>La barra d&apos;accés ràpid admet com a màxim <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> accions. Treu-ne alguna abans d&apos;afegir-ne una altra.</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>

@@ -1,5 +1,6 @@
 import { AfterViewInit, ApplicationRef, Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { NgTemplateOutlet } from "@angular/common";
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
 import { TooltipModule } from "primeng/tooltip";
@@ -32,6 +33,8 @@ import { DashboardOptions, DashboardOptionsModal } from "../../../components/das
 import { GlobalFilterDialogComponent } from "../../../pages/dashboard/global-filter-dialog/global-filter-dialog.component";
 import { GlobalFilterComponent } from "@eda/components/global-filter/global-filter.component";
 import { isDashboardEditable, isDashboardReadOnly } from "../dashboard-permissions.util";
+import { canUseDashboardAction, DASHBOARD_ACTIONS, DASHBOARD_DOWNLOAD_FORMATS } from "../dashboard-actions";
+import { MAX_QUICK_ACTIONS, QuickActionsPrefsService } from "../quick-actions-prefs.service";
 
 const STANDALONE_COMPONENTS = [
     DashboardSaveAsDialog,
@@ -51,6 +54,7 @@ const ANGULAR_MODULES = [
   OverlayModule,
   OverlayPanelModule,
   TooltipModule,
+  NgTemplateOutlet,
   IconComponent,
   DragDropModule,
   FormsModule,
@@ -95,6 +99,12 @@ export class DashboardSidebarComponent implements AfterViewInit {
   private alertService = inject(AlertService);
   private stylesProviderService = inject(StyleProviderService)
   private ChartUtilsService = inject(ChartUtilsService)
+  private quickActionsPrefs = inject(QuickActionsPrefsService);
+
+  readonly pinLabels = {
+    pin: $localize`:@@dashboardSidebarPin:Fijar en la barra de acceso rápido`,
+    unpin: $localize`:@@dashboardSidebarUnpin:Quitar de la barra de acceso rápido`,
+  };
 
   @ViewChild('popover') popover!: OverlayPanel;
   @Input() dashboard: DashboardPage;
@@ -176,199 +186,60 @@ export class DashboardSidebarComponent implements AfterViewInit {
   }
 
   initSidebar() {
-    // Each item belongs to a menu section (see menuSections); the order here is the display order
-    this.sidebarItems = [
-      // CREATE
-      {
-        id: 'newPanel',
-        section: 'create',
-        label: $localize`:@@newPanelTitle:Nuevo panel`,
-        icon: "pi pi-plus-circle",
-        command: () => this.onAddWidget()
-      },
-      {
-        id: 'newFilter',
-        section: 'create',
-        label: $localize`:@@dashboardSidebarNewFilter:Nuevo filtro`,
-        icon: "pi pi-filter",
-        command: () => this.onAddGlobalFilter()
-      },
-      {
-        id: 'newText',
-        section: 'create',
-        label: $localize`:@@dashboardSidebarNewText:Nuevo texto`,
-        icon: "pi pi-file-edit",
-        command: () => this.onAddTitle()
-      },
-      {
-        id: 'newTabs',
-        section: 'create',
-        label: $localize`:@@dashboardSidebarNewTabs:Nuevo navegador`,
-        icon: "pi pi-folder",
-        command: () => this.onAddTabsPanel()
-      },
-      {
-        id: 'importPanel',
-        section: 'create',
-        label: $localize`:@@dashboardSidebarImportPanel:Importar panel`,
-        icon: "pi pi-file-import",
-        command: () => this.onImportPanel()
-      },
-      // FILTERS
-      {
-        id: 'editFilters',
-        section: 'filters',
-        label: $localize`:@@dashboardSidebarEditFilter:Editar filtros`,
-        icon: "pi pi-list",
-        command: () => this.toggleGlobalFilter(),
-        items: this.dashboard.globalFilter.globalFilters.map(f => ({
-          label: f?.selectedColumn?.display_name?.default || f?.column?.value?.description?.default,
-          command: () => this.handleSpecificFilter(f),
-          filter: f,
-        }),
-        ),
-      },
-      {
-        id: 'dependentFilters',
-        section: 'filters',
-        label: $localize`:@@dashboardSidebarDependentFilters:Filtros dependientes`,
-        icon: "pi pi-sitemap",
-        command: () => this.dependentFilters()
-      },
-      // REPORT
-      {
-        id: 'save',
-        section: 'report',
-        label: $localize`:@@dashboardSidebarSave: Guardar`,
-        icon: "pi pi-save",
-        command: () => this.saveDashboard()
-      },
-      {
-        id: 'saveAs',
-        section: 'report',
-        label: $localize`:@@dashboardSidebarSaveAs: Guardar como`,
-        icon: "pi pi-copy",
-        command: () => {
-          this.isSaveAsDialogVisible = true;
-          this.hidePopover();
-        }
-      },
-      {
-        id: 'refreshDashboard',
-        section: 'report',
-        label: $localize`:@@dashboardSidebarRefreshDashboard: Recargar informe`,
-        icon: "pi pi-refresh",
-        command: () => this.cleanPanelsCache()
-      },
-      // SHARE
-      {
-        id: 'download',
-        section: 'share',
-        label: $localize`:@@dashboardSidebarDownload:Descargar...`,
-        icon: "pi pi-download",
-        items: [
-          {
-            id: 'downloadPDF',
-            label: $localize`:@@dashboardSidebarDownloadPDF: Descargar PDF`,
-            icon: "pi pi-file-pdf",
-            color: "text-red-600",
-            command: () => this.exportAsPDF()
-          },
-          {
-            id: 'downloadImage',
-            label: $localize`:@@dashboardSidebarDownloadImage:Descargar Imagen`,
-            icon: "pi pi-image",
-            color: "text-sky-600",
-            command: () => this.exportAsJPEG()
-          },
-          {
-            id: 'downloadExcel',
-            label: $localize`:@@dashboardSidebarDownloadExcel:Descargar Excel`,
-            icon: "pi pi-file-excel",
-            color: "text-green-600",
-            command: () => this.exportDashboardAsExcel()
-          },
-          {
-            id: 'downloadWord',
-            label: $localize`:@@dashboardSidebarDownloadWord:Descargar Word`,
-            icon: "pi pi-file-word",
-            color: "text-blue-700",
-            command: () => this.exportDashboardAsWord()
-          },
-        ]
-      },
-      {
-        id: 'sendEmail',
-        section: 'share',
-        label: $localize`:@@opcionMail: Enviar por email`,
-        icon: "pi pi-envelope",
-        command: () => {
-          this.isMailConfigDialogVisible = true;
-          this.hidePopover();
-        }
-      },
-      {
-        id: 'dashboardPrivacity',
-        section: 'share',
-        label: $localize`:@@dashboardSidebarDashboardPrivacity: Privacidad informe`,
-        icon: "pi pi-lock",
-        command: () => {
-          this.isVisibleModalVisible = true;
-          this.hidePopover();
-        }
-      },
-      // SETTINGS
-      {
-        id: 'editStyles',
-        section: 'settings',
-        label: $localize`:@@dashboardSidebarEditStyles: Editar estilos`,
-        icon: "pi pi-palette",
-        command: () => {
-          this.isEditStyleDialogVisible = true;
-          this.hidePopover();
-        }
-      },
-      {
-        id: 'addTag',
-        section: 'settings',
-        label: $localize`:@@addTag: Añadir etiqueta`,
-        icon: "pi pi-tag",
-        command: () => {
-          this.isTagModalVisible = true;
-          this.hidePopover();
-        }
-      },
-      {
-        // Click on filters, panel lock, animations and private edit, as switches in a dialog
-        id: 'reportOptions',
-        section: 'settings',
-        label: $localize`:@@dashboardSidebarReportOptions:Opciones del informe...`,
-        icon: "pi pi-sliders-v",
-        command: () => {
-          this.reportOptionsSnapshot = this.currentReportOptions();
-          this.isReportOptionsVisible = true;
-          this.hidePopover();
-        }
-      },
-      {
-        id: 'customAction',
-        section: 'settings',
-        label: $localize`:@@dashboardSidebarCustomAction: Acción personalizada`,
-        icon: "pi pi-bolt",
-        command: () => {
-          this.isCustomActionDialogVisible = true;
-          this.hidePopover();
-        }
-      },
-      // DANGER ZONE (rendered apart, in red)
-      {
-        id: 'deleteDashboard',
-        section: 'danger',
-        label: $localize`:@@dashboardSidebarDeleteDashboard: Eliminar informe`,
-        icon: "pi pi-trash",
-        command: () => this.removeDashboard()
-      },
-    ]
+    // Menu items come from the shared catalog (dashboard-actions.ts); commands from runAction()
+    this.sidebarItems = DASHBOARD_ACTIONS.map(action => ({
+      ...action,
+      command: () => this.runAction(action.id),
+    }));
+
+    const editFilters = this.sidebarItems.find(item => item.id === 'editFilters');
+    editFilters.items = this.dashboard.globalFilter.globalFilters.map(f => ({
+      label: f?.selectedColumn?.display_name?.default || f?.column?.value?.description?.default,
+      command: () => this.handleSpecificFilter(f),
+      filter: f,
+    }));
+
+    const download = this.sidebarItems.find(item => item.id === 'download');
+    download.items = DASHBOARD_DOWNLOAD_FORMATS.map(format => ({
+      ...format,
+      command: () => this.runAction(format.id),
+    }));
+  }
+
+  /** Runs a menu action by id; also used by the quick actions bar */
+  public runAction(id: string): void {
+    switch (id) {
+      case 'newPanel': this.onAddWidget(); break;
+      case 'newFilter': this.onAddGlobalFilter(); break;
+      case 'newText': this.onAddTitle(); break;
+      case 'newTabs': this.onAddTabsPanel(); break;
+      case 'importPanel': this.onImportPanel(); break;
+      case 'editFilters': this.toggleGlobalFilter(); break;
+      case 'dependentFilters': this.dependentFilters(); break;
+      case 'save': this.saveDashboard(); break;
+      case 'saveAs': this.openDialog(() => this.isSaveAsDialogVisible = true); break;
+      case 'refreshDashboard': this.cleanPanelsCache(); break;
+      case 'downloadPDF': this.exportAsPDF(); break;
+      case 'downloadImage': this.exportAsJPEG(); break;
+      case 'downloadExcel': this.exportDashboardAsExcel(); break;
+      case 'downloadWord': this.exportDashboardAsWord(); break;
+      case 'sendEmail': this.openDialog(() => this.isMailConfigDialogVisible = true); break;
+      case 'dashboardPrivacity': this.openDialog(() => this.isVisibleModalVisible = true); break;
+      case 'editStyles': this.openDialog(() => this.isEditStyleDialogVisible = true); break;
+      case 'addTag': this.openDialog(() => this.isTagModalVisible = true); break;
+      case 'reportOptions':
+        this.reportOptionsSnapshot = this.currentReportOptions();
+        this.openDialog(() => this.isReportOptionsVisible = true);
+        break;
+      case 'customAction': this.openDialog(() => this.isCustomActionDialogVisible = true); break;
+      case 'deleteDashboard': this.removeDashboard(); break;
+      default: console.warn(`Unknown dashboard action '${id}'`);
+    }
+  }
+
+  private openDialog(show: () => void): void {
+    show();
+    this.hidePopover();
   }
 
   showPopover(event: Event) {
@@ -1264,11 +1135,22 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
   // Sidebar creation methods
   // Same permissions the menu had before being split into sections
+  // Shared permission rule (dashboard-actions.ts); the filters list also needs existing filters
   public canShowItem(item: any): boolean {
-    if (item.id === 'download') return true;
     if (item.id === 'editFilters' && !this.hayFiltros) return false;
-    if (item.id === 'refreshDashboard') return !this.isReadOnly;
-    return !this.isReadOnly && this.isEditable;
+    return canUseDashboardAction(item.id, { readOnly: this.isReadOnly, editable: this.isEditable });
+  }
+
+  // Quick actions bar: pin/unpin a menu action
+  public isPinned(id: string): boolean {
+    return this.quickActionsPrefs.isPinned(id);
+  }
+
+  public togglePin(id: string, event: Event): void {
+    event.stopPropagation(); // don't run the action itself
+    if (!this.quickActionsPrefs.toggle(id)) {
+      this.alertService.addWarning($localize`:@@dashboardSidebarPinLimit:La barra de acceso rápido admite como máximo ${MAX_QUICK_ACTIONS}:max: acciones. Quita alguna antes de añadir otra.`);
+    }
   }
 
   public sectionItems(sectionId: string): any[] {

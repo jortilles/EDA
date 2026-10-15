@@ -8439,6 +8439,18 @@ Pozdrawiam.</target>
         <source>Recarga los paneles cada N segundos. Vacío = desactivado. Se aplica al guardar el informe</source>
         <target>Odświeża panele co N sekund. Puste = wyłączone. Stosowane po zapisaniu raportu</target>
       </trans-unit>
+      <trans-unit id="dashboardSidebarPin" datatype="html">
+        <source>Fijar en la barra de acceso rápido</source>
+        <target>Przypnij do paska szybkiego dostępu</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarUnpin" datatype="html">
+        <source>Quitar de la barra de acceso rápido</source>
+        <target>Odepnij z paska szybkiego dostępu</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarPinLimit" datatype="html">
+        <source>La barra de acceso rápido admite como máximo <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> acciones. Quita alguna antes de añadir otra.</source>
+        <target>Pasek szybkiego dostępu mieści maksymalnie <x id="max" equiv-text="MAX_QUICK_ACTIONS"/> akcji. Usuń jedną, zanim dodasz kolejną.</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
