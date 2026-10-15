@@ -5929,6 +5929,14 @@ Cumprimentos.</target>
         <source>Solo el propietario puede editar el informe; el resto puede usar Guardar como</source>
         <target>Só o proprietário pode editar o relatório; os restantes podem usar Guardar como</target>
       </trans-unit>
+      <trans-unit id="dashboardOptionsAutoRefresh" datatype="html">
+        <source>Refresco automático</source>
+        <target>Atualização automática</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAutoRefreshDesc" datatype="html">
+        <source>Recarga los paneles cada N segundos. Vacío = desactivado. Se aplica al guardar el informe</source>
+        <target>Recarrega os painéis a cada N segundos. Vazio = desativado. Aplica-se ao guardar o relatório</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

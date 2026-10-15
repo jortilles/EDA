@@ -8,6 +8,8 @@ export interface DashboardOptions {
   panelsLocked: boolean;
   animations: boolean;
   privateEdit: boolean;
+  /** Live dashboard: seconds between automatic refreshes; null = off. Applied when the report is saved */
+  refreshTime: number | null;
 }
 
 // Report-level on/off settings, shown as switches so their current state is visible at a glance

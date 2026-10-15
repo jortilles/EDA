@@ -8754,6 +8754,14 @@ Cordialement.</target>
         <source>Solo el propietario puede editar el informe; el resto puede usar Guardar como</source>
         <target>Seul le propriétaire peut modifier le rapport ; les autres peuvent utiliser Enregistrer sous</target>
       </trans-unit>
+      <trans-unit id="dashboardOptionsAutoRefresh" datatype="html">
+        <source>Refresco automático</source>
+        <target>Actualisation automatique</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAutoRefreshDesc" datatype="html">
+        <source>Recarga los paneles cada N segundos. Vacío = desactivado. Se aplica al guardar el informe</source>
+        <target>Recharge les panneaux toutes les N secondes. Vide = désactivé. S&apos;applique à l&apos;enregistrement du rapport</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>

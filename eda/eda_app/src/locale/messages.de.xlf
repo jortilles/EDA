@@ -6055,6 +6055,14 @@ Un saludo.</source>
         <source>Solo el propietario puede editar el informe; el resto puede usar Guardar como</source>
         <target>Nur der Eigentümer kann den Bericht bearbeiten; andere können Speichern unter verwenden</target>
       </trans-unit>
+      <trans-unit id="dashboardOptionsAutoRefresh" datatype="html">
+        <source>Refresco automático</source>
+        <target>Automatische Aktualisierung</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAutoRefreshDesc" datatype="html">
+        <source>Recarga los paneles cada N segundos. Vacío = desactivado. Se aplica al guardar el informe</source>
+        <target>Lädt die Panels alle N Sekunden neu. Leer = aus. Wird beim Speichern des Berichts angewendet</target>
+      </trans-unit>
   </body>
   </file>
 </xliff>

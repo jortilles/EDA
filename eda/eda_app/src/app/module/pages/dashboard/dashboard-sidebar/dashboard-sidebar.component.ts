@@ -111,7 +111,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
   isTagModalVisible = false;
   isReportOptionsVisible = false;
   reportOptionsSnapshot: DashboardOptions; // State when the options dialog was opened
-  inputVisible: boolean = false;
   refreshTime: number = null;
   clickFiltersEnabled: boolean = true;
   clickPanelLockButton: boolean = true;
@@ -212,7 +211,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
         id: 'importPanel',
         section: 'create',
         label: $localize`:@@dashboardSidebarImportPanel:Importar panel`,
-        icon: "pi pi-plus-circle",
+        icon: "pi pi-file-import",
         command: () => this.onImportPanel()
       },
       // FILTERS
@@ -220,11 +219,10 @@ export class DashboardSidebarComponent implements AfterViewInit {
         id: 'editFilters',
         section: 'filters',
         label: $localize`:@@dashboardSidebarEditFilter:Editar filtros`,
-        icon: "pi pi-filter",
+        icon: "pi pi-list",
         command: () => this.toggleGlobalFilter(),
         items: this.dashboard.globalFilter.globalFilters.map(f => ({
           label: f?.selectedColumn?.display_name?.default || f?.column?.value?.description?.default,
-          icon: "pi pi-check",
           command: () => this.handleSpecificFilter(f),
           filter: f,
         }),
@@ -234,7 +232,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
         id: 'dependentFilters',
         section: 'filters',
         label: $localize`:@@dashboardSidebarDependentFilters:Filtros dependientes`,
-        icon: "pi pi-sliders-h",
+        icon: "pi pi-sitemap",
         command: () => this.dependentFilters()
       },
       // REPORT
@@ -261,16 +259,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
         label: $localize`:@@dashboardSidebarRefreshDashboard: Recargar informe`,
         icon: "pi pi-refresh",
         command: () => this.cleanPanelsCache()
-      },
-      {
-        id: 'liveDashboard',
-        section: 'report',
-        label: $localize`:@@dashboardSidebarLiveDashboard: Live Dashboard`,
-        icon: "pi pi-desktop",
-        items: [],
-        command: () => {
-          this.inputVisible = !this.inputVisible;
-        },
       },
       // SHARE
       {
@@ -366,7 +354,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
         id: 'customAction',
         section: 'settings',
         label: $localize`:@@dashboardSidebarCustomAction: Acción personalizada`,
-        icon: "pi pi-cog",
+        icon: "pi pi-bolt",
         command: () => {
           this.isCustomActionDialogVisible = true;
           this.hidePopover();
@@ -1401,6 +1389,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
       panelsLocked: !this.clickPanelLockButton,
       animations: this.clickPanelAnimationsButton,
       privateEdit: this.onlyIcanEdit,
+      refreshTime: this.refreshTime ? Number(this.refreshTime) : null,
     };
   }
 
@@ -1413,6 +1402,12 @@ export class DashboardSidebarComponent implements AfterViewInit {
     if (options.animations !== current.animations) this.panelAnimationsButton();
     if (options.privateEdit !== current.privateEdit) {
       this.toggleEdit();
+      this.dashboardService.setNotSaved(true);
+    }
+    // Live dashboard: stored into the config on the next save, like the old menu input
+    const refreshTime = options.refreshTime ? Number(options.refreshTime) : null;
+    if (refreshTime !== current.refreshTime) {
+      this.refreshTime = refreshTime;
       this.dashboardService.setNotSaved(true);
     }
   }

@@ -63,9 +63,9 @@
                       (cdkDropListDropped)="onDrop($event)">
                       @for (subItem of item.items; track subItem.label) {
                         <button class="sidebarLabels" cdkDrag (click)="subItem.command()">
-                          <i [class]="subItem.icon + ' text-gray-600'"></i>
+                          <!-- Drag handle: filters can be reordered by dragging -->
+                          <i class="pi pi-bars text-gray-400 cursor-grab"></i>
                           <span>{{ subItem.label }}</span>
-                          <i class="pi" [class.pi-check]="subItem.active" [class.pi-square-o]="!subItem.active"></i>
                           <i class="pi pi-times-circle ml-auto text-gray-400 hover:text-[var(--corporate-primary)]"
                             (click)="$event.stopPropagation(); removeFilterFromSidebar(subItem.filter)"></i>
                         </button>
@@ -86,17 +86,7 @@
                   <button class="sidebarLabels" (click)="item.command()">
                     <i [class]="item.icon + ' text-gray-600'"></i>
                     <span>{{ item.label }}</span>
-                    @if (item.items) {
-                      <i class="pi pi-chevron-down ml-auto text-gray-400"
-                        [style.transform]="inputVisible ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: transform 0.3s"></i>
-                    }
                   </button>
-                  @if (item.id === 'liveDashboard' && inputVisible) {
-                    <input type="number" [value]="refreshTime" (input)="refreshTime = $any($event.target).value"
-                      class="w-full mt-1 px-2 py-1 border rounded-md"
-                      i18n-placeholder="@@secondsToRefresh"
-                      placeholder="Segundos para refrescar" />
-                  }
                 }
               }
             }

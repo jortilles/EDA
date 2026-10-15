@@ -6233,6 +6233,12 @@ Un saludo.</source>
       <trans-unit id="dashboardSidebarDownloadWord" datatype="html">
         <source>Descargar Word</source>
       </trans-unit>
+      <trans-unit id="dashboardOptionsAutoRefresh" datatype="html">
+        <source>Refresco automático</source>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAutoRefreshDesc" datatype="html">
+        <source>Recarga los paneles cada N segundos. Vacío = desactivado. Se aplica al guardar el informe</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

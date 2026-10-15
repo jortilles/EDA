@@ -66,7 +66,7 @@ export class DashboardQuickActionsComponent implements OnInit {
       { label: this.labels.newFilter, icon: 'pi pi-plus-circle', command: () => this.dashboard.sidebar?.onAddGlobalFilter() },
       ...(existingFilters.length ? [{ separator: true }, ...existingFilters] : []),
       { separator: true },
-      { label: this.labels.dependentFilters, icon: 'pi pi-sliders-h', command: () => this.dashboard.sidebar?.dependentFilters() },
+      { label: this.labels.dependentFilters, icon: 'pi pi-sitemap', command: () => this.dashboard.sidebar?.dependentFilters() },
     ];
     this.filtersMenu.toggle(event);
   }

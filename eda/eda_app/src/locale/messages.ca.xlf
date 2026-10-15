@@ -8322,6 +8322,14 @@ Salutacions.</target>
         <source>Descargar Word</source>
         <target>Descarregar Word</target>
       </trans-unit>
+      <trans-unit id="dashboardOptionsAutoRefresh" datatype="html">
+        <source>Refresco automático</source>
+        <target>Refresc automàtic</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAutoRefreshDesc" datatype="html">
+        <source>Recarga los paneles cada N segundos. Vacío = desactivado. Se aplica al guardar el informe</source>
+        <target>Recarrega els panells cada N segons. Buit = desactivat. S&apos;aplica en guardar l&apos;informe</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>

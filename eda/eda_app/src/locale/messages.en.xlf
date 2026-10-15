@@ -8016,6 +8016,14 @@ Best regards.</target>
         <source>Descargar Word</source>
         <target>Download Word</target>
       </trans-unit>
+      <trans-unit id="dashboardOptionsAutoRefresh" datatype="html">
+        <source>Refresco automático</source>
+        <target>Auto refresh</target>
+      </trans-unit>
+      <trans-unit id="dashboardOptionsAutoRefreshDesc" datatype="html">
+        <source>Recarga los paneles cada N segundos. Vacío = desactivado. Se aplica al guardar el informe</source>
+        <target>Reloads the panels every N seconds. Empty = off. Applied when the report is saved</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
