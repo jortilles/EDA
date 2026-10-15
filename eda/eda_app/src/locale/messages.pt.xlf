@@ -5868,6 +5868,26 @@ Cumprimentos.</target>
       <trans-unit id="filteredItems" datatype="html">
         <source>elementos disponibles</source>
         <target>elementos disponíveis</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionCreate" datatype="html">
+        <source>Crear</source>
+        <target>Criar</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionFilters" datatype="html">
+        <source>Filtros</source>
+        <target>Filtros</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionReport" datatype="html">
+        <source>Informe</source>
+        <target>Relatório</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionShare" datatype="html">
+        <source>Compartir</source>
+        <target>Compartilhar</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionSettings" datatype="html">
+        <source>Configuración</source>
+        <target>Configurações</target>
       </trans-unit>
     </body>
   </file>

@@ -40,16 +40,18 @@
       <hr class="my-2" />
     </div>
 
-    <!-- White menu -->
+    <!-- White menu, grouped by section -->
     <div class="bg-white px-3 pb-3 pt-2 overflow-y-auto max-h-[80vh] overscroll-contain">
       <div class="flex flex-col gap-2 text-lg">
-        @for (item of itemsVisibles(); track item.label) {
-          @if(!isReadOnly){
-            @if(isEditable || item.id === 'refreshDashboard'){
-              @if (item.id === "editFilters") {
-                @if(hayFiltros){
-                  <button class="sidebarLabels "
-                    (click)="item.command()">
+        @for (section of menuSections; track section.id) {
+          @if (sectionItems(section.id); as items) {
+            @if (items.length) {
+              <span class="sidebar-section-title">{{ section.label }}</span>
+
+              @for (item of items; track item.id) {
+                @if (item.id === 'editFilters') {
+                  <!-- Existing filters: expandable, sortable list -->
+                  <button class="sidebarLabels" (click)="item.command()">
                     <i [class]="item.icon + ' text-gray-600'"></i>
                     <span>{{ item.label }}</span>
                     <i class="pi pi-chevron-down ml-auto text-gray-400"
@@ -59,61 +61,20 @@
                   @if (item.items && mostrarFiltros) {
                     <div class="ml-6 flex flex-col gap-2" cdkDropList [cdkDropListData]="item.items" (cdkDropListDropped)="drop($event)"
                       (cdkDropListDropped)="onDrop($event)">
-
                       @for (subItem of item.items; track subItem.label) {
-                      <button class="sidebarLabels" cdkDrag
-                        (click)="subItem.command()">
-                        <i [class]="subItem.icon + ' text-gray-600'"></i>
-                        <span>{{ subItem.label }}</span>
-                        <i class="pi" [class.pi-check]="subItem.active" [class.pi-square-o]="!subItem.active"></i>
-                        <i class="pi pi-times-circle ml-auto text-gray-400 hover:text-[var(--corporate-primary)]"
-                          (click)="$event.stopPropagation(); removeFilterFromSidebar(subItem.filter)"></i>
-                      </button>
+                        <button class="sidebarLabels" cdkDrag (click)="subItem.command()">
+                          <i [class]="subItem.icon + ' text-gray-600'"></i>
+                          <span>{{ subItem.label }}</span>
+                          <i class="pi" [class.pi-check]="subItem.active" [class.pi-square-o]="!subItem.active"></i>
+                          <i class="pi pi-times-circle ml-auto text-gray-400 hover:text-[var(--corporate-primary)]"
+                            (click)="$event.stopPropagation(); removeFilterFromSidebar(subItem.filter)"></i>
+                        </button>
                       }
                     </div>
-                    }
                   }
-                }
-                @else{
-                  <button class="sidebarLabels"
-                    (click)="item.command()">
-                    <i [class]="item.icon + ' text-gray-600'"></i>
-                    <span>{{ item.label }}</span>
-                    @if (item.items) {
-                    <i class="pi pi-chevron-down ml-auto text-gray-400"
-                      [style.transform]="inputVisible ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: transform 0.3s"></i>
-                    }
-                  </button>
-                  @if (item.id === "liveDashboard" || item.id === "newTabs") {
-                    @if (item.id === "liveDashboard" && inputVisible) {
-                      <input type="number" [value]="refreshTime" (input)="refreshTime = $any($event.target).value"
-                        class="w-full mt-1 px-2 py-1 border rounded-md"
-                        i18n-placeholder="@@secondsToRefresh"
-                        placeholder="Segundos para refrescar" />
-                    }
-                    <hr class="my-2" />
-                  }
-                }
-              }
-            }
-         }
-
-        <button class="sidebarLabels "
-          (click)="toggleOpciones()">
-          <!-- <i class="pi pi-chevron-down text-gray-600"></i> -->
-          <span i18n="@@dashboardSidebarMoreOptions">Más opciones</span>
-          <i class="pi pi-chevron-down ml-auto text-gray-400"
-            [style.transform]="mostrarOpciones ? 'rotate(180deg)' : 'rotate(0deg)'"
-            style="transition: transform 0.3s"></i>
-        </button>
-
-        @if (mostrarOpciones) {
-          <div class="ml-6 flex flex-col gap-2">
-            @for (item of itemsDesplegables().slice(1); track item.label) {
-              @if(isEditable && !isReadOnly || item.id === 'download'){
-                @if (item.id === 'download') {
-                  <button class="sidebarLabels "
-                    (click)="mostrarDescargas = !mostrarDescargas">
+                } @else if (item.id === 'download') {
+                  <!-- Download formats submenu -->
+                  <button class="sidebarLabels" (click)="mostrarDescargas = !mostrarDescargas">
                     <i [class]="item.icon + ' text-gray-600'"></i>
                     <span>{{ item.label }}</span>
                     <i class="pi pi-chevron-down ml-auto text-gray-400"
@@ -123,8 +84,7 @@
                   @if (mostrarDescargas) {
                     <div class="ml-6 flex flex-col gap-2">
                       @for (subItem of item.items; track subItem.label) {
-                        <button class="sidebarLabels "
-                          (click)="subItem.command()">
+                        <button class="sidebarLabels" (click)="subItem.command()">
                           <i [class]="subItem.icon + ' text-gray-600'"></i>
                           <span>{{ subItem.label }}</span>
                         </button>
@@ -132,15 +92,33 @@
                     </div>
                   }
                 } @else {
-                  <button class="sidebarLabels "
-                    (click)="item.command()">
+                  <button class="sidebarLabels" (click)="item.command()">
                     <i [class]="item.icon + ' text-gray-600'"></i>
                     <span>{{ item.label }}</span>
+                    @if (item.items) {
+                      <i class="pi pi-chevron-down ml-auto text-gray-400"
+                        [style.transform]="inputVisible ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: transform 0.3s"></i>
+                    }
                   </button>
+                  @if (item.id === 'liveDashboard' && inputVisible) {
+                    <input type="number" [value]="refreshTime" (input)="refreshTime = $any($event.target).value"
+                      class="w-full mt-1 px-2 py-1 border rounded-md"
+                      i18n-placeholder="@@secondsToRefresh"
+                      placeholder="Segundos para refrescar" />
+                  }
                 }
               }
             }
-          </div>
+          }
+        }
+
+        <!-- Danger zone: delete dashboard, apart and in red -->
+        @for (item of sectionItems('danger'); track item.id) {
+          <hr class="my-1" />
+          <button class="sidebarLabels sidebar-danger" (click)="item.command()">
+            <i [class]="item.icon"></i>
+            <span>{{ item.label }}</span>
+          </button>
         }
       </div>
     </div>

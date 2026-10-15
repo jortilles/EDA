@@ -29,6 +29,7 @@ import { DependentFilters } from "../../../components/dependent-filters/dependen
 import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
 import { GlobalFilterDialogComponent } from "../../../pages/dashboard/global-filter-dialog/global-filter-dialog.component";
 import { GlobalFilterComponent } from "@eda/components/global-filter/global-filter.component";
+import { isDashboardEditable, isDashboardReadOnly } from "../dashboard-permissions.util";
 
 const STANDALONE_COMPONENTS = [
     DashboardSaveAsDialog,
@@ -112,7 +113,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
   onlyIcanEdit: boolean = true; // Only I can edit, but I can save as
   isReadOnly: boolean = false; // this is a read-only dashboard
   isEditable: boolean = false; // can edit the dashboard
-  mostrarOpciones = false;
   mostrarFiltros = false;
   mostrarDescargas = false;
   hayFiltros;
@@ -127,6 +127,15 @@ export class DashboardSidebarComponent implements AfterViewInit {
   private pendingRefreshPanelIds = new Set<string>();
 
   sidebarItems: any[] = [];
+
+  // Menu sections in display order; the 'danger' section (delete) is rendered apart
+  readonly menuSections = [
+    { id: 'create', label: $localize`:@@dashboardSidebarSectionCreate:Crear` },
+    { id: 'filters', label: $localize`:@@dashboardSidebarSectionFilters:Filtros` },
+    { id: 'report', label: $localize`:@@dashboardSidebarSectionReport:Informe` },
+    { id: 'share', label: $localize`:@@dashboardSidebarSectionShare:Compartir` },
+    { id: 'settings', label: $localize`:@@dashboardSidebarSectionSettings:Configuración` },
+  ];
 
   ngOnInit(): void {
     this.hayFiltros = this.dashboard.globalFilter.globalFilters.length > 0;
@@ -163,34 +172,48 @@ export class DashboardSidebarComponent implements AfterViewInit {
   }
 
   initSidebar() {
+    // Each item belongs to a menu section (see menuSections); the order here is the display order
     this.sidebarItems = [
+      // CREATE
       {
         id: 'newPanel',
+        section: 'create',
         label: $localize`:@@newPanelTitle:Nuevo panel`,
         icon: "pi pi-plus-circle",
         command: () => this.onAddWidget()
       },
       {
         id: 'newFilter',
+        section: 'create',
         label: $localize`:@@dashboardSidebarNewFilter:Nuevo filtro`,
         icon: "pi pi-filter",
         command: () => this.onAddGlobalFilter()
-
       },
       {
         id: 'newText',
+        section: 'create',
         label: $localize`:@@dashboardSidebarNewText:Nuevo texto`,
         icon: "pi pi-file-edit",
         command: () => this.onAddTitle()
       },
       {
         id: 'newTabs',
+        section: 'create',
         label: $localize`:@@dashboardSidebarNewTabs:Nuevo navegador`,
         icon: "pi pi-folder",
         command: () => this.onAddTabsPanel()
       },
       {
+        id: 'importPanel',
+        section: 'create',
+        label: $localize`:@@dashboardSidebarImportPanel:Importar panel`,
+        icon: "pi pi-plus-circle",
+        command: () => this.onImportPanel()
+      },
+      // FILTERS
+      {
         id: 'editFilters',
+        section: 'filters',
         label: $localize`:@@dashboardSidebarEditFilter:Editar filtros`,
         icon: "pi pi-filter",
         command: () => this.toggleGlobalFilter(),
@@ -204,39 +227,22 @@ export class DashboardSidebarComponent implements AfterViewInit {
       },
       {
         id: 'dependentFilters',
+        section: 'filters',
         label: $localize`:@@dashboardSidebarDependentFilters:Filtros dependientes`,
         icon: "pi pi-sliders-h",
         command: () => this.dependentFilters()
-        
       },
+      // REPORT
       {
-        id: 'importPanel',
-        label: $localize`:@@dashboardSidebarImportPanel:Importar panel`,
-        icon: "pi pi-plus-circle",
-        command: () => this.onImportPanel()
-      },
-      {
-        id: 'refreshDashboard',
-        label: $localize`:@@dashboardSidebarRefreshDashboard: Recargar informe`,
-        icon: "pi pi-refresh",
-        command: () => this.cleanPanelsCache()
-      },
-      {
-        id: 'liveDashboard',
-        label: $localize`:@@dashboardSidebarLiveDashboard: Live Dashboard`,
-        icon: "pi pi-desktop",
-        items: [],
-        command: () => {
-          this.inputVisible = !this.inputVisible;
-        },
-      }, {
         id: 'save',
+        section: 'report',
         label: $localize`:@@dashboardSidebarSave: Guardar`,
         icon: "pi pi-save",
         command: () => this.saveDashboard()
       },
       {
         id: 'saveAs',
+        section: 'report',
         label: $localize`:@@dashboardSidebarSaveAs: Guardar como`,
         icon: "pi pi-copy",
         command: () => {
@@ -245,78 +251,26 @@ export class DashboardSidebarComponent implements AfterViewInit {
         }
       },
       {
-        id: 'deleteDashboard',
-        label: $localize`:@@dashboardSidebarDeleteDashboard: Eliminar informe`,
-        icon: "pi pi-trash",
-        command: () => this.removeDashboard()
+        id: 'refreshDashboard',
+        section: 'report',
+        label: $localize`:@@dashboardSidebarRefreshDashboard: Recargar informe`,
+        icon: "pi pi-refresh",
+        command: () => this.cleanPanelsCache()
       },
       {
-        id: 'moreOptions',
-        label: $localize`:@@dashboardSidebarMoreOptions: Más opciones`,
-      },
-      {
-        id: 'editStyles',
-        label: $localize`:@@dashboardSidebarEditStyles: Editar estilos`,
-        icon: "pi pi-palette",
+        id: 'liveDashboard',
+        section: 'report',
+        label: $localize`:@@dashboardSidebarLiveDashboard: Live Dashboard`,
+        icon: "pi pi-desktop",
+        items: [],
         command: () => {
-          this.isEditStyleDialogVisible = true;
-          this.hidePopover();
-        }
+          this.inputVisible = !this.inputVisible;
+        },
       },
-      {
-        id: 'dashboardPrivacity',
-        label: $localize`:@@dashboardSidebarDashboardPrivacity: Privacidad informe`,
-        icon: "pi pi-lock",
-        command: () => {
-          this.isVisibleModalVisible = true;
-          this.hidePopover();
-        }
-      }, {
-        id: 'addTag',
-        label: $localize`:@@addTag: Añadir etiqueta`,
-        icon: "pi pi-tag",
-        command: () => {
-          this.isTagModalVisible = true;
-          this.hidePopover();
-        }
-      },
-      {
-        id: 'enableFilters',
-        label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado`
-          : $localize`:@@disableFilters:Click en filtros deshabilitado`,
-        icon: this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban",
-        command: () => {
-          this.toggleClickFilters();
-        }
-      },
-      {
-        id: 'enablePanelLock',
-        label: this.clickPanelLockButton ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
-          : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
-        icon: this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock",
-        command: () => {
-          this.panelLockButton();
-        }
-      },
-      {
-        id: 'enablePanelAnimations',
-        label: this.clickPanelAnimationsButton ? $localize`:@@disablePanelAnimationsButton:Desactivar animaciones`
-          : $localize`:@@enablePanelAnimationsButton:Activar animaciones`,
-        icon: this.clickPanelAnimationsButton ? "pi pi-bolt" : "pi pi-ban",
-        command: () => {
-          this.panelAnimationsButton();
-        }
-      },
-      {
-        id: 'enableEdition',
-        label: this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
-        icon: this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
-        command: () => {
-          this.toggleEdit();
-        }
-      },
+      // SHARE
       {
         id: 'download',
+        section: 'share',
         label: $localize`:@@dashboardSidebarDownload:Descargar...`,
         icon: "pi pi-download",
         items: [
@@ -348,6 +302,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
       },
       {
         id: 'sendEmail',
+        section: 'share',
         label: $localize`:@@opcionMail: Enviar por email`,
         icon: "pi pi-envelope",
         command: () => {
@@ -356,13 +311,92 @@ export class DashboardSidebarComponent implements AfterViewInit {
         }
       },
       {
+        id: 'dashboardPrivacity',
+        section: 'share',
+        label: $localize`:@@dashboardSidebarDashboardPrivacity: Privacidad informe`,
+        icon: "pi pi-lock",
+        command: () => {
+          this.isVisibleModalVisible = true;
+          this.hidePopover();
+        }
+      },
+      // SETTINGS
+      {
+        id: 'editStyles',
+        section: 'settings',
+        label: $localize`:@@dashboardSidebarEditStyles: Editar estilos`,
+        icon: "pi pi-palette",
+        command: () => {
+          this.isEditStyleDialogVisible = true;
+          this.hidePopover();
+        }
+      },
+      {
+        id: 'addTag',
+        section: 'settings',
+        label: $localize`:@@addTag: Añadir etiqueta`,
+        icon: "pi pi-tag",
+        command: () => {
+          this.isTagModalVisible = true;
+          this.hidePopover();
+        }
+      },
+      {
+        id: 'enableFilters',
+        section: 'settings',
+        label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado`
+          : $localize`:@@disableFilters:Click en filtros deshabilitado`,
+        icon: this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban",
+        command: () => {
+          this.toggleClickFilters();
+        }
+      },
+      {
+        id: 'enablePanelLock',
+        section: 'settings',
+        label: this.clickPanelLockButton ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
+          : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
+        icon: this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock",
+        command: () => {
+          this.panelLockButton();
+        }
+      },
+      {
+        id: 'enablePanelAnimations',
+        section: 'settings',
+        label: this.clickPanelAnimationsButton ? $localize`:@@disablePanelAnimationsButton:Desactivar animaciones`
+          : $localize`:@@enablePanelAnimationsButton:Activar animaciones`,
+        icon: this.clickPanelAnimationsButton ? "pi pi-bolt" : "pi pi-ban",
+        command: () => {
+          this.panelAnimationsButton();
+        }
+      },
+      {
+        id: 'enableEdition',
+        section: 'settings',
+        label: this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
+        icon: this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
+        command: () => {
+          this.toggleEdit();
+        }
+      },
+      {
         id: 'customAction',
+        section: 'settings',
         label: $localize`:@@dashboardSidebarCustomAction: Acción personalizada`,
         icon: "pi pi-cog",
         command: () => {
           this.isCustomActionDialogVisible = true;
           this.hidePopover();
         }
+      },
+      // DANGER ZONE (rendered apart, in red)
+      {
+        id: 'deleteDashboard',
+        section: 'danger',
+        label: $localize`:@@dashboardSidebarDeleteDashboard: Eliminar informe`,
+        icon: "pi pi-trash",
+        command: () => this.removeDashboard()
       },
     ]
   }
@@ -377,7 +411,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
   hidePopover() {
     this.isPopoverVisible = false;
     this.popover.hide();
-    this.mostrarOpciones = false;
     this.mostrarFiltros = false;
     this.mostrarDescargas = false;
     this.flushPendingFilterRemovalRefresh();
@@ -531,7 +564,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.dashboardService.setNotSaved(false);
   }
 
-  private async saveDashboard() {
+  public async saveDashboard() {
     // Update refreshTime if needed
     this.dashboard.dashboard.config.refreshTime = this.refreshTime || null;
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
@@ -1261,21 +1294,16 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
 
   // Sidebar creation methods
-  public indiceMasOpciones(): number {
-    return this.sidebarItems.findIndex(item => item.id === 'moreOptions');
+  // Same permissions the menu had before being split into sections
+  public canShowItem(item: any): boolean {
+    if (item.id === 'download') return true;
+    if (item.id === 'editFilters' && !this.hayFiltros) return false;
+    if (item.id === 'refreshDashboard') return !this.isReadOnly;
+    return !this.isReadOnly && this.isEditable;
   }
 
-  public itemsVisibles() {
-    return this.sidebarItems.slice(0, this.indiceMasOpciones());
-  }
-
-  public itemsDesplegables() {
-    return this.sidebarItems.slice(this.indiceMasOpciones());
-  }
-
-  public toggleOpciones() {
-    // Toggle sidebar states
-    this.mostrarOpciones = !this.mostrarOpciones;
+  public sectionItems(sectionId: string): any[] {
+    return this.sidebarItems.filter(item => item.section === sectionId && this.canShowItem(item));
   }
 
   public toggleGlobalFilter() {
@@ -1325,21 +1353,11 @@ export class DashboardSidebarComponent implements AfterViewInit {
   }
 
  public isReadOnlyCheck() {
-    const user = localStorage.getItem('user');
-    const userName = JSON.parse(user)._id;
-    const imProperty = userName === this.dashboard.dashboard.user;
-    const isObserver = JSON.parse(user).role.includes('135792467811111111111113');
-    const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ? this.dashboard.dashboard.config.onlyIcanEdit: true ;
-    return userName === '135792467811111111111112' || (!onlyIcanEdit && !imProperty) || isObserver;
+    return isDashboardReadOnly(this.dashboard.dashboard);
   }
 
   public isEditableCheck() {
-    const user = localStorage.getItem('user');
-    const userId = JSON.parse(user)._id;
-    const userRole = JSON.parse(user).role;
-    const isAdmin = userRole.includes('135792467811111111111110');
-    const imProperty = userId === this.dashboard.dashboard.user;
-    return (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin );
+    return isDashboardEditable(this.dashboard.dashboard);
   }
 
   toggleClickFilters() {

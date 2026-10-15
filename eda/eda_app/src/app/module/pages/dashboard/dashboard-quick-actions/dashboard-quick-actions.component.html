@@ -1,0 +1,32 @@
+<div class="flex items-center gap-1">
+  @if (canEdit) {
+    <button class="quick-action relative w-7 h-7 rounded-md flex items-center justify-center hover:bg-gray-200"
+      [ngStyle]="buttonStyle" (click)="save()" [pTooltip]="notSaved ? labels.notSaved : labels.save" tooltipPosition="bottom">
+      <i class="pi pi-save"></i>
+      <!-- Unsaved changes indicator -->
+      @if (notSaved) {
+        <span class="absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-orange-500"></span>
+      }
+    </button>
+
+    <button class="quick-action w-7 h-7 rounded-md flex items-center justify-center hover:bg-gray-200"
+      [ngStyle]="buttonStyle" (click)="newPanel()" [pTooltip]="labels.newPanel" tooltipPosition="bottom">
+      <i class="pi pi-plus-circle"></i>
+    </button>
+
+    <!-- Filters: new filter, edit an existing one, dependent filters -->
+    <button class="quick-action h-7 px-1 rounded-md flex items-center justify-center gap-0.5 hover:bg-gray-200"
+      [ngStyle]="buttonStyle" (click)="toggleFiltersMenu($event)" [pTooltip]="labels.filters" tooltipPosition="bottom">
+      <i class="pi pi-filter"></i>
+      <i class="pi pi-angle-down text-xs"></i>
+    </button>
+    <p-menu #filtersMenu [model]="filtersMenuItems" [popup]="true" appendTo="body"></p-menu>
+  }
+
+  @if (canRefresh) {
+    <button class="quick-action w-7 h-7 rounded-md flex items-center justify-center hover:bg-gray-200"
+      [ngStyle]="buttonStyle" (click)="refresh()" [pTooltip]="labels.refresh" tooltipPosition="bottom">
+      <i class="pi pi-refresh"></i>
+    </button>
+  }
+</div>

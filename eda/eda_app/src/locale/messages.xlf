@@ -6184,6 +6184,21 @@ Un saludo.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
         </context-group>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionCreate" datatype="html">
+        <source>Crear</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionFilters" datatype="html">
+        <source>Filtros</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionReport" datatype="html">
+        <source>Informe</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionShare" datatype="html">
+        <source>Compartir</source>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionSettings" datatype="html">
+        <source>Configuración</source>
       </trans-unit>
     </body>
   </file>

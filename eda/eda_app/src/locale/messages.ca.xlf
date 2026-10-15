@@ -8257,7 +8257,27 @@ Salutacions.</target>
 <trans-unit id="foldersMergedText">
   <source>se ha fusionado con</source>
   <target>s'ha fusionat amb</target>
-</trans-unit>
+</trans-unit>
+      <trans-unit id="dashboardSidebarSectionCreate" datatype="html">
+        <source>Crear</source>
+        <target>Crear</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionFilters" datatype="html">
+        <source>Filtros</source>
+        <target>Filtres</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionReport" datatype="html">
+        <source>Informe</source>
+        <target>Informe</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionShare" datatype="html">
+        <source>Compartir</source>
+        <target>Compartir</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionSettings" datatype="html">
+        <source>Configuración</source>
+        <target>Configuració</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>

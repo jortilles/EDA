@@ -5994,6 +5994,26 @@ Un saludo.</source>
       <trans-unit id="foldersMergedText">
         <source>se ha fusionado con</source>
         <target>wurde zusammengeführt mit</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionCreate" datatype="html">
+        <source>Crear</source>
+        <target>Erstellen</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionFilters" datatype="html">
+        <source>Filtros</source>
+        <target>Filter</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionReport" datatype="html">
+        <source>Informe</source>
+        <target>Bericht</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionShare" datatype="html">
+        <source>Compartir</source>
+        <target>Teilen</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarSectionSettings" datatype="html">
+        <source>Configuración</source>
+        <target>Einstellungen</target>
       </trans-unit>
   </body>
   </file>

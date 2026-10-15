@@ -12,3 +12,23 @@
     border-radius: 0.5rem;
     transition: background-color 0.1s ease;
 }
+
+/* Small grey heading above each menu section */
+.sidebar-section-title {
+    margin-top: 0.5rem;
+    padding: 0 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #9ca3af;
+}
+
+/* Delete dashboard: kept apart and in red */
+.sidebar-danger {
+    color: #dc2626;
+}
+
+.sidebar-danger:hover {
+    background-color: rgba(220, 38, 38, 0.1);
+}

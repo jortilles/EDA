@@ -11,6 +11,7 @@ import { CompactType, DisplayGrid, GridsterComponent, GridsterConfig, GridsterIt
 import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService, UserService, MediaService } from '@eda/services/service.index';
 import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
+import { DashboardQuickActionsComponent } from './dashboard-quick-actions/dashboard-quick-actions.component';
 import { GlobalFilterComponent } from '@eda/components/global-filter/global-filter.component'; 
 import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { FormsModule } from '@angular/forms';
@@ -52,6 +53,7 @@ const GRIDSTER_MODULES = [
 // Standalone Components
 const STANDALONE_COMPONENTS = [
   DashboardSidebarComponent,
+  DashboardQuickActionsComponent,
   EdaBlankPanelComponent, 
   GlobalFilterComponent, 
   DashboardSaveAsDialog,
