@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { getDashboardAction } from './dashboard-actions';
 
-export const DEFAULT_QUICK_ACTIONS = ['save', 'newPanel', 'editFilters', 'refreshDashboard'];
+// Empty by default: the bar only shows what each user pins from the ⋮ menu
+export const DEFAULT_QUICK_ACTIONS: string[] = [];
 export const MAX_QUICK_ACTIONS = 5;
 
 // Which actions each user pinned to the quick actions bar, stored per user in the browser
