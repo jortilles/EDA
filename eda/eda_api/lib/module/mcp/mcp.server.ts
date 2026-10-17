@@ -139,10 +139,10 @@ export function createMcpServer(requestUser?: any) {
                     return true;
                 });
 
-                const privados: any[] = filterItems(data.dashboards ?? []);
+                const privados: any[] = filterItems(data.private ?? []);
                 const grupo: any[]    = filterItems(data.group ?? []);
-                const comunes: any[]  = filterItems(data.publics ?? []);
-                const publicos: any[] = filterItems(data.shared ?? []);
+                const comunes: any[]  = filterItems(data.common ?? []);
+                const publicos: any[] = filterItems(data.open ?? []);
                 console.log('[MCP] list_dashboards — tras filtro | privados:', privados.length, '| grupo:', grupo.length, '| comunes:', comunes.length, '| públicos:', publicos.length);
 
                 const baseUrl = getBaseUrl();

@@ -53,7 +53,7 @@ export class ModelImportExportPage implements OnInit {
       .sort((a, b) => a.label.localeCompare(b.label, 'es', { sensitivity: 'base' }));
 
     const data2 = await lastValueFrom(this.dashboardService.getDashboards());
-    const dashboards = [].concat.apply([], [data2.dashboards, data2.group, data2.publics, data2.shared]);
+    const dashboards = [].concat.apply([], [data2.private, data2.group, data2.open, data2.common]);
 
     this.dashboards = dashboards
       .map(elem => ({ label: elem.config.title, value: elem }))

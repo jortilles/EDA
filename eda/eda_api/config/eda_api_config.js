@@ -3,7 +3,7 @@ module.exports = {
     null_value: '',
     // Número de workers en modo cluster. Si es 0 o no se define, usa todos los núcleos disponibles.
     cluster_workers: 4,
-     authentication_type: {
+    authentication_type: {
       type: 'native',
       native: true,
       options: {
@@ -14,5 +14,8 @@ module.exports = {
     },
     maxStatementTime: 900, // tiempo antes de hacer kill a la mysql query
     log_file: "XXXXXXXXXXXXXXXXXX", // log de consoltas del servidor
-    error_log_file: "XXXXXXXXXXXXXXXXXX" // log de errores del servidor
+    error_log_file: "XXXXXXXXXXXXXXXXXX", // log de errores del servidor
+    custom_behaviour:{
+      ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: false, //true -> los usuarios no-admin pueden gestionar dashboards "open".
+    }
   }

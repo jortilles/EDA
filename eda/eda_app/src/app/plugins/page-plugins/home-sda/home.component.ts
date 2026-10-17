@@ -1,0 +1,1243 @@
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone, ViewChildren, QueryList } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
+import { fromEvent, Subscription } from "rxjs";
+import { filter } from "rxjs/operators";
+import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService } from "@eda/services/service.index";
+import { CreateDashboardService } from "@eda/services/utils/create-dashboard.service";
+import { IconComponent } from "@eda/shared/components/icon/icon.component";
+import { TooltipModule } from "primeng/tooltip";
+import { DropdownModule, Dropdown } from "primeng/dropdown";
+import Swal from "sweetalert2";
+import * as _ from "lodash";
+import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_default";
+
+@Component({
+  standalone: true,
+  selector: "home-sda",
+  imports: [CommonModule, FormsModule, TooltipModule, IconComponent, DropdownModule],
+  templateUrl: "./home.component.html",
+  styleUrls: ["./home.component.css"]
+})
+export class HomeSdaComponent implements OnInit, OnDestroy {
+  // Dropdown filters open state (Bootstrap's data-toggle isn't available in this app; handled manually)
+  public openFilter: "tags" | "groups" | "status" | "type" | null = null;
+  private outsideClickSub?: Subscription;
+
+  // Dashboard Management
+  public dss: any[];
+  public allDashboards: Array<any> = [];
+  public visibleDashboards: Array<any> = [];
+
+  // View Mode
+  public viewMode: "table" | "card" = "table";
+
+  // Sorting and Filtering
+  public sortColumn: string = "config.title";
+  public sortDirection: "asc" | "desc" = "asc";
+  public filteringByName: boolean = false;
+  public searchTerm: string = "";
+  public lastSortCriteria: {
+    column: string;
+    direction: "asc" | "desc";
+  };
+  public selectedStatuses: string[] = ["active", "inactive"];
+  public titleActive: string = $localize`:@@activateReport:Activar informe`;
+  public titleInactive: string = $localize`:@@deactivateReport:Desactivar informe`;
+
+  // User and Group Management
+  public groups: IGroup[] = [];
+  public isAdmin: boolean;
+  public currentUser: any;
+  public IsDataSourceCreator: boolean;
+  public isObserver: boolean = false;
+  public grups: Array<any> = [];
+
+  // Tag Filtering
+  public tags: Array<any> = [];
+  public selectedTags: Array<any> = [];
+  public filteredTags: Array<any> = [];
+  public tagSearchTerm: string = "";
+  public noTagLabel = $localize`:@@NoTag:Sin Etiqueta`;
+
+  // Group Filtering
+  public groupOptions: Array<any> = [];
+  public selectedGroups: Array<any> = [];
+  public filteredGroups: Array<any> = [];
+  public groupSearchTerm: string = "";
+  public noGroupLabel = $localize`:@@NoGroup:Sin Grupo`;
+
+  // Dashboard Type Filtering
+  public dashboardTypes: Array<{
+    type: string;
+    label: string;
+    icon: string;
+    color: string;
+  }> = [
+    {
+      type: "open",
+      label: $localize`:@@Public:Público`,
+      icon: "fa-circle",
+      color: "#add8e7"
+    },
+    {
+      type: "group",
+      label: $localize`:@@Group:Grupo`,
+      icon: "fa-circle",
+      color: "#ffd971"
+    },
+    {
+      type: "private",
+      label: $localize`:@@Private:Privado`,
+      icon: "fa-circle",
+      color: "#ee4e36"
+    }
+  ];
+
+  private defaultDashboardTypes: Array<{
+    type: string;
+    label: string;
+    icon: string;
+    color: string;
+  }> = [
+    {
+      type: "open",
+      label: $localize`:@@Public:Público`,
+      icon: "fa-circle",
+      color: "#b4bc32"
+    },
+    {
+      type: "common",
+      label: $localize`:@@Common:Común`,
+      icon: "fa-circle",
+      color: "#add8e7"
+    },
+    {
+      type: "group",
+      label: $localize`:@@Group:Grupo`,
+      icon: "fa-circle",
+      color: "#ffd971"
+    },
+    {
+      type: "private",
+      label: $localize`:@@Private:Privado`,
+      icon: "fa-circle",
+      color: "#ee4e36"
+    }
+  ];
+
+  // Type filtering
+  public selectedTypes: Array<any> = [];
+  public filteredTypes: Array<any> = [];
+  public typeSearchTerm: string = "";
+
+  // Dashboard Type Translations
+  public dashboardTypeTranslations = {
+    open: $localize`:@@Public:Público`,
+    common: $localize`:@@Common:Común`,
+    group: $localize`:@@Group:Grupo`,
+    private: $localize`:@@Private:Privado`
+  };
+
+  // Title Editing
+  public showEditIcon: boolean = false;
+  public isEditing: boolean = false;
+
+  // Dashboard Type Editing
+  public editingType: {
+    [key: string]: boolean;
+  } = {};
+  public editingTypeId: string | null = null;
+  @ViewChildren(Dropdown) private typeDropdowns!: QueryList<Dropdown>;
+
+  constructor(
+    // Services for managing dashboards and related operations
+    private dashboardService: DashboardService,
+    private sidebarService: SidebarService,
+    private stylesProviderService: StyleProviderService,
+    private createDashboardService: CreateDashboardService,
+    // Services for navigation and user feedback
+    private router: Router,
+    private alertService: AlertService,
+    // Service for group management
+    private groupService: GroupService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
+  ) {
+    // Initialize data sources
+    this.sidebarService.getDataSourceNames();
+    this.sidebarService.getDataSourceNamesForDashboard();
+
+    // Set default styles
+    this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles());
+
+    // Set view mode from local storage or default to table view
+    this.viewMode = (localStorage.getItem("preferredViewMode") as "table" | "card") || "table";
+  }
+
+  private initDashboardTypes(): void {
+    this.dashboardTypes = this.defaultDashboardTypes.filter(
+      type => type.type !== 'open' || this.isAdmin || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS
+    );
+    this.filteredTypes = [...this.dashboardTypes];
+  }
+
+  /**
+   * Initializes the component.
+   */
+  public ngOnInit() {
+    this.init();
+    this.ifAnonymousGetOut();
+    this.setIsObserver();
+    this.currentUser = JSON.parse(localStorage.getItem("user"));
+    this.loadFiltersFromStorage();
+    this.bindOutsideClickClose();
+  }
+
+  public ngOnDestroy(): void {
+    this.outsideClickSub?.unsubscribe();
+  }
+
+  /**
+   * Opens/closes a filter dropdown panel. Only one can be open at a time.
+   * Bootstrap's data-toggle="dropdown" behavior isn't available (no Bootstrap JS in this app),
+   * so open/close state is handled here.
+   */
+  public toggleFilterDropdown(name: "tags" | "groups" | "status" | "type", event: Event): void {
+    event.stopPropagation();
+    this.openFilter = this.openFilter === name ? null : name;
+  }
+
+  private bindOutsideClickClose(): void {
+    this.outsideClickSub = fromEvent<MouseEvent>(document, "click")
+      .pipe(filter(e => {
+        const target = e.target as HTMLElement;
+        const insideFilter = target.closest(".filter-dropdown-panel") || target.closest(".filter-dropdown-toggle");
+        const insideTypeEdit = target.closest(".type-edit-container");
+        return !insideFilter && !insideTypeEdit;
+      }))
+      .subscribe(() => {
+        this.openFilter = null;
+        this.editingTypeId = null;
+      });
+  }
+
+  /**
+   * Initializes all necessary data for the component.
+   */
+  private init() {
+    this.initDatasources();
+    this.initDashboards();
+    this.initTags();
+    this.initGroups();
+    this.initDashboardTypes();
+  }
+
+  /**
+   * Sets the isObserver flag based on the user's group membership.
+   */
+  private setIsObserver = async () => {
+    this.groupService.getGroupsByUser().subscribe(
+      res => {
+        const user = localStorage.getItem("user");
+        const userID = JSON.parse(user)?._id;
+        this.grups = res;
+        this.isObserver =
+          this.grups.filter(group => group.name === "EDA_RO" && group.users.includes(userID)).length !== 0;
+          this.sidebarService.setIsObserver(this.isObserver);
+      },
+      err => this.alertService.addError(err)
+    );
+  };
+
+  /**
+   * Redirects anonymous users to the login page.
+   */
+  private ifAnonymousGetOut(): void {
+    const user = localStorage.getItem("user");
+    const userName = JSON.parse(user)?.name;
+
+    if (userName === "edaanonim" || userName === "EDA_RO") {
+      this.router.navigate(["/login"]);
+    }
+  }
+
+  /**
+   * Initializes datasources from the sidebar service.
+   */
+  private initDatasources(): void {
+    this.sidebarService.currentDatasourcesDB.subscribe(
+      data => (this.dss = data),
+      err => this.alertService.addError(err)
+    );
+  }
+
+  /**
+   * Initializes dashboards, sets up groups, and performs initial filtering.
+   */
+  private initDashboards(): void {
+    this.dashboardService.getDashboards().subscribe(
+      res => {
+        this.allDashboards = [
+          ...res.open.map(d => this.normalizeDashboard(d, "open")),
+          ...res.common.map(d => this.normalizeDashboard(d, "common")),
+          ...res.group.map(d => this.normalizeDashboard(d, "group")),
+          ...res.private.map(d => this.normalizeDashboard(d, "private"))
+        ].sort((a, b) => (a.config.title > b.config.title ? 1 : b.config.title > a.config.title ? -1 : 0));
+
+        this.groups = _.map(_.uniqBy(res.group, "group._id"), "group");
+        console.log("Groups obtained from service:", this.groups);
+
+        this.isAdmin = res.isAdmin;
+        this.IsDataSourceCreator = res.isDataSourceCreator;
+
+        this.initDashboardTypes();
+        this.initTags();
+        this.initGroups();
+        this.restoreFiltersAndApply();
+
+        this.setIsObserver();
+      },
+      err => this.alertService.addError(err)
+    );
+  }
+
+  /**
+   * Makes tag an array if it's not already, and trims whitespace.
+   */
+  private normalizeDashboard(dashboard: any, type: string) {
+    return {
+      ...dashboard,
+      type,
+      active: dashboard.config.active !== undefined ? dashboard.config.active : true,
+      config: {
+        ...dashboard.config,
+        tag: Array.isArray(dashboard.config.tag)
+          ? dashboard.config.tag.filter(t => t).map(tag => tag.trim())
+          : dashboard.config.tag
+          ? [dashboard.config.tag.trim()]
+          : []
+      }
+    };
+  }
+  /**
+   * Initializes the tags for filtering dashboards.
+   */
+  private initTags(): void {
+
+    const uniqueTags = Array.from(new Set(this.allDashboards.map(db => db.config.tag))).filter((item) => (item?.length !==0 && item !== undefined && item !== null)).sort();
+
+    const filteredUniqueTags = uniqueTags.filter(tag => {
+      if (tag === 'shared') {
+        return this.isAdmin;
+      }
+      return true;
+    });
+
+    const filteredUniqueTagsString = filteredUniqueTags.reduce((acc, item) => {
+      if (Array.isArray(item)) {
+        return acc.concat(item);
+      } else {
+        return acc.concat([item]);
+      }
+    }, []);
+
+    const filteredUniqueTagsStringNew = [...new Set(filteredUniqueTagsString)];
+
+    this.tags = [
+      {
+        value: null,
+        label: this.noTagLabel
+      },
+      ...filteredUniqueTagsStringNew.map(tag => ({
+        value: tag,
+        label: tag
+      }))
+    ];
+
+    this.filteredTags = [...this.tags];
+
+    // Sorting filteredTags in alphabetical order
+    this.filteredTags.sort((a, b) => a.label.trim().toLowerCase().localeCompare(b.label.trim().toLowerCase()));
+    localStorage.setItem('tags', JSON.stringify(this.tags));
+  }
+
+  /**
+   * Initializes the groups for filtering dashboards.
+   */
+  private initGroups(): void {
+    console.log("Starting initGroups");
+    console.log("allDashboards:", this.allDashboards);
+
+    const uniqueGroups = Array.from(
+      new Set(
+        this.allDashboards
+          .filter(db => db.group && Array.isArray(db.group))
+          .reduce((acc, db) => acc.concat(db.group.map(g => g.name)), [])
+      )
+    ).sort();
+
+    console.log("Unique groups found:", uniqueGroups);
+
+    this.groupOptions = [
+      {
+        value: null,
+        label: this.noGroupLabel
+      },
+      ...uniqueGroups.map(group => ({
+        value: group,
+        label: group
+      }))
+    ];
+
+    console.log("Group options:", this.groupOptions);
+
+    this.filteredGroups = [...this.groupOptions];
+
+    // Ensure groups are updated in the view
+    this.filterGroups();
+  }
+
+  /**
+   * Opens the create-dashboard dialog (rendered globally, see pages-v3.html).
+   */
+  public onCreateDashboard(): void {
+    this.createDashboardService.open();
+  }
+
+  /**
+   * Deletes a dashboard after user confirmation.
+   * @param dashboard The dashboard to be deleted
+   */
+  public deleteDashboard(dashboard): void {
+    let text = $localize`:@@deleteDashboardWarning:You are about to delete the report:`;
+    Swal.fire({
+      title: $localize`:@@Sure:Are you sure?`,
+      text: `${text} ${dashboard.config.title}`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: $localize`:@@ConfirmDeleteModel:Yes, delete it!`,
+      cancelButtonText: $localize`:@@cancelarButton:Cancel`
+    }).then(deleted => {
+      if (deleted.value) {
+        this.dashboardService.deleteDashboard(dashboard._id).subscribe(
+          () => {
+            // Remove the dashboard from allDashboards and visibleDashboards without reordering
+            this.allDashboards = this.allDashboards.filter(d => d._id !== dashboard._id);
+            this.visibleDashboards = this.visibleDashboards.filter(d => d._id !== dashboard._id);
+
+            this.alertService.addSuccess($localize`:@@DashboardDeletedInfo:Report successfully deleted.`);
+          },
+          err => this.alertService.addError(err)
+        );
+      }
+    });
+  }
+
+  /**
+   * Navigates to a specific dashboard.
+   * @param dashboard The dashboard to navigate to
+   */
+  public goToDashboard(dashboard): void {
+    if (dashboard) {
+      this.router.navigate(["/dashboard", dashboard._id]);
+    } else {
+      this.alertService.addError($localize`:@@ErrorMessage:An error has occurred`);
+    }
+  }
+
+  /**
+   * Gets a string of group names for a dashboard.
+   * @param group Array of groups
+   * @returns A string of group names separated by commas
+   */
+  public getGroupsNamesByDashboard(group: any[]): string {
+    return group.map((elem: any) => elem.name).join(" , ");
+  }
+
+  /**
+   * Filters tags based on the search term.
+   */
+  public filterTags() {
+    this.filteredTags = this.tags
+      .filter(tag => {
+        if (tag.value === 'shared') {
+          return this.isAdmin;
+        }
+        return tag.label.toLowerCase().includes(this.tagSearchTerm.toLowerCase());
+      });
+  }
+
+/**
+ * Filters groups based on the search term.
+ */
+public filterGroups() {
+  this.filteredGroups = this.groupOptions.filter(group => {
+    // Verificar si group y group.label están definidos
+    if (group && typeof group.label === 'string') {
+      return group.label.toLowerCase().includes(this.groupSearchTerm.toLowerCase());
+    }
+    // Si group.label no es una cadena, no lo incluimos en los resultados filtrados
+    return false;
+  });
+  console.log("Filtered groups:", this.filteredGroups);
+}
+
+  /**
+   * Toggles the selection of a tag and updates the dashboard filter.
+   * @param tag The tag to toggle
+   */
+  public toggleTagSelection(tag: any) {
+
+    const index = this.selectedTags.findIndex(t => t.value === tag.value);
+
+    if (index > -1) {
+      this.selectedTags.splice(index, 1);
+    } else {
+      this.selectedTags.push(tag);
+    }
+
+    this.filterDashboards();
+    this.saveFiltersToStorage();
+  }
+
+  /**
+   * Toggles the selection of a group and updates the dashboard filter.
+   * @param group The group to toggle
+   */
+  public toggleGroupSelection(group: any) {
+    const index = this.selectedGroups.findIndex(g => g.value === group.value);
+    if (index > -1) {
+      this.selectedGroups.splice(index, 1);
+    } else {
+      this.selectedGroups.push(group);
+    }
+    this.filterDashboards();
+    this.saveFiltersToStorage();
+  }
+
+  /**
+   * Toggles the selection of a dashboard type and updates the dashboard filter.
+   * @param type The type to toggle
+   */
+  public toggleTypeSelection(type: any) {
+    const index = this.selectedTypes.findIndex(t => t.type === type.type);
+    if (index > -1) {
+      this.selectedTypes.splice(index, 1);
+    } else {
+      this.selectedTypes.push(type);
+    }
+    this.filterDashboards();
+    this.saveFiltersToStorage();
+  }
+
+  /**
+   * Filters dashboards based on selected types, tags, groups, and name search term.
+   * All filters are applied cumulatively.
+   */
+  public filterDashboards() {
+    // Reset visibleDashboards
+    this.visibleDashboards = [...this.allDashboards];
+
+    // Apply active filter
+    // Restrict status filtering to admins and support multiselect
+    if (this.isAdmin) {
+      if (this.selectedStatuses.length < 2) {
+        this.visibleDashboards = this.visibleDashboards.filter(db => {
+          if (this.selectedStatuses.includes("active") && db.active) return true;
+          if (this.selectedStatuses.includes("inactive") && !db.active) return true;
+          return false;
+        });
+      }
+    } else {
+      // Non-admins only see active reports
+      this.visibleDashboards = this.visibleDashboards.filter(db => db.active === true);
+    }
+
+    // Apply type filter
+    if (this.selectedTypes.length > 0) {
+      this.visibleDashboards = this.visibleDashboards.filter(db =>
+        this.selectedTypes.some(type => type.type === db.type)
+      );
+    }
+
+    // Apply tag filter
+    if (this.selectedTags.length > 0) {
+      this.visibleDashboards = this.visibleDashboards.filter(db => {
+        const tags = Array.isArray(db.config.tag)
+          ? db.config.tag
+          : typeof db.config.tag === 'string'
+            ? [db.config.tag]
+            : [];
+
+        return this.selectedTags.some(tag => {
+          const tagVal = tag?.value;
+          return tagVal === null
+            ? tags.length === 0
+            : tags.includes(tagVal);
+        });
+      });
+    }
+
+    // Apply group filter
+    if (this.selectedGroups.length > 0) {
+      this.visibleDashboards = this.visibleDashboards.filter(db => {
+        if (this.selectedGroups.some(group => group.value === null)) {
+          return (
+            !db.group ||
+            db.group.length === 0 ||
+            this.selectedGroups.some(
+              group => group.value !== null && db.group && db.group.some(g => g.name === group.value)
+            )
+          );
+        } else {
+          return (
+            db.group && db.group.some(g => this.selectedGroups.some(selectedGroup => selectedGroup.value === g.name))
+          );
+        }
+      });
+    }
+
+    // Apply name search filter
+    if (this.searchTerm && this.searchTerm.length > 0) {
+      const normalizedSearchTerm = this.normalizeText(this.searchTerm);
+      this.visibleDashboards = this.visibleDashboards.filter(
+        db => this.normalizeText(db.config.title).indexOf(normalizedSearchTerm) >= 0
+      );
+    }
+  }
+
+  /**
+   * Filters dashboards based on the search term
+   * @param event The input event containing the search term
+   */
+  public filterTitle(event: any) {
+    this.searchTerm = event.target.value.toString();
+    this.filterDashboards();
+    this.filteringByName = this.searchTerm.length > 1;
+    this.saveFiltersToStorage();
+  }
+
+  /**
+   * Checks if the current user can edit a dashboard
+   * @param dashboard The dashboard to check
+   * @returns Boolean indicating if the user can edit the dashboard
+   */
+  public canIEdit(dashboard): boolean {
+    if (this.isObserver) return false;
+    let result: boolean = false;
+    result = this.isAdmin;
+    if (result == false) {
+      if (dashboard.config.onlyIcanEdit === true) {
+        if (localStorage.getItem("user") == dashboard.user) {
+          result = true;
+        }
+      } else {
+        result = true;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Sorts the table based on the selected column
+   * @param column The column to sort by
+   */
+  public sortTable(column: string): void {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === "asc" ? "desc" : "asc";
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = "asc";
+    }
+
+    this.visibleDashboards.sort((a, b) => {
+      let valueA = this.getNestedProperty(a, column);
+      let valueB = this.getNestedProperty(b, column);
+
+      // Special handling for creation date
+      if (column === "config.createdAt") {
+        valueA = valueA ? new Date(valueA).getTime() : 0;
+        valueB = valueB ? new Date(valueB).getTime() : 0;
+      }
+
+      // Special handling for author
+      if (column === "user.name") {
+        valueA = valueA || "";
+        valueB = valueB || "";
+      }
+
+      if (typeof valueA === "string") valueA = valueA.toLowerCase();
+      if (typeof valueB === "string") valueB = valueB.toLowerCase();
+
+      if (valueA < valueB) return this.sortDirection === "asc" ? -1 : 1;
+      if (valueA > valueB) return this.sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    this.saveFiltersToStorage();
+  }
+
+  /**
+   * Retrieves a nested property from an object
+   * @param obj The object to retrieve the property from
+   * @param path The path to the property
+   * @returns The value of the nested property
+   */
+  private getNestedProperty(obj: any, path: string): any {
+    return path.split(".").reduce((o, key) => (o && o[key] !== undefined ? o[key] : null), obj);
+  }
+
+  /**
+   * Normalizes a string by removing accents and special characters for comparison
+   * @param text The text to normalize
+   * @returns The normalized text
+   */
+  private normalizeText(text: string): string {
+    if (!text) return "";
+    return text
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase();
+  }
+
+  /**
+   * Sets the view mode and saves it to local storage
+   * @param mode The view mode to set
+   */
+  public setViewMode(mode: "table" | "card"): void {
+    this.viewMode = mode;
+    localStorage.setItem("preferredViewMode", mode);
+  }
+
+  /**
+   * Gets the CSS class for a dashboard type
+   * @param type The dashboard type
+   * @returns The CSS class for the dashboard type
+   */
+  public getDashboardTypeClass(type: string): string {
+    const dashboardType = this.dashboardTypes.find(t => t.type === type);
+    return dashboardType ? `card-border-${dashboardType.type}` : "";
+  }
+
+  /**
+   * Gets the color for a dashboard type
+   * @param type The dashboard type
+   * @returns The color for the dashboard type
+   */
+  public getDashboardTypeColor(type: string): string {
+    const dashboardType = this.dashboardTypes.find(t => t.type === type);
+    return dashboardType ? dashboardType.color : "";
+  }
+
+  /**
+   * Clones a dashboard
+   * @param dashboard The dashboard to clone
+   */
+  public cloneDashboard(dashboard: any): void {
+    this.dashboardService.cloneDashboard(dashboard._id).subscribe(
+      response => {
+        if (response.ok && response.dashboard) {
+          // Create a deep copy of the original dashboard
+          const clonedDashboard = _.cloneDeep(dashboard);
+
+          // Update the cloned dashboard data with the server response
+          Object.assign(clonedDashboard, response.dashboard);
+
+          // Ensure type and author are correctly assigned
+          clonedDashboard.type = clonedDashboard.config.visible;
+          clonedDashboard.user = this.currentUser;
+
+          // Update creation and modification dates
+          clonedDashboard.config.createdAt = new Date().toISOString();
+          clonedDashboard.config.modifiedAt = new Date().toISOString();
+
+          // Find the index of the original dashboard in both lists
+          const allDashboardsIndex = this.allDashboards.findIndex(d => d._id === dashboard._id);
+          const visibleDashboardsIndex = this.visibleDashboards.findIndex(d => d._id === dashboard._id);
+
+          // Insert the cloned dashboard just after the original in both lists
+          if (allDashboardsIndex !== -1) {
+            this.allDashboards.splice(allDashboardsIndex + 1, 0, clonedDashboard);
+          } else {
+            this.allDashboards.push(clonedDashboard);
+          }
+
+          if (visibleDashboardsIndex !== -1) {
+            this.visibleDashboards.splice(visibleDashboardsIndex + 1, 0, clonedDashboard);
+          } else {
+            this.visibleDashboards.push(clonedDashboard);
+          }
+
+          // Mark the dashboard as newly cloned
+          clonedDashboard.isNewlyCloned = true;
+
+          // Scroll to the cloned dashboard
+          setTimeout(() => {
+            const element = document.getElementById(`dashboard-${clonedDashboard._id}`);
+            if (element) {
+              element.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+              });
+            }
+          }, 100);
+
+          // Remove the newly cloned mark after 5 seconds
+          setTimeout(() => {
+            clonedDashboard.isNewlyCloned = false;
+          }, 5000);
+
+          this.alertService.addSuccess($localize`:@@REPORTCloned:Informe clonado correctamente`);
+        } else {
+          throw new Error($localize`:@@InvalidServerResponse:Respuesta inválida del servidor`);
+        }
+      },
+      error => {
+        console.error($localize`:@@ErrorCloningDashboard:Error al clonar el dashboard:`, error);
+        Swal.fire(
+          $localize`:@@Error:Error`,
+          $localize`:@@CouldNotCloneReport:No se pudo clonar el informe. Por favor, inténtalo de nuevo.`,
+          "error"
+        );
+      }
+    );
+  }
+
+  /**
+   * Copies the public URL of a shared dashboard to the clipboard
+   * @param dashboard The dashboard whose URL to copy
+   */
+  public copyUrl(dashboard: any): void {
+    if (dashboard.type === "open") {
+      const href = location.href;
+      const baseURL = href.slice(0, href.indexOf('#'));
+
+      const url = `${baseURL}#/public/${dashboard._id}?panelMode=true`
+
+      navigator.clipboard.writeText(url).then(
+        () => {
+          this.alertService.addSuccess($localize`:@@URLCopied:URL copiada al portapapeles`);
+        },
+        err => {
+          console.error($localize`:@@ErrorCopyingURL:Error al copiar URL: `, err);
+          this.alertService.addError($localize`:@@ErrorCopyingURL:Error al copiar la URL`);
+        }
+      );
+    }
+  }
+
+  /**
+   * Formats a date string or Date object to a localized string
+   * @param date The date to format
+   * @returns A formatted date string
+   */
+  public formatDate(date: string | Date): string {
+    if (!date) return "";
+    const dateObj = typeof date === "string" ? new Date(date) : date;
+    return dateObj.toLocaleString("es-ES", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
+  /**
+   * Starts the editing mode for a dashboard title
+   * @param titleSpan The HTML element containing the title
+   */
+  public startEditing(titleSpan: HTMLElement): void {
+    this.isEditing = true;
+    setTimeout(() => {
+      titleSpan.focus();
+      // Place the cursor at the end of the text
+      const range = document.createRange();
+      range.selectNodeContents(titleSpan);
+      range.collapse(false);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }, 0);
+  }
+
+  /**
+   * Updates the title of a dashboard
+   * @param dashboard The dashboard to update
+   * @param event The event object containing the new title
+   */
+  public updateDashboardTitle(dashboard: any, event: any): void {
+    const newTitle = event.target.textContent.trim();
+    this.isEditing = false;
+    if (newTitle !== dashboard.config.title) {
+      dashboard.config.title = newTitle;
+      this.dashboardService
+        .updateDashboardSpecific(dashboard._id, {
+          data: {
+            key: "config.title",
+            newValue: newTitle
+          }
+        })
+        .subscribe(
+          () => {
+            this.alertService.addSuccess(
+              $localize`:@@DashboardTitleUpdated:Título del informe actualizado correctamente.`
+            );
+          },
+          error => {
+            this.alertService.addError(
+              $localize`:@@ErrorUpdatingDashboardTitle:Error al actualizar el título del informe.`
+            );
+            console.error("Error updating dashboard title:", error);
+          }
+        );
+    }
+  }
+
+  /**
+   * Applies the current filters to the dashboard list
+   * Now simply calls filterDashboards which applies all filters cumulatively
+   */
+  private applyCurrentFilters(): void {
+    this.filterDashboards();
+  }
+
+  /**
+   * Starts the editing mode for a dashboard type
+   * @param dashboard The dashboard to edit
+   * @param event The originating click event
+   */
+  public startEditingType(dashboard: any, event: Event): void {
+    event.stopPropagation();
+    this.editingTypeId = dashboard._id;
+    setTimeout(() => {
+      const dd = this.typeDropdowns?.find(d => d.inputId === "type-dd-" + dashboard._id);
+      dd?.show();
+    });
+  }
+
+  /**
+   * Updates the type of a dashboard
+   * @param dashboard The dashboard to update
+   * @param newType The new type for the dashboard
+   */
+  public updateDashboardType(dashboard: any, newType: string): void {
+    const oldType = dashboard.type;
+    const oldVisible = dashboard.config.visible;
+    dashboard.type = newType;
+    dashboard.config.visible = newType;
+
+    this.dashboardService
+      .updateDashboardSpecific(dashboard._id, {
+        data: {
+          key: "config.visible",
+          newValue: newType
+        }
+      })
+      .subscribe(
+        () => {
+          this.alertService.addSuccess($localize`:@@DashboardTypeUpdated:Tipo de informe actualizado correctamente.`);
+          this.editingTypeId = null;
+        },
+        error => {
+          this.alertService.addError($localize`:@@ErrorUpdatingDashboardType:Error al actualizar el tipo de informe.`);
+          dashboard.type = oldType;
+          dashboard.config.visible = oldVisible;
+          console.error("Error updating dashboard type:", error);
+        }
+      );
+  }
+
+  /**
+   * Cancels the editing of a dashboard type
+   */
+  public cancelEditingType(): void {
+    this.editingTypeId = null;
+  }
+
+  /**
+   * Toggles the active status of a dashboard
+   * @param dashboard The dashboard to toggle
+   */
+  public toggleDashboardActive(dashboard: any): void {
+    const newStatus = !dashboard.active;
+    /* Confirm deactivation of public reports */
+    if (!newStatus && (dashboard.config.visible === "open")) {
+      Swal.fire({
+        title: $localize`:@@Sure:Are you sure?`,
+        text: $localize`:@@deactivatePublicDashboardWarning:Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: $localize`:@@ConfirmDeactivate:Yes, deactivate it!`,
+        cancelButtonText: $localize`:@@Cancel:Cancelar`
+      }).then(result => {
+        if (result.value) {
+          this.executeToggleDashboardActive(dashboard, newStatus);
+        } else {
+          this.ngZone.run(() => {
+            dashboard.active = !newStatus;
+            if (dashboard.config) dashboard.config.active = !newStatus;
+            this.cdr.detectChanges();
+            window.location.reload();
+          });
+        }
+      });
+    } else {
+      this.executeToggleDashboardActive(dashboard, newStatus);
+    }
+  }
+
+  /**
+   * Internal function to execute the dashboard status toggle
+   */
+  private executeToggleDashboardActive(dashboard: any, newStatus: boolean): void {
+    dashboard.active = newStatus;
+    if (!dashboard.config) dashboard.config = {};
+    dashboard.config.active = newStatus;
+
+    this.dashboardService
+      .updateDashboardSpecific(dashboard._id, {
+        data: {
+          key: "config.active",
+          newValue: newStatus
+        }
+      })
+      .subscribe(
+        () => {
+          this.alertService.addSuccess(
+            newStatus
+              ? $localize`:@@DashboardActivated:Informe activado correctamente.`
+              : $localize`:@@DashboardDeactivated:Informe desactivado correctamente.`
+          );
+          this.filterDashboards();
+        },
+        error => {
+          this.alertService.addError($localize`:@@ErrorUpdatingDashboardStatus:Error al actualizar el estado del informe.`);
+          dashboard.active = !newStatus;
+          dashboard.config.active = !newStatus;
+          console.error("Error updating dashboard status:", error);
+        }
+      );
+  }
+
+  public filterTypes() {
+    this.filteredTypes = this.dashboardTypes.filter(type =>
+      type.label.toLowerCase().includes(this.typeSearchTerm.toLowerCase())
+    );
+  }
+
+  public clearTagFilter() {
+    this.selectedTags = [];
+    this.filterDashboards();
+    this.saveFiltersToStorage();
+  }
+
+  public clearGroupFilter() {
+    this.selectedGroups = [];
+    this.filterDashboards();
+    this.saveFiltersToStorage();
+  }
+
+  public clearTypeFilter() {
+    this.selectedTypes = [];
+    this.filterDashboards();
+    this.saveFiltersToStorage();
+  }
+
+  /**
+   * Checks if a tag is selected by comparing values
+   * @param tag The tag to check
+   * @returns True if the tag is selected
+   */
+  public isTagSelected(tag: any): boolean {
+    return this.selectedTags.some(t => t.value === tag.value);
+  }
+
+  /**
+   * Checks if a group is selected by comparing values
+   * @param group The group to check
+   * @returns True if the group is selected
+   */
+  public isGroupSelected(group: any): boolean {
+    return this.selectedGroups.some(g => g.value === group.value);
+  }
+
+  /**
+   * Checks if a type is selected by comparing type property
+   * @param type The type to check
+   * @returns True if the type is selected
+   */
+  public isTypeSelected(type: any): boolean {
+    return this.selectedTypes.some(t => t.type === type.type);
+  }
+
+  /**
+   * Clears all filters at once
+   */
+  public clearAllFilters(): void {
+    this.selectedTags = [];
+    this.selectedGroups = [];
+    this.selectedTypes = [];
+    this.searchTerm = "";
+    this.selectedStatuses = ["active", "inactive"];
+    this.filterDashboards();
+    this.saveFiltersToStorage();
+  }
+
+  /**
+   * Saves the current filter state and sorting to LocalStorage
+   */
+  public saveFiltersToStorage(): void {
+    const filterState = {
+      selectedTags: this.selectedTags,
+      selectedGroups: this.selectedGroups,
+      selectedTypes: this.selectedTypes,
+      searchTerm: this.searchTerm,
+      selectedStatuses: this.selectedStatuses,
+      sortColumn: this.sortColumn,
+      sortDirection: this.sortDirection
+    };
+    localStorage.setItem("dashboardFilters", JSON.stringify(filterState));
+  }
+
+  /**
+   * Loads the filter state and sorting from LocalStorage
+   */
+  private loadFiltersFromStorage(): void {
+    const savedFilters = localStorage.getItem("dashboardFilters");
+    if (savedFilters) {
+      try {
+        const filterState = JSON.parse(savedFilters);
+        this.searchTerm = filterState.searchTerm || "";
+        this.selectedStatuses = filterState.selectedStatuses || ["active", "inactive"];
+        this.sortColumn = filterState.sortColumn || "config.title";
+        this.sortDirection = filterState.sortDirection || "asc";
+        // Note: selectedTags, selectedGroups, and selectedTypes will be restored after tags/groups are initialized
+      } catch (error) {
+        console.error("Error loading filters from storage:", error);
+      }
+    }
+  }
+
+  /**
+   * Restores the filter selections and applies them after tags, groups, and types are initialized
+   */
+  private restoreFiltersAndApply(): void {
+    const savedFilters = localStorage.getItem("dashboardFilters");
+    if (savedFilters) {
+      try {
+        const filterState = JSON.parse(savedFilters);
+
+        // Restore selected tags - Map to actual tag objects from this.tags
+        if (filterState.selectedTags && filterState.selectedTags.length > 0) {
+          this.selectedTags = [];
+          filterState.selectedTags.forEach(savedTag => {
+            const matchingTag = this.tags.find(tag => tag.value === savedTag.value);
+            if (matchingTag) {
+              this.selectedTags.push(matchingTag);
+            }
+          });
+        }
+
+        // Restore selected groups - Map to actual group objects from this.groupOptions
+        if (filterState.selectedGroups && filterState.selectedGroups.length > 0) {
+          this.selectedGroups = [];
+          filterState.selectedGroups.forEach(savedGroup => {
+            const matchingGroup = this.groupOptions.find(group => group.value === savedGroup.value);
+            if (matchingGroup) {
+              this.selectedGroups.push(matchingGroup);
+            }
+          });
+        }
+
+        // Restore selected types - Map to actual type objects from this.dashboardTypes
+        if (filterState.selectedTypes && filterState.selectedTypes.length > 0) {
+          this.selectedTypes = [];
+          filterState.selectedTypes.forEach(savedType => {
+            const matchingType = this.dashboardTypes.find(type => type.type === savedType.type);
+            if (matchingType) {
+              this.selectedTypes.push(matchingType);
+            }
+          });
+        }
+
+        // Apply all filters
+        this.applyCurrentFilters();
+
+        // Apply sorting if different from default
+        if (this.sortColumn && this.visibleDashboards.length > 0) {
+          this.visibleDashboards.sort((a, b) => {
+            let valueA = this.getNestedProperty(a, this.sortColumn);
+            let valueB = this.getNestedProperty(b, this.sortColumn);
+
+            if (this.sortColumn === "config.createdAt") {
+              valueA = valueA ? new Date(valueA).getTime() : 0;
+              valueB = valueB ? new Date(valueB).getTime() : 0;
+            }
+
+            if (this.sortColumn === "user.name") {
+              valueA = valueA || "";
+              valueB = valueB || "";
+            }
+
+            if (typeof valueA === "string") valueA = valueA.toLowerCase();
+            if (typeof valueB === "string") valueB = valueB.toLowerCase();
+
+            if (valueA < valueB) return this.sortDirection === "asc" ? -1 : 1;
+            if (valueA > valueB) return this.sortDirection === "asc" ? 1 : -1;
+            return 0;
+          });
+        }
+      } catch (error) {
+        console.error("Error restoring filters:", error);
+      }
+    } else {
+      // If no saved filters, just apply current (empty) filters
+      this.filterDashboards();
+    }
+  }
+
+  /**
+   * Checks if a status is selected
+   * @param status The status to check
+   * @returns Boolean indicating if the status is selected
+   */
+  public isStatusSelected(status: string): boolean {
+    return this.selectedStatuses.includes(status);
+  }
+
+  /**
+   * Toggles the selection of a status
+   * @param status The status to toggle
+   */
+  public toggleStatusSelection(status: string): void {
+    const index = this.selectedStatuses.indexOf(status);
+    if (index > -1) {
+      this.selectedStatuses.splice(index, 1);
+    } else {
+      this.selectedStatuses.push(status);
+    }
+    this.filterDashboards();
+    this.saveFiltersToStorage();
+  }
+
+  /**
+   * Checks if any filters are currently active (different from default state)
+   * @returns Boolean indicating if any filter is active
+   */
+  public hasActiveFilters(): boolean {
+    return (
+      this.selectedTags.length > 0 ||
+      this.selectedGroups.length > 0 ||
+      this.selectedTypes.length > 0 ||
+      this.searchTerm.length > 0 ||
+      this.selectedStatuses.length < 2
+    );
+  }
+}

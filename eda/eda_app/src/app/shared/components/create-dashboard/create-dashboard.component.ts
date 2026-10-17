@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, OnInit, Output, ViewEncapsulation } from "@angular/core";
 import { FormBuilder, FormsModule, ReactiveFormsModule, UntypedFormGroup, Validators } from "@angular/forms";
-import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService } from "@eda/services/service.index";
+import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService, UserService } from "@eda/services/service.index";
 import { SelectItem } from "primeng/api";
 import { CreateDashboardService } from "@eda/services/utils/create-dashboard.service";
 import { SharedModule } from "@eda/shared/shared.module";
@@ -11,6 +11,7 @@ import { SelectButtonModule } from "primeng/selectbutton";
 import { EdaDialog2Component } from "../shared-components.index";
 import * as _ from 'lodash';
 import { DataSourceNamesService } from "@eda/services/shared/datasource-names.service";
+import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_default";
 
 @Component({
     standalone: true,
@@ -23,6 +24,7 @@ import { DataSourceNamesService } from "@eda/services/shared/datasource-names.se
 export class CreateDashboardComponent implements OnInit {
     private createDashboardService = inject(CreateDashboardService);
     private dataSourceNameService = inject(DataSourceNamesService);
+    private userService = inject(UserService);
 
     public display: boolean = false;
     public dataSources: any[] = [];
@@ -65,9 +67,10 @@ export class CreateDashboardComponent implements OnInit {
             { label: $localize`:@@commonPanel:Común`, value: 'common', icon: 'fa fa-fw fa-building' },
             { label: $localize`:@@group:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
             { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
-        ];
+        ].filter(type => type.value !== 'open' || this.userService.isAdmin || ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS);
 
-        this.form.controls['visible'].setValue(this.visibleTypes[3].value);
+        const defaultVisibleType = this.visibleTypes.find(type => type.value === 'private') ?? this.visibleTypes[0];
+        this.form.controls['visible'].setValue(defaultVisibleType?.value ?? null);
 
         this.dataSourceNameService.getDataSourceNamesForDashboard().subscribe((res) => {
             this.dataSources = res?.ds;
@@ -84,7 +87,10 @@ export class CreateDashboardComponent implements OnInit {
             this.grups = await this.groupService.getGroupsByUser().toPromise();
 
             if (this.grups.length === 0) {
-                this.visibleTypes.splice(1, 1);
+                const groupIndex = this.visibleTypes.findIndex(type => type.value === 'group');
+                if (groupIndex > -1) {
+                    this.visibleTypes.splice(groupIndex, 1);
+                }
             }
         } catch (err) {
             this.alertService.addError(err)

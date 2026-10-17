@@ -39,15 +39,15 @@ export class EditTabsDialogComponent implements OnInit {
     public availableTags: any[] = [];
 
     public filterTag: string = null;
-    public filterPrivacy: DashboardPrivacy | 'all' = 'public';
+    public filterPrivacy: DashboardPrivacy | 'all' = 'open';
     public selectedDashboardIds: string[] = [];
 
     public isOpeningNewTab: boolean = false;
 
     public privacyOptions = [
         { label: 'Todos', value: 'all' as const },
-        { label: 'Público', value: 'public' as DashboardPrivacy },
-        { label: 'Compartido', value: 'shared' as DashboardPrivacy },
+        { label: 'Público', value: 'open' as DashboardPrivacy },
+        { label: 'Común', value: 'common' as DashboardPrivacy },
         { label: 'Privado', value: 'private' as DashboardPrivacy },
         { label: 'Grupo', value: 'group' as DashboardPrivacy }
     ];

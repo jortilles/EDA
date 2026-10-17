@@ -44,8 +44,8 @@ export class HomePage implements OnInit, OnDestroy {
   publicReports: any[] = [];
   privateReports: any[] = [];
   roleReports: any[] = [];
-  sharedReports: any[] = [];
-  reportMap: any = { public: [], shared: [], private: [], group: [] };
+  commonReports: any[] = [];
+  reportMap: any = { open: [], common: [], private: [], group: [] };
 
   tags: any[] = [];
   selectedTags = signal<any>(JSON.parse(sessionStorage.getItem('activeTags') ? sessionStorage.getItem('activeTags') : '[]'));
@@ -96,8 +96,8 @@ export class HomePage implements OnInit, OnDestroy {
   private lastDragMoveCheck = 0;
 
   private readonly colKeyToVisible: { [key: string]: string } = {
-    shared: 'open',
-    public: 'common',
+    open: 'open',
+    common: 'common',
     group: 'group',
     private: 'private'
   };
@@ -125,8 +125,8 @@ export class HomePage implements OnInit, OnDestroy {
   isMobileLayout = signal(this.mobileLayoutQuery.matches);
   mobileColumn = signal<string>(sessionStorage.getItem('homeMobileColumn') || '');
   readonly mobileColumnOptions = [
-    { label: this.publicTitle, value: 'shared' },
-    { label: this.commonTitle, value: 'public' },
+    { label: this.publicTitle, value: 'open' },
+    { label: this.commonTitle, value: 'common' },
     { label: this.groupTitle, value: 'group' },
     { label: this.privateTitle, value: 'private' },
   ];
@@ -162,7 +162,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   private setDefaultMobileColumn(): void {
     if (this.mobileColumn()) return;
-    const firstWithReports = ['private', 'group', 'public', 'shared'].find(key => this.reportMap[key]?.length > 0);
+    const firstWithReports = ['private', 'group', 'common', 'open'].find(key => this.reportMap[key]?.length > 0);
     this.mobileColumn.set(firstWithReports || 'private');
   }
 
@@ -201,19 +201,19 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private async loadReports(applyDefaultTagSelection = false) {
-    const { publics, shared, dashboards, group } = await lastValueFrom(this.dashboardService.getDashboards());
-    this.publicReports = shared;
-    this.privateReports = dashboards;
+    const { open, common, private: privateDashboards, group } = await lastValueFrom(this.dashboardService.getDashboards());
+    this.publicReports = open;
+    this.privateReports = privateDashboards;
     this.roleReports = group;
-    this.sharedReports = publics;
+    this.commonReports = common;
 
-    this.allDashboards = [].concat(this.publicReports, this.privateReports, this.roleReports, this.sharedReports);
+    this.allDashboards = [].concat(this.publicReports, this.privateReports, this.roleReports, this.commonReports);
 
     this.reportMap = {
       private: this.privateReports,
       group: this.roleReports,
-      public: this.publicReports,
-      shared: this.sharedReports
+      open: this.publicReports,
+      common: this.commonReports
     };
 
     if (applyDefaultTagSelection) {
@@ -431,8 +431,8 @@ export class HomePage implements OnInit, OnDestroy {
 
   private columnTitle(colKey: string): string {
     switch (colKey) {
-      case 'shared': return this.publicTitle;
-      case 'public': return this.commonTitle;
+      case 'open': return this.publicTitle;
+      case 'common': return this.commonTitle;
       case 'group': return this.groupTitle;
       case 'private': return this.privateTitle;
       default: return colKey;
@@ -752,13 +752,13 @@ export class HomePage implements OnInit, OnDestroy {
   public filterByTags() {
     const tags = sessionStorage.getItem('activeTags') || '[]';
     if (tags.includes($localize`:@@AllTags:Todos`) || tags.includes(this.allTagsFlatValue) || tags === '[]') {
-      this.publicReports  = [...this.reportMap.public];
-      this.sharedReports  = [...this.reportMap.shared];
+      this.publicReports  = [...this.reportMap.open];
+      this.commonReports  = [...this.reportMap.common];
       this.privateReports = [...this.reportMap.private];
       this.roleReports    = [...this.reportMap.group];
     } else {
-      this.publicReports  = this.checkTagsIntoReports(this.reportMap.public, tags);
-      this.sharedReports  = this.checkTagsIntoReports(this.reportMap.shared, tags);
+      this.publicReports  = this.checkTagsIntoReports(this.reportMap.open, tags);
+      this.commonReports  = this.checkTagsIntoReports(this.reportMap.common, tags);
       this.privateReports = this.checkTagsIntoReports(this.reportMap.private, tags);
       this.roleReports    = this.checkTagsIntoReports(this.reportMap.group, tags);
     }
@@ -812,8 +812,8 @@ export class HomePage implements OnInit, OnDestroy {
     const activeTags = sessionStorage.getItem('activeTags') || '[]';
     const hasActiveTag = !activeTags.includes($localize`:@@AllTags:Todos`) && !activeTags.includes(this.allTagsFlatValue) && activeTags !== '[]';
     return {
-      public:  hasActiveTag ? this.checkTagsIntoReports(this.reportMap.public,  activeTags) : this.reportMap.public,
-      shared:  hasActiveTag ? this.checkTagsIntoReports(this.reportMap.shared,  activeTags) : this.reportMap.shared,
+      open:    hasActiveTag ? this.checkTagsIntoReports(this.reportMap.open,  activeTags) : this.reportMap.open,
+      common:  hasActiveTag ? this.checkTagsIntoReports(this.reportMap.common,  activeTags) : this.reportMap.common,
       private: hasActiveTag ? this.checkTagsIntoReports(this.reportMap.private, activeTags) : this.reportMap.private,
       group:   hasActiveTag ? this.checkTagsIntoReports(this.reportMap.group,   activeTags) : this.reportMap.group,
     };
@@ -852,8 +852,8 @@ export class HomePage implements OnInit, OnDestroy {
     });
 
     const base = this.getActiveTagBase();
-    this.publicReports  = filterFn(base.public);
-    this.sharedReports  = filterFn(base.shared);
+    this.publicReports  = filterFn(base.open);
+    this.commonReports  = filterFn(base.common);
     this.privateReports = filterFn(base.private);
     this.roleReports    = filterFn(base.group);
   }
@@ -951,7 +951,7 @@ export class HomePage implements OnInit, OnDestroy {
               }
             }
 
-            const listNames = ['publicReports', 'privateReports', 'roleReports', 'sharedReports'];
+            const listNames = ['publicReports', 'privateReports', 'roleReports', 'commonReports'];
 
             for (const name of listNames) {
               const list = this[name];
@@ -979,7 +979,7 @@ export class HomePage implements OnInit, OnDestroy {
 
           const allReports = [
             ...this.privateReports, ...this.publicReports,
-            ...this.roleReports,    ...this.sharedReports
+            ...this.roleReports,    ...this.commonReports
           ];
           const clonedReport = allReports.find(d => d._id === newId);
           if (clonedReport) {
@@ -1005,10 +1005,10 @@ export class HomePage implements OnInit, OnDestroy {
   handleSorting() {
     sessionStorage.setItem('homeSorting', this.sortingType);
     const compareFn = this.getSortCompareFn();
-    this.publicReports = this.reportMap.public.sort(compareFn);
+    this.publicReports = this.reportMap.open.sort(compareFn);
     this.privateReports = this.reportMap.private.sort(compareFn);
     this.roleReports = this.reportMap.group.sort(compareFn);
-    this.sharedReports = this.reportMap.shared.sort(compareFn);
+    this.commonReports = this.reportMap.common.sort(compareFn);
   }
 
   /** Comparator for the active sort dropdown selection (name / date asc / date desc). */
@@ -1093,8 +1093,8 @@ export class HomePage implements OnInit, OnDestroy {
     });
 
     const base = this.getActiveTagBase();
-    this.publicReports  = filterFn(base.public);
-    this.sharedReports  = filterFn(base.shared);
+    this.publicReports  = filterFn(base.open);
+    this.commonReports  = filterFn(base.common);
     this.privateReports = filterFn(base.private);
     this.roleReports    = groupFilterFn(base.group);
     if (updateSearchBar) this.buildSearchQuery();
@@ -1145,4 +1145,26 @@ export class HomePage implements OnInit, OnDestroy {
     this.filterByTags();
   }
 
+  sortingReports(type: string, reports: any, direction: string) {
+    const compareFn = (a: any, b: any) => {
+      const valA = a.config[type];
+      const valB = b.config[type];
+      if (type === 'modifiedAt') {
+        const dateA = new Date(valA);
+        const dateB = new Date(valB);
+
+        return direction === 'asc'
+          ? dateA.getTime() - dateB.getTime()
+          : dateB.getTime() - dateA.getTime();
+      }
+
+      const comparison = valA.localeCompare(valB);
+      return direction === 'asc' ? comparison : -comparison;
+    };
+
+    this.publicReports = reports.open.sort(compareFn);
+    this.privateReports = reports.private.sort(compareFn);
+    this.roleReports = reports.group.sort(compareFn);
+    this.commonReports = reports.common.sort(compareFn);
+  }
 }

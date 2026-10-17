@@ -172,7 +172,7 @@ export class LinkDashboardsComponent {
       this.loading = true;
       const dashboardInfo = await this.dashboardService.getDashboards().toPromise();
       const dashboards = []
-        .concat(dashboardInfo.dashboards, dashboardInfo.group, dashboardInfo.publics, dashboardInfo.shared)
+        .concat(dashboardInfo.private, dashboardInfo.group, dashboardInfo.open, dashboardInfo.common)
         .filter(d => d._id !== this.controller.params.dashboard_id);
 
       // Parallel calls to load dashboards faster
