@@ -69,12 +69,10 @@ private initializeForm(): void {
     this.groupService.getGroupsByUser().subscribe(
       res => {
         this.grups = res;
-        console.log('[DASH-TRACE][dashboard-visible] loadGroups() userGroups=', this.grups?.length, this.grups);
 
         if (this.grups.length === 0) {
           const commonIndex = this.visibleTypes.findIndex(type => type.value === 'common');
           if (commonIndex > -1) {
-            console.warn('[DASH-TRACE][dashboard-visible] user has 0 groups -> removing "common" from visibleTypes (looks like it should remove "group" instead). currentFormVisible=', this.form.controls['visible'].value);
             this.visibleTypes.splice(commonIndex, 1);
           }
         }
