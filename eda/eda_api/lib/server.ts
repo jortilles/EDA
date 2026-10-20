@@ -8,7 +8,7 @@ interface IError extends Error {
     status?: any;
 }
 
-const PORT = 8666;
+const PORT = apiConfig.port;
 
 if (cluster.isMaster) {
     console.log(`\n\x1b[34m=====\x1b[0m Master \x1b[32m[PID:${process.pid}]\x1b[0m iniciando \x1b[32m${numCPUs}\x1b[0m workers en puerto \x1b[32m[${PORT}]\x1b[0m \x1b[34m=====\x1b[0m\n`);

@@ -32,6 +32,8 @@ export class EdaPanel {
     public clickFiltersEnabled: boolean = true;
     public clickFilterApplyToAll: boolean = true;
     public clickFilterTargets: string[] = [];
+    public backgroundTransparent?: boolean;
+    public _isDuplicate?: boolean;
 
     constructor(init?: Partial<EdaPanel>) {
         Object.assign(this, init);

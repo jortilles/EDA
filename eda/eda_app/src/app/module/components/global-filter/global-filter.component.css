@@ -92,6 +92,51 @@
   width: 10.7vw;
   max-width: 165px;
   box-sizing: border-box;
+  position: relative;
+}
+
+/* Highlighted while the panel-highlight-on-hover effect is active */
+.filter-card.filter-hover-active {
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.02);
+  transition: box-shadow 0.8s ease, background-color 0.8s ease;
+}
+
+/* Tooltip that appears above the filter when highlighting is active */
+.filter-hover-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 6px;
+  font-size: 11px;
+  background-color: #fff;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 4px;
+  line-height: 1.5;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e0e0e0;
+  opacity: 1;
+  animation: filterTooltipFadeIn 0.8s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+::ng-deep .tooltip-green {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+::ng-deep .tooltip-red {
+  color: #bd1913;
+  font-weight: 600;
+}
+
+@keyframes filterTooltipFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* filter without autocomplete (multiselect) - fills the card */

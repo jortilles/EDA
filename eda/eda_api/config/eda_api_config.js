@@ -1,8 +1,11 @@
-module.exports = {
-    //podem modificar el valor null de la bbdd per a que ens otorgui un altre valor de lectura en pantalla
+const applyConfigOverwrite = require('./apply-config-overwrite');
+
+module.exports = applyConfigOverwrite('eda_api_config', {
+    // we can modify the null value of the bbdd to give us another value read on the screen
     null_value: '',
-    // Número de workers en modo cluster. Si es 0 o no se define, usa todos los núcleos disponibles.
+    // Number of workers in cluster mode. If it is 0 or not defined, it uses all available cores.
     cluster_workers: 4,
+    port: 8666,
     authentication_type: {
       type: 'native',
       native: true,
@@ -12,10 +15,12 @@ module.exports = {
         elements: []
       }
     },
-    maxStatementTime: 900, // tiempo antes de hacer kill a la mysql query
-    log_file: "XXXXXXXXXXXXXXXXXX", // log de consoltas del servidor
-    error_log_file: "XXXXXXXXXXXXXXXXXX", // log de errores del servidor
+    maxStatementTime: 900, // time before killing the MySQL query
+    log_file: "XXXXXXXXXXXXXXXXXX", // server query log
+    error_log_file: "XXXXXXXXXXXXXXXXXX", // server error log
     custom_behaviour:{
-      ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: false, //true -> los usuarios no-admin pueden gestionar dashboards "open".
+      ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: false, // true -> Non-admin users can manage "open" dashboards.
+      USE_RECURSIVE_PERMISSIONS: true, // true -> QueryBuilderService.builder() getRecursivePermissions (EDA, existing behaviour, keep as default). false -> getFlatPermissions (SDA).
+      RESTRICT_TABLE_TO_GRANTED_COLUMN: true // true -> closed model: granting permission on one column hides the rest of the table's columns (EDA, existing behaviour, keep as default). false -> row-level permissions never hide sibling columns (SDA).
     }
-  }
+  });

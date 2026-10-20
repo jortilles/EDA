@@ -21,6 +21,41 @@
   overflow: auto; /* (Optional) Adds scroll if the content is too large */
 }
 
+/* Transparent background for text panels (type=1) configured without background/border */
+.gridster-item.background-transparent {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+/* Panel highlight when hovering a global filter */
+.panel-filter-dimmed::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(189, 25, 19, 0.35);
+  pointer-events: none;
+  z-index: 999999;
+  border-radius: 0.5rem;
+  transition: background-color 0.8s ease;
+}
+
+.panel-filter-highlight {
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.6) !important;
+  transition: box-shadow 0.8s ease;
+}
+
+.panel-filter-highlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(76, 175, 80, 0.45);
+  pointer-events: none;
+  z-index: 999999;
+  border-radius: 0.5rem;
+  transition: background-color 0.8s ease;
+}
+
 
 @media (max-width: 640px) {
   /* Gridster collapses its own height; the wrapper div controls the scroll */

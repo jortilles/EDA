@@ -31,8 +31,9 @@
                   @for (subItem of item.items; track subItem.path) {
                     <li>
                       @if (subItem.path && !subItem.command) {
-                            <a 
+                            <a
                               [routerLink]="subItem.path"
+                              (click)="ignoreNotSaved()"
                               class="sidebar-submenu-link flex items-center gap-2 p-2 rounded-md bg-white transition-colors"
                             >
                               @if(subItem.icon) {

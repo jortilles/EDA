@@ -10,8 +10,10 @@
  * For local development: http://localhost:8080/google-analytics/oauth-callback
  * For production:        https://your-domain.com/google-analytics/oauth-callback
  */
-module.exports = {
+const applyConfigOverwrite = require('./apply-config-overwrite');
+
+module.exports = applyConfigOverwrite('google_analytics_config', {
     CLIENT_ID:     process.env.GA4_CLIENT_ID     || 'XXX',
     CLIENT_SECRET: process.env.GA4_CLIENT_SECRET || 'YYY',
     REDIRECT_URI:  process.env.GA4_REDIRECT_URI  || 'http://localhost:8080/google-analytics/oauth-callback',
-};
+});

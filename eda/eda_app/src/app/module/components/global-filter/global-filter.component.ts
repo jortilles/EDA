@@ -7,6 +7,7 @@ import { OverlayPanelModule } from "primeng/overlaypanel";
 import * as _ from 'lodash';
 import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
 import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/customizable/customizable_default';
+import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from "@angular/forms";
 import { StyleProviderService } from '@eda/services/service.index';
@@ -77,6 +78,15 @@ export class GlobalFilterComponent implements OnInit {
     public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
     public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
     public selectedItemsLabel: string = $localize`:@@globalFilterSelectedItemsLabel:elementos seleccionados`;
+
+    public filterHoverTooltipHtml: string =
+        `<span class="tooltip-green">${$localize`:@@filterHoverGreen:Verde`}</span>: ${$localize`:@@filterHoverAffected:Paneles afectados por este filtro`}<br>` +
+        `<span class="tooltip-red">${$localize`:@@filterHoverRed:Rojo`}</span>: ${$localize`:@@filterHoverNotAffected:Paneles no afectados por este filtro`}`;
+
+    // Wait 2s before activating the filter hover effect
+    private filterHoverTimeout: any;
+    public filterHoverActiveId: string | null = null;
+
     private tooltipHideTimeout: any;
     // Flag to view last panel
     private lastPanel: any;
@@ -121,7 +131,10 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public async initGlobalFilters(filters: any[]): Promise<void> {
-        this.globalFilters = _.cloneDeep(filters);
+        this.globalFilters = _.cloneDeep(filters).map((f: any) => {
+            if (f.queryMode) f.queryMode = normalizeQueryMode(f.queryMode);
+            return f;
+        });
         const userName = JSON.parse(localStorage.getItem('user'))?.id;
         this.isDashboardCreator = userName === this.dashboard.dashboard?.user;
         this.setFiltersVisibility();
@@ -412,12 +425,12 @@ export class GlobalFilterComponent implements OnInit {
         if (this.dashboard.validateDashboard('GLOBALFILTER')) {
 
             const treeQueryMode = this.dashboard.edaPanels.some(
-                (panel) => panel.selectedQueryMode === 'EDA2'
+                (panel) => panel.selectedQueryMode === 'TREE'
             );
 
             const globalFilter: any = {
                 isnew,
-                queryMode: treeQueryMode ? 'EDA2' : 'EDA',
+                queryMode: treeQueryMode ? 'TREE' : 'EDA',
                 ...filter
             };
 
@@ -1162,6 +1175,29 @@ export class GlobalFilterComponent implements OnInit {
             op?.hide();
             this.tooltipHideTimeout = null;
         }, 150);
+    }
+
+    public onFilterHover(filter: any): void {
+        if (this.filterHoverTimeout) {
+            clearTimeout(this.filterHoverTimeout);
+        }
+        this.filterHoverActiveId = null;
+        this.filterHoverTimeout = setTimeout(() => {
+            this.dashboard.hoveredFilterPanelIds = filter.panelList || [];
+            this.dashboard.isFilterHoverActive = true;
+            this.filterHoverActiveId = filter.id;
+        }, 2000);
+    }
+
+    // Clears panel highlight immediately when mouse leaves
+    public onFilterLeave(): void {
+        if (this.filterHoverTimeout) {
+            clearTimeout(this.filterHoverTimeout);
+            this.filterHoverTimeout = null;
+        }
+        this.dashboard.hoveredFilterPanelIds = [];
+        this.dashboard.isFilterHoverActive = false;
+        this.filterHoverActiveId = null;
     }
 
     get filterButtonPosition(): string {

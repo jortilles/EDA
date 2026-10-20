@@ -1,4 +1,6 @@
-module.exports = {
+const applyConfigOverwrite = require('./apply-config-overwrite');
+
+module.exports = applyConfigOverwrite('saml_config', {
     // Para un nuevo cliente se debe agregar el nuevo certificado a continuación del ultimo certificado
 
     issuer: 'xxxxxxxxxxxxxxxxxxxxxxxxxx',
@@ -15,4 +17,4 @@ xxxxxxxxxxxxxxxxxxxxxxxxxx
     wantAuthnResponseSigned: false,
     acceptedClockSkewMs: 3*6*9,
     urlRedirection: 'xxxxxxxxxxxxxxxxxxxxxxxxxx',
-};
+});

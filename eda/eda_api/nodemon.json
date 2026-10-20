@@ -7,5 +7,5 @@
     ".git",
     "node_modules"
   ],
-  "exec": "tsc && node ./dist/server.js"
+  "exec": "tsc && copyfiles -u 1 lib/plugins/SdaInfoPlugin/SdaVersion.js dist && node ./dist/server.js"
 }

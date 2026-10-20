@@ -286,7 +286,7 @@
                       <ng-container *ngTemplateOutlet="entityList"></ng-container>
                     }
                     <!-- EDA JOINS TREE MODE -->
-                    @if (selectedQueryMode=='EDA2') {
+                    @if (selectedQueryMode=='TREE') {
 
                       @if (currentQuery.length > 0) {
                         <div class="eda-tree-scroll">
@@ -730,12 +730,14 @@
                           </div>
 
                           <!-- What-If Scenarios -->
-                          <div class="flex items-center justify-between rounded-lg px-3 py-2 ">
-                            <span i18n="@@scenarios" class="text-base font-medium text-gray-700" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios" tooltipPosition="top">Escenarios</span>
-                            <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onWhatIfDialog()">
-                              What If?
-                            </button>
-                          </div>
+                          @if (showWhatIf) {
+                            <div class="flex items-center justify-between rounded-lg px-3 py-2 ">
+                              <span i18n="@@scenarios" class="text-base font-medium text-gray-700" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios" tooltipPosition="top">Escenarios</span>
+                              <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onWhatIfDialog()">
+                                What If?
+                              </button>
+                            </div>
+                          }
 
                           <!-- AND/OR Advanced filters -->
                           <div class="flex items-center justify-between rounded-lg px-3 py-2 ">
@@ -801,6 +803,7 @@
                             </details>
 
                             <!-- What If -->
+                            @if (showWhatIf) {
                             <details class="group" name="sqlIndicationOpenSection">
                               <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
                                 <div class="flex items-center gap-2">
@@ -822,6 +825,7 @@
                                 </ul>
                               </div>
                             </details>
+                            }
 
                             <!-- Advanced Filters -->
                             <details class="group" name="sqlIndicationOpenSection">

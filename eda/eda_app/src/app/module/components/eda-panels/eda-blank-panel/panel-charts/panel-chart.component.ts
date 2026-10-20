@@ -79,6 +79,7 @@ import { CHART_RENDER_LIMITS } from '@eda/configs/customizable/customizable_defa
     templateUrl: './panel-chart.component.html',
     imports: [FormsModule, CommonModule, ProgressSpinnerModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    styleUrl: './panel-chart.component.css',
     // Custom elements default to display:inline, which ignores the parent's h-full/w-full
     // (height/width 100%) classes entirely - without this, the dynamically-created chart inside
     // (treemap/bubblechart/sunburst/etc.) never gets a definite, live-resizing containing block,

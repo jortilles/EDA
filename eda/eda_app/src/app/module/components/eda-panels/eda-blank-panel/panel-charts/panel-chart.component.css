@@ -1,0 +1,7 @@
+.no-permission-alert {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  border-radius: .25rem;
+  padding: .75rem 1.25rem;
+}

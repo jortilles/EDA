@@ -1,3 +1,5 @@
-module.exports = {
+const applyConfigOverwrite = require('./apply-config-overwrite');
+
+module.exports = applyConfigOverwrite('database_config', {
     url: "mongodb://localhost:27017/EDA"
-};
+});

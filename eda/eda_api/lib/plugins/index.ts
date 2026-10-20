@@ -5,7 +5,7 @@ import { IEDAPlugin } from './plugin.interface';
 
 function isEDAPlugin(value: any): value is IEDAPlugin {
     return value && typeof value === 'object'
-        && (value.kind === 'datasource' || value.kind === 'feature')
+        && (value.kind === 'datasource' || value.kind === 'feature' || value.kind === 'auth')
         && typeof value.type === 'string';
 }
 
@@ -19,13 +19,17 @@ const pluginDirs = fs
     .map((entry) => entry.name);
 
 for (const dir of pluginDirs) {
-    const pluginModule = require(path.join(__dirname, dir));
-    const plugin = Object.values(pluginModule).find(isEDAPlugin) as IEDAPlugin | undefined;
+    try {
+        const pluginModule = require(path.join(__dirname, dir));
+        const plugin = Object.values(pluginModule).find(isEDAPlugin) as IEDAPlugin | undefined;
 
-    if (plugin) {
-        PluginRegistry.register(plugin);
-    } else {
-        console.warn(`[PluginRegistry] La carpeta "${dir}" no exporta un IEDAPlugin válido, se omite.`);
+        if (plugin) {
+            PluginRegistry.register(plugin);
+        } else {
+            console.warn(`[PluginRegistry] La carpeta "${dir}" no exporta un IEDAPlugin válido, se omite.`);
+        }
+    } catch (error) {
+        console.error(`[PluginRegistry] Error al cargar el plugin "${dir}", se omite.`, error);
     }
 }
 

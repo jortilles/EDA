@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { AbstractConnection } from '../services/connection/abstract-connection';
 
 interface IBasePlugin {
-    kind: 'datasource' | 'feature';
+    kind: 'datasource' | 'feature' | 'auth';
     type: string;
     router?: Router;
     routerPath?: string;
@@ -33,10 +33,21 @@ export interface IFeaturePlugin extends IBasePlugin {
     routerPath: string;
 }
 
+/** Plugin that provides an alternate/legacy password verification strategy for login, gated by its own isEnabled() check */
+export interface IAuthPlugin extends IBasePlugin {
+    kind: 'auth';
+    isEnabled: () => boolean;
+    verifyLegacyPassword: (password: string, storedHash: string) => Promise<boolean>;
+}
+
 /*************** Interfaces End ***************/
 
-export type IEDAPlugin = IDatasourcePlugin | IFeaturePlugin;
+export type IEDAPlugin = IDatasourcePlugin | IFeaturePlugin | IAuthPlugin;
 
 export function isDatasourcePlugin(plugin: IEDAPlugin): plugin is IDatasourcePlugin {
     return plugin.kind === 'datasource';
+}
+
+export function isAuthPlugin(plugin: IEDAPlugin): plugin is IAuthPlugin {
+    return plugin.kind === 'auth';
 }

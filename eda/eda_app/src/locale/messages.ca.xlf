@@ -8286,9 +8286,165 @@ Salutacions.</target>
         <source>Edición privada</source>
         <target>Edició privada</target>
       </trans-unit>
-      <trans-unit id="reportDataSourceName">
-        <source>Fuente de datos</source>
-        <target>Font de dades</target>
+      <trans-unit id="ResetZoom">
+        <source>Restablecer (100%)</source>
+        <target>Restableix (100%)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageTitle">
+        <source>Tutorial</source>
+        <target>Tutorial</target>
+      </trans-unit>
+      <trans-unit id="filterHoverGreen">
+        <source>Verde</source>
+        <target>Verd</target>
+      </trans-unit>
+      <trans-unit id="filterHoverRed">
+        <source>Rojo</source>
+        <target>Vermell</target>
+      </trans-unit>
+      <trans-unit id="filterHoverAffected">
+        <source>Paneles afectados por este filtro</source>
+        <target>Panells afectats per aquest filtre</target>
+      </trans-unit>
+      <trans-unit id="filterHoverNotAffected">
+        <source>Paneles no afectados por este filtro</source>
+        <target>Panells no afectats per aquest filtre</target>
+      </trans-unit>
+      <trans-unit id="duplicatePanel">
+        <source>Duplicar panel</source>
+        <target>Duplica el panell</target>
+      </trans-unit>
+      <trans-unit id="PanelOptions">
+        <source>PANEL OPTIONS</source>
+        <target>OPCIONS DEL PANELL</target>
+      </trans-unit>
+      <trans-unit id="titlePanelOptions">
+        <source>Opciones del panel</source>
+        <target>Opcions del panell</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAppearance">
+        <source>Apariencia</source>
+        <target>Aparença</target>
+      </trans-unit>
+      <trans-unit id="titlePanelShowBg">
+        <source>Mostrar fondo del panel</source>
+        <target>Mostra el fons del panell</target>
+      </trans-unit>
+      <trans-unit id="titlePanelBgColor">
+        <source>Color de fondo</source>
+        <target>Color del fons</target>
+      </trans-unit>
+      <trans-unit id="titlePanelShowBorder">
+        <source>Mostrar borde</source>
+        <target>Mostra la vora</target>
+      </trans-unit>
+      <trans-unit id="titlePanelBorderColor">
+        <source>Color del borde</source>
+        <target>Color de la vora</target>
+      </trans-unit>
+      <trans-unit id="titlePanelVerticalAlign">
+        <source>Alineación vertical</source>
+        <target>Alineació vertical</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignTop">
+        <source>Arriba</source>
+        <target>A dalt</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignCenter">
+        <source>Centro</source>
+        <target>Al centre</target>
+      </trans-unit>
+      <trans-unit id="titlePanelAlignBottom">
+        <source>Abajo</source>
+        <target>A baix</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipSize">
+        <source>Tamaño de letra</source>
+        <target>Mida de lletra</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipBold">
+        <source>Negrita</source>
+        <target>Negreta</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipItalic">
+        <source>Cursiva</source>
+        <target>Cursiva</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipUnderline">
+        <source>Subrayado</source>
+        <target>Subratllat</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipStrike">
+        <source>Tachado</source>
+        <target>Ratllat</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipTextColor">
+        <source>Color del texto</source>
+        <target>Color del text</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipTextBgColor">
+        <source>Color de resaltado del texto</source>
+        <target>Color de ressaltat del text</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipSub">
+        <source>Subíndice</source>
+        <target>Subíndex</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipSuper">
+        <source>Superíndice</source>
+        <target>Superíndex</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipH1">
+        <source>Título 1</source>
+        <target>Títol 1</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipH2">
+        <source>Título 2</source>
+        <target>Títol 2</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipQuote">
+        <source>Cita</source>
+        <target>Cita</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipOrderedList">
+        <source>Lista numerada</source>
+        <target>Llista numerada</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipBulletList">
+        <source>Lista con viñetas</source>
+        <target>Llista amb pics</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipAlignLeft">
+        <source>Alinear a la izquierda</source>
+        <target>Alinear a l'esquerra</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipAlignCenter">
+        <source>Centrar</source>
+        <target>Centrar</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipAlignRight">
+        <source>Alinear a la derecha</source>
+        <target>Alinear a la dreta</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipLink">
+        <source>Insertar enlace</source>
+        <target>Inserir enllaç</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipImage">
+        <source>Insertar imagen desde un archivo</source>
+        <target>Inserir imatge des d'un arxiu</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipVideo">
+        <source>Insertar vídeo</source>
+        <target>Inserir vídeo</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipUrlImage">
+        <source>Insertar imagen desde una URL</source>
+        <target>Inserir imatge des d'una URL</target>
+      </trans-unit>
+      <trans-unit id="qlTooltipClean">
+        <source>Quitar formato</source>
+        <target>Eliminar format</target>
       </trans-unit>
     </body>
   </file>

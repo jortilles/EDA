@@ -8403,6 +8403,199 @@ Pozdrawiam.</target>
         <source>Fuente de datos</source>
         <target>Źródło danych</target>
       </trans-unit>
+<trans-unit id="duplicatePanel">
+<source>Duplicar panel</source>
+<target>Duplikuj panel</target>
+</trans-unit>
+
+<trans-unit id="PanelOptions">
+<source>PANEL OPTIONS</source>
+<target>OPCJE PANELU</target>
+</trans-unit>
+
+<trans-unit id="titlePanelOptions">
+<source>Opciones del panel</source>
+<target>Opcje panelu</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAppearance">
+<source>Apariencia</source>
+<target>Wygląd</target>
+</trans-unit>
+
+<trans-unit id="titlePanelShowBg">
+<source>Mostrar fondo del panel</source>
+<target>Pokaż tło panelu</target>
+</trans-unit>
+
+<trans-unit id="titlePanelBgColor">
+<source>Color de fondo</source>
+<target>Kolor tła</target>
+</trans-unit>
+
+<trans-unit id="titlePanelShowBorder">
+<source>Mostrar borde</source>
+<target>Pokaż obramowanie</target>
+</trans-unit>
+
+<trans-unit id="titlePanelBorderColor">
+<source>Color del borde</source>
+<target>Kolor obramowania</target>
+</trans-unit>
+
+<trans-unit id="titlePanelVerticalAlign">
+<source>Alineación vertical</source>
+<target>Wyrównanie pionowe</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignTop">
+<source>Arriba</source>
+<target>Góra</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignCenter">
+<source>Centro</source>
+<target>Środek</target>
+</trans-unit>
+
+<trans-unit id="titlePanelAlignBottom">
+<source>Abajo</source>
+<target>Dół</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipSize">
+<source>Tamaño de letra</source>
+<target>Rozmiar czcionki</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipBold">
+<source>Negrita</source>
+<target>Pogrubienie</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipItalic">
+<source>Cursiva</source>
+<target>Kursywa</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipUnderline">
+<source>Subrayado</source>
+<target>Podkreślenie</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipStrike">
+<source>Tachado</source>
+<target>Przekreślenie</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipTextColor">
+<source>Color del texto</source>
+<target>Kolor tekstu</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipTextBgColor">
+<source>Color de resaltado del texto</source>
+<target>Kolor wyróżnienia tekstu</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipSub">
+<source>Subíndice</source>
+<target>Indeks dolny</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipSuper">
+<source>Superíndice</source>
+<target>Indeks górny</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipH1">
+<source>Título 1</source>
+<target>Nagłówek 1</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipH2">
+<source>Título 2</source>
+<target>Nagłówek 2</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipQuote">
+<source>Cita</source>
+<target>Cytat</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipOrderedList">
+<source>Lista numerada</source>
+<target>Lista numerowana</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipBulletList">
+<source>Lista con viñetas</source>
+<target>Lista punktowana</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipAlignLeft">
+<source>Alinear a la izquierda</source>
+<target>Wyrównaj do lewej</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipAlignCenter">
+<source>Centrar</source>
+<target>Wyśrodkuj</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipAlignRight">
+<source>Alinear a la derecha</source>
+<target>Wyrównaj do prawej</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipLink">
+<source>Insertar enlace</source>
+<target>Wstaw link</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipImage">
+<source>Insertar imagen desde un archivo</source>
+<target>Wstaw obraz z pliku</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipVideo">
+<source>Insertar vídeo</source>
+<target>Wstaw wideo</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipUrlImage">
+<source>Insertar imagen desde una URL</source>
+<target>Wstaw obraz z adresu URL</target>
+</trans-unit>
+
+<trans-unit id="qlTooltipClean">
+<source>Quitar formato</source>
+<target>Wyczyść formatowanie</target>
+</trans-unit>
+      <trans-unit id="filterHoverGreen">
+        <source>Verde</source>
+        <target>Zielony</target>
+      </trans-unit>
+      <trans-unit id="filterHoverRed">
+        <source>Rojo</source>
+        <target>Czerwony</target>
+      </trans-unit>
+      <trans-unit id="filterHoverAffected">
+        <source>Paneles afectados por este filtro</source>
+        <target>Panele objęte tym filtrem</target>
+      </trans-unit>
+      <trans-unit id="filterHoverNotAffected">
+        <source>Paneles no afectados por este filtro</source>
+        <target>Panele nieobjęte tym filtrem</target>
+      </trans-unit>
+      <trans-unit id="ResetZoom">
+        <source>Restablecer (100%)</source>
+        <target>Resetuj (100%)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageTitle">
+        <source>Tutorial</source>
+        <target>Samouczek</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

@@ -31,12 +31,17 @@
 
           <!-- If it does NOT have autocomplete → legacy style -->
           @if(!filter.isAutocompleted || filter.isAutocompleted === false) {
-            <div class="filter-card flex flex-col gap-1 rounded-lg p-1" [style]="getPanelWidthVar(filter)">
+            <div class="filter-card flex flex-col gap-1 rounded-lg p-1" [style]="getPanelWidthVar(filter)"
+              [class.filter-hover-active]="filterHoverActiveId === filter.id"
+              (mouseenter)="onFilterHover(filter)" (mouseleave)="onFilterLeave()">
               <span [ngClass]="{'italic': !filter.applyToAll}" class="filter-label-top"
                 [style.color]="styleButton.color"
                 [style.font-family]="styleButton.fontFamily">
                 {{ getFilterLabel(filter) }}:
               </span>
+              @if (filterHoverActiveId === filter.id) {
+                <span class="filter-hover-tooltip" [innerHTML]="filterHoverTooltipHtml"></span>
+              }
 
               @if (getFilterType(filter) == 'date') {
               <eda-date-picker [autoClear]="true" [inject]="datePickerConfigs[filter.id]"
@@ -142,12 +147,17 @@
             </div>
           }@else{
             <!-- If it has autocomplete → modern style -->
-            <div class="filter-card flex flex-col gap-1 rounded-lg p-1" [style]="getPanelWidthVar(filter)">
+            <div class="filter-card flex flex-col gap-1 rounded-lg p-1" [style]="getPanelWidthVar(filter)"
+              [class.filter-hover-active]="filterHoverActiveId === filter.id"
+              (mouseenter)="onFilterHover(filter)" (mouseleave)="onFilterLeave()">
               <span [ngClass]="{'italic': !filter.applyToAll}" class="filter-label-top"
                 [style.color]="styleButton.color"
                 [style.font-family]="styleButton.fontFamily">
                 {{ getFilterLabel(filter) }}:
               </span>
+              @if (filterHoverActiveId === filter.id) {
+                <span class="filter-hover-tooltip" [innerHTML]="filterHoverTooltipHtml"></span>
+              }
               @if (getFilterType(filter) == 'date') {
               <eda-date-picker [autoClear]="true" [inject]="datePickerConfigs[filter.id]"
                 (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)">

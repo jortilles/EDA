@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import { QueryOptions } from 'mongoose';
 import { GroupController } from '../groups/group.controller';
 import { randomSsoPasswordHash } from '../../../utils/sso-password.util';
+import { PluginRegistry } from '../../../plugins';
 
 
 
@@ -116,12 +117,18 @@ export class UserController {
                 const userEda = await UserController.getUserInfoByEmail(body.email, false);
 
                 if (! await bcrypt.compareSync(body.password, userEda.password)) {
+                    let validLegacyPassword = false;
+                    try {
+                        const authPlugin = PluginRegistry.getAuthPlugins().find(plugin => plugin.isEnabled());
+                        validLegacyPassword = !!authPlugin
+                            && await authPlugin.verifyLegacyPassword(body.password, userEda.password.toString());
+                    } catch (err) {
+                        validLegacyPassword = false;
+                    }
 
-                    
-                            return next(new HttpException(400, 'Incorrect credentials - password'));
-      
-                            
-                    
+                    if (!validLegacyPassword) {
+                        return next(new HttpException(400, 'Incorrect credentials - password'));
+                    }
                 }
 
                     Object.assign(user, userEda);

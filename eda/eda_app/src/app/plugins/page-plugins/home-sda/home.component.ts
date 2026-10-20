@@ -632,7 +632,7 @@ public filterGroups() {
     result = this.isAdmin;
     if (result == false) {
       if (dashboard.config.onlyIcanEdit === true) {
-        if (localStorage.getItem("user") == dashboard.user) {
+        if (JSON.parse(localStorage.getItem("user"))._id == dashboard.user._id) {
           result = true;
         }
       } else {

@@ -1938,25 +1938,20 @@ pre {
         border: solid 1px;
         height: 3vh;
     }
-    .p-colorpicker-panel .p-colorpicker-color-background {
-	width: 100%;
-        height: 100%;
-        background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0) 100%), linear-gradient(to right, #fff 0%, rgba(255, 255, 255, 0) 100%) !important;
+
+
 }
 
+/* p-colorPicker: degradado de saturación/brillo + tira de matiz (independiente del tamaño de pantalla) */
+.p-colorpicker-panel .p-colorpicker-color {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0) 100%), linear-gradient(to right, #fff 0%, rgba(255, 255, 255, 0) 100%) !important;
+}
 
 .p-colorpicker-panel .p-colorpicker-hue {
-	background: linear-gradient(0deg, red 0, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, red) !important;
+    background: linear-gradient(0deg, red 0, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, red) !important;
 }
-
-
-
-
-
-
-}
-
-
 
 /* ====== Tooltip global (fuera de todos los layers) ====== */
 .p-tooltip .p-tooltip-text {

@@ -1,0 +1,36 @@
+<div class="dashboard-menu-sda">
+  <!-- Add dropdown -->
+  <p-menu #addMenu [model]="addMenuItems" [popup]="true" appendTo="body" panelStyleClass="dsm-menu"></p-menu>
+
+  <!-- More dropdown -->
+  <p-menu #moreMenu [model]="moreMenuItems" [popup]="true" appendTo="body" panelStyleClass="dsm-menu"></p-menu>
+
+  @if (isEditable) {
+    <button type="button" class="dsm-btn" [pTooltip]="viewMode ? editModeTooltip : viewTooltip" tooltipPosition="bottom" (click)="toggleViewMode()">
+      <i [class]="viewMode ? 'pi pi-pencil dsm-btn-icon' : 'pi pi-eye dsm-btn-icon'"></i>
+      <span>{{ viewMode ? editModeLabel : viewLabel }}</span>
+    </button>
+  }
+
+  @if (isEditable && !viewMode) {
+    <button type="button" class="dsm-btn dsm-btn-primary" (click)="addMenu.toggle($event)">
+      <i class="pi pi-plus dsm-btn-icon"></i>
+      <span>{{ addLabel }}</span>
+      <i class="pi pi-chevron-down dsm-btn-caret"></i>
+    </button>
+  }
+
+  @if (isEditable && !viewMode) {
+    <button type="button" class="dsm-btn" [class.dsm-btn-warning]="hasUnsavedChanges" [pTooltip]="saveTooltip" tooltipPosition="bottom" (click)="save()">
+      <i class="pi pi-save dsm-btn-icon"></i>
+      <span>{{ saveLabel }}</span>
+    </button>
+  }
+
+  @if (!viewMode) {
+    <button type="button" class="dsm-btn dsm-btn-ghost" [pTooltip]="moreLabel" tooltipPosition="bottom"
+      (click)="openMoreMenu($event)">
+      <i class="pi pi-ellipsis-h dsm-btn-icon"></i>
+    </button>
+  }
+</div>

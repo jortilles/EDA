@@ -1,4 +1,5 @@
 import { AfterViewInit, ApplicationRef, Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
+import { animate, style, transition, trigger } from "@angular/animations";
 import { FormsModule } from "@angular/forms";
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
@@ -29,6 +30,9 @@ import { DependentFilters } from "../../../components/dependent-filters/dependen
 import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
 import { GlobalFilterDialogComponent } from "../../../pages/dashboard/global-filter-dialog/global-filter-dialog.component";
 import { GlobalFilterComponent } from "@eda/components/global-filter/global-filter.component";
+import { SHOW_CUSTOM_ACTION, SHOW_ZOOM_IN_SIDEBAR, PRIVATE_EDITION_ACTIVATED } from "@eda/configs/customizable/customizable_default";
+import { ZoomSdaComponent } from "../zoom-control/zoom.component";
+
 
 const STANDALONE_COMPONENTS = [
     DashboardSaveAsDialog,
@@ -40,8 +44,9 @@ const STANDALONE_COMPONENTS = [
     ImportPanelDialog,
     DependentFilters,
     GlobalFilterDialogComponent,
-    GlobalFilterComponent
-] 
+    GlobalFilterComponent,
+    ZoomSdaComponent
+]
 
 const ANGULAR_MODULES = [
   OverlayModule,
@@ -58,6 +63,18 @@ const ANGULAR_MODULES = [
   imports: [ STANDALONE_COMPONENTS, ANGULAR_MODULES],
   styleUrl: './dashboard-sidebar.component.css',
   templateUrl: './dashboard-sidebar.component.html',
+  animations: [
+    trigger('slideDown', [
+      transition(':enter', [
+        style({ height: 0, opacity: 0, overflow: 'hidden' }),
+        animate('220ms cubic-bezier(0.19, 1, 0.22, 1)', style({ height: '*', opacity: 1 }))
+      ]),
+      transition(':leave', [
+        style({ overflow: 'hidden' }),
+        animate('160ms ease-in', style({ height: 0, opacity: 0 }))
+      ])
+    ])
+  ],
   styles: `
     .overlay-backdrop {
         position: fixed;
@@ -109,7 +126,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
   clickFiltersEnabled: boolean = true;
   clickPanelLockButton: boolean = true;
   clickPanelAnimationsButton: boolean = true;
-  onlyIcanEdit: boolean = true; // Only I can edit, but I can save as
+  onlyIcanEdit: boolean = PRIVATE_EDITION_ACTIVATED; // Only I can edit, but I can save as
   isReadOnly: boolean = false; // this is a read-only dashboard
   isEditable: boolean = false; // can edit the dashboard
   mostrarOpciones = false;
@@ -121,6 +138,8 @@ export class DashboardSidebarComponent implements AfterViewInit {
   isDependentFiltersVisible = false;
   editingTitle: boolean = false;
   editableTitle: string = '';
+  showZoomControls: boolean = false;
+  public readonly showZoomInSidebar = SHOW_ZOOM_IN_SIDEBAR;
 
   // Panels touched by filters removed from the sidebar during this popover session,
   // refreshed once when the popover closes instead of after every single deletion
@@ -129,10 +148,12 @@ export class DashboardSidebarComponent implements AfterViewInit {
   sidebarItems: any[] = [];
 
   ngOnInit(): void {
-    this.hayFiltros = this.dashboard.globalFilter.globalFilters.length > 0;
+    // dashboard.globalFilter is a ViewChild on the host DashboardPage — it may not have
+    // resolved yet if the sidebar's own ngOnInit runs before the parent's view finishes.
+    this.hayFiltros = (this.dashboard.globalFilter?.globalFilters.length ?? 0) > 0;
     this.refreshTime = this.dashboard.dashboard.config.refreshTime || null;
     this.clickFiltersEnabled = this.dashboard.dashboard.config.clickFiltersEnabled ?? true;
-    this.onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ?? true;
+    this.onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ?? PRIVATE_EDITION_ACTIVATED;
     this.clickPanelLockButton = this.dashboard.dashboard.config.panelLockEnabled ?? true;
     this.clickPanelAnimationsButton = this.dashboard.dashboard.config.panelAnimationsEnabled ?? true;
     this.isReadOnly = this.isReadOnlyCheck();
@@ -355,7 +376,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
           this.hidePopover();
         }
       },
-      {
+      ...(SHOW_CUSTOM_ACTION ? [{
         id: 'customAction',
         label: $localize`:@@dashboardSidebarCustomAction: Acción personalizada`,
         icon: "pi pi-cog",
@@ -363,7 +384,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
           this.isCustomActionDialogVisible = true;
           this.hidePopover();
         }
-      },
+      }] : []),
     ]
   }
 
@@ -381,6 +402,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.mostrarFiltros = false;
     this.mostrarDescargas = false;
     this.flushPendingFilterRemovalRefresh();
+    this.showZoomControls = false;
   }
 
   public onAddGlobalFilter(): void {
@@ -483,7 +505,8 @@ export class DashboardSidebarComponent implements AfterViewInit {
       resizable: true,
       dragAndDrop: true,
       fontsize: '22px',
-      color: '#000000'
+      color: '#000000',
+      backgroundColor: '#ffffff'
     });
 
     this.dashboard.panels.push(panel);
@@ -563,7 +586,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
           ds,
           tag: null,
           refreshTime: null,
-          onlyIcanEdit: true,
+          onlyIcanEdit: PRIVATE_EDITION_ACTIVATED,
           author: JSON.parse(localStorage.getItem('user')).name,
           styles: this.stylesProviderService.generateDefaultStyles(),
         },
@@ -615,6 +638,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
   public saveCustomAction(url: any) {
     this.isCustomActionDialogVisible = false;
     this.dashboard.dashboard.config.urls = url;
+    this.dashboardService.setNotSaved(true);
   }
 
   public closeStyles() {

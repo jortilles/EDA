@@ -1,70 +1,176 @@
-<eda-dialog2 width="80vw" height="70vh" [header]="header" [overflow]="'auto'" (apply)="saveChartConfig()" (close)="closeChartConfig()">
-	<div content class="grid">
-		<div class="col-12">
+<eda-dialog2 width="80vw" height="70vh" [header]="header" [overflow]="'visible'" (apply)="saveChartConfig()" (close)="closeChartConfig()">
+	<div content class="flex flex-col md:flex-row flex-1 h-full">
 
-			<p-editor #Editor [(ngModel)]="title" [style]="{'height':'100%'}">
-				<p-header>
-					<span class="ql-formats">
-						<select class="ql-size"></select>
-					</span>
-					<span class="ql-formats">
-						<button class="ql-bold"></button>
-						<button class="ql-italic"></button>
-						<button class="ql-underline"></button>
-						<button class="ql-strike"></button>
-					</span>
-					<span class="ql-formats">
-						<select class="ql-color"></select>
-						<select class="ql-background"></select>
-					</span>
-					<span class="ql-formats">
-						<button class="ql-script" value="sub"></button>
-						<button class="ql-script" value="super"></button>
-					</span>
-					<span class="ql-formats">
-						<button class="ql-header" value="1"></button>
-						<button class="ql-header" value="2"></button>
-						<button class="ql-blockquote"></button>
-					</span>
-					<span class="ql-formats">
-						<button class="ql-list" value="ordered"></button>
-						<button class="ql-list" value="bullet"></button>
-					</span>
-					<span class="ql-formats">
-						<button type="button" class="ql-align" value="" inputId="i1">
-							<svg viewBox="0 0 18 18">
-								<line class="ql-stroke" x1="3" x2="15" y1="9" y2="9"></line>
-								<line class="ql-stroke" x1="3" x2="13" y1="14" y2="14"></line>
-								<line class="ql-stroke" x1="3" x2="9" y1="4" y2="4"></line>
-							</svg>
-						</button>
-						<button type="button" class="ql-align" value="center" inputId="i2">
-							<svg viewBox="0 0 18 18">
-								<line class="ql-stroke" x1="15" x2="3" y1="9" y2="9"></line>
-								<line class="ql-stroke" x1="14" x2="4" y1="14" y2="14"></line>
-								<line class="ql-stroke" x1="12" x2="6" y1="4" y2="4"></line>
-							</svg>
-						</button>
-						<button type="button" class="ql-align" value="right" inputId="i3">
-							<svg viewBox="0 0 18 18">
-								<line class="ql-stroke" x1="15" x2="3" y1="9" y2="9"></line>
-								<line class="ql-stroke" x1="15" x2="5" y1="14" y2="14"></line>
-								<line class="ql-stroke" x1="15" x2="9" y1="4" y2="4"></line>
-							</svg>
-						</button>
+		<!-- Editor -->
+		<div class="md:w-[65%] flex flex-col h-[58vh] border-b md:border-b-0 md:border-r bg-slate-100 min-h-0 min-w-0 p-4">
+			<div class="flex-1 min-h-0 bg-white rounded-lg border border-slate-200 shadow-sm flex flex-col">
+				<p-editor #Editor [(ngModel)]="title" [style]="{'height':'100%', 'border':'none'}" [bounds]="'.p-editor-container'" class="flex-1 min-h-0 flex flex-col">
+					<p-header>
+						<span class="ql-formats">
+							<select class="ql-size" [pTooltip]="tooltipSize" tooltipPosition="bottom">
+								<option value="10px">10px</option>
+								<option value="12px">12px</option>
+								<option value="14px">14px</option>
+								<option value="16px" selected>16px</option>
+								<option value="18px">18px</option>
+								<option value="20px">20px</option>
+								<option value="24px">24px</option>
+								<option value="28px">28px</option>
+								<option value="32px">32px</option>
+								<option value="36px">36px</option>
+								<option value="42px">42px</option>
+								<option value="48px">48px</option>
+							</select>
+						</span>
+						<span class="ql-formats">
+							<button class="ql-bold" [pTooltip]="tooltipBold" tooltipPosition="bottom"></button>
+							<button class="ql-italic" [pTooltip]="tooltipItalic" tooltipPosition="bottom"></button>
+							<button class="ql-underline" [pTooltip]="tooltipUnderline" tooltipPosition="bottom"></button>
+							<button class="ql-strike" [pTooltip]="tooltipStrike" tooltipPosition="bottom"></button>
+						</span>
+						<span class="ql-formats">
+							<button type="button" class="custom-color-btn" (click)="openColorOverlay($event, textColorOL)" [pTooltip]="tooltipTextColor" tooltipPosition="bottom">
+								<svg viewBox="0 0 18 18"><line class="ql-color-label ql-stroke ql-transparent" x1="3" x2="15" y1="15" y2="15"></line><polyline class="ql-stroke" points="5.5 11 9 3 12.5 11"></polyline><line class="ql-stroke" x1="11.63" x2="6.38" y1="9" y2="9"></line></svg>
+							</button>
+							<button type="button" class="custom-color-btn" (click)="openColorOverlay($event, textBgColorOL)" [pTooltip]="tooltipTextBgColor" tooltipPosition="bottom">
+								<svg viewBox="0 0 18 18"><g class="ql-fill ql-color-label"><polygon points="6 6.868 6 6 5 6 5 7 5.942 7 6 6.868"></polygon><rect height="1" width="1" x="4" y="4"></rect><polygon points="6.817 5 6 5 6 6 6.38 6 6.817 5"></polygon></g><polyline class="ql-stroke" points="5.5 13 9 5 12.5 13"></polyline><line class="ql-stroke" x1="11.63" x2="6.38" y1="11" y2="11"></line></svg>
+							</button>
+						</span>
+						<span class="ql-formats">
+							<button class="ql-script" value="sub" [pTooltip]="tooltipSub" tooltipPosition="bottom"></button>
+							<button class="ql-script" value="super" [pTooltip]="tooltipSuper" tooltipPosition="bottom"></button>
+						</span>
+						<span class="ql-formats">
+							<button class="ql-header" value="1" [pTooltip]="tooltipH1" tooltipPosition="bottom"></button>
+							<button class="ql-header" value="2" [pTooltip]="tooltipH2" tooltipPosition="bottom"></button>
+							<button class="ql-blockquote" [pTooltip]="tooltipQuote" tooltipPosition="bottom"></button>
+						</span>
+						<span class="ql-formats">
+							<button class="ql-list" value="ordered" [pTooltip]="tooltipOrderedList" tooltipPosition="bottom"></button>
+							<button class="ql-list" value="bullet" [pTooltip]="tooltipBulletList" tooltipPosition="bottom"></button>
+						</span>
+						<span class="ql-formats">
+							<button type="button" class="ql-align" value="" inputId="i1" [pTooltip]="tooltipAlignLeft" tooltipPosition="bottom">
+								<svg viewBox="0 0 18 18">
+									<line class="ql-stroke" x1="3" x2="15" y1="9" y2="9"></line>
+									<line class="ql-stroke" x1="3" x2="13" y1="14" y2="14"></line>
+									<line class="ql-stroke" x1="3" x2="9" y1="4" y2="4"></line>
+								</svg>
+							</button>
+							<button type="button" class="ql-align" value="center" inputId="i2" [pTooltip]="tooltipAlignCenter" tooltipPosition="bottom">
+								<svg viewBox="0 0 18 18">
+									<line class="ql-stroke" x1="15" x2="3" y1="9" y2="9"></line>
+									<line class="ql-stroke" x1="14" x2="4" y1="14" y2="14"></line>
+									<line class="ql-stroke" x1="12" x2="6" y1="4" y2="4"></line>
+								</svg>
+							</button>
+							<button type="button" class="ql-align" value="right" inputId="i3" [pTooltip]="tooltipAlignRight" tooltipPosition="bottom">
+								<svg viewBox="0 0 18 18">
+									<line class="ql-stroke" x1="15" x2="3" y1="9" y2="9"></line>
+									<line class="ql-stroke" x1="15" x2="5" y1="14" y2="14"></line>
+									<line class="ql-stroke" x1="15" x2="9" y1="4" y2="4"></line>
+								</svg>
+							</button>
+						</span>
+						<span class="ql-formats">
+							<button class="ql-link" [pTooltip]="tooltipLink" tooltipPosition="bottom"></button>
+							<button class="ql-image" [pTooltip]="tooltipImage" tooltipPosition="bottom"></button>
+							<button class="ql-video" [pTooltip]="tooltipVideo" tooltipPosition="bottom"></button>
+							<button type="button" (click)="urlImageHandler()" [pTooltip]="tooltipUrlImage" tooltipPosition="bottom">Url</button>
+						</span>
+						<span class="ql-formats">
+							<button class="ql-clean" [pTooltip]="tooltipClean" tooltipPosition="bottom"></button>
+						</span>
+					</p-header>
+				</p-editor>
+			</div>
+		</div>
 
-					</span>
-					<span class="ql-formats">
-						<button class="ql-link"></button>
-						<button class="ql-image"></button>
-						<button class="ql-video"></button>
-						<button id="qlUrlImage">Url</button>
-					</span>
-					<span class="ql-formats">
-						<button class="ql-clean"></button>
-					</span>
-				</p-header>
-			</p-editor>
+		<!-- Panel options -->
+		<div class="md:w-[35%] flex flex-col h-[58vh] overflow-y-auto pl-6">
+
+			<!-- Appearance -->
+			<div class="space-y-4 p-4 pt-0 mb-6 bg-slate-100 border border-slate-200 rounded-md">
+				<span class="text-lg font-semibold" i18n="@@titlePanelAppearance">Apariencia</span>
+
+				<div class="flex items-center justify-between">
+					<span class="font-medium text-sm" i18n="@@titlePanelShowBg">Mostrar fondo del panel</span>
+					<p-inputSwitch [(ngModel)]="showPanelBackground" inputId="showPanelBackground"></p-inputSwitch>
+				</div>
+
+				@if (showPanelBackground) {
+				<div class="space-y-2">
+					<label class="text-sm font-medium text-slate-600" i18n="@@titlePanelBgColor">Color de fondo</label>
+					<div class="flex items-center gap-3">
+						<input type="text" [(ngModel)]="backgroundColor" placeholder="#ffffff"
+							class="flex-1 px-3 py-2 border rounded-md font-mono bg-white text-sm" />
+						<p-colorPicker [(ngModel)]="backgroundColor" format="hex" appendTo="body"
+							class="rounded-md border shadow-sm transition-transform hover:scale-105 cursor-pointer" />
+					</div>
+				</div>
+				}
+
+				<div class="flex items-center justify-between pt-3 border-t border-slate-200">
+					<span class="font-medium text-sm" i18n="@@titlePanelShowBorder">Mostrar borde</span>
+					<p-inputSwitch [(ngModel)]="showBorder" inputId="showBorder"></p-inputSwitch>
+				</div>
+
+				@if (showBorder) {
+				<div class="space-y-2">
+					<label class="text-sm font-medium text-slate-600" i18n="@@titlePanelBorderColor">Color del borde</label>
+					<div class="flex items-center gap-3">
+						<input type="text" [(ngModel)]="borderColor" placeholder="#d7dde6"
+							class="flex-1 px-3 py-2 border rounded-md font-mono bg-white text-sm" />
+						<p-colorPicker [(ngModel)]="borderColor" format="hex" appendTo="body"
+							class="rounded-md border shadow-sm transition-transform hover:scale-105 cursor-pointer" />
+					</div>
+				</div>
+				}
+			</div>
+
+			<!-- Vertical alignment -->
+			<div class="space-y-4 p-4 pt-0 mb-6 bg-slate-100 border border-slate-200 rounded-md">
+				<span class="text-lg font-semibold" i18n="@@titlePanelVerticalAlign">Alineación vertical</span>
+
+				<div class="grid grid-cols-3 gap-2">
+					<button type="button" (click)="setVerticalAlign('top')"
+						[ngClass]="verticalAlign === 'top' ? 'bg-[var(--corporate-primary)] text-white border-[var(--corporate-primary)]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'"
+						class="flex flex-col items-center gap-1 px-3 py-2 rounded-md border text-xs font-medium transition-colors">
+						<i class="pi pi-arrow-up"></i>
+						<span i18n="@@titlePanelAlignTop">Arriba</span>
+					</button>
+					<button type="button" (click)="setVerticalAlign('center')"
+						[ngClass]="verticalAlign === 'center' ? 'bg-[var(--corporate-primary)] text-white border-[var(--corporate-primary)]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'"
+						class="flex flex-col items-center gap-1 px-3 py-2 rounded-md border text-xs font-medium transition-colors">
+						<i class="pi pi-minus"></i>
+						<span i18n="@@titlePanelAlignCenter">Centro</span>
+					</button>
+					<button type="button" (click)="setVerticalAlign('bottom')"
+						[ngClass]="verticalAlign === 'bottom' ? 'bg-[var(--corporate-primary)] text-white border-[var(--corporate-primary)]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'"
+						class="flex flex-col items-center gap-1 px-3 py-2 rounded-md border text-xs font-medium transition-colors">
+						<i class="pi pi-arrow-down"></i>
+						<span i18n="@@titlePanelAlignBottom">Abajo</span>
+					</button>
+				</div>
+			</div>
+
 		</div>
 	</div>
+
+	<p-overlayPanel #textColorOL appendTo="body" styleClass="ql-color-overlay" (onShow)="onOverlayShow('textColor')" (onHide)="showTextColorPicker = false">
+		<div *ngIf="showTextColorPicker" class="ql-overlay-picker">
+			<p-colorPicker [(ngModel)]="customTextColor" (ngModelChange)="onTextColorLive($event)" inline="true" format="hex"></p-colorPicker>
+			<input type="text" pInputText [(ngModel)]="customTextColor" (keydown.enter)="onTextColorLive(customTextColor)" class="ql-hex-input-popup" placeholder="#000000" maxlength="7" />
+			<button type="button" (click)="removeTextFormat('color'); textColorOL.hide()"
+				class="w-full mt-1 px-3 py-1.5 text-sm font-medium rounded-md border border-[var(--corporate-primary)] text-[var(--corporate-primary)] bg-white hover:bg-[var(--corporate-primary)] hover:text-white transition-colors">{{ labelClearColor }}</button>
+		</div>
+	</p-overlayPanel>
+	<p-overlayPanel #textBgColorOL appendTo="body" styleClass="ql-color-overlay" (onShow)="onOverlayShow('textBgColor')" (onHide)="showTextBgColorPicker = false">
+		<div *ngIf="showTextBgColorPicker" class="ql-overlay-picker">
+			<p-colorPicker [(ngModel)]="customTextBgColor" (ngModelChange)="onTextBgColorLive($event)" inline="true" format="hex"></p-colorPicker>
+			<input type="text" pInputText [(ngModel)]="customTextBgColor" (keydown.enter)="onTextBgColorLive(customTextBgColor)" class="ql-hex-input-popup" placeholder="#ffffff" maxlength="7" />
+			<button type="button" (click)="removeTextFormat('background'); textBgColorOL.hide()"
+				class="w-full mt-1 px-3 py-1.5 text-sm font-medium rounded-md border border-[var(--corporate-primary)] text-[var(--corporate-primary)] bg-white hover:bg-[var(--corporate-primary)] hover:text-white transition-colors">{{ labelClearColor }}</button>
+		</div>
+	</p-overlayPanel>
 </eda-dialog2>

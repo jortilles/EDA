@@ -6,6 +6,7 @@ import _ from 'lodash'
 import { roleGuard } from 'guards/role-guard'
 import { GroupActiveDirectoryModel } from './model/group-active-directory.model'
 import Group, { IGroup } from './../../module/admin/groups/model/group.model'
+const applyConfigOverwrite = require('../../../config/apply-config-overwrite')
 
 let adconfig
 
@@ -256,7 +257,7 @@ export class ActiveDirectoryService {
       )
 
       if (fs.existsSync(ldapPath)) {
-        adconfig = require('../../../config/activedirectory.json')
+        adconfig = applyConfigOverwrite('activedirectory_config', require('../../../config/activedirectory.json'))
         resolve()
       } else if (!fs.existsSync(ldapPath)) {
         reject(`Error config not found`)
