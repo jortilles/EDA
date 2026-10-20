@@ -8092,6 +8092,172 @@ Salutacions.</target>
         <source>Limpiar todos los filtros globales</source>
         <target>Netejar tots els filtres globals</target>
       </trans-unit>
+<trans-unit id="clickFiltersConfigText" datatype="html">
+<source>Filtros en click</source>
+<target>Filtres en clic</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="configurarClickFilters" datatype="html">
+<source>Configurar</source>
+<target>Configurar</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="resumenPanelesAfectanH6" datatype="html">
+<source>Paneles que me afectan</source>
+<target>Panells que m'afecten</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="noAffectingPanels" datatype="html">
+<source>Sin paneles</source>
+<target>Sense panells</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterDialogHeader" datatype="html">
+<source>Filtros en click</source>
+<target>Filtres en clic</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterDialogCloseBtn" datatype="html">
+<source>Cerrar</source>
+<target>Tancar</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterEnabledLabel" datatype="html">
+<source>¿Este panel es clicable?</source>
+<target>Aquest panell és clicable?</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterAffectsH5" datatype="html">
+<source>A qué paneles afecta</source>
+<target>A quins panells afecta</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="applyToAllPanelsLabel" datatype="html">
+<source>Aplicar a todos</source>
+<target>Aplicar a tots</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="noOtherPanels" datatype="html">
+<source>No hay otros paneles en este dashboard</source>
+<target>No hi ha altres panells en aquest tauler</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="clickFilterAffectedByH5" datatype="html">
+<source>Qué paneles me afectan</source>
+<target>Quins panells m'afecten</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="searchPanelPlaceholder" datatype="html">
+<source>Buscar panel...</source>
+<target>Cercar panell...</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="selectPanelsPlaceholder" datatype="html">
+<source>Añadir panel...</source>
+<target>Afegir panell...</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="panelsSelectedLabel" datatype="html">
+<source>{0} paneles seleccionados</source>
+<target>{0} panells seleccionats</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
+</context-group>
+</trans-unit>
+<trans-unit id="dragHandleTooltip">
+  <source>Arrastrar</source>
+  <target>Arrossegar</target>
+</trans-unit>
+<trans-unit id="noGroupsToAssignDrag">
+  <source>No perteneces a ningún grupo al que asignar el informe.</source>
+  <target>No pertanys a cap grup al qual assignar l'informe.</target>
+</trans-unit>
+<trans-unit id="selectGroupDragTitle">
+  <source>Selecciona el grupo</source>
+  <target>Selecciona el grup</target>
+</trans-unit>
+<trans-unit id="moveFolderConfirmBtn">
+  <source>Sí, mover</source>
+  <target>Sí, mou-la</target>
+</trans-unit>
+<trans-unit id="moveFolderConfirmTitle">
+  <source>¿Mover carpeta?</source>
+  <target>Vols moure la carpeta?</target>
+</trans-unit>
+<trans-unit id="confirmBtn">
+  <source>Confirmar</source>
+  <target>Confirmar</target>
+</trans-unit>
+<trans-unit id="ofGroupSuffix">
+  <source>grupo</source>
+  <target>grup</target>
+</trans-unit>
+<trans-unit id="reportMovedToFolderText">
+  <source>se ha movido a la carpeta</source>
+  <target>s'ha mogut a la carpeta</target>
+</trans-unit>
+<trans-unit id="reportMovedInColumnWord">
+  <source>en</source>
+  <target>a</target>
+</trans-unit>
+<trans-unit id="reportMovedToColumnText">
+  <source>se ha movido a</source>
+  <target>s'ha mogut a</target>
+</trans-unit>
+<trans-unit id="dashboardMovedTitle">
+  <source>Informe movido</source>
+  <target>Informe mogut</target>
+</trans-unit>
+<trans-unit id="multiSelectGroupHint">
+  <source>Mantén Ctrl (o Cmd) para seleccionar varios</source>
+  <target>Mantén Ctrl (o Cmd) per seleccionar-ne diversos</target>
+</trans-unit>
+<trans-unit id="selectGroupRequired">
+  <source>Selecciona al menos un grupo</source>
+  <target>Selecciona almenys un grup</target>
+</trans-unit>
+<trans-unit id="mergeFolderConfirmTitle">
+  <source>¿Fusionar carpetas?</source>
+  <target>Vols fusionar les carpetes?</target>
+</trans-unit>
+<trans-unit id="folderMovedTitle">
+  <source>Carpeta movida</source>
+  <target>Carpeta moguda</target>
+</trans-unit>
+<trans-unit id="foldersMergedTitle">
+  <source>Carpetas fusionadas</source>
+  <target>Carpetes fusionades</target>
+</trans-unit>
+<trans-unit id="foldersMergedText">
+  <source>se ha fusionado con</source>
+  <target>s'ha fusionat amb</target>
+</trans-unit>
 </body>
   </file>
 </xliff>
