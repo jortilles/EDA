@@ -8,44 +8,42 @@
         <div class="grid grid-cols-[42.5%_42.5%_15%] gap-3 items-start">
 
           <!-- Filter type and scope + switch -->
-          <div class="flex flex-col gap-3 w-full">
-            <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
-              [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"
-              i18n-placeholder="@@tiposFiltrosLabel" placeholder="Tipos de filtro"
-              (onChange)="handleFilterChange(filterSelected)">
-            </p-dropdown>
-
-            @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton) {
-              <p-dropdown
-                id="whereHaving"
-                [options]="filterBeforeAfter.elements"
-                [(ngModel)]="filterBeforeAfterSelected"
-                optionLabel="label"
-                [autoDisplayFirst]="true"
-                [style]="{'width': '100%'}"
-                i18n-placeholder="@@whereHavingLabel" placeholder="Ámbito del filtro"
-                (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
+          @if (selectedColumn?.column_type !== 'date') {
+            <div class="flex flex-col gap-3 w-full">
+              <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
+                [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"
+                i18n-placeholder="@@tiposFiltrosLabel" placeholder="Tipos de filtro"
+                (onChange)="handleFilterChange(filterSelected)">
               </p-dropdown>
-            }
 
-            <div class="flex items-center gap-2">
-              <label class="text-base text-gray-600" i18n="@@optionsLabel" for="filter_options">Opciones</label>
-              <p-inputSwitch id="filter_options" [(ngModel)]="filter.switch" [disabled]="display.switchButton"
-                (onChange)="loadDropDrownData()">
-              </p-inputSwitch>
+              @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton) {
+                <p-dropdown
+                  id="whereHaving"
+                  [options]="filterBeforeAfter.elements"
+                  [(ngModel)]="filterBeforeAfterSelected"
+                  optionLabel="label"
+                  [autoDisplayFirst]="true"
+                  [style]="{'width': '100%'}"
+                  i18n-placeholder="@@whereHavingLabel" placeholder="Ámbito del filtro"
+                  (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
+                </p-dropdown>
+              }
+
+              <div class="flex items-center gap-2">
+                <label class="text-base text-gray-600" i18n="@@optionsLabel" for="filter_options">Opciones</label>
+                <p-inputSwitch id="filter_options" [(ngModel)]="filter.switch" [disabled]="display.switchButton"
+                  (onChange)="loadDropDrownData()">
+                </p-inputSwitch>
+              </div>
             </div>
-          </div>
+          }
 
           <!-- Filter values -->
-          <div class="flex flex-col w-full gap-3">
-            @if (!!display.calendar && !filter.switch) {
-              <eda-date-picker
-                #myCalendar
-                class="h-[3.2rem]"
-                (onDatesChanges)="processPickerEvent($event)"
-                [filterSelected]="filterSelected"
-                [selectionMode]="display.between ? 'range' : 'single'">
-              </eda-date-picker>
+          <div class="flex flex-col gap-3 w-full"
+            [class.col-span-2]="selectedColumn?.column_type === 'date'">
+            @if (selectedColumn?.column_type === 'date') {
+              <date-picker [inline]="true" (onDatesChanges)="processPickerEvent($event)">
+              </date-picker>
             }
             @if (display.filterValue && !display.calendar && !filter.switch) {
               <input
@@ -107,21 +105,25 @@
 
       <!-- Active filters list -->
       @if (filter.forDisplay.length > 0) {
-        <div class="section-card pt-3">
+        <div class="section-card pt-3 mt-6">
           <h5 class="section-title" i18n="@@filters">Filtros activos</h5>
           <div class="w-full h-auto max-h-[23vh] overflow-auto rounded-md bg-gray-100 border border-gray-200">
             <p-scrollPanel styleClass="custombar1">
               @for (filtre of filter.forDisplay; track filtre) {
                 <div class="filter-tag flex items-center justify-between px-3 py-2">
                   <span class="text-base ">
-                    @if (filtre.filter_elements.length === 0) {
-                      * {{ selectedColumn.display_name.default }} is {{ filtre.filter_type }}
-                    }
-                    @if (filtre.filter_elements.length === 1) {
-                      * {{ selectedColumn.display_name.default }} {{ filtre.filter_type }} "{{ filtre.filter_elements[0].value1 }}"
-                    }
-                    @if (filtre.filter_elements.length === 2) {
-                      * {{ selectedColumn.display_name.default }} {{ filtre.filter_type }} "{{ filtre.filter_elements[0].value1 }}" Y "{{ filtre.filter_elements[1].value2 }}"
+                    @if (filtre.selectedRange) {
+                      * {{ selectedColumn.display_name.default }} {{ filtre.display_filter_type || filtre.filter_type }} "{{ getRangeLabelForFilter(filtre.selectedRange) }}"
+                    } @else {
+                      @if (filtre.filter_elements.length === 0) {
+                        * {{ selectedColumn.display_name.default }} is {{ filtre.display_filter_type || filtre.filter_type }}
+                      }
+                      @if (filtre.filter_elements.length === 1) {
+                        * {{ selectedColumn.display_name.default }} {{ filtre.display_filter_type || filtre.filter_type }} "{{ filtre.filter_elements[0].value1 }}"
+                      }
+                      @if (filtre.filter_elements.length === 2) {
+                        * {{ selectedColumn.display_name.default }} {{ filtre.display_filter_type || filtre.filter_type }} "{{ filtre.filter_elements[0].value1 }}" Y "{{ filtre.filter_elements[1].value2 }}"
+                      }
                     }
                   </span>
                   <div class="flex items-center gap-2 ml-2 shrink-0">

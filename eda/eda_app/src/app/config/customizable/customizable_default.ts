@@ -247,6 +247,7 @@ export const SHOW_LOCK_IN_PANEL_HEADER: boolean = false; // true → lock button
 export const SHOW_HIDDEN_FIELDS_BUTTON: boolean = false; // true → Show the hidden fields button | false → Don't show the hidden fields button
 export const SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY: boolean = false; // true → only admins see the button | false → all users see it
 export const ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: boolean = false; // true → public visibility option shown in dashboard creation/edit UIs | false → hidden
+export const USE_VALUE_LIST_CODE_FOR_FILTERS: boolean = false; // true -> compare filters against the value-list's internal codes instead of the raw selected values.
 export const ALLOWED_QUERY_MODES: string[] = ['EDA', 'SQL', 'TREE']; // ALLOWED_QUERY_MODES Order matters; the first value "ALLOWED_QUERY_MODES[0]" is considered the default query mode. Keep all 3 (EDA, existing behaviour) unless you want to restrict them.
 export const SHOW_WHAT_IF: boolean = true; // true → "What If?" scenarios button visible (EDA, existing behaviour) | false → hidden
 export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner', 'right']; // subset of 'left' | 'inner' | 'right' shown as join type options. Keep all 3 (EDA, existing behaviour) unless you want to restrict them.

@@ -21,19 +21,27 @@
 }
 
 /* Date picker - wrapper and input both constrained to same height as multiselect */
-::ng-deep eda-date-picker {
+::ng-deep date-picker {
   display: block;
   height: 32px;
 }
 
-::ng-deep eda-date-picker input {
+::ng-deep date-picker input {
   height: 32px;
   width: 100%;
   padding: 0.25rem 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid #d1d5db;
   box-sizing: border-box;
-  font-size: 0.9rem;
+  font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+::ng-deep date-picker input::placeholder {
+  color: #000000;
+  opacity: 1;
 }
 
 /*****************/
@@ -68,10 +76,19 @@
   color: var(--corporate-primary);
 }
 .filter-tooltip-text{
-    padding: 2px 6px; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
+    padding: 2px 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
+}
+/* Date filter summary joins every "in"/"not_in" value into one string — let it wrap
+   instead of inheriting the nowrap/ellipsis clipping meant for single-value rows. */
+.filter-tooltip-value{
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-break: break-word;
+    text-align: right;
 }
 .filter-tooltip-container{
     display: grid; 
@@ -83,6 +100,12 @@
 
 .filter-tooltip-container:hover{
   transition: background-color 0.2s ease;
+  background-color: rgba(var(--corporate-primary-rgb), 0.08);
+}
+
+/* Purely informational row (e.g. date filter summary) — no per-item action to reveal on hover,
+   so it carries the highlighted background from the start instead of only on :hover. */
+.filter-tooltip-container--static{
   background-color: rgba(var(--corporate-primary-rgb), 0.08);
 }
 /* individual filter - uniform width */

@@ -1,11 +1,12 @@
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { EdaPanel } from "@eda/models/model.index";
-import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService, StyleProviderService } from "@eda/services/service.index";
-import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
+import { AlertService, ChartUtilsService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService, StyleProviderService } from "@eda/services/service.index";
+import { DatePickerConfig } from "@eda/shared/components/date-picker/datePickerConfig";
+import { getDateFilterOperatorLabel, getDateFilterValueLabel } from "@eda/shared/components/date-picker/date-filter-display.util";
 import * as _ from 'lodash';
 import { NgClass } from "@angular/common";
-import { EdaDatePickerComponent } from "@eda/shared/components/shared-components.index";
+import { DatePickerComponent } from "@eda/shared/components/shared-components.index";
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 import { DropdownModule } from "primeng/dropdown";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";  
@@ -40,7 +41,7 @@ const PRIMENG_MODULES = [
 
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component,
-    EdaDatePickerComponent,
+    DatePickerComponent,
 ];
 
 @Component({
@@ -96,6 +97,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public selectedColumn: any;
 
     public columnValues: any[] = [];
+    /** SDA CUSTOM - raw [label, id] rows behind columnValues, used to resolve selectedIdValues in onSelectedItemsChange */
+    public totalValues: any[] = [];
     public tableNodes: any[] = [];
     public autoCompleteValues: string[];
     private itemJustSelected = false;
@@ -131,6 +134,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         private queryBuilderService: QueryBuilderService,
         private alertService: AlertService,
         private fileUtils: FileUtiles,
+        private chartUtils: ChartUtilsService,
     ) { }
 
     private sortByTittle = (a: any, b: any) => {
@@ -187,7 +191,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.globalFilter.selectedColumn = _.cloneDeep(this.globalFilter.selectedTable.columns.find((col: any) => col.column_name == columnName));
 
             this.getColumnsByTable();
-            this.loadColumnValues();
+            if (this.globalFilter.selectedColumn?.column_type === 'date') {
+                this.loadDatesFromFilter();
+            } else {
+                this.loadColumnValues();
+            }
             this.findPanelPathTables();
             this.aliasValue = display_name_alias;
         }
@@ -375,6 +383,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public onChangeSelectedColumn(): void {
         this.aliasValue = '';
         this.globalFilter.selectedItems = [];
+
+        // Date filters use the date-picker (operator + dynamic range), not the autocomplete
+        // multiselect — autocomplete has no meaning for a date column.
+        if (this.globalFilter.selectedColumn?.column_type === 'date') {
+            this.isAutocompleted = false;
+            this.globalFilter.isAutocompleted = false;
+        }
+
         if(!this.globalFilter?.isAutocompleted){
             if (this.globalFilter.selectedColumn.column_type == 'date') {
                 this.loadDatesFromFilter();
@@ -413,6 +429,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
             if (Array.isArray(response) && response.length > 1) {
                 const data = response[1];
+                this.totalValues = data;
                 this.columnValues = data.filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
             }
         } catch (err) {
@@ -422,46 +439,107 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         this.loading = false;
     }
 
+    /**
+     * Resolves the internal code (id) behind each selected label, so the filter can be
+     * compared against the internal code column instead of the label when USE_VALUE_LIST_CODE_FOR_FILTERS
+     * is enabled. Harmless to compute unconditionally: assertGlobalFilterCodes() decides whether to use it.
+     */
+    public onSelectedItemsChange(values: any[]): void {
+        if (this.globalFilter.selectedColumn?.valueListSource === undefined) return;
+
+        this.globalFilter.selectedIdValues = (values || []).map((value: any) => {
+            const match = this.totalValues.find((tv: any) => tv[0] === value);
+            if (match) return match[1];
+            return value === 'emptyString' ? '' : undefined;
+        });
+    }
+
     private loadDatesFromFilter() {
         const filter = this.globalFilter;
 
-        this.datePickerConfigs[filter.id] = new EdaDatePickerConfig();
+        this.datePickerConfigs[filter.id] = new DatePickerConfig();
         const config = this.datePickerConfigs[filter.id];
         config.dateRange = [];
         config.range = filter.selectedRange;
         config.filter = filter;
+        config.dateFilterType = filter.dateFilterType;
         if (filter.selectedItems.length > 0) {
             if (!filter.selectedRange) {
-                let firstDate = filter.selectedItems[0];
-                let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
-                config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
-                config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
+                // Static in/not_in stores its discrete dates nested as selectedItems[0]
+                const isDiscreteList = Array.isArray(filter.selectedItems[0]);
+                if (isDiscreteList) {
+                    // Restore every discrete date, not just the first and last
+                    config.dateRange = filter.selectedItems[0].map((d: string) => new Date(d.replace(/-/g, '/')));
+                } else {
+                    let firstDate = filter.selectedItems[0];
+                    let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
+                    config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
+                    config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
+                }
             }
-        }    
+        }
     }
 
-    public processPickerEvent(event): void {
+    public processPickerEvent(event: any): void {
+        this.globalFilter.dateFilterType = event.operator;
+
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-            if (!event.dates[1]) {
-                event.dates[1] = event.dates[0];
+            const toStr = (date: Date) => {
+                const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                return `${ye}-${mo}-${da}`;
+            };
+
+            const isStaticInNotIn = ['in', 'not_in'].includes(event.operator) && !event.range;
+            if (isStaticInNotIn) {
+                // Discrete, individually picked dates — kept as a single nested list, not a start/end pair
+                this.globalFilter.selectedItems = [event.dates.filter((d: any) => d != null).map(toStr)];
+            } else {
+                if (!event.dates[1]) {
+                    event.dates[1] = event.dates[0];
+                }
+                this.globalFilter.selectedItems = [event.dates[0], event.dates[1]].map(toStr);
             }
 
-            let stringRange = [event.dates[0], event.dates[1]]
-                .map(date => {
-                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-                    return `${ye}-${mo}-${da}`
-                });
-
-            this.globalFilter.selectedItems = stringRange;
             this.globalFilter.selectedRange = event.range;
+            this.globalFilter.dynamicValue = event.range;
         }
+
+        if (!event.dates) {
+            this.globalFilter.selectedItems = [];
+        }
+
+        if (!event.range) {
+            this.globalFilter.selectedRange = null;
+            this.globalFilter.dynamicValue = null;
+        }
+
+        this.loadDatesFromFilter();
+    }
+
+    /** Just the value part of the date-picker's own summary — e.g. "03-08-26 - 09-08-26" or "Avui" */
+    public getDateFilterValueText(): string {
+        const items = this.globalFilter.selectedItems;
+        const isDiscreteList = Array.isArray(items?.[0]);
+        return getDateFilterValueLabel({
+            operator: this.globalFilter.dateFilterType,
+            dynamicRangeValue: this.globalFilter.dynamicValue || this.globalFilter.selectedRange,
+            value1: isDiscreteList ? items[0] : items?.[0],
+            value2: isDiscreteList ? undefined : items?.[1],
+        });
+    }
+
+    /** Just the operator part of the date-picker's own summary, e.g. "=" or "Entre" — rendered as a badge */
+    public getDateFilterOperatorText(): string {
+        return getDateFilterOperatorLabel(this.globalFilter.dateFilterType, this.chartUtils.filterTypesLabels);
     }
 
     public findPanelPathTables() {
         if (this.globalFilter.queryMode !== 'TREE') return;
 
         for (const panel of this.filteredPanels) {
+            if (panel.content?.query?.query?.queryMode === 'SQL') continue;
+
             panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
 
             if (this.isPathStaleForPanel(panel)) {
@@ -491,16 +569,23 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * A previously-saved path is stale when the panel's rootTable no longer matches
+     * the table the path was built from (e.g. the user changed the panel's root table
+     * after the global filter's path was set).
+     */
     private isPathStaleForPanel(panel: any): boolean {
         const pathEntry = this.globalFilter.pathList[panel.id];
         if (!pathEntry || this.isEmpty(pathEntry.selectedTableNodes)) return false;
 
         const currentRootTable = panel.content.query.query.rootTable;
+
         if (!currentRootTable) return false; // panels without rootTable (e.g. SQL): don't validate
 
         const path: any[] = pathEntry.path || [];
 
         if (path.length === 0) {
+
             // 0 hops: the start is at selectedTableNodes.table_id
             return pathEntry.selectedTableNodes?.table_id !== currentRootTable;
         } else {
@@ -508,6 +593,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             return path[0][0]?.split('.')[0] !== currentRootTable;
         }
     }
+
+    /**
+     * Auto-completes the path when the filtered table is a single relation hop away
+     * from the panel's root table, so the user doesn't have to configure it manually.
+     */
 
     private tryAutoFillSingleHop(panel: any): void {
         const filterTableName = this.globalFilter.selectedTable?.table_name;
@@ -522,6 +612,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         const directRelations = (rootTable.relations || []).filter((rel: any) =>
             !rel.bridge && !rel.autorelation && rel.target_table === filterTableName
         );
+
 
         // If multiple relations exist to the same table, use the first primary; user can override manually.
         if (directRelations.length === 0) return;
@@ -551,6 +642,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * If another panel sharing the same root table already has a valid path configured,
+     * replicate it so the report stays consistent (e.g. after duplicating a panel).
+     */
     private tryCopyPathFromSiblingPanel(panel: any): void {
         const rootTableName = panel.content.query.query.rootTable;
 
@@ -572,6 +667,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.globalFilter.panelList.push(panel.id);
         }
     }
+
+    /**
+     * Replicates a manually-selected path to other panels that share the same root table
+     * and don't have a path defined yet, to keep the report consistent.
+     */
 
     private propagatePathToSimilarPanels(sourcePanelId: string, table_id: string, node: any): void {
         const sourcePanel = this.filteredPanels.find((p: any) => p.id === sourcePanelId);
@@ -635,6 +735,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             if (!this.globalFilter.panelList.includes(panel.id)) {
                 this.globalFilter.panelList.push(panel.id);
             }
+
+            this.propagatePathToSimilarPanels(panel.id, table_id, node);
 
             // const existsPath = pathList.find((path: any) => path.panel_id == panel.id);
             // pathList.push({ panel_id: panel.id, path: node.joins || [] });

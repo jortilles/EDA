@@ -157,7 +157,7 @@
             [showClear]="true"
             (onChange)="addFormatDate()"
             appendTo="body"
-            styleClass="w-full">
+            styleClass="w-full format-date-dropdown">
           </p-dropdown>
 
           <div class="mt-4" [pTooltip]="cumulativeSumTooltip" tooltipPosition="left">
@@ -180,52 +180,46 @@
           <div class="grid grid-cols-[42.5%_42.5%_15%] gap-3 items-start">
 
             <!-- Filter type and scope + switch -->
-            <div class="flex flex-col gap-3 w-full">
-              <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
-                [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"
-                i18n-placeholder="@@tiposFiltrosLabel" placeholder="Tipos de filtro"
-                (onChange)="handleFilterChange(filterSelected)">
-              </p-dropdown>
-
-              @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton && aggregationSelected?.value !== 'none') {
-                <p-dropdown
-                  id="whereHaving"
-                  [options]="filterBeforeAfter.elements"
-                  [(ngModel)]="filterBeforeAfterSelected"
-                  optionLabel="label"
-                  [autoDisplayFirst]="true"
-                  [style]="{'width': '100%'}"
-                  i18n-placeholder="@@whereHavingLabel" placeholder="Ámbito del filtro"
-                  (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
+            @if (selectedColumn?.column_type !== 'date') {
+              <div class="flex flex-col gap-3 w-full">
+                <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
+                  [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"
+                  i18n-placeholder="@@tiposFiltrosLabel" placeholder="Tipos de filtro"
+                  (onChange)="handleFilterChange(filterSelected)">
                 </p-dropdown>
-              }
 
-              @if (!showFormatDateSection) {
-                <div class="flex items-center gap-2">
-                  <label class="text-base text-gray-600" i18n="@@optionsLabel" for="filter_options">Opciones</label>
-                  <p-inputSwitch id="filter_options" [(ngModel)]="filter.switch" [disabled]="display.switchButton"
-                    (onChange)="loadDropDrownData()">
-                  </p-inputSwitch>
-                </div>
-              }
-            </div>
+                @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton && aggregationSelected?.value !== 'none') {
+                  <p-dropdown
+                    id="whereHaving"
+                    [options]="filterBeforeAfter.elements"
+                    [(ngModel)]="filterBeforeAfterSelected"
+                    optionLabel="label"
+                    [autoDisplayFirst]="true"
+                    [style]="{'width': '100%'}"
+                    i18n-placeholder="@@whereHavingLabel" placeholder="Ámbito del filtro"
+                    (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
+                  </p-dropdown>
+                }
 
-            <!-- Filter values -->
-            <div class="flex flex-col w-full gap-3">
-              @if (!!display.calendar && !!display.between) {
-                <eda-date-picker #myCalendar class="h-[3.2rem]" (onDatesChanges)="processPickerEvent($event)"></eda-date-picker>
-              }
-              @if (!(display.calendar && display.between) && !filter.switch && (!['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filterSelected?.value))) {
-                @if(selectedColumn?.column_type === 'date') {
-                  <div class="date-picker-single">
-                    <eda-date-picker
-                      (onDatesChanges)="processPickerEvent($event)"
-                      [filterSelected]="filterSelected"
-                      [selectionMode]="'single'">
-                    </eda-date-picker>
+                @if (!showFormatDateSection) {
+                  <div class="flex items-center gap-2">
+                    <label class="text-base text-gray-600" i18n="@@optionsLabel" for="filter_options">Opciones</label>
+                    <p-inputSwitch id="filter_options" [(ngModel)]="filter.switch" [disabled]="display.switchButton"
+                      (onChange)="loadDropDrownData()">
+                    </p-inputSwitch>
                   </div>
                 }
-                @if(!showFormatDateSection){
+              </div>
+            }
+
+            <!-- Filter values -->
+            <div class="flex flex-col gap-3 w-full"
+              [class.col-span-2]="selectedColumn?.column_type === 'date'">
+              @if (selectedColumn?.column_type === 'date') {
+                <date-picker [inline]="true" (onDatesChanges)="processPickerEvent($event)">
+                </date-picker>
+              } @else {
+                @if (!filter.switch && !['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filterSelected?.value)) {
                   <input
                     id="float-input1"
                     class="w-full h-[3.2rem] rounded-md border border-gray-300 px-3 py-2"
@@ -294,14 +288,18 @@
                 @for (filtre of filter.forDisplay; track filtre) {
                   <div class="filter-tag flex items-center justify-between px-3 py-2">
                     <span class="text-base">
-                      @if (filtre.filter_elements.length === 0) {
-                        * {{ selectedColumn.display_name.default }} is {{ filtre.filter_type }}
-                      }
-                      @if (filtre.filter_elements.length === 1) {
-                        * {{ selectedColumn.display_name.default }} {{ filtre.filter_type }} "{{ filtre.filter_elements[0].value1 }}"
-                      }
-                      @if (filtre.filter_elements.length === 2) {
-                        * {{ selectedColumn.display_name.default }} {{ filtre.filter_type }} "{{ filtre.filter_elements[0].value1 }}" Y "{{ filtre.filter_elements[1].value2 }}"
+                      @if (filtre.selectedRange) {
+                        * {{ selectedColumn.display_name.default }} {{ filtre.display_filter_type || filtre.filter_type }} "{{ getRangeLabelForFilter(filtre.selectedRange) }}"
+                      } @else {
+                        @if (filtre.filter_elements.length === 0) {
+                          * {{ selectedColumn.display_name.default }} is {{ filtre.display_filter_type || filtre.filter_type }}
+                        }
+                        @if (filtre.filter_elements.length === 1) {
+                          * {{ selectedColumn.display_name.default }} {{ filtre.display_filter_type || filtre.filter_type }} "{{ filtre.filter_elements[0].value1 }}"
+                        }
+                        @if (filtre.filter_elements.length === 2) {
+                          * {{ selectedColumn.display_name.default }} {{ filtre.display_filter_type || filtre.filter_type }} "{{ filtre.filter_elements[0].value1 }}" Y "{{ filtre.filter_elements[1].value2 }}"
+                        }
                       }
                     </span>
                     <div class="flex items-center gap-2 ml-2 shrink-0">
