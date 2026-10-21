@@ -101,31 +101,6 @@
   transform: translateX(-50%);
 }
 
-/* VIEW-MODE (no core changes): hides edit chrome NOT governed by flags
- * (panel.readonly covers data panels via isEditable()).
- * Fragile by design: if the core changes this markup, revisit here. */
-#myDashboard.dsm-view-mode eda-title-panel {
-  pointer-events: none; /* blocks dblclick-editing and its chrome clicks */
-}
-#myDashboard.dsm-view-mode eda-title-panel .pi-ellipsis-v,
-#myDashboard.dsm-view-mode eda-tabs-panel .pi-ellipsis-v,
-#myDashboard.dsm-view-mode eda-blank-panel .pi-ellipsis-v {
-  display: none; /* ungated panel-menu triggers (titles stay visible) */
-}
-#myDashboard.dsm-view-mode eda-title-panel .pi-lock,
-#myDashboard.dsm-view-mode eda-title-panel .pi-lock-open {
-  display: none; /* title-panel lock runs on internal editMode, not flippable */
-}
-#myDashboard.dsm-view-mode .drag-handler {
-  cursor: default; /* the header bar doubles as drag handle: keep it, just not draggable */
-}
-#myDashboard.dsm-view-mode .gridster-item-resizable-handler {
-  display: none; /* visual handles (gridster off stops the behavior) */
-}
-#myDashboard.dsm-view-mode zoom-control {
-  display: none; /* zoom control: viewing aid, out in view mode */
-}
-
 /* "Unsaved changes" notice: lives in dashboard.page.html with
  * `absolute -top-12 right-16` classes. Centered on top like the toasts,
  * without touching the core. Fragile by design: if the core changes those

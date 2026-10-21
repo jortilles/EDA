@@ -13,8 +13,7 @@ import { SHOW_CUSTOM_ACTION } from "@eda/configs/customizable/customizable_defau
  * dashboard-menu-sda: replaces the three-dot (⠿) menu in the report header
  * with a horizontal toolbar. The only active plugin of type 'report-toolbar'.
  * Receives the DashboardPage instance as input and only depends on it
- * structurally (without refactoring DashboardSidebarComponent). In view mode
- * the toolbar collapses to the view/edit switch (see viewMode).
+ * structurally (without refactoring DashboardSidebarComponent).
  */
 @Component({
   selector: "dashboard-menu-sda",
@@ -47,27 +46,9 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
   public saveLabel = $localize`:@@dashboardSidebarSave:Guardar`;
   public saveTooltip = $localize`:@@dashboardSidebarSaveTooltip:Guardar informe`;
   public moreLabel = $localize`:@@dashboardSidebarMoreOptions:Más`;
-  public viewLabel = $localize`:@@dashboardMenuViewMode:Ver`;
-  public viewTooltip = $localize`:@@dashboardMenuViewModeTooltip:Pasar a modo ver (oculta la edición)`;
-  public editModeLabel = $localize`:@@dashboardMenuEditMode:Editar`;
-  public editModeTooltip = $localize`:@@dashboardMenuEditModeTooltip:Volver a modo edición`;
   /** true when the report has unsaved changes. */
   public hasUnsavedChanges: boolean = false;
-  /**
-   * View mode: hides all editing WITHOUT touching the core. Hot levers:
-   * - `panel.readonly=true` (switches off everything governed by `isEditable()` in panels),
-   * - `gridsterOptions.draggable/resizable.enabled=false` (stops move/resize),
-   * - `dsm-view-mode` class on #myDashboard + global CSS (chrome without flags),
-   * - own toolbar collapsed to the switch. Everything is restored on exit.
-   */
-  public viewMode: boolean = true;
-  private viewModeInit = false;
-  private viewModeTouched = false;
-  private viewModeBackup = new Map<string, any>();
-  private viewModeCompBackup = new Map<string, any>();
-  private gridsterBackup: { draggable?: boolean; resizable?: boolean } = {};
-  /** localStorage key prefix for the per-report view/edit preference. */
-  private readonly VIEW_MODE_STORAGE_PREFIX = 'dsm-view-mode:';
+  private menuInit = false;
 
   private readonly ANONIM_ID = "135792467811111111111112";
   private readonly ADMIN_ID = "135792467811111111111110";
@@ -83,143 +64,20 @@ export class DashboardMenuSdaComponent implements OnInit, OnDestroy, DoCheck {
 
   ngOnDestroy(): void {
     this.notSavedSub?.unsubscribe();
-    if (this.viewMode) this.restoreEditMode();
   }
 
   /**
-   * Re-asserts the view-mode flags on every cycle: panels can be replaced
-   * (e.g. reload with auto-refresh) without going through the plugin.
-   * Idempotent and cheap: only touches what differs.
+   * The report loads async AFTER this plugin is created, so permissions and
+   * menus can only be resolved once the dashboard id is available.
    */
   ngDoCheck(): void {
-    // The report loads async AFTER this plugin is created, so permissions,
-    // menus and the stored per-report mode can only be resolved once the
-    // dashboard id is available. Never touches a mode the user already set.
-    if (!this.viewModeInit && (this.dashboard?.dashboardId || this.dashboard?.dashboard?._id)) {
-      this.viewModeInit = true;
+    if (!this.menuInit && (this.dashboard?.dashboardId || this.dashboard?.dashboard?._id)) {
+      this.menuInit = true;
       this.isEditable = this.canIedit();
       this.isReadOnly = this.isReadOnlyCheck();
-      if (!this.viewModeTouched) {
-        this.viewMode = this.isEditable && this.readStoredViewMode();
-      }
       this.buildAddMenu();
       this.buildMoreMenu();
     }
-    if (!this.viewMode) return;
-    this.ensureViewFlags();
-    this.syncViewModeClass();
-  }
-
-  /** View/edit switch (edit permission only). */
-  public toggleViewMode(): void {
-    this.setViewMode(!this.viewMode);
-  }
-
-  /** Enables or disables view mode, applying or restoring its flags. */
-  public setViewMode(enabled: boolean): void {
-    this.closeMenus();
-    this.viewMode = enabled;
-    this.viewModeTouched = true;
-    this.storeViewMode(enabled);
-    this.syncViewModeClass();
-    if (enabled) {
-      this.ensureViewFlags();
-    } else {
-      this.restoreEditMode();
-    }
-  }
-
-  /** Storage key for this report (null when the dashboard id is unknown). */
-  private viewModeStorageKey(): string | null {
-    const id = this.dashboard?.dashboardId ?? this.dashboard?.dashboard?._id;
-    return id ? `${this.VIEW_MODE_STORAGE_PREFIX}${id}` : null;
-  }
-
-  /** Last view-mode choice for this report; defaults to view (true). */
-  private readStoredViewMode(): boolean {
-    try {
-      const key = this.viewModeStorageKey();
-      if (!key) return true;
-      return localStorage.getItem(key) !== 'edit';
-    } catch {
-      return true;
-    }
-  }
-
-  private storeViewMode(enabled: boolean): void {
-    try {
-      const key = this.viewModeStorageKey();
-      if (key) localStorage.setItem(key, enabled ? 'view' : 'edit');
-    } catch { /* private mode etc.: preference simply not persisted */ }
-  }
-
-  private syncViewModeClass(): void {
-    document.getElementById('myDashboard')?.classList.toggle('dsm-view-mode', this.viewMode);
-  }
-
-  /** Applies readonly + gridster off, stashing the previous values on first touch. */
-  private ensureViewFlags(): void {
-    for (const p of this.dashboard?.panels || []) {
-      if (p && p.readonly !== true) {
-        if (!this.viewModeBackup.has(p.id)) this.viewModeBackup.set(p.id, p.readonly);
-        p.readonly = true;
-      }
-    }
-    // Blank-panel chrome (lock, ...) reads the COMPONENT's readonly snapshot
-    // taken in its ngOnInit, not the panel object: patch live instances too.
-    // Components created later snapshot panel.readonly (already true here).
-    for (const comp of this.dashboard?.edaPanels?.toArray?.() || []) {
-      const compAny = comp as any;
-      if (compAny && compAny.readonly !== true) {
-        if (!this.viewModeCompBackup.has(compAny.panel?.id)) {
-          this.viewModeCompBackup.set(compAny.panel?.id, compAny.readonly);
-        }
-        compAny.readonly = true;
-      }
-    }
-    const g: any = this.dashboard?.gridsterOptions;
-    if (!g) return;
-    let changed = false;
-    if (g.draggable && g.draggable.enabled !== false) {
-      if (this.gridsterBackup.draggable === undefined) this.gridsterBackup.draggable = g.draggable.enabled;
-      g.draggable.enabled = false;
-      changed = true;
-    }
-    if (g.resizable && g.resizable.enabled !== false) {
-      if (this.gridsterBackup.resizable === undefined) this.gridsterBackup.resizable = g.resizable.enabled;
-      g.resizable.enabled = false;
-      changed = true;
-    }
-    if (changed) g.api?.optionsChanged();
-  }
-
-  /** Restores the pre-view-mode values (only what view mode touched). */
-  private restoreEditMode(): void {
-    for (const p of this.dashboard?.panels || []) {
-      if (!p || !this.viewModeBackup.has(p.id)) continue;
-      p.readonly = this.viewModeBackup.get(p.id);
-    }
-    this.viewModeBackup.clear();
-    for (const comp of this.dashboard?.edaPanels?.toArray?.() || []) {
-      const compAny = comp as any;
-      if (!compAny || !this.viewModeCompBackup.has(compAny.panel?.id)) continue;
-      compAny.readonly = this.viewModeCompBackup.get(compAny.panel?.id);
-    }
-    this.viewModeCompBackup.clear();
-    const g: any = this.dashboard?.gridsterOptions;
-    if (g) {
-      let changed = false;
-      if (g.draggable && this.gridsterBackup.draggable !== undefined) {
-        g.draggable.enabled = this.gridsterBackup.draggable;
-        changed = true;
-      }
-      if (g.resizable && this.gridsterBackup.resizable !== undefined) {
-        g.resizable.enabled = this.gridsterBackup.resizable;
-        changed = true;
-      }
-      if (changed) g.api?.optionsChanged();
-    }
-    this.gridsterBackup = {};
   }
 
   /** Primary visible action: Save. */
