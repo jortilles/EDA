@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2"
+  xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="es" target-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <!-- Place here the id-level overrides/additions for this locale, if you ever need any.
+           See src/locale/custom_messages.* for how scripts/i18n-merge.js uses this file:
+           overrides targets by id over messages.en.xlf, and appends ids it doesn't declare. -->
+    </body>
+  </file>
+</xliff>

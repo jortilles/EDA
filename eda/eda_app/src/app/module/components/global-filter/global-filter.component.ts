@@ -60,7 +60,7 @@ export class GlobalFilterComponent implements OnInit {
     public globalFilters: any[] = [];
     public globalFilter: any;
     public styleButton: any = {};
-    @ViewChildren(EdaDatePickerComponent) private datePickers: QueryList<EdaDatePickerComponent>;
+    @ViewChildren(DatePickerComponent) private datePickers: QueryList<DatePickerComponent>;
     public orderDependentFilters: any[] = [];
     loading: boolean = true;
     placeholderText = this.loading ? $localize`:@@Cargando:Cargando...` : '';

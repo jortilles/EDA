@@ -16,6 +16,7 @@ import { EdaColumnChart } from '@eda/components/eda-tables/eda-table/eda-columns
 import { EdaColumnPercentage } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-percentage';
 import { EdaLineD3 } from '@eda/components/eda-line-d3/eda-line';
 import { HeaderModel, SyntheticColumnKind } from './eda-table.header';
+import { USE_EDA_TABLE_TOTALS_LOGIC } from '@eda/configs/customizable/customizable_default';
 
 export interface CellAggregationStrategy {
   /**
@@ -24,8 +25,12 @@ export interface CellAggregationStrategy {
    * percentageOfPageTotal), so a same-mode all-zero column still yields '100.00%', not ' ~ '.
    */
   percentageOfGrandTotal(grandTotalRow: any, percentageCol: EdaColumn): string;
-  /** colSubTotals()'s percentage-column value: this page's share of the full dataset. */
-  percentageOfPageTotal(pageTotalRow: any, percentageCol: EdaColumn, allRows: any[]): string;
+  /**
+   * colSubTotals()'s percentage-column value: this page's share of the full dataset.
+   * `pageRows` (only the rows on the current page) is used by the SDA alternative, which sums
+   * each row's own percentage instead of recomputing the ratio against `allRows`.
+   */
+  percentageOfPageTotal(pageTotalRow: any, percentageCol: EdaColumn, allRows: any[], pageRows?: any[]): string;
   /**
    * colSubTotals()'s cell for a non-numeric, non-percentage column that isn't the first
    * one (e.g. a trend sparkline column, which can't render a chart in a totals row).
@@ -260,13 +265,27 @@ export function coltotals(ctx: TotalsContext): TotalRowCell[] {
     for (let j = 0; j < keys.length; j++) {
       const currentCol = cols.find(col => col.field === keys[j]);
       if (currentCol?.type === 'EdaColumnNumber') {
-        const decimalplaces = (currentCol as EdaColumnNumber).decimals ?? 0;
         const addend = rows[i][keys[j]] === '' ? 0 : parseFloat(rows[i][keys[j]]);
-        row[keys[j]] = parseFloat((parseFloat(row[keys[j]]) + addend).toFixed(decimalplaces));
+        if (USE_EDA_TABLE_TOTALS_LOGIC) {
+          // EDA (current) logic: rounds on every partial sum
+          const decimalplaces = (currentCol as EdaColumnNumber).decimals ?? 0;
+          row[keys[j]] = parseFloat((parseFloat(row[keys[j]]) + addend).toFixed(decimalplaces));
+        } else {
+          // SDA logic: accumulate raw sums first, round once at the end (avoids compounding rounding errors)
+          row[keys[j]] = parseFloat(row[keys[j]]) + addend;
+        }
       } else {
         row[keys[j]] = NaN;
       }
     }
+  }
+  if (!USE_EDA_TABLE_TOTALS_LOGIC) {
+    cols.forEach(col => {
+      if (col.type === 'EdaColumnNumber') {
+        const decimalplaces = (col as EdaColumnNumber).decimals ?? 0;
+        row[col.field] = parseFloat((row[col.field] as number).toFixed(decimalplaces));
+      }
+    });
   }
 
   const totalsRow: TotalRowCell[] = [];
@@ -291,6 +310,7 @@ export function colSubTotals(ctx: TotalsContext, page: number): TotalRowCell[] {
   const partialRow = sumPartialRows(ctx, offset);
   const cols = ctx.getCols();
   const rows = ctx.getRows();
+  const pageRows = rows.slice(offset, offset + ctx.initRows);
 
   const partialTotalsRow: TotalRowCell[] = [];
   let firstNonNumericRow = true;
@@ -298,7 +318,7 @@ export function colSubTotals(ctx: TotalsContext, page: number): TotalRowCell[] {
     if (col.type === 'EdaColumnNumber') {
       partialTotalsRow.push({ data: parseFloat(partialRow[col.field]).toLocaleString('de-DE'), style: 'right', class: 'sub-total-row', border: '', type: col.type });
     } else if (col.type === 'EdaColumnPercentage') {
-      partialTotalsRow.push({ data: ctx.cellAggregation.percentageOfPageTotal(partialRow, col, rows), style: 'right', class: 'sub-total-row', border: '', type: col.type });
+      partialTotalsRow.push({ data: ctx.cellAggregation.percentageOfPageTotal(partialRow, col, rows, pageRows), style: 'right', class: 'sub-total-row', border: '', type: col.type });
     } else if (firstNonNumericRow) {
       partialTotalsRow.push({ data: `${ctx.subTotalsLabel} `, border: ' ', class: 'sub-total-row-header', type: col.type });
       firstNonNumericRow = false;
@@ -467,11 +487,20 @@ export function noRepeatedRows(
 
 export class FlatCellAggregation implements CellAggregationStrategy {
   percentageOfGrandTotal(_grandTotalRow: any, _percentageCol: EdaColumn): string {
-    return '100.00%';
+    // EDA (current) logic: "100.00%" | SDA logic: "100%" (grand total over grand total by definition, avoids rounding errors)
+    return USE_EDA_TABLE_TOTALS_LOGIC ? '100.00%' : '100%';
   }
 
-  percentageOfPageTotal(pageTotalRow: any, percentageCol: EdaColumn, allRows: any[]): string {
+  percentageOfPageTotal(pageTotalRow: any, percentageCol: EdaColumn, allRows: any[], pageRows?: any[]): string {
     const numericField = percentageCol.field.slice(0, -1);
+    if (!USE_EDA_TABLE_TOTALS_LOGIC) {
+      // SDA logic: sum each row's own % value for this page instead of recomputing the ratio, capped at 100%
+      const percentageSum = (pageRows ?? allRows).reduce((sum, row) => {
+        const val = parseFloat(String(row[percentageCol.field]).replace('%', ''));
+        return sum + (isNaN(val) ? 0 : val);
+      }, 0);
+      return Math.min(100, percentageSum).toFixed(2) + '%';
+    }
     const globalSum = allRows.reduce((acc, row) => acc + (row[numericField] === '' ? 0 : parseFloat(row[numericField]) || 0), 0);
     const pageSum = pageTotalRow[numericField] || 0;
     return globalSum !== 0 ? ((pageSum / globalSum) * 100).toFixed(2) + '%' : ' ~ ';

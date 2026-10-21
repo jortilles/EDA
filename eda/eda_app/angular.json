@@ -7,12 +7,12 @@
       "i18n": {
         "sourceLocale": "es",
         "locales": {
-          "en": "src/locale/messages.en.xlf",
-          "ca": "src/locale/messages.ca.xlf",
-          "pl": "src/locale/messages.pl.xlf",
-          "fr": "src/locale/messages.fr.xlf",
-          "de": "src/locale/messages.de.xlf",
-          "pt": "src/locale/messages.pt.xlf"
+          "en": "src/locale/merged/messages.en.xlf",
+          "ca": "src/locale/merged/messages.ca.xlf",
+          "pl": "src/locale/merged/messages.pl.xlf",
+          "fr": "src/locale/merged/messages.fr.xlf",
+          "de": "src/locale/merged/messages.de.xlf",
+          "pt": "src/locale/merged/messages.pt.xlf"
         }
       },
       "projectType": "application",

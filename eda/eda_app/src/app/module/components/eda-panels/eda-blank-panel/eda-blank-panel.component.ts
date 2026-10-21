@@ -2555,6 +2555,9 @@ public tableNodeExpand(event: any): void {
         this.groupByEnabled = !this.groupByEnabled;
     }
 
+    dynamicFiltersInteraction(): void {
+        this.dynamicFilters = !this.dynamicFilters;
+    }
 
     newCurrentQueryUpdate(event: any) {
         this.currentQuery = event;
