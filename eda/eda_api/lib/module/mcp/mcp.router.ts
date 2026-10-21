@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import cluster from 'cluster';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
@@ -20,17 +21,21 @@ const SEED   = require('../../../config/seed').SEED;
 // --- Express router ---
 const McpRouter = express.Router();
 
-// Log de arranque con valores clave
-{
+// Log de arranque: solo en el primer worker para no repetirlo en cluster
+if (cluster.isMaster || (cluster.worker && cluster.worker.id === 1)) {
     const { EDA_APP_URL, MODEL, AVAILABLE, MAX_TOKENS, MCP_EMAIL, MCP_PASSWORD } = MCPUtils.getAnthropicConfig();
-    console.log('[MCP] ========== ROUTER INICIADO ==========');
-    console.log('[MCP] EDA_APP_URL :', EDA_APP_URL || '(no configurado)');
-    console.log('[MCP] MODEL       :', MODEL || '(no configurado)');
-    console.log('[MCP] AVAILABLE   :', AVAILABLE);
-    console.log('[MCP] MAX_TOKENS  :', MAX_TOKENS);
-    console.log('[MCP] MCP_EMAIL   :', MCP_EMAIL || '(no configurado)');
-    console.log('[MCP] MCP_PASSWORD:', MCP_PASSWORD ? '(configurado)' : '(no configurado)');
-    console.log('[MCP] =========================================');
+    if (!AVAILABLE) {
+        console.log('[MCP] No configurado');
+    } else {
+        console.log('[MCP] ========== ROUTER INICIADO ==========');
+        console.log('[MCP] EDA_APP_URL :', EDA_APP_URL || '(no configurado)');
+        console.log('[MCP] MODEL       :', MODEL || '(no configurado)');
+        console.log('[MCP] AVAILABLE   :', AVAILABLE);
+        console.log('[MCP] MAX_TOKENS  :', MAX_TOKENS);
+        console.log('[MCP] MCP_EMAIL   :', MCP_EMAIL || '(no configurado)');
+        console.log('[MCP] MCP_PASSWORD:', MCP_PASSWORD ? '(configurado)' : '(no configurado)');
+        console.log('[MCP] =========================================');
+    }
 }
 
 /**
