@@ -213,6 +213,7 @@ export const DEFAULT_FONT_COLOR: string = '#000000'
 /** Table header background color (header: high opacity, banding: low opacity) */
 export const DEFAULT_TABLE_HEADER_COLOR: string = '#249daa';
 export const DEFAULT_TABLE_BANDING_COLOR: string = '#31bece'; // Same color as the header but with reduced opacity for row banding
+export const DEFAULT_TABLE_TOTAL_COLOR: string = '#5ba38b8c'; // Fixed background for the "row totals" column 
 export const DEFAULT_FONT_FAMILY: string = 'Montserrat';  /* THIS MUST BE SET ALSO IN  \eda_app\src\assets\sass\css\custom.css */
 export const DEFAULT_FONT_SIZE: number = 0;
 export const DEFAULT_TITLE_ALIGN: string = 'flex-start';
@@ -254,3 +255,4 @@ export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner', 'right']; // subse
 export const SHOW_CUSTOM_ACTION: boolean = true; // true → "Acción personalizada" visible en el menú del informe (EDA, existing behaviour) | false → oculta
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = false; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
 export const PRIVATE_EDITION_ACTIVATED: boolean = false;
+export const USE_EDA_TABLE_TOTALS_LOGIC: boolean = true; // true → current EDA logic (existing behaviour, keep as default) | false → SDA logic (sum of row percentages + single final rounding)

@@ -31,7 +31,7 @@
 }
 
 .total-col {
-  background-color: #5ba38b8c !important; 
+  background-color: var(--table-total-col-color, #5ba38b8c) !important;
   color:var(--panel-font-color)!important;
   text-align: right!important;
   font-weight: normal;
@@ -129,8 +129,8 @@ th{
      background: var(--table-header-color) !important;
 }
 
-/* Row banding: even rows with configurable color — exclude cells with gradient/semaphore color */
-.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]) {
+/* Row banding: even rows with configurable color — exclude cells with gradient/semaphore color, and row-total/trend cells which keep their own fixed color */
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]):not([class*="total-col"]):not([class*="trend-col"]) {
      background: var(--table-banding-color) !important;
 }
 .eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
@@ -139,7 +139,7 @@ th{
 
 /* Odd rows: transparent so the panel background color shows through — exclude colored cells */
 .eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd),
-.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]) {
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]):not([class*="total-col"]):not([class*="trend-col"]) {
      background: transparent !important;
 }
 

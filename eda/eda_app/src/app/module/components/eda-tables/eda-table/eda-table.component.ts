@@ -5,7 +5,7 @@ import { Table } from 'primeng/table';
 // import { FilterUtils } from 'primeng/utils';
 import { EdaTableModel } from './eda-table.model';
 import { computeTableColorStyles, getNiceName, ColorStyleSpec } from '@eda/services/utils/eda-table-utils/eda-table.color';
-import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_default';
+import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR, DEFAULT_TABLE_TOTAL_COLOR } from '@eda/configs/customizable/customizable_default';
 import { registerLocaleData } from '@angular/common';
 
 import es from '@angular/common/locales/es';
@@ -230,6 +230,7 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
     public applyBandingColors(headerColor?: string, bandingColor?: string, colorEnabled?: boolean) {
         const el: HTMLElement = this.elementRef.nativeElement.querySelector('.eda-table')
                                || this.elementRef.nativeElement;
+        el.style.setProperty('--table-total-col-color', DEFAULT_TABLE_TOTAL_COLOR);
         if (colorEnabled === false) {
             el.style.setProperty('--table-header-color', '#ffffff');
             el.style.setProperty('--table-banding-color', '#ffffff');
