@@ -749,16 +749,6 @@
                                 </div>
                               </div>
     
-                              <!-- What-If Scenarios -->
-                              @if (showWhatIf) {
-                                <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
-                                  <span i18n="@@scenarios" class="text-base font-medium text-gray-700" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios" tooltipPosition="top">Escenarios</span>
-                                  <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onWhatIfDialog()">
-                                    What If?
-                                  </button>
-                                </div>
-                              }
-  
                               <!-- AND/OR Advanced filters -->
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
                                 <span i18n="@@filtrosAvanzados" class="text-base font-medium text-gray-700" pTooltip="Combina los filtros del panel con operadores AND u OR" i18n-pTooltip="@@tooltipAdvancedFilters" tooltipPosition="top">Filtros avanzados (AND/OR)</span>
@@ -769,6 +759,26 @@
                             </div>
 
                             <div class="flex flex-col justify-between">
+                              <!-- What-If Scenarios -->
+                              @if (showWhatIf) {
+                                <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
+                                  <span i18n="@@scenarios" class="text-base font-medium text-gray-700" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios" tooltipPosition="top">Escenarios</span>
+                                  <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onWhatIfDialog()">
+                                    What If?
+                                  </button>
+                                </div>
+                              }
+
+                              <!-- Click filter configuration (outgoing + bilateral) -->
+                              @if (selectedQueryMode !== 'SQL') {
+                                <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
+                                  <span i18n="@@clickFiltersConfigText" class="text-base font-medium text-gray-700" pTooltip="Decide si este panel es clicable y a qué paneles afecta su click" tooltipPosition="top">Filtros en click</span>
+                                  <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onClickFilterConfig()">
+                                    <span i18n="@@configurarClickFilters">Configurar</span>
+                                  </button>
+                                </div>
+                              }
+
                               <!-- Unique records -->
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
                                 <span i18n="@@uniqueRecordsGrouping" class="text-base font-medium text-gray-700" pTooltip="Aplica GROUP BY a todos los campos para eliminar duplicados" i18n-pTooltip="@@tooltipUniqueRecords" tooltipPosition="top">Registros únicos (agrupación)</span>
@@ -783,16 +793,6 @@
                                   {{ groupByEnabled ? 'Sí' : 'No' }}
                                 </button>
                               </div>
-
-                              <!-- Click filter configuration (outgoing + bilateral) -->
-                              @if (selectedQueryMode !== 'SQL') {
-                                <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
-                                  <span i18n="@@clickFiltersConfigText" class="text-base font-medium text-gray-700" pTooltip="Decide si este panel es clicable y a qué paneles afecta su click" tooltipPosition="top">Filtros en click</span>
-                                  <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onClickFilterConfig()">
-                                    <span i18n="@@configurarClickFilters">Configurar</span>
-                                  </button>
-                                </div>
-                              }
 
                               <!-- Dynamic filters -->
                               @if (dashboard.dynamicFiltersAvailable()) {
