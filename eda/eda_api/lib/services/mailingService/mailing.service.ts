@@ -19,12 +19,28 @@ export class MailingService {
 
   static async mailingService(updateTimestamp = true) {
     const newDate = SchedulerFunctions.totLocalISOTime(new Date()) ;
-    const smtpConfig = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
+    const notConfiguredMsg = `\n\x1b[33m↯\x1b[0m \x1b[1mMailing service not configured, skipping\x1b[0m \x1b[33m↯\x1b[0m\n`;
+
+    let smtpConfig: any;
+    try {
+      smtpConfig = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
+    } catch (err) {
+      console.log(notConfiguredMsg); // SMPT.config.json missing or invalid JSON
+      return;
+    }
+
+    // Placeholder values (XXXX) or empty fields → not configured, skip without contacting the mail server
+    if (!MailingService.isConfigured(smtpConfig)) {
+      console.log(notConfiguredMsg);
+      return;
+    }
+
     const config = { ...smtpConfig, family: 4 };
     const senderEmail = smtpConfig.auth?.user;
     const transporter = nodemailer.createTransport(config);
     transporter.verify(async (error: any) => {
       if (error) {
+        // Only reached with a real (non-placeholder) config, so the full error is useful here
         console.log(`\n\x1b[33m\u21AF\x1b[0m \x1b[1mMailing service is not configured properly, please check your configuration file\x1b[0m \x1b[33m\u21AF\x1b[0m\n`);
         console.log(error);
       } else {
@@ -42,6 +58,22 @@ export class MailingService {
         }
       }
     });
+  }
+
+  /**
+   * True when SMPT.config.json holds real values. Placeholders ('XXXX') or empty required
+   * fields mean the mailing service was never configured.
+   * OAuth2 \u2192 clientId, clientSecret and refreshToken required | SMTP \u2192 pass required.
+   */
+  static isConfigured(cfg: any): boolean {
+    const isPlaceholder = (v: any) => v === undefined || v === null || String(v).trim() === '' || String(v).includes('XXXX');
+
+    if (!cfg || isPlaceholder(cfg.host) || isPlaceholder(cfg.auth?.user)) return false;
+
+    if (cfg.auth?.type === 'OAuth2') {
+      return !['clientId', 'clientSecret', 'refreshToken'].some(key => isPlaceholder(cfg.auth[key]));
+    }
+    return !isPlaceholder(cfg.auth?.pass);
   }
 
   static async alertSending(newDate: string, transporter: any, senderEmail: string, updateTimestamp = true) {
