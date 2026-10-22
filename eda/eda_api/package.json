@@ -13,7 +13,7 @@
         "build": "tsc && npm run movefiles",
         "dev": "ts-node ./lib/server.ts",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "movefiles": "copyfiles -u 4 -a -E lib/module/uploads/users/* dist/module/uploads/users && copyfiles -u 2 -a lib/assets/* dist/assets"
+        "movefiles": "copyfiles -u 4 -a -E lib/module/uploads/users/* dist/module/uploads/users && copyfiles -u 2 -a lib/assets/* dist/assets && copyfiles -u 1 lib/plugins/SdaInfoPlugin/SdaVersion.js dist"
     },
     "author": "",
     "license": "ISC",
