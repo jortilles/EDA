@@ -557,7 +557,17 @@ public tableNodeExpand(event: any): void {
     public async changeHiddenMode(): Promise<void> {
         this.showHiddenColumn = !this.showHiddenColumn;
         const selectedTable = this.getUserSelectedTable();
-        this.loadColumns(selectedTable);
+        // Reload without clearing the attribute search, then re-apply the typed text
+        PanelInteractionUtils.loadColumns(this, selectedTable);
+        this.applyColumnSearch(this.columnInput);
+    }
+
+    /** Filters the attribute list by the search text, ignoring case and accents (e.g. "pub" matches "Público"). */
+    private applyColumnSearch(search: string): void {
+        if (!search) return;
+        const normalize = (text: string) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+        const term = normalize(search);
+        this.columns = this.columns.filter(col => normalize(col.display_name.default).includes(term));
     }
     readonly showWhatIf = SHOW_WHAT_IF;
 
@@ -1263,10 +1273,7 @@ public tableNodeExpand(event: any): void {
         if (!_.isNil(this.userSelectedTable)) {
             const selectedTable = this.getUserSelectedTable();
             PanelInteractionUtils.loadColumns(this, selectedTable) ;
-            if (event.target.value) {
-                this.columns = this.columns
-                    .filter(col => col.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
-            }
+            this.applyColumnSearch(event.target.value);
         }
     }
 
