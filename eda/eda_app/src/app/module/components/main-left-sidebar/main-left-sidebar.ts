@@ -1,10 +1,12 @@
-import { Component, inject, ViewEncapsulation } from '@angular/core';
+import { Component, inject, LOCALE_ID, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
 import Swal from 'sweetalert2';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { UserService } from '@eda/services/service.index';
 import { LogoSidebar } from '@eda/configs/index';
+import { AI_ASSISTANT_MANAGEMENT_AVAILABLE, CUSTOMIZE_SIDE_MENU_ICONS, ENABLED_LANGUAGES } from '@eda/configs/customizable/customizable_default';
+import { IconService } from '@eda/services/utils/icons.service';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import { GroupService } from '@eda/services/api/group.service';
 import { DashboardService } from '@eda/services/api/dashboard.service';
@@ -34,6 +36,8 @@ export class MainLeftSidebarComponent {
   private createDashboardService = inject(CreateDashboardService);
   private groupService = inject(GroupService);
   private dashboardService = inject(DashboardService);
+  private iconService = inject(IconService);
+  private currentLocale = inject(LOCALE_ID);
   public queryParams: any = {};
   public hideWheel: boolean = false;
   public panelMode: boolean = false;
@@ -65,34 +69,35 @@ export class MainLeftSidebarComponent {
   }
 
   assignNavItems() {
+    // Languages come only from the ENABLED_LANGUAGES flag
+    const languageItems = ENABLED_LANGUAGES.map(code => ({
+      lang: code,
+      label: this.getLanguageLabel(code),
+      icon: this.getLanguageIcon(code),
+    }));
+
     // Basic for all users
     const baseNav: NavItem[] = [
-      { path: '/home', icon: 'home' },
+      { path: '/home', icon: this.resolveSideMenuIcon('home') },
       {
-        icon: 'settings',
+        icon: this.resolveSideMenuIcon('settings'),
         items: [
           { path: '/profile', label: $localize`:@@sidebarProfile:Perfil`, icon: 'profile' },
-          { lang: 'EN', label: 'English', icon: 'en-flag' },
-          { lang: 'ES', label: 'Español', icon: 'es-flag' },
-          { lang: 'CA', label: 'Català', icon: 'cat-flag' },
-          { lang: 'FR', label: 'Français', icon: 'fr-flag' },
-          { lang: 'PL', label: 'Polski', icon: 'pl-flag' },
-          { lang: 'DE', label: 'Deutsch', icon: 'de-flag' },
-          { lang: 'PT', label: 'Português', icon: 'pt-flag' },
+          ...languageItems,
         ]
       },
       {
         path: '/about',
-        icon: 'global',
+        icon: this.resolveSideMenuIcon('information'),
         label: $localize`:@@aboutPageTitle:Tutorial`
       },
-      { path: '/logout', icon: 'logout' },
+      { path: '/logout', icon: this.resolveSideMenuIcon('logout') },
     ];
 
 
   // Additional section creation (hidden for EDA_RO)
   const plusSection: NavItem = {
-    icon: 'plus',
+    icon: this.resolveSideMenuIcon('create'),
     items: [
       { path: '/home', label: $localize`:@@tituloNuevoInforme:Crear nuevo informe`, icon: 'plus', command: () => this.createDashboardService.open() },
     ]
@@ -104,7 +109,7 @@ export class MainLeftSidebarComponent {
     
 
   const moleculaSection: NavItem = {
-    icon: 'molecula',
+    icon: this.resolveSideMenuIcon('management'),
     items: []
   };
 
@@ -117,7 +122,7 @@ export class MainLeftSidebarComponent {
       { path: '/admin/models/import-export', label: $localize`:@@dataExportImport:Data Export/Import`, icon: 'arrow-down-on-square-stack' },
       { path: '/admin/email-settings', label: $localize`:@@adminEmail:Gestión de email`, icon: 'at-symbol' },
       { path: '/logs', label: $localize`:@@logsManagement:Visor de logs`, icon: 'clipboard-document-list' },
-      { path: '/admin/ai-settings', label: $localize`:@@AIManagement:Gestión del asistente`, icon: 'sparkles-ai' },
+      ...(AI_ASSISTANT_MANAGEMENT_AVAILABLE ? [{ path: '/admin/ai-settings', label: $localize`:@@AIManagement:Gestión del asistente`, icon: 'sparkles-ai' }] : []),
       { path: '/portal', label: $localize`:@@adminPortal:Portal de datos`, icon: 'global-mini' },
     );
   } else if (this.userService.isDataSourceCreator) {
@@ -132,7 +137,37 @@ export class MainLeftSidebarComponent {
     ...(!this.isObserver ? [plusSection] : []), // create menu (hidden for EDA_RO)
     ...((this.userService.isAdmin || this.userService.isDataSourceCreator) ? [moleculaSection] : []), // management
     ...baseNav.slice(1),    // settings, about, logout
-  ];
+  ].filter(item => item.icon); // entries configured as 'none' / '' are hidden
+  }
+
+  /**
+   * Returns the icon configured in CUSTOMIZE_SIDE_MENU_ICONS for a side-menu entry.
+   * 'none' or '' → null (entry hidden). Unknown icon name → warning in console.
+   */
+  private resolveSideMenuIcon(key: string): string | null {
+    const name = (CUSTOMIZE_SIDE_MENU_ICONS[key] ?? '').trim();
+    if (name === '' || name.toLowerCase() === 'none') return null;
+
+    if (!this.iconService.getIcon(name)) {
+      console.warn(`CUSTOMIZE_SIDE_MENU_ICONS.${key}: icon "${name}" not found in IconService`);
+    }
+    return name;
+  }
+
+  /** Native name of the language (es → Español, ca → Català...), provided by the browser */
+  private getLanguageLabel(code: string): string {
+    try {
+      const name = new Intl.DisplayNames([code], { type: 'language' }).of(code);
+      return name ? name.charAt(0).toLocaleUpperCase(code) + name.slice(1) : code.toUpperCase();
+    } catch (e) {
+      return code.toUpperCase();
+    }
+  }
+
+  /** '<code>-flag' icon (Catalan one is registered as 'cat-flag'), generic fallback icon if there's no flag registered */
+  private getLanguageIcon(code: string): string {
+    const flag = code === 'ca' ? 'cat-flag' : `${code}-flag`;
+    return this.iconService.getIcon(flag) ? flag : 'global';
   }
 
   showOverlay(item: NavItem) {
@@ -224,24 +259,11 @@ menuCommand(item: any, event: MouseEvent) {
   public redirectLocale(lan: string) {
     let baseUrl = window.location.href.split('#')[0];
 
-    if (baseUrl.slice(-4) == '/es/' ||
-        baseUrl.slice(-4) == '/ca/' ||
-        baseUrl.slice(-4) == '/pl/' ||
-        baseUrl.slice(-4) == '/fr/' ||
-        baseUrl.slice(-4) == '/de/' ||
-        baseUrl.slice(-4) == '/pt/' ||
-        baseUrl.slice(-4) == '/en/') {
-        baseUrl = baseUrl.slice(0, baseUrl.length - 3)
+    // Drop the current locale folder (/es/, /ca/...) to get the app root
+    if (baseUrl.endsWith(`/${this.currentLocale}/`)) {
+        baseUrl = baseUrl.slice(0, baseUrl.length - this.currentLocale.length - 1);
     }
-    switch (lan) {
-      case 'EN': window.location.href = baseUrl + 'en/#/home'; break;
-      case 'CA': window.location.href = baseUrl + 'ca/#/home'; break;
-      case 'ES': window.location.href = baseUrl + 'es/#/home'; break;
-      case 'FR': window.location.href = baseUrl + 'fr/#/home'; break;
-      case 'PL'  : window.location.href = baseUrl + 'pl/#/home'; break;
-      case 'DE': window.location.href = baseUrl + 'de/#/home'; break;
-      case 'PT': window.location.href = baseUrl + 'pt/#/home'; break;
-    }
+    window.location.href = baseUrl + lan + '/#/home';
   }
   private getUrlParams(): void {
         this.route.queryParams.subscribe(params => {

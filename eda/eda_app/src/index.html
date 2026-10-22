@@ -51,6 +51,25 @@
         </div>
     </app-root>
 
+    <!-- Translate the preloader label: index.html is not processed by Angular i18n,
+         but the localize build sets <html lang="..."> for each locale -->
+    <script>
+        (function () {
+            var labels = {
+                es: 'Cargando EDA App...',
+                ca: 'Carregant EDA App...',
+                en: 'Loading EDA App...',
+                fr: 'Chargement de EDA App...',
+                pl: 'Ładowanie EDA App...',
+                de: 'EDA App wird geladen...',
+                pt: 'A carregar EDA App...'
+            };
+            var lang = (document.documentElement.lang || 'es').slice(0, 2);
+            var label = document.querySelector('.loader__label');
+            if (label && labels[lang]) label.textContent = labels[lang];
+        })();
+    </script>
+
     <!-- ============================================================== -->
     <!-- All Jquery -->
     <!-- ============================================================== -->

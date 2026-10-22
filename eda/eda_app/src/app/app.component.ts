@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { AlertService, UserService, SpinnerService } from './services/service.index';
 import { Router, RouterModule } from '@angular/router';
-import { CORPORATE_COLORS, DEFAULT_HOME_BACKGROUND_COLOR } from './config/customizable/customizable_default';
+import { Title } from '@angular/platform-browser';
+import { APPLICATION_NAME, CORPORATE_COLORS, DEFAULT_HOME_BACKGROUND_COLOR } from './config/customizable/customizable_default';
 
 import { PrimeNGConfig } from 'primeng/api';
 
@@ -26,12 +27,14 @@ export class AppComponent implements OnInit {
         private router: Router,
         public alertService: AlertService,
         public messageService: MessageService,
-        private config: PrimeNGConfig
+        private config: PrimeNGConfig,
+        private title: Title
     ) { }
 
 
 
     ngOnInit(): void {
+        this.title.setTitle(APPLICATION_NAME);
         this.initializeCorporateColors();
         this.initializeAlertService();
         this.initializeSpinnerService();

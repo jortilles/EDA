@@ -243,7 +243,8 @@ export const  AGG_TYPES  = [
     { label: 'No', value: 'none' }
 ];
 
-/** Feature flags variables  */ 
+/** Feature flags variables  */
+export const APPLICATION_NAME: string = 'Edalitics'; // application name shown in the browser tab title
 export const SHOW_LOCK_IN_PANEL_HEADER: boolean = false; // true → lock button visible in panel header | false → lock in context menu
 export const SHOW_HIDDEN_FIELDS_BUTTON: boolean = false; // true → Show the hidden fields button | false → Don't show the hidden fields button
 export const SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY: boolean = false; // true → only admins see the button | false → all users see it
@@ -253,6 +254,16 @@ export const ALLOWED_QUERY_MODES: string[] = ['EDA', 'SQL', 'TREE']; // ALLOWED_
 export const SHOW_WHAT_IF: boolean = true; // true → "What If?" scenarios button visible (EDA, existing behaviour) | false → hidden
 export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner', 'right']; // subset of 'left' | 'inner' | 'right' shown as join type options. Keep all 3 (EDA, existing behaviour) unless you want to restrict them.
 export const SHOW_CUSTOM_ACTION: boolean = true; // true → "Acción personalizada" visible en el menú del informe (EDA, existing behaviour) | false → oculta
-export const SHOW_ZOOM_IN_SIDEBAR: boolean = true; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
+export const SHOW_ZOOM_IN_SIDEBAR: boolean = true   ; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
 export const PRIVATE_EDITION_ACTIVATED: boolean = false;
 export const USE_EDA_TABLE_TOTALS_LOGIC: boolean = true; // true → current EDA logic (existing behaviour, keep as default) | false → SDA logic (sum of row percentages + single final rounding)
+export const AI_ASSISTANT_MANAGEMENT_AVAILABLE: boolean = true; // true → "Gestión del asistente" visible in the admin menu (EDA, existing behaviour) | false → hidden
+export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService registry) per side-menu entry | 'none' or '' → entry hidden
+    home: 'home',
+    create: 'plus',
+    management: 'molecula',
+    settings: 'settings',
+    information: 'global',
+    logout: 'logout',
+};
+export const ENABLED_LANGUAGES: string[] = ['es', 'ca', 'de', 'en', 'fr', 'pl', 'pt']; // Locale codes shown in the language selector (EDA's 7 locales, all enabled by default). Each one must have a matching build in angular.json's i18n.locales (or be the sourceLocale) — this flag only controls what's offered in the UI, it doesn't build/remove locales.
