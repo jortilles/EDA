@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { PluginRegistry } from './plugin-registry';
 import { IEDAPlugin } from './plugin.interface';
+import { isFirstWorker } from '../utils/cluster.util';
 
 function isEDAPlugin(value: any): value is IEDAPlugin {
     return value && typeof value === 'object'
@@ -25,7 +26,7 @@ for (const dir of pluginDirs) {
 
         if (plugin) {
             PluginRegistry.register(plugin);
-        } else {
+        } else if (isFirstWorker()) {
             console.warn(`[PluginRegistry] La carpeta "${dir}" no exporta un IEDAPlugin válido, se omite.`);
         }
     } catch (error) {

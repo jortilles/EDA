@@ -1,12 +1,13 @@
 import { AbstractConnection } from '../services/connection/abstract-connection';
 import { IAuthPlugin, IDatasourcePlugin, IEDAPlugin, IFeaturePlugin, isAuthPlugin, isDatasourcePlugin } from './plugin.interface';
+import { isFirstWorker } from '../utils/cluster.util';
 
 export class PluginRegistry {
     private static plugins = new Map<string, IEDAPlugin>();
 
     static register(plugin: IEDAPlugin): void {
         this.plugins.set(plugin.type, plugin);
-        console.log(`[PluginRegistry] Registered plugin: ${plugin.type}`);
+        if (isFirstWorker()) console.log(`[PluginRegistry] Registered plugin: ${plugin.type}`);
     }
 
     static get(type: string): IEDAPlugin | undefined {
