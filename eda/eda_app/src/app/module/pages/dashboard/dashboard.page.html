@@ -16,9 +16,6 @@
             class="w-full max-w-md px-3 py-2 bg-gray-100 rounded-md cursor-auto focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
           }
         </div>
-        @if(!hideWheel && menuPlugin){
-          <ng-container *ngComponentOutlet="menuPlugin.component; inputs: { dashboard: this }"></ng-container>
-        }
       </div>
 
       <!-- Filters Section -->
