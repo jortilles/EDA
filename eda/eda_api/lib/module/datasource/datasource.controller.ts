@@ -15,6 +15,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { AggregationTypes } from '../global/model/aggregation-types';
 import { normalizeCsvDecimalSeparators } from '../../utils/csv-decimal.util';
+import { ownerOnlyGrantedRoles } from '../../utils/model-owner-security.util';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -79,12 +80,12 @@ export class DataSourceController {
             /*Edalitics Free */const filters = JSON.stringify(filter) 
             let datasources;
             /*Edalitics Free */if( filters !== '{}'){
-            /*Edalitics Free */    datasources = await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() ;
+            /*Edalitics Free */    datasources = await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options).exec() ;
             /*Edalitics Free */}else{                
             /*Edalitics Free */ if (userID == '135792467811111111111111' ){
-            /*Edalitics Free */    datasources = await DataSource.find( {} , '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
+            /*Edalitics Free */    datasources = await DataSource.find( {} , '_id ds.metadata.model_name ds.security', options).exec();
             /*Edalitics Free */  }else{
-            /*Edalitics Free */    datasources = await DataSource.find(  { 'ds.metadata.model_owner': { $in:[  userID ] } } , '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
+            /*Edalitics Free */    datasources = await DataSource.find(  { 'ds.metadata.model_owner': { $in:[ '135792467811111111111111', userID ] } } , '_id ds.metadata.model_name ds.security', options).exec();
             /*Edalitics Free */  }
             /*Edalitics Free */}
 
@@ -142,12 +143,12 @@ export class DataSourceController {
             /*Edalitics Free */const filters = JSON.stringify(filter) 
             /*Edalitics Free */let datasources;
             /*Edalitics Free */if( filters !== '{}'){
-            /*Edalitics Free */    datasources = await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options).exec() ;
+            /*Edalitics Free */    datasources = await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner ds.metadata.model_description ds.metadata.ia_visibility', options).exec() ;
             /*Edalitics Free */}else{                
             /*Edalitics Free */ if (userID == '135792467811111111111111' ){
-            /*Edalitics Free */    datasources = await DataSource.find( {} , '_id ds.metadata.model_name ds.security', options).exec();
+            /*Edalitics Free */    datasources = await DataSource.find( {} , '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner ds.metadata.model_description ds.metadata.ia_visibility', options).exec();
             /*Edalitics Free */  }else{
-            /*Edalitics Free */    datasources = await DataSource.find(  { 'ds.metadata.model_owner': { $in:[ '135792467811111111111111', userID ] } } , '_id ds.metadata.model_name ds.security', options).exec();
+            /*Edalitics Free */    datasources = await DataSource.find(  { 'ds.metadata.model_owner': { $in:[  userID ] } } , '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner ds.metadata.model_description ds.metadata.ia_visibility', options).exec();
             /*Edalitics Free */  }
             /*Edalitics Free */}
 
@@ -510,9 +511,10 @@ export class DataSourceController {
                         model_name: req.body.name,
                         model_description: req.body.description || '',
                         model_id: '',
-                        model_granted_roles: [],
+                        /*Edalitics Free */ model_granted_roles: ownerOnlyGrantedRoles(req.user),
                         optimized: req.params.optimize === '1',
                         cache_config: CC,
+                        model_owner: req.user._id,
                         ia_visibility: 'FULL'
                     },
                     model: {
@@ -560,7 +562,7 @@ export class DataSourceController {
                         model_name: req.body.name,
                         model_description: req.body.description || '',
                         model_id: '',
-                        model_granted_roles: [],
+                        /*Edalitics Free */ model_granted_roles: ownerOnlyGrantedRoles(req.user),
                         optimized: req.params.optimize === '1',
                         cache_config: CC,
                         filter: req.body.filter,
@@ -700,8 +702,8 @@ export class DataSourceController {
                     metadata: {
                         ...original.ds.metadata,
                         model_name: newName,
-                        model_owner: [req.user._id],
-                        model_granted_roles: []
+                        model_owner: req.user._id,
+                        /*Edalitics Free */ model_granted_roles: ownerOnlyGrantedRoles(req.user)
                     },
                     model: original.ds.model
                 }
@@ -878,7 +880,7 @@ export class DataSourceController {
                         model_name: name,
                         model_description: description || '',
                         model_id: '',
-                        model_granted_roles: [],
+                        /*Edalitics Free */ model_granted_roles: ownerOnlyGrantedRoles(req.user),
                         optimized: !!optimize,
                         cache_config: CC,
                         model_owner: req.user._id,

@@ -5,6 +5,7 @@ import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
 import { PluginRegistry } from '../plugin-registry';
 import DataSource, { IDataSource } from '../../module/datasource/model/datasource.model';
+import { ownerOnlyGrantedRoles } from '../../utils/model-owner-security.util';
 import * as path from 'path';
 import * as crypto from 'crypto';
 
@@ -66,7 +67,7 @@ export class GoogleAnalyticsController {
                         model_name: name,
                         model_description: description || '',
                         model_id: '',
-                        model_granted_roles: [],
+                        /*Edalitics Free */ model_granted_roles: ownerOnlyGrantedRoles(req.user),
                         optimized: !!optimize,
                         cache_config: CC,
                         model_owner: req.user._id,
