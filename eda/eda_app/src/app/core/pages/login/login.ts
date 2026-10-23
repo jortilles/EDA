@@ -46,6 +46,8 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
     singleSignOnMicrosoftAvailable : boolean = false;
     singleSignOnOauthAvailable : boolean = false;
 
+    showUserPasswordLogin: boolean = false;
+
     private googleInitialized = false;        // Initialize google.accounts.id only once
     private googleButtonRendered = false;     // Avoid multiple rendering
 
@@ -125,6 +127,10 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
                     return;
                 }
         }))
+    }
+
+    toggleUserPasswordLogin() {
+        this.showUserPasswordLogin = !this.showUserPasswordLogin;
     }
 
     // Native Login
