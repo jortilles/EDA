@@ -86,6 +86,11 @@ export function renderCategoryIcons<D>(opts: RenderCategoryIconsOptions<D>): voi
         .style('opacity', entrance ? 0 : null);
     enter.append('image')
         .attr('class', 'cat-icon-img')
+        // html2canvas rasterizes the whole <svg> by serializing it to a data URI and drawing that
+        // as one <img>; a cross-origin sub-resource referenced from inside only avoids tainting
+        // that render if it carries its own crossorigin attribute (the top-level useCORS option
+        // only covers html2canvas's own top-level <img>/background-image fetches, not this).
+        .attr('crossorigin', 'anonymous')
         // A dead/unreachable url degrades to "no image" instead of the browser's broken-image glyph.
         .on('error', (event: any) => {
             const g = event?.target?.parentNode;
