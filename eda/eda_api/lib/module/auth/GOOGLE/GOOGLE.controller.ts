@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../global/model/index';
 import ServerLogService from '../../../services/server-log/server-log.service';
+import { randomSsoPasswordHash } from '../../../utils/sso-password.util';
 // import * as path from 'path';
 // import * as fs from 'fs';
 // import { QueryOptions } from 'mongoose';
@@ -47,7 +48,7 @@ export class GoogleController {
                     const userToSave: IUser = new User({
                         name: name,
                         email: email,
-                        password: bcrypt.hashSync(jti, 10),
+                        password: randomSsoPasswordHash(),
                         img: picture,
                         role: ['135792467811111111111115'],  // Edalitics FREE role por defecto
                         creation_date: new Date()
@@ -69,7 +70,7 @@ export class GoogleController {
                     // Si el usuario ya esta registrado, se actualiza algunos datos.
                     userEda.name = name;
                     userEda.email = email;
-                    userEda.password = bcrypt.hashSync(jti, 10); // validar con Juanjo
+                    userEda.password = randomSsoPasswordHash(); // validar con Juanjo
                     
                     try {
                         const userSaved = await userEda.save();

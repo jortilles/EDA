@@ -8,6 +8,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { QueryOptions } from 'mongoose';
 import { GroupController } from '../groups/group.controller';
+import { randomSsoPasswordHash } from '../../../utils/sso-password.util';
 
 
 
@@ -72,7 +73,7 @@ export class UserController {
                         const userToSave: IUser = new User({
                             name: userAD.displayName,
                             email: userAD.username,
-                            password: bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10),
+                            password: randomSsoPasswordHash(),
                             img: body.img,
                             role: adGroupsInMongo,
                             creation_date: new Date()

@@ -103,6 +103,22 @@
 
 </div><!-- end flex-row wrapper -->
 
+@if (groupPickerVisible()) {
+  <eda-dialog2 [display]="true"
+    header="Selecciona el grupo" i18n-header="@@selectGroupDragTitle"
+    width="30vw" height="auto"
+    [disableApply]="groupPickerSelection.length === 0"
+    (apply)="confirmGroupPicker()"
+    (close)="cancelGroupPicker()">
+    <div content class="p-6">
+      <p-multiSelect [(ngModel)]="groupPickerSelection" [options]="grups" [filter]="true"
+        optionLabel="name" optionValue="_id"
+        i18n-defaultLabel="@@multiSelectDefaultLabel" defaultLabel="Selecciona un grupo *"
+        [style]="{width: '100%'}" appendTo="body">
+      </p-multiSelect>
+    </div>
+  </eda-dialog2>
+}
 
 <!-- Template: report search box with advanced filter panel -->
 <ng-template #searchBox>
@@ -168,6 +184,21 @@
               placeholder="Selecciona tags...">
             </p-multiSelect>
           </div>
+          <!-- Groups -->
+          <div class="space-y-1">
+            <label class="text-xs font-medium text-muted-foreground" i18n="@@groupFilterLabel">Grupo</label>
+            <p-multiSelect
+              [options]="groupOptions"
+              [(ngModel)]="advancedGroups"
+              (ngModelChange)="applyAdvancedFilters()"
+              optionLabel="label"
+              optionValue="value"
+              appendTo="body"
+              [style]="{width: '100%'}"
+              i18n-placeholder="@@groupFilterPlaceholder"
+              placeholder="Selecciona grupos...">
+            </p-multiSelect>
+          </div>
         </div>
       </div>
     }
@@ -175,14 +206,24 @@
 </ng-template>
 
 <!-- Template: single dashboard card -->
-<ng-template #reportCard let-report>
-  <div class="report-card rounded-lg border bg-card text-card-foreground shadow-sm transition-colors" [attr.id]="'dashboard-' + report._id">
-    <div class="px-4 py-2 cursor-pointer" (mousedown)="openReport(report, $event)">
+<ng-template #reportCard let-report let-colKey="colKey" let-folderTag="folderTag">
+  <div class="report-card rounded-lg border bg-card text-card-foreground shadow-sm transition-colors relative"
+    [attr.id]="'dashboard-' + report._id"
+    cdkDrag
+    [cdkDragData]="{ type: 'report', report: report, fromColKey: colKey, fromTag: folderTag }"
+    [cdkDragDisabled]="isEditing"
+    (cdkDragStarted)="onCdkDragStarted($event)"
+    (cdkDragMoved)="onCdkDragMoved($event)"
+    (cdkDragEnded)="onCdkDragEnded($event)">
+    <span class="drag-handle absolute left-1 top-2 text-muted-foreground" title="Arrastrar" i18n-title="@@dragHandleTooltip">
+      <eda-icon name="grip-dots" size="sm"></eda-icon>
+    </span>
+    <div class="px-4 py-2 pl-6 cursor-pointer" (click)="openReport(report, $event)" (mousedown)="onCardMouseDown(report, $event)">
       @if(!isEditing || editingReportId !== report._id){
       <h3 class="text-base font-semibold flex items-center justify-between gap-1">
         <span>{{ report.config?.title }}</span>
         <!-- Info icon with tooltip -->
-        <span class="relative group/info inline-flex shrink-0 ml-auto" (mousedown)="$event.stopPropagation()">
+        <span class="relative group/info inline-flex shrink-0 ml-auto" (click)="$event.stopPropagation()" (mousedown)="$event.stopPropagation()">
           <i class="pi pi-info-circle cursor-pointer text-gray-500"></i>
           <div class="absolute z-50 right-0 bottom-full mb-1 w-[32rem] rounded-md border bg-popover p-3 shadow-lg text-sm text-popover-foreground opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-200 pointer-events-none">
             <div class="font-semibold text-base mb-2 break-words">{{ report.config?.title }}</div>
@@ -282,7 +323,8 @@
 
 <!-- Template: column of reports with folder/flat view -->
 <ng-template #reportsTemplate let-reports="reports" let-title="title" let-colKey="colKey">
-  <div class="space-y-4">
+  <div class="space-y-4 column-dropzone rounded-lg transition-colors"
+    [attr.data-col-key]="colKey">
     <!-- On mobile layout the selector already shows the column title -->
     @if (!isMobileLayout()) {
       <h2 class="text-lg font-semibold">{{ title }}</h2>
@@ -297,6 +339,13 @@
       } @else {
         <!-- Active folder (same format as closed, open icon + chevron down) -->
         <div class="folder-card-open rounded-lg border text-card-foreground shadow-sm cursor-pointer transition-colors flex items-center gap-3 px-4 min-h-[calc(5.75rem)]"
+          cdkDrag
+          [cdkDragData]="{ type: 'folder', tag: exp.tag, fromColKey: colKey }"
+          (cdkDragStarted)="onCdkDragStarted($event)"
+          (cdkDragMoved)="onCdkDragMoved($event)"
+          (cdkDragEnded)="onCdkDragEnded($event)"
+          [attr.data-folder-tag]="exp.tag"
+          [attr.data-folder-colkey]="colKey"
           (click)="clickFolder(exp.tag, colKey)">
           <!-- Icon square (open) -->
           <div class="folder-icon-wrap-open shrink-0 flex items-center justify-center w-12 h-12 rounded-lg">
@@ -316,7 +365,7 @@
         </div>
         <!-- Reports in the active folder -->
         @for (report of getReportsByTag(reports, exp.tag); track report._id) {
-          <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report }"></ng-container>
+          <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report, colKey: colKey, folderTag: exp.tag }"></ng-container>
         }
         @empty {
           <div class="rounded-lg bg-muted p-4 text-center text-muted-foreground">
@@ -327,8 +376,18 @@
     } @else if (viewMode() === 'folders') {
       <!-- Folder cards (closed) -->
       @for (tag of getTagsInReports(reports); track tag) {
-        <div class="folder-card rounded-lg border bg-card text-card-foreground shadow-sm cursor-pointer transition-colors flex items-center gap-3 px-4 min-h-[calc(5.75rem)]"
+        <div class="folder-card rounded-lg border bg-card text-card-foreground shadow-sm cursor-pointer transition-colors flex items-center gap-3 px-4 min-h-[calc(5.75rem)] relative"
+          cdkDrag
+          [cdkDragData]="{ type: 'folder', tag: tag, fromColKey: colKey }"
+          (cdkDragStarted)="onCdkDragStarted($event)"
+          (cdkDragMoved)="onCdkDragMoved($event)"
+          (cdkDragEnded)="onCdkDragEnded($event)"
+          [attr.data-folder-tag]="tag"
+          [attr.data-folder-colkey]="colKey"
           (click)="clickFolder(tag, colKey)">
+          <span class="drag-handle absolute left-1 top-2 text-muted-foreground" title="Arrastrar" i18n-title="@@dragHandleTooltip">
+            <eda-icon name="grip-dots" size="sm"></eda-icon>
+          </span>
           <!-- Icon square -->
           <div class="folder-icon-wrap shrink-0 flex items-center justify-center w-12 h-12 rounded-lg">
             <svg xmlns="http://www.w3.org/2000/svg" class="folder-icon w-10 h-10 pl-[4px]" viewBox="0 0 24 24" fill="currentColor">
@@ -349,7 +408,7 @@
 
       <!-- Untagged dashboards below folders -->
       @for (report of getUntaggedReports(reports); track report._id) {
-        <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report }"></ng-container>
+        <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report, colKey: colKey, folderTag: null }"></ng-container>
       }
 
       @if (reports.length === 0) {
@@ -360,7 +419,7 @@
     } @else {
       <!-- Flat view (specific tag selected in filter bar) -->
       @for (report of reports; track report._id) {
-        <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report }"></ng-container>
+        <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report, colKey: colKey, folderTag: null }"></ng-container>
       }
       @empty {
         <div class="mt-4 rounded-lg bg-muted p-4 text-center text-muted-foreground">

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../global/model/index';
 import ServerLogService from '../../../services/server-log/server-log.service';
+import { randomSsoPasswordHash } from '../../../utils/sso-password.util';
 
 // Importaciones necesarias
 import User, { IUser } from '../../admin/users/model/user.model';
@@ -43,7 +44,7 @@ export class MicrosoftController {
                     const userToSave: IUser = new User({
                         name: givenName,
                         email: email,
-                        password: bcrypt.hashSync(oid, 10),
+                        password: randomSsoPasswordHash(),
                         img: 'imagen', // Falta solucionar
                         role: ['135792467811111111111115'],  // Edalitics FREE role por defecto
                         creation_date: new Date()
@@ -65,7 +66,7 @@ export class MicrosoftController {
                     // Si el usuario ya esta registrado, se actualiza algunos datos.
                     userEda.name = givenName;
                     userEda.email = email;
-                    userEda.password = bcrypt.hashSync(oid, 10); 
+                    userEda.password = randomSsoPasswordHash(); 
                     
                     try {
                         const userSaved = await userEda.save(); 

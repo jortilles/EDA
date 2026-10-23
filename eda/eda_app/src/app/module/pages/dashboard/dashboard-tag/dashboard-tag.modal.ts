@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, } from "@angular/forms";
-import { AlertService } from "@eda/services/service.index";
+import { AlertService, DashboardService } from "@eda/services/service.index";
 import { SharedModule } from "@eda/shared/shared.module";
 import { MultiSelectModule } from "primeng/multiselect";
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -26,10 +26,10 @@ export class DashboardTagModal implements OnInit {
   public tags: any[];
   public selectedTags: any[] = [];
 
-  constructor(private alertService: AlertService) { }
+  constructor(private alertService: AlertService, private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
-    // We retrieve all tags stored locally
+    // We retrieve all tags stored locally as an immediate fallback while the full list loads
     const tags = JSON.parse(localStorage.getItem('tags')) || [];
     this.selectedTags = this.dashboard.selectedTags;
     this.tags = _.uniqBy(tags, 'value');
@@ -38,17 +38,41 @@ export class DashboardTagModal implements OnInit {
     if(!Array.isArray(this.tags)){
       this.tags = [this.tags];
     }
-    
+
     // We add the tags present in this document in case they are not stored locally
     if(!Array.isArray(this.selectedTags)){
       this.selectedTags = [this.selectedTags];
-    } 
-  
+    }
+
     // Add tag values that come from imports
     this.tags.push(...this.selectedTags.filter(  (tag): tag is string => typeof tag === "string").map(tag => ({label: tag,value: tag})));
 
     // Remove duplicates by 'label' in case they are already stored locally and avoid repeating them
     this.tags = Array.from(new Map(this.tags.map(item => [item.label, item])).values());
+
+    this.loadExistingTags();
+  }
+
+  // Tags live on each dashboard's config.tag, not in a shared catalog, so other users' tags only
+  // show up here if we pull them from every dashboard the current user can see.
+  private loadExistingTags(): void {
+    this.dashboardService.getDashboards().subscribe((resp: any) => {
+      const allDashboards = [
+        ...(resp?.dashboards || []),
+        ...(resp?.group || []),
+        ...(resp?.publics || []),
+        ...(resp?.shared || []),
+      ];
+
+      const remoteTags = allDashboards
+        .flatMap(db => db?.config?.tag)
+        .filter(tag => tag !== null && tag !== undefined)
+        .flatMap(tag => Array.isArray(tag) ? tag : [tag])
+        .map(tag => typeof tag === 'string' ? { label: tag, value: tag } : tag);
+
+      this.tags.push(...remoteTags);
+      this.tags = Array.from(new Map(this.tags.map(item => [item.label, item])).values());
+    });
   }
 
   public setNewTag() {
