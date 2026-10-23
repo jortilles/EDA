@@ -402,6 +402,24 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._modelMetadata.next(tmpMetadata);
     }
 
+    /**
+     * Posiciones de las tablas en la vista mapa: { [table_name]: { x, y } }.
+     * Se guardan en ds.metadata.map_layout junto con el modelo.
+     */
+    getMapLayout(): { [table: string]: { x: number, y: number } } {
+        const metadata = this._modelMetadata.getValue();
+        if (!metadata || Array.isArray(metadata)) return {};
+        if (!metadata.map_layout) metadata.map_layout = {};
+        return metadata.map_layout;
+    }
+
+    setMapLayout(layout: { [table: string]: { x: number, y: number } }, markUnsaved = true) {
+        const metadata = this._modelMetadata.getValue();
+        if (!metadata || Array.isArray(metadata)) return;
+        metadata.map_layout = layout;
+        if (markUnsaved) this._unsaved.next(true);
+    }
+
     addCacheConfig(config:any){
         let tmpMetadata = this._modelMetadata.getValue();
         tmpMetadata.cache_config = config;

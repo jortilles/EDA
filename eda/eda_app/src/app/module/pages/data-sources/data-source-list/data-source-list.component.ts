@@ -7,6 +7,7 @@ import Swal, { SweetAlertOptions } from 'sweetalert2';
 import { DataSourceDetailComponent } from '../data-source-detail/data-source-detail.component';
 import { PrimengModule } from 'app/core/primeng.module';
 import { DatasourceSaveAsDialog } from '../data-source-save-as/datasource-save-as.dialog';
+import { DataSourceMapComponent } from './data-source-map/data-source-map.component';
 
 import * as _ from 'lodash';
 
@@ -14,7 +15,7 @@ import * as _ from 'lodash';
     standalone: true,
     selector: 'app-data-source-list',
     templateUrl: './data-source-list.component.html',
-    imports: [ PrimengModule, DataSourceDetailComponent, DatasourceSaveAsDialog ],
+    imports: [ PrimengModule, DataSourceDetailComponent, DatasourceSaveAsDialog, DataSourceMapComponent ],
     styleUrls: ['./data-source-list.component.css']
 })
 export class DataSourceListComponent implements OnInit, OnDestroy {
@@ -25,6 +26,8 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     public selectedNode : TreeNode;
     public isSaveAsDialogVisible = false;
     public searchTerm = '';
+    // Vista del modelo de datos: árbol (actual) o mapa
+    public viewMode: 'tree' | 'map' = 'tree';
 
     get filteredTreeData(): any[] {
         if (!this.searchTerm.trim()) return this.treeData;
@@ -153,6 +156,10 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
         }
     }
 
+
+    setViewMode(mode: 'tree' | 'map') {
+        this.viewMode = mode;
+    }
 
     nodeUnselect(event: any) {
         console.log('Unselected:', event.node)

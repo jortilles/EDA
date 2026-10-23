@@ -5995,6 +5995,38 @@ Un saludo.</source>
         <source>se ha fusionado con</source>
         <target>wurde zusammengeführt mit</target>
       </trans-unit>
+<trans-unit id="dsViewTree" datatype="html">
+  <source>Árbol</source>
+  <target>Baum</target>
+</trans-unit>
+<trans-unit id="dsViewMap" datatype="html">
+  <source>Mapa</source>
+  <target>Karte</target>
+</trans-unit>
+<trans-unit id="dsMapFit" datatype="html">
+  <source>Ajustar a la pantalla</source>
+  <target>An Bildschirm anpassen</target>
+</trans-unit>
+<trans-unit id="dsMapRelayout" datatype="html">
+  <source>Reorganizar tablas</source>
+  <target>Tabellen neu anordnen</target>
+</trans-unit>
+<trans-unit id="dsMapModelProps" datatype="html">
+  <source>Propiedades del modelo</source>
+  <target>Modelleigenschaften</target>
+</trans-unit>
+<trans-unit id="dsMapExpand" datatype="html">
+  <source>Mostrar columnas</source>
+  <target>Spalten anzeigen</target>
+</trans-unit>
+<trans-unit id="dsMapCollapse" datatype="html">
+  <source>Ocultar columnas</source>
+  <target>Spalten ausblenden</target>
+</trans-unit>
+<trans-unit id="dsMapEmpty" datatype="html">
+  <source>El modelo de datos no tiene tablas</source>
+  <target>Das Datenmodell enthält keine Tabellen</target>
+</trans-unit>
   </body>
   </file>
 </xliff>

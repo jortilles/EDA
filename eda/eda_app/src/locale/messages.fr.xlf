@@ -8694,6 +8694,38 @@ Cordialement.</target>
   <source>se ha fusionado con</source>
   <target>a été fusionné avec</target>
 </trans-unit>
+<trans-unit id="dsViewTree" datatype="html">
+  <source>Árbol</source>
+  <target>Arbre</target>
+</trans-unit>
+<trans-unit id="dsViewMap" datatype="html">
+  <source>Mapa</source>
+  <target>Carte</target>
+</trans-unit>
+<trans-unit id="dsMapFit" datatype="html">
+  <source>Ajustar a la pantalla</source>
+  <target>Ajuster à l'écran</target>
+</trans-unit>
+<trans-unit id="dsMapRelayout" datatype="html">
+  <source>Reorganizar tablas</source>
+  <target>Réorganiser les tables</target>
+</trans-unit>
+<trans-unit id="dsMapModelProps" datatype="html">
+  <source>Propiedades del modelo</source>
+  <target>Propriétés du modèle</target>
+</trans-unit>
+<trans-unit id="dsMapExpand" datatype="html">
+  <source>Mostrar columnas</source>
+  <target>Afficher les colonnes</target>
+</trans-unit>
+<trans-unit id="dsMapCollapse" datatype="html">
+  <source>Ocultar columnas</source>
+  <target>Masquer les colonnes</target>
+</trans-unit>
+<trans-unit id="dsMapEmpty" datatype="html">
+  <source>El modelo de datos no tiene tablas</source>
+  <target>Le modèle de données ne contient aucune table</target>
+</trans-unit>
 </body>
   </file>
 </xliff>
