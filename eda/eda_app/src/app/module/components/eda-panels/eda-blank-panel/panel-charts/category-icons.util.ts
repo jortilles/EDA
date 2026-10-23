@@ -27,10 +27,14 @@ export function resolveIconHref(raw: string, fileUtils: FileUtiles): string {
 }
 
 /** Fits an image inside a pie/donut/polar-area slice: bounded by its own angular span (arc length
- * at the slice's mid-radius) and by the radial room available (ring thickness / wedge length). */
-export function arcIconSize(startAngle: number, endAngle: number, midRadius: number, radialRoom: number, cap = 90): number {
+ * at `widthRadius`, which callers should pass as the slice's narrowest edge so the estimate stays
+ * conservative) and by the radial room available (ring thickness / wedge length). The badge is a
+ * square centred on the wedge's centroid, while the wedge itself is curved, so both bounds are
+ * shrunk an extra margin (0.7 instead of a tight 0.85) to keep the square's corners from poking
+ * past the slice's arcs. */
+export function arcIconSize(startAngle: number, endAngle: number, widthRadius: number, radialRoom: number, cap = 64): number {
     const span = Math.max(0, endAngle - startAngle);
-    return Math.min(span * midRadius * 0.85, radialRoom * 0.85, cap);
+    return Math.min(span * widthRadius * 0.7, radialRoom * 0.7, cap);
 }
 
 export interface RenderCategoryIconsOptions<D> {
@@ -56,6 +60,10 @@ export interface RenderCategoryIconsOptions<D> {
      * popping in immediately alongside it. Only affects icons entering on THIS call (a legend
      * toggle or resize on an already-rendered chart won't replay it, since those icons already exist). */
     entrance?: { delay: number; duration?: number };
+    /** crop the image to a circle inscribed in its own box - for round charts (donut, polar area)
+     * carrying square source images (e.g. the 640x640 media-library uploads), so a logo's own
+     * square/white background doesn't show as a card floating on the curved chart. */
+    rounded?: boolean;
 }
 
 /**
@@ -67,7 +75,7 @@ export interface RenderCategoryIconsOptions<D> {
  * centred on (x, y).
  */
 export function renderCategoryIcons<D>(opts: RenderCategoryIconsOptions<D>): void {
-    const { group, data, key, x, y, size, href, align = 'xMidYMid meet', entrance } = opts;
+    const { group, data, key, x, y, size, href, align = 'xMidYMid meet', entrance, rounded } = opts;
     const sizeOf = typeof size === 'function' ? size : () => size;
     const alignOf = typeof align === 'function' ? align : () => align;
 
@@ -90,7 +98,8 @@ export function renderCategoryIcons<D>(opts: RenderCategoryIconsOptions<D>): voi
         .attr('preserveAspectRatio', (d: D) => alignOf(d))
         .attr('x', (d: D) => -sizeOf(d) / 2).attr('y', (d: D) => -sizeOf(d) / 2)
         .attr('width', (d: D) => sizeOf(d)).attr('height', (d: D) => sizeOf(d))
-        .attr('href', (d: D) => href(d));
+        .attr('href', (d: D) => href(d))
+        .style('clip-path', rounded ? (d: D) => `circle(${sizeOf(d) / 2}px)` : null);
 
     if (entrance) {
         enter.transition().delay(entrance.delay).duration(entrance.duration ?? 350).style('opacity', 1);
