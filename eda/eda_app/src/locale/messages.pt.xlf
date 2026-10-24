@@ -4985,6 +4985,14 @@ Cumprimentos.</target>
         <source>Modelo exportado correctamente</source>
         <target>Modelo exportado corretamente</target>
       </trans-unit>
+      <trans-unit id="downloadModelJson" datatype="html">
+        <source>Descargar modelo como JSON</source>
+        <target>Descarregar modelo como JSON</target>
+      </trans-unit>
+      <trans-unit id="SureDeleteModel" datatype="html">
+        <source>¿Estás seguro de borrar el modelo <x id="modelName" equiv-text="modelNameHtml"/>?</source>
+        <target>Tem a certeza de que pretende eliminar o modelo <x id="modelName" equiv-text="modelNameHtml"/>?</target>
+      </trans-unit>
       <trans-unit id="problemExportingModel" datatype="html">
         <source>Ocurrió un problema al exportar el modelo</source>
         <target>Ocorreu um problema ao exportar o modelo</target>

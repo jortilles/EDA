@@ -4908,6 +4908,14 @@ Un saludo.</source>
         <source>Modelo exportado correctamente</source>
         <target>Modell erfolgreich exportiert</target>
       </trans-unit>
+      <trans-unit id="downloadModelJson" datatype="html">
+        <source>Descargar modelo como JSON</source>
+        <target>Modell als JSON herunterladen</target>
+      </trans-unit>
+      <trans-unit id="SureDeleteModel" datatype="html">
+        <source>¿Estás seguro de borrar el modelo <x id="modelName" equiv-text="modelNameHtml"/>?</source>
+        <target>Möchten Sie das Modell <x id="modelName" equiv-text="modelNameHtml"/> wirklich löschen?</target>
+      </trans-unit>
       <trans-unit id="problemExportingModel" datatype="html">
         <source>Ocurrió un problema al exportar el modelo</source>
         <target>Beim Exportieren des Modells ist ein Problem aufgetreten</target>
