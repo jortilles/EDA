@@ -15,6 +15,7 @@ import { KpiConfig } from '@eda/components/eda-panels/eda-blank-panel/panel-char
 import { DEFAULT_PALETTE_COLOR, CHART_RENDER_LIMITS } from '@eda/configs/index';
 import { StyleProviderService } from '@eda/services/service.index';
 import { color } from 'd3';
+import { resultColumnKey } from './result-column-key';
 
 export interface EdaChartType {
     label: string;
@@ -955,11 +956,10 @@ export class ChartUtilsService {
     public pretifyLabels(columns: Array<Column>, labels: Array<string>) {
         let names = [];
         labels.forEach(label => {
-            columns.forEach(column => {
-                if (column.column_name === label || column.display_name?.default === label) {
-                    names.push(column.display_name.default);
-                }
-            });
+            // Labels are result keys: table_id.column_name when the column_name is repeated
+            const column = columns.find(c => resultColumnKey(c, columns) === label)
+                || columns.find(c => c.display_name?.default === label);
+            if (column) names.push(column.display_name.default);
         });
 
         return names

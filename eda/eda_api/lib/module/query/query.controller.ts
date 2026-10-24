@@ -3,6 +3,7 @@ import { HttpException } from "../global/model";
 import ManagerConnectionService from "../../services/connection/manager-connection.service";
 import { DashboardController } from "../dashboard/dashboard.controller";
 import formatDate from '../../services/date-format/date-format.service'
+import { resultColumnKey } from '../../utils/result-column-key.util';
 
 
 /** Esta clase sirve para analizar los datos de una consulta si hay duplicados, etc. */
@@ -47,7 +48,7 @@ export class QueryController {
                     if (uniquesForbiddenTables.includes(field.table_id)) {
                         notAllowedColumns.push(field);
                     } else {
-                        mylabels.push(field.column_name);
+                        mylabels.push(resultColumnKey(field, req.body.query.fields));
                         myQuery.fields.push(field);
                     }
                 }
@@ -63,7 +64,7 @@ export class QueryController {
                 // las etiquetas son el nombre técnico...
                 myQuery = JSON.parse(JSON.stringify(req.body.query));
                 for (const field of req.body.query.fields) {
-                    mylabels.push(field.column_name)
+                    mylabels.push(resultColumnKey(field, req.body.query.fields))
                 }
             }
 

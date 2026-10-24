@@ -82,6 +82,7 @@ import { TableDialogComponent } from '@eda/components/component.index';
 import { TableGradientDialogComponent } from '@eda/components/component.index';
 import { KpiEditDialogComponent } from '@eda/components/component.index';
 import { CategoryChartType, getChartCategoryValues } from './panel-charts/chart-category-values.util';
+import { resultColumnKey } from '@eda/services/utils/result-column-key';
 export interface IPanelAction {
     code: string;
     data: any;
@@ -1114,7 +1115,8 @@ public tableNodeExpand(event: any): void {
 
             if(config===null){
                 if(Object.keys(this.copyConfigCrossTable).length !== 0) {
-                    this.axes = this.copyConfigCrossTable['ordering'][0].axes;
+                    // The copy may predate columns added to (or removed from) the query since
+                    this.axes = this.syncAxesWithQuery(this.copyConfigCrossTable['ordering']?.[0]?.axes, _queryForAxesCT);
                     if(configCrossTable) configCrossTable['ordering'] = [{axes: this.axes}];
                 } else {
                     this.axes = this.initAxes(_queryForAxesCT);
@@ -1127,7 +1129,9 @@ public tableNodeExpand(event: any): void {
                     if(config['config']['ordering'].length === 0) {
                         this.axes = this.initAxes(_queryForAxesCT);
                     } else {
-                        this.axes = config['config']['ordering'][0]['axes']
+                        // Columns added to the query after the axes were set must get an axis too
+                        this.axes = this.syncAxesWithQuery(config['config']['ordering'][0]['axes'], _queryForAxesCT);
+                        if(configCrossTable) configCrossTable['ordering'] = [{axes: this.axes}];
                     }
                 }
             }
@@ -1907,50 +1911,37 @@ public tableNodeExpand(event: any): void {
     */
     public initAxes(currenQuery) {
 
-        let currenQueryCopy = [...currenQuery];
+        // column_name holds the result key (table_id.column_name when repeated): the crosstable engine
+        // matches axis items against the table fields, which are keyed by it
+        const toAxisItem = (v: any) => ({ column_name: resultColumnKey(v, currenQuery), column_type: v.column_type, description: v.display_name.default });
 
         // itemX = "Vertical axis" (rows), itemY = "Horizontal axis" (columns), itemZ = numeric measures.
-        let vx = currenQuery.find( (v:any) => v.column_type==='text' || v.column_type==='date')
-        let objx = {}
-        let itemX = []
-        let indexX
+        // Every non-numeric column but the last goes to the rows, the last one to the columns
+        // and every numeric column to the measures.
+        const dimensions = currenQuery.filter((v: any) => v.column_type !== 'numeric').map(toAxisItem);
+        let itemZ = currenQuery.filter((v: any) => v.column_type === 'numeric').map(toAxisItem);
+        let itemX = [];
+        let itemY = [];
 
-        if(vx === undefined) {
-            indexX = currenQueryCopy.findIndex((v:any) => v.column_type==='numeric');
-            vx = currenQueryCopy.find( (v:any) => v.column_type==='numeric')
-            objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
-            itemX = [objx]
-            if (indexX !== -1) {
-                currenQueryCopy.splice(indexX, 1);
-            }
+        if (dimensions.length === 0) {
+            // Only numeric columns: the first one acts as the row dimension
+            itemX = itemZ.slice(0, 1);
+            itemZ = itemZ.slice(1);
+        } else if (dimensions.length === 1) {
+            itemX = dimensions;
         } else {
-            objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
-            itemX = [objx]
+            itemX = dimensions.slice(0, -1);
+            itemY = dimensions.slice(-1);
         }
 
-        let itemY = [];
-        currenQueryCopy.forEach( (v:any) => {
-            if(v.column_type!=='numeric'){
-                itemY.push({column_name: v.column_name, column_type: v.column_type, description: v.display_name.default})
-            }
-        })
-        itemY.shift()
-
-        let itemZ = [];
-        currenQueryCopy.forEach( (v:any) => {
-            if(v.column_type==='numeric'){
-                itemZ.push({column_name: v.column_name, column_type: v.column_type, description: v.display_name.default})
-            }
-        })
-
-        if(itemY.length===0){
+        if(itemY.length===0 && itemZ.length > 0){
             itemY.push(itemZ[0]);
             itemZ.shift();
         }
 
         // Columns with downChild (parent-child families) must always be on the vertical axis (itemX).
         // Any that remain in itemY (horizontal) are moved to itemX.
-        const navParentNames = new Set(currenQuery.filter((c: any) => c.downChild).map((c: any) => c.column_name));
+        const navParentNames = new Set(currenQuery.filter((c: any) => c.downChild).map((c: any) => resultColumnKey(c, currenQuery)));
         const toMoveToVertical: any[] = [];
         itemY = itemY.filter((item: any) => {
             if (navParentNames.has(item.column_name)) { toMoveToVertical.push(item); return false; }
@@ -1960,7 +1951,7 @@ public tableNodeExpand(event: any): void {
 
         // Columns flagged with _forceItemX (previously nav-children detached in pivot mode)
         // must also be moved to itemX to prevent itemY from expanding excessively and causing a potential OOM in the pivot table.
-        const forceXNames = new Set(currenQuery.filter((c: any) => c._forceItemX).map((c: any) => c.column_name));
+        const forceXNames = new Set(currenQuery.filter((c: any) => c._forceItemX).map((c: any) => resultColumnKey(c, currenQuery)));
         if (forceXNames.size > 0) {
             const toForceVertical: any[] = [];
             itemY = itemY.filter((item: any) => {
@@ -1972,15 +1963,46 @@ public tableNodeExpand(event: any): void {
             for (const col of currenQuery) {
                 if (col._forceItemX) delete col._forceItemX;
             }
-            // If itemY is now empty, promote the first numeric measure as a column axis
-            if (itemY.length === 0 && itemZ.length > 0) {
-                itemY.push(itemZ[0]);
-                itemZ.shift();
-            }
+        }
+
+        // If itemY is now empty, promote the first numeric measure as a column axis
+        if (itemY.length === 0 && itemZ.length > 0) {
+            itemY.push(itemZ[0]);
+            itemZ.shift();
         }
 
         return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
 
+    }
+
+    /**
+    * Reconciles previously saved crosstable axes with the current query: drops the axis items
+    * whose column is no longer in the query and adds the new query columns (non-numeric ones
+    * to the rows, numeric ones to the measures), keeping the user's own arrangement for the rest.
+    */
+    public syncAxesWithQuery(axes: any[], currenQuery: any[]): any[] {
+        if (!axes?.[0]) return this.initAxes(currenQuery);
+
+        const sameColumn = (item: any, col: any) =>
+            item.column_name === resultColumnKey(col, currenQuery) && item.description === col.display_name.default;
+        const inQuery = (item: any) => currenQuery.some((col: any) => sameColumn(item, col));
+
+        const itemX = (axes[0].itemX || []).filter(inQuery);
+        const itemY = (axes[0].itemY || []).filter(inQuery);
+        const itemZ = (axes[0].itemZ || []).filter(inQuery);
+        const placed = [...itemX, ...itemY, ...itemZ];
+
+        currenQuery
+            .filter((col: any) => !placed.some((item: any) => sameColumn(item, col)))
+            .forEach((col: any) => {
+                const item = { column_name: resultColumnKey(col, currenQuery), column_type: col.column_type, description: col.display_name.default };
+                (col.column_type === 'numeric' ? itemZ : itemX).push(item);
+            });
+
+        // Any axis left empty means the saved layout no longer fits the query: start over
+        if (itemX.length === 0 || itemY.length === 0 || itemZ.length === 0) return this.initAxes(currenQuery);
+
+        return [{ itemX, itemY, itemZ }];
     }
 
     /**
@@ -2341,32 +2363,18 @@ public tableNodeExpand(event: any): void {
 
         let newCurrentQuery = []
 
-        axes[0].itemX.forEach(e => {
-            currenQuery.forEach(cq => {
-                if(e.description===cq.display_name.default) {
-                    newCurrentQuery.push(cq);
-                    return;
-                }
-            });
-        });
+        // Each axis item takes ONE query column: the one with its result key and display name,
+        // falling back to the display name alone for items saved before keys were stored
+        const pickColumn = (e: any) => {
+            const free = currenQuery.filter(cq => !newCurrentQuery.includes(cq));
+            const cq = free.find(c => e.column_name === resultColumnKey(c, currenQuery) && e.description === c.display_name.default)
+                || free.find(c => e.description === c.display_name.default);
+            if (cq) newCurrentQuery.push(cq);
+        };
 
-        axes[0].itemY.forEach(e => {
-            currenQuery.forEach(cq => {
-                if(e.description===cq.display_name.default) {
-                    newCurrentQuery.push(cq);
-                    return;
-                }
-            });
-        });
-
-        axes[0].itemZ.forEach(e => {
-            currenQuery.forEach(cq => {
-                if(e.description===cq.display_name.default) {
-                    newCurrentQuery.push(cq);
-                    return;
-                }
-            });
-        });
+        axes[0].itemX.forEach(pickColumn);
+        axes[0].itemY.forEach(pickColumn);
+        axes[0].itemZ.forEach(pickColumn);
 
         // Nav-child columns are excluded from axes (drag-drop never shows them) but must
         // remain in currentQuery so the navigation hierarchy stays intact.
@@ -2392,7 +2400,7 @@ public tableNodeExpand(event: any): void {
         // or itemZ (numeric), we move it back to itemX to enforce the restriction.
         if (newAxes[0]) {
             const navParentNames = new Set(
-                this.currentQuery.filter((col: any) => col.downChild).map((col: any) => col.column_name)
+                this.currentQuery.filter((col: any) => col.downChild).map((col: any) => resultColumnKey(col, this.currentQuery))
             );
             const toMoveToVertical: any[] = [];
             newAxes[0].itemY = newAxes[0].itemY.filter((item: any) => {

@@ -94,9 +94,10 @@ const TUPLE_SEP = String.fromCharCode(1);
 
 /**
  * Synthesizes the implicit axis config for the legacy (no drag-drop `ordering`) pivot
- * UI: first text column -> itemX (exactly 1 dimension), remaining text columns -> itemY,
- * every numeric column -> itemZ. Matches today's generatePivotParams()'s auto-selection
- * (getColsInfo()'s text[0] as the main column).
+ * UI: every text column but the last -> itemX (rows), the last text column -> itemY
+ * (columns), every numeric column -> itemZ. A single text column goes to itemX alone.
+ * Must stay in line with EdaBlankPanelComponent.initAxes(), which builds the same default
+ * layout for the drag-drop editor.
  *
  * itemZ[i].description is set to the column's HEADER, not its `.description` metadata —
  * generateAxisParams() matches itemZ entries to columns via `col.header === description`
@@ -107,10 +108,11 @@ const TUPLE_SEP = String.fromCharCode(1);
 export function synthesizeLegacyAxis(sourceCols: EdaColumn[]): AxisConfig {
   const textCols = sourceCols.filter(c => c.type !== 'EdaColumnNumber');
   const numericCols = sourceCols.filter(c => c.type === 'EdaColumnNumber');
-  const [mainCol, ...pivotCols] = textCols;
+  const mainCols = textCols.length > 1 ? textCols.slice(0, -1) : textCols;
+  const pivotCols = textCols.length > 1 ? textCols.slice(-1) : [];
 
   return {
-    itemX: [{ column_name: mainCol.field, description: mainCol.description }],
+    itemX: mainCols.map(c => ({ column_name: c.field, description: c.description })),
     itemY: pivotCols.map(c => ({ column_name: c.field, description: c.description })),
     itemZ: numericCols.map(c => ({ column_name: c.field, description: c.header })),
   };
@@ -193,7 +195,7 @@ interface AxisParams {
   pivotColsLabels: string[];
   pivotCols: EdaColumn[];
   oldRows: any[];
-  xCols: string[][];
+  xTuples: string[][];
   yTuples: string[][];
 }
 
@@ -213,34 +215,34 @@ function generateAxisParams(
     });
   });
 
+  // Both lists follow the AXIS order (itemY / itemX), not the query column order: the tree
+  // and the sparse tuples are built in axis order, so the labels used to read them back
+  // (pivotColsLabels / mainColsLabels) must use that same order.
   const pivotCols: EdaColumn[] = [];
   const pivotColsLabels: string[] = [];
-  sourceCols.forEach(e => {
-    axis.itemY.forEach(y => {
-      const effectiveName = navSub[y.column_name] || y.column_name;
-      if (e.field === effectiveName) {
-        pivotCols.push(e);
-        pivotColsLabels.push(e.field);
-      }
-    });
+  axis.itemY.forEach(y => {
+    const effectiveName = navSub[y.column_name] || y.column_name;
+    const col = sourceCols.find(e => e.field === effectiveName);
+    if (col) {
+      pivotCols.push(col);
+      pivotColsLabels.push(col.field);
+    }
   });
 
   const mainCols: EdaColumn[] = [];
   const mainColsLabels: string[] = [];
-  sourceCols.forEach(e => {
-    axis.itemX.forEach(x => {
-      const effectiveName = navSub[x.column_name] || x.column_name;
-      if (e.field === effectiveName) {
-        mainCols.push(e);
-        mainColsLabels.push(e.field);
-      }
-    });
+  axis.itemX.forEach(x => {
+    const effectiveName = navSub[x.column_name] || x.column_name;
+    const col = sourceCols.find(e => e.field === effectiveName);
+    if (col) {
+      mainCols.push(col);
+      mainColsLabels.push(col.field);
+    }
   });
 
-  // X-dims stay a dense per-dimension unique-value list — buildAxisRows still takes the
-  // full cross product of these for ROWS. X is typically 1 (occasionally 2-3) low-
-  // cardinality dimensions; the explosive case reported in practice is always Y (many
-  // synthetic COLUMNS), so only Y needs the sparse treatment below.
+  // Per-dimension value order of the X axis. The ROWS themselves are sparse like the Y
+  // columns (see xTuples below): with 2+ row dimensions the dense cross product would add
+  // every value combination that never occurs in the data, and can blow up just the same.
   const xCols: string[][] = axis.itemX.map(e => {
     const effectiveName = navSub[e.column_name] || e.column_name;
     return _.orderBy(_.uniq(_.map(sourceRows, effectiveName)));
@@ -260,9 +262,11 @@ function generateAxisParams(
     });
   }
 
+  const xDimNames = axis.itemX.map(e => navSub[e.column_name] || e.column_name);
+  const xTuples = computeSparseYTuples(sourceRows, xDimNames, xCols);
   const yTuples = computeSparseYTuples(sourceRows, yDimNames, yDimValueOrders);
 
-  return { mainCols, mainColsLabels, aggregatedColLabels, pivotColsLabels, pivotCols, oldRows, xCols, yTuples };
+  return { mainCols, mainColsLabels, aggregatedColLabels, pivotColsLabels, pivotCols, oldRows, xTuples, yTuples };
 }
 
 // ---------------------------------------------------------------------------
@@ -271,10 +275,10 @@ function generateAxisParams(
 // populateCrossMap. See the file-level comment for why the leaf fill value alone
 // (0 vs '') is enough to reproduce both the legacy and cross paths' behavior.
 //
-// The tree nests one Map level per X-dimension (dense, as before); the innermost level is
-// a SINGLE flat Map keyed by the joined Y-tuple string, pre-filled with the sentinel for
-// every entry in the (sparse) `yTuples` list — replacing the old per-Y-dimension nested
-// levels, which is where the dense cross product used to get built.
+// The tree has two flat levels: a Map keyed by the joined X-tuple string (one entry per
+// sparse `xTuples` row), each holding a Map keyed by the joined Y-tuple string, pre-filled
+// with the sentinel for every entry in the (sparse) `yTuples` list. Neither axis builds a
+// dense cross product of its dimensions' values anymore.
 // ---------------------------------------------------------------------------
 
 function buildYLeafMap(yTuples: string[][], hasConfiguredAxis: boolean): Map<string, any> {
@@ -283,11 +287,9 @@ function buildYLeafMap(yTuples: string[][], hasConfiguredAxis: boolean): Map<str
   return leaf;
 }
 
-function buildMapTree(xCols: string[][], yTuples: string[][], hasConfiguredAxis: boolean): Map<string, any> {
-  if (xCols.length === 0) return buildYLeafMap(yTuples, hasConfiguredAxis);
-  const [firstXCol, ...restXCols] = xCols;
+function buildMapTree(xTuples: string[][], yTuples: string[][], hasConfiguredAxis: boolean): Map<string, any> {
   const map = new Map<string, any>();
-  firstXCol.forEach(key => map.set(key, buildMapTree(restXCols, yTuples, hasConfiguredAxis)));
+  xTuples.forEach(tuple => map.set(tuple.join(TUPLE_SEP), buildYLeafMap(yTuples, hasConfiguredAxis)));
   return map;
 }
 
@@ -300,8 +302,8 @@ function populateMapTree(
 ): Map<string, any> {
   rows.forEach(row => {
     const value = row[aggregatedColLabel];
-    let node = map;
-    mainColsLabels.forEach(label => { node = node.get(row[label]); });
+    const node = map.get(mainColsLabels.map(label => row[label]).join(TUPLE_SEP));
+    if (!node) return;
     const tupleKey = pivotColsLabels.map(label => row[label]).join(TUPLE_SEP);
     const actualValue = node.get(tupleKey);
     node.set(tupleKey, Number(actualValue) + value);
@@ -311,30 +313,9 @@ function populateMapTree(
 
 // ---------------------------------------------------------------------------
 // buildAxisRows — unifies buildNewRows(+buildNewRowsRecursive) and buildNewCrossRows
-// (+recursiveAccessCrossTable+combineArrays). Both always emit one row per X-axis
-// combination — the row-dropping behavior lives in mergeAxisRows, not here.
+// (+recursiveAccessCrossTable+combineArrays). Both emit one row per X-axis value tuple
+// that occurs in the data — the row-dropping behavior lives in mergeAxisRows, not here.
 // ---------------------------------------------------------------------------
-
-function recursiveAccessCrossTable(map: Map<string, any>, keys: string[]): any {
-  if (keys.length === 0) return map;
-  const [firstKey, ...remainingKeys] = keys;
-  const nextMap = map.get(firstKey);
-  if (nextMap instanceof Map) return recursiveAccessCrossTable(nextMap, remainingKeys);
-  return nextMap;
-}
-
-function combineArrays(arrays: any[][]): any[][] {
-  const result: any[][] = [];
-  function combine(currentIndex: number, currentCombination: any[]) {
-    if (currentIndex === arrays.length) {
-      result.push(currentCombination);
-      return;
-    }
-    arrays[currentIndex].forEach(e => combine(currentIndex + 1, [...currentCombination, e]));
-  }
-  combine(0, []);
-  return result;
-}
 
 // Reads the flat Y-tuple leaf map for one X-combination into { label, value } column
 // entries, in `yTuples` order (so every X-row ends up with the exact same set of column
@@ -349,26 +330,14 @@ function buildAxisRowColumns(leafMap: Map<string, any>, yTuples: string[][], ser
   });
 }
 
-function buildAxisRows(map: Map<string, any>, mainColsLabels: string[], serieLabel: string, xCols: string[][], yTuples: string[][]): any[] {
-  const combinations = combineArrays(xCols);
-
-  const rows: any[] = [];
-  combinations.forEach(element => {
+function buildAxisRows(map: Map<string, any>, mainColsLabels: string[], serieLabel: string, xTuples: string[][], yTuples: string[][]): any[] {
+  return xTuples.map(tuple => {
     const row: any = {};
-    mainColsLabels.forEach((main, j) => { row[main] = element[j]; });
-    rows.push(row);
+    mainColsLabels.forEach((main, j) => { row[main] = tuple[j]; });
+    const leafMap = map.get(tuple.join(TUPLE_SEP));
+    buildAxisRowColumns(leafMap, yTuples, serieLabel).forEach(col => { row[col.label] = col.value; });
+    return row;
   });
-
-  const rowsTest: any[] = [];
-  combinations.forEach(keys => {
-    const row: any = {};
-    const leafMap = recursiveAccessCrossTable(map, keys);
-    const pivotedCols = buildAxisRowColumns(leafMap, yTuples, serieLabel);
-    pivotedCols.forEach(col => { row[col.label] = col.value; });
-    rowsTest.push(row);
-  });
-
-  return rows.map((item, index) => ({ ...item, ...rowsTest[index] }));
 }
 
 // ---------------------------------------------------------------------------
@@ -434,10 +403,10 @@ function buildAxisSerie(
   opts: CrossTableBuildOptions,
 ): AxisSerieResult {
   const params = generateAxisParams(sourceRows, sourceCols, axis, opts);
-  const mapTree = buildMapTree(params.xCols, params.yTuples, opts.hasConfiguredAxis);
+  const mapTree = buildMapTree(params.xTuples, params.yTuples, opts.hasConfiguredAxis);
   const populatedMap = populateMapTree(mapTree, params.oldRows, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
 
-  const newRows = buildAxisRows(populatedMap, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.xCols, params.yTuples);
+  const newRows = buildAxisRows(populatedMap, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.xTuples, params.yTuples);
   const newColNames = Object.keys(newRows[0]).slice(params.mainColsLabels.length);
 
   const tableColumns: EdaColumn[] = [];

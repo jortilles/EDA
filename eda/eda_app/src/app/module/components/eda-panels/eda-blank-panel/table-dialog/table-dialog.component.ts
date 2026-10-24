@@ -58,6 +58,8 @@ export class TableDialogComponent{
 
   public headerColor: string = '';
   public bandingColor: string = '';
+  // Raw text typed in the hex inputs while it is not yet a valid color
+  public colorDrafts: { headerColor?: string; bandingColor?: string } = {};
   public colorEnabled: boolean = true;
 
   /** Ordered column names to nest grouped subtotals by (e.g. [pais, ciudad]) — see
@@ -500,6 +502,16 @@ export class TableDialogComponent{
 
   public toggleColorEnabled() {
     this.colorEnabled = !this.colorEnabled;
+    this.applyBandingPreview();
+  }
+
+  /** Applies a hex color typed by hand: accepts #rgb / #rrggbb, with or without '#' */
+  public onHexColorInput(field: 'headerColor' | 'bandingColor', value: string) {
+    this.colorDrafts[field] = value;
+    const match = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec((value || '').trim());
+    if (!match) return;
+    const digits = match[1].length === 3 ? match[1].split('').map(c => c + c).join('') : match[1];
+    this[field] = `#${digits.toLowerCase()}`;
     this.applyBandingPreview();
   }
 

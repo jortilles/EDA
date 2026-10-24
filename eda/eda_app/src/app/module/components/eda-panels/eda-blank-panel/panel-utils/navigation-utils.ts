@@ -1,5 +1,6 @@
 import { EdaBlankPanelComponent } from '../eda-blank-panel.component';
 import { QueryUtils } from './query-utils';
+import { resultColumnKey } from '@eda/services/utils/result-column-key';
 
 export const NavigationUtils = {
 
@@ -23,13 +24,35 @@ export const NavigationUtils = {
     },
 
     /**
+     * currentQuery without the navigable children: the field set the crosstable axes are
+     * built from (see EdaBlankPanelComponent.initAxes), so root-column keys use it.
+     */
+    getBaseFields(component: EdaBlankPanelComponent): any[] {
+        const navigableChildKeys = new Set<string>();
+        component.currentQuery.forEach((col: any) => {
+            if (col.downChild) navigableChildKeys.add(`${col.downChild.table_id}.${col.downChild.column_name}`);
+        });
+        return component.currentQuery.filter((col: any) => !navigableChildKeys.has(`${col.table_id}.${col.column_name}`));
+    },
+
+    /**
+     * Finds the effective (sent) query column rendered under the table field `field`: its
+     * result key (column_name, or table_id.display_name when the column_name is repeated).
+     */
+    findEffectiveColByField(component: EdaBlankPanelComponent, field: string): any {
+        const effectiveFields = QueryUtils.getEffectiveFields(component);
+        return effectiveFields.find((col: any) => resultColumnKey(col, effectiveFields) === field);
+    },
+
+    /**
      * Finds the active navState entry whose current column matches `field`.
      * Used to detect if clicking "+" on an already-active child should extend the chain.
      */
     findActiveNavEntryForField(component: EdaBlankPanelComponent, field: string): any | undefined {
+        const effectiveFields = QueryUtils.getEffectiveFields(component);
         return component.navState.find((d: any) => {
             const activeCol = d.navPath[d.currentIndex];
-            return activeCol && activeCol.column_name === field;
+            return activeCol && resultColumnKey(activeCol, effectiveFields) === field;
         });
     },
 
@@ -175,7 +198,8 @@ export const NavigationUtils = {
      * Creates a navState entry and adds the initial filter to selectedFilters.
      */
     startNavChain(component: EdaBlankPanelComponent, field: string, value: any): void {
-        const rootCol = component.currentQuery.find((col: any) => col.column_name === field);
+        // `field` is the table field (result key) of the clicked column
+        const rootCol = NavigationUtils.findEffectiveColByField(component, field);
         if (!rootCol?.downChild) return;
         const rootKey = `${rootCol.table_id}.${rootCol.column_name}`;
         const childCol = NavigationUtils.findColInQuery(component, rootCol.downChild.table_id, rootCol.downChild.column_name);
@@ -297,7 +321,8 @@ export const NavigationUtils = {
      * Routes to date-nav for dateNav columns; otherwise handles child nav.
      */
     handleNavIn(component: EdaBlankPanelComponent, event: { field: string; value: any }): void {
-        const dateNavCol = component.currentQuery.find((col: any) => col.column_name === event.field && col.dateNav === true);
+        const clickedCol = NavigationUtils.findEffectiveColByField(component, event.field);
+        const dateNavCol = clickedCol?.dateNav === true ? clickedCol : undefined;
         if (dateNavCol) {
             NavigationUtils.handleDateNavIn(component, dateNavCol, String(event.value));
             return;
@@ -357,16 +382,24 @@ export const NavigationUtils = {
         const activeNavChildNames = new Set<string>();
         const activeChildParentFields: string[] = [];
 
+        // Keys are table fields (result keys). The active child is keyed within the fields
+        // actually sent; the root within the base fields, which is what the crosstable axes
+        // items were keyed with (navColumnSubstitution maps axis item → rendered field).
+        const effectiveFields = QueryUtils.getEffectiveFields(component);
+        const baseFields = NavigationUtils.getBaseFields(component);
+
         for (const entry of component.navState) {
             const activeCol = entry.navPath[entry.currentIndex];
-            childFieldMap[activeCol.column_name] = entry.rootKey;
-            activeNavChildNames.add(activeCol.column_name);
-            const rootColName = entry.navPath[0]?.column_name;
-            if (rootColName && rootColName !== activeCol.column_name) {
-                navColumnSubstitution[rootColName] = activeCol.column_name;
+            const activeField = resultColumnKey(activeCol, effectiveFields);
+            childFieldMap[activeField] = entry.rootKey;
+            activeNavChildNames.add(activeField);
+            const rootCol = entry.navPath[0];
+            const rootField = rootCol ? resultColumnKey(rootCol, baseFields) : undefined;
+            if (rootField && rootField !== activeField) {
+                navColumnSubstitution[rootField] = activeField;
             }
             if (activeCol.downChild) {
-                activeChildParentFields.push(activeCol.column_name);
+                activeChildParentFields.push(activeField);
             }
         }
 
@@ -394,7 +427,9 @@ export const NavigationUtils = {
         parentFields.push(...activeChildParentFields);
 
         for (const col of effectiveFields) {
-            if (activeNavChildNames.has(col.column_name)) continue;
+            // Table field the column is rendered under (table_id.display_name when repeated)
+            const field = resultColumnKey(col, effectiveFields);
+            if (activeNavChildNames.has(field)) continue;
 
             if (col.dateNav === true) {
                 const colKey = `${col.table_id}.${col.column_name}`;
@@ -402,22 +437,22 @@ export const NavigationUtils = {
 
                 if (activeEntry) {
                     if (activeEntry.currentFormatIndex < activeEntry.formatChain.length - 1) {
-                        parentFields.push(col.column_name);
+                        parentFields.push(field);
                     }
-                    childFieldMap[col.column_name] = colKey;
+                    childFieldMap[field] = colKey;
                 } else {
                     const navFmt = NavigationUtils.mapToNavFormat(col.format);
                     if (navFmt === 'year') {
-                        parentFields.push(col.column_name);
+                        parentFields.push(field);
                     } else if (navFmt === 'month') {
-                        parentFields.push(col.column_name);
-                        childFieldMap[col.column_name] = colKey;
+                        parentFields.push(field);
+                        childFieldMap[field] = colKey;
                     } else {
-                        childFieldMap[col.column_name] = colKey;
+                        childFieldMap[field] = colKey;
                     }
                 }
             } else if (col.downChild) {
-                parentFields.push(col.column_name);
+                parentFields.push(field);
             }
         }
 

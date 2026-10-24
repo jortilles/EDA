@@ -6,6 +6,7 @@ import DataSource from '../datasource/model/datasource.model'
 import User from '../admin/users/model/user.model'
 import Group from '../admin/groups/model/group.model'
 import formatDate from '../../services/date-format/date-format.service'
+import { resultColumnKey } from '../../utils/result-column-key.util';
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
 import { ArimaService } from '../../services/prediction/arima.service'
 import { TensorflowService } from '../../services/prediction/tensorflow.service'
@@ -2519,7 +2520,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       myQuery = { fields: [], filters: [] };
       for (let c = 0; c < queryData.fields.length; c++) {
         if (!uniquesForbiddenTables.includes(queryData.fields[c].table_id.split('.')[0])) {
-          mylabels.push(queryData.fields[c].column_name);
+          mylabels.push(resultColumnKey(queryData.fields[c], queryData.fields));
           myQuery.fields.push(queryData.fields[c]);
         }
       }
@@ -2532,7 +2533,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     } else {
       myQuery = JSON.parse(JSON.stringify(queryData));
       for (let c = 0; c < queryData.fields.length; c++) {
-        mylabels.push(queryData.fields[c].column_name);
+        mylabels.push(resultColumnKey(queryData.fields[c], queryData.fields));
       }
     }
 

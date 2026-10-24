@@ -28,6 +28,7 @@ import { ImportPanelDialog } from "@eda/components/import-panel/import-panel.dia
 import { DashboardSaveAsDialog } from "@eda/components/dashboard-save-as/dashboard-save-as.dialog";
 import { DashboardEditStyleDialog } from "@eda/components/dashboard-edit-style/dashboard-edit-style.dialog";
 import { DashboardVisibleModal } from "@eda/components/dashboard-visible/dashboard-visible.modal";
+import { resultColumnKey } from "@eda/services/utils/result-column-key";
 import { DashboardTagModal } from './dashboard-tag/dashboard-tag.modal'; 
 import { DashboardMailConfigModal } from "@eda/components/dashboard-mail-config/dashboard-mail-config.modal";
 import { DashboardCustomActionDialog } from "@eda/components/dashboard-custom-action/dashboard-custom-action.dialog";
@@ -1400,7 +1401,8 @@ public startCountdown(seconds: number) {
         return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);
     }
     else if (['table', 'crosstable', 'treetable'].includes(event.data.panel.content.chart)) {
-      return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);
+      // Table fields are result keys: table_id.column_name when the column_name is repeated
+      return event.data.query.find((query: any) => resultColumnKey(query, event.data.query) === event.data.filterBy);
     }
     else {
       // If the event is from a D3Chart or Leaflet library chart
