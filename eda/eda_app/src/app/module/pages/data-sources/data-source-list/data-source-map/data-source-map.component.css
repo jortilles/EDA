@@ -64,7 +64,7 @@
     cursor: pointer;
 }
 
-/* Toda la fila (no sólo el texto) recibe el clic */
+/* The whole row (not just the text) receives the click */
 :host ::ng-deep .ds-map-column-bg {
     fill: transparent;
     pointer-events: all;
@@ -93,7 +93,7 @@
     fill: var(--corporate-primary);
 }
 
-/* Columnas implicadas en la relación seleccionada */
+/* Columns involved in the selected relation */
 :host ::ng-deep .ds-map-column.related .ds-map-column-bg {
     fill: rgba(245, 158, 11, 0.25);
     stroke: #f59e0b;
@@ -137,15 +137,13 @@
     stroke-width: 40;
 }
 
-:host ::ng-deep .ds-map-link-group:hover .ds-map-link {
-    stroke-width: 10;
-}
-
 :host ::ng-deep .ds-map-link-group.active .ds-map-link {
     stroke: var(--corporate-primary);
     stroke-width: 7;
 }
 
+/* Hover and selection share the same highlight */
+:host ::ng-deep .ds-map-link-group:hover .ds-map-link,
 :host ::ng-deep .ds-map-link-group.selected .ds-map-link {
     stroke: #f59e0b;
     stroke-width: 12;

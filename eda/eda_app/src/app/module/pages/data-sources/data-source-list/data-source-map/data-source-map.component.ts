@@ -12,8 +12,8 @@ interface MapColumn {
 }
 
 interface MapTable {
-    id: string;          // nombre técnico de la tabla (table_name)
-    label: string;       // nombre visible (display_name)
+    id: string;          // technical table name (table_name)
+    label: string;       // display name (display_name)
     node: TreeNode;
     columns: MapColumn[];
     relationColumns: Set<string>;
@@ -34,9 +34,9 @@ interface MapLink {
 }
 
 /**
- * Vista mapa del modelo de datos: diagrama entidad-relación dibujado con d3.
- * Las tablas son nodos (arrastrables) y las relaciones aristas.
- * Al seleccionar una tabla se expande mostrando sus columnas.
+ * Map view of the data model: entity-relationship diagram drawn with d3.
+ * Tables are (draggable) nodes and relations are edges.
+ * Selecting a table expands it to show its columns.
  */
 @Component({
     standalone: true,
@@ -46,45 +46,70 @@ interface MapLink {
     imports: [PrimengModule]
 })
 export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestroy {
+    // Model tree (model > tables > columns) the map is drawn from
     @Input() treeData: TreeNode[] = [];
+    // Node selected in the tree (model, table or column); its table is highlighted on the map
     @Input() selectedNode: TreeNode;
+    // Search text: tables that do not match are dimmed
     @Input() searchTerm = '';
+    // Notifies the parent that a node was selected from the map
     @Output() nodeSelected = new EventEmitter<{ node: TreeNode }>();
 
+    // SVG canvas the map is drawn on
     @ViewChild('svgMap', { static: true }) svgMap: ElementRef<SVGSVGElement>;
 
+    // Translatable texts for buttons and tooltips
     public fitSTR = $localize`:@@dsMapFit:Ajustar a la pantalla`;
     public relayoutSTR = $localize`:@@dsMapRelayout:Reorganizar tablas`;
     public modelPropsSTR = $localize`:@@dsMapModelProps:Propiedades del modelo`;
     public expandSTR = $localize`:@@dsMapExpand:Mostrar columnas`;
     public collapseSTR = $localize`:@@dsMapCollapse:Ocultar columnas`;
 
+    // Model tables as drawn on the map (position, columns, tree node)
     public tables: MapTable[] = [];
+    // Relations between tables, one per pair of tables and columns
     private links: MapLink[] = [];
-    // Posiciones de las tablas por nombre técnico. Es el objeto ds.metadata.map_layout del modelo,
-    // de modo que se guardan con el modelo de datos y se recuperan al volver a abrirlo.
+    // Table positions by technical name. This is the model's ds.metadata.map_layout object,
+    // so they are saved with the data model and restored when it is reopened.
     private positions: { [table: string]: { x: number, y: number } } = {};
 
+    // The view is initialized: nothing can be drawn on the SVG before that
     private viewInit = false;
-    // Tablas expandidas (nombre técnico). Al seleccionar una tabla se expande.
+    // Expanded tables (technical name). Selecting a table expands it.
     private expanded = new Set<string>();
-    // Relación seleccionada (clave de MapLink)
+    // Selected relation (MapLink key)
     private selectedLinkKey: string = null;
-    // Mientras el usuario no haga zoom, desplace el lienzo o arrastre tablas, el mapa se ajusta a la pantalla
+    // Relation under the pointer (MapLink key)
+    private hoveredLinkKey: string = null;
+    // Table being dragged: its relations are highlighted even before it is selected
+    private draggedTableId: string = null;
+    // The selection comes from dragging a table: it is selected without expanding it
+    private skipExpand = false;
+    // Until the user zooms, pans the canvas or drags tables, the map fits itself to the screen
     private autoFit = true;
+    // Detects canvas size changes to refit the map
     private resizeObserver: ResizeObserver;
+    // Id of the pending auto-fit requestAnimationFrame (to avoid queuing several)
     private fitFrame: number;
+    // d3 zoom and pan behavior on the SVG
     private zoom: d3.ZoomBehavior<SVGSVGElement, unknown>;
+    // Root group the zoom transform is applied to
     private root: d3.Selection<SVGGElement, unknown, null, undefined>;
+    // Relations layer (below the tables)
     private linkLayer: d3.Selection<SVGGElement, unknown, null, undefined>;
+    // Tables layer
     private nodeLayer: d3.Selection<SVGGElement, unknown, null, undefined>;
 
-    private readonly WIDTH = 720;
-    private readonly HEADER = 104;
-    private readonly ROW = 76;
-    private readonly PAD = 12;     // margen vertical de la lista de columnas
-    private readonly RADIUS = 16;
-    private readonly TOGGLE = 36;  // radio del botón de expandir / plegar
+    private readonly WIDTH = 720;  // width of each table
+    private readonly HEADER = 104; // height of the header with the table name
+    private readonly ROW = 76;     // height of each column row
+    private readonly PAD = 12;     // vertical padding of the column list
+    private readonly RADIUS = 16;  // radius of the table's rounded corners
+    private readonly TOGGLE = 36;  // radius of the expand / collapse button
+    // Auto-fit limits (e.g. when the model has a single table)
+    private readonly MAX_TABLE_RATIO = 0.7; // a table never takes more than 70% of the canvas
+    private readonly TITLE_FONT = 52;       // font-size of .ds-map-title in the CSS
+    private readonly MAX_TITLE_FONT = 32;   // maximum on-screen size of the table name (px)
 
     constructor(private dataModelService: DataSourceService) { }
 
@@ -93,14 +118,16 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         this.initSvg();
         this.render();
         this.scheduleAutoFit();
-        // Reajusta cuando cambia el tamaño disponible (cambio de vista, ventana, etc.)
+        // Refit when the available size changes (view switch, window resize, etc.)
         this.resizeObserver = new ResizeObserver(() => this.scheduleAutoFit());
         this.resizeObserver.observe(this.svgMap.nativeElement);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['selectedNode']) {
-            this.expandSelected();
+            this.draggedTableId = null;
+            if (this.skipExpand) this.skipExpand = false;
+            else this.expandSelected();
         }
         if (this.viewInit) {
             this.render();
@@ -118,14 +145,14 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         }
     }
 
-    /** Muestra las propiedades del modelo (nodo raíz del árbol) */
+    /** Shows the model properties (root node of the tree) */
     selectModel() {
         if (this.treeData?.length) {
             this.nodeSelected.emit({ node: this.treeData[0] });
         }
     }
 
-    /** Recalcula la disposición de todas las tablas */
+    /** Recomputes the layout of all tables */
     relayout() {
         this.positions = {};
         this.dataModelService.setMapLayout(this.positions);
@@ -133,7 +160,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         this.fitToView(true);
     }
 
-    /** Ajuste automático en el siguiente frame, cuando el contenedor ya tiene su tamaño final */
+    /** Auto-fit on the next frame, once the container has its final size */
     private scheduleAutoFit() {
         if (!this.autoFit) return;
         if (this.fitFrame) cancelAnimationFrame(this.fitFrame);
@@ -143,7 +170,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         });
     }
 
-    /** Ajusta el zoom para que se vean todas las tablas */
+    /** Sets the zoom so that all tables are visible */
     fitToView(animate = true) {
         this.autoFit = true;
         if (!this.tables.length || !this.zoom) return;
@@ -157,7 +184,15 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         const maxY = d3.max(this.tables, t => t.y + this.tableHeight(t));
         const bw = Math.max(maxX - minX, 1);
         const bh = Math.max(maxY - minY, 1);
-        const scale = Math.min(0.9 * width / bw, 0.9 * height / bh, 1);
+        const maxTableHeight = d3.max(this.tables, t => this.tableHeight(t));
+        const scale = Math.min(
+            0.9 * width / bw,
+            0.9 * height / bh,
+            this.MAX_TABLE_RATIO * width / this.WIDTH,
+            this.MAX_TABLE_RATIO * height / maxTableHeight,
+            // Column fonts are proportional to the title, so they are capped as well
+            this.MAX_TITLE_FONT / this.TITLE_FONT
+        );
         const transform = d3.zoomIdentity
             .translate(width / 2 - scale * (minX + bw / 2), height / 2 - scale * (minY + bh / 2))
             .scale(scale);
@@ -173,7 +208,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         const svg = d3.select(this.svgMap.nativeElement);
         svg.selectAll('*').remove();
 
-        // Marcador para los extremos de las relaciones
+        // Marker for the relation endpoints
         svg.append('defs').append('marker')
             .attr('id', 'ds-map-dot')
             .attr('viewBox', '0 0 10 10')
@@ -190,7 +225,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         this.zoom = d3.zoom<SVGSVGElement, unknown>()
             .scaleExtent([0.1, 3])
             .on('zoom', (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
-                // sourceEvent sólo existe cuando el zoom lo provoca el usuario (rueda, arrastre del lienzo)
+                // sourceEvent only exists when the zoom is triggered by the user (wheel, canvas drag)
                 if (event.sourceEvent) this.autoFit = false;
                 this.root.attr('transform', event.transform.toString());
             });
@@ -203,16 +238,16 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         });
     }
 
-    /** Guarda la posición de la tabla movida en el diseño del modelo y lo marca como pendiente de guardar */
+    /** Stores the moved table's position in the model layout and marks the model as unsaved */
     private saveTablePosition(t: MapTable) {
         this.positions[t.id] = { x: Math.round(t.x), y: Math.round(t.y) };
-        // Se descartan las posiciones de tablas que ya no existen en el modelo
+        // Drop positions of tables that no longer exist in the model
         const ids = new Set(this.tables.map(table => table.id));
         Object.keys(this.positions).filter(id => !ids.has(id)).forEach(id => delete this.positions[id]);
         this.dataModelService.setMapLayout(this.positions);
     }
 
-    /** Construye tablas y relaciones a partir del árbol y del modelo de datos */
+    /** Builds tables and relations from the tree and the data model */
     private buildData() {
         this.positions = this.dataModelService.getMapLayout();
 
@@ -251,7 +286,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         const byId = new Map<string, MapTable>();
         tables.forEach(t => byId.set(t.id, t));
 
-        // Las relaciones se guardan en las dos tablas: se eliminan duplicados
+        // Relations are stored in both tables: remove duplicates
         const links = new Map<string, MapLink>();
         model.forEach(table => {
             (table.relations ?? []).filter(r => r.visible !== false).forEach(r => {
@@ -275,7 +310,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         this.links = Array.from(links.values());
     }
 
-    /** Coloca con una simulación de fuerzas las tablas que aún no tienen posición */
+    /** Places tables without a position yet using a force simulation */
     private layoutMissing() {
         const pending = this.tables.filter(t => isNaN(t.x) || isNaN(t.y));
         if (!pending.length) return;
@@ -291,7 +326,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
                 table: t,
                 x: placed ? t.x + half : width / 2 + (Math.random() - 0.5) * 50,
                 y: placed ? t.y + this.HEADER / 2 : height / 2 + (Math.random() - 0.5) * 50,
-                // Las tablas ya colocadas no se mueven
+                // Tables already placed do not move
                 fx: placed ? t.x + half : undefined,
                 fy: placed ? t.y + this.HEADER / 2 : undefined
             };
@@ -342,7 +377,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         return this.selectedTableLabel() === t.label;
     }
 
-    /** Expande la tabla seleccionada (o la tabla de la columna seleccionada) */
+    /** Expands the selected table (or the table of the selected column) */
     private expandSelected() {
         const label = this.selectedTableLabel();
         if (!label) return;
@@ -350,7 +385,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         if (table) this.expanded.add(table.table_name);
     }
 
-    /** Botón de la cabecera: expande (y selecciona) o pliega la tabla */
+    /** Header button: expands (and selects) or collapses the table */
     private toggleTable(t: MapTable) {
         if (this.isExpanded(t)) {
             this.expanded.delete(t.id);
@@ -362,12 +397,21 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         }
     }
 
-    /** La columna forma parte de la relación seleccionada */
+    /** The column is part of the selected relation or of the one under the pointer */
     private isRelatedColumn(t: MapTable, c: MapColumn): boolean {
-        const link = this.links.find(l => l.key === this.selectedLinkKey);
-        if (!link) return false;
-        return (link.source.id === t.id && link.sourceColumns.includes(c.technical))
-            || (link.target.id === t.id && link.targetColumns.includes(c.technical));
+        return this.links
+            .filter(l => l.key === this.selectedLinkKey || l.key === this.hoveredLinkKey)
+            .some(link => (link.source.id === t.id && link.sourceColumns.includes(c.technical))
+                || (link.target.id === t.id && link.targetColumns.includes(c.technical)));
+    }
+
+    /** Updates the related-column highlight without redrawing the tables */
+    private updateRelatedColumns() {
+        const self = this;
+        this.nodeLayer.selectAll<SVGGElement, MapTable>('g.ds-map-table').each(function (t) {
+            d3.select(this).selectAll<SVGGElement, MapColumn>('g.ds-map-column')
+                .classed('related', c => self.isRelatedColumn(t, c));
+        });
     }
 
     private isSelectedColumn(t: MapTable, c: MapColumn): boolean {
@@ -385,7 +429,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         return this.isExpanded(t) ? this.HEADER + t.columns.length * this.ROW + 2 * this.PAD : this.HEADER;
     }
 
-    /** Escribe el texto recortándolo con "…" si no cabe en maxWidth píxeles */
+    /** Writes the text, truncating it with "…" if it does not fit in maxWidth pixels */
     private fitText(el: SVGTextElement, text: string, maxWidth: number) {
         el.textContent = text ?? '';
         if (!text || el.getComputedTextLength() <= maxWidth) return;
@@ -398,9 +442,20 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         el.textContent = text.substring(0, lo) + '…';
     }
 
-    private drawLinks() {
+    /** The relation starts or ends at the selected table or the one being dragged */
+    private isActiveLink(l: MapLink): boolean {
         const selected = this.selectedTableLabel();
-        // Cada relación: línea visible + trazo ancho transparente para poder pulsarla con facilidad
+        return l.source.label === selected || l.target.label === selected
+            || l.source.id === this.draggedTableId || l.target.id === this.draggedTableId;
+    }
+
+    private updateActiveLinks() {
+        this.linkLayer.selectAll<SVGGElement, MapLink>('g.ds-map-link-group')
+            .classed('active', l => this.isActiveLink(l));
+    }
+
+    private drawLinks() {
+        // Each relation: visible line + wide transparent stroke so it is easy to click
         this.linkLayer.selectAll<SVGGElement, MapLink>('g.ds-map-link-group')
             .data(this.links, d => d.key)
             .join(enter => {
@@ -412,7 +467,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
                 g.append('path').attr('class', 'ds-map-link-hit').append('title');
                 return g;
             })
-            .classed('active', d => d.source.label === selected || d.target.label === selected)
+            .classed('active', d => this.isActiveLink(d))
             .classed('selected', d => d.key === this.selectedLinkKey)
             .classed('dimmed', d => !this.matchesSearch(d.source) && !this.matchesSearch(d.target))
             .on('click', (event: MouseEvent, d) => {
@@ -420,14 +475,22 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
                 this.selectedLinkKey = this.selectedLinkKey === d.key ? null : d.key;
                 this.render();
             })
+            .on('mouseenter', (event: MouseEvent, d) => {
+                this.hoveredLinkKey = d.key;
+                this.updateRelatedColumns();
+            })
+            .on('mouseleave', () => {
+                this.hoveredLinkKey = null;
+                this.updateRelatedColumns();
+            })
             .select('title')
             .text(d => `${d.source.label}.${d.sourceColumns.join(', ')} = ${d.target.label}.${d.targetColumns.join(', ')}`);
     }
 
     private drawTables() {
         const self = this;
-        // Se trae la tabla al frente sólo cuando realmente se arrastra: hacer raise() en el mousedown
-        // mueve el nodo en el DOM y el navegador descarta el click (no se podría seleccionar una columna).
+        // The table is brought to the front only when actually dragged: calling raise() on mousedown
+        // moves the node in the DOM and the browser drops the click (a column could not be selected).
         let moved = false;
         const drag = d3.drag<SVGGElement, MapTable>()
             .clickDistance(4)
@@ -438,6 +501,8 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
                 if (!moved) {
                     moved = true;
                     d3.select(this).raise().classed('dragging', true);
+                    self.draggedTableId = d.id;
+                    self.updateActiveLinks();
                 }
                 self.autoFit = false;
                 d.x += event.dx;
@@ -447,7 +512,15 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
             })
             .on('end', function (event, d) {
                 d3.select(this).classed('dragging', false);
-                if (moved) self.saveTablePosition(d);
+                if (!moved) return;
+                self.saveTablePosition(d);
+                // Dragging does not fire click: select the table here (without expanding it)
+                if (self.isSelected(d)) {
+                    self.draggedTableId = null;
+                } else {
+                    self.skipExpand = true;
+                    self.nodeSelected.emit({ node: d.node });
+                }
             });
 
         const groups = this.nodeLayer.selectAll<SVGGElement, MapTable>('g.ds-map-table')
@@ -460,7 +533,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
             .call(drag)
             .on('click', (event: MouseEvent, d) => this.nodeSelected.emit({ node: d.node }));
 
-        // El contenido depende del estado (expandida / seleccionada): se redibuja
+        // The content depends on the state (expanded / selected): redraw it
         groups.selectAll('*').remove();
         groups.each(function (d) {
             const g = d3.select(this);
@@ -486,7 +559,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
                     self.toggleTable(d);
                 });
             toggle.append('circle').attr('r', self.TOGGLE);
-            // Chevron: hacia abajo si está plegada, hacia arriba si está expandida
+            // Chevron: down when collapsed, up when expanded
             const c = self.TOGGLE * 0.4;
             toggle.append('path')
                 .attr('d', expanded ? `M${-c},${c / 2} L0,${-c / 2} L${c},${c / 2}` : `M${-c},${-c / 2} L0,${c / 2} L${c},${-c / 2}`);
@@ -517,7 +590,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
                 .attr('transform', (c, i) => `translate(0,${self.HEADER + self.PAD + i * self.ROW})`)
                 .on('click', (event: MouseEvent, c) => {
                     event.stopPropagation();
-                    // editColumn necesita el padre del nodo
+                    // editColumn needs the node's parent
                     c.node.parent = d.node;
                     self.nodeSelected.emit({ node: c.node });
                 });
@@ -557,7 +630,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         });
     }
 
-    /** Cabecera con las esquinas superiores redondeadas (y las inferiores si está plegada) */
+    /** Header with rounded top corners (and bottom ones when collapsed) */
     private headerPath(expanded: boolean): string {
         const w = this.WIDTH, h = this.HEADER, r = this.RADIUS;
         const bottom = expanded
@@ -570,7 +643,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         return { x: t.x + this.WIDTH / 2, y: t.y + this.tableHeight(t) / 2 };
     }
 
-    /** Punto del borde de la tabla en dirección a (toX, toY) */
+    /** Point on the table border in the direction of (toX, toY) */
     private clip(t: MapTable, toX: number, toY: number) {
         const c = this.center(t);
         const w = this.WIDTH / 2, h = this.tableHeight(t) / 2;
@@ -580,7 +653,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         return { x: c.x + dx * s, y: c.y + dy * s };
     }
 
-    /** Extremo de la relación: la fila de la columna si la tabla está expandida, si no el borde */
+    /** Relation endpoint: the column row if the table is expanded, otherwise the border */
     private anchor(t: MapTable, columns: string[], other: MapTable) {
         const oc = this.center(other);
         const idx = this.isExpanded(t) ? t.columns.findIndex(c => columns.includes(c.technical)) : -1;
@@ -593,8 +666,8 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
     }
 
     private updateLinks() {
-        // El dato actualizado está en el grupo; d3 no lo propaga a las líneas hijas en los redibujados,
-        // así que se toma del grupo para que las relaciones sigan siempre a las tablas actuales.
+        // The updated datum lives on the group; d3 does not propagate it to child paths on redraws,
+        // so it is read from the group to keep relations following the current tables.
         const self = this;
         this.linkLayer.selectAll<SVGGElement, MapLink>('g.ds-map-link-group')
             .each(function (l) {
@@ -604,7 +677,7 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
 
     private linkPath(l: MapLink): string {
         if (l.source === l.target) {
-            // Relación de una tabla consigo misma: bucle en el lateral derecho
+            // Self-relation of a table: loop on the right side
             const t = l.source;
             const x = t.x + this.WIDTH;
             const y1 = t.y + 30, y2 = t.y + this.tableHeight(t) - 30;
