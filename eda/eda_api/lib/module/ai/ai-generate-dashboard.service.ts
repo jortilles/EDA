@@ -10,6 +10,7 @@ import DataSource from '../datasource/model/datasource.model';
 import Dashboard from '../dashboard/model/dashboard.model';
 import AIUsage from './model/ai-usage.model';
 import { DASHBOARD_SYSTEM_PROMPT, buildUserPrompt } from './ai-prompts';
+import { resultColumnKey } from '../../utils/result-column-key.util';
 
 const GRID_W = 40;
 const KPI_H = 4;
@@ -282,7 +283,7 @@ function buildPanel(
                     queryLimit: aiPanel.queryLimit || 1000,
                     groupByEnabled: true,
                 },
-                output: { labels: fields.map((f: any) => f.column_name), data: [] },
+                output: { labels: fields.map((f: any) => resultColumnKey(f, fields)), data: [] },
             },
             chart: chartType,
             edaChart: chartType,

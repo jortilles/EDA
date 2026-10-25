@@ -9,6 +9,8 @@ import { DataSourceNamesService } from '@eda/services/shared/datasource-names.se
 import * as _ from 'lodash';
 import { Router } from '@angular/router';
 import { DropdownModule } from 'primeng/dropdown';
+import { AlertService, DataSourceService, SpinnerService } from '@eda/services/service.index';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-datasources-list',
@@ -20,6 +22,9 @@ import { DropdownModule } from 'primeng/dropdown';
 export class DataSourceListPage implements OnInit {
   private datasourceService = inject(DataSourceNamesService);
   private router = inject(Router);
+  private dataModelService = inject(DataSourceService);
+  private alertService = inject(AlertService);
+  private spinnerService = inject(SpinnerService);
 
   dataSources: any[] = [];
 
@@ -89,6 +94,52 @@ export class DataSourceListPage implements OnInit {
 
   handleCreateDataSource() {
     this.router.navigate(['/admin/data-source/new']);
+  }
+
+  handleDownloadDataSource(dataSource: any) {
+    this.spinnerService.on();
+    this.dataModelService.getDataSourceById(dataSource._id).subscribe(
+      (data: any) => {
+        const blob = new Blob([JSON.stringify(data.dataSource)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        // Keep the file name filesystem-safe
+        link.download = `${(dataSource.model_name || 'model').replace(/[\\/:*?"<>|]/g, '_')}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        this.spinnerService.off();
+        this.alertService.addSuccess($localize`:@@modelExportedSucessfully:Modelo exportado correctamente`);
+      },
+      () => {
+        this.spinnerService.off();
+        this.alertService.addError($localize`:@@problemExportingModel:Ocurrió un problema al exportar el modelo`);
+      }
+    );
+  }
+
+  handleDeleteDataSource(dataSource: any) {
+    Swal.fire(this.dataModelService.deleteModelConfirmOptions(dataSource.model_name)).then(result => {
+      if (!result.value) return;
+      this.spinnerService.on();
+      this.dataModelService.deleteModel(dataSource._id).subscribe(
+        () => {
+          this.spinnerService.off();
+          Swal.fire($localize`:@@Deleted:¡Eliminado!`, $localize`:@@DeleteSuccess:Modelo eliminado correctamente.`, 'success');
+          // Drop the editor state if it still holds the deleted model
+          if (this.dataModelService.model_id === dataSource._id) this.dataModelService.cleanAll();
+          this.dataSources = this.dataSources.filter(ds => ds._id !== dataSource._id);
+          // Step back when the current page becomes empty
+          if (this.currentPage > 1 && this.currentPage > this.totalPages()) this.currentPage = this.totalPages();
+        },
+        err => {
+          this.spinnerService.off();
+          this.alertService.addError(err);
+        }
+      );
+    });
   }
 
 }

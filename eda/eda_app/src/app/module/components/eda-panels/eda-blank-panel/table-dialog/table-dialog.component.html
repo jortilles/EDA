@@ -157,7 +157,7 @@
           <div class="flex items-center justify-between border rounded-lg p-3 bg-white">
             <span class="font-medium" i18n="@@tableHeaderColor">Color cabecera</span>
             <div class="flex items-center gap-2">
-              <input class="text-base text-right text-slate-500 font-mono w-20" [(ngModel)]="headerColor">
+              <input class="text-base text-right text-slate-500 font-mono w-20" [ngModel]="colorDrafts.headerColor ?? headerColor" (ngModelChange)="onHexColorInput('headerColor', $event)" (blur)="colorDrafts.headerColor = undefined">
               <p-colorPicker [(ngModel)]="headerColor" format="hex" appendTo="body" (onChange)="applyBandingPreview()" />
             </div>
           </div>
@@ -165,7 +165,7 @@
           <div class="flex items-center justify-between border rounded-lg p-3 bg-white">
             <span class="font-medium" i18n="@@tableBandingColor">Color filas alternas</span>
             <div class="flex items-center gap-2">
-              <input class="text-base text-right text-slate-500 font-mono w-20" [(ngModel)]="bandingColor">
+              <input class="text-base text-right text-slate-500 font-mono w-20" [ngModel]="colorDrafts.bandingColor ?? bandingColor" (ngModelChange)="onHexColorInput('bandingColor', $event)" (blur)="colorDrafts.bandingColor = undefined">
               <p-colorPicker [(ngModel)]="bandingColor" format="hex" appendTo="body" (onChange)="applyBandingPreview()" />
             </div>
           </div>

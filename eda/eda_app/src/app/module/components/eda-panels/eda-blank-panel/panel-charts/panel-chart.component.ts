@@ -72,6 +72,7 @@ import { EdaBarlineComponent } from '@eda/components/eda-barline-d3/eda-barline.
 import { EdaBarlineD3 } from '@eda/components/eda-barline-d3/eda-barline';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CHART_RENDER_LIMITS } from '@eda/configs/customizable/customizable_default';
+import { resultColumnKey } from '@eda/services/utils/result-column-key';
 
 @Component({
     standalone: true,
@@ -2463,8 +2464,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             for (let i = 0, n = this.props.query.length; i < n; i += 1) {
 
                 const r: Column = this.props.query[i];
-                // Find the label matching this column's column_name (consume it to handle duplicates)
-                const labelIdx = availableLabels.findIndex(l => l === r.column_name);
+                // Find the label matching this column's result key (consume it to handle duplicates).
+                // The key is table_id.column_name when the column_name is repeated in the query.
+                const labelIdx = availableLabels.findIndex(l => l === resultColumnKey(r, this.props.query));
                 const label = labelIdx !== -1
                     ? availableLabels.splice(labelIdx, 1)[0]
                     : (availableLabels.shift() ?? labels[i]);

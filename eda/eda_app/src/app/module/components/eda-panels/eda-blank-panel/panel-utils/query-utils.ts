@@ -300,8 +300,10 @@ export const QueryUtils = {
             const _navChildKeys = new Set<string>();
             ebp.currentQuery.forEach((col: any) => { if (col.downChild) _navChildKeys.add(`${col.downChild.table_id}.${col.downChild.column_name}`); });
             const _queryForAxes = ebp.currentQuery.filter((col: any) => !_navChildKeys.has(`${col.table_id}.${col.column_name}`));
-            ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, ebp.initAxes(_queryForAxes)); // Reorder the currentQuery
-            config['ordering'] = [{axes: ebp.initAxes(_queryForAxes)}]; // Add the new axes to the config
+            // Computed once: initAxes() consumes the _forceItemX flags, so a second call would ignore them
+            const axes = ebp.initAxes(_queryForAxes);
+            ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, axes); // Reorder the currentQuery
+            config['ordering'] = [{axes: JSON.parse(JSON.stringify(axes))}]; // Add the new axes to the config
             ebp.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
           }
         }
