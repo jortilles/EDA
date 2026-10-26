@@ -1,4 +1,5 @@
 import { IPlugin } from './plugin.interface';
+import { EdaliticsFreeLoginPlugin } from './edalitics-free-login';
 
 /**
  * Central registry for plugins.
@@ -17,5 +18,5 @@ import { IPlugin } from './plugin.interface';
  */
 
 export const PLUGINS: IPlugin[] = [
-
+    EdaliticsFreeLoginPlugin,
 ];

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IActionPlugin, IChartPlugin, IPagePlugin, IPlugin, IWidgetPlugin } from './plugin.interface';
+import { IActionPlugin, IChartPlugin, ILoginPlugin, IPagePlugin, IPlugin, IWidgetPlugin } from './plugin.interface';
 import { PLUGINS } from './plugin-registry';
 
 @Injectable({ providedIn: 'root' })
@@ -19,6 +19,10 @@ export class PluginService {
 
     getActionPlugins(context: IActionPlugin['context']): IActionPlugin[] {
         return PLUGINS.filter((p): p is IActionPlugin => p.type === 'action' && p.context === context);
+    }
+
+    getLoginPlugin(): ILoginPlugin | undefined {
+        return PLUGINS.find((p): p is ILoginPlugin => p.type === 'login');
     }
 
     getByKey(key: string): IPlugin | undefined {

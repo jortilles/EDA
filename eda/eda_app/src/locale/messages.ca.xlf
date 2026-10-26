@@ -8266,6 +8266,266 @@ Salutacions.</target>
   <source>se ha fusionado con</source>
   <target>s'ha fusionat amb</target>
 </trans-unit>
+      <trans-unit id="loginHeroTitle" datatype="html">
+        <source>Convierte tus datos en cuadros de mando.</source>
+        <target>Converteix les teves dades en quadres de comandament.</target>
+      </trans-unit>
+      <trans-unit id="loginHeroFree" datatype="html">
+        <source>Gratis.</source>
+        <target>Gratis.</target>
+      </trans-unit>
+      <trans-unit id="loginHeroLead" datatype="html">
+        <source>Conecta tu base de datos o sube un CSV o Excel, arrastra campos y comparte informes en minutos. Sin escribir código.</source>
+        <target>Connecta la teva base de dades o puja un CSV o Excel, arrossega camps i comparteix informes en minuts. Sense escriure codi.</target>
+      </trans-unit>
+      <trans-unit id="loginHeroWith" datatype="html">
+        <source>Con</source>
+        <target>Amb</target>
+      </trans-unit>
+      <trans-unit id="loginCheckFree" datatype="html">
+        <source>Gratis</source>
+        <target>Gratis</target>
+      </trans-unit>
+      <trans-unit id="loginCheckOpenSource" datatype="html">
+        <source>Open source</source>
+        <target>Codi obert</target>
+      </trans-unit>
+      <trans-unit id="loginCheckAi" datatype="html">
+        <source>Dashboards con IA</source>
+        <target>Dashboards amb IA</target>
+      </trans-unit>
+      <trans-unit id="loginSampleDashboard" datatype="html">
+        <source>Ventas por región</source>
+        <target>Vendes per regió</target>
+      </trans-unit>
+      <trans-unit id="loginSampleData" datatype="html">
+        <source>datos de ejemplo</source>
+        <target>dades d'exemple</target>
+      </trans-unit>
+      <trans-unit id="loginKpiRevenue" datatype="html">
+        <source>Facturación</source>
+        <target>Facturació</target>
+      </trans-unit>
+      <trans-unit id="loginKpiCustomers" datatype="html">
+        <source>Clientes activos</source>
+        <target>Clients actius</target>
+      </trans-unit>
+      <trans-unit id="loginKpiMargin" datatype="html">
+        <source>Margen</source>
+        <target>Marge</target>
+      </trans-unit>
+      <trans-unit id="loginTabSignin" datatype="html">
+        <source>Iniciar sesión</source>
+        <target>Inicia sessió</target>
+      </trans-unit>
+      <trans-unit id="loginTabSignup" datatype="html">
+        <source>Crear cuenta</source>
+        <target>Crea un compte</target>
+      </trans-unit>
+      <trans-unit id="signupDoneTitle" datatype="html">
+        <source>Revisa tu correo</source>
+        <target>Revisa el teu correu</target>
+      </trans-unit>
+      <trans-unit id="signupDoneText" datatype="html">
+        <source>Te hemos enviado la contraseña a:</source>
+        <target>T'hem enviat la contrasenya a:</target>
+      </trans-unit>
+      <trans-unit id="signupDoneSpam" datatype="html">
+        <source>Si no lo ves en unos minutos, revisa la carpeta de spam.</source>
+        <target>Si no el veus en uns minuts, revisa la carpeta de correu brossa.</target>
+      </trans-unit>
+      <trans-unit id="signupGoToLogin" datatype="html">
+        <source>Ir a iniciar sesión</source>
+        <target>Ves a iniciar sessió</target>
+      </trans-unit>
+      <trans-unit id="loginSubtitle" datatype="html">
+        <source>Entra para ver tus cuadros de mando.</source>
+        <target>Entra per veure els teus quadres de comandament.</target>
+      </trans-unit>
+      <trans-unit id="signupTitle" datatype="html">
+        <source>Empieza gratis</source>
+        <target>Comença gratis</target>
+      </trans-unit>
+      <trans-unit id="signupSubtitleSso" datatype="html">
+        <source>Con Google o Microsoft tu cuenta se crea al momento. Con tu email, te enviamos la contraseña.</source>
+        <target>Amb Google o Microsoft el teu compte es crea al moment. Amb el teu correu, t’enviem la contrasenya.</target>
+      </trans-unit>
+      <trans-unit id="signupSubtitle" datatype="html">
+        <source>Te enviaremos la contraseña a tu email.</source>
+        <target>T’enviarem la contrasenya al teu correu.</target>
+      </trans-unit>
+      <trans-unit id="loginContinueMicrosoft" datatype="html">
+        <source>Continuar con Microsoft</source>
+        <target>Continua amb Microsoft</target>
+      </trans-unit>
+      <trans-unit id="loginContinueSaml" datatype="html">
+        <source>Continuar con SAML</source>
+        <target>Continua amb SAML</target>
+      </trans-unit>
+      <trans-unit id="loginOrEmail" datatype="html">
+        <source>o con tu email</source>
+        <target>o amb el teu correu</target>
+      </trans-unit>
+      <trans-unit id="loginShowPassword" datatype="html">
+        <source>Mostrar contraseña</source>
+        <target>Mostra la contrasenya</target>
+      </trans-unit>
+      <trans-unit id="signupName" datatype="html">
+        <source>Nombre de usuario</source>
+        <target>Nom d'usuari</target>
+      </trans-unit>
+      <trans-unit id="signupEmail" datatype="html">
+        <source>Email</source>
+        <target>Correu electrònic</target>
+      </trans-unit>
+      <trans-unit id="signupAcceptTerms" datatype="html">
+        <source>Acepto los</source>
+        <target>Accepto els</target>
+      </trans-unit>
+      <trans-unit id="signupTermsLink" datatype="html">
+        <source>términos y condiciones</source>
+        <target>termes i condicions</target>
+      </trans-unit>
+      <trans-unit id="signupSubmit" datatype="html">
+        <source>Crear cuenta gratis</source>
+        <target>Crea un compte gratis</target>
+      </trans-unit>
+      <trans-unit id="loginReassure" datatype="html">
+        <source>Para uso personal y pequeñas organizaciones</source>
+        <target>Per a ús personal i petites organitzacions</target>
+      </trans-unit>
+      <trans-unit id="loginUpsell" datatype="html">
+        <source>¿Necesitas más potencia?</source>
+        <target>Necessites més potència?</target>
+      </trans-unit>
+      <trans-unit id="loginUpsellLink" datatype="html">
+        <source>Escala a Edalitics Base o Pro →</source>
+        <target>Escala a Edalitics Base o Pro →</target>
+      </trans-unit>
+      <trans-unit id="signupErrorTitle" datatype="html">
+        <source>No se pudo crear la cuenta</source>
+        <target>No s'ha pogut crear el compte</target>
+      </trans-unit>
+      <trans-unit id="signupErrorExists" datatype="html">
+        <source>Ya existe una cuenta con este email. Inicia sesión o entra con Google o Microsoft.</source>
+        <target>Ja existeix un compte amb aquest correu. Inicia sessió o entra amb Google o Microsoft.</target>
+      </trans-unit>
+      <trans-unit id="signupErrorRateLimit" datatype="html">
+        <source>Demasiados intentos. Inténtalo de nuevo más tarde.</source>
+        <target>Massa intents. Torna-ho a provar més tard.</target>
+      </trans-unit>
+      <trans-unit id="signupErrorMail" datatype="html">
+        <source>Ahora mismo no podemos enviar el email con tu contraseña. Inténtalo de nuevo más tarde.</source>
+        <target>Ara mateix no podem enviar el correu amb la teva contrasenya. Torna-ho a provar més tard.</target>
+      </trans-unit>
+      <trans-unit id="signupErrorGeneric" datatype="html">
+        <source>Revisa el nombre y el email e inténtalo de nuevo.</source>
+        <target>Revisa el nom i el correu i torna-ho a provar.</target>
+      </trans-unit>
+      <trans-unit id="termsTitle" datatype="html">
+        <source>Edalitics — Términos y condiciones de uso</source>
+        <target>Edalitics — Termes i condicions d'ús</target>
+      </trans-unit>
+      <trans-unit id="termsS1Title" datatype="html">
+        <source>1. ¿Qué es Edalitics?</source>
+        <target>1. Què és Edalitics?</target>
+      </trans-unit>
+      <trans-unit id="termsS1P1" datatype="html">
+        <source>Edalitics es la plataforma de analítica más fácil de usar disponible hoy en día, ofrecida por Jortilles. Edalitics permite a personas y organizaciones analizar sus datos de forma sencilla, clara y accesible, sin necesidad de conocimientos técnicos. Edalitics está disponible en diferentes planes, desde un servicio compartido gratuito hasta servidores empresariales totalmente privados.</source>
+        <target>Edalitics és la plataforma d'analítica més fàcil d'utilitzar disponible avui dia, oferta per Jortilles. Edalitics permet a persones i organitzacions analitzar les seves dades d'una manera senzilla, clara i accessible, sense necessitat de coneixements tècnics. Edalitics està disponible en diferents plans, des d'un servei compartit gratuït fins a servidors empresarials totalment privats.</target>
+      </trans-unit>
+      <trans-unit id="termsS2Title" datatype="html">
+        <source>2. Edalitics Free — Servicio compartido</source>
+        <target>2. Edalitics Free — Servei compartit</target>
+      </trans-unit>
+      <trans-unit id="termsS2P1" datatype="html">
+        <source>El plan gratuito de Edalitics funciona en un servidor compartido pensado para usuarios individuales y pequeños equipos que quieren explorar y analizar sus datos fácilmente. Este entorno compartido está destinado a un uso analítico personal o moderado. Edalitics Free no ofrece ninguna garantía de disponibilidad del servidor, tiempos de respuesta o niveles de rendimiento.</source>
+        <target>El pla gratuït d'Edalitics funciona en un servidor compartit pensat per a usuaris individuals i equips petits que volen explorar i analitzar les seves dades fàcilment. Aquest entorn compartit està destinat a un ús analític personal o moderat. Edalitics Free no ofereix cap garantia de disponibilitat del servidor, temps de resposta o nivells de rendiment.</target>
+      </trans-unit>
+      <trans-unit id="termsS2P2" datatype="html">
+        <source>Si necesitas un entorno dedicado con mayor rendimiento, disponibilidad garantizada o funciones de colaboración avanzadas, te invitamos a conocer nuestros planes de servidor privado.</source>
+        <target>Si necessites un entorn dedicat amb més rendiment, disponibilitat garantida o funcions de col·laboració avançades, et convidem a conèixer els nostres plans de servidor privat.</target>
+      </trans-unit>
+      <trans-unit id="termsS3Title" datatype="html">
+        <source>3. Planes privados y empresariales</source>
+        <target>3. Plans privats i empresarials</target>
+      </trans-unit>
+      <trans-unit id="termsS3P1" datatype="html">
+        <source>Para las organizaciones que necesitan su propia infraestructura, Edalitics ofrece planes de servidor privado. Estos planes incluyen garantías de servicio en cuanto a disponibilidad, tiempos de respuesta y soporte dedicado. Contáctanos en</source>
+        <target>Per a les organitzacions que necessiten la seva pròpia infraestructura, Edalitics ofereix plans de servidor privat. Aquests plans inclouen garanties de servei pel que fa a disponibilitat, temps de resposta i suport dedicat. Contacta'ns a</target>
+      </trans-unit>
+      <trans-unit id="termsS3P1End" datatype="html">
+        <source>para encontrar el plan que se adapte a tus necesidades.</source>
+        <target>per trobar el pla que s'adapti a les teves necessitats.</target>
+      </trans-unit>
+      <trans-unit id="termsS4Title" datatype="html">
+        <source>4. Alojamiento de datos y legislación aplicable</source>
+        <target>4. Allotjament de dades i legislació aplicable</target>
+      </trans-unit>
+      <trans-unit id="termsS4P1" datatype="html">
+        <source>Todos los datos subidos a Edalitics se alojan en servidores ubicados en Europa. La normativa de la Unión Europea se aplica a todos los datos almacenados y tratados en la plataforma, incluido el Reglamento General de Protección de Datos (RGPD).</source>
+        <target>Totes les dades pujades a Edalitics s'allotgen en servidors ubicats a Europa. La normativa de la Unió Europea s'aplica a totes les dades emmagatzemades i tractades a la plataforma, inclòs el Reglament General de Protecció de Dades (RGPD).</target>
+      </trans-unit>
+      <trans-unit id="termsS5Title" datatype="html">
+        <source>5. Responsabilidad del usuario sobre los datos</source>
+        <target>5. Responsabilitat de l'usuari sobre les dades</target>
+      </trans-unit>
+      <trans-unit id="termsS5P1" datatype="html">
+        <source>Los usuarios son los únicos responsables de los datos que suben a Edalitics. Jortilles no asume ninguna responsabilidad sobre la naturaleza, exactitud o legalidad de los datos subidos por los usuarios. Al utilizar este servicio, el usuario declara que tiene derecho a usar y subir dichos datos.</source>
+        <target>Els usuaris són els únics responsables de les dades que pugen a Edalitics. Jortilles no assumeix cap responsabilitat sobre la naturalesa, l'exactitud o la legalitat de les dades pujades pels usuaris. En utilitzar aquest servei, l'usuari declara que té dret a utilitzar i pujar aquestes dades.</target>
+      </trans-unit>
+      <trans-unit id="termsS5P2" datatype="html">
+        <source>Si Jortilles detecta que los datos subidos a la plataforma son fraudulentos, ilegales o infringen estos términos, Jortilles se reserva el derecho de cancelar la suscripción del usuario y eliminar definitivamente los datos asociados, sin previo aviso y sin ninguna compensación.</source>
+        <target>Si Jortilles detecta que les dades pujades a la plataforma són fraudulentes, il·legals o infringeixen aquests termes, Jortilles es reserva el dret de cancel·lar la subscripció de l'usuari i eliminar definitivament les dades associades, sense avís previ i sense cap compensació.</target>
+      </trans-unit>
+      <trans-unit id="termsS6Title" datatype="html">
+        <source>6. Privacidad y comercialización de datos</source>
+        <target>6. Privacitat i comercialització de dades</target>
+      </trans-unit>
+      <trans-unit id="termsS6P1" datatype="html">
+        <source>Jortilles recoge los datos de los usuarios únicamente con el fin de prestar y mejorar el servicio Edalitics. Jortilles nunca venderá ni comercializará los datos personales de sus usuarios a terceros. Jortilles se reserva el derecho de tratar los datos de uso de forma agregada y anónima para mejorar la plataforma.</source>
+        <target>Jortilles recull les dades dels usuaris únicament amb la finalitat de prestar i millorar el servei Edalitics. Jortilles mai no vendrà ni comercialitzarà les dades personals dels seus usuaris a tercers. Jortilles es reserva el dret de tractar les dades d'ús de forma agregada i anònima per millorar la plataforma.</target>
+      </trans-unit>
+      <trans-unit id="termsS7Title" datatype="html">
+        <source>7. Condiciones especiales de Edalitics Free</source>
+        <target>7. Condicions especials d'Edalitics Free</target>
+      </trans-unit>
+      <trans-unit id="termsS7L1" datatype="html">
+        <source>El plan gratuito está pensado para usuarios individuales o equipos con necesidades analíticas moderadas.</source>
+        <target>El pla gratuït està pensat per a usuaris individuals o equips amb necessitats analítiques moderades.</target>
+      </trans-unit>
+      <trans-unit id="termsS7L2" datatype="html">
+        <source>El uso del plan gratuito está limitado a 500 accesos por usuario y mes.</source>
+        <target>L'ús del pla gratuït està limitat a 500 accessos per usuari i mes.</target>
+      </trans-unit>
+      <trans-unit id="termsS7L3" datatype="html">
+        <source>Los datos pueden ser privados o públicos, siempre bajo la plena responsabilidad del usuario.</source>
+        <target>Les dades poden ser privades o públiques, sempre sota la plena responsabilitat de l'usuari.</target>
+      </trans-unit>
+      <trans-unit id="termsS7L4" datatype="html">
+        <source>Los usuarios del plan gratuito no pueden crear grupos de usuarios ni gestionar permisos de acceso a datos compartidos.</source>
+        <target>Els usuaris del pla gratuït no poden crear grups d'usuaris ni gestionar permisos d'accés a dades compartides.</target>
+      </trans-unit>
+      <trans-unit id="termsS7L5" datatype="html">
+        <source>Si necesitas compartir dashboards privados o gestionar permisos de usuarios, considera pasar a un plan de pago.</source>
+        <target>Si necessites compartir quadres de comandament privats o gestionar permisos d'usuaris, considera passar a un pla de pagament.</target>
+      </trans-unit>
+      <trans-unit id="termsS7L6" datatype="html">
+        <source>Jortilles se reserva el derecho de modificar, suspender o interrumpir el servicio gratuito en cualquier momento.</source>
+        <target>Jortilles es reserva el dret de modificar, suspendre o interrompre el servei gratuït en qualsevol moment.</target>
+      </trans-unit>
+      <trans-unit id="termsS8Title" datatype="html">
+        <source>8. Aceptación</source>
+        <target>8. Acceptació</target>
+      </trans-unit>
+      <trans-unit id="termsS8P1" datatype="html">
+        <source>Al registrarte, confirmas que has leído, entendido y aceptado estos términos y condiciones de uso.</source>
+        <target>En registrar-te, confirmes que has llegit, entès i acceptat aquests termes i condicions d'ús.</target>
+      </trans-unit>
+      <trans-unit id="termsBack" datatype="html">
+        <source>← Volver</source>
+        <target>← Tornar</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>

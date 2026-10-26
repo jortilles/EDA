@@ -1,4 +1,5 @@
 import { Type } from '@angular/core';
+import { Routes } from '@angular/router';
 
 interface IBasePlugin {
     key: string;
@@ -34,4 +35,13 @@ export interface IActionPlugin extends IBasePlugin {
     context: 'dashboard' | 'panel' | 'datasource';
 }
 
-export type IPlugin = IChartPlugin | IPagePlugin | IWidgetPlugin | IActionPlugin;
+/** Replaces the core login page. Only the first registered login plugin is used. */
+export interface ILoginPlugin extends IBasePlugin {
+    type: 'login';
+    /** Lazy loader of the login page component (used by '', 'login' and 'old/login') */
+    loadComponent: () => Promise<Type<any>>;
+    /** Extra public routes (no login guard), e.g. sign up or terms pages */
+    routes?: Routes;
+}
+
+export type IPlugin = IChartPlugin | IPagePlugin | IWidgetPlugin | IActionPlugin | ILoginPlugin;

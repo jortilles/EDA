@@ -1,0 +1,201 @@
+<div class="ed-login">
+
+    <!-- Value panel: what Edalitics is and what you get -->
+    <section class="ed-value">
+        <svg class="ed-net" viewBox="0 0 700 780" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <line x1="520" y1="60" x2="640" y2="140" /><line x1="640" y1="140" x2="600" y2="260" />
+            <line x1="520" y1="60" x2="600" y2="260" /><line x1="600" y1="260" x2="680" y2="330" />
+            <line x1="40" y1="700" x2="140" y2="620" /><line x1="140" y1="620" x2="90" y2="520" />
+            <circle cx="520" cy="60" r="5" /><circle cx="640" cy="140" r="8" /><circle cx="600" cy="260" r="4" />
+            <circle cx="680" cy="330" r="6" /><circle cx="40" cy="700" r="6" /><circle cx="140" cy="620" r="4" />
+            <circle cx="90" cy="520" r="7" />
+        </svg>
+
+        <h1 class="ed-hero">
+            <span i18n="@@loginHeroTitle">Convierte tus datos en cuadros de mando.</span>{{ ' ' }}<em i18n="@@loginHeroFree">Gratis.</em>
+        </h1>
+        <p class="ed-lead">
+            <span i18n="@@loginHeroLead">Conecta tu base de datos o sube un CSV o Excel, arrastra campos y comparte informes en minutos. Sin escribir código.</span>{{ ' ' }}<span i18n="@@loginHeroWith">Con</span>{{ ' ' }}<a href="https://www.edalitics.com" target="_blank" rel="noopener">Edalitics</a>
+        </p>
+        <div class="ed-checks">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg><span i18n="@@loginCheckFree">Gratis</span></span>
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg><span i18n="@@loginCheckOpenSource">Open source</span></span>
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg><span i18n="@@loginCheckAi">Dashboards con IA</span></span>
+        </div>
+
+        <!-- Illustrative dashboard (sample figures) -->
+        <div class="ed-dash" aria-hidden="true">
+            <div class="ed-dash-head"><span i18n="@@loginSampleDashboard">Ventas por región</span> <small i18n="@@loginSampleData">datos de ejemplo</small></div>
+            <div class="ed-kpis">
+                <div class="ed-kpi"><span i18n="@@loginKpiRevenue">Facturación</span><b>128,4 k€</b><i>▲ 12%</i></div>
+                <div class="ed-kpi"><span i18n="@@loginKpiCustomers">Clientes activos</span><b>1.942</b><i>▲ 5%</i></div>
+                <div class="ed-kpi"><span i18n="@@loginKpiMargin">Margen</span><b>31,6%</b><i>▲ 2 pts</i></div>
+            </div>
+            <div class="ed-charts">
+                <div class="ed-panel">
+                    <div class="ed-bars">
+                        @for (h of sampleBars; track $index) {
+                            <div [style.height.%]="h"></div>
+                        }
+                    </div>
+                </div>
+                <div class="ed-panel ed-donut">
+                    <svg width="96" height="96" viewBox="0 0 42 42">
+                        <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--ed-sky-500)" stroke-width="6" />
+                        <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--ed-teal-500)" stroke-width="6" stroke-dasharray="58 42" stroke-dashoffset="25" />
+                        <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--ed-sage-300)" stroke-width="6" stroke-dasharray="18 82" stroke-dashoffset="67" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Form panel -->
+    <section class="ed-form-panel">
+        <div class="ed-form">
+            <img class="ed-brandmark" [src]="subLogo || logo" alt="edalitics · Cloud analytics for everyone" width="230" />
+
+            @if (signupEnabled) {
+                <div class="ed-tabs" role="tablist">
+                    <button type="button" role="tab" [class.on]="mode === 'login'" [attr.aria-selected]="mode === 'login'"
+                        (click)="setMode('login')" i18n="@@loginTabSignin">Iniciar sesión</button>
+                    <button type="button" role="tab" [class.on]="mode === 'signup'" [attr.aria-selected]="mode === 'signup'"
+                        (click)="setMode('signup')" i18n="@@loginTabSignup">Crear cuenta</button>
+                </div>
+            }
+
+            @if (mode === 'signup' && signupDoneEmail) {
+                <!-- Sign up completed -->
+                <div class="ed-done">
+                    <div class="ed-done-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M3 7l9 6 9-6" /><rect x="3" y="5" width="18" height="14" rx="2" /></svg>
+                    </div>
+                    <h2 class="ed-h1" i18n="@@signupDoneTitle">Revisa tu correo</h2>
+                    <p class="ed-muted" i18n="@@signupDoneText">Te hemos enviado la contraseña a:</p>
+                    <p class="ed-done-email">{{ signupDoneEmail }}</p>
+                    <p class="ed-caption" i18n="@@signupDoneSpam">Si no lo ves en unos minutos, revisa la carpeta de spam.</p>
+                    <button type="button" class="ed-btn ed-btn--primary ed-btn--block" (click)="goToLoginAfterSignup()"
+                        i18n="@@signupGoToLogin">Ir a iniciar sesión</button>
+                </div>
+            } @else {
+                @if (mode === 'login') {
+                    @if (!instantAccountSso) {
+                        <p class="ed-sub ed-muted" i18n="@@loginSubtitle">Entra para ver tus cuadros de mando.</p>
+                    }
+                } @else {
+                    <h2 class="ed-h1" i18n="@@signupTitle">Empieza gratis</h2>
+                    @if (instantAccountSso) {
+                        <p class="ed-sub ed-muted" i18n="@@signupSubtitleSso">Con Google o Microsoft tu cuenta se crea al momento. Con tu email, te enviamos la contraseña.</p>
+                    } @else {
+                        <p class="ed-sub ed-muted" i18n="@@signupSubtitle">Te enviaremos la contraseña a tu email.</p>
+                    }
+                }
+
+                <!-- Single sign-on: same buttons as the core login (core/pages/login/login.html) -->
+                @if (hasSso) {
+                    <div class="ed-sso">
+                        @if (singleSignOnSamlMixOrclAvailable) {
+                            <button type="button"
+                                class="sso-btn w-full text-black rounded-md bg-white border-[0.5px] border-[#dadce0] hover:bg-[#E1E9FF] transition-colors focus:outline-none focus:ring-0"
+                                (click)="loginButtonSSOMixOrcl()">
+                                <div class="flex items-center">
+                                    <img src="assets/images/logos/SAML.png" alt="SSO" class="w-7 h-7 ml-3 xl:ml-1" />
+                                    <span class="block text-center w-full mr-10 xl:mr-8 font-medium" i18n="@@loginContinueSaml">Continuar con SAML</span>
+                                </div>
+                            </button>
+                        }
+
+                        @if (singleSignOnSamlAvailable) {
+                            <button type="button"
+                                class="sso-btn w-full text-black rounded-md bg-white border-[0.5px] border-[#dadce0] hover:bg-[#E1E9FF] transition-colors focus:outline-none focus:ring-0"
+                                (click)="loginButtonSSO()">
+                                <div class="flex items-center">
+                                    <img src="assets/images/logos/SAML.png" alt="SSO" class="w-7 h-7 ml-3 xl:ml-1" />
+                                    <span class="block text-center w-full mr-6 xl:mr-1 font-medium" i18n="@@loginContinueSaml">Continuar con SAML</span>
+                                </div>
+                            </button>
+                        }
+
+                        @if (singleSignOnMicrosoftAvailable) {
+                            <div class="container-microsoft">
+                                <button type="button"
+                                    class="sso-btn w-full text-black rounded-md bg-white border-[0.5px] border-[#dadce0] hover:bg-[#E1E9FF] transition-colors focus:outline-none focus:ring-0"
+                                    (click)="loginMicrosoft()">
+                                    <div class="flex items-center">
+                                        <img src="assets/images/logos/microsoftLogo.png" alt="SSO" class="w-6 h-6 ml-3 xl:w-5 xl:h-5 xl:ml-2" />
+                                        <span class="block text-center w-full mr-6 xl:mr-1 font-medium" i18n="@@loginContinueMicrosoft">Continuar con Microsoft</span>
+                                    </div>
+                                </button>
+                            </div>
+                        }
+
+                        @if (singleSignOnGoogleAvailable) {
+                            <div class="container-google">
+                                <div #googleBtn id="google-btn"></div>
+                            </div>
+                        }
+                    </div>
+                    <div class="ed-divider" i18n="@@loginOrEmail">o con tu email</div>
+                }
+
+                @if (mode === 'login') {
+                    <form [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()">
+                        <div class="ed-field">
+                            <label for="email" i18n="@@direccionMail">Dirección Email / Usuario</label>
+                            <input type="text" id="email" formControlName="email" autocomplete="username" />
+                        </div>
+                        <div class="ed-field">
+                            <label for="password" i18n="@@password">Contraseña</label>
+                            <div class="ed-input">
+                                <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
+                                    autocomplete="current-password" />
+                                <button type="button" class="ed-eye" (click)="showPassword = !showPassword"
+                                    [attr.aria-pressed]="showPassword" i18n-aria-label="@@loginShowPassword" aria-label="Mostrar contraseña">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" />
+                                        @if (showPassword) { <path d="M4 20L20 4" /> }
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <label class="ed-check">
+                            <input type="checkbox" formControlName="remember" />
+                            <span i18n="@@spanRememberme">Recuérdame</span>
+                        </label>
+                        <button type="submit" class="ed-btn ed-btn--primary ed-btn--block" [disabled]="loginForm.invalid">
+                            <span i18n="@@signinBtn">Entrar</span>
+                        </button>
+                    </form>
+                } @else {
+                    <form [formGroup]="signupForm" (ngSubmit)="onSubmitSignup()">
+                        <div class="ed-field">
+                            <label for="signup-name" i18n="@@signupName">Nombre de usuario</label>
+                            <input type="text" id="signup-name" formControlName="name" autocomplete="name" maxlength="100" />
+                        </div>
+                        <div class="ed-field">
+                            <label for="signup-email" i18n="@@signupEmail">Email</label>
+                            <input type="email" id="signup-email" formControlName="email" autocomplete="email" />
+                        </div>
+                        <label class="ed-check">
+                            <input type="checkbox" formControlName="acceptTerms" />
+                            <span><span i18n="@@signupAcceptTerms">Acepto los </span> &nbsp;<a class="ed-link" routerLink="/terms" target="_blank" i18n="@@signupTermsLink">términos y condiciones</a></span>
+                        </label>
+                        <button type="submit" class="ed-btn ed-btn--primary ed-btn--block" [disabled]="signupForm.invalid || signupSending">
+                            <span i18n="@@signupSubmit">Crear cuenta gratis</span>
+                        </button>
+                    </form>
+                }
+
+                <p class="ed-reassure ed-caption" i18n="@@loginReassure">Para uso personal y pequeñas organizaciones</p>
+            }
+
+            <p class="ed-upsell">
+                <span i18n="@@loginUpsell">¿Necesitas más potencia?</span>{{ ' ' }}<a class="ed-link" href="https://www.edalitics.com/precios/" target="_blank" rel="noopener" i18n="@@loginUpsellLink">Escala a Edalitics Base o Pro →</a>
+            </p>
+            <p class="ed-copy">
+                Copyright ©{{ currentYear }} Jortilles S.L.
+                <img src="https://www.edalitics.com/px.png" alt="" />
+            </p>
+        </div>
+    </section>
+</div>

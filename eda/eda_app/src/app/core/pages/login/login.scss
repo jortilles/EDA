@@ -33,17 +33,21 @@
 }
 
 .container-google {
-    transform: scale(0.9);
-    display: flex; 
-    flex-direction: column; 
+    display: flex;
+    flex-direction: column;
     align-items: center;
     position: relative;
-    height: 48px; /* altura fija para el botón de google*/
+    min-height: 40px; /* same height as the other SSO buttons (Google 'large' size) */
     filter: brightness(100%);
 }
 
 .container-google:hover{
     filter: brightness(96%);
+}
+
+/* SAML and Microsoft buttons: same height as the Google button */
+.sso-btn {
+    height: 40px;
 }
 
 .container-microsoft {

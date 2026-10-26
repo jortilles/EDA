@@ -44,13 +44,13 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
     singleSignOnGoogleAvailable : boolean = false;
     singleSignOnMicrosoftAvailable : boolean = false;
 
-    private googleInitialized = false;        // Initialize google.accounts.id only once
+    protected googleInitialized = false;        // Initialize google.accounts.id only once
     private googleButtonRendered = false;     // Avoid multiple rendering
 
-    private fb = inject(FormBuilder);
-    private userService = inject(UserService);
+    protected fb = inject(FormBuilder);
+    protected userService = inject(UserService);
     private router = inject(Router);
-    private route = inject(ActivatedRoute);
+    protected route = inject(ActivatedRoute);
     private ngZone = inject(NgZone)
     private msalService = inject(MsalService);
 
@@ -192,7 +192,7 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
     }
 
     // Google button initialization and design
-    private initGoogleSignIn(){
+    protected initGoogleSignIn(){
         if(!this.googleInitialized) this.googleInitialized = true;
         try {
             // Google callback
@@ -206,14 +206,15 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
 
         if(this.googleBtn?.nativeElement) {
             try {
-                // Google button configuration
+                // Google button configuration: 40px high ('large') and as wide as the other SSO buttons (Google allows 200-400px)
+                const width = Math.max(200, Math.min(400, Math.floor(this.googleBtn.nativeElement.parentElement?.clientWidth || 389)));
                 google.accounts.id.renderButton(document.getElementById("google-btn"),
                 {
                     theme: 'filled_white',
-                    size: 'medium',
+                    size: 'large',
                     shape: 'square',
                     text: 'continue_with',
-                    width: 389
+                    width
                 });
             } catch (error) {
                 console.error('Error al renderizar el botón de google:', error);

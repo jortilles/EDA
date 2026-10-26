@@ -1,0 +1,23 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    background: #ebf4ff;
+    color: #003345;
+    font-family: Montserrat, "Segoe UI", system-ui, sans-serif;
+}
+
+.terms {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 16px 64px;
+    line-height: 1.6;
+}
+
+.terms-logo { display: block; height: auto; margin-bottom: 24px; }
+
+h1 { margin: 0 0 24px; font-size: 30px; line-height: 36px; font-weight: 700; }
+h2 { margin: 28px 0 8px; font-size: 20px; line-height: 28px; font-weight: 600; }
+p, li { color: #4b5563; font-size: 15px; }
+a { color: #007b74; font-weight: 700; }
+
+.terms-back { display: inline-block; margin-top: 32px; text-decoration: none; }

@@ -148,7 +148,7 @@ export class MailController {
   }
 
   /** Transporter from the saved SMTP config; rejects if the connection does not verify. */
-  private static async openTransporter(): Promise<{ transporter: any; senderEmail: string }> {
+  static async openTransporter(): Promise<{ transporter: any; senderEmail: string }> {
     const config = readConfig();
     const transporter = nodemailer.createTransport({ ...config, family: 4 });
     await new Promise<void>((resolve, reject) => {

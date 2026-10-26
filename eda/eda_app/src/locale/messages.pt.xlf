@@ -5877,6 +5877,266 @@ Cumprimentos.</target>
         <source>elementos disponibles</source>
         <target>elementos disponíveis</target>
       </trans-unit>
+      <trans-unit id="loginHeroTitle" datatype="html">
+        <source>Convierte tus datos en cuadros de mando.</source>
+        <target>Transforme os seus dados em painéis.</target>
+      </trans-unit>
+      <trans-unit id="loginHeroFree" datatype="html">
+        <source>Gratis.</source>
+        <target>Grátis.</target>
+      </trans-unit>
+      <trans-unit id="loginHeroLead" datatype="html">
+        <source>Conecta tu base de datos o sube un CSV o Excel, arrastra campos y comparte informes en minutos. Sin escribir código.</source>
+        <target>Ligue a sua base de dados ou carregue um ficheiro CSV ou Excel, arraste campos e partilhe relatórios em minutos. Sem escrever código.</target>
+      </trans-unit>
+      <trans-unit id="loginHeroWith" datatype="html">
+        <source>Con</source>
+        <target>Com</target>
+      </trans-unit>
+      <trans-unit id="loginCheckFree" datatype="html">
+        <source>Gratis</source>
+        <target>Grátis</target>
+      </trans-unit>
+      <trans-unit id="loginCheckOpenSource" datatype="html">
+        <source>Open source</source>
+        <target>Código aberto</target>
+      </trans-unit>
+      <trans-unit id="loginCheckAi" datatype="html">
+        <source>Dashboards con IA</source>
+        <target>Painéis com IA</target>
+      </trans-unit>
+      <trans-unit id="loginSampleDashboard" datatype="html">
+        <source>Ventas por región</source>
+        <target>Vendas por região</target>
+      </trans-unit>
+      <trans-unit id="loginSampleData" datatype="html">
+        <source>datos de ejemplo</source>
+        <target>dados de exemplo</target>
+      </trans-unit>
+      <trans-unit id="loginKpiRevenue" datatype="html">
+        <source>Facturación</source>
+        <target>Faturação</target>
+      </trans-unit>
+      <trans-unit id="loginKpiCustomers" datatype="html">
+        <source>Clientes activos</source>
+        <target>Clientes ativos</target>
+      </trans-unit>
+      <trans-unit id="loginKpiMargin" datatype="html">
+        <source>Margen</source>
+        <target>Margem</target>
+      </trans-unit>
+      <trans-unit id="loginTabSignin" datatype="html">
+        <source>Iniciar sesión</source>
+        <target>Iniciar sessão</target>
+      </trans-unit>
+      <trans-unit id="loginTabSignup" datatype="html">
+        <source>Crear cuenta</source>
+        <target>Criar conta</target>
+      </trans-unit>
+      <trans-unit id="signupDoneTitle" datatype="html">
+        <source>Revisa tu correo</source>
+        <target>Verifique o seu e-mail</target>
+      </trans-unit>
+      <trans-unit id="signupDoneText" datatype="html">
+        <source>Te hemos enviado la contraseña a:</source>
+        <target>Enviámos a sua palavra-passe para:</target>
+      </trans-unit>
+      <trans-unit id="signupDoneSpam" datatype="html">
+        <source>Si no lo ves en unos minutos, revisa la carpeta de spam.</source>
+        <target>Se não o vir dentro de alguns minutos, verifique a pasta de spam.</target>
+      </trans-unit>
+      <trans-unit id="signupGoToLogin" datatype="html">
+        <source>Ir a iniciar sesión</source>
+        <target>Ir para iniciar sessão</target>
+      </trans-unit>
+      <trans-unit id="loginSubtitle" datatype="html">
+        <source>Entra para ver tus cuadros de mando.</source>
+        <target>Inicie sessão para ver os seus painéis.</target>
+      </trans-unit>
+      <trans-unit id="signupTitle" datatype="html">
+        <source>Empieza gratis</source>
+        <target>Comece grátis</target>
+      </trans-unit>
+      <trans-unit id="signupSubtitleSso" datatype="html">
+        <source>Con Google o Microsoft tu cuenta se crea al momento. Con tu email, te enviamos la contraseña.</source>
+        <target>Com Google ou Microsoft a sua conta é criada de imediato. Com o seu e-mail, enviamos-lhe a palavra-passe.</target>
+      </trans-unit>
+      <trans-unit id="signupSubtitle" datatype="html">
+        <source>Te enviaremos la contraseña a tu email.</source>
+        <target>Enviaremos a palavra-passe para o seu e-mail.</target>
+      </trans-unit>
+      <trans-unit id="loginContinueMicrosoft" datatype="html">
+        <source>Continuar con Microsoft</source>
+        <target>Continuar com Microsoft</target>
+      </trans-unit>
+      <trans-unit id="loginContinueSaml" datatype="html">
+        <source>Continuar con SAML</source>
+        <target>Continuar com SAML</target>
+      </trans-unit>
+      <trans-unit id="loginOrEmail" datatype="html">
+        <source>o con tu email</source>
+        <target>ou com o seu e-mail</target>
+      </trans-unit>
+      <trans-unit id="loginShowPassword" datatype="html">
+        <source>Mostrar contraseña</source>
+        <target>Mostrar palavra-passe</target>
+      </trans-unit>
+      <trans-unit id="signupName" datatype="html">
+        <source>Nombre de usuario</source>
+        <target>Nome de utilizador</target>
+      </trans-unit>
+      <trans-unit id="signupEmail" datatype="html">
+        <source>Email</source>
+        <target>E-mail</target>
+      </trans-unit>
+      <trans-unit id="signupAcceptTerms" datatype="html">
+        <source>Acepto los</source>
+        <target>Aceito os</target>
+      </trans-unit>
+      <trans-unit id="signupTermsLink" datatype="html">
+        <source>términos y condiciones</source>
+        <target>termos e condições</target>
+      </trans-unit>
+      <trans-unit id="signupSubmit" datatype="html">
+        <source>Crear cuenta gratis</source>
+        <target>Criar conta grátis</target>
+      </trans-unit>
+      <trans-unit id="loginReassure" datatype="html">
+        <source>Para uso personal y pequeñas organizaciones</source>
+        <target>Para uso pessoal e pequenas organizações</target>
+      </trans-unit>
+      <trans-unit id="loginUpsell" datatype="html">
+        <source>¿Necesitas más potencia?</source>
+        <target>Precisa de mais potência?</target>
+      </trans-unit>
+      <trans-unit id="loginUpsellLink" datatype="html">
+        <source>Escala a Edalitics Base o Pro →</source>
+        <target>Mude para o Edalitics Base ou Pro →</target>
+      </trans-unit>
+      <trans-unit id="signupErrorTitle" datatype="html">
+        <source>No se pudo crear la cuenta</source>
+        <target>Não foi possível criar a conta</target>
+      </trans-unit>
+      <trans-unit id="signupErrorExists" datatype="html">
+        <source>Ya existe una cuenta con este email. Inicia sesión o entra con Google o Microsoft.</source>
+        <target>Já existe uma conta com este e-mail. Inicie sessão ou continue com Google ou Microsoft.</target>
+      </trans-unit>
+      <trans-unit id="signupErrorRateLimit" datatype="html">
+        <source>Demasiados intentos. Inténtalo de nuevo más tarde.</source>
+        <target>Demasiadas tentativas. Tente novamente mais tarde.</target>
+      </trans-unit>
+      <trans-unit id="signupErrorMail" datatype="html">
+        <source>Ahora mismo no podemos enviar el email con tu contraseña. Inténtalo de nuevo más tarde.</source>
+        <target>De momento não conseguimos enviar o e-mail com a sua palavra-passe. Tente novamente mais tarde.</target>
+      </trans-unit>
+      <trans-unit id="signupErrorGeneric" datatype="html">
+        <source>Revisa el nombre y el email e inténtalo de nuevo.</source>
+        <target>Verifique o nome e o e-mail e tente novamente.</target>
+      </trans-unit>
+      <trans-unit id="termsTitle" datatype="html">
+        <source>Edalitics — Términos y condiciones de uso</source>
+        <target>Edalitics — Termos e condições de utilização</target>
+      </trans-unit>
+      <trans-unit id="termsS1Title" datatype="html">
+        <source>1. ¿Qué es Edalitics?</source>
+        <target>1. O que é o Edalitics?</target>
+      </trans-unit>
+      <trans-unit id="termsS1P1" datatype="html">
+        <source>Edalitics es la plataforma de analítica más fácil de usar disponible hoy en día, ofrecida por Jortilles. Edalitics permite a personas y organizaciones analizar sus datos de forma sencilla, clara y accesible, sin necesidad de conocimientos técnicos. Edalitics está disponible en diferentes planes, desde un servicio compartido gratuito hasta servidores empresariales totalmente privados.</source>
+        <target>O Edalitics é a plataforma de análise de dados mais fácil de utilizar atualmente disponível, oferecida pela Jortilles. O Edalitics permite a particulares e organizações analisar os seus dados de forma simples, clara e acessível, sem necessidade de conhecimentos técnicos. O Edalitics está disponível em diferentes planos, desde um serviço partilhado gratuito até servidores empresariais totalmente privados.</target>
+      </trans-unit>
+      <trans-unit id="termsS2Title" datatype="html">
+        <source>2. Edalitics Free — Servicio compartido</source>
+        <target>2. Edalitics Free — Serviço partilhado</target>
+      </trans-unit>
+      <trans-unit id="termsS2P1" datatype="html">
+        <source>El plan gratuito de Edalitics funciona en un servidor compartido pensado para usuarios individuales y pequeños equipos que quieren explorar y analizar sus datos fácilmente. Este entorno compartido está destinado a un uso analítico personal o moderado. Edalitics Free no ofrece ninguna garantía de disponibilidad del servidor, tiempos de respuesta o niveles de rendimiento.</source>
+        <target>O plano gratuito do Edalitics funciona num servidor partilhado pensado para utilizadores individuais e pequenas equipas que pretendem explorar e analisar os seus dados facilmente. Este ambiente partilhado destina-se a uma utilização analítica pessoal ou moderada. O Edalitics Free não oferece qualquer garantia de disponibilidade do servidor, tempos de resposta ou níveis de desempenho.</target>
+      </trans-unit>
+      <trans-unit id="termsS2P2" datatype="html">
+        <source>Si necesitas un entorno dedicado con mayor rendimiento, disponibilidad garantizada o funciones de colaboración avanzadas, te invitamos a conocer nuestros planes de servidor privado.</source>
+        <target>Se precisa de um ambiente dedicado com maior desempenho, disponibilidade garantida ou funcionalidades de colaboração avançadas, convidamo-lo a conhecer os nossos planos de servidor privado.</target>
+      </trans-unit>
+      <trans-unit id="termsS3Title" datatype="html">
+        <source>3. Planes privados y empresariales</source>
+        <target>3. Planos privados e empresariais</target>
+      </trans-unit>
+      <trans-unit id="termsS3P1" datatype="html">
+        <source>Para las organizaciones que necesitan su propia infraestructura, Edalitics ofrece planes de servidor privado. Estos planes incluyen garantías de servicio en cuanto a disponibilidad, tiempos de respuesta y soporte dedicado. Contáctanos en</source>
+        <target>Para as organizações que necessitam da sua própria infraestrutura, o Edalitics oferece planos de servidor privado. Estes planos incluem garantias de serviço em termos de disponibilidade, tempos de resposta e suporte dedicado. Contacte-nos em</target>
+      </trans-unit>
+      <trans-unit id="termsS3P1End" datatype="html">
+        <source>para encontrar el plan que se adapte a tus necesidades.</source>
+        <target>para encontrar o plano que se adapta às suas necessidades.</target>
+      </trans-unit>
+      <trans-unit id="termsS4Title" datatype="html">
+        <source>4. Alojamiento de datos y legislación aplicable</source>
+        <target>4. Alojamento de dados e legislação aplicável</target>
+      </trans-unit>
+      <trans-unit id="termsS4P1" datatype="html">
+        <source>Todos los datos subidos a Edalitics se alojan en servidores ubicados en Europa. La normativa de la Unión Europea se aplica a todos los datos almacenados y tratados en la plataforma, incluido el Reglamento General de Protección de Datos (RGPD).</source>
+        <target>Todos os dados carregados no Edalitics são alojados em servidores localizados na Europa. A regulamentação da União Europeia aplica-se a todos os dados armazenados e tratados na plataforma, incluindo o Regulamento Geral sobre a Proteção de Dados (RGPD).</target>
+      </trans-unit>
+      <trans-unit id="termsS5Title" datatype="html">
+        <source>5. Responsabilidad del usuario sobre los datos</source>
+        <target>5. Responsabilidade do utilizador pelos dados</target>
+      </trans-unit>
+      <trans-unit id="termsS5P1" datatype="html">
+        <source>Los usuarios son los únicos responsables de los datos que suben a Edalitics. Jortilles no asume ninguna responsabilidad sobre la naturaleza, exactitud o legalidad de los datos subidos por los usuarios. Al utilizar este servicio, el usuario declara que tiene derecho a usar y subir dichos datos.</source>
+        <target>Os utilizadores são os únicos responsáveis pelos dados que carregam no Edalitics. A Jortilles não assume qualquer responsabilidade pela natureza, exatidão ou legalidade dos dados carregados pelos utilizadores. Ao utilizar este serviço, o utilizador declara que tem o direito de utilizar e carregar esses dados.</target>
+      </trans-unit>
+      <trans-unit id="termsS5P2" datatype="html">
+        <source>Si Jortilles detecta que los datos subidos a la plataforma son fraudulentos, ilegales o infringen estos términos, Jortilles se reserva el derecho de cancelar la suscripción del usuario y eliminar definitivamente los datos asociados, sin previo aviso y sin ninguna compensación.</source>
+        <target>Se a Jortilles detetar que os dados carregados na plataforma são fraudulentos, ilegais ou violam estes termos, a Jortilles reserva-se o direito de cancelar a subscrição do utilizador e eliminar definitivamente os dados associados, sem aviso prévio e sem qualquer compensação.</target>
+      </trans-unit>
+      <trans-unit id="termsS6Title" datatype="html">
+        <source>6. Privacidad y comercialización de datos</source>
+        <target>6. Privacidade e comercialização de dados</target>
+      </trans-unit>
+      <trans-unit id="termsS6P1" datatype="html">
+        <source>Jortilles recoge los datos de los usuarios únicamente con el fin de prestar y mejorar el servicio Edalitics. Jortilles nunca venderá ni comercializará los datos personales de sus usuarios a terceros. Jortilles se reserva el derecho de tratar los datos de uso de forma agregada y anónima para mejorar la plataforma.</source>
+        <target>A Jortilles recolhe os dados dos utilizadores unicamente com o objetivo de prestar e melhorar o serviço Edalitics. A Jortilles nunca venderá nem comercializará os dados pessoais dos seus utilizadores a terceiros. A Jortilles reserva-se o direito de tratar os dados de utilização de forma agregada e anónima para melhorar a plataforma.</target>
+      </trans-unit>
+      <trans-unit id="termsS7Title" datatype="html">
+        <source>7. Condiciones especiales de Edalitics Free</source>
+        <target>7. Condições especiais do Edalitics Free</target>
+      </trans-unit>
+      <trans-unit id="termsS7L1" datatype="html">
+        <source>El plan gratuito está pensado para usuarios individuales o equipos con necesidades analíticas moderadas.</source>
+        <target>O plano gratuito destina-se a utilizadores individuais ou equipas com necessidades analíticas moderadas.</target>
+      </trans-unit>
+      <trans-unit id="termsS7L2" datatype="html">
+        <source>El uso del plan gratuito está limitado a 500 accesos por usuario y mes.</source>
+        <target>A utilização do plano gratuito está limitada a 500 acessos por utilizador por mês.</target>
+      </trans-unit>
+      <trans-unit id="termsS7L3" datatype="html">
+        <source>Los datos pueden ser privados o públicos, siempre bajo la plena responsabilidad del usuario.</source>
+        <target>Os dados podem ser privados ou públicos, sempre sob a inteira responsabilidade do utilizador.</target>
+      </trans-unit>
+      <trans-unit id="termsS7L4" datatype="html">
+        <source>Los usuarios del plan gratuito no pueden crear grupos de usuarios ni gestionar permisos de acceso a datos compartidos.</source>
+        <target>Os utilizadores do plano gratuito não podem criar grupos de utilizadores nem gerir permissões de acesso a dados partilhados.</target>
+      </trans-unit>
+      <trans-unit id="termsS7L5" datatype="html">
+        <source>Si necesitas compartir dashboards privados o gestionar permisos de usuarios, considera pasar a un plan de pago.</source>
+        <target>Se precisa de partilhar dashboards privados ou gerir permissões de utilizadores, considere mudar para um plano pago.</target>
+      </trans-unit>
+      <trans-unit id="termsS7L6" datatype="html">
+        <source>Jortilles se reserva el derecho de modificar, suspender o interrumpir el servicio gratuito en cualquier momento.</source>
+        <target>A Jortilles reserva-se o direito de modificar, suspender ou descontinuar o serviço gratuito a qualquer momento.</target>
+      </trans-unit>
+      <trans-unit id="termsS8Title" datatype="html">
+        <source>8. Aceptación</source>
+        <target>8. Aceitação</target>
+      </trans-unit>
+      <trans-unit id="termsS8P1" datatype="html">
+        <source>Al registrarte, confirmas que has leído, entendido y aceptado estos términos y condiciones de uso.</source>
+        <target>Ao registar-se, confirma que leu, compreendeu e aceitou estes termos e condições de utilização.</target>
+      </trans-unit>
+      <trans-unit id="termsBack" datatype="html">
+        <source>← Volver</source>
+        <target>← Voltar</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

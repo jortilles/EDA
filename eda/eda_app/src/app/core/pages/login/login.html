@@ -92,7 +92,7 @@
 
         @if (singleSignOnSamlMixOrclAvailable) {
             <button 
-                class="w-full py-2 xl:py-1 text-black rounded-md bg-white border-[0.5px] border-[#dadce0] hover:bg-[#E1E9FF] transition-colors focus:outline-none focus:ring-0"
+                class="sso-btn w-full text-black rounded-md bg-white border-[0.5px] border-[#dadce0] hover:bg-[#E1E9FF] transition-colors focus:outline-none focus:ring-0"
                 (click)="loginButtonSSOMixOrcl()"
                 >
                 <div class="flex items-center">
@@ -110,7 +110,7 @@
 
         @if (singleSignOnSamlAvailable) {
             <button 
-                class="w-full py-2 xl:py-1 text-black rounded-md bg-white border-[0.5px] border-[#dadce0] hover:bg-[#E1E9FF] transition-colors focus:outline-none focus:ring-0"
+                class="sso-btn w-full text-black rounded-md bg-white border-[0.5px] border-[#dadce0] hover:bg-[#E1E9FF] transition-colors focus:outline-none focus:ring-0"
                 (click)="loginButtonSSO()"
                 >
                 <div class="flex items-center">
@@ -130,7 +130,7 @@
             <div class="container-microsoft">
 
             <button 
-                class="w-full py-[7px] xl:py-[5px] text-black rounded-md bg-white border-[0.5px] border-[#dadce0] hover:bg-[#E1E9FF] transition-colors focus:outline-none focus:ring-0"
+                class="sso-btn w-full text-black rounded-md bg-white border-[0.5px] border-[#dadce0] hover:bg-[#E1E9FF] transition-colors focus:outline-none focus:ring-0"
                 (click)="loginMicrosoft()"
                 >
                 <div class="flex items-center">
@@ -151,7 +151,7 @@
 
         @if(singleSignOnGoogleAvailable) {
             <div class="container-google">
-                <div #googleBtn id="google-btn" style="margin-bottom: 15px; "></div>
+                <div #googleBtn id="google-btn"></div>
             </div>
         }
 
