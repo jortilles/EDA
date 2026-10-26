@@ -214,13 +214,18 @@ export class HoldedApiService {
             ])
         );
 
+        // Current catalogue cost per product, fallback for lines without their own cost
+        const productCosts = new Map<string, number>();
+        products.forEach((p: any) => productCosts.set(p.id, HoldedApiService.num(p.cost)));
+
         // invoice_lines.csv — v2 doesn't return line amounts, they are computed
         // from price × units with the line discount, tax and retention (IRPF) percentages
         HoldedApiService.writeCsv(path.join(folderPath, 'invoice_lines.csv'),
             ['invoice_line_id', 'invoice_id', 'product_id', 'product_name', 'invoice_line_description', 'product_sku',
              'invoice_line_quantity', 'invoice_line_unit_price', 'invoice_line_discount_pct', 'invoice_line_subtotal',
              'invoice_line_total', 'invoice_line_tax_pct', 'invoice_line_account', 'invoice_line_retention_pct',
-             'invoice_line_retention'],
+             'invoice_line_retention', 'invoice_line_cost', 'invoice_line_margin', 'invoice_line_margin_pct',
+             'invoice_line_cost_source'],
             allLines.map((line: any) => {
                 const units        = HoldedApiService.num(line.units);
                 const price        = HoldedApiService.num(line.price);
@@ -231,13 +236,25 @@ export class HoldedApiService {
                 const taxAmount    = +(subtotal * taxPct / 100).toFixed(2);
                 const retention    = +(subtotal * retentionPct / 100).toFixed(2);
                 const total        = +(subtotal + taxAmount - retention).toFixed(2);
+
+                // Unit cost: the line's own cost_price (cost at sale time) when informed,
+                // otherwise the current product cost. Without any cost the margin is left
+                // empty (null) so it doesn't inflate margins with a 100% value.
+                const lineCost     = HoldedApiService.num(line.cost_price);
+                const productCost  = productCosts.get(line.product_id) || 0;
+                const costSource   = lineCost > 0 ? 'line' : productCost > 0 ? 'product' : '';
+                const unitCost     = costSource === 'line' ? lineCost : productCost;
+                const cost         = costSource ? +(unitCost * units).toFixed(2) : null;
+                const margin       = cost !== null ? +(subtotal - cost).toFixed(2) : null;
+                const marginPct    = margin !== null && subtotal ? +(margin / subtotal * 100).toFixed(2) : null;
                 return [
                     line.line_id || `${line.invoice_id}_${line._lineIdx}`,
                     line.invoice_id, line.product_id || '',
                     line.name || '', line.description || '', line.sku || '',
                     units, price, discount, subtotal, total, taxPct,
                     line.account || '',
-                    retentionPct, retention
+                    retentionPct, retention,
+                    cost, margin, marginPct, costSource
                 ];
             })
         );
