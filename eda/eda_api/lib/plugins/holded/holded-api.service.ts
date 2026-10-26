@@ -200,8 +200,9 @@ export class HoldedApiService {
 
         // invoices.csv
         HoldedApiService.writeCsv(path.join(folderPath, 'invoices.csv'),
-            ['id', 'number', 'date', 'due_date', 'contact_id', 'contact', 'description',
-             'currency', 'subtotal', 'discount', 'taxes', 'total', 'status', 'paid', 'pending'],
+            ['invoice_id', 'invoice_number', 'invoice_date', 'invoice_due_date', 'contact_id', 'contact_name',
+             'invoice_description', 'invoice_currency', 'invoice_subtotal', 'invoice_discount', 'invoice_taxes',
+             'invoice_total', 'invoice_status', 'invoice_paid', 'invoice_pending'],
             invoices.map((inv: any) => [
                 inv.id, inv.document_number || '',
                 inv.date || '', inv.due_date || '',
@@ -216,9 +217,10 @@ export class HoldedApiService {
         // invoice_lines.csv — v2 doesn't return line amounts, they are computed
         // from price × units with the line discount, tax and retention (IRPF) percentages
         HoldedApiService.writeCsv(path.join(folderPath, 'invoice_lines.csv'),
-            ['id', 'invoice_id', 'product_id', 'name', 'description', 'sku', 'quantity',
-             'unit_price', 'discount', 'subtotal', 'total', 'tax_pct', 'account',
-             'retention_pct', 'retention'],
+            ['invoice_line_id', 'invoice_id', 'product_id', 'product_name', 'invoice_line_description', 'product_sku',
+             'invoice_line_quantity', 'invoice_line_unit_price', 'invoice_line_discount_pct', 'invoice_line_subtotal',
+             'invoice_line_total', 'invoice_line_tax_pct', 'invoice_line_account', 'invoice_line_retention_pct',
+             'invoice_line_retention'],
             allLines.map((line: any) => {
                 const units        = HoldedApiService.num(line.units);
                 const price        = HoldedApiService.num(line.price);
@@ -242,7 +244,8 @@ export class HoldedApiService {
 
         // contacts.csv
         HoldedApiService.writeCsv(path.join(folderPath, 'contacts.csv'),
-            ['id', 'code', 'name', 'trade_name', 'email', 'phone', 'mobile', 'type', 'vat', 'country'],
+            ['contact_id', 'contact_code', 'contact_name', 'contact_trade_name', 'contact_email', 'contact_phone',
+             'contact_mobile', 'contact_type', 'contact_vat', 'contact_country'],
             contacts.map((c: any) => [
                 c.id, c.code || '', c.name || '', c.trade_name || '',
                 c.email || '', c.phone || '', c.mobile || '',
@@ -253,7 +256,8 @@ export class HoldedApiService {
 
         // products.csv
         HoldedApiService.writeCsv(path.join(folderPath, 'products.csv'),
-            ['id', 'name', 'description', 'price', 'cost', 'tax_codes', 'type', 'sku', 'category_id', 'stock'],
+            ['product_id', 'product_name', 'product_description', 'product_price', 'product_cost', 'product_tax_codes',
+             'product_type', 'product_sku', 'product_category_id', 'product_stock'],
             products.map((p: any) => [
                 p.id, p.name || '', p.description || '',
                 HoldedApiService.num(p.price), HoldedApiService.num(p.cost), HoldedApiService.joinList(p.taxes),
@@ -264,8 +268,8 @@ export class HoldedApiService {
 
         // ledger.csv
         HoldedApiService.writeCsv(path.join(folderPath, 'ledger.csv'),
-            ['id', 'entry_number', 'line', 'date', 'type', 'account', 'account_name',
-             'description', 'doc_description', 'debit', 'credit'],
+            ['entry_line_id', 'entry_number', 'entry_line', 'entry_date', 'entry_type', 'account_code', 'account_name',
+             'entry_description', 'entry_doc_description', 'entry_debit', 'entry_credit'],
             ledgerEntries.map((e: any) => [
                 e.id, e.entry_number ?? '', e.line ?? '',
                 HoldedApiService.isoDate(e.date), e.type || '',
