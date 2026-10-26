@@ -12,13 +12,13 @@
     <div class="absolute bottom-0 left-0 w-full overflow-hidden" style="height: 70%;">
       @switch (inject.edaChart.edaChart) {
         @case ('bar') {
-          <eda-bar-d3 #EdaChart [inject]="inject.edaChart" class="h-full w-full"></eda-bar-d3>
+          <eda-bar-d3 #EdaChart [inject]="inject.edaChart" (onClick)="onClick.emit($event)" class="h-full w-full"></eda-bar-d3>
         }
         @case ('line') {
-          <eda-line-d3 #EdaChart [inject]="inject.edaChart" class="h-full w-full"></eda-line-d3>
+          <eda-line-d3 #EdaChart [inject]="inject.edaChart" (onClick)="onClick.emit($event)" class="h-full w-full"></eda-line-d3>
         }
         @case ('area') {
-          <eda-area-d3 #EdaChart [inject]="inject.edaChart" class="h-full w-full"></eda-area-d3>
+          <eda-area-d3 #EdaChart [inject]="inject.edaChart" (onClick)="onClick.emit($event)" class="h-full w-full"></eda-area-d3>
         }
       }
     </div>

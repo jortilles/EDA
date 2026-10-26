@@ -21,6 +21,8 @@ import { PipesModule } from '@eda/pipes/pipes.module';
 export class EdaKpiComponent implements OnInit, AfterViewInit {
     @Input() inject: EdaKpi;
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
+    // Re-emits the click of the embedded bar/line/area chart
+    @Output() onClick: EventEmitter<any> = new EventEmitter();
 
     @HostBinding('style.display') readonly hostDisplay = 'block';
     @HostBinding('style.position') readonly hostPosition = 'relative';

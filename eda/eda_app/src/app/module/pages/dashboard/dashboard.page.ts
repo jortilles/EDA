@@ -1382,7 +1382,8 @@ public startCountdown(seconds: number) {
     const edaChart = event.data?.panel?.content?.edaChart;
     const queries = event.data?.query || [];
     const filterBy = event.data?.filterBy;
-    if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(chartType)) {
+    // KPI + chart panels emit the same click payload (label/filterBy) as their standalone bar/line chart
+    if (['doughnut', 'polarArea', 'bar', 'line', 'radar', 'kpibar', 'kpiline', 'kpiarea'].includes(chartType)) {
       if (edaChart === 'stackedbar100') {
         // For stackedbar100, a label is a value, not a table column, and cannot be filterby.
         // The last text column is the value we are looking for
