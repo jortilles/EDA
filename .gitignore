@@ -31,3 +31,4 @@ eda/eda_app/src/app/config/config.ts
 .claude
 eda/eda_mcp/dist
 eda/eda_mcp/node_modules
+eda/eda_api/config/signup.config.js
