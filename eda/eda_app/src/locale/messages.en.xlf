@@ -7960,6 +7960,38 @@ Best regards.</target>
   <source>se ha fusionado con</source>
   <target>has merged with</target>
 </trans-unit>
+<trans-unit id="dsViewTree" datatype="html">
+  <source>Árbol</source>
+  <target>Tree</target>
+</trans-unit>
+<trans-unit id="dsViewMap" datatype="html">
+  <source>Mapa</source>
+  <target>Map</target>
+</trans-unit>
+<trans-unit id="dsMapFit" datatype="html">
+  <source>Ajustar a la pantalla</source>
+  <target>Fit to screen</target>
+</trans-unit>
+<trans-unit id="dsMapRelayout" datatype="html">
+  <source>Reorganizar tablas</source>
+  <target>Rearrange tables</target>
+</trans-unit>
+<trans-unit id="dsMapModelProps" datatype="html">
+  <source>Propiedades del modelo</source>
+  <target>Data model properties</target>
+</trans-unit>
+<trans-unit id="dsMapExpand" datatype="html">
+  <source>Mostrar columnas</source>
+  <target>Show columns</target>
+</trans-unit>
+<trans-unit id="dsMapCollapse" datatype="html">
+  <source>Ocultar columnas</source>
+  <target>Hide columns</target>
+</trans-unit>
+<trans-unit id="dsMapEmpty" datatype="html">
+  <source>El modelo de datos no tiene tablas</source>
+  <target>The data model has no tables</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
