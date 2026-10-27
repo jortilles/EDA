@@ -6131,6 +6131,10 @@ Un saludo.</source>
         <source>Para uso personal y pequeñas organizaciones</source>
         <target>Für den privaten Gebrauch und kleine Organisationen</target>
       </trans-unit>
+      <trans-unit id="loginLanguage" datatype="html">
+        <source>Idioma</source>
+        <target>Sprache</target>
+      </trans-unit>
       <trans-unit id="loginUpsell" datatype="html">
         <source>¿Necesitas más potencia?</source>
         <target>Brauchen Sie mehr Leistung?</target>

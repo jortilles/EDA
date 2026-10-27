@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewChecked, inject } from '@angular/core';
+import { Component, OnInit, AfterViewChecked, LOCALE_ID, inject } from '@angular/core';
 import { FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -23,6 +23,18 @@ export class FreeLoginComponent extends LoginV2Component implements OnInit, Afte
 
     // Bar heights (%) of the illustrative dashboard
     readonly sampleBars = [45, 62, 55, 78, 70, 92, 84];
+
+    // App locales, labelled in their own language (same list as the main sidebar)
+    readonly languages = [
+        { code: 'es', label: 'Español' },
+        { code: 'en', label: 'English' },
+        { code: 'ca', label: 'Català' },
+        { code: 'fr', label: 'Français' },
+        { code: 'pl', label: 'Polski' },
+        { code: 'de', label: 'Deutsch' },
+        { code: 'pt', label: 'Português' },
+    ];
+    readonly currentLanguage: string = (inject(LOCALE_ID) || 'es').toLowerCase().split('-')[0];
 
     signupForm: FormGroup;
     mode: 'login' | 'signup' = 'login';
@@ -97,6 +109,21 @@ export class FreeLoginComponent extends LoginV2Component implements OnInit, Afte
                 Swal.fire($localize`:@@signupErrorTitle:No se pudo crear la cuenta`, this.signupErrorText(err?.status), 'error');
             }
         });
+    }
+
+    /**
+     * Reloads the page in the chosen locale. Each locale build is served from its own
+     * base path (/es/, /en/...), so the locale segment is replaced keeping the current route.
+     */
+    changeLanguage(code: string) {
+        if (!code || code === this.currentLanguage) return;
+
+        let baseUrl = window.location.href.split('#')[0];
+        const localeSegment = new RegExp(`/(${this.languages.map(l => l.code).join('|')})/$`);
+        baseUrl = baseUrl.replace(localeSegment, '/');
+        if (!baseUrl.endsWith('/')) baseUrl += '/';
+
+        window.location.href = `${baseUrl}${code}/${window.location.hash || '#/login'}`;
     }
 
     goToLoginAfterSignup() {

@@ -8830,6 +8830,10 @@ Cordialement.</target>
         <source>Para uso personal y pequeñas organizaciones</source>
         <target>Pour un usage personnel et les petites organisations</target>
       </trans-unit>
+      <trans-unit id="loginLanguage" datatype="html">
+        <source>Idioma</source>
+        <target>Langue</target>
+      </trans-unit>
       <trans-unit id="loginUpsell" datatype="html">
         <source>¿Necesitas más potencia?</source>
         <target>Besoin de plus de puissance ?</target>

@@ -8088,6 +8088,10 @@ Best regards.</target>
         <source>Para uso personal y pequeñas organizaciones</source>
         <target>For personal use and small organizations</target>
       </trans-unit>
+      <trans-unit id="loginLanguage" datatype="html">
+        <source>Idioma</source>
+        <target>Language</target>
+      </trans-unit>
       <trans-unit id="loginUpsell" datatype="html">
         <source>¿Necesitas más potencia?</source>
         <target>Need more power?</target>

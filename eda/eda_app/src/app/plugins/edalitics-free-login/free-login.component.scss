@@ -156,10 +156,40 @@ h1, h2, p { margin: 0; }
 
 // ---------- Form panel ----------
 .ed-form-panel {
+    position: relative;
     display: grid;
     place-items: center;
     padding: 40px 24px;
     background: var(--ed-surface);
+}
+
+// Language selector, top right corner of the form panel
+.ed-lang {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px 4px 10px;
+    border: 1px solid var(--ed-line);
+    border-radius: var(--ed-radius-pill);
+    color: var(--ed-ink-muted);
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover, &:focus-within { border-color: var(--ed-teal-500); color: var(--ed-ink); }
+
+    svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; flex-shrink: 0; }
+
+    select {
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+        outline: none;
+    }
 }
 
 .ed-form { width: 100%; max-width: 400px; }
@@ -362,5 +392,6 @@ h1, h2, p { margin: 0; }
     .ed-hero { margin-top: 0; font-size: 32px; line-height: 38px; }
     .ed-lead { font-size: 16px; line-height: 24px; }
     .ed-dash { display: none; }
-    .ed-form-panel { padding: 32px 16px; }
+    .ed-form-panel { padding: 64px 16px 32px; }
+    .ed-lang { top: 16px; right: 16px; }
 }

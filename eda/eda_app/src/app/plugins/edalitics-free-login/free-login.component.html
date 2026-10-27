@@ -52,6 +52,19 @@
 
     <!-- Form panel -->
     <section class="ed-form-panel">
+        <!-- Language selector: each locale is served from its own base path (/es/, /en/...) -->
+        <label class="ed-lang">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z" />
+            </svg>
+            <select [value]="currentLanguage" (change)="changeLanguage($any($event.target).value)"
+                i18n-aria-label="@@loginLanguage" aria-label="Idioma">
+                @for (lang of languages; track lang.code) {
+                    <option [value]="lang.code" [selected]="lang.code === currentLanguage">{{ lang.label }}</option>
+                }
+            </select>
+        </label>
+
         <div class="ed-form">
             <img class="ed-brandmark" [src]="subLogo || logo" alt="edalitics · Cloud analytics for everyone" width="230" />
 

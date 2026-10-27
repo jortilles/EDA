@@ -6005,6 +6005,10 @@ Cumprimentos.</target>
         <source>Para uso personal y pequeñas organizaciones</source>
         <target>Para uso pessoal e pequenas organizações</target>
       </trans-unit>
+      <trans-unit id="loginLanguage" datatype="html">
+        <source>Idioma</source>
+        <target>Idioma</target>
+      </trans-unit>
       <trans-unit id="loginUpsell" datatype="html">
         <source>¿Necesitas más potencia?</source>
         <target>Precisa de mais potência?</target>

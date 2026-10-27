@@ -8394,6 +8394,10 @@ Salutacions.</target>
         <source>Para uso personal y pequeñas organizaciones</source>
         <target>Per a ús personal i petites organitzacions</target>
       </trans-unit>
+      <trans-unit id="loginLanguage" datatype="html">
+        <source>Idioma</source>
+        <target>Idioma</target>
+      </trans-unit>
       <trans-unit id="loginUpsell" datatype="html">
         <source>¿Necesitas más potencia?</source>
         <target>Necessites més potència?</target>

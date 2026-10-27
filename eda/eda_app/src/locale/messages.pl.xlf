@@ -8507,6 +8507,10 @@ Pozdrawiam.</target>
         <source>Para uso personal y pequeñas organizaciones</source>
         <target>Do użytku osobistego i dla małych organizacji</target>
       </trans-unit>
+      <trans-unit id="loginLanguage" datatype="html">
+        <source>Idioma</source>
+        <target>Język</target>
+      </trans-unit>
       <trans-unit id="loginUpsell" datatype="html">
         <source>¿Necesitas más potencia?</source>
         <target>Potrzebujesz większej mocy?</target>
