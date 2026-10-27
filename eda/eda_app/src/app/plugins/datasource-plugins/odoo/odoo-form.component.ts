@@ -50,6 +50,14 @@ export class OdooFormComponent implements OnInit, OnDestroy {
             return;
         }
 
+        // The Odoo database name is also the folder name of the model, so it can't be reused
+        const odooFolderExistsMessage =
+            $localize`:@@odooFolderAlreadyExists:Ya existe un modelo de datos para la base de datos de Odoo "${value.database}".`;
+        if (await this.pluginFormService.duckdbFolderExists(this.dataSourceService, value.database)) {
+            this.alertService.addError(odooFolderExistsMessage);
+            return;
+        }
+
         this.spinnerService.on();
         try {
             const payload = {
@@ -70,7 +78,7 @@ export class OdooFormComponent implements OnInit, OnDestroy {
             this.router.navigate(['/data-source/', res.data_source_id]);
         } catch (err) {
             this.spinnerService.off();
-            this.alertService.addError(err);
+            this.alertService.addError(this.pluginFormService.isFolderExistsError(err) ? odooFolderExistsMessage : err);
         }
     }
 }

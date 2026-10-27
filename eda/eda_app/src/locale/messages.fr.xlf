@@ -8734,6 +8734,14 @@ Cordialement.</target>
   <source>El modelo de datos no tiene tablas</source>
   <target>Le modèle de données ne contient aucune table</target>
 </trans-unit>
+<trans-unit id="duckdbFolderAlreadyExists" datatype="html">
+  <source>La carpeta "<x id="PH" equiv-text="folderName"/>" ya existe. Elija otro nombre de carpeta.</source>
+  <target>Le dossier « <x id="PH" equiv-text="folderName"/> » existe déjà. Choisissez un autre nom de dossier.</target>
+</trans-unit>
+<trans-unit id="odooFolderAlreadyExists" datatype="html">
+  <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
+  <target>Un modèle de données existe déjà pour la base de données Odoo « <x id="PH" equiv-text="value.database"/> ».</target>
+</trans-unit>
 </body>
   </file>
 </xliff>

@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DataSourceService, SpinnerService, AlertService } from '@eda/services/service.index';
-import { PluginFormService } from '../plugin-form.service';
+import { PluginFormService, sanitizeDuckdbFolderName } from '../plugin-form.service';
 
 @Component({
     standalone: true,
@@ -54,12 +54,18 @@ export class HoldedFormComponent implements OnInit, OnDestroy {
             return;
         }
 
+        const folderName = sanitizeDuckdbFolderName(value.database);
+        if (await this.pluginFormService.duckdbFolderExists(this.dataSourceService, folderName)) {
+            this.alertService.addError(this.pluginFormService.folderExistsMessage(folderName));
+            return;
+        }
+
         this.spinnerService.on();
         try {
             const payload = {
                 name: value.name,
                 description: value.description || '',
-                folderName: value.database,
+                folderName,
                 apiKey: value.password,
                 optimize: value.optimize ? 1 : 0,
                 allowCache: value.allowCache ? 1 : 0,
@@ -72,7 +78,9 @@ export class HoldedFormComponent implements OnInit, OnDestroy {
             this.router.navigate(['/data-source/', res.data_source_id]);
         } catch (err) {
             this.spinnerService.off();
-            this.alertService.addError(err);
+            this.alertService.addError(this.pluginFormService.isFolderExistsError(err)
+                ? this.pluginFormService.folderExistsMessage(folderName)
+                : err);
         }
     }
 }

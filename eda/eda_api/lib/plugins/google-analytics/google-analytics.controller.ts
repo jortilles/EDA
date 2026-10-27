@@ -7,6 +7,7 @@ import { PluginRegistry } from '../plugin-registry';
 import DataSource, { IDataSource } from '../../module/datasource/model/datasource.model';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import { checkNewDuckdbFolder, duckdbBaseFolder, sanitizeDuckdbFolderName } from '../../utils/duckdb-folder.util';
 
 const cache_config = require('../../../config/cache.config');
 const ga4Config = require('../../../config/google-analytics.config');
@@ -36,8 +37,10 @@ export class GoogleAnalyticsController {
                 return next(new HttpException(400, 'Se requieren: name, propertyId, credentialsJson, folderName'));
             }
 
-            const safeFolderName = folderName.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
-            const folderPath = path.join(process.cwd(), 'duckdb', safeFolderName);
+            const safeFolderName = sanitizeDuckdbFolderName(folderName);
+            const folderError = checkNewDuckdbFolder(safeFolderName);
+            if (folderError) return next(folderError);
+            const folderPath = path.join(duckdbBaseFolder(), safeFolderName);
 
             const plugin = PluginRegistry.getDatasource('googleanalytics');
             await plugin.downloadData({ propertyId, credentialsJson }, folderPath);

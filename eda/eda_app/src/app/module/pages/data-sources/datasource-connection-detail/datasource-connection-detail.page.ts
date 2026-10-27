@@ -11,7 +11,7 @@ import { lastValueFrom } from 'rxjs';
 import { NgxCsvParser } from 'ngx-csv-parser';
 import { ChangeDetectorRef } from '@angular/core';
 import { DATASOURCE_PLUGINS } from '../../../../plugins/datasource-plugins/datasource-plugin-registry';
-import { PluginFormService } from '../../../../plugins/datasource-plugins/plugin-form.service';
+import { PluginFormService, sanitizeDuckdbFolderName } from '../../../../plugins/datasource-plugins/plugin-form.service';
 
 import { DropdownModule } from 'primeng/dropdown';
 
@@ -460,8 +460,9 @@ export class DataSourceConnectionDetailPage implements OnInit {
   }
 
   onFolderNameInput(event: Event): void {
-    const typed = ((event.target as HTMLInputElement).value || '').trim().toLowerCase();
-    const exists = this.duckdbFolderOptions.some(f => f.value.toLowerCase() === typed);
+    // Compare with the folder name the API will actually create (e.g. "Mis Datos" → "mis_datos")
+    const typed = sanitizeDuckdbFolderName((event.target as HTMLInputElement).value);
+    const exists = !!typed && this.duckdbFolderOptions.some(f => f.value.toLowerCase() === typed);
     this.duckdbFolderExists.set(exists);
   }
 
@@ -884,7 +885,14 @@ export class DataSourceConnectionDetailPage implements OnInit {
       this.router.navigate(['/data-source/', res.data_source_id]);
     } catch (err) {
       this.spinnerService.off();
-      this.alertService.addError(err);
+      if (this.pluginFormService.isFolderExistsError(err)) {
+        // The folder was created after the list was loaded: flag the field and refresh the list
+        this.duckdbFolderExists.set(true);
+        this.loadDuckDbFolders();
+        this.alertService.addError(this.pluginFormService.folderExistsMessage(sanitizeDuckdbFolderName(value.folderName)));
+      } else {
+        this.alertService.addError(err);
+      }
       throw err;
     }
   }

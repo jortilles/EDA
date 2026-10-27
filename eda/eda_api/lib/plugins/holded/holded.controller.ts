@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../module/global/model/index';
-import { HoldedApiService } from './holded-api.service';
+import { HoldedApiService, HOLDED_CSV_FILES } from './holded-api.service';
 import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
 import { PluginRegistry } from '../plugin-registry';
 import DataSource, { IDataSource } from '../../module/datasource/model/datasource.model';
 import * as path from 'path';
+import { checkNewDuckdbFolder, duckdbBaseFolder, sanitizeDuckdbFolderName } from '../../utils/duckdb-folder.util';
 
 const cache_config = require('../../../config/cache.config');
 
@@ -19,12 +20,18 @@ export class HoldedController {
                 return next(new HttpException(400, 'Se requieren: name, folderName, apiKey'));
             }
 
-            const folderPath = path.join(process.cwd(), 'duckdb', folderName);
+            const safeFolderName = sanitizeDuckdbFolderName(folderName);
+            if (!safeFolderName) {
+                return next(new HttpException(400, `Nombre de carpeta no válido: "${folderName}"`));
+            }
+            const folderError = checkNewDuckdbFolder(safeFolderName);
+            if (folderError) return next(folderError);
+            const folderPath = path.join(duckdbBaseFolder(), safeFolderName);
 
             const plugin = PluginRegistry.getDatasource('holded');
             await plugin.downloadData({ apiKey }, folderPath);
 
-            const conn = new DuckDBConnection({ type: 'duckdb', database: folderName, schema: 'main' });
+            const conn = new DuckDBConnection({ type: 'duckdb', database: safeFolderName, schema: 'main' });
             const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
 
             plugin.addRelations(tables);
@@ -39,7 +46,7 @@ export class HoldedController {
                         type: 'holded',
                         host: '',
                         port: null,
-                        database: folderName,
+                        database: safeFolderName,
                         schema: 'main',
                         user: '',
                         password: EnCrypterService.encrypt(apiKey)
@@ -89,16 +96,15 @@ export class HoldedController {
                     `${result.lines} líneas`,
                     `${result.contacts} contactos`,
                     `${result.products} productos`,
-                    `${result.ledgerEntries} asientos contables`
+                    `${result.ledgerEntries} asientos contables`,
+                    `${result.estimates} presupuestos (${result.estimateLines} líneas)`,
+                    `${result.purchases} compras (${result.purchaseLines} líneas)`,
+                    `${result.purchaseOrders} pedidos de compra (${result.purchaseOrderLines} líneas)`,
+                    `${result.funnels} embudos (${result.funnelStages} etapas)`,
+                    `${result.leads} leads`
                 ].join(' · '),
                 counts: result,
-                files: [
-                    `duckdb/${folderName}/invoices.csv`,
-                    `duckdb/${folderName}/invoice_lines.csv`,
-                    `duckdb/${folderName}/contacts.csv`,
-                    `duckdb/${folderName}/products.csv`,
-                    `duckdb/${folderName}/ledger.csv`
-                ]
+                files: HOLDED_CSV_FILES.map(file => `duckdb/${folderName}/${file}`)
             });
 
         } catch (err: any) {

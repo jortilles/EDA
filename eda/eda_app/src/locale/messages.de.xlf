@@ -6035,6 +6035,14 @@ Un saludo.</source>
   <source>El modelo de datos no tiene tablas</source>
   <target>Das Datenmodell enthält keine Tabellen</target>
 </trans-unit>
+<trans-unit id="duckdbFolderAlreadyExists" datatype="html">
+  <source>La carpeta "<x id="PH" equiv-text="folderName"/>" ya existe. Elija otro nombre de carpeta.</source>
+  <target>Der Ordner „<x id="PH" equiv-text="folderName"/>“ existiert bereits. Wählen Sie einen anderen Ordnernamen.</target>
+</trans-unit>
+<trans-unit id="odooFolderAlreadyExists" datatype="html">
+  <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
+  <target>Für die Odoo-Datenbank „<x id="PH" equiv-text="value.database"/>“ existiert bereits ein Datenmodell.</target>
+</trans-unit>
   </body>
   </file>
 </xliff>
