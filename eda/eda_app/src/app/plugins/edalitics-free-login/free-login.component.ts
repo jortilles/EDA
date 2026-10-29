@@ -33,6 +33,7 @@ export class FreeLoginComponent extends LoginV2Component implements OnInit, Afte
         { code: 'pl', label: 'Polski' },
         { code: 'de', label: 'Deutsch' },
         { code: 'pt', label: 'Português' },
+        { code: 'it', label: 'Italiano' },
     ];
     readonly currentLanguage: string = (inject(LOCALE_ID) || 'es').toLowerCase().split('-')[0];
 
