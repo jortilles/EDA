@@ -171,25 +171,22 @@ export class DashboardController {
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
         if( dashboard.config.visible === 'group' && dashboard.group ){
-          for (const dashboardGroup of dashboard.group) {
-            for (const userGroup of userGroups) {
-              if ( userGroup._id.equals(dashboardGroup) ) {
-                  const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() );
-                  if( ds ){
-                        dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
-                        dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
-                        if (this.iCanSeeTheDashboard(req, ds) == true) {
-                          groupDashboards.push(dashboard)
-                        }else{
-                         //console.log('No pudo ver el informe ' +  dashboard);
-                        }
-                    }else{
-                      console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
-                    }
-
-                
+          const hasMatchingGroup = dashboard.group.some(dashboardGroup =>
+            userGroups.some(userGroup => userGroup._id.equals(dashboardGroup))
+          );
+          if (hasMatchingGroup) {
+            const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() );
+            if( ds ){
+                  dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+                  dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
+                  if (this.iCanSeeTheDashboard(req, ds) == true) {
+                    groupDashboards.push(dashboard)
+                  }else{
+                   //console.log('No pudo ver el informe ' +  dashboard);
+                  }
+              }else{
+                console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
               }
-            }
           }
         }
       }
