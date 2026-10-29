@@ -5,7 +5,6 @@ import { SharedModule } from "@eda/shared/shared.module";
 import { MultiSelectModule } from "primeng/multiselect";
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { SelectButtonModule } from "primeng/selectbutton";
-import * as _ from 'lodash';
 import { DashboardPage } from "../dashboard.page";
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 
@@ -23,38 +22,29 @@ export class DashboardTagModal implements OnInit {
   public display: boolean = false;
 
   public newTag: any;
-  public tags: any[];
+  public tags: any[] = [];
   public selectedTags: any[] = [];
+
+  // Entries the home page's tag bar synthesizes on top of real tags (untagged-dashboards filter,
+  // "show everything" options) — never real tags, so they must never show up as assignable here.
+  private readonly nonAssignableTagLabels = [
+    $localize`:@@NoTag:Sin Etiqueta`,
+    $localize`:@@AllTagsFlat:Todo`,
+    $localize`:@@AllTagsGrouped:Todo agrupado`,
+  ];
 
   constructor(private alertService: AlertService, private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
-    // We retrieve all tags stored locally as an immediate fallback while the full list loads
-    const tags = JSON.parse(localStorage.getItem('tags')) || [];
-    this.selectedTags = this.dashboard.selectedTags;
-    this.tags = _.uniqBy(tags, 'value');
-
-    // If this.tags is not an array because they are legacy tags, we need to convert it into an array
-    if(!Array.isArray(this.tags)){
-      this.tags = [this.tags];
-    }
-
-    // We add the tags present in this document in case they are not stored locally
-    if(!Array.isArray(this.selectedTags)){
-      this.selectedTags = [this.selectedTags];
-    }
-
-    // Add tag values that come from imports
-    this.tags.push(...this.selectedTags.filter(  (tag): tag is string => typeof tag === "string").map(tag => ({label: tag,value: tag})));
-
-    // Remove duplicates by 'label' in case they are already stored locally and avoid repeating them
-    this.tags = Array.from(new Map(this.tags.map(item => [item.label, item])).values());
+    const tags = this.dashboard.selectedTags;
+    this.selectedTags = tags == null ? [] : (Array.isArray(tags) ? tags : [tags]);
 
     this.loadExistingTags();
   }
 
-  // Tags live on each dashboard's config.tag, not in a shared catalog, so other users' tags only
-  // show up here if we pull them from every dashboard the current user can see.
+  // Tags live on each dashboard's config.tag, not in a shared catalog, so the full list has to be
+  // built from every dashboard the current user can see — the same source the home page's tag bar
+  // uses — rather than a local cache that can drift from it (stale/removed tags, missing new ones).
   private loadExistingTags(): void {
     this.dashboardService.getDashboards().subscribe((resp: any) => {
       const allDashboards = [
@@ -70,8 +60,14 @@ export class DashboardTagModal implements OnInit {
         .flatMap(tag => Array.isArray(tag) ? tag : [tag])
         .map(tag => typeof tag === 'string' ? { label: tag, value: tag } : tag);
 
-      this.tags.push(...remoteTags);
-      this.tags = Array.from(new Map(this.tags.map(item => [item.label, item])).values());
+      // Tags present on this dashboard but not yet reflected remotely (e.g. just added in this
+      // session before saving) still need to be selectable.
+      const localTags = this.selectedTags
+        .filter((tag): tag is string => typeof tag === 'string')
+        .map(tag => ({ label: tag, value: tag }));
+
+      this.tags = Array.from(new Map([...remoteTags, ...localTags, ...this.tags].map(item => [item.label, item])).values())
+        .filter(tag => !this.nonAssignableTagLabels.includes(tag.label));
     });
   }
 
@@ -88,7 +84,6 @@ export class DashboardTagModal implements OnInit {
       const tag = JSON.parse(JSON.stringify({ label: this.newTag, value: this.newTag }));
       this.tags.push(tag);
       this.newTag = '';
-      localStorage.setItem('tags', JSON.stringify(this.tags));
       this.alertService.addSuccess($localize`:@@tagCreated:Etiqueta creada correctamente`);
       (this.selectedTags ??= []).push(tag.label);
     }

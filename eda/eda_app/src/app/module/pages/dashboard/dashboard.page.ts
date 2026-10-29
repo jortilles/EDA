@@ -345,7 +345,7 @@ export class DashboardPage implements OnInit {
         dashboard.config.stopRefresh = false;
         this.startCountdown(dashboard.config.refreshTime);
       }
-      this.selectedTags = this.dashboard.config.tag;
+      this.selectedTags = this.dashboard.config.tag || [];
 
       // PROVISIONAL: migrate any legacy base64-embedded background/KPI images
       // to the media library. Fire-and-forget so it never blocks dashboard rendering.
