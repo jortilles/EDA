@@ -8266,6 +8266,50 @@ Salutacions.</target>
   <source>se ha fusionado con</source>
   <target>s'ha fusionat amb</target>
 </trans-unit>
+<trans-unit id="dsViewTree" datatype="html">
+  <source>Árbol</source>
+  <target>Arbre</target>
+</trans-unit>
+<trans-unit id="dsViewMap" datatype="html">
+  <source>Mapa</source>
+  <target>Mapa</target>
+</trans-unit>
+<trans-unit id="dsMapFit" datatype="html">
+  <source>Ajustar a la pantalla</source>
+  <target>Ajustar a la pantalla</target>
+</trans-unit>
+<trans-unit id="dsMapRelayout" datatype="html">
+  <source>Reorganizar tablas</source>
+  <target>Reorganitzar taules</target>
+</trans-unit>
+<trans-unit id="dsMapModelProps" datatype="html">
+  <source>Propiedades del modelo</source>
+  <target>Propietats del model</target>
+</trans-unit>
+<trans-unit id="dsMapExpand" datatype="html">
+  <source>Mostrar columnas</source>
+  <target>Mostrar columnes</target>
+</trans-unit>
+<trans-unit id="dsMapCollapse" datatype="html">
+  <source>Ocultar columnas</source>
+  <target>Amagar columnes</target>
+</trans-unit>
+<trans-unit id="dsMapEmpty" datatype="html">
+  <source>El modelo de datos no tiene tablas</source>
+  <target>El model de dades no té taules</target>
+</trans-unit>
+<trans-unit id="duckdbFolderAlreadyExists" datatype="html">
+  <source>La carpeta "<x id="PH" equiv-text="folderName"/>" ya existe. Elija otro nombre de carpeta.</source>
+  <target>La carpeta "<x id="PH" equiv-text="folderName"/>" ja existeix. Trieu un altre nom de carpeta.</target>
+</trans-unit>
+<trans-unit id="odooFolderAlreadyExists" datatype="html">
+  <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
+  <target>Ja existeix un model de dades per a la base de dades d'Odoo "<x id="PH" equiv-text="value.database"/>".</target>
+</trans-unit>
+<trans-unit id="duckdbFolderExistsError" datatype="html">
+  <source>Este nombre ya existe. Escribe un nombre diferente.</source>
+  <target>Aquest nom ja existeix. Escriu un nom diferent.</target>
+</trans-unit>
       <trans-unit id="loginHeroTitle" datatype="html">
         <source>Convierte tus datos en cuadros de mando.</source>
         <target>Converteix les teves dades en quadres de comandament.</target>

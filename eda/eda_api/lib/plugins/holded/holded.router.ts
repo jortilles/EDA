@@ -9,7 +9,7 @@ const router = express.Router();
  * @openapi
  * /holded/download:
  *   post:
- *     description: Descarga facturas, contactos, productos y asientos contables de Holded y los guarda como CSV
+ *     description: Descarga facturas, presupuestos, compras, pedidos de compra, embudos de venta (etapas y leads), contactos, productos y asientos contables de Holded y los guarda como CSV
  *     requestBody:
  *       required: true
  *       content:

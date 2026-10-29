@@ -15,6 +15,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { AggregationTypes } from '../global/model/aggregation-types';
 import { normalizeCsvDecimalSeparators } from '../../utils/csv-decimal.util';
+import { checkNewDuckdbFolder, duckdbBaseFolder, sanitizeDuckdbFolderName } from '../../utils/duckdb-folder.util';
 import { ownerOnlyGrantedRoles } from '../../utils/model-owner-security.util';
 const cache_config = require('../../../config/cache.config');
 
@@ -798,16 +799,17 @@ export class DataSourceController {
                 str.split('_').join(' ').toLowerCase()
                     .split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
 
-            const safeFolderName = folderName.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
+            const safeFolderName = sanitizeDuckdbFolderName(folderName);
             if (!safeFolderName) {
                 return next(new HttpException(400, `Invalid folderName "${folderName}": must contain at least one alphanumeric character`));
             }
 
-            const duckdbBaseFolder = path.join(process.cwd(), 'duckdb');
-            const targetFolder = path.join(duckdbBaseFolder, safeFolderName);
-            if (!fs.existsSync(targetFolder)) {
-                fs.mkdirSync(targetFolder, { recursive: true });
-            }
+            // A new model must not reuse (and overwrite) the CSV folder of another model
+            const folderError = checkNewDuckdbFolder(safeFolderName);
+            if (folderError) return next(folderError);
+
+            const targetFolder = path.join(duckdbBaseFolder(), safeFolderName);
+            fs.mkdirSync(targetFolder, { recursive: true });
 
             const tables = csvFiles.map((csvFile: any) => {
                 const safeName = (csvFile.fileName || 'file')
@@ -1008,11 +1010,11 @@ export class DataSourceController {
 
     static async GetDuckDbFolders(req: Request, res: Response, next: NextFunction) {
         try {
-            const duckdbBaseFolder = path.join(process.cwd(), 'duckdb');
-            if (!fs.existsSync(duckdbBaseFolder)) {
+            const baseFolder = duckdbBaseFolder();
+            if (!fs.existsSync(baseFolder)) {
                 return res.status(200).json({ ok: true, folders: [] });
             }
-            const entries = fs.readdirSync(duckdbBaseFolder, { withFileTypes: true });
+            const entries = fs.readdirSync(baseFolder, { withFileTypes: true });
             const folders = entries
                 .filter(e => e.isDirectory())
                 .map(e => e.name);

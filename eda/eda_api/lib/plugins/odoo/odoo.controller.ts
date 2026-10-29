@@ -7,6 +7,7 @@ import { PluginRegistry } from '../plugin-registry';
 import DataSource, { IDataSource } from '../../module/datasource/model/datasource.model';
 import { ownerOnlyGrantedRoles } from '../../utils/model-owner-security.util';
 import * as path from 'path';
+import { DUCKDB_FOLDER_EXISTS_STATUS, duckdbBaseFolder, duckdbFolderExists } from '../../utils/duckdb-folder.util';
 
 const cache_config = require('../../../config/cache.config');
 
@@ -20,7 +21,16 @@ export class OdooController {
                 return next(new HttpException(400, 'Se requieren: name, url, db, username, password'));
             }
 
-            const folderPath = path.join(process.cwd(), 'duckdb', db);
+            // The Odoo database name is also the folder name under duckdb/ (connection.database
+            // is used both to authenticate and to locate the CSV files), so it can't be renamed
+            if (db !== path.basename(db) || db.includes('..')) {
+                return next(new HttpException(400, `Nombre de base de datos no válido: "${db}"`));
+            }
+            if (duckdbFolderExists(db)) {
+                return next(new HttpException(DUCKDB_FOLDER_EXISTS_STATUS,
+                    `Ya existe un modelo de datos para la base de datos de Odoo "${db}" (la carpeta "${db}" ya existe).`));
+            }
+            const folderPath = path.join(duckdbBaseFolder(), db);
 
             const plugin = PluginRegistry.getDatasource('odoo');
             await plugin.downloadData({ url, db, username, password }, folderPath);
