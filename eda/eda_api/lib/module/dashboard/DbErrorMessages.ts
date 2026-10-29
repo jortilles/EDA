@@ -1,4 +1,4 @@
-export type DbMessageLang = 'es' | 'ca' | 'en' | 'fr' | 'pl' | 'gl' | 'de' | 'pt';
+export type DbMessageLang = 'es' | 'ca' | 'en' | 'fr' | 'pl' | 'gl' | 'de' | 'pt' | 'it';
 
 export type DbMessageKey =
   | 'unknownColumn'
@@ -21,6 +21,7 @@ const DB_ERROR_MESSAGES: Record<DbMessageKey, Record<DbMessageLang, (value?: str
     gl: (value?: string) => `O campo '${value || '?'}' esta incluido no informe pero non esta disponible na base de datos.`,
     de: (value?: string) => `Das Feld '${value || '?'}' ist im Bericht enthalten, existiert aber nicht in der Datenbank.`,
     pt: (value?: string) => `O campo '${value || '?'}' está incluído no relatório, mas não existe na base de dados.`,
+    it: (value?: string) => `Il campo '${value || '?'}' è incluso nel report ma non esiste nel database.`,
   },
   unknownTable: {
     es: (value?: string) => `La tabla '${value || '?'}' no existe en la base de datos. Revise el modelo de datos.`,
@@ -31,6 +32,7 @@ const DB_ERROR_MESSAGES: Record<DbMessageKey, Record<DbMessageLang, (value?: str
     gl: (value?: string) => `A taboa '${value || '?'}' non existe na base de datos. Revisa o modelo de datos.`,
     de: (value?: string) => `Die Tabelle '${value || '?'}' existiert nicht in der Datenbank. Bitte überprüfen Sie das Datenmodell.`,
     pt: (value?: string) => `A tabela '${value || '?'}' não existe na base de dados. Reveja o modelo de dados.`,
+    it: (value?: string) => `La tabella '${value || '?'}' non esiste nel database. Verifica il modello dati.`,
   },
   accessDenied: {
     es: () => 'Acceso denegado a la base de datos. Verifique las credenciales de conexión.',
@@ -41,6 +43,7 @@ const DB_ERROR_MESSAGES: Record<DbMessageKey, Record<DbMessageLang, (value?: str
     gl: () => 'Acceso denegado a base de datos. Verifica as credenciais de conexion.',
     de: () => 'Zugriff auf die Datenbank verweigert. Bitte überprüfen Sie die Verbindungsdaten.',
     pt: () => 'Acesso negado à base de dados. Verifique as credenciais da ligação.',
+    it: () => 'Accesso al database negato. Verifica le credenziali di connessione.',
   },
   syntaxError: {
     es: () => 'Error de sintaxis en la consulta SQL. Revísela.',
@@ -51,6 +54,7 @@ const DB_ERROR_MESSAGES: Record<DbMessageKey, Record<DbMessageLang, (value?: str
     gl: () => 'Erro de sintaxe na consulta SQL. Revisa a consulta.',
     de: () => 'Syntaxfehler in der SQL-Abfrage. Bitte überprüfen Sie sie.',
     pt: () => 'Erro de sintaxe na consulta SQL. Reveja-a.',
+    it: () => 'Errore di sintassi nella query SQL. Controllala.',
   },
   tooManyConnections: {
     es: () => 'Demasiadas conexiones activas en la base de datos. Inténtelo de nuevo más tarde.',
@@ -61,6 +65,7 @@ const DB_ERROR_MESSAGES: Record<DbMessageKey, Record<DbMessageLang, (value?: str
     gl: () => 'Demasiadas conexions activas na base de datos. Intentalo de novo mais tarde.',
     de: () => 'Zu viele aktive Verbindungen zur Datenbank. Bitte versuchen Sie es später erneut.',
     pt: () => 'Demasiadas ligações ativas na base de dados. Tente novamente mais tarde.',
+    it: () => 'Troppe connessioni attive al database. Riprova più tardi.',
   },
   lockTimeout: {
     es: () => 'Tiempo de espera agotado por bloqueo en la base de datos. Inténtelo de nuevo.',
@@ -71,6 +76,7 @@ const DB_ERROR_MESSAGES: Record<DbMessageKey, Record<DbMessageLang, (value?: str
     gl: () => 'Tempo de espera esgotado por bloqueo na base de datos. Intentalo de novo.',
     de: () => 'Zeitüberschreitung beim Warten auf eine Sperre in der Datenbank. Bitte versuchen Sie es erneut.',
     pt: () => 'Tempo de espera esgotado por bloqueio na base de dados. Tente novamente.',
+    it: () => 'Tempo di attesa scaduto per un blocco nel database. Riprova.',
   },
   connectionRefused: {
     es: () => 'No se puede conectar con la base de datos. Verifique que el servidor está disponible.',
@@ -81,6 +87,7 @@ const DB_ERROR_MESSAGES: Record<DbMessageKey, Record<DbMessageLang, (value?: str
     gl: () => 'Non se pode conectar coa base de datos. Verifica que o servidor esta dispoñible.',
     de: () => 'Keine Verbindung zur Datenbank möglich. Bitte prüfen Sie, ob der Server verfügbar ist.',
     pt: () => 'Não é possível ligar à base de dados. Verifique se o servidor está disponível.',
+    it: () => 'Impossibile connettersi al database. Verifica che il server sia disponibile.',
   },
   generic: {
     es: (value?: string) => `Error en la consulta a la base de datos: ${value || ''}`,
@@ -91,6 +98,7 @@ const DB_ERROR_MESSAGES: Record<DbMessageKey, Record<DbMessageLang, (value?: str
     gl: (value?: string) => `Erro na consulta a base de datos: ${value || ''}`,
     de: (value?: string) => `Fehler bei der Datenbankabfrage: ${value || ''}`,
     pt: (value?: string) => `Erro na consulta à base de dados: ${value || ''}`,
+    it: (value?: string) => `Errore nella query al database: ${value || ''}`,
   },
   fallback: {
     es: () => 'Error al consultar la base de datos',
@@ -101,11 +109,12 @@ const DB_ERROR_MESSAGES: Record<DbMessageKey, Record<DbMessageLang, (value?: str
     gl: () => 'Erro ao consultar a base de datos',
     de: () => 'Fehler beim Abfragen der Datenbank',
     pt: () => 'Erro ao consultar a base de dados',
+    it: () => "Errore durante l'interrogazione del database",
   },
 };
 
 export function resolveDbLang(lang?: string | false): DbMessageLang {
-  return typeof lang === 'string' && ['es', 'ca', 'en', 'fr', 'pl', 'gl', 'de', 'pt'].includes(lang)
+  return typeof lang === 'string' && ['es', 'ca', 'en', 'fr', 'pl', 'gl', 'de', 'pt', 'it'].includes(lang)
     ? (lang as DbMessageLang)
     : 'en';
 }

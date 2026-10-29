@@ -12,7 +12,8 @@
           "pl": "src/locale/messages.pl.xlf",
           "fr": "src/locale/messages.fr.xlf",
           "de": "src/locale/messages.de.xlf",
-          "pt": "src/locale/messages.pt.xlf"
+          "pt": "src/locale/messages.pt.xlf",
+          "it": "src/locale/messages.it.xlf"
         }
       },
       "projectType": "application",
@@ -59,7 +60,8 @@
               "pl",
               "fr",
               "de",
-              "pt"
+              "pt",
+              "it"
             ]
           },
           "configurations": {
@@ -112,6 +114,11 @@
               "localize": [
                 "pt"
               ]
+            },
+            "it": {
+              "localize": [
+                "it"
+              ]
             }
           },
           "defaultConfiguration": "development"
@@ -146,6 +153,9 @@
             },
             "pt": {
               "buildTarget": "app-eda:build:pt"
+            },
+            "it": {
+              "buildTarget": "app-eda:build:it"
             }
           },
           "defaultConfiguration": "development"
