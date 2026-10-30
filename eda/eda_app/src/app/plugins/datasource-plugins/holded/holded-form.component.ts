@@ -2,6 +2,7 @@ import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DataSourceService, SpinnerService, AlertService } from '@eda/services/service.index';
 import { PluginFormService, sanitizeDuckdbFolderName, currentAppLocale } from '../plugin-form.service';
@@ -10,7 +11,7 @@ import { PluginFormService, sanitizeDuckdbFolderName, currentAppLocale } from '.
     standalone: true,
     selector: 'eda-holded-form',
     templateUrl: './holded-form.component.html',
-    imports: [CommonModule, FormsModule, ReactiveFormsModule],
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, TooltipModule],
 })
 export class HoldedFormComponent implements OnInit, OnDestroy {
     @Input() connectionForm!: FormGroup;

@@ -7271,10 +7271,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>URL de Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
         <target>URL d'Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
-      <trans-unit id="odooInfoMessage">
-        <source>Al confirmar se descargarán las facturas, líneas, clientes, productos y vendedores de Odoo y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos segundos dependiendo del volumen de datos.</source>
-        <target>En confirmar es descarregaran les factures, línies, clients, productes i venedors d'Odoo i es crearan com a taules en un datasource DuckDB. La descàrrega pot tardar uns segons depenent del volum de dades.</target>
-      </trans-unit>
       <trans-unit id="odooCreated">
         <source>Fuente de datos Odoo creada correctamente</source>
         <target>Font de dades Odoo creada correctament</target>
@@ -7323,10 +7319,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Error durante la autorización. Inténtalo de nuevo.</source>
         <target>Error durant l'autorització. Torna-ho a intentar.</target>
       </trans-unit>
-      <trans-unit id="ga4InfoMessage">
-        <source>Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4: sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos. La descarga puede tardar según el volumen de datos de la propiedad.</source>
-        <target>En confirmar es descarregaran les dades dels últims 365 dies de Google Analytics 4: sessions per canal, pàgines vistes, esdeveniments, dispositius i dades geogràfiques. La descàrrega pot trigar segons el volum de dades de la propietat.</target>
-      </trans-unit>
       <trans-unit id="ga4Created">
         <source>Fuente de datos Google Analytics 4 creada correctamente</source>
         <target>Font de dades Google Analytics 4 creada correctament</target>
@@ -7347,9 +7339,17 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
         <target>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
-      <trans-unit id="holdedInfoMessage">
-        <source>Al confirmar se descargarán las facturas, líneas, contactos, productos y asientos contables de Holded y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos minutos dependiendo del volumen de datos.</source>
-        <target>En confirmar es descarregaran les factures, línies, contactes, productes i assentaments comptables de Holded i es crearan com a taules en un datasource DuckDB. La descàrrega pot tardar uns minuts depenent del volum de dades.</target>
+      <trans-unit id="holdedApiKeyTooltip" datatype="html">
+        <source>Obtén la API Key desde tu cuenta de Holded: ve al menú Configuración, apartado Desarrolladores, y copia la API Key.</source>
+        <target>Obtén l'API Key des del teu compte de Holded: ves al menú Configuració, apartat Desenvolupadors, i copia l'API Key.</target>
+      </trans-unit>
+      <trans-unit id="holdedApiKeyRequired" datatype="html">
+        <source>Debe proporcionar la API Key de Holded</source>
+        <target>Heu de proporcionar l'API Key de Holded</target>
+      </trans-unit>
+      <trans-unit id="pluginDownloadInfoMessage" datatype="html">
+        <source>Al confirmar se descargarán los datos a una base de datos local. Esto puede tardar unos minutos dependiendo del volumen de datos.</source>
+        <target>En confirmar es descarregaran les dades a una base de dades local. Això pot trigar uns minuts depenent del volum de dades.</target>
       </trans-unit>
       <trans-unit id="holdedCreated">
         <source>Fuente de datos Holded creada correctamente</source>

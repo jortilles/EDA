@@ -6904,10 +6904,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>URL de Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
         <target>URL Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
-      <trans-unit id="odooInfoMessage">
-        <source>Al confirmar se descargarán las facturas, líneas, clientes, productos y vendedores de Odoo y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos segundos dependiendo del volumen de datos.</source>
-        <target>Po potwierdzeniu faktury, linie, klienci, produkty i sprzedawcy zostaną pobrane z Odoo i utworzone jako tabele w źródle danych DuckDB. Pobieranie może zająć kilka sekund w zależności od ilości danych.</target>
-      </trans-unit>
       <trans-unit id="odooCreated">
         <source>Fuente de datos Odoo creada correctamente</source>
         <target>Źródło danych Odoo zostało pomyślnie utworzone</target>
@@ -6956,10 +6952,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Error durante la autorización. Inténtalo de nuevo.</source>
         <target>Błąd podczas autoryzacji. Spróbuj ponownie.</target>
       </trans-unit>
-      <trans-unit id="ga4InfoMessage">
-        <source>Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4: sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos. La descarga puede tardar según el volumen de datos de la propiedad.</source>
-        <target>Po potwierdzeniu zostaną pobrane dane z ostatnich 365 dni z Google Analytics 4: sesje według kanału, wyświetlenia stron, zdarzenia, urządzenia i dane geograficzne. Czas pobierania zależy od wolumenu danych właściwości.</target>
-      </trans-unit>
       <trans-unit id="ga4Created">
         <source>Fuente de datos Google Analytics 4 creada correctamente</source>
         <target>Źródło danych Google Analytics 4 zostało pomyślnie utworzone</target>
@@ -6980,9 +6972,13 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
         <target>Klucz API Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
-      <trans-unit id="holdedInfoMessage">
-        <source>Al confirmar se descargarán las facturas, líneas, contactos, productos y asientos contables de Holded y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos minutos dependiendo del volumen de datos.</source>
-        <target>Po potwierdzeniu faktury, linie, kontakty, produkty i zapisy księgowe zostaną pobrane z Holded i utworzone jako tabele w źródle danych DuckDB. Pobieranie może zająć kilka minut w zależności od ilości danych.</target>
+      <trans-unit id="holdedApiKeyTooltip" datatype="html">
+        <source>Obtén la API Key desde tu cuenta de Holded: ve al menú Configuración, apartado Desarrolladores, y copia la API Key.</source>
+        <target>Pobierz klucz API ze swojego konta Holded: przejdź do menu Ustawienia, sekcja Deweloperzy, i skopiuj klucz API.</target>
+      </trans-unit>
+      <trans-unit id="pluginDownloadInfoMessage" datatype="html">
+        <source>Al confirmar se descargarán los datos a una base de datos local. Esto puede tardar unos minutos dependiendo del volumen de datos.</source>
+        <target>Po potwierdzeniu dane zostaną pobrane do lokalnej bazy danych. Może to potrwać kilka minut w zależności od ilości danych.</target>
       </trans-unit>
       <trans-unit id="holdedCreated">
         <source>Fuente de datos Holded creada correctamente</source>

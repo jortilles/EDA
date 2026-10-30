@@ -7239,10 +7239,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>URL de Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
         <target>URL Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
-      <trans-unit id="odooInfoMessage">
-        <source>Al confirmar se descargarán las facturas, líneas, clientes, productos y vendedores de Odoo y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos segundos dependiendo del volumen de datos.</source>
-        <target>En confirmant, les factures, lignes, clients, produits et vendeurs seront téléchargés depuis Odoo et créés comme tables dans un datasource DuckDB. Le téléchargement peut prendre quelques secondes selon le volume de données.</target>
-      </trans-unit>
       <trans-unit id="odooCreated">
         <source>Fuente de datos Odoo creada correctamente</source>
         <target>Source de données Odoo créée avec succès</target>
@@ -7291,10 +7287,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Error durante la autorización. Inténtalo de nuevo.</source>
         <target>Erreur lors de l'autorisation. Veuillez réessayer.</target>
       </trans-unit>
-      <trans-unit id="ga4InfoMessage">
-        <source>Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4: sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos. La descarga puede tardar según el volumen de datos de la propiedad.</source>
-        <target>En confirmant, les données des 365 derniers jours de Google Analytics 4 seront téléchargées : sessions par canal, pages vues, événements, appareils et données géographiques. Le téléchargement peut prendre du temps selon le volume de données de la propriété.</target>
-      </trans-unit>
       <trans-unit id="ga4Created">
         <source>Fuente de datos Google Analytics 4 creada correctamente</source>
         <target>Source de données Google Analytics 4 créée avec succès</target>
@@ -7315,9 +7307,13 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
         <target>Clé API Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
-      <trans-unit id="holdedInfoMessage">
-        <source>Al confirmar se descargarán las facturas, líneas, contactos, productos y asientos contables de Holded y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos minutos dependiendo del volumen de datos.</source>
-        <target>En confirmant, les factures, lignes, contacts, produits et écritures comptables seront téléchargés depuis Holded et créés comme tables dans un datasource DuckDB. Le téléchargement peut prendre quelques minutes selon le volume de données.</target>
+      <trans-unit id="holdedApiKeyTooltip" datatype="html">
+        <source>Obtén la API Key desde tu cuenta de Holded: ve al menú Configuración, apartado Desarrolladores, y copia la API Key.</source>
+        <target>Obtenez la clé API depuis votre compte Holded : allez dans le menu Configuration, section Développeurs, et copiez la clé API.</target>
+      </trans-unit>
+      <trans-unit id="pluginDownloadInfoMessage" datatype="html">
+        <source>Al confirmar se descargarán los datos a una base de datos local. Esto puede tardar unos minutos dependiendo del volumen de datos.</source>
+        <target>Une fois confirmé, les données seront téléchargées dans une base de données locale. Cela peut prendre quelques minutes selon le volume de données.</target>
       </trans-unit>
       <trans-unit id="holdedCreated">
         <source>Fuente de datos Holded creada correctamente</source>

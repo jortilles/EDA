@@ -21,9 +21,15 @@
 
     <!-- API Key -->
     <div class="space-y-2">
-      <label class="block font-medium" i18n="@@holdedApiKeyLabel">
-        API Key de Holded <span class="text-red-500">*</span>
-      </label>
+      <div class="flex items-center gap-1.5">
+        <label class="block font-medium" i18n="@@holdedApiKeyLabel">
+          API Key de Holded <span class="text-red-500">*</span>
+        </label>
+        <i class="pi pi-info-circle text-gray-400 cursor-pointer" style="font-size: 0.85rem;"
+          tooltipPosition="top"
+          pTooltip="Obtén la API Key desde tu cuenta de Holded: ve al menú Configuración, apartado Desarrolladores, y copia la API Key."
+          i18n-pTooltip="@@holdedApiKeyTooltip"></i>
+      </div>
       <div class="relative">
         <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
           placeholder="••••••••"
@@ -53,10 +59,8 @@
 
     <!-- Info message -->
     <div class="md:col-span-2 p-3 bg-blue-50 rounded-md border border-blue-200 text-sm text-blue-700"
-         i18n="@@holdedInfoMessage">
-      Al confirmar se descargarán las facturas, líneas, contactos, productos y asientos contables de Holded
-      y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos minutos
-      dependiendo del volumen de datos.
+         i18n="@@pluginDownloadInfoMessage">
+      Al confirmar se descargarán los datos a una base de datos local. Esto puede tardar unos minutos dependiendo del volumen de datos.
     </div>
 
   </div>
