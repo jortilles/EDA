@@ -4,7 +4,7 @@ import HoldedRouter from './holded.router';
 import { HoldedSyncService } from './holded-sync.service';
 import { HoldedApiService } from './holded-api.service';
 import { applyHoldedLabels, resolveHoldedLocale } from './holded-labels';
-import { addHoldedRelations } from './holded-relations';
+import { addHoldedRelations, applyHoldedVisibility } from './holded-relations';
 import { dropSyncControlTables } from '../plugin-relations';
 
 const cache_config = require('../../../config/cache.config');
@@ -24,4 +24,5 @@ export const HoldedPlugin: IEDAPlugin = {
         dropSyncControlTables(tables);
         addHoldedRelations(tables);
     },
+    applyVisibility: applyHoldedVisibility,
 };

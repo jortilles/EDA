@@ -29,9 +29,24 @@ export function addHoldedRelations(tables: any[]): void {
     linkTables(tables, 'purchase_orders',      'contact_id',        'contacts',        'contact_id');
     linkTables(tables, 'purchase_order_lines', 'product_id',        'products',        'product_id');
 
-    // CRM sales funnel
-    linkTables(tables, 'funnel_stages',  'funnel_id',   'funnels',       'funnel_id');
-    linkTables(tables, 'leads',          'stage_id',    'funnel_stages', 'stage_id');
-    linkTables(tables, 'leads',          'funnel_id',   'funnels',       'funnel_id');
+    // CRM: funnels.csv holds one row per funnel stage, so leads join it by their stage
+    linkTables(tables, 'leads',          'stage_id',    'funnels',       'stage_id');
     linkTables(tables, 'leads',          'contact_id',  'contacts',      'contact_id');
+
+    applyHoldedVisibility(tables);
+}
+
+/** Holded internal identifiers (invoice_id, contact_id, entry_line_id, ...) */
+const HOLDED_TECHNICAL_ID = /_id$/;
+
+/**
+ * Hides from end users the Holded internal ids: opaque hashes only needed to join tables
+ * (relations do not depend on column visibility).
+ */
+export function applyHoldedVisibility(tables: any[]): void {
+    for (const table of tables) {
+        for (const col of table.columns || []) {
+            if (HOLDED_TECHNICAL_ID.test(col.column_name)) col.visible = false;
+        }
+    }
 }
