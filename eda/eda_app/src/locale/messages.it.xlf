@@ -5349,10 +5349,6 @@ Cordiali saluti.</target>
         <source> Cambiar cuenta </source>
         <target> Cambia account </target>
       </trans-unit>
-      <trans-unit id="ga4InfoMessage" datatype="html">
-        <source> Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4: sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos. La descarga puede tardar según el volumen de datos de la propiedad. </source>
-        <target> Confermando verranno scaricati i dati degli ultimi 365 giorni di Google Analytics 4: sessioni per canale, pagine viste, eventi, dispositivi e dati geografici. Il download può richiedere tempo in base al volume di dati della proprietà. </target>
-      </trans-unit>
       <trans-unit id="ga4PropertyIdRequired" datatype="html">
         <source>Debe indicar el ID de propiedad de Google Analytics 4</source>
         <target>Devi indicare l'ID della proprietà di Google Analytics 4</target>
@@ -5373,9 +5369,13 @@ Cordiali saluti.</target>
         <source> API Key de Holded <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <target> API Key di Holded <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
-      <trans-unit id="holdedInfoMessage" datatype="html">
-        <source> Al confirmar se descargarán las facturas, líneas, contactos, productos y asientos contables de Holded y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos minutos dependiendo del volumen de datos. </source>
-        <target> Confermando verranno scaricati fatture, righe, contatti, prodotti e registrazioni contabili di Holded e verranno creati come tabelle in un'origine dati DuckDB. Il download può richiedere alcuni minuti a seconda del volume di dati. </target>
+      <trans-unit id="holdedApiKeyTooltip" datatype="html">
+        <source>Obtén la API Key desde tu cuenta de Holded: ve al menú Configuración, apartado Desarrolladores, y copia la API Key.</source>
+        <target>Ottieni la API Key dal tuo account Holded: vai al menu Configurazione, sezione Sviluppatori, e copia la API Key.</target>
+      </trans-unit>
+      <trans-unit id="pluginDownloadInfoMessage" datatype="html">
+        <source>Al confirmar se descargarán los datos a una base de datos local. Esto puede tardar unos minutos dependiendo del volumen de datos.</source>
+        <target>Alla conferma i dati verranno scaricati in un database locale. L'operazione può richiedere alcuni minuti a seconda del volume dei dati.</target>
       </trans-unit>
       <trans-unit id="holdedFolderRequired" datatype="html">
         <source>Debe indicar el nombre de la carpeta</source>
@@ -5392,10 +5392,6 @@ Cordiali saluti.</target>
       <trans-unit id="odooUrlLabel" datatype="html">
         <source> URL de Odoo <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <target> URL di Odoo <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
-      </trans-unit>
-      <trans-unit id="odooInfoMessage" datatype="html">
-        <source> Al confirmar se descargarán las facturas, líneas, clientes, productos y vendedores de Odoo y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos segundos dependiendo del volumen de datos. </source>
-        <target> Confermando verranno scaricati fatture, righe, clienti, prodotti e venditori di Odoo e verranno creati come tabelle in un'origine dati DuckDB. Il download può richiedere alcuni secondi a seconda del volume di dati. </target>
       </trans-unit>
       <trans-unit id="odooFolderAlreadyExists" datatype="html">
         <source>Ya existe un modelo de datos para la base de datos de Odoo &quot;<x id="PH" equiv-text="value.database"/>&quot;.</source>

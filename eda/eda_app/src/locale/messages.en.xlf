@@ -6964,10 +6964,6 @@ OR<ph id="5"/>
   <source>URL de Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
   <target>Odoo URL <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
 </trans-unit>
-<trans-unit id="odooInfoMessage">
-  <source>Al confirmar se descargarán las facturas, líneas, clientes, productos y vendedores de Odoo y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos segundos dependiendo del volumen de datos.</source>
-  <target>On confirm, invoices, lines, customers, products and salespeople will be downloaded from Odoo and created as tables in a DuckDB datasource. The download may take a few seconds depending on data volume.</target>
-</trans-unit>
 <trans-unit id="odooCreated">
   <source>Fuente de datos Odoo creada correctamente</source>
   <target>Odoo data source created successfully</target>
@@ -7016,10 +7012,6 @@ OR<ph id="5"/>
   <source>Error durante la autorización. Inténtalo de nuevo.</source>
   <target>Authorization error. Please try again.</target>
 </trans-unit>
-<trans-unit id="ga4InfoMessage">
-  <source>Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4: sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos. La descarga puede tardar según el volumen de datos de la propiedad.</source>
-  <target>On confirm, the last 365 days of Google Analytics 4 data will be downloaded: sessions by channel, page views, events, devices and geographic data. Download time depends on the property's data volume.</target>
-</trans-unit>
 <trans-unit id="ga4Created">
   <source>Fuente de datos Google Analytics 4 creada correctamente</source>
   <target>Google Analytics 4 data source created successfully</target>
@@ -7040,9 +7032,17 @@ OR<ph id="5"/>
   <source>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
   <target>Holded API Key <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
 </trans-unit>
-<trans-unit id="holdedInfoMessage">
-  <source>Al confirmar se descargarán las facturas, líneas, contactos, productos y asientos contables de Holded y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos minutos dependiendo del volumen de datos.</source>
-  <target>On confirm, invoices, lines, contacts, products and accounting entries will be downloaded from Holded and created as tables in a DuckDB datasource. The download may take a few minutes depending on data volume.</target>
+<trans-unit id="holdedApiKeyTooltip" datatype="html">
+  <source>Obtén la API Key desde tu cuenta de Holded: ve al menú Configuración, apartado Desarrolladores, y copia la API Key.</source>
+  <target>Get the API Key from your Holded account: go to the Settings menu, Developers section, and copy the API Key.</target>
+</trans-unit>
+<trans-unit id="holdedApiKeyRequired" datatype="html">
+  <source>Debe proporcionar la API Key de Holded</source>
+  <target>You must provide the Holded API Key</target>
+</trans-unit>
+<trans-unit id="pluginDownloadInfoMessage" datatype="html">
+  <source>Al confirmar se descargarán los datos a una base de datos local. Esto puede tardar unos minutos dependiendo del volumen de datos.</source>
+  <target>On confirm, the data will be downloaded to a local database. This may take a few minutes depending on the data volume.</target>
 </trans-unit>
 <trans-unit id="holdedCreated">
   <source>Fuente de datos Holded creada correctamente</source>
