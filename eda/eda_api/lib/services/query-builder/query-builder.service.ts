@@ -991,7 +991,12 @@ export abstract class QueryBuilderService {
         const schema = this.dataModel.ds.connection.schema;
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
         let query = userQuery.SQLexpression;
-        
+
+        // Normalizo espacios "invisibles" (NBSP y similares) que suelen colarse al copiar/pegar
+        // desde Word, Outlook o un email con formato: para el ojo son un espacio, pero MySQL no
+        // los trata como separador de tokens y rompe el parseo justo en ese punto.
+        query = query.replace(/[   -​  　﻿]/g, ' ');
+
         // añado un espacio en blanco al final de cada linea para asegurar que no se juntan palabras
         let reg = new RegExp(`\n`, "g");
         query = query.replace(reg, ` `);

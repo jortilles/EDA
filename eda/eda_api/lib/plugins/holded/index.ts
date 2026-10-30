@@ -5,6 +5,7 @@ import { HoldedSyncService } from './holded-sync.service';
 import { HoldedApiService } from './holded-api.service';
 import { applyHoldedLabels, resolveHoldedLocale } from './holded-labels';
 import { addHoldedRelations } from './holded-relations';
+import { dropSyncControlTables } from '../plugin-relations';
 
 const cache_config = require('../../../config/cache.config');
 
@@ -19,5 +20,8 @@ export const HoldedPlugin: IEDAPlugin = {
     downloadData: (params, folderPath) => HoldedApiService.downloadToFolder(params as any, folderPath),
     applyLabels: (tables, locale) => applyHoldedLabels(tables, locale as any),
     resolveLocale: resolveHoldedLocale,
-    addRelations: (tables) => addHoldedRelations(tables),
+    addRelations: (tables) => {
+        dropSyncControlTables(tables);
+        addHoldedRelations(tables);
+    },
 };
