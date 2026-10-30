@@ -13,6 +13,16 @@ export function sanitizeDuckdbFolderName(name: string): string {
     return String(name || '').trim().replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
 }
 
+/**
+ * Language the app is running in. LOCALE_ID and $localize.locale are not reliable: main.ts
+ * re-imports '@angular/localize/init', which resets $localize, so LOCALE_ID falls back to
+ * 'en-US' whatever the UI language is. A translated marker is replaced by each locale build
+ * and keeps the source locale ('es') when the app is not localized (e.g. ng serve).
+ */
+export function currentAppLocale(): string {
+    return $localize`:@@appLocaleCode:es`;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PluginFormService {
     private readonly saveSubject = new Subject<void>();

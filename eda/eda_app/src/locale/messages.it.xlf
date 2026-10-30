@@ -5409,6 +5409,10 @@ Cordiali saluti.</target>
         <source>La carpeta &quot;<x id="PH" equiv-text="folderName"/>&quot; ya existe. Elija otro nombre de carpeta.</source>
         <target>La cartella "<x id="PH" equiv-text="folderName"/>" esiste già. Scegli un altro nome per la cartella.</target>
       </trans-unit>
+      <trans-unit id="appLocaleCode" datatype="html">
+        <source>es</source>
+        <target>it</target>
+      </trans-unit>
       <trans-unit id="SureDeleteModel" datatype="html">
         <source>¿Estás seguro de borrar el modelo <x id="modelName" equiv-text="modelNameHtml"/>?</source>
         <target>Sei sicuro di voler eliminare il modello <x id="modelName" equiv-text="modelNameHtml"/>?</target>

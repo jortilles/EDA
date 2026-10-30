@@ -5913,6 +5913,10 @@ Cumprimentos.</target>
   <source>La carpeta "<x id="PH" equiv-text="folderName"/>" ya existe. Elija otro nombre de carpeta.</source>
   <target>A pasta "<x id="PH" equiv-text="folderName"/>" já existe. Escolha outro nome de pasta.</target>
 </trans-unit>
+      <trans-unit id="appLocaleCode" datatype="html">
+        <source>es</source>
+        <target>pt</target>
+      </trans-unit>
 <trans-unit id="odooFolderAlreadyExists" datatype="html">
   <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
   <target>Já existe um modelo de dados para a base de dados do Odoo "<x id="PH" equiv-text="value.database"/>".</target>
