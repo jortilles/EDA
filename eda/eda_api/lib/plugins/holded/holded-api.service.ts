@@ -14,7 +14,7 @@ export const HOLDED_CSV_FILES = [
     'estimates.csv', 'estimate_lines.csv',
     'purchases.csv', 'purchase_lines.csv',
     'purchase_orders.csv', 'purchase_order_lines.csv',
-    'funnels.csv', 'funnel_stages.csv', 'leads.csv',
+    'funnels.csv', 'leads.csv',
     'contacts.csv', 'products.csv', 'ledger.csv'
 ];
 
@@ -504,25 +504,31 @@ export class HoldedApiService {
             })
         );
 
-        // funnels.csv
-        HoldedApiService.writeCsv(path.join(folderPath, 'funnels.csv'),
-            ['funnel_id', 'funnel_name', 'funnel_created_at', 'funnel_updated_at'],
-            funnels.map((f: any) => [
-                f.id, f.name || '',
-                HoldedApiService.isoDateTime(f.created_at), HoldedApiService.isoDateTime(f.updated_at)
-            ])
-        );
-
-        // funnel_stages.csv
+        // funnels.csv — funnels and their stages in a single table: one row per stage,
+        // and one row with empty stage columns for a funnel without stages
         const stageProbability = new Map<string, number>();
         funnelStages.forEach((s: any) => stageProbability.set(s.id, num(s.deal_probability)));
-        HoldedApiService.writeCsv(path.join(folderPath, 'funnel_stages.csv'),
-            ['stage_id', 'funnel_id', 'stage_name', 'stage_order', 'stage_probability', 'stage_rotting_days'],
-            funnelStages.map((s: any) => [
-                s.id, s.funnel_id, s.name || '', s._order,
-                num(s.deal_probability), num(s.rotting_days)
-            ])
+        const funnelRows: any[][] = [];
+        for (const f of funnels) {
+            const funnelCols = [
+                f.id, f.name || '',
+                HoldedApiService.isoDateTime(f.created_at), HoldedApiService.isoDateTime(f.updated_at)
+            ];
+            const stages = funnelStages.filter((s: any) => s.funnel_id === f.id);
+            if (!stages.length) funnelRows.push([...funnelCols, '', '', '', '', '']);
+            stages.forEach((s: any) => funnelRows.push([
+                ...funnelCols,
+                s.id, s.name || '', s._order, num(s.deal_probability), num(s.rotting_days)
+            ]));
+        }
+        HoldedApiService.writeCsv(path.join(folderPath, 'funnels.csv'),
+            ['funnel_id', 'funnel_name', 'funnel_created_at', 'funnel_updated_at',
+             'stage_id', 'stage_name', 'stage_order', 'stage_probability', 'stage_rotting_days'],
+            funnelRows
         );
+        // Stages used to be written to their own file: remove it so it no longer becomes a table
+        const legacyStagesFile = path.join(folderPath, 'funnel_stages.csv');
+        if (fs.existsSync(legacyStagesFile)) fs.unlinkSync(legacyStagesFile);
 
         // leads.csv — the weighted value (value × stage probability) is the pipeline forecast
         HoldedApiService.writeCsv(path.join(folderPath, 'leads.csv'),

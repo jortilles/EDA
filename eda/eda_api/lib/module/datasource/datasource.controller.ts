@@ -18,7 +18,7 @@ import { normalizeCsvDecimalSeparators } from '../../utils/csv-decimal.util';
 import { checkNewDuckdbFolder, duckdbBaseFolder, sanitizeDuckdbFolderName } from '../../utils/duckdb-folder.util';
 import { PluginRegistry } from '../../plugins/plugin-registry';
 import { resolvePluginModelLocale } from '../../plugins/plugin-locale';
-import { dropSyncControlTables } from '../../plugins/plugin-relations';
+import { dropSyncControlTables, mergePluginRelations } from '../../plugins/plugin-relations';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -643,6 +643,12 @@ export class DataSourceController {
 
             const out = DataSourceController.FindAndUpdateDataModel(datasource.ds.model.tables, storedDataModel.ds.model.tables);
             datasource.ds.model.tables = DataSourceController.FindAndDeleteDataModel(datasource.ds.model.tables, out);
+            if (plugin) {
+                // The merge keeps the stored tables with their relations and visibility: add the plugin
+                // relations they lack and hide the plugin's technical tables and columns
+                mergePluginRelations(tables, datasource.ds.model.tables);
+                plugin.applyVisibility?.(datasource.ds.model.tables);
+            }
 
             try {
                 const dataSource: IDataSource = await DataSource.findById(req.params.id)
