@@ -3,6 +3,7 @@ import { TreeNode } from 'primeng/api';
 import { PrimengModule } from 'app/core/primeng.module';
 import { DataSourceService } from '@eda/services/service.index';
 import * as d3 from 'd3';
+import { Subscription } from 'rxjs';
 
 interface MapColumn {
     label: string;
@@ -91,6 +92,10 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
     private resizeObserver: ResizeObserver;
     // Id of the pending auto-fit requestAnimationFrame (to avoid queuing several)
     private fitFrame: number;
+    // Id of the pending redraw requestAnimationFrame after a data model change
+    private renderFrame: number;
+    // Data model changes (relations, table and column names...) made while editing
+    private modelSubscription: Subscription;
     // d3 zoom and pan behavior on the SVG
     private zoom: d3.ZoomBehavior<SVGSVGElement, unknown>;
     // Root group the zoom transform is applied to
@@ -121,6 +126,9 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         // Refit when the available size changes (view switch, window resize, etc.)
         this.resizeObserver = new ResizeObserver(() => this.scheduleAutoFit());
         this.resizeObserver.observe(this.svgMap.nativeElement);
+        // Redraw on every data model edit: deleting or changing a relation does not rebuild the tree,
+        // so the inputs alone would leave the old relation lines and names on the map
+        this.modelSubscription = this.dataModelService.databaseModel.subscribe(() => this.scheduleRender());
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -139,7 +147,9 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
 
     ngOnDestroy(): void {
         this.resizeObserver?.disconnect();
+        this.modelSubscription?.unsubscribe();
         if (this.fitFrame) cancelAnimationFrame(this.fitFrame);
+        if (this.renderFrame) cancelAnimationFrame(this.renderFrame);
         if (this.svgMap?.nativeElement) {
             d3.select(this.svgMap.nativeElement).on('.zoom', null).selectAll('*').remove();
         }
@@ -158,6 +168,18 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
         this.dataModelService.setMapLayout(this.positions);
         this.render();
         this.fitToView(true);
+    }
+
+    /**
+     * Redraw on the next frame. A model edit and the tree rebuilt from it arrive together
+     * (e.g. renaming a table): drawing once both are applied keeps names and tree nodes in sync.
+     */
+    private scheduleRender() {
+        if (this.renderFrame) cancelAnimationFrame(this.renderFrame);
+        this.renderFrame = requestAnimationFrame(() => {
+            this.renderFrame = null;
+            this.render();
+        });
     }
 
     /** Auto-fit on the next frame, once the container has its final size */

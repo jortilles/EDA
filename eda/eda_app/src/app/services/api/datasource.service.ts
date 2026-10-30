@@ -368,6 +368,14 @@ export class DataSourceService extends ApiService implements OnDestroy {
     }
 
     updateRelation(rel: Relation, newRelation: Relation) {
+        const tmp_model = this._databaseModel.getValue();
+        // Relations are stored in both tables: find the mirror of the old relation before changing it
+        const oldMirror: Relation = {
+            source_table: rel.target_table, source_column: rel.target_column,
+            target_table: rel.source_table, target_column: rel.source_column
+        } as Relation;
+        const oldTargetIndex = tmp_model.findIndex((table: { table_name: string; }) => table.table_name === rel.target_table);
+
         // Set new values
         rel.display_name = newRelation.display_name;
         rel.source_column = newRelation.source_column;
@@ -387,6 +395,28 @@ export class DataSourceService extends ApiService implements OnDestroy {
             tmp_panel.relations.push(rel);
         }
         this._tablePanel.next(tmp_panel);
+
+        // Replace the mirror relation in the target table with the new one
+        if (oldTargetIndex >= 0) {
+            const mirrorIndex = this.getRelationIndex(oldMirror, oldTargetIndex);
+            if (mirrorIndex >= 0) tmp_model[oldTargetIndex].relations.splice(mirrorIndex, 1);
+        }
+        const newTargetIndex = tmp_model.findIndex((table: { table_name: string; }) => table.table_name === rel.target_table);
+        if (newTargetIndex >= 0) {
+            const newMirror: Relation = {
+                source_table: rel.target_table, source_column: rel.target_column,
+                target_table: rel.source_table, target_column: rel.source_column,
+                display_name: rel.display_name,
+                visible: true
+            };
+            const existing = this.getRelationIndex(newMirror, newTargetIndex);
+            if (existing >= 0) tmp_model[newTargetIndex].relations[existing].visible = true;
+            else tmp_model[newTargetIndex].relations.push(newMirror);
+        }
+
+        // Notify the change (e.g. the model map redraws the relation)
+        this._databaseModel.next(tmp_model);
+        this._unsaved.next(true);
     }
 
     /** add a value list as the source of a column */
