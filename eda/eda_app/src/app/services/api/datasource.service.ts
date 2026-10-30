@@ -8,6 +8,7 @@ import { AlertService } from '../alerts/alert.service';
 import { AGG_TYPES } from '../../config/customizable/customizable_default';
 import { map } from 'rxjs/internal/operators/map';
 import { catchError } from 'rxjs/internal/operators/catchError';
+import { SweetAlertOptions } from 'sweetalert2';
 
 
 @Injectable()
@@ -402,6 +403,24 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._modelMetadata.next(tmpMetadata);
     }
 
+    /**
+     * Posiciones de las tablas en la vista mapa: { [table_name]: { x, y } }.
+     * Se guardan en ds.metadata.map_layout junto con el modelo.
+     */
+    getMapLayout(): { [table: string]: { x: number, y: number } } {
+        const metadata = this._modelMetadata.getValue();
+        if (!metadata || Array.isArray(metadata)) return {};
+        if (!metadata.map_layout) metadata.map_layout = {};
+        return metadata.map_layout;
+    }
+
+    setMapLayout(layout: { [table: string]: { x: number, y: number } }, markUnsaved = true) {
+        const metadata = this._modelMetadata.getValue();
+        if (!metadata || Array.isArray(metadata)) return;
+        metadata.map_layout = layout;
+        if (markUnsaved) this._unsaved.next(true);
+    }
+
     addCacheConfig(config:any){
         let tmpMetadata = this._modelMetadata.getValue();
         tmpMetadata.cache_config = config;
@@ -714,6 +733,31 @@ export class DataSourceService extends ApiService implements OnDestroy {
     }
     updateModelInServer(id, body): Observable<any> {
         return this.put(`${this.globalDSRoute}/${id}`, body);
+    }
+
+    /** Raw datasource document, without loading it into the model editor state */
+    getDataSourceById(id: string): Observable<any> {
+        return this.get(`${this.globalDSRoute}/${id}`);
+    }
+
+    /** Name of the model currently loaded in the editor */
+    getModelName(): string {
+        return this._modelMetadata.getValue()?.model_name || '';
+    }
+
+    /** SweetAlert options to confirm a model deletion, showing the underlined model name */
+    deleteModelConfirmOptions(modelName: string): SweetAlertOptions {
+        // The title is rendered as HTML: escape the name before injecting it
+        const safeName = String(modelName || '').replace(/[&<>"']/g, c =>
+            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;' }[c]));
+        const modelNameHtml = `<u style="font-size: 1.2em">${safeName}</u>`;
+        return {
+            title: $localize`:@@SureDeleteModel:¿Estás seguro de borrar el modelo ${modelNameHtml}:modelName:?`,
+            text: $localize`:@@SureInfo:Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`
+        };
     }
 
     deleteModel(id): Observable<any> {

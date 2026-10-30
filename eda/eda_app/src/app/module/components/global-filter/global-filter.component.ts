@@ -505,15 +505,18 @@ export class GlobalFilterComponent implements OnInit {
             this.globalFilter = gf;
         }
 
+        // Keep a local reference: this.globalFilter is shared state and can be reset
+        // by another call while this one is awaiting the filter data.
+        const currentFilter = this.globalFilter;
 
-        if (apply) {
+        if (apply && currentFilter) {
             this.dashboard.edaPanels.forEach(panel => {
-                if (!this.globalFilter.isdeleted) {
-                    panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
+                if (!currentFilter.isdeleted) {
+                    panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== currentFilter.id);
                 }
             });
 
-            if (this.globalFilter.isnew) {
+            if (currentFilter.isnew) {
 
 
                 // Add one more item to the dependent filter order:
@@ -523,35 +526,35 @@ export class GlobalFilterComponent implements OnInit {
                         rows: 1,
                         y: this.orderDependentFilters.length,
                         x: 0,
-                        filter_table: this.globalFilter.selectedTable.table_name,
-                        filter_column: this.globalFilter.selectedColumn.column_name,
-                        filter_type: this.globalFilter.selectedColumn.column_type,
-                        filter_id: this.globalFilter.id,
-                        description_table: this.globalFilter.selectedTable?.display_name?.default || this.globalFilter.selectedTable?.table_name,
-                        description_column: this.globalFilter.selectedColumn?.display_name?.default || this.globalFilter.selectedColumn?.column_name,
+                        filter_table: currentFilter.selectedTable.table_name,
+                        filter_column: currentFilter.selectedColumn.column_name,
+                        filter_type: currentFilter.selectedColumn.column_type,
+                        filter_id: currentFilter.id,
+                        description_table: currentFilter.selectedTable?.display_name?.default || currentFilter.selectedTable?.table_name,
+                        description_column: currentFilter.selectedColumn?.display_name?.default || currentFilter.selectedColumn?.column_name,
                     })
                     this.alertService.addInfo($localize`:@@newFilterAddToDF:Se agregó un nuevo filtro a la relación de filtros dependientes`);
                 }
 
-                this.globalFilters.push(this.globalFilter);
+                this.globalFilters.push(currentFilter);
 
             }
 
             for (const filter of this.globalFilters) {
-                if (this.globalFilter.id == filter.id && !filter.isdeleted && !this.globalFilter.isdeleted) {
-                    filter.data = this.globalFilter.data;
-                    filter.selectedTable = this.globalFilter.selectedTable;
-                    filter.selectedColumn = this.globalFilter.selectedColumn;
-                    filter.selectedItems = this.globalFilter.selectedItems;
-                    filter.selectedRange = this.globalFilter.selectedRange;
-                    filter.panelList = this.globalFilter.panelList;
-                    filter.pathList = this.globalFilter.pathList;
-                    filter.type = this.globalFilter.type;
-                    filter.isGlobal = this.globalFilter.isGlobal;
-                    filter.visible = this.globalFilter.visible;
-                    filter.isAutocompleted = this.globalFilter.isAutocompleted !== undefined ? this.globalFilter.isAutocompleted : false;
-                    filter.applyToAll = this.globalFilter.applyToAll;
-                    filter.multipleSelection = this.globalFilter.multipleSelection ?? true;
+                if (currentFilter.id == filter.id && !filter.isdeleted && !currentFilter.isdeleted) {
+                    filter.data = currentFilter.data;
+                    filter.selectedTable = currentFilter.selectedTable;
+                    filter.selectedColumn = currentFilter.selectedColumn;
+                    filter.selectedItems = currentFilter.selectedItems;
+                    filter.selectedRange = currentFilter.selectedRange;
+                    filter.panelList = currentFilter.panelList;
+                    filter.pathList = currentFilter.pathList;
+                    filter.type = currentFilter.type;
+                    filter.isGlobal = currentFilter.isGlobal;
+                    filter.visible = currentFilter.visible;
+                    filter.isAutocompleted = currentFilter.isAutocompleted !== undefined ? currentFilter.isAutocompleted : false;
+                    filter.applyToAll = currentFilter.applyToAll;
+                    filter.multipleSelection = currentFilter.multipleSelection ?? true;
 
                     if (filter.pathList) {
                         for (const key in filter.pathList) {
@@ -564,22 +567,22 @@ export class GlobalFilterComponent implements OnInit {
 
 
                     delete (filter.isnew);
-                } else if (filter.isdeleted || (this.globalFilter.id === filter.id && this.globalFilter.isdeleted)) {
+                } else if (filter.isdeleted || (currentFilter.id === filter.id && currentFilter.isdeleted)) {
                     filter.selectedItems = [];
                     this.applyGlobalFilter(filter);
                     this.removeGlobalFilter(filter);
                 }
             }
 
-            if (!this.globalFilter.isdeleted) {
+            if (!currentFilter.isdeleted) {
                 // Load Filter dropdwons option s
-                if (this.globalFilter.selectedColumn.column_type === 'date' && this.globalFilter.selectedItems.length > 0) {
-                    this.loadDatesFromFilter(this.globalFilter);
-                } else if (!this.globalFilter.isAutocompleted) {
-                    await this.loadGlobalFiltersData();
+                if (currentFilter.selectedColumn.column_type === 'date' && currentFilter.selectedItems.length > 0) {
+                    this.loadDatesFromFilter(currentFilter);
+                } else if (!currentFilter.isAutocompleted) {
+                    await this.loadGlobalFiltersData(currentFilter);
                 }
 
-                this.applyGlobalFilter(this.globalFilter);
+                this.applyGlobalFilter(currentFilter);
             }
         }
 

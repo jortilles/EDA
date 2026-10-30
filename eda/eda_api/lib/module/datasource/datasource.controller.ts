@@ -15,6 +15,10 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { AggregationTypes } from '../global/model/aggregation-types';
 import { normalizeCsvDecimalSeparators } from '../../utils/csv-decimal.util';
+import { checkNewDuckdbFolder, duckdbBaseFolder, sanitizeDuckdbFolderName } from '../../utils/duckdb-folder.util';
+import { PluginRegistry } from '../../plugins/plugin-registry';
+import { resolvePluginModelLocale } from '../../plugins/plugin-locale';
+import { dropSyncControlTables, mergePluginRelations } from '../../plugins/plugin-relations';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -594,6 +598,16 @@ export class DataSourceController {
                 tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized, storedDataModel.ds.metadata.filter);
             }
 
+            // Plugin models (Holded, Odoo, GA4...): label the regenerated tables in the model's locale,
+            // otherwise new tables and columns would get their raw (English) technical names
+            const plugin = PluginRegistry.getDatasource(storedDataModel.ds.connection.type);
+            let pluginLocale: string | undefined;
+            if (plugin) dropSyncControlTables(tables);
+            if (plugin?.applyLabels) {
+                pluginLocale = resolvePluginModelLocale(plugin, req, storedDataModel.ds);
+                plugin.applyLabels(tables, pluginLocale);
+            }
+
             const datasource: IDataSource = new DataSource({
                 ds: {
                     connection: {
@@ -629,12 +643,21 @@ export class DataSourceController {
 
             const out = DataSourceController.FindAndUpdateDataModel(datasource.ds.model.tables, storedDataModel.ds.model.tables);
             datasource.ds.model.tables = DataSourceController.FindAndDeleteDataModel(datasource.ds.model.tables, out);
+            if (plugin) {
+                // The merge keeps the stored tables with their relations and visibility: add the plugin
+                // relations they lack and hide the plugin's technical tables and columns
+                mergePluginRelations(tables, datasource.ds.model.tables);
+                plugin.applyVisibility?.(datasource.ds.model.tables);
+            }
 
             try {
                 const dataSource: IDataSource = await DataSource.findById(req.params.id)
                 
                 dataSource.ds.model.tables = datasource.ds.model.tables;
-    
+                if (pluginLocale && !dataSource.ds.metadata?.locale) {
+                    dataSource.ds.metadata = { ...dataSource.ds.metadata, locale: pluginLocale };
+                }
+
                 const iDataSource = new DataSource(dataSource);
     
                 try {
@@ -764,16 +787,17 @@ export class DataSourceController {
                 str.split('_').join(' ').toLowerCase()
                     .split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
 
-            const safeFolderName = folderName.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
+            const safeFolderName = sanitizeDuckdbFolderName(folderName);
             if (!safeFolderName) {
                 return next(new HttpException(400, `Invalid folderName "${folderName}": must contain at least one alphanumeric character`));
             }
 
-            const duckdbBaseFolder = path.join(process.cwd(), 'duckdb');
-            const targetFolder = path.join(duckdbBaseFolder, safeFolderName);
-            if (!fs.existsSync(targetFolder)) {
-                fs.mkdirSync(targetFolder, { recursive: true });
-            }
+            // A new model must not reuse (and overwrite) the CSV folder of another model
+            const folderError = checkNewDuckdbFolder(safeFolderName);
+            if (folderError) return next(folderError);
+
+            const targetFolder = path.join(duckdbBaseFolder(), safeFolderName);
+            fs.mkdirSync(targetFolder, { recursive: true });
 
             const tables = csvFiles.map((csvFile: any) => {
                 const safeName = (csvFile.fileName || 'file')
@@ -974,11 +998,11 @@ export class DataSourceController {
 
     static async GetDuckDbFolders(req: Request, res: Response, next: NextFunction) {
         try {
-            const duckdbBaseFolder = path.join(process.cwd(), 'duckdb');
-            if (!fs.existsSync(duckdbBaseFolder)) {
+            const baseFolder = duckdbBaseFolder();
+            if (!fs.existsSync(baseFolder)) {
                 return res.status(200).json({ ok: true, folders: [] });
             }
-            const entries = fs.readdirSync(duckdbBaseFolder, { withFileTypes: true });
+            const entries = fs.readdirSync(baseFolder, { withFileTypes: true });
             const folders = entries
                 .filter(e => e.isDirectory())
                 .map(e => e.name);

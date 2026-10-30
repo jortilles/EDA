@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../module/global/model/index';
-import { HoldedApiService } from './holded-api.service';
+import { HoldedApiService, HOLDED_CSV_FILES } from './holded-api.service';
 import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
 import { PluginRegistry } from '../plugin-registry';
+import { resolvePluginModelLocale } from '../plugin-locale';
 import DataSource, { IDataSource } from '../../module/datasource/model/datasource.model';
 import * as path from 'path';
+import { checkNewDuckdbFolder, duckdbBaseFolder, sanitizeDuckdbFolderName } from '../../utils/duckdb-folder.util';
 
 const cache_config = require('../../../config/cache.config');
 
@@ -19,16 +21,22 @@ export class HoldedController {
                 return next(new HttpException(400, 'Se requieren: name, folderName, apiKey'));
             }
 
-            const folderPath = path.join(process.cwd(), 'duckdb', folderName);
+            const safeFolderName = sanitizeDuckdbFolderName(folderName);
+            if (!safeFolderName) {
+                return next(new HttpException(400, `Nombre de carpeta no válido: "${folderName}"`));
+            }
+            const folderError = checkNewDuckdbFolder(safeFolderName);
+            if (folderError) return next(folderError);
+            const folderPath = path.join(duckdbBaseFolder(), safeFolderName);
 
             const plugin = PluginRegistry.getDatasource('holded');
             await plugin.downloadData({ apiKey }, folderPath);
 
-            const conn = new DuckDBConnection({ type: 'duckdb', database: folderName, schema: 'main' });
+            const conn = new DuckDBConnection({ type: 'duckdb', database: safeFolderName, schema: 'main' });
             const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
 
             plugin.addRelations(tables);
-            const locale = plugin.resolveLocale(req.body?.locale || req.headers?.['accept-language'] as string);
+            const locale = resolvePluginModelLocale(plugin, req);
             plugin.applyLabels(tables, locale);
 
             const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
@@ -39,7 +47,7 @@ export class HoldedController {
                         type: 'holded',
                         host: '',
                         port: null,
-                        database: folderName,
+                        database: safeFolderName,
                         schema: 'main',
                         user: '',
                         password: EnCrypterService.encrypt(apiKey)
@@ -52,7 +60,9 @@ export class HoldedController {
                         optimized: !!optimize,
                         cache_config: CC,
                         model_owner: req.user._id,
-                        ia_visibility: 'FULL'
+                        ia_visibility: 'FULL',
+                        // Locale the labels were generated in, reused when the model is refreshed
+                        locale
                     },
                     model: { tables }
                 }
@@ -89,16 +99,15 @@ export class HoldedController {
                     `${result.lines} líneas`,
                     `${result.contacts} contactos`,
                     `${result.products} productos`,
-                    `${result.ledgerEntries} asientos contables`
+                    `${result.ledgerEntries} asientos contables`,
+                    `${result.estimates} presupuestos (${result.estimateLines} líneas)`,
+                    `${result.purchases} compras (${result.purchaseLines} líneas)`,
+                    `${result.purchaseOrders} pedidos de compra (${result.purchaseOrderLines} líneas)`,
+                    `${result.funnels} embudos (${result.funnelStages} etapas)`,
+                    `${result.leads} leads`
                 ].join(' · '),
                 counts: result,
-                files: [
-                    `duckdb/${folderName}/invoices.csv`,
-                    `duckdb/${folderName}/invoice_lines.csv`,
-                    `duckdb/${folderName}/contacts.csv`,
-                    `duckdb/${folderName}/products.csv`,
-                    `duckdb/${folderName}/ledger.csv`
-                ]
+                files: HOLDED_CSV_FILES.map(file => `duckdb/${folderName}/${file}`)
             });
 
         } catch (err: any) {

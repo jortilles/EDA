@@ -5635,6 +5635,14 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>Modelo exportado correctamente</source>
 <target>Model exported successfully</target>
 </trans-unit>
+<trans-unit id="downloadModelJson">
+<source>Descargar modelo como JSON</source>
+<target>Download model as JSON</target>
+</trans-unit>
+<trans-unit id="SureDeleteModel">
+<source>¿Estás seguro de borrar el modelo <x id="modelName" equiv-text="modelNameHtml"/>?</source>
+<target>Are you sure you want to delete the model <x id="modelName" equiv-text="modelNameHtml"/>?</target>
+</trans-unit>
 
 <trans-unit id="selectModelToExport">
 <source>Por favor selecciona un modelo para exportar</source>
@@ -6980,10 +6988,6 @@ OR<ph id="5"/>
   <source>URL de Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
   <target>Odoo URL <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
 </trans-unit>
-<trans-unit id="odooInfoMessage">
-  <source>Al confirmar se descargarán las facturas, líneas, clientes, productos y vendedores de Odoo y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos segundos dependiendo del volumen de datos.</source>
-  <target>On confirm, invoices, lines, customers, products and salespeople will be downloaded from Odoo and created as tables in a DuckDB datasource. The download may take a few seconds depending on data volume.</target>
-</trans-unit>
 <trans-unit id="odooCreated">
   <source>Fuente de datos Odoo creada correctamente</source>
   <target>Odoo data source created successfully</target>
@@ -7032,10 +7036,6 @@ OR<ph id="5"/>
   <source>Error durante la autorización. Inténtalo de nuevo.</source>
   <target>Authorization error. Please try again.</target>
 </trans-unit>
-<trans-unit id="ga4InfoMessage">
-  <source>Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4: sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos. La descarga puede tardar según el volumen de datos de la propiedad.</source>
-  <target>On confirm, the last 365 days of Google Analytics 4 data will be downloaded: sessions by channel, page views, events, devices and geographic data. Download time depends on the property's data volume.</target>
-</trans-unit>
 <trans-unit id="ga4Created">
   <source>Fuente de datos Google Analytics 4 creada correctamente</source>
   <target>Google Analytics 4 data source created successfully</target>
@@ -7056,9 +7056,17 @@ OR<ph id="5"/>
   <source>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
   <target>Holded API Key <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
 </trans-unit>
-<trans-unit id="holdedInfoMessage">
-  <source>Al confirmar se descargarán las facturas, líneas, contactos, productos y asientos contables de Holded y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos minutos dependiendo del volumen de datos.</source>
-  <target>On confirm, invoices, lines, contacts, products and accounting entries will be downloaded from Holded and created as tables in a DuckDB datasource. The download may take a few minutes depending on data volume.</target>
+<trans-unit id="holdedApiKeyTooltip" datatype="html">
+  <source>Obtén la API Key desde tu cuenta de Holded: ve al menú Configuración, apartado Desarrolladores, y copia la API Key.</source>
+  <target>Get the API Key from your Holded account: go to the Settings menu, Developers section, and copy the API Key.</target>
+</trans-unit>
+<trans-unit id="holdedApiKeyRequired" datatype="html">
+  <source>Debe proporcionar la API Key de Holded</source>
+  <target>You must provide the Holded API Key</target>
+</trans-unit>
+<trans-unit id="pluginDownloadInfoMessage" datatype="html">
+  <source>Al confirmar se descargarán los datos a una base de datos local. Esto puede tardar unos minutos dependiendo del volumen de datos.</source>
+  <target>On confirm, the data will be downloaded to a local database. This may take a few minutes depending on the data volume.</target>
 </trans-unit>
 <trans-unit id="holdedCreated">
   <source>Fuente de datos Holded creada correctamente</source>
@@ -7975,6 +7983,54 @@ Best regards.</target>
 <trans-unit id="foldersMergedText">
   <source>se ha fusionado con</source>
   <target>has merged with</target>
+</trans-unit>
+<trans-unit id="dsViewTree" datatype="html">
+  <source>Árbol</source>
+  <target>Tree</target>
+</trans-unit>
+<trans-unit id="dsViewMap" datatype="html">
+  <source>Mapa</source>
+  <target>Map</target>
+</trans-unit>
+<trans-unit id="dsMapFit" datatype="html">
+  <source>Ajustar a la pantalla</source>
+  <target>Fit to screen</target>
+</trans-unit>
+<trans-unit id="dsMapRelayout" datatype="html">
+  <source>Reorganizar tablas</source>
+  <target>Rearrange tables</target>
+</trans-unit>
+<trans-unit id="dsMapModelProps" datatype="html">
+  <source>Propiedades del modelo</source>
+  <target>Data model properties</target>
+</trans-unit>
+<trans-unit id="dsMapExpand" datatype="html">
+  <source>Mostrar columnas</source>
+  <target>Show columns</target>
+</trans-unit>
+<trans-unit id="dsMapCollapse" datatype="html">
+  <source>Ocultar columnas</source>
+  <target>Hide columns</target>
+</trans-unit>
+<trans-unit id="dsMapEmpty" datatype="html">
+  <source>El modelo de datos no tiene tablas</source>
+  <target>The data model has no tables</target>
+</trans-unit>
+<trans-unit id="duckdbFolderAlreadyExists" datatype="html">
+  <source>La carpeta "<x id="PH" equiv-text="folderName"/>" ya existe. Elija otro nombre de carpeta.</source>
+  <target>The folder "<x id="PH" equiv-text="folderName"/>" already exists. Choose another folder name.</target>
+</trans-unit>
+      <trans-unit id="appLocaleCode" datatype="html">
+        <source>es</source>
+        <target>en</target>
+      </trans-unit>
+<trans-unit id="odooFolderAlreadyExists" datatype="html">
+  <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
+  <target>A data model already exists for the Odoo database "<x id="PH" equiv-text="value.database"/>".</target>
+</trans-unit>
+<trans-unit id="duckdbFolderExistsError" datatype="html">
+  <source>Este nombre ya existe. Escribe un nombre diferente.</source>
+  <target>This name already exists. Enter a different name.</target>
 </trans-unit>
 </body>
 </file>

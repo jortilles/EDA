@@ -967,7 +967,7 @@ public tableNodeExpand(event: any): void {
      * Chart click event
     */
     public onChartClick(event: any): void {
-        if (['doughnut', 'polarArea', 'bar', 'radar', 'line', 'area', 'treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets', 'raceBar'].includes(this.panelChart.props.chartType) || //D3 CHARTS
+        if (['doughnut', 'polarArea', 'bar', 'radar', 'line', 'area', 'treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets', 'raceBar', 'kpibar', 'kpiline', 'kpiarea'].includes(this.panelChart.props.chartType) || //D3 CHARTS
             'geoJsonMap'.includes(this.panelChart.props.chartType) || //Leaflet 
             ['table', 'crosstable', 'treetable'].includes(this.panelChart.props.chartType)) // tables
         {

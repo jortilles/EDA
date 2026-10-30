@@ -1,0 +1,182 @@
+:host {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.ds-map-svg {
+    display: block;
+    cursor: grab;
+    background-image: radial-gradient(circle, rgba(148, 163, 184, 0.35) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.ds-map-svg:active {
+    cursor: grabbing;
+}
+
+:host ::ng-deep .ds-map-table {
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+:host ::ng-deep .ds-map-table.dragging {
+    cursor: grabbing;
+}
+
+:host ::ng-deep .ds-map-table.dimmed,
+:host ::ng-deep .ds-map-link-group.dimmed {
+    opacity: 0.2;
+}
+
+:host ::ng-deep .ds-map-body {
+    fill: #fff;
+    stroke: #cbd5e1;
+    stroke-width: 2;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
+}
+
+:host ::ng-deep .ds-map-table.selected .ds-map-body {
+    stroke: var(--corporate-primary);
+    stroke-width: 6;
+}
+
+:host ::ng-deep .ds-map-header {
+    fill: rgba(var(--corporate-primary-rgb), 0.12);
+}
+
+:host ::ng-deep .ds-map-table.selected .ds-map-header {
+    fill: rgba(var(--corporate-primary-rgb), 0.22);
+}
+
+:host ::ng-deep .ds-map-title {
+    font-size: 52px;
+    font-weight: 600;
+    fill: #1e293b;
+    pointer-events: none;
+}
+
+:host ::ng-deep .ds-map-separator {
+    stroke: #e2e8f0;
+}
+
+:host ::ng-deep .ds-map-column {
+    cursor: pointer;
+}
+
+/* The whole row (not just the text) receives the click */
+:host ::ng-deep .ds-map-column-bg {
+    fill: transparent;
+    pointer-events: all;
+}
+
+:host ::ng-deep .ds-map-column .ds-map-key {
+    pointer-events: none;
+}
+
+:host ::ng-deep .ds-map-column:hover .ds-map-column-bg {
+    fill: rgba(var(--corporate-primary-rgb), 0.08);
+}
+
+:host ::ng-deep .ds-map-column.selected .ds-map-column-bg {
+    fill: rgba(var(--corporate-primary-rgb), 0.18);
+}
+
+:host ::ng-deep .ds-map-column-label {
+    font-size: 48px;
+    fill: #334155;
+    pointer-events: none;
+}
+
+:host ::ng-deep .ds-map-column.selected .ds-map-column-label {
+    font-weight: 600;
+    fill: var(--corporate-primary);
+}
+
+/* Columns involved in the selected relation */
+:host ::ng-deep .ds-map-column.related .ds-map-column-bg {
+    fill: rgba(245, 158, 11, 0.25);
+    stroke: #f59e0b;
+    stroke-width: 3;
+}
+
+:host ::ng-deep .ds-map-column.related .ds-map-column-label {
+    font-weight: 700;
+    fill: #92400e;
+}
+
+:host ::ng-deep .ds-map-column.related .ds-map-key {
+    fill: #f59e0b;
+}
+
+:host ::ng-deep .ds-map-column-type {
+    font-size: 40px;
+    fill: #94a3b8;
+    pointer-events: none;
+}
+
+:host ::ng-deep .ds-map-key {
+    fill: var(--corporate-primary);
+}
+
+:host ::ng-deep .ds-map-link-group {
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+:host ::ng-deep .ds-map-link {
+    fill: none;
+    stroke: #94a3b8;
+    stroke-width: 5;
+    pointer-events: none;
+}
+
+:host ::ng-deep .ds-map-link-hit {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 40;
+}
+
+:host ::ng-deep .ds-map-link-group.active .ds-map-link {
+    stroke: var(--corporate-primary);
+    stroke-width: 7;
+}
+
+/* Hover and selection share the same highlight */
+:host ::ng-deep .ds-map-link-group:hover .ds-map-link,
+:host ::ng-deep .ds-map-link-group.selected .ds-map-link {
+    stroke: #f59e0b;
+    stroke-width: 12;
+}
+
+:host ::ng-deep .ds-map-dot {
+    fill: #94a3b8;
+}
+
+:host ::ng-deep .ds-map-toggle {
+    cursor: pointer;
+}
+
+:host ::ng-deep .ds-map-toggle circle {
+    fill: #fff;
+    stroke: var(--corporate-primary);
+    stroke-width: 3;
+    transition: fill 0.2s;
+}
+
+:host ::ng-deep .ds-map-toggle path {
+    fill: none;
+    stroke: var(--corporate-primary);
+    stroke-width: 7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+}
+
+:host ::ng-deep .ds-map-toggle:hover circle {
+    fill: var(--corporate-primary);
+}
+
+:host ::ng-deep .ds-map-toggle:hover path {
+    stroke: #fff;
+}
