@@ -7996,6 +7996,10 @@ Best regards.</target>
   <source>La carpeta "<x id="PH" equiv-text="folderName"/>" ya existe. Elija otro nombre de carpeta.</source>
   <target>The folder "<x id="PH" equiv-text="folderName"/>" already exists. Choose another folder name.</target>
 </trans-unit>
+      <trans-unit id="appLocaleCode" datatype="html">
+        <source>es</source>
+        <target>en</target>
+      </trans-unit>
 <trans-unit id="odooFolderAlreadyExists" datatype="html">
   <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
   <target>A data model already exists for the Odoo database "<x id="PH" equiv-text="value.database"/>".</target>

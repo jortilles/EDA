@@ -1,10 +1,10 @@
-import { Component, Input, OnInit, OnDestroy, ChangeDetectorRef, inject, LOCALE_ID } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DataSourceService, SpinnerService, AlertService } from '@eda/services/service.index';
-import { PluginFormService, sanitizeDuckdbFolderName } from '../plugin-form.service';
+import { PluginFormService, sanitizeDuckdbFolderName, currentAppLocale } from '../plugin-form.service';
 
 @Component({
     standalone: true,
@@ -22,7 +22,6 @@ export class Ga4FormComponent implements OnInit, OnDestroy {
     private router            = inject(Router);
     private cdr               = inject(ChangeDetectorRef);
     private pluginFormService = inject(PluginFormService);
-    private localeId          = inject(LOCALE_ID);
 
     public ga4PropertyId: string = '';
     public ga4FolderName: string = '';
@@ -115,7 +114,7 @@ export class Ga4FormComponent implements OnInit, OnDestroy {
                 folderName,
                 optimize: value.optimize ? 1 : 0,
                 allowCache: value.allowCache ? 1 : 0,
-                locale: this.localeId,
+                locale: currentAppLocale(),
             };
 
             const res = await lastValueFrom(this.dataSourceService.callPluginPost(this.apiBasePath, '/add-data-source', payload));

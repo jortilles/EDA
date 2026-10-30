@@ -1,10 +1,10 @@
-import { Component, Input, OnInit, OnDestroy, inject, LOCALE_ID } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DataSourceService, SpinnerService, AlertService } from '@eda/services/service.index';
-import { PluginFormService } from '../plugin-form.service';
+import { PluginFormService, currentAppLocale } from '../plugin-form.service';
 
 @Component({
     standalone: true,
@@ -21,7 +21,6 @@ export class OdooFormComponent implements OnInit, OnDestroy {
     private alertService      = inject(AlertService);
     private router            = inject(Router);
     private pluginFormService = inject(PluginFormService);
-    private localeId          = inject(LOCALE_ID);
 
     public showPassword = false;
     private saveSub!: Subscription;
@@ -69,7 +68,7 @@ export class OdooFormComponent implements OnInit, OnDestroy {
                 password: value.password,
                 optimize: value.optimize ? 1 : 0,
                 allowCache: value.allowCache ? 1 : 0,
-                locale: this.localeId,
+                locale: currentAppLocale(),
             };
 
             const res = await lastValueFrom(this.dataSourceService.callPluginPost(this.apiBasePath, '/add-data-source', payload));

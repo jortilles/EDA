@@ -8302,6 +8302,10 @@ Salutacions.</target>
   <source>La carpeta "<x id="PH" equiv-text="folderName"/>" ya existe. Elija otro nombre de carpeta.</source>
   <target>La carpeta "<x id="PH" equiv-text="folderName"/>" ja existeix. Trieu un altre nom de carpeta.</target>
 </trans-unit>
+      <trans-unit id="appLocaleCode" datatype="html">
+        <source>es</source>
+        <target>ca</target>
+      </trans-unit>
 <trans-unit id="odooFolderAlreadyExists" datatype="html">
   <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
   <target>Ja existeix un model de dades per a la base de dades d'Odoo "<x id="PH" equiv-text="value.database"/>".</target>
