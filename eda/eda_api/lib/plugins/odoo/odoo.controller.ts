@@ -4,6 +4,7 @@ import { OdooApiService } from './odoo-api.service';
 import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
 import { PluginRegistry } from '../plugin-registry';
+import { resolvePluginModelLocale } from '../plugin-locale';
 import DataSource, { IDataSource } from '../../module/datasource/model/datasource.model';
 import * as path from 'path';
 import { DUCKDB_FOLDER_EXISTS_STATUS, duckdbBaseFolder, duckdbFolderExists } from '../../utils/duckdb-folder.util';
@@ -38,7 +39,7 @@ export class OdooController {
             const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
 
             plugin.addRelations(tables);
-            const locale = plugin.resolveLocale(req.body?.locale || req.headers?.['accept-language'] as string);
+            const locale = resolvePluginModelLocale(plugin, req);
             plugin.applyLabels(tables, locale);
 
             const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
@@ -62,7 +63,9 @@ export class OdooController {
                         optimized: !!optimize,
                         cache_config: CC,
                         model_owner: req.user._id,
-                        ia_visibility: 'FULL'
+                        ia_visibility: 'FULL',
+                        // Locale the labels were generated in, reused when the model is refreshed
+                        locale
                     },
                     model: { tables }
                 }

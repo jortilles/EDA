@@ -97,6 +97,7 @@ const COLUMN_LABELS: Record<string, Record<OdooLocale, string>> = {
     template_id:      { en: 'Template ID', es: 'ID Plantilla', ca: 'ID Plantilla', fr: 'ID modèle', pl: 'ID szablonu', de: 'Vorlagen-ID', pt: 'ID modelo', it: 'ID modello' },
 
     // users
+    salesman:       { en: 'Salesperson', es: 'Vendedor', ca: 'Venedor', fr: 'Commercial', pl: 'Handlowiec', de: 'Vertriebsmitarbeiter', pt: 'Vendedor', it: 'Venditore' },
     login:          { en: 'Login', es: 'Login', ca: 'Login', fr: 'Identifiant', pl: 'Login', de: 'Login', pt: 'Login', it: 'Login' },
     external_user:  { en: 'External User', es: 'Usuario Externo', ca: 'Usuari Extern', fr: 'Utilisateur externe', pl: 'Użytkownik zewnętrzny', de: 'Externer Benutzer', pt: 'Utilizador externo', it: 'Utente esterno' },
 };
@@ -166,6 +167,7 @@ const COLUMN_DESCRIPTIONS: Record<string, Record<OdooLocale, string>> = {
     barcode:          { en: 'EAN / barcode', es: 'EAN / código de barras', ca: 'EAN / codi de barres', fr: 'EAN / code-barres', pl: 'EAN / kod kreskowy', de: 'EAN / Barcode', pt: 'EAN / código de barras', it: 'EAN / codice a barre' },
     active:           { en: '1 if the record is active', es: '1 si el registro está activo', ca: '1 si el registre està actiu', fr: '1 si l\'enregistrement est actif', pl: '1, jeśli rekord jest aktywny', de: '1, wenn der Datensatz aktiv ist', pt: '1 se o registo estiver ativo', it: '1 se il record è attivo' },
     template_id:      { en: 'Product template foreign key', es: 'Clave foránea de la plantilla de producto', ca: 'Clau forana de la plantilla de producte', fr: 'Clé étrangère du modèle de produit', pl: 'Klucz obcy szablonu produktu', de: 'Fremdschlüssel der Produktvorlage', pt: 'Chave estrangeira do modelo de produto', it: 'Chiave esterna modello di prodotto' },
+    salesman:         { en: 'Name of the Odoo user (salesperson)', es: 'Nombre del usuario de Odoo (vendedor)', ca: 'Nom de l\'usuari d\'Odoo (venedor)', fr: 'Nom de l\'utilisateur Odoo (commercial)', pl: 'Nazwa użytkownika Odoo (handlowca)', de: 'Name des Odoo-Benutzers (Vertriebsmitarbeiter)', pt: 'Nome do utilizador do Odoo (vendedor)', it: 'Nome dell\'utente di Odoo (venditore)' },
     login:            { en: 'Odoo login username', es: 'Nombre de usuario en Odoo', ca: 'Nom d\'usuari a Odoo', fr: 'Identifiant de connexion Odoo', pl: 'Nazwa użytkownika w Odoo', de: 'Odoo-Anmeldename', pt: 'Nome de utilizador no Odoo', it: 'Nome utente di accesso a Odoo' },
     email:            { en: 'Email address', es: 'Dirección de correo electrónico', ca: 'Adreça de correu electrònic', fr: 'Adresse e-mail', pl: 'Adres e-mail', de: 'E-Mail-Adresse', pt: 'Endereço de email', it: 'Indirizzo email' },
     external_user:    { en: '1 if the user is an external/portal user', es: '1 si el usuario es externo/portal', ca: '1 si l\'usuari és extern/portal', fr: '1 si l\'utilisateur est externe/portail', pl: '1, jeśli użytkownik jest zewnętrzny/portalowy', de: '1, wenn der Benutzer extern/Portalbenutzer ist', pt: '1 se o utilizador for externo/portal', it: '1 se l\'utente è esterno/portale' },

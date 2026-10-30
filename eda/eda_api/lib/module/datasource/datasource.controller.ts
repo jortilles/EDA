@@ -16,6 +16,9 @@ import * as fs from 'fs';
 import { AggregationTypes } from '../global/model/aggregation-types';
 import { normalizeCsvDecimalSeparators } from '../../utils/csv-decimal.util';
 import { checkNewDuckdbFolder, duckdbBaseFolder, sanitizeDuckdbFolderName } from '../../utils/duckdb-folder.util';
+import { PluginRegistry } from '../../plugins/plugin-registry';
+import { resolvePluginModelLocale } from '../../plugins/plugin-locale';
+import { dropSyncControlTables } from '../../plugins/plugin-relations';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -595,6 +598,16 @@ export class DataSourceController {
                 tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized, storedDataModel.ds.metadata.filter);
             }
 
+            // Plugin models (Holded, Odoo, GA4...): label the regenerated tables in the model's locale,
+            // otherwise new tables and columns would get their raw (English) technical names
+            const plugin = PluginRegistry.getDatasource(storedDataModel.ds.connection.type);
+            let pluginLocale: string | undefined;
+            if (plugin) dropSyncControlTables(tables);
+            if (plugin?.applyLabels) {
+                pluginLocale = resolvePluginModelLocale(plugin, req, storedDataModel.ds);
+                plugin.applyLabels(tables, pluginLocale);
+            }
+
             const datasource: IDataSource = new DataSource({
                 ds: {
                     connection: {
@@ -635,7 +648,10 @@ export class DataSourceController {
                 const dataSource: IDataSource = await DataSource.findById(req.params.id)
                 
                 dataSource.ds.model.tables = datasource.ds.model.tables;
-    
+                if (pluginLocale && !dataSource.ds.metadata?.locale) {
+                    dataSource.ds.metadata = { ...dataSource.ds.metadata, locale: pluginLocale };
+                }
+
                 const iDataSource = new DataSource(dataSource);
     
                 try {
