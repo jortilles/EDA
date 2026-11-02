@@ -107,6 +107,7 @@ export const ChartsConfigUtils = {
         sortedColumn: ebp.panelChart.componentRef.instance.inject.sortedColumn,
         styles: ebp.panelChart.componentRef.instance.inject.styles,
         noRepetitions: ebp.panelChart.componentRef.instance.inject.noRepetitions,
+        hidePaginator: ebp.panelChart.componentRef.instance.inject.hidePaginator || false,
         negativeNumbers: ebp.panelChart.componentRef.instance.inject.negativeNumbers,
         ordering: ebp.panelChart.componentRef.instance.inject.ordering,
         headerColor: ebp.panelChart.componentRef.instance.inject.headerColor || '',
