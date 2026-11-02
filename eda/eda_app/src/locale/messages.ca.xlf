@@ -6935,6 +6935,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Continuar con Microsoft</source>
         <target>Continuar amb Microsoft</target>
       </trans-unit>
+      <trans-unit id="loginWithUserPassword">
+        <source>Iniciar sesión con usuario y contraseña</source>
+        <target>Iniciar sessió amb usuari i contrasenya</target>
+      </trans-unit>
       <trans-unit id="whereMessage">
         <source>Filtro sobre todos los registros</source>
         <target>Filtre sobre tots els registres</target>

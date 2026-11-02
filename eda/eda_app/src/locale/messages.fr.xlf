@@ -6903,6 +6903,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Continuar con Microsoft</source>
         <target>Continuer avec Microsoft</target>
       </trans-unit>
+      <trans-unit id="loginWithUserPassword">
+        <source>Iniciar sesión con usuario y contraseña</source>
+        <target>Se connecter avec nom d'utilisateur et mot de passe</target>
+      </trans-unit>
       <trans-unit id="whereMessage">
         <source>Filtro sobre todos los registros</source>
         <target>Filtrer tous les enregistrements</target>

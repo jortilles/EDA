@@ -75,6 +75,10 @@
         <source>Inicio de sesión</source>
         <target>Início de sessão</target>
       </trans-unit>
+      <trans-unit id="loginWithUserPassword" datatype="html">
+        <source>Iniciar sesión con usuario y contraseña</source>
+        <target>Iniciar sessão com utilizador e palavra-passe</target>
+      </trans-unit>
       <trans-unit id="direccionMail" datatype="html">
         <source> Dirección Email / Usuario </source>
         <target> Endereço de email / Utilizador </target>

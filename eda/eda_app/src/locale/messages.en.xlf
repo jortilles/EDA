@@ -6564,6 +6564,10 @@ OR<ph id="5"/>
   <source>Continuar con Microsoft</source>
   <target>Continue with Microsoft</target>
 </trans-unit>
+<trans-unit id="loginWithUserPassword">
+  <source>Iniciar sesión con usuario y contraseña</source>
+  <target>Sign in with username and password</target>
+</trans-unit>
 <trans-unit id="copyPublicLinkTooltip">
   <source>Copiar enlace público</source>
   <target>Copy public link</target>
