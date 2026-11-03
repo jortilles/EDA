@@ -52,6 +52,7 @@ export class TableDialogComponent{
   public cols: Array<any> = [];
   public styles = [];
   public noRepetitions : boolean = false;
+  public hidePaginator : boolean = false;
   public negativeNumbers : boolean = false;
   public ordering: Array<any> = [];
   public crossSortOrder: string = 'alphabetical';
@@ -133,6 +134,7 @@ export class TableDialogComponent{
       this.sortedSerie = config.sortedSerie;
       this.sortedColumn = config.sortedColumn;
       this.noRepetitions = config.noRepetitions;
+      this.hidePaginator = config.hidePaginator || false;
       this.ordering = config.ordering;
       this.negativeNumbers = config.negativeNumbers;
       this.crossSortOrder = config.crossSortOrder || 'alphabetical';
@@ -261,6 +263,14 @@ export class TableDialogComponent{
     // currentConfig.noRepetitions = !currentConfig.negativeNumbers;
 
     this.setItems();
+  }
+
+  public toggleHidePaginator() {
+
+    const currentConfig = this.myPanelChartComponent.currentConfig;
+    currentConfig.hidePaginator = !currentConfig.hidePaginator;
+    this.hidePaginator = currentConfig.hidePaginator;
+    this.myPanelChartComponent.markDirty();
   }
 
   public noNegativeNumbers() {
@@ -530,7 +540,7 @@ export class TableDialogComponent{
       this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles,
       this.noRepetitions, this.negativeNumbers, this.ordering, this.crossSortOrder,
       this.headerColor, this.bandingColor, this.colorEnabled,
-      this.groupBySubtotalColumns);
+      this.groupBySubtotalColumns, undefined, this.hidePaginator);
 
     // Apply prediction changes to the dashboard only on confirm
     const panelID = this.controller?.params?.panelId;
