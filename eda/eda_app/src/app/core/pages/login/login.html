@@ -26,54 +26,14 @@
         <!-- Logo and Title -->
         <div class="mb-6 text-center">
         <div class="mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800"  >Edalitics</h2>
+            <h2 class="text-2xl font-semibold text-gray-800" i18n="@@loginPortalTitle">Portal d'analítica de dades</h2>
         </div>
             <div class="flex items-center justify-center mb-2">
                     <img [src]="subLogo" alt="logo" class="max-w-[275px]"/>
             </div>
         </div>
 
-        <!-- Welcome Text -->
-        <div class="mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800" i18n="@@loginTitle">Inicio de sesión</h2>
-        </div>
-
-        <!-- Login Form -->
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()" class="space-y-4">
-            <div class="space-y-1">
-                <label for="email" class="block text-sm text-gray-600" i18n="@@direccionMail">
-                    Dirección Email / Usuario
-                </label>
-                <input type="text" id="email" formControlName="email"
-                    class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--corporate-primary)]">
-            </div>
-
-            <div class="space-y-1">
-                <label for="password" class="block text-sm text-gray-600" i18n="@@password">
-                    Contraseña
-                </label>
-                <input type="password" id="password" formControlName="password"
-                    class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--corporate-primary)]">
-            </div>
-
-            <div class="flex items-center space-x-2">
-                <input type="checkbox" id="remember" formControlName="remember"
-                    class="rounded border-gray-300 text-blue-500 focus:ring-blue-500/20">
-                <label for="remember" class="text-sm text-gray-600" i18n="@@spanRememberme">Recuérdame</label>
-            </div>
-
-            <button type="submit" class="login-btn">
-                <span i18n="@@signinBtn">Entrar</span>
-            </button>
-
-            <!-- <a routerLink="/forgot-password"
-                class="block text-center text-sm text-blue-600 pointer hover:text-blue-800 hover:underline transition-colors"
-                i18n="@@loginForgotPassword">
-                He oblidat la meva contrasenya
-            </a> -->
-        </form>
-
-
+        <!-- SSO / OAuth login options -->
         @if (singleSignOnSamlMixOrclAvailable) {
             <button 
                 class="w-full py-2 xl:py-1 text-black rounded-md bg-white border-[0.5px] border-[#dadce0] hover:bg-[#E1E9FF] transition-colors focus:outline-none focus:ring-0"
@@ -157,9 +117,58 @@
             </div>
         }
 
+        <!-- User / Password login (collapsible) -->
+        <div>
+            <button type="button"
+                class="w-full flex items-center justify-between text-sm text-gray-600 px-3 py-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--corporate-primary)]"
+                (click)="toggleUserPasswordLogin()">
+                <span i18n="@@loginWithUserPassword">Iniciar sesión con usuario y contraseña</span>
+                <svg class="w-4 h-4 shrink-0 transition-transform" [class.rotate-180]="showUserPasswordLogin"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+
+            @if (showUserPasswordLogin) {
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()" class="space-y-4 pt-3">
+                    <div class="space-y-1">
+                        <label for="email" class="block text-sm text-gray-600" i18n="@@direccionMail">
+                            Dirección Email / Usuario
+                        </label>
+                        <input type="text" id="email" formControlName="email"
+                            class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--corporate-primary)]">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label for="password" class="block text-sm text-gray-600" i18n="@@password">
+                            Contraseña
+                        </label>
+                        <input type="password" id="password" formControlName="password"
+                            class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--corporate-primary)]">
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <input type="checkbox" id="remember" formControlName="remember"
+                            class="rounded border-gray-300 text-blue-500 focus:ring-blue-500/20">
+                        <label for="remember" class="text-sm text-gray-600" i18n="@@spanRememberme">Recuérdame</label>
+                    </div>
+
+                    <button type="submit" class="login-btn">
+                        <span i18n="@@signinBtn">Entrar</span>
+                    </button>
+
+                    <!-- <a routerLink="/forgot-password"
+                        class="block text-center text-sm text-blue-600 pointer hover:text-blue-800 hover:underline transition-colors"
+                        i18n="@@loginForgotPassword">
+                        He oblidat la meva contrasenya
+                    </a> -->
+                </form>
+            }
+        </div>
+
         <!-- Copyright -->
         <div class="mt-6 text-center text-xs text-gray-500">
-            <span>Copyright ©{{currentYear}} Jortilles S.L.</span>
+            <span>Copyright ©{{currentYear}} Jortilles S.L. · <span class="font-bold">Edalitics</span></span>
             <img src="https://www.edalitics.com/px.png" />
         </div>
     </div>

@@ -755,6 +755,10 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
     try {
       const canvas = await this._captureDashboardCanvas(element, 2);
+      // The last PDF page is taller than the leftover image slice once imgHeight doesn't divide
+      // evenly into page-sized chunks - fill that leftover with the dashboard's own background
+      // instead of white, so it doesn't end in a blank band.
+      const bgColor = this._readDashboardBackground(element).backgroundColor || '#ffffff';
 
       const pdf = new jspdf('p', 'pt', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
@@ -772,7 +776,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
       let position = 0;
       while (position < imgHeight) {
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
         ctx.drawImage(canvas, 0, -position, imgWidth, imgHeight);
 
@@ -871,13 +875,19 @@ export class DashboardSidebarComponent implements AfterViewInit {
       contentWidth = Math.ceil(contentWidth);
       contentHeight = Math.ceil(contentHeight);
 
-      const container = this._buildOffscreenCaptureContainer(targets, contentWidth, contentHeight);
+      // #myDashboard's own background (solid color and/or the optional background-image) lives on
+      // its direct child, not on any captured target, so it's read off separately and painted onto
+      // the offscreen container instead of the plain white it'd otherwise default to.
+      const container = await this._buildOffscreenCaptureContainer(targets, contentWidth, contentHeight, this._readDashboardBackground(element));
       try {
         return await html2canvas(container, {
-          backgroundColor: '#ffffff',
-          // Map tiles already load with crossOrigin (Leaflet layer config); allowTaint stays
-          // false so any other genuinely-tainting image is skipped, not thrown on.
-          useCORS: false,
+          // The container already paints the dashboard's real background itself; null (transparent)
+          // avoids html2canvas compositing a second, opaque white layer underneath it.
+          backgroundColor: null,
+          // The API serves media-library images (panel icons, background image) with
+          // Access-Control-Allow-Origin: *, so requesting them anonymously keeps the resulting
+          // canvas untainted instead of html2canvas silently skipping them.
+          useCORS: true,
           allowTaint: false,
           logging: false,
           scale,
@@ -892,17 +902,33 @@ export class DashboardSidebarComponent implements AfterViewInit {
     }
   }
 
+  /** The dashboard's background-color/-image live as inline styles (`[ngStyle]`) on #myDashboard's
+   *  direct child, which the capture never clones directly - read back here so it can be painted
+   *  onto the offscreen container instead. */
+  private _readDashboardBackground(element: HTMLElement): Partial<CSSStyleDeclaration> {
+    const bgEl = (element.firstElementChild as HTMLElement) || element;
+    const computed = getComputedStyle(bgEl);
+    return {
+      backgroundColor: computed.backgroundColor,
+      backgroundImage: computed.backgroundImage,
+      backgroundSize: computed.backgroundSize,
+      backgroundPosition: computed.backgroundPosition,
+      backgroundRepeat: computed.backgroundRepeat,
+    };
+  }
+
   /** Builds an off-screen container with an absolutely-positioned (top/left, not CSS transform)
    *  clone of every target. html2canvas's bounds calc breaks on scale>1 + a transformed element
    *  (confirmed: only the panel at gridster offset (0,0) ever captured correctly otherwise), so
    *  this avoids gridster's own `transform: translate3d(...)` positioning. Canvas elements are
    *  re-painted from their live counterpart since cloneNode() doesn't carry drawn pixels. Caller
    *  must `.remove()` the returned element once done. */
-  private _buildOffscreenCaptureContainer(
+  private async _buildOffscreenCaptureContainer(
     targets: { el: HTMLElement; x: number; y: number; width: number; height: number }[],
     contentWidth: number,
-    contentHeight: number
-  ): HTMLElement {
+    contentHeight: number,
+    background?: Partial<CSSStyleDeclaration>
+  ): Promise<HTMLElement> {
     const container = document.createElement('div');
     container.style.setProperty('position', 'fixed', 'important');
     container.style.setProperty('left', '-99999px', 'important');
@@ -910,7 +936,11 @@ export class DashboardSidebarComponent implements AfterViewInit {
     container.style.setProperty('z-index', '-1', 'important');
     container.style.width = `${contentWidth}px`;
     container.style.height = `${contentHeight}px`;
-    container.style.backgroundColor = '#ffffff';
+    if (background) {
+      Object.assign(container.style, background);
+    } else {
+      container.style.backgroundColor = '#ffffff';
+    }
 
     for (const target of targets) {
       if (target.width === 0 || target.height === 0) continue;
@@ -926,7 +956,36 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
     document.body.appendChild(container);
     void container.offsetHeight; // force layout before html2canvas reads it
+    await this._inlineSvgImageHrefs(container);
     return container;
+  }
+
+  /** Browsers run an SVG used as an image source (html2canvas serializes every <svg> it meets
+   *  into a data:image/svg+xml and paints that as one flat image - see SVGElementContainer in
+   *  html2canvas) in a locked-down mode that refuses to fetch any resource the SVG references,
+   *  regardless of CORS: the shapes/text render fine since those need nothing external, but any
+   *  nested <image href="https://..."> (our per-slice media-library icons) comes out blank. Only
+   *  a self-contained data: URI survives that, so every such href is swapped for one here before
+   *  the container is handed to html2canvas. */
+  private async _inlineSvgImageHrefs(container: HTMLElement): Promise<void> {
+    const images = Array.from(container.querySelectorAll('image'));
+    await Promise.all(images.map(async img => {
+      const href = img.getAttribute('href') || img.getAttribute('xlink:href');
+      if (!href || href.startsWith('data:')) return;
+      try {
+        const blob = await (await fetch(href)).blob();
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+        img.setAttribute('href', dataUrl);
+        img.removeAttribute('xlink:href');
+      } catch {
+        // Unreachable icon URL - leave it as-is, same "degrades to no image" fallback as live.
+      }
+    }));
   }
 
   /** Deep-clones `el` for capture: canvas pixels are re-painted (cloneNode doesn't carry them),
@@ -988,10 +1047,14 @@ export class DashboardSidebarComponent implements AfterViewInit {
         ctx.strokeStyle = cs.color;
         ctx.strokeText(text, rect.width / 2, rect.height / 2);
       }
+      // The KPI's prefix icon (<img>, see eda-kpi.component.html) is this span's sibling, not
+      // part of the text being rasterized - pull it out before clearing so it isn't lost with it.
+      const icon = clonedSpan.querySelector('img');
       clonedSpan.innerHTML = '';
       clonedSpan.style.setProperty('display', 'flex', 'important');
       clonedSpan.style.setProperty('justify-content', 'center', 'important');
       clonedSpan.style.setProperty('align-items', 'center', 'important');
+      if (icon) clonedSpan.appendChild(icon);
       clonedSpan.appendChild(canvas);
     });
   }
@@ -1203,11 +1266,13 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
     const contentWidth  = Math.ceil(maxWidth);
     const contentHeight = Math.ceil(cursorY - GAP);
-    const container = this._buildOffscreenCaptureContainer(targets, contentWidth, contentHeight);
+    const container = await this._buildOffscreenCaptureContainer(targets, contentWidth, contentHeight);
     try {
       const canvas = await html2canvas(container, {
         backgroundColor: '#ffffff',
-        useCORS: false,
+        // See _captureDashboardCanvas - the API's images are CORS-open, so this can be requested
+        // anonymously instead of skipped to avoid tainting the canvas.
+        useCORS: true,
         allowTaint: false,
         logging: false,
         scale,

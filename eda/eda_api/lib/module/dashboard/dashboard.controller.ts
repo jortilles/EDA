@@ -171,25 +171,22 @@ export class DashboardController {
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
         if( dashboard.config.visible === 'group' && dashboard.group ){
-          for (const dashboardGroup of dashboard.group) {
-            for (const userGroup of userGroups) {
-              if ( userGroup._id.equals(dashboardGroup) ) {
-                  const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() );
-                  if( ds ){
-                        dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
-                        dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
-                        if (this.iCanSeeTheDashboard(req, ds) == true) {
-                          groupDashboards.push(dashboard)
-                        }else{
-                         //console.log('No pudo ver el informe ' +  dashboard);
-                        }
-                    }else{
-                      console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
-                    }
-
-                
+          const hasMatchingGroup = dashboard.group.some(dashboardGroup =>
+            userGroups.some(userGroup => userGroup._id.equals(dashboardGroup))
+          );
+          if (hasMatchingGroup) {
+            const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() );
+            if( ds ){
+                  dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+                  dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
+                  if (this.iCanSeeTheDashboard(req, ds) == true) {
+                    groupDashboards.push(dashboard)
+                  }else{
+                   //console.log('No pudo ver el informe ' +  dashboard);
+                  }
+              }else{
+                console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
               }
-            }
           }
         }
       }
@@ -2164,7 +2161,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
   }
 
   static resolveDbErrorLangFromRequest(req: Request): string {
-    const supportedLangs = ['es', 'ca', 'en', 'fr', 'pl', 'gl', 'de', 'pt'];
+    const supportedLangs = ['es', 'ca', 'en', 'fr', 'pl', 'gl', 'de', 'pt', 'it'];
     const queryLang = (req?.query as any)?.lang;
     const paramLang = (req?.params as any)?.lang;
     const bodyLang = (req?.body as any)?.lang;
@@ -2250,7 +2247,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     let isNotNumeric = false;
     try {
       if (
-        isNaN(val) || val.toString().indexOf('-') >= 0 || val.toString().indexOf('/') >= 0 ||
+        isNaN(val) || val.toString().indexOf('-') > 0 || val.toString().indexOf('/') >= 0 ||
         val.toString().indexOf('|') >= 0 || val.toString().indexOf(':') >= 0 || val.toString().indexOf('T') >= 0 ||
         val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0 || val.toString().replace(/['"]+/g, '').length == 0) {
         isNotNumeric = true;

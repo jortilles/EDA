@@ -8,6 +8,7 @@ import { AlertService } from '../alerts/alert.service';
 import { AGG_TYPES } from '../../config/customizable/customizable_default';
 import { map } from 'rxjs/internal/operators/map';
 import { catchError } from 'rxjs/internal/operators/catchError';
+import { SweetAlertOptions } from 'sweetalert2';
 
 
 @Injectable()
@@ -367,6 +368,14 @@ export class DataSourceService extends ApiService implements OnDestroy {
     }
 
     updateRelation(rel: Relation, newRelation: Relation) {
+        const tmp_model = this._databaseModel.getValue();
+        // Relations are stored in both tables: find the mirror of the old relation before changing it
+        const oldMirror: Relation = {
+            source_table: rel.target_table, source_column: rel.target_column,
+            target_table: rel.source_table, target_column: rel.source_column
+        } as Relation;
+        const oldTargetIndex = tmp_model.findIndex((table: { table_name: string; }) => table.table_name === rel.target_table);
+
         // Set new values
         rel.display_name = newRelation.display_name;
         rel.source_column = newRelation.source_column;
@@ -386,6 +395,28 @@ export class DataSourceService extends ApiService implements OnDestroy {
             tmp_panel.relations.push(rel);
         }
         this._tablePanel.next(tmp_panel);
+
+        // Replace the mirror relation in the target table with the new one
+        if (oldTargetIndex >= 0) {
+            const mirrorIndex = this.getRelationIndex(oldMirror, oldTargetIndex);
+            if (mirrorIndex >= 0) tmp_model[oldTargetIndex].relations.splice(mirrorIndex, 1);
+        }
+        const newTargetIndex = tmp_model.findIndex((table: { table_name: string; }) => table.table_name === rel.target_table);
+        if (newTargetIndex >= 0) {
+            const newMirror: Relation = {
+                source_table: rel.target_table, source_column: rel.target_column,
+                target_table: rel.source_table, target_column: rel.source_column,
+                display_name: rel.display_name,
+                visible: true
+            };
+            const existing = this.getRelationIndex(newMirror, newTargetIndex);
+            if (existing >= 0) tmp_model[newTargetIndex].relations[existing].visible = true;
+            else tmp_model[newTargetIndex].relations.push(newMirror);
+        }
+
+        // Notify the change (e.g. the model map redraws the relation)
+        this._databaseModel.next(tmp_model);
+        this._unsaved.next(true);
     }
 
     /** add a value list as the source of a column */
@@ -400,6 +431,24 @@ export class DataSourceService extends ApiService implements OnDestroy {
         let tmpMetadata = this._modelMetadata.getValue();
         tmpMetadata.model_granted_roles.push(permission);
         this._modelMetadata.next(tmpMetadata);
+    }
+
+    /**
+     * Posiciones de las tablas en la vista mapa: { [table_name]: { x, y } }.
+     * Se guardan en ds.metadata.map_layout junto con el modelo.
+     */
+    getMapLayout(): { [table: string]: { x: number, y: number } } {
+        const metadata = this._modelMetadata.getValue();
+        if (!metadata || Array.isArray(metadata)) return {};
+        if (!metadata.map_layout) metadata.map_layout = {};
+        return metadata.map_layout;
+    }
+
+    setMapLayout(layout: { [table: string]: { x: number, y: number } }, markUnsaved = true) {
+        const metadata = this._modelMetadata.getValue();
+        if (!metadata || Array.isArray(metadata)) return;
+        metadata.map_layout = layout;
+        if (markUnsaved) this._unsaved.next(true);
     }
 
     addCacheConfig(config:any){
@@ -714,6 +763,31 @@ export class DataSourceService extends ApiService implements OnDestroy {
     }
     updateModelInServer(id, body): Observable<any> {
         return this.put(`${this.globalDSRoute}/${id}`, body);
+    }
+
+    /** Raw datasource document, without loading it into the model editor state */
+    getDataSourceById(id: string): Observable<any> {
+        return this.get(`${this.globalDSRoute}/${id}`);
+    }
+
+    /** Name of the model currently loaded in the editor */
+    getModelName(): string {
+        return this._modelMetadata.getValue()?.model_name || '';
+    }
+
+    /** SweetAlert options to confirm a model deletion, showing the underlined model name */
+    deleteModelConfirmOptions(modelName: string): SweetAlertOptions {
+        // The title is rendered as HTML: escape the name before injecting it
+        const safeName = String(modelName || '').replace(/[&<>"']/g, c =>
+            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;' }[c]));
+        const modelNameHtml = `<u style="font-size: 1.2em">${safeName}</u>`;
+        return {
+            title: $localize`:@@SureDeleteModel:¿Estás seguro de borrar el modelo ${modelNameHtml}:modelName:?`,
+            text: $localize`:@@SureInfo:Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`
+        };
     }
 
     deleteModel(id): Observable<any> {

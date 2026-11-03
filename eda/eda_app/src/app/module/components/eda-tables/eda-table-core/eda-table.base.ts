@@ -80,6 +80,7 @@ export abstract class EdaTableBase implements TotalsContext {
   public onlyPercentages: boolean = false;
   public percentageColumns: EdaColumn[] = [];
   public noRepetitions: boolean;
+  public hidePaginator: boolean = false;
   public negativeNumbers: boolean;
   public origValues: any[] = [];
 

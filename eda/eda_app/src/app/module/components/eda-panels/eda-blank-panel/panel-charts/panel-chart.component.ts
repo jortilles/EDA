@@ -449,6 +449,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.sortedSerie = config.sortedSerie;
         this.componentRef.instance.inject.sortedColumn = config.sortedColumn;
         this.componentRef.instance.inject.noRepetitions = config.noRepetitions;
+        this.componentRef.instance.inject.hidePaginator = config.hidePaginator || false;
         if (this.componentRef.instance.inject instanceof EdaCrosstableModel) {
             this.componentRef.instance.inject.ordering = config.ordering;
             this.componentRef.instance.inject.crossSortOrder = config.crossSortOrder || 'alphabetical';
@@ -752,6 +753,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.edaChart.showLabelsPercent = edaCfg.showLabelsPercent ?? false;
     chartConfig.edaChart.labelColorMode = edaCfg.labelColorMode ?? 'series';
     chartConfig.edaChart.labelCustomColor = edaCfg.labelCustomColor;
+    chartConfig.edaChart.linkedDashboard = this.props.linkedDashboardProps;
     if (supportsTrendCompare) {
         chartConfig.edaChart.showPointLines = edaCfg.showPointLines ?? false;
         chartConfig.edaChart.addTrend = edaCfg.addTrend ?? false;
@@ -870,6 +872,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaKpiComponent);
         this.componentRef.instance.inject = inject;
+        // Clicks on the embedded bar/line/area chart filter the dashboard like the standalone chart
+        this.chartClickSubscription = this.componentRef.instance.onClick.subscribe(
+            (event) => this.onChartClick.emit({...event, query: this.props.query})
+        );
 
         this.componentRef.instance.onNotify.subscribe(data => {
             const kpiConfig = new KpiConfig({

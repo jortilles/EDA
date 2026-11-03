@@ -5853,6 +5853,13 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
           <context context-type="linenumber">145</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="loginWithUserPassword" datatype="html">
+        <source>Iniciar sesión con usuario y contraseña</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/pages/login/login.html</context>
+          <context context-type="linenumber">125</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="whereDoWeBegin" datatype="html">
         <source>¿ Por dónde empezamos ?</source>
         <context-group purpose="location">
