@@ -3,6 +3,7 @@ import hasher from 'node-object-hash'
 import CachedQuery, { ICachedQuery } from './cached-query.model'
 import DataSource from '../../module/datasource/model/datasource.model'
 import ManagerConnectionService from '../../services/connection/manager-connection.service'
+import { normalizeOracleMysqlRows } from '../../utils/numeric-value.util'
 
 export class CachedQueryService {
   static build(model_id: string, query: any, mode: 'SQL' | 'EDA') {
@@ -81,7 +82,7 @@ export class CachedQueryService {
 
     try {
       const res = await CachedQuery.deleteMany({
-        'cachedQuery.lastLoaded': {
+        'cachedQuery.dateAdded': {
           $lte: SchedulerFunctions.totLocalISOTime(limitDate)
         }
       }).exec()
@@ -198,13 +199,17 @@ export class CachedQueryService {
       const connection = await ManagerConnectionService.getConnection(model_id)
       connection.client = await connection.getclient()
       const getResults = await connection.execQuery(query)
-      const results = []
 
-      // Normalize data
-      for (let i = 0, n = getResults.length; i < n; i++) {
-        const r = getResults[i]
-        const output = Object.keys(r).map(i => r[i])
-        results.push(output)
+      let results = getResults.map((r: any) => Object.keys(r).map(key => r[key]))
+
+      // Oracle/MySQL can return numeric aggregates (COUNT/SUM/DECIMAL) as strings -
+      // same normalization as the live query path (DashboardController), otherwise a
+      // scheduled cache refresh silently re-corrupts an already-correct cached value
+      // back into a string, breaking KPI-type panels until the next full reload.
+      const datasource = await DataSource.findOne({ _id: model_id })
+      const connectionType = datasource?.ds?.connection?.type
+      if (connectionType === 'oracle' || connectionType === 'mysql') {
+        results = normalizeOracleMysqlRows(results)
       }
 
       const output = [labels, results]

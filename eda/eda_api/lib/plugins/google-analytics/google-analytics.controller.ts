@@ -4,11 +4,14 @@ import { GA4ApiService } from './ga4-api.service';
 import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
 import { PluginRegistry } from '../plugin-registry';
+import { resolvePluginModelLocale } from '../plugin-locale';
 import DataSource, { IDataSource } from '../../module/datasource/model/datasource.model';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import { checkNewDuckdbFolder, duckdbBaseFolder, sanitizeDuckdbFolderName } from '../../utils/duckdb-folder.util';
 
 const cache_config = require('../../../config/cache.config');
+const ga4Config = require('../../../config/google-analytics.config');
 
 // In-memory store for pending OAuth states (state → refresh_token).
 // Entries are cleaned up after retrieval or after 10 minutes.
@@ -35,8 +38,10 @@ export class GoogleAnalyticsController {
                 return next(new HttpException(400, 'Se requieren: name, propertyId, credentialsJson, folderName'));
             }
 
-            const safeFolderName = folderName.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
-            const folderPath = path.join(process.cwd(), 'duckdb', safeFolderName);
+            const safeFolderName = sanitizeDuckdbFolderName(folderName);
+            const folderError = checkNewDuckdbFolder(safeFolderName);
+            if (folderError) return next(folderError);
+            const folderPath = path.join(duckdbBaseFolder(), safeFolderName);
 
             const plugin = PluginRegistry.getDatasource('googleanalytics');
             await plugin.downloadData({ propertyId, credentialsJson }, folderPath);
@@ -45,7 +50,7 @@ export class GoogleAnalyticsController {
             const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
 
             plugin.addRelations(tables);
-            const locale = plugin.resolveLocale(req.body?.locale || req.headers?.['accept-language'] as string);
+            const locale = resolvePluginModelLocale(plugin, req);
             plugin.applyLabels(tables, locale);
 
             const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
@@ -69,7 +74,9 @@ export class GoogleAnalyticsController {
                         optimized: !!optimize,
                         cache_config: CC,
                         model_owner: req.user._id,
-                        ia_visibility: 'FULL'
+                        ia_visibility: 'FULL',
+                        // Locale the labels were generated in, reused when the model is refreshed
+                        locale
                     },
                     model: { tables }
                 }
@@ -92,7 +99,10 @@ export class GoogleAnalyticsController {
                 return next(new HttpException(503, 'GA4_CLIENT_ID y GA4_CLIENT_SECRET no están configurados en el servidor'));
             }
 
-            const state = crypto.randomBytes(16).toString('hex');
+            const token = crypto.randomBytes(16).toString('hex');
+            const instanceCallback = ga4Config.REDIRECT_URI;
+            const state = `${token}|${instanceCallback}`;
+
             const oauth2Client = GA4ApiService.buildOAuth2Client();
 
             const authUrl = oauth2Client.generateAuthUrl({
@@ -102,7 +112,8 @@ export class GoogleAnalyticsController {
                 state
             });
 
-            return res.json({ ok: true, authUrl, state });
+            // Frontend polls using only the token (proxy strips |instanceName)
+            return res.json({ ok: true, authUrl, state: token });
         } catch (err: any) {
             return next(new HttpException(500, err.message));
         }

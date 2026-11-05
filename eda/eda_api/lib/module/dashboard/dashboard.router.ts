@@ -272,6 +272,56 @@ router.post('/sql-query', authGuard, DashboardController.execSqlQuery);
 
 /**
  * @openapi
+ * /dashboard/source-fields-query:
+ *   post:
+ *     description: builds and executes a `SELECT * FROM ... [WHERE ...]` version of the panel's query, for "Mostrar campos de origen"
+ *     parameters:
+ *       - name: token
+ *         in: query
+ *         description: Authentication token
+ *         type: string
+ *       - name: query
+ *         in: body
+ *         required: true
+ *         type: object
+ *         description: Query configuration
+ *     responses:
+ *       200:
+ *         description: returns ok
+ *       500:
+ *         description: returns error by permisos, query error, or unsupported connection type
+ *     tags:
+ *       - Dashboard Routes
+ */
+router.post('/source-fields-query', authGuard, DashboardController.getSourceFieldsData);
+
+/**
+ * @openapi
+ * /dashboard/grouped-subtotals-query:
+ *   post:
+ *     description: runs one GROUP BY + aggregate query per nesting level for a table's "subtotales agrupados" (grouping columns identified by index into query.fields, not by name)
+ *     parameters:
+ *       - name: token
+ *         in: query
+ *         description: Authentication token
+ *         type: string
+ *       - name: query
+ *         in: body
+ *         required: true
+ *         type: object
+ *         description: "Query configuration plus a groupBy object ({ fieldIndexes, numericFields: [{fieldIndex, aggregation}] })"
+ *     responses:
+ *       200:
+ *         description: returns ok
+ *       500:
+ *         description: returns error by permisos, query error, or unsupported connection type
+ *     tags:
+ *       - Dashboard Routes
+ */
+router.post('/grouped-subtotals-query', authGuard, DashboardController.getGroupedSubtotalsData);
+
+/**
+ * @openapi
  * /dashboard/view-query:
  *   post:
  *     description: creates the SQL query from panel

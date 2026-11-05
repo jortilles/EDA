@@ -4,4 +4,5 @@ export class EdaKnob {
   limits: Array<number>;
   assignedColors: any;
   semaphoreColor: boolean;
+  chartAnimation?: boolean;
 }

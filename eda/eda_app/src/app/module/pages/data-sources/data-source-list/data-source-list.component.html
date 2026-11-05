@@ -1,5 +1,6 @@
 <div class="my-10 px-4 flex overflow-hidden">
-  <div class="rounded-lg border-r bg-background flex flex-col h-[calc(100vh-5rem)] w-[30%]">
+  <div class="rounded-lg border-r bg-background flex flex-col h-[calc(100vh-5rem)]"
+    [ngClass]="viewMode === 'map' ? 'w-[60%]' : 'w-[30%]'">
     <div class="p-4 border-b shrink-0">
       <div class="flex items-center justify-between">
         <h2 class="text-lg font-semibold" i18n="@@tituloCard">Modelo de datos</h2>
@@ -57,6 +58,19 @@
           </button>
         </div>
       </div>
+      @if (unsaved) {
+        <p class="mt-1 text-sm font-medium text-amber-600">{{ unsaved }}</p>
+      }
+      <div class="mt-3 inline-flex rounded-md border p-0.5 bg-muted/40 text-sm" role="group">
+        <button type="button" class="px-3 py-1 rounded"
+          [ngClass]="viewMode === 'tree' ? 'btn-type-active' : 'hover:bg-muted'"
+          [attr.aria-pressed]="viewMode === 'tree'"
+          (click)="setViewMode('tree')" i18n="@@dsViewTree">Árbol</button>
+        <button type="button" class="px-3 py-1 rounded"
+          [ngClass]="viewMode === 'map' ? 'btn-type-active' : 'hover:bg-muted'"
+          [attr.aria-pressed]="viewMode === 'map'"
+          (click)="setViewMode('map')" i18n="@@dsViewMap">Mapa</button>
+      </div>
     </div>
 
     <div class="px-3 py-2 border-b shrink-0">
@@ -73,6 +87,7 @@
       </div>
     </div>
 
+    @if (viewMode === 'tree') {
     <div class="p-2 overflow-auto flex-1">
       <p-tree id="datasource-list" [style]="{'width':'100%'}" [value]="filteredTreeData" [filter]="false"
         selectionMode="single" [(selection)]="selectedFile" (onNodeSelect)="nodeSelect($event)"
@@ -85,9 +100,17 @@
         </ng-template>
       </p-tree>
     </div>
+    } @else {
+    <div class="flex-1 min-h-0 overflow-hidden">
+      <!-- Vista mapa del modelo de datos (diagrama entidad-relación) -->
+      <app-data-source-map [treeData]="treeData" [selectedNode]="selectedNode" [searchTerm]="searchTerm"
+        (nodeSelected)="nodeSelect($event)"></app-data-source-map>
+    </div>
+    }
   </div>
 
-  <div class="w-[70%] h-[calc(100vh-5rem)] overflow-auto">
+  <div class="h-[calc(100vh-5rem)] overflow-auto"
+    [ngClass]="viewMode === 'map' ? 'w-[40%]' : 'w-[70%]'">
     <app-data-source-detail (onTableCreated)="reLoadModelFromDb()"></app-data-source-detail>
   </div>
   

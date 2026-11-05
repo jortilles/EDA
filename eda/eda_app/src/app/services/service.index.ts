@@ -12,6 +12,11 @@ export * from './utils/upload-file.service';
 export * from './utils/date-utils.service';
 export * from './utils/styles-service';
 export * from './utils/style-provider.service';
+export * from './utils/d3-tooltip.service';
+export * from './utils/d3-color-utils';
+export * from './utils/d3-format-utils';
+export * from './utils/d3-chart-lifecycle.util';
+export * from './utils/d3-xy-chart.util';
 
 
 // Sidebar
@@ -32,6 +37,7 @@ export * from './api/createTable.service';
 export * from './api/mail.service';
 export * from './api/excel-formatter.service';
 export * from './api/log.service';
+export * from './api/media.service'; // Media library
 
 
 

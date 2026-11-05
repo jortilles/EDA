@@ -1,5 +1,5 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { ApiService } from './api.service';
 
 @Injectable({
@@ -12,6 +12,8 @@ export class DashboardService extends ApiService {
 
     private _notSaved = new BehaviorSubject<boolean>(false); // [{ display_name: { default: '' }, eda-columns: [] }] --> just in case
     public notSaved = this._notSaved.asObservable();
+
+    public dashboardCreated$ = new Subject<void>();
 
     setNotSaved(value: boolean): void {
         this._notSaved.next(value);
@@ -60,12 +62,24 @@ export class DashboardService extends ApiService {
         return this.post(`${this.route}getQuery`, body);
     }
 
+    executeSourceFieldsQuery(body): Observable<any> {
+        return this.post(`${this.route}source-fields-query`, body);
+    }
+
+    executeGroupedSubtotalsQuery(body): Observable<any> {
+        return this.post(`${this.route}grouped-subtotals-query`, body);
+    }
+
     cleanCache(body): Observable<any> {
         return this.post(`${this.route}clean-refresh`, body);
     }
 
     cloneDashboard(id: string): Observable<any> {
         return this.post(`${this.route}${id}/clone`, {});
+    }
+
+    generateDashboardWithAI(body: any): Observable<any> {
+        return this.post('/assistant/generate-dashboard', body);
     }
 
     updateDashboardSpecific(id: string, body: any): Observable<any> {

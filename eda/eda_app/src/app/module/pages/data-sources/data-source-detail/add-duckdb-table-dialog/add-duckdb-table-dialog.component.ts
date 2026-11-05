@@ -46,8 +46,8 @@ export class AddDuckdbTableDialogComponent implements OnInit {
     { label: 'DD-MM-YYYY HH:MI:SS', value: 'DD-MM-YYYY HH:MI:SS' },
   ];
   public decSeparators: SelectItem[] = [
-    { label: ',', value: ',' },
-    { label: '.', value: '.' },
+    { label: $localize`:@@decSeparatorComma:, (coma)`, value: ',' },
+    { label: $localize`:@@decSeparatorDot:. (punto)`, value: '.' },
   ];
 
   constructor(
@@ -136,7 +136,8 @@ export class AddDuckdbTableDialogComponent implements OnInit {
         this.dataSourceService.addDuckDbTable(this.datasourceId, {
           fileName: this._fileName(),
           csvContent: this.rawContent,
-          columnsConfig: this.csvColumns
+          columnsConfig: this.csvColumns,
+          separator: this.separator
         })
       );
       this.alertService.addSuccess($localize`:@@duckdbTableAdded:Tabla añadida correctamente`);

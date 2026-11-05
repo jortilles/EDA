@@ -81,11 +81,11 @@
 
           @if(tablePanel.query){
             <div>
-              <label for="description" class="block font-medium text-gray-700 mb-1" i18n="@@viewLabel"> Vista </label>
-              <textarea readonly id="description"
-                [(ngModel)]="tablePanel.query" (keyup)="update()"  
-                class="flex min-h-[20vh] w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-              </textarea>
+              <label class="block font-medium text-gray-700 mb-1" i18n="@@viewLabel"> Vista </label>
+              <eda-code-editor
+                [ngModel]="viewQueryPreview()" [ngModelOptions]="{standalone: true}"
+                language="sql" [readOnly]="true" minHeight="20vh">
+              </eda-code-editor>
             </div>
           }
 
@@ -412,7 +412,7 @@
         }
 
         @if (columnPanel.computed_column !== 'no') {
-          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primaryh-10 px-4 py-2"
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
             (click)="editCalculatedField(columnPanel)" i18n="@@editCalculatedField">
             Edición de campo calculado
           </button>

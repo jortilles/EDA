@@ -1,85 +1,58 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import { UserService } from "@eda/services/service.index";
 import { MultiSelectModule } from "primeng/multiselect";
 import { CalendarModule } from "primeng/calendar";
 import { InputSwitchModule } from "primeng/inputswitch";
-import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
-import { CommonModule } from "@angular/common";
+import { DropdownModule } from "primeng/dropdown";
+import { DialogModule } from "primeng/dialog";
+import { TooltipModule } from "primeng/tooltip";
+import { EdaDialog2Component, CodeEditorComponent } from "@eda/shared/components/shared-components.index";
+import { MailConfigModalBase } from "../mail-config/mail-config-modal.base";
 
 @Component({
   selector: 'app-kpi-mail-config',
   standalone: true,
-  imports: [CommonModule, FormsModule, MultiSelectModule, CalendarModule, InputSwitchModule, EdaDialog2Component],
-  templateUrl: './kpi-mail-config.modal.html',
-  styleUrls: ['./kpi-mail-config.modal.css'],
+  imports: [CommonModule, FormsModule, MultiSelectModule, CalendarModule, InputSwitchModule, DropdownModule, DialogModule, TooltipModule, EdaDialog2Component, CodeEditorComponent],
+  templateUrl: '../mail-config/mail-config-modal.html',
+  styleUrls: ['../mail-config/mail-config-modal.css'],
 })
-export class KpiMailConfigModal implements OnInit {
+export class KpiMailConfigModal extends MailConfigModalBase implements OnInit {
   @Input() alert: any;
-  @Output() apply: EventEmitter<any> = new EventEmitter<any>();
-  @Output() close: EventEmitter<void> = new EventEmitter<void>();
+  @Input() dashboardId = '';
+  @Input() panelId = '';
+  @Input() kpiPanels: any[] = [];
 
-  public units: string;
-  public quantity: number;
-  public hours: any;
-  public hoursSTR = $localize`:@@hours:Hora/s`;
-  public daysSTR = $localize`:@@days:Día/s`;
-  public mailMessage = '';
-  public users: any[] = [];
-  public selectedUsers: any[] = [];
-  public enabled: boolean = false;
+  get isAlert(): boolean { return true; }
+  protected get variablePanels(): any[] { return this.kpiPanels; }
+  protected get linkDashboardId(): string { return this.dashboardId; }
+  protected override footerCondition = ', si el KPI cumple la condición';
 
-  constructor(private userService: UserService) {}
-
-  ngOnInit(): void {
-    const mailing = this.alert?.mailing;
-
-    if (mailing?.enabled) {
-      this.hours = `${mailing.hours || '00'}:${mailing.minutes || '00'}`;
-      this.units = mailing.units;
-      this.quantity = mailing.quantity;
-      this.mailMessage = mailing.mailMessage || '';
-      this.enabled = mailing.enabled;
-    }
-
-    this.userService.getUsers().subscribe(
-      res => {
-        this.users = res.map(user => ({ label: user.name, value: user }));
-        const savedUsers = mailing?.users || [];
-        this.selectedUsers = this.users.filter(opt =>
-          savedUsers.some((u: any) => u._id === opt.value._id || u.email === opt.value.email)
-        );
-      },
-      err => console.log(err)
-    );
+  loadConfig(): void {
+    this.loadSchedule(this.alert?.mailing);
   }
 
-  save() {
-    const hours = this.hours && typeof this.hours === 'string' ? this.hours.slice(0, 2) :
-      this.hours ? this.fillWithZeros(this.hours.getHours()) : null;
-    const minutes = this.hours && typeof this.hours === 'string' ? this.hours.slice(3, 5) :
-      this.hours ? this.fillWithZeros(this.hours.getMinutes()) : null;
-
+  save(): void {
     this.apply.emit({
-      units: this.units,
-      quantity: this.quantity,
-      hours,
-      minutes,
-      users: this.selectedUsers.map((u: any) => u.value ?? u),
-      mailMessage: this.mailMessage,
+      ...this.schedulePayload(),
       lastUpdated: '2000-01-01T00:00:01.000',
-      enabled: this.enabled,
     });
   }
 
-  disableApply(): boolean {
-    return !this.quantity || !this.units || this.selectedUsers.length === 0 || !this.mailMessage;
-  }
-
-  onApply() { this.save(); }
-  onClose() { this.close.emit(); }
-
-  fillWithZeros(n: number) {
-    return n < 10 ? `0${n}` : `${n}`;
+  async sendNow(recipients?: { to: string[]; toExternal: string[] }): Promise<void> {
+    await this.runSend(
+      this.mailService.sendAlertNow({
+        dashboardId: this.dashboardId,
+        panelId: this.panelId,
+        operand: this.alert?.operand,
+        value: this.alert?.value,
+        to: recipients ? recipients.to : this.registeredEmails,
+        toExternal: recipients ? recipients.toExternal : this.parseOtherRecipients(),
+        subject: this.mailSubject,
+        message: this.mailMessage,
+        aiAnalysis: this.aiAvailable && this.aiAnalysis,
+      }),
+      $localize`:@@alertSendNowDone:Alerta enviada (si el KPI cumple la condición en este momento)`,
+    );
   }
 }

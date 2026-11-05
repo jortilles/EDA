@@ -204,6 +204,18 @@ export class IconService {
         <rect x="2" y="9" width="20" height="6" fill="#FFC400" />
       </svg>
     `,
+    "de-flag": `
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        [attr.class]="className"
+        fill="none"
+      >
+        <rect x="2" y="6" width="20" height="4" fill="#000000" />
+        <rect x="2" y="10" width="20" height="4" fill="#DD0000" />
+        <rect x="2" y="14" width="20" height="4" fill="#FFCE00" />
+      </svg>
+    `,
     "pl-flag": `
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -213,6 +225,30 @@ export class IconService {
       >
         <rect x="2" y="6" width="20" height="6" fill="#FFFFFF" />
         <rect x="2" y="12" width="20" height="6" fill="#DC143C" />
+      </svg>
+    `,
+    "pt-flag": `
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        [attr.class]="className"
+        fill="none"
+      >
+        <rect x="2" y="6" width="8" height="12" fill="#006600" />
+        <rect x="10" y="6" width="12" height="12" fill="#FF0000" />
+        <circle cx="10" cy="12" r="2.5" fill="#FFCC00" />
+      </svg>
+    `,
+    "it-flag": `
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        [attr.class]="className"
+        fill="none"
+      >
+        <rect x="2" y="6" width="6.67" height="12" fill="#009246" />
+        <rect x="8.67" y="6" width="6.66" height="12" fill="#FFFFFF" />
+        <rect x="15.33" y="6" width="6.67" height="12" fill="#CE2B37" />
       </svg>
     `,
     "users": `
@@ -334,6 +370,14 @@ export class IconService {
 "sombrilla": `
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
     <path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25c-4.5 0-9 3-9 9h18c0-6-4.5-9-9-9zm0 0v19.5" />
+  </svg>
+`,
+
+"grip-dots": `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="9" cy="5" r="1.5" /><circle cx="15" cy="5" r="1.5" />
+    <circle cx="9" cy="12" r="1.5" /><circle cx="15" cy="12" r="1.5" />
+    <circle cx="9" cy="19" r="1.5" /><circle cx="15" cy="19" r="1.5" />
   </svg>
 `,
 

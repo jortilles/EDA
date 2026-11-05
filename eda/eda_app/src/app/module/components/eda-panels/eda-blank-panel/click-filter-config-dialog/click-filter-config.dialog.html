@@ -1,0 +1,86 @@
+<eda-dialog2 [display]="true" header="Filtros en click" i18n-header="@@clickFilterDialogHeader"
+  width="70vw" height="80vh" [showApply]="false" closeLabel="Cerrar" i18n-closeLabel="@@clickFilterDialogCloseBtn"
+  [overflow]="'auto'" (close)="onClose()">
+
+  <div content class="p-6 space-y-5">
+
+    <!-- Is this panel clickable -->
+    <div class="flex items-center justify-between rounded-lg border px-3 py-2">
+      <span i18n="@@clickFilterEnabledLabel">¿Este panel es clicable?</span>
+      <button type="button" role="switch" [attr.aria-checked]="isClickable()" (click)="toggleClickable()"
+        class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors"
+        [ngClass]="{'bg-[var(--corporate-primary)]': isClickable(), 'bg-input': !isClickable()}">
+        <span class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform"
+          [ngClass]="{'translate-x-5': isClickable(), 'translate-x-0': !isClickable()}"></span>
+      </button>
+    </div>
+
+    <!-- Outgoing: which panels does this panel affect -->
+    <div class="border rounded-lg shadow-sm">
+      <div class="p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-bold" i18n="@@clickFilterAffectsH5">A qué paneles afecta</h3>
+          <div class="flex items-center gap-2">
+            <span class="text-sm" i18n="@@applyToAllPanelsLabel">Aplicar a todos</span>
+            <button type="button" role="switch" [attr.aria-checked]="isApplyToAll()" (click)="toggleApplyToAll()"
+              class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors"
+              [ngClass]="{'bg-[var(--corporate-primary)]': isApplyToAll(), 'bg-input': !isApplyToAll()}">
+              <span class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform"
+                [ngClass]="{'translate-x-5': isApplyToAll(), 'translate-x-0': !isApplyToAll()}"></span>
+            </button>
+          </div>
+        </div>
+
+        @if (!isApplyToAll()) {
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            @for (otherPanel of otherPanels; track otherPanel.id) {
+              <button type="button" (click)="toggleTarget(otherPanel)"
+                class="flex items-center justify-start w-full h-auto py-2 px-3 rounded-md font-medium transition-colors border"
+                [ngClass]="{
+                  'bg-[var(--corporate-primary)] text-white border-[var(--corporate-primary)]': isTarget(otherPanel),
+                  'border-gray-300': !isTarget(otherPanel)
+                }">
+                <span class="truncate">{{ otherPanel.title }}</span>
+              </button>
+            }
+          </div>
+          @if (otherPanels.length === 0) {
+            <span class="text-sm text-gray-400 italic" i18n="@@noOtherPanels">No hay otros paneles en este dashboard</span>
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Incoming (bilateral): which panels affect this one -->
+    <div class="border rounded-lg shadow-sm">
+      <div class="p-4 space-y-3">
+        <h3 class="text-base font-bold" i18n="@@clickFilterAffectedByH5">Qué paneles me afectan</h3>
+
+        @if (otherPanels.length > 0) {
+          <p-multiSelect [options]="otherPanels" optionLabel="title" dataKey="id"
+            [ngModel]="affectingSelection" (onChange)="onAffectingSelectionChange($event)"
+            [filter]="true" filterPlaceHolder="Buscar panel..." i18n-filterPlaceHolder="@@searchPanelPlaceholder"
+            placeholder="Añadir panel..." i18n-placeholder="@@selectPanelsPlaceholder"
+            selectedItemsLabel="{0} paneles seleccionados" i18n-selectedItemsLabel="@@panelsSelectedLabel"
+            [maxSelectedLabels]="0"
+            appendTo="body" styleClass="w-full">
+          </p-multiSelect>
+
+          @if (affectingSelection.length > 0) {
+            <div class="flex flex-wrap gap-2 pt-2 border-t">
+              @for (otherPanel of affectingSelection; track otherPanel.id) {
+                <span class="flex items-center gap-1.5 py-1.5 px-3 rounded-full bg-[var(--corporate-primary)] text-white">
+                  <span class="truncate">{{ otherPanel.title }}</span>
+                  <i class="pi pi-times text-xs cursor-pointer opacity-80 hover:opacity-100" (click)="removeAffecting(otherPanel)"></i>
+                </span>
+              }
+            </div>
+          }
+        } @else {
+          <span class="text-sm text-gray-400 italic" i18n="@@noOtherPanels">No hay otros paneles en este dashboard</span>
+        }
+      </div>
+    </div>
+
+  </div>
+</eda-dialog2>

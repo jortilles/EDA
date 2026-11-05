@@ -46,10 +46,10 @@
         >
           Expresión SQL <span class="text-red-500">*</span>
         </label>
-        <textarea id="eda_sqlExpression"
-          formControlName="colSqlExpression"  
-          class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-        </textarea>
+        <eda-code-editor id="eda_sqlExpression"
+          formControlName="colSqlExpression"
+          language="sql" minHeight="60px">
+        </eda-code-editor>
       </div>
 
       <div class="grid gap-2">

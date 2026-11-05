@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit, ChangeDetectorRef } from "@angular/core";
+import { Component, inject, Input, OnInit, ChangeDetectorRef, ViewChildren, QueryList } from "@angular/core";
 import { AlertService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import { EdaDialogController } from "@eda/shared/components/shared-components.index";
@@ -6,7 +6,7 @@ import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-pan
 import { OverlayPanelModule } from "primeng/overlaypanel";
 import * as _ from 'lodash';
 import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
-import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/personalitzacio/customizables';
+import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/customizable/customizable_default';
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from "@angular/forms";
 import { StyleProviderService } from '@eda/services/service.index';
@@ -18,6 +18,7 @@ import '@angular/localize/init';
 import { DropdownModule } from 'primeng/dropdown';       // if use <p-dropdown>
 import { InputSwitchModule } from 'primeng/inputswitch'; // if use <p-inputSwitch>
 import { ScrollPanelModule } from 'primeng/scrollpanel'; // if use <p-scrollPanel>
+import { TooltipModule } from 'primeng/tooltip';
 import { GlobalFilterDialogComponent } from "../component.index";
 import { EdaDatePickerComponent } from "@eda/shared/components/shared-components.index";
 
@@ -30,7 +31,8 @@ const PRIMENG_MODULES = [
     InputSwitchModule,
     ScrollPanelModule,
     AutoCompleteModule,
-    OverlayPanelModule
+    OverlayPanelModule,
+    TooltipModule
 ];
 
 const DIALOGS_COMPONENTS = [
@@ -56,6 +58,7 @@ export class GlobalFilterComponent implements OnInit {
     public globalFilters: any[] = [];
     public globalFilter: any;
     public styleButton: any = {};
+    @ViewChildren(EdaDatePickerComponent) private datePickers: QueryList<EdaDatePickerComponent>;
     public orderDependentFilters: any[] = [];
     loading: boolean = true;
     placeholderText = this.loading ? $localize`:@@Cargando:Cargando...` : '';
@@ -119,8 +122,8 @@ export class GlobalFilterComponent implements OnInit {
 
     public async initGlobalFilters(filters: any[]): Promise<void> {
         this.globalFilters = _.cloneDeep(filters);
-        const userName = JSON.parse(localStorage.getItem('user'))?.name;
-        this.isDashboardCreator = userName === this.dashboard.dashboard?.config?.author;
+        const userName = JSON.parse(localStorage.getItem('user'))?.id;
+        this.isDashboardCreator = userName === this.dashboard.dashboard?.user;
         this.setFiltersVisibility();
         this.setFilterButtonVisibilty();
         await this.fillFiltersData();
@@ -191,7 +194,7 @@ export class GlobalFilterComponent implements OnInit {
         for (const filter of this.globalFilters) {
             if (this.getFilterType(filter) === 'date') {
                 this.loadDatesFromFilter(filter)
-            } else {
+            } else if (!filter.isAutocompleted) {
                 tasks.push(this.loadGlobalFiltersData(filter)); // Promise to ensure all data has been loaded
             }
         }
@@ -454,7 +457,7 @@ export class GlobalFilterComponent implements OnInit {
                 // Load Filter dropdowns options
                 if (filter.column?.value?.column_type === 'date' && filter.selectedItems.length > 0) {
                     this.loadDatesFromFilter(filter);
-                } else {
+                } else if (!filter.isAutocompleted) {
                     await this.loadGlobalFiltersData(filter);
                     this.cdr.detectChanges();
                 }
@@ -502,15 +505,18 @@ export class GlobalFilterComponent implements OnInit {
             this.globalFilter = gf;
         }
 
+        // Keep a local reference: this.globalFilter is shared state and can be reset
+        // by another call while this one is awaiting the filter data.
+        const currentFilter = this.globalFilter;
 
-        if (apply) {
+        if (apply && currentFilter) {
             this.dashboard.edaPanels.forEach(panel => {
-                if (!this.globalFilter.isdeleted) {
-                    panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
+                if (!currentFilter.isdeleted) {
+                    panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== currentFilter.id);
                 }
             });
 
-            if (this.globalFilter.isnew) {
+            if (currentFilter.isnew) {
 
 
                 // Add one more item to the dependent filter order:
@@ -520,35 +526,35 @@ export class GlobalFilterComponent implements OnInit {
                         rows: 1,
                         y: this.orderDependentFilters.length,
                         x: 0,
-                        filter_table: this.globalFilter.selectedTable.table_name,
-                        filter_column: this.globalFilter.selectedColumn.column_name,
-                        filter_type: this.globalFilter.selectedColumn.column_type,
-                        filter_id: this.globalFilter.id,
-                        description_table: this.globalFilter.selectedTable?.display_name?.default || this.globalFilter.selectedTable?.table_name,
-                        description_column: this.globalFilter.selectedColumn?.display_name?.default || this.globalFilter.selectedColumn?.column_name,
+                        filter_table: currentFilter.selectedTable.table_name,
+                        filter_column: currentFilter.selectedColumn.column_name,
+                        filter_type: currentFilter.selectedColumn.column_type,
+                        filter_id: currentFilter.id,
+                        description_table: currentFilter.selectedTable?.display_name?.default || currentFilter.selectedTable?.table_name,
+                        description_column: currentFilter.selectedColumn?.display_name?.default || currentFilter.selectedColumn?.column_name,
                     })
                     this.alertService.addInfo($localize`:@@newFilterAddToDF:Se agregó un nuevo filtro a la relación de filtros dependientes`);
                 }
 
-                this.globalFilters.push(this.globalFilter);
+                this.globalFilters.push(currentFilter);
 
             }
 
             for (const filter of this.globalFilters) {
-                if (this.globalFilter.id == filter.id && !filter.isdeleted && !this.globalFilter.isdeleted) {
-                    filter.data = this.globalFilter.data;
-                    filter.selectedTable = this.globalFilter.selectedTable;
-                    filter.selectedColumn = this.globalFilter.selectedColumn;
-                    filter.selectedItems = this.globalFilter.selectedItems;
-                    filter.selectedRange = this.globalFilter.selectedRange;
-                    filter.panelList = this.globalFilter.panelList;
-                    filter.pathList = this.globalFilter.pathList;
-                    filter.type = this.globalFilter.type;
-                    filter.isGlobal = this.globalFilter.isGlobal;
-                    filter.visible = this.globalFilter.visible;
-                    filter.isAutocompleted = this.globalFilter.isAutocompleted !== undefined ? this.globalFilter.isAutocompleted : false;
-                    filter.applyToAll = this.globalFilter.applyToAll;
-                    filter.multipleSelection = this.globalFilter.multipleSelection ?? true;
+                if (currentFilter.id == filter.id && !filter.isdeleted && !currentFilter.isdeleted) {
+                    filter.data = currentFilter.data;
+                    filter.selectedTable = currentFilter.selectedTable;
+                    filter.selectedColumn = currentFilter.selectedColumn;
+                    filter.selectedItems = currentFilter.selectedItems;
+                    filter.selectedRange = currentFilter.selectedRange;
+                    filter.panelList = currentFilter.panelList;
+                    filter.pathList = currentFilter.pathList;
+                    filter.type = currentFilter.type;
+                    filter.isGlobal = currentFilter.isGlobal;
+                    filter.visible = currentFilter.visible;
+                    filter.isAutocompleted = currentFilter.isAutocompleted !== undefined ? currentFilter.isAutocompleted : false;
+                    filter.applyToAll = currentFilter.applyToAll;
+                    filter.multipleSelection = currentFilter.multipleSelection ?? true;
 
                     if (filter.pathList) {
                         for (const key in filter.pathList) {
@@ -561,22 +567,22 @@ export class GlobalFilterComponent implements OnInit {
 
 
                     delete (filter.isnew);
-                } else if (filter.isdeleted || (this.globalFilter.id === filter.id && this.globalFilter.isdeleted)) {
+                } else if (filter.isdeleted || (currentFilter.id === filter.id && currentFilter.isdeleted)) {
                     filter.selectedItems = [];
                     this.applyGlobalFilter(filter);
                     this.removeGlobalFilter(filter);
                 }
             }
 
-            if (!this.globalFilter.isdeleted) {
+            if (!currentFilter.isdeleted) {
                 // Load Filter dropdwons option s
-                if (this.globalFilter.selectedColumn.column_type === 'date' && this.globalFilter.selectedItems.length > 0) {
-                    this.loadDatesFromFilter(this.globalFilter);
-                } else {
-                    await this.loadGlobalFiltersData();
+                if (currentFilter.selectedColumn.column_type === 'date' && currentFilter.selectedItems.length > 0) {
+                    this.loadDatesFromFilter(currentFilter);
+                } else if (!currentFilter.isAutocompleted) {
+                    await this.loadGlobalFiltersData(currentFilter);
                 }
 
-                this.applyGlobalFilter(this.globalFilter);
+                this.applyGlobalFilter(currentFilter);
             }
         }
 
@@ -756,6 +762,7 @@ export class GlobalFilterComponent implements OnInit {
         }
 
         this.applyGlobalFilter(filter);
+        this.setGlobalFilterItems(filter);
         // filter = this.globalFilterService.formatGlobalFilter(filter);
         // this.applyGlobalFilter(filter);
     }
@@ -780,12 +787,11 @@ export class GlobalFilterComponent implements OnInit {
         }
     }
 
-    private async loadGlobalFiltersData(globalFilter?: any): Promise<void> {
-
-        if (!globalFilter) {
-            globalFilter = this.globalFilter;
-        }
-
+    /** Query que rellena los valores del desplegable de un filtro global. Debe mantenerse
+     *  como único punto de construcción: la usan tanto loadGlobalFiltersData (para ejecutarla)
+     *  como getFilterSelectorQueries (para poder borrar su entrada de caché), de forma que
+     *  ambas generen siempre exactamente la misma query. */
+    private buildFilterSelectorQuery(globalFilter: any): any {
         let targetTable: string;
         let targetColumn: any;
         if (globalFilter.selectedTable) {
@@ -807,12 +813,28 @@ export class GlobalFilterComponent implements OnInit {
             filters: []
         };
 
-        try {
-            
-            const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
-            query.query.forSelector = true;
+        const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
+        query.query.forSelector = true;
+        return query;
+    }
 
-            
+    /** Queries (ya cacheadas en el backend) de todos los filtros globales que se rellenan vía
+     *  loadGlobalFiltersData. Usado por el botón "Recargar informe" para poder borrar también
+     *  su entrada de caché, no solo la de los paneles. */
+    public getFilterSelectorQueries(): any[] {
+        return this.globalFilters
+            .filter((f: any) => this.getFilterType(f) !== 'date' && !f.isAutocompleted)
+            .map((f: any) => this.buildFilterSelectorQuery(f).query);
+    }
+
+    private async loadGlobalFiltersData(globalFilter?: any): Promise<void> {
+
+        if (!globalFilter) {
+            globalFilter = this.globalFilter;
+        }
+
+        try {
+            const query = this.buildFilterSelectorQuery(globalFilter);
             const res = await this.dashboardService.executeQuery(query).toPromise();
             const message = res[0][0];
             
@@ -991,6 +1013,8 @@ export class GlobalFilterComponent implements OnInit {
                     filter_id:filtro.id,
                     filter_table:filtro.selectedTable.table_name,
                     filter_type:"like",
+                    // Autocomplete search must match regardless of letter case
+                    caseInsensitive: true,
                     isGlobal:filtro.isGlobal,
                     joins:[],
                 }]
@@ -1016,6 +1040,9 @@ export class GlobalFilterComponent implements OnInit {
             }
             return item;
         });
+        if (filtro.multipleSelection === false && filtro.selectedItems.length > 1) {
+            filtro.selectedItems = [filtro.selectedItems[filtro.selectedItems.length - 1]];
+        }
         // Update Global filter
         this.setGlobalFilterItems(filtro)
     }
@@ -1052,6 +1079,54 @@ export class GlobalFilterComponent implements OnInit {
     public removeAllFilterItems(filter: any): void {
         filter.selectedItems = [];
         this.setGlobalFilterItems(filter);
+    }
+
+    // Same rule as the template: admin/creator edit all; others only visible, non-readOnly filters
+    private canClearGlobalFilter(filter: any): boolean {
+        if (this.isAdmin || this.isDashboardCreator) return true;
+        return filter.visible === 'public' && !!(filter.selectedColumn?.visible || filter.column?.value?.visible);
+    }
+
+    private getClearableSelectedFilters(): any[] {
+        return this.globalFilters.filter((f: any) => f.selectedItems?.length > 0 && this.canClearGlobalFilter(f));
+    }
+
+    public hasClearableGlobalFilters(): boolean {
+        return this.getClearableSelectedFilters().length > 0;
+    }
+
+    // Clears the selection of the filters this user may edit (keeps the filters) and refreshes affected panels once
+    public clearAllGlobalFilters(): void {
+        const filtersToClear = this.getClearableSelectedFilters();
+        if (!filtersToClear.length) return;
+
+        // Phase 1: empty every selection first, so dependent filters never reload against stale parents
+        filtersToClear.forEach((f: any) => {
+            f.selectedItems = [];
+            if (this.getFilterType(f) === 'date') {
+                f.selectedRange = null;
+                this.loadDatesFromFilter(f);
+            }
+        });
+
+        // Reset the date pickers' own UI without emitting (avoids applying the filter twice)
+        this.datePickers?.forEach(picker => {
+            if (filtersToClear.includes(picker.inject?.filter)) {
+                picker.rangeDates = null;
+                picker.selectedRange = null;
+            }
+        });
+
+        // Phase 2: propagate to panels
+        const affectedPanelIds = new Set<string>();
+        filtersToClear.forEach((f: any) => {
+            (f.panelList || []).forEach((id: string) => affectedPanelIds.add(id));
+            if (this.getFilterType(f) === 'date') this.applyGlobalFilter(f);
+            this.setGlobalFilterItems(f);
+        });
+
+        if (affectedPanelIds.size) this.dashboard.refreshPanels(Array.from(affectedPanelIds));
+        this.cdr.markForCheck();
     }
 
     public onSingleSelectChange(filter: any): void {

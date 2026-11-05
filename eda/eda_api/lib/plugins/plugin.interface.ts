@@ -24,6 +24,8 @@ export interface IDatasourcePlugin extends IBasePlugin {
     resolveLocale?: (raw?: string) => string;
     /** Add domain-specific relations between generated data model tables */
     addRelations?: (tables: any[]) => void;
+    /** Hide technical tables and columns (internal ids...) from end users; also applied to stored models on refresh */
+    applyVisibility?: (tables: any[]) => void;
 }
 
 /** Plugin that adds a feature module (new routes, pages, actions...) without a database connection */

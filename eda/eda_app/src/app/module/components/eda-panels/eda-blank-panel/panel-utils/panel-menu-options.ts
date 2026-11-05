@@ -1,8 +1,10 @@
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { PanelInteractionUtils } from './panel-interaction-utils';
+import { SourceFieldsUtils } from '../source-fields-dialog/source-fields-utils';
 import * as _ from 'lodash';
 
 import { EdaContextMenuItem, EdaDialogController, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
+import { SHOW_LOCK_IN_PANEL_HEADER } from '@eda/configs/customizable/customizable_default';
 
 export const PanelOptions = {
   editQuery: (panelComponent: EdaBlankPanelComponent) => {
@@ -38,14 +40,20 @@ export const PanelOptions = {
 
         if (Object.entries(panelComponent.graficos).length !== 0 && panelComponent.chartData.length !== 0) {
           
-          if (['line', 'area', 'doughnut', 'polarArea', 'bar', 'horizontalBar', 'barline', 'histogram', 'pyramid', 'radar'].includes(panelComponent.graficos.chartType)) {
+          if (['line', 'area', 'bar', 'horizontalBar', 'barline', 'histogram', 'pyramid', 'radar',
+               'doughnut', 'polarArea', 'sunburst', 'treeMap', 'scatterPlot', 'bubblechart', 'parallelSets', 'funnel', 'raceBar',
+               'knob']
+               .includes(panelComponent.graficos.chartType)) {
 
+            // Single unified chart dialog for every axis + D3 category chart (+ knob) - it resolves
+            // per-type options from CHART_DIALOG_SPECS internally.
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.chartController = new EdaDialogController({
               params: {
-                panelId: _.get(panelComponent.panel, 'id'), 
+                panelId: _.get(panelComponent.panel, 'id'),
                 chart: panelComponent.graficos,
-                config: panelComponent.panelChartConfig
+                config: panelComponent.panelChartConfig,
+                chartType: panelComponent.graficos.chartType
             },
               close: (event, response) => panelComponent.onCloseChartProperties(event, response)
             });
@@ -55,7 +63,7 @@ export const PanelOptions = {
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.tableController = new EdaDialogController({
               params: { panelId: _.get(panelComponent.panel, 'id'), panelChart: panelComponent.panelChartConfig },
-              close: (event, response) => panelComponent.onCloseTableProperties(event, response)
+              close: (event, response, extra) => panelComponent.onCloseTableProperties(event, response, extra)
             });
 
           } else if (panelComponent.graficos.chartType === 'geoJsonMap') {
@@ -94,6 +102,10 @@ export const PanelOptions = {
             panelComponent.kpiController = new EdaDialogController({
               params: {
                 panelID: _.get(panelComponent.panel, 'id'),
+                dashboardId: panelComponent.dashboard?.dashboardId,
+                kpiPanels: (panelComponent.dashboard?.panels || [])
+                  .filter((p: any) => String(p?.content?.chart || '').startsWith('kpi'))
+                  .map((p: any) => ({ id: p.id, title: p.title, chart: p?.content?.chart })),
                 panelChart: panelComponent.panelChartConfig,
                 alertLimits: panelComponent.panelChart.componentRef.instance.alertLimits || [],
                 edaChart: panelComponent.panelChart.componentRef.instance.edaChartComponent?.inject,
@@ -118,29 +130,6 @@ export const PanelOptions = {
               close: (event, response) => { panelComponent.onClosedynamicTextProperties(event, response) }
             });
 
-          } 
-          else if (panelComponent.graficos.chartType === 'parallelSets') {
-
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.sankeyController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseSankeyProperties(event, response) }
-            });
-
-          } 
-          else if(panelComponent.graficos.chartType === 'treeMap'){
-
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.treeMapController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseTreeMapProperties(event, response) }
-            });
           }
           else if(panelComponent.graficos.chartType === 'treetable') {
             panelComponent.contextMenu.hideContextMenu();
@@ -154,64 +143,6 @@ export const PanelOptions = {
               close: (event, response) => { panelComponent.onCloseTreeTableProperties(event, response) }
             })
 
-
-          }
-
-          else if (panelComponent.graficos.chartType === 'funnel') {
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.funnelController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseFunnelProperties(event, response) }
-            });
-
-          }
-          else if (panelComponent.graficos.chartType === 'bubblechart') {
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.bubblechartController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseBubblechartProperties(event, response) }
-            });
-
-          }
-
-          else if(panelComponent.graficos.chartType === 'scatterPlot'){
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.scatterPlotController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseScatterProperties(event, response) }
-            });
-
-          }
-          else if(panelComponent.graficos.chartType === 'sunburst'){
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.sunburstController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseSunburstProperties(event, response) }
-            });
-
-          }
-          else if(panelComponent.graficos.chartType === 'knob'){
-
-            panelComponent.contextMenu.hideContextMenu();
-            panelComponent.knobController = new EdaDialogController({
-              params: {
-                panelID: _.get(panelComponent.panel, 'id'),
-                panelChart: panelComponent.panelChartConfig
-              },
-              close: (event, response) => { panelComponent.onCloseKnobProperties(event, response) }
-            });
 
           }
 
@@ -283,10 +214,10 @@ export const PanelOptions = {
     if (!panelComponent.panel.content) {
         return panelComponent.alertService.addError($localize`:@@noContentToExport:No tienes contenido para exportar`);
     }
-    const { exportLabels, predLabel } = PanelOptions._buildPredictionLabels(panelComponent);
+    const { exportLabels, predLabels } = PanelOptions._buildPredictionLabels(panelComponent);
     const cols = panelComponent.chartUtils.transformDataQueryForTable(exportLabels, panelComponent.chartData);
     const headers = panelComponent.currentQuery.map(o => o.display_name.default);
-    if (predLabel) headers.push(predLabel);
+    headers.push(...predLabels);
 
     if (_.isEqual(fileType, 'excel')) {
       panelComponent.fileUtiles.exportToExcel(headers, cols, panelComponent.panel.title);
@@ -297,18 +228,27 @@ export const PanelOptions = {
 
     panelComponent.contextMenu.hideContextMenu();
   },
-  _buildPredictionLabels: (panelComponent: EdaBlankPanelComponent): { exportLabels: string[], predLabel: string | null } => {
+  _buildPredictionLabels: (panelComponent: EdaBlankPanelComponent): { exportLabels: string[], predLabels: string[] } => {
     const queryLen = panelComponent.currentQuery.length;
     const rowLen = panelComponent.chartData[0]?.length || 0;
     const prediction = panelComponent.panel?.content?.query?.query?.prediction;
     if (!prediction || prediction === 'None' || rowLen <= queryLen)
-        return { exportLabels: panelComponent.chartLabels, predLabel: null };
+        return { exportLabels: panelComponent.chartLabels, predLabels: [] };
     const numericCol = panelComponent.currentQuery.find((q: any) => q.column_type === 'numeric');
-    const predLabel = numericCol?.display_name?.default
+    const baseLabel = numericCol?.display_name?.default
         ? `${$localize`:@@Prediction:Predicción`} - ${numericCol.display_name.default}`
         : $localize`:@@Prediction:Predicción`;
-    const exportLabels = [...panelComponent.chartLabels.slice(0, queryLen), ...Array.from({ length: rowLen - queryLen }, () => predLabel)];
-    return { exportLabels, predLabel };
+    const predCount = rowLen - queryLen;
+    // Index-suffix when there's more than one, so they don't collapse into the same object key.
+    const rawPredLabels = predCount === 1
+        ? [baseLabel]
+        : Array.from({ length: predCount }, (_, i) => `${baseLabel} (${i + 1})`);
+    // Safety net against colliding with a user-renamed query column.
+    const combined = panelComponent.chartUtils.uniqueLabels([
+        ...panelComponent.chartLabels.slice(0, queryLen),
+        ...rawPredLabels,
+    ]);
+    return { exportLabels: combined, predLabels: combined.slice(queryLen) };
   },
   askToIA : (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
@@ -353,28 +293,51 @@ export const PanelOptions = {
       }
     });
   },
-  toggleLock: (panelComponent: EdaBlankPanelComponent) => {
-    const isLocked = () => (panelComponent.panel as any).dragEnabled === false;
-    const item = new EdaContextMenuItem({
-      label: isLocked() ? $localize`:@@panelOptionsUnlock:Desbloquear panel` : $localize`:@@panelOptionsLock:Bloquear panel`,
-      icon: isLocked() ? 'pi pi-lock' : 'pi pi-lock-open',
-      command: () => {
-        if (isLocked()) {
-          (panelComponent.panel as any).dragEnabled = true;
-          (panelComponent.panel as any).resizeEnabled = true;
-          item.label = $localize`:@@panelOptionsLock:Bloquear panel`;
-          item.icon = 'pi pi-lock-open';
-        } else {
-          (panelComponent.panel as any).dragEnabled = false;
-          (panelComponent.panel as any).resizeEnabled = false;
-          item.label = $localize`:@@panelOptionsUnlock:Desbloquear panel`;
-          item.icon = 'pi pi-lock';
+  showSourceFields: (panelComponent: EdaBlankPanelComponent) => {
+    return new EdaContextMenuItem({
+      label: $localize`:@@panelOptionsShowSourceFields:Mostrar campos de origen`,
+      icon: 'mdi mdi-eye-outline',
+      command: async () => {
+        panelComponent.contextMenu.hideContextMenu();
+        panelComponent.spinnerService.on();
+        try {
+          const result = await SourceFieldsUtils.getSourceFieldsResult(panelComponent);
+          const tableInject = panelComponent.panelChart?.componentRef?.instance?.inject;
+          panelComponent.sourceFieldsController = new EdaDialogController({
+            params: {
+              ...result,
+              panelTitle: panelComponent.panel.title,
+              headerColor: tableInject?.headerColor,
+              bandingColor: tableInject?.bandingColor,
+              colorEnabled: tableInject?.colorEnabled,
+            },
+            close: () => { panelComponent.sourceFieldsController = undefined; panelComponent.markDirty(); }
+          });
+        } catch (err) {
+          panelComponent.alertService.addError(err);
+        } finally {
+          panelComponent.spinnerService.off();
+          panelComponent.markDirty();
         }
-        panelComponent.dashboard.gridsterOptions.api?.optionsChanged();
-        panelComponent.dashboardService.setNotSaved(true);
       }
     });
-    return item;
+  },
+  toggleLock: (panelComponent: EdaBlankPanelComponent) => {
+    return new EdaContextMenuItem({
+      label: panelComponent.isPanelLocked()
+        ? $localize`:@@panelOptionsUnlock:Desbloquear panel`
+        : $localize`:@@panelOptionsLock:Bloquear panel`,
+      icon: panelComponent.isPanelLocked() ? 'pi pi-lock' : 'pi pi-lock-open',
+      command: () => {
+        panelComponent.togglePanelLock();
+        // Defer reassignment by one tick: the click must finish bubbling before we
+        // replace the DOM, otherwise onOutsideClick sees a detached target and closes the menu
+        setTimeout(() => {
+          panelComponent.contextMenu.contextMenuItems = PanelOptions.generateMenu(panelComponent);
+        }, 0);
+
+      }
+    });
   },
 
   generateMenu: (ebp: EdaBlankPanelComponent) => {
@@ -405,6 +368,10 @@ export const PanelOptions = {
         item: () => PanelOptions.changeChartType(ebp),
       },
       {
+        show: !!ebp.panel.content && ebp.selectedQueryMode !== 'SQL',
+        item: () => PanelOptions.showSourceFields(ebp),
+      },
+      {
         show: !isRoOrAnonimus && isEditable && isImported,
         item: () => PanelOptions.filtersMapper(ebp),
       },
@@ -421,7 +388,7 @@ export const PanelOptions = {
         item: () => PanelOptions.duplicatePanel(ebp),
       },
       {
-        show: !isRoOrAnonimus,
+        show: !isRoOrAnonimus && !SHOW_LOCK_IN_PANEL_HEADER,
         item: () => PanelOptions.toggleLock(ebp),
       },
       {

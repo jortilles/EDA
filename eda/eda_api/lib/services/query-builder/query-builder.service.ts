@@ -77,6 +77,36 @@ export abstract class QueryBuilderService {
 
     abstract simpleQuery(columns: string[], origin: string, view:boolean);
 
+    /** Hard cap applied to every "Mostrar campos de origen" query, regardless of dialect —
+     *  this is a preview, not a full export, and an unbounded join (no WHERE, no limit) can
+     *  otherwise return millions of rows and crash the API (OOM) or trip the proxy timeout. */
+    protected static readonly SOURCE_FIELDS_ROW_LIMIT = 50000;
+
+    /**
+     * Builds a `SELECT * FROM ... [JOINS] [WHERE ...]` version of the query (no columns list,
+     * grouping, having or order, but always capped at SOURCE_FIELDS_ROW_LIMIT rows) — used by
+     * "Mostrar campos de origen". Not abstract so existing connection types keep compiling
+     * without implementing it; only overridden where support has actually been added.
+     */
+    public sourceFieldsQuery(origin: string, dest: any[], joinTree: any[], filters: any[], tables: Array<any>,
+        joinType: string, valueListJoins: any[], schema?: string, database?: string, sortedFilters?: any[]): string {
+        throw new Error('"Mostrar campos de origen" no está soportado todavía para este tipo de conexión');
+    }
+
+    /**
+     * ORDER BY for a calculated field must use its SQL expression, not its display_name alias -
+     * ordering by the alias fails for computed columns, so every qb-system's ORDER BY building
+     * routes computed fields through here instead of quoting display_name like regular columns.
+     */
+    protected getOrderExpression(field: any): string {
+        if (!field.aggregation_type || field.aggregation_type === 'none') {
+            return `(${field.SQLexpression})`;
+        }
+        return field.aggregation_type === 'count_distinct'
+            ? `count(distinct ${field.SQLexpression})`
+            : `${field.aggregation_type}(${field.SQLexpression})`;
+    }
+
 
 
     public async builder() {
@@ -370,6 +400,11 @@ export abstract class QueryBuilderService {
                 tables, columns, fields, origin, dest, joinTree, grouping, filters, havingFilters,
                 queryLimit, joinType, valueListJoins, schema, database, forSelector
             })
+        } else if (this.queryTODO.sourceFields) {
+            this.query = this.sourceFieldsQuery(
+                origin, dest, joinTree, filters, tables, joinType, valueListJoins, schema, database, sortedFilters
+            );
+            return this.query;
         } else {
             this.query = this.normalQuery(
                 columns, origin, dest, joinTree, grouping,  filters, havingFilters, tables,
@@ -956,7 +991,12 @@ export abstract class QueryBuilderService {
         const schema = this.dataModel.ds.connection.schema;
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
         let query = userQuery.SQLexpression;
-        
+
+        // Normalizo espacios "invisibles" (NBSP y similares) que suelen colarse al copiar/pegar
+        // desde Word, Outlook o un email con formato: para el ojo son un espacio, pero MySQL no
+        // los trata como separador de tokens y rompe el parseo justo en ese punto.
+        query = query.replace(/[   -​  　﻿]/g, ' ');
+
         // añado un espacio en blanco al final de cada linea para asegurar que no se juntan palabras
         let reg = new RegExp(`\n`, "g");
         query = query.replace(reg, ` `);

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
-import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { EdaDialog2Component, CodeEditorComponent } from '@eda/shared/components/shared-components.index';
 import { CustomHTMLService } from '@eda/services/api/customHTML.service';
 import { DashboardService } from '@eda/services/api/dashboard.service';
 import { AlertService } from '@eda/services/service.index';
@@ -12,7 +12,7 @@ import { lastValueFrom } from 'rxjs';
 @Component({
   selector: 'app-customized-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconComponent, EdaDialog2Component],
+  imports: [CommonModule, FormsModule, IconComponent, EdaDialog2Component, CodeEditorComponent],
   templateUrl: './customized-dashboard.component.html',
 })
 export class CustomizedDashboardComponent implements OnInit, OnDestroy {

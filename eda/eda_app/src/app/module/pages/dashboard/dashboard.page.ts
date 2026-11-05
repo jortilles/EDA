@@ -8,7 +8,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { MenuModule } from 'primeng/menu';
 import { MessageModule } from 'primeng/message';
 import { CompactType, DisplayGrid, GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent, GridType } from 'angular-gridster2';
-import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService, UserService } from '@eda/services/service.index';
+import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService, UserService, MediaService } from '@eda/services/service.index';
 import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
 import { GlobalFilterComponent } from '@eda/components/global-filter/global-filter.component'; 
@@ -87,6 +87,7 @@ export class DashboardPage implements OnInit {
   private dashboardService = inject(DashboardService);
   private alertService = inject(AlertService);
   private fileUtils = inject(FileUtiles);
+  private mediaService = inject(MediaService);
   private route = inject(ActivatedRoute);
   private chartUtils = inject(ChartUtilsService);
   private dateUtilsService = inject(DateUtils);
@@ -97,6 +98,7 @@ export class DashboardPage implements OnInit {
   public gridsterOptions: GridsterConfig;
   public gridsterDashboard: GridsterItem[];
   private edaPanelsSubscription: Subscription;
+  private notSavedSubscription: Subscription;
   
   public reportTitle: any;
   public reportPanel: any;
@@ -161,7 +163,7 @@ export class DashboardPage implements OnInit {
     this.initializeResponsiveSizes();
     this.initializeGridsterOptions();
     this.loadDashboard();
-    this.dashboardService.notSaved.subscribe(
+    this.notSavedSubscription = this.dashboardService.notSaved.subscribe(
       (data) => this.notSaved = data
     );
 
@@ -207,12 +209,17 @@ export class DashboardPage implements OnInit {
     this.stylesProviderService.setDefaultBackgroundColor();
     this.stylesProviderService.loadingFromPalette = false;
     this.stopRefresh = true;
-    this.dashboard.config.stopRefresh = true;
+    if (this.dashboard) this.dashboard.config.stopRefresh = true;
     clearInterval(this.countdownInterval);
     this.mobileResizeObserver?.disconnect();
     if (this.edaPanelsSubscription) {
         this.edaPanelsSubscription.unsubscribe();
     }
+    if (this.notSavedSubscription) {
+        this.notSavedSubscription.unsubscribe();
+    }
+    // Don't let this dashboard's "unsaved changes" state leak into the next dashboard navigated to.
+    this.dashboardService.setNotSaved(false);
   }
 
 
@@ -277,6 +284,9 @@ export class DashboardPage implements OnInit {
   }
 
   public async loadDashboard() {
+    // Reset before loading so a leftover "unsaved changes" flag from a previously viewed
+    // dashboard (the service-level flag is shared/global) never leaks into this one.
+    this.dashboardService.setNotSaved(false);
     const dashboardId = this.route.snapshot.paramMap.get('id');
     const data = await lastValueFrom(this.dashboardService.getDashboard(dashboardId));
     const dashboard = data.dashboard;
@@ -289,14 +299,18 @@ export class DashboardPage implements OnInit {
       this.applyToAllfilter = dashboard.config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
       this.globalFilter?.initOrderDependentFilters(dashboard.config.orderDependentFilters || []); // Dependent filters
       //this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Dashboard filters
-      this.globalFilter?.initGlobalFilters( this.checkFiltersVisibility( dashboard.config.filters , data.datasource.model.tables ) ||[]);// Dashboard filters
+      try {
+        // A failure loading one filter's data must not prevent the rest of the dashboard (panels) from loading.
+        await this.globalFilter?.initGlobalFilters( this.checkFiltersVisibility( dashboard.config.filters , data.datasource.model.tables ) ||[]);// Dashboard filters
+      } catch (err) {
+        console.error('Error initializing dashboard filters: ', err);
+      }
       this.initPanels(dashboard);
       this.sortPanelsForMobile();
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
       this.getUrlParams();
       this.globalFilter.findGlobalFilterByUrlParams(this.queryParams);
-      this.globalFilter.fillFiltersData();
-      
+
       if (this.styles.palette !== undefined) {
         this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
       }
@@ -330,11 +344,87 @@ export class DashboardPage implements OnInit {
         dashboard.config.stopRefresh = false;
         this.startCountdown(dashboard.config.refreshTime);
       }
-      this.selectedTags = this.dashboard.config.tag;
+      this.selectedTags = this.dashboard.config.tag || [];
+
+      // PROVISIONAL: migrate any legacy base64-embedded background/KPI images
+      // to the media library. Fire-and-forget so it never blocks dashboard rendering.
+      this.migrateEmbeddedImages(dashboard);
     }
 
     this.checkImportedPanels(dashboard);
     this.updateFilterDatesInPanels();
+  }
+
+  /**
+   * PROVISIONAL migration: legacy dashboards store background/KPI-prefix images
+   * as base64 data URIs directly inside the dashboard config. This detects any
+   * of those still present, uploads them to the media library named after the
+   * dashboard/panel, swaps the field for the returned url and silently
+   * persists the change - so the dashboard document stops carrying megabytes
+   * of embedded base64 the next time it's opened.
+   */
+  private async migrateEmbeddedImages(dashboard: any): Promise<void> {
+    if (!this.canIedit()) return;
+
+    let stylesChanged = false;
+    let panelsChanged = false;
+
+    const bg = dashboard.config?.styles?.backgroundImage;
+    if (typeof bg === 'string' && bg.startsWith('data:image')) {
+      const url = await this.migrateOneEmbeddedImage(bg, dashboard.config.title || 'dashboard');
+      if (url) {
+        dashboard.config.styles.backgroundImage = url;
+        stylesChanged = true;
+      }
+    }
+
+    for (const [i, panel] of (dashboard.config?.panel || []).entries()) {
+      const cfg = panel?.content?.query?.output?.config;
+      const prefix = cfg?.prefixImage;
+      if (typeof prefix === 'string' && prefix.startsWith('data:image')) {
+        const url = await this.migrateOneEmbeddedImage(prefix, panel.title || `panel-${i}`);
+        if (url) {
+          cfg.prefixImage = url;
+          panelsChanged = true;
+        }
+      }
+    }
+
+    if (!stylesChanged && !panelsChanged) return;
+
+    try {
+      if (stylesChanged) {
+        await lastValueFrom(this.dashboardService.updateDashboardSpecific(this.dashboardId,
+          { data: { key: 'config.styles', newValue: dashboard.config.styles } }));
+      }
+      if (panelsChanged) {
+        await lastValueFrom(this.dashboardService.updateDashboardSpecific(this.dashboardId,
+          { data: { key: 'config.panel', newValue: dashboard.config.panel } }));
+      }
+      // Re-apply so the on-screen background/KPI images reflect the new urls immediately
+      this.assignStyles();
+    } catch (e) {
+      console.warn('No se pudieron migrar las imágenes embebidas del dashboard', e);
+    }
+  }
+
+  /** Uploads one base64 data URI to the media library, returns its url (or null on failure). */
+  private async migrateOneEmbeddedImage(dataUri: string, suggestedName: string): Promise<string | null> {
+    try {
+      const blob = await (await fetch(dataUri)).blob();
+      const extension = (blob.type.split('/')[1] || 'png').replace('jpeg', 'jpg');
+      const safeName = (suggestedName || 'imagen')
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-zA-Z0-9-_]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 60) || 'imagen';
+      const res: any = await this.mediaService.upload(blob, `${safeName}.${extension}`);
+      return res?.media?.url || null;
+    } catch (e) {
+      console.warn('No se pudo migrar una imagen embebida', e);
+      return null;
+    }
   }
 
   private updateFilterDatesInPanels(): void {
@@ -412,7 +502,7 @@ export class DashboardPage implements OnInit {
     this.backgroundColor = {
       background: this.dashboard.config.styles.backgroundColor,
       ...(bgImage ? {
-        'background-image': `url(${bgImage})`,
+        'background-image': `url(${this.resolveImageSrc(bgImage)})`,
         'background-size': '100% auto',
         'background-position': 'top center',
         'background-repeat': 'repeat-y'
@@ -456,6 +546,13 @@ export class DashboardPage implements OnInit {
     };
 
     this.stylesProviderService.ActualChartPalette = this.dashboard.config.styles.palette;
+  }
+
+  /** Resolves a stored image reference (base64, absolute url, or media library path) to a displayable url. */
+  private resolveImageSrc(value: string): string {
+    if (!value) return value;
+    if (value.startsWith('data:') || /^https?:\/\//.test(value)) return value;
+    return this.fileUtils.connection(value);
   }
 
   private hexColorToRgba(hex: string, alpha: number): string {
@@ -579,6 +676,7 @@ export class DashboardPage implements OnInit {
     const tasks = this.edaPanels.map(async (panel) => {
       if (panel.currentQuery.length > 0) {
         panel.display_v.chart = '';
+        panel.markDirty();
 
         await panel.runQueryFromDashboard(true);
 
@@ -600,7 +698,8 @@ export class DashboardPage implements OnInit {
   public async onPanelAction(event: IPanelAction): Promise<void> {
     let modeEDA = false;
     const panel = event?.data?.panel;
-    const filtersEnabled: boolean = this.dashboard.config.clickFiltersEnabled;
+    const panelFiltersEnabled: boolean = panel?.clickFiltersEnabled ?? true;
+    const filtersEnabled: boolean = this.dashboard.config.clickFiltersEnabled && panelFiltersEnabled;
     const isImportedPanel: boolean = panel?.globalFilterMap;
 
     if (panel) {
@@ -935,15 +1034,25 @@ export class DashboardPage implements OnInit {
       try {        
         if (element.globalFilterMap) {
           const panelFilters = element.content.query.query.filters;
-  
           element.globalFilterMap.forEach(filterLinkId => {
             // Find the dashboard filter that targetId points to
             const dashboardFilterToApply = dashboard.config.filters.find(filter => filter.id === filterLinkId.targetId);
             const sourceFilter = panelFilters.find(f => f.filter_id === filterLinkId.sourceId);
             const valueToApply = dashboardFilterToApply.selectedItems;
-  
-            if(sourceFilter?.filter_elements)
-              sourceFilter.filter_elements[0].value1 = valueToApply;
+            const columnType = dashboardFilterToApply.column?.value?.column_type || dashboardFilterToApply.selectedColumn?.column_type;
+            const isDate = columnType === 'date';
+
+            if (sourceFilter?.filter_elements) {
+              if (isDate) {
+                if (!sourceFilter.filter_elements[1]) {
+                  sourceFilter.filter_elements[1] = { value2: [] };
+                }
+                sourceFilter.filter_elements[0].value1 = valueToApply[0] ? [valueToApply[0]] : [];
+                sourceFilter.filter_elements[1].value2 = valueToApply[1] ? [valueToApply[1]] : [];
+              } else {
+                sourceFilter.filter_elements[0].value1 = valueToApply;
+              }
+            }
           });
         }
       } catch (error) {
@@ -953,8 +1062,32 @@ export class DashboardPage implements OnInit {
     });
   }
 
-  public onDuplicatePanel(panel: any) {
+  public onDuplicatePanel(event: any) {
+    const panel = event?.panel ?? event;
+    const sourcePanelId = event?.sourcePanelId;
     this.panels.push(panel);
+
+    // A duplicate has content, so ngAfterViewInit's "new empty panel" flow skips it: link its global filters here.
+    const globalFilters = (this.globalFilter?.globalFilters || []).filter((f: any) => f.isGlobal === true);
+    globalFilters.forEach((filter: any) => {
+      if (!Array.isArray(filter.panelList)) filter.panelList = [];
+      const inheritsFilter = filter.applyToAll || filter.panelList.includes(sourcePanelId);
+      if (inheritsFilter && !filter.panelList.includes(panel.id)) {
+        filter.panelList.push(panel.id);
+      }
+    });
+
+    setTimeout(() => {
+      const newEdaPanel = this.edaPanels.find(p => p.panel.id === panel.id);
+      if (newEdaPanel) {
+        globalFilters.forEach((filter: any) => {
+          if (filter.panelList.includes(panel.id)) {
+            newEdaPanel.assertGlobalFilter(this.globalFiltersService.formatFilter(filter));
+          }
+        });
+      }
+    }, 0);
+
     this.dashboardService.setNotSaved(true);
     this.stylesProviderService.loadedPanels++;
   }
@@ -999,7 +1132,13 @@ export class DashboardPage implements OnInit {
   private setPanelsToFilter(panel: any): any {
     const newPanel = this.panels.find(p => p.id === panel.id);
     const panels = this.globalFiltersService.panelsToDisplay(this.dataSource.model.tables, this.panels, newPanel);
-    const panelsToFilter = panels.filter(p => p.avaliable === true);
+    let panelsToFilter = panels.filter(p => p.avaliable === true);
+
+    // Respect this panel's own click-filter configuration (which panels its click affects)
+    if (newPanel?.clickFilterApplyToAll === false) {
+      const targets = newPanel.clickFilterTargets || [];
+      panelsToFilter = panelsToFilter.filter(p => p.id === newPanel.id || targets.includes(p.id));
+    }
 
     return {
         panelList: panelsToFilter,
@@ -1032,13 +1171,17 @@ export class DashboardPage implements OnInit {
           { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
         ];
       }
+      panel.markDirty();
     }
   }
 
-  refreshPanels() {
+  // panelIds: when provided, only those panels are refreshed instead of every panel in the dashboard
+  refreshPanels(panelIds?: string[]) {
     this.edaPanels.forEach(async (panel) => {
+      if (panelIds && !panelIds.includes(panel.panel.id)) return;
       if (panel.currentQuery.length > 0) {
         panel.display_v.chart = '';
+        panel.markDirty();
         await panel.runQueryFromDashboard(true);
         setTimeout(() => panel.panelChart?.updateComponent(), 100);
       }
@@ -1052,6 +1195,7 @@ export class DashboardPage implements OnInit {
         const isChartJS = ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar', 'knob'].includes(chartType);
         if (!isChartJS) {
           panel.display_v.chart = '';
+          panel.markDirty();
           await panel.runQueryFromDashboard(true);
         }
         setTimeout(() => panel.panelChart?.updateComponent(), 100);
@@ -1080,6 +1224,7 @@ export class DashboardPage implements OnInit {
         refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
         clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
         panelLockEnabled: this.dashboard.config.panelLockEnabled,
+        panelAnimationsEnabled: this.dashboard.config.panelAnimationsEnabled,
         createdAt: this.dashboard.config.createdAt || new Date().toISOString(),
         modifiedAt: new Date().toISOString(),
         sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig,
@@ -1237,7 +1382,8 @@ public startCountdown(seconds: number) {
     const edaChart = event.data?.panel?.content?.edaChart;
     const queries = event.data?.query || [];
     const filterBy = event.data?.filterBy;
-    if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(chartType)) {
+    // KPI + chart panels emit the same click payload (label/filterBy) as their standalone bar/line chart
+    if (['doughnut', 'polarArea', 'bar', 'line', 'radar', 'kpibar', 'kpiline', 'kpiarea'].includes(chartType)) {
       if (edaChart === 'stackedbar100') {
         // For stackedbar100, a label is a value, not a table column, and cannot be filterby.
         // The last text column is the value we are looking for

@@ -1,0 +1,13 @@
+@if (items.length) {
+  <div class="eda-chart-legend">
+    @for (entry of sortedItems; track entry.index; let i = $index) {
+      <div #legendItemEl class="eda-chart-legend-item"
+        [class.hidden]="entry.item.hidden"
+        [class.eda-chart-legend-item-clipped]="visibleCount !== null && i >= visibleCount"
+        (click)="onToggle(entry.index)">
+        <span class="eda-chart-legend-swatch" [style.background-color]="entry.item.color" [style.width]="boxSize" [style.height]="boxSize"></span>
+        <span class="eda-chart-legend-label" [style.font-size]="fontSize">{{ entry.item.label }}</span>
+      </div>
+    }
+  </div>
+}

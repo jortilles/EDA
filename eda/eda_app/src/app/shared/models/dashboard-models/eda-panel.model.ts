@@ -29,6 +29,9 @@ export class EdaPanel {
     public linkedDashboardProps: LinkedDashboardProps;
     public readonly: boolean = false;
     public globalFilterMap: any[];
+    public clickFiltersEnabled: boolean = true;
+    public clickFilterApplyToAll: boolean = true;
+    public clickFilterTargets: string[] = [];
 
     constructor(init?: Partial<EdaPanel>) {
         Object.assign(this, init);

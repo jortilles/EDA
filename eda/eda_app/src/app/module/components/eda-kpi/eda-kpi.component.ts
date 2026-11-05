@@ -1,23 +1,28 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, HostBinding } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, HostBinding } from '@angular/core';
 import { StyleProviderService } from '@eda/services/service.index';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
-import { EdaChartComponent } from '../eda-chart/eda-chart.component';
+import { EdaBarD3Component } from '../eda-bar-d3/eda-bar.component';
+import { EdaLineComponent } from '../eda-line-d3/eda-line.component';
+import { EdaAreaComponent } from '../eda-area-d3/eda-area.component';
 
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { PipesModule } from '@eda/pipes/pipes.module';
 
 @Component({
     standalone: true,
     selector: 'eda-kpi',
     templateUrl: './eda-kpi.component.html',
-    imports: [FormsModule, CommonModule, EdaChartComponent]
+    imports: [FormsModule, CommonModule, EdaBarD3Component, EdaLineComponent, EdaAreaComponent, PipesModule]
 })
 
-export class EdaKpiComponent implements OnInit, AfterViewInit {
+export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() inject: EdaKpi;
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
+    // Re-emits the click of the embedded bar/line/area chart
+    @Output() onClick: EventEmitter<any> = new EventEmitter();
 
     @HostBinding('style.display') readonly hostDisplay = 'block';
     @HostBinding('style.position') readonly hostPosition = 'relative';
@@ -26,7 +31,10 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
     @HostBinding('style.background-color') get hostBg() { return this.inject?.backgroundColor || ''; }
     @ViewChild('kpiContainer') kpiContainer: ElementRef;
     @ViewChild('sufixContainer') sufixContainer: ElementRef;
-    @ViewChild('EdaChart', { static: false }) edaChartComponent: EdaChartComponent;
+    // Whichever of eda-bar-d3/eda-line-d3/eda-area-d3 is actually mounted (see eda-kpi.component.html's
+    // @switch on inject.edaChart.edaChart) - only one is ever in the DOM at a time, all three share
+    // the same updateChart() convention, so a loose type is fine here.
+    @ViewChild('EdaChart', { static: false }) edaChartComponent: any;
     sufixClick: boolean = false;
     color: string = this.styleProviderService.panelFontColor.source['_value'];
     family: string = this.styleProviderService.panelFontFamily.source['_value'];
@@ -36,13 +44,33 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
     containerWidth: number = 20;
     baseResultSize: number = 0;
     showChart: boolean = true;
+    private resizeObserver?: ResizeObserver;
 
     constructor(private styleProviderService : StyleProviderService, private cdr: ChangeDetectorRef) { }
 
     ngAfterViewInit() {
         this.initDimensions();
         this.baseResultSize = this.computeBaseSize();
+        this.observeContainerResize();
         this.cdr.detectChanges();
+    }
+
+    ngOnDestroy() {
+        this.resizeObserver?.disconnect();
+    }
+
+    /** Recalculates the font size whenever the panel itself resizes (drag, zoom, layout change...). */
+    private observeContainerResize(): void {
+        const realContainer: HTMLElement | undefined = this.kpiContainer?.nativeElement
+            ?.parentElement
+            ?.parentElement
+            ?.parentElement;
+        if (!realContainer || typeof ResizeObserver === 'undefined') return;
+        this.resizeObserver = new ResizeObserver(() => {
+            this.initDimensions();
+            this.cdr.detectChanges();
+        });
+        this.resizeObserver.observe(realContainer);
     }
 
     ngOnInit() {
@@ -118,6 +146,14 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
     setSufix(): void {
         this.sufixClick = !this.sufixClick;
         this.onNotify.emit({ sufix: this.inject.sufix })
+    }
+
+    /** Format string for the value's `number` pipe - fixes it at exactly `inject.decimals`
+     *  fraction digits (matching the column's configured "Número de decimals") when known,
+     *  otherwise keeps the original 0-10 range. */
+    getNumberFormat(): string {
+        const d = this.inject.decimals;
+        return d != null ? `1.${d}-${d}` : '1.0-10';
     }
 
     getStyle(): any {

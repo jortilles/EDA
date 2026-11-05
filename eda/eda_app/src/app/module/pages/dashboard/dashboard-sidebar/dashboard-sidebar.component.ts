@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
+import { AfterViewInit, ApplicationRef, Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
@@ -8,7 +8,6 @@ import { DashboardPanelExport } from "@eda/services/utils/file-utils.service";
 import { EdaPanel, EdaPanelType, EdaTitlePanel, EdaTabsPanel } from "@eda/models/model.index";
 import { lastValueFrom } from "rxjs";
 import { Router } from "@angular/router";
-import domtoimage from 'dom-to-image';
 import jspdf from 'jspdf';
 import html2canvas from 'html2canvas';
 import Swal from 'sweetalert2';
@@ -86,6 +85,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
   private dashboardService = inject(DashboardService);
   private fileUtils = inject(FileUtiles);
   private router = inject(Router);
+  private appRef = inject(ApplicationRef);
   private spinner = inject(SpinnerService);
   private alertService = inject(AlertService);
   private stylesProviderService = inject(StyleProviderService)
@@ -108,6 +108,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
   refreshTime: number = null;
   clickFiltersEnabled: boolean = true;
   clickPanelLockButton: boolean = true;
+  clickPanelAnimationsButton: boolean = true;
   onlyIcanEdit: boolean = true; // Only I can edit, but I can save as
   isReadOnly: boolean = false; // this is a read-only dashboard
   isEditable: boolean = false; // can edit the dashboard
@@ -121,6 +122,10 @@ export class DashboardSidebarComponent implements AfterViewInit {
   editingTitle: boolean = false;
   editableTitle: string = '';
 
+  // Panels touched by filters removed from the sidebar during this popover session,
+  // refreshed once when the popover closes instead of after every single deletion
+  private pendingRefreshPanelIds = new Set<string>();
+
   sidebarItems: any[] = [];
 
   ngOnInit(): void {
@@ -129,6 +134,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.clickFiltersEnabled = this.dashboard.dashboard.config.clickFiltersEnabled ?? true;
     this.onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ?? true;
     this.clickPanelLockButton = this.dashboard.dashboard.config.panelLockEnabled ?? true;
+    this.clickPanelAnimationsButton = this.dashboard.dashboard.config.panelAnimationsEnabled ?? true;
     this.isReadOnly = this.isReadOnlyCheck();
     this.isEditable = this.isEditableCheck();
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
@@ -192,6 +198,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
           label: f?.selectedColumn?.display_name?.default || f?.column?.value?.description?.default,
           icon: "pi pi-check",
           command: () => this.handleSpecificFilter(f),
+          filter: f,
         }),
         ),
       },
@@ -292,6 +299,15 @@ export class DashboardSidebarComponent implements AfterViewInit {
         }
       },
       {
+        id: 'enablePanelAnimations',
+        label: this.clickPanelAnimationsButton ? $localize`:@@disablePanelAnimationsButton:Desactivar animaciones`
+          : $localize`:@@enablePanelAnimationsButton:Activar animaciones`,
+        icon: this.clickPanelAnimationsButton ? "pi pi-bolt" : "pi pi-ban",
+        command: () => {
+          this.panelAnimationsButton();
+        }
+      },
+      {
         id: 'enableEdition',
         label: this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
         icon: this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
@@ -364,6 +380,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.mostrarOpciones = false;
     this.mostrarFiltros = false;
     this.mostrarDescargas = false;
+    this.flushPendingFilterRemovalRefresh();
   }
 
   public onAddGlobalFilter(): void {
@@ -393,10 +410,30 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
     if (response) {
       for (const item of response) {
-        this.dashboard.panels.push(item as EdaPanel);
+        const panel = item as EdaPanel;
+        if (this.importedPanelOverlaps(panel)) {
+          panel.x = 0;
+          panel.y = this.getImportBottomY();
+        }
+        this.dashboard.panels.push(panel);
       }
     }
+  }
 
+  private importedPanelOverlaps(panel: EdaPanel): boolean {
+    if (panel.x == null || panel.y == null || !panel.cols || !panel.rows) return true;
+    return this.dashboard.panels.some(existing => {
+      const hOverlap = panel.x < (existing.x + existing.cols) && (panel.x + panel.cols) > existing.x;
+      const vOverlap = panel.y < (existing.y + existing.rows) && (panel.y + panel.rows) > existing.y;
+      return hOverlap && vOverlap;
+    });
+  }
+
+  private getImportBottomY(): number {
+    return this.dashboard.panels.reduce((max, p) => {
+      const bottom = (p.y || 0) + (p.rows || 0);
+      return bottom > max ? bottom : max;
+    }, 0);
   }
 
   public closeDependentFilters(dependentFilterObject: any){
@@ -480,6 +517,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
         queries.push(panel.content.query.query);
       }
     }
+    queries.push(...this.dashboard.globalFilter.getFilterSelectorQueries());
 
     const body = {
       model_id: this.dashboard.dataSource._id,
@@ -499,8 +537,9 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
     this.dashboard.dashboard.config.onlyIcanEdit = this.onlyIcanEdit;
     this.dashboard.dashboard.config.panelLockEnabled = this.clickPanelLockButton;
+    this.dashboard.dashboard.config.panelAnimationsEnabled = this.clickPanelAnimationsButton;
     // Update the author
-    this.dashboard.dashboard.config.author = JSON.parse(localStorage.getItem('user')).name;
+    this.dashboard.dashboard.config.author =  this.dashboard.dashboard.config.author?this.dashboard.dashboard.config.author:JSON.parse(localStorage.getItem('user')).name;
     // Save dashboard
     try {
       await this.dashboard.saveDashboard();
@@ -636,12 +675,20 @@ export class DashboardSidebarComponent implements AfterViewInit {
     const configToSave = {
       enabled: sendViaMailConfig.enabled,
       hours: sendViaMailConfig.hours,
-      lastUpdated: sendViaMailConfig.lastUpdated,
-      mailMessage: sendViaMailConfig.mailMessage,
       minutes: sendViaMailConfig.minutes,
-      quantity: sendViaMailConfig.quantity,
+      lastUpdated: sendViaMailConfig.lastUpdated,
       units: sendViaMailConfig.units,
-      users: sendViaMailConfig.users
+      quantity: sendViaMailConfig.quantity,
+      weekday: sendViaMailConfig.weekday,
+      monthlyMode: sendViaMailConfig.monthlyMode,
+      monthlyDay: sendViaMailConfig.monthlyDay,
+      monthlyOrdinal: sendViaMailConfig.monthlyOrdinal,
+      monthlyWeekday: sendViaMailConfig.monthlyWeekday,
+      mailSubject: sendViaMailConfig.mailSubject,
+      mailMessage: sendViaMailConfig.mailMessage,
+      aiAnalysis: sendViaMailConfig.aiAnalysis,
+      users: sendViaMailConfig.users,
+      otherRecipients: sendViaMailConfig.otherRecipients
     };
 
     // Assign data to config and persist to DB
@@ -694,63 +741,66 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
 
 
-  public exportAsPDF() {
+  public async exportAsPDF() {
     this.hidePopover();
     this.spinner.on();
+    await this._waitForPaint();
 
     const element = document.getElementById('myDashboard');
-
-    domtoimage.toPng(element, {
-      bgcolor: 'white',
-      height: element.scrollHeight * 2,
-      width: element.scrollWidth * 2,
-      style: {
-        transform: 'scale(2)',
-        transformOrigin: 'top left'
-      }
-    }).then((dataUrl: string) => {
-      const img = new Image();
-      img.src = dataUrl;
-
-      img.onload = () => {
-        const pdf = new jspdf('p', 'pt', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-
-        const imgWidth = img.width;
-        const imgHeight = img.height;
-        const ratio = pageWidth / imgWidth;
-
-        const sliceCanvas = document.createElement('canvas');
-        const ctx = sliceCanvas.getContext('2d')!;
-        sliceCanvas.width = imgWidth;
-        sliceCanvas.height = Math.round(pageHeight / ratio);
-
-        let position = 0;
-        while (position < imgHeight) {
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
-          ctx.drawImage(img, 0, -position, imgWidth, imgHeight);
-
-          pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, pageHeight);
-
-          position += sliceCanvas.height;
-          if (position < imgHeight) pdf.addPage();
-        }
-
-        this.spinner.off();
-        pdf.save(`${this.dashboard.title}.pdf`);
-      };
-    }).catch((error: any) => {
-      console.error('Error exportando como PDF:', error);
+    if (!element) {
+      console.error('No se encontró el elemento "myDashboard" en el DOM');
       this.spinner.off();
-    });
+      return;
+    }
+
+    try {
+      const canvas = await this._captureDashboardCanvas(element, 2);
+      // The last PDF page is taller than the leftover image slice once imgHeight doesn't divide
+      // evenly into page-sized chunks - fill that leftover with the dashboard's own background
+      // instead of white, so it doesn't end in a blank band.
+      const bgColor = this._readDashboardBackground(element).backgroundColor || '#ffffff';
+
+      const pdf = new jspdf('p', 'pt', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = pageWidth / imgWidth;
+
+      const sliceCanvas = document.createElement('canvas');
+      // See _captureDashboardCanvas for why willReadFrequently matters here too.
+      const ctx = sliceCanvas.getContext('2d', { willReadFrequently: true })!;
+      sliceCanvas.width = imgWidth;
+      sliceCanvas.height = Math.round(pageHeight / ratio);
+
+      let position = 0;
+      while (position < imgHeight) {
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+        ctx.drawImage(canvas, 0, -position, imgWidth, imgHeight);
+
+        // JPEG not PNG: jsPDF embeds PNG uncompressed, producing 50+MB files at 2x scale.
+        pdf.addImage(sliceCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, pageWidth, pageHeight);
+
+        position += sliceCanvas.height;
+        if (position < imgHeight) pdf.addPage();
+      }
+
+      pdf.save(`${this.dashboard.title}.pdf`);
+    } catch (error) {
+      console.error('Error exportando como PDF:', error);
+      this.alertService.addError($localize`:@@dashboardExportPdfError:No se ha podido generar el PDF del informe. Inténtalo de nuevo.`);
+    } finally {
+      this.spinner.off();
+    }
   }
 
 
-  public exportAsJPEG() {
+  public async exportAsJPEG() {
     this.hidePopover();
     this.spinner.on();
+    await this._waitForPaint();
 
     const node = document.getElementById('myDashboard');
     if (!node) {
@@ -761,28 +811,323 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
     const title = this.dashboard.title;
 
-    domtoimage.toPng(node, { bgcolor: 'white' })
-      .then((dataUrl: string) => {
-        const link = document.createElement('a');
-        link.download = `${title}.png`;
-        link.href = dataUrl;
-        link.click();
-        this.spinner.off();
-      })
-      .catch((error: any) => {
-        console.error('Error exportando como imagen:', error);
-        this.spinner.off();
-      });
+    try {
+      const canvas = await this._captureDashboardCanvas(node, 2);
+      const link = document.createElement('a');
+      link.download = `${title}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (error) {
+      console.error('Error exportando como imagen:', error);
+      this.alertService.addError($localize`:@@dashboardExportImageError:No se ha podido generar la imagen del informe. Inténtalo de nuevo.`);
+    } finally {
+      this.spinner.off();
+    }
+  }
+
+  /** Captures the whole dashboard in one html2canvas() call (each call has a ~4-5s fixed cost
+   *  regardless of panel size, so batching beats one-call-per-panel by ~7x). See
+   *  _buildOffscreenCaptureContainer for the container this renders. */
+  private async _captureDashboardCanvas(element: HTMLElement, scale: number): Promise<HTMLCanvasElement> {
+    const restore = this._unclipTablesForExport(element);
+    try {
+      const dashboardRect = element.getBoundingClientRect();
+
+      type Target = { el: HTMLElement; x: number; y: number; width: number; height: number };
+
+      // Unioned with descendant table rects since an unclipped table can render past its panel's own box.
+      const measure = (el: HTMLElement): Target => {
+        const rect = el.getBoundingClientRect();
+        let left = rect.left, top = rect.top, right = rect.right, bottom = rect.bottom;
+        el.querySelectorAll('eda-table').forEach(t => {
+          const tr = (t as HTMLElement).getBoundingClientRect();
+          left = Math.min(left, tr.left);
+          top = Math.min(top, tr.top);
+          right = Math.max(right, tr.right);
+          bottom = Math.max(bottom, tr.bottom);
+        });
+        return {
+          el,
+          x: left - dashboardRect.left,
+          y: top - dashboardRect.top,
+          width: right - left,
+          height: bottom - top,
+        };
+      };
+
+      const targets: Target[] = [];
+      const headerEl = element.querySelector('.dashboard-export-header') as HTMLElement | null;
+      if (headerEl) targets.push(measure(headerEl));
+      element.querySelectorAll('gridster-item').forEach(item => targets.push(measure(item as HTMLElement)));
+
+      // Sized to actual panel content, not #myDashboard's own box (min-h-screen/gridster row
+      // reservation made it taller than the real content, leaving blank space below).
+      let contentWidth = 0;
+      let contentHeight = 0;
+      for (const t of targets) {
+        contentWidth = Math.max(contentWidth, t.x + t.width);
+        contentHeight = Math.max(contentHeight, t.y + t.height);
+      }
+      if (targets.length === 0) {
+        contentWidth = dashboardRect.width;
+        contentHeight = dashboardRect.height;
+      }
+      contentWidth = Math.ceil(contentWidth);
+      contentHeight = Math.ceil(contentHeight);
+
+      // #myDashboard's own background (solid color and/or the optional background-image) lives on
+      // its direct child, not on any captured target, so it's read off separately and painted onto
+      // the offscreen container instead of the plain white it'd otherwise default to.
+      const container = await this._buildOffscreenCaptureContainer(targets, contentWidth, contentHeight, this._readDashboardBackground(element));
+      try {
+        return await html2canvas(container, {
+          // The container already paints the dashboard's real background itself; null (transparent)
+          // avoids html2canvas compositing a second, opaque white layer underneath it.
+          backgroundColor: null,
+          // The API serves media-library images (panel icons, background image) with
+          // Access-Control-Allow-Origin: *, so requesting them anonymously keeps the resulting
+          // canvas untainted instead of html2canvas silently skipping them.
+          useCORS: true,
+          allowTaint: false,
+          logging: false,
+          scale,
+          width: contentWidth,
+          height: contentHeight,
+        });
+      } finally {
+        container.remove();
+      }
+    } finally {
+      this._restoreAfterExport(restore);
+    }
+  }
+
+  /** The dashboard's background-color/-image live as inline styles (`[ngStyle]`) on #myDashboard's
+   *  direct child, which the capture never clones directly - read back here so it can be painted
+   *  onto the offscreen container instead. */
+  private _readDashboardBackground(element: HTMLElement): Partial<CSSStyleDeclaration> {
+    const bgEl = (element.firstElementChild as HTMLElement) || element;
+    const computed = getComputedStyle(bgEl);
+    return {
+      backgroundColor: computed.backgroundColor,
+      backgroundImage: computed.backgroundImage,
+      backgroundSize: computed.backgroundSize,
+      backgroundPosition: computed.backgroundPosition,
+      backgroundRepeat: computed.backgroundRepeat,
+    };
+  }
+
+  /** Builds an off-screen container with an absolutely-positioned (top/left, not CSS transform)
+   *  clone of every target. html2canvas's bounds calc breaks on scale>1 + a transformed element
+   *  (confirmed: only the panel at gridster offset (0,0) ever captured correctly otherwise), so
+   *  this avoids gridster's own `transform: translate3d(...)` positioning. Canvas elements are
+   *  re-painted from their live counterpart since cloneNode() doesn't carry drawn pixels. Caller
+   *  must `.remove()` the returned element once done. */
+  private async _buildOffscreenCaptureContainer(
+    targets: { el: HTMLElement; x: number; y: number; width: number; height: number }[],
+    contentWidth: number,
+    contentHeight: number,
+    background?: Partial<CSSStyleDeclaration>
+  ): Promise<HTMLElement> {
+    const container = document.createElement('div');
+    container.style.setProperty('position', 'fixed', 'important');
+    container.style.setProperty('left', '-99999px', 'important');
+    container.style.setProperty('top', '0', 'important');
+    container.style.setProperty('z-index', '-1', 'important');
+    container.style.width = `${contentWidth}px`;
+    container.style.height = `${contentHeight}px`;
+    if (background) {
+      Object.assign(container.style, background);
+    } else {
+      container.style.backgroundColor = '#ffffff';
+    }
+
+    for (const target of targets) {
+      if (target.width === 0 || target.height === 0) continue;
+      const clone = this._cloneForCapture(target.el);
+      clone.style.setProperty('position', 'absolute', 'important');
+      clone.style.setProperty('transform', 'none', 'important');
+      clone.style.setProperty('left', `${target.x}px`, 'important');
+      clone.style.setProperty('top', `${target.y}px`, 'important');
+      clone.style.setProperty('width', `${target.width}px`, 'important');
+      clone.style.setProperty('height', `${target.height}px`, 'important');
+      container.appendChild(clone);
+    }
+
+    document.body.appendChild(container);
+    void container.offsetHeight; // force layout before html2canvas reads it
+    await this._inlineSvgImageHrefs(container);
+    return container;
+  }
+
+  /** Browsers run an SVG used as an image source (html2canvas serializes every <svg> it meets
+   *  into a data:image/svg+xml and paints that as one flat image - see SVGElementContainer in
+   *  html2canvas) in a locked-down mode that refuses to fetch any resource the SVG references,
+   *  regardless of CORS: the shapes/text render fine since those need nothing external, but any
+   *  nested <image href="https://..."> (our per-slice media-library icons) comes out blank. Only
+   *  a self-contained data: URI survives that, so every such href is swapped for one here before
+   *  the container is handed to html2canvas. */
+  private async _inlineSvgImageHrefs(container: HTMLElement): Promise<void> {
+    const images = Array.from(container.querySelectorAll('image'));
+    await Promise.all(images.map(async img => {
+      const href = img.getAttribute('href') || img.getAttribute('xlink:href');
+      if (!href || href.startsWith('data:')) return;
+      try {
+        const blob = await (await fetch(href)).blob();
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+        img.setAttribute('href', dataUrl);
+        img.removeAttribute('xlink:href');
+      } catch {
+        // Unreachable icon URL - leave it as-is, same "degrades to no image" fallback as live.
+      }
+    }));
+  }
+
+  /** Deep-clones `el` for capture: canvas pixels are re-painted (cloneNode doesn't carry them),
+   *  and any stroke-dasharray/dashoffset draw-in animation stuck at its start position (PrimeNG's
+   *  Knob gauge, among others) is revealed - cloneNode() copies the literal pre-animation inline
+   *  style, not the live CSS-animated state, so gauges rendered as a colorless ring otherwise. */
+  private _cloneForCapture(el: HTMLElement): HTMLElement {
+    const clone = el.cloneNode(true) as HTMLElement;
+    const liveCanvases = el.querySelectorAll('canvas');
+    const clonedCanvases = clone.querySelectorAll('canvas');
+    liveCanvases.forEach((liveCanvas, i) => {
+      const clonedCanvas = clonedCanvases[i] as HTMLCanvasElement | undefined;
+      if (!clonedCanvas || !(liveCanvas as HTMLCanvasElement).width) return;
+      clonedCanvas.width = (liveCanvas as HTMLCanvasElement).width;
+      clonedCanvas.height = (liveCanvas as HTMLCanvasElement).height;
+      try { clonedCanvas.getContext('2d')?.drawImage(liveCanvas as HTMLCanvasElement, 0, 0); } catch { /* tainted source canvas - skip */ }
+    });
+    clone.querySelectorAll<HTMLElement>('[style*="stroke-dashoffset"]').forEach(node => {
+      const dasharray = node.style.strokeDasharray;
+      const dashoffset = node.style.strokeDashoffset;
+      if (dasharray && dashoffset && Math.abs(parseFloat(dashoffset) - parseFloat(dasharray)) < 0.01) {
+        node.style.strokeDashoffset = '0';
+      }
+    });
+    this._rasterizeKpiText(el, clone);
+    return clone;
+  }
+
+  // html2canvas's font resolution silently substitutes an unrelated bold @font-face (League
+  // Spartan) for the KPI number regardless of the requested font-family - pre-render the number
+  // onto a canvas (which html2canvas copies as a bitmap) to sidestep its text renderer entirely.
+  private _rasterizeKpiText(el: HTMLElement, clone: HTMLElement): void {
+    const liveSpans = el.querySelectorAll<HTMLElement>('eda-kpi span');
+    const clonedSpans = clone.querySelectorAll<HTMLElement>('eda-kpi span');
+    liveSpans.forEach((liveSpan, i) => {
+      const clonedSpan = clonedSpans[i];
+      const text = liveSpan.textContent?.trim();
+      if (!clonedSpan || !text) return;
+      const rect = liveSpan.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+      const cs = getComputedStyle(liveSpan);
+      const scale = 4;
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.ceil(rect.width * scale);
+      canvas.height = Math.ceil(rect.height * scale);
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
+      canvas.style.display = 'block';
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.scale(scale, scale);
+      ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      ctx.fillStyle = cs.color;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, rect.width / 2, rect.height / 2);
+      if (parseInt(cs.fontWeight, 10) >= 600) {
+        ctx.lineWidth = 0.6;
+        ctx.strokeStyle = cs.color;
+        ctx.strokeText(text, rect.width / 2, rect.height / 2);
+      }
+      // The KPI's prefix icon (<img>, see eda-kpi.component.html) is this span's sibling, not
+      // part of the text being rasterized - pull it out before clearing so it isn't lost with it.
+      const icon = clonedSpan.querySelector('img');
+      clonedSpan.innerHTML = '';
+      clonedSpan.style.setProperty('display', 'flex', 'important');
+      clonedSpan.style.setProperty('justify-content', 'center', 'important');
+      clonedSpan.style.setProperty('align-items', 'center', 'important');
+      if (icon) clonedSpan.appendChild(icon);
+      clonedSpan.appendChild(canvas);
+    });
+  }
+
+  // Lets the export spinner paint, then waits for fonts and every panel's own query to finish
+  // (each shows `.spinner-panel` while loading) before capture starts.
+  private async _waitForPaint(): Promise<void> {
+    await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    try { await (document as any).fonts?.ready; } catch { /* FontFaceSet unsupported - ignore */ }
+    await this._waitForPanelsReady();
+    this._forceChangeDetection();
+  }
+
+  /** Panels run OnPush, so a loaded panel's DOM can lag its data until something calls
+   *  markForCheck() + a tick - forces that for every panel right before capture. */
+  private _forceChangeDetection(): void {
+    (this.dashboard.edaPanels?.toArray() ?? []).forEach((p: any) => p.markDirty?.());
+    this.appRef.tick();
+  }
+
+  /** Polls for every panel's spinner to clear, up to `timeoutMs` (best-effort, then proceeds anyway). */
+  private _waitForPanelsReady(timeoutMs = 20000): Promise<void> {
+    return new Promise(resolve => {
+      const deadline = Date.now() + timeoutMs;
+      const check = () => {
+        const pending = document.querySelectorAll('.spinner-panel').length;
+        if (pending === 0 || Date.now() > deadline) {
+          if (pending > 0) console.warn(`[Export] ${pending} panel(es) seguían cargando tras ${timeoutMs}ms, se captura igualmente`);
+          resolve();
+        } else {
+          setTimeout(check, 300);
+        }
+      };
+      check();
+    });
+  }
+
+  // Temporarily clears overflow clipping (panel wrapper, .p-datatable-wrapper, gridster-item) on
+  // every ancestor of a table so it captures in full instead of at its on-screen scrolled size.
+  private _unclipTablesForExport(root: HTMLElement | null): { el: HTMLElement; overflow: string }[] {
+    const restore: { el: HTMLElement; overflow: string }[] = [];
+    if (!root) return restore;
+    const clipping = ['auto', 'scroll', 'hidden'];
+
+    root.querySelectorAll('eda-table').forEach((tableEl: Element) => {
+      let ancestor = tableEl.parentElement;
+      while (ancestor && ancestor !== root) {
+        const computed = window.getComputedStyle(ancestor);
+        if (clipping.includes(computed.overflowX) || clipping.includes(computed.overflowY)) {
+          restore.push({ el: ancestor, overflow: ancestor.style.overflow });
+          ancestor.style.overflow = 'visible';
+        }
+        ancestor = ancestor.parentElement;
+      }
+    });
+
+    return restore;
+  }
+
+  private _restoreAfterExport(saved: { el: HTMLElement; overflow: string }[]): void {
+    saved.forEach(({ el, overflow }) => { el.style.overflow = overflow; });
   }
 
   public async exportDashboardAsExcel(): Promise<void> {
     this.hidePopover();
     this.spinner.on();
+    await this._waitForPaint();
     try {
       const panelDataList = await this._collectPanelData();
       await this.fileUtils.exportDashboardToExcel(panelDataList, this.dashboard.title);
     } catch (err) {
       console.error('[ExportExcel] Error exportando dashboard a Excel:', err);
+      this.alertService.addError($localize`:@@dashboardExportExcelError:No se ha podido generar el Excel del informe. Inténtalo de nuevo.`);
     } finally {
       this.spinner.off();
     }
@@ -791,114 +1136,168 @@ export class DashboardSidebarComponent implements AfterViewInit {
   public async exportDashboardAsWord(): Promise<void> {
     this.hidePopover();
     this.spinner.on();
+    await this._waitForPaint();
     try {
       const panelDataList = await this._collectPanelData();
       await this.fileUtils.exportDashboardToWord(panelDataList, this.dashboard.title);
     } catch (err) {
       console.error('[ExportWord] Error exportando dashboard a Word:', err);
+      this.alertService.addError($localize`:@@dashboardExportWordError:No se ha podido generar el Word del informe. Inténtalo de nuevo.`);
     } finally {
       this.spinner.off();
     }
   }
 
-  /**
-   * Iterates over all panels and returns their content ready for export.
-   * For charts, temporarily hides the panel header before capturing
-   * the image to avoid the title appearing duplicated.
-   */
+  /** Collects every panel's export-ready content. Chart/kpi-with-chart panels need an image;
+   *  all of those are captured in ONE batched html2canvas call (see _captureElementsBatched)
+   *  instead of one call per panel, since each call has a ~4-5s fixed cost regardless of size. */
   private async _collectPanelData(): Promise<DashboardPanelExport[]> {
-    const panelDataList: DashboardPanelExport[] = [];
+    const panels = (this.dashboard.edaPanels?.toArray() ?? []).filter(p => p.panel?.content);
 
-    for (const panelComp of this.dashboard.edaPanels?.toArray() ?? []) {
-      if (!panelComp.panel?.content) continue;
+    type PanelSpec = { entry: DashboardPanelExport; hostEl?: HTMLElement };
+    const specs: PanelSpec[] = [];
+    const hidden: HTMLElement[] = [];
 
-      const chartType = panelComp.panelChart?.props?.chartType ?? '';
-      const title     = panelComp.panel.title ?? '';
-      const gridPos   = {
-        gridX:    panelComp.panel.x    ?? 0,
-        gridY:    panelComp.panel.y    ?? 0,
-        gridCols: panelComp.panel.cols ?? 20,
-        gridRows: panelComp.panel.rows ?? 10,
-      };
-
-      if (['table', 'crosstable'].includes(chartType)) {
-        const tableInstance = panelComp.panelChart?.currentConfig;
-        if (tableInstance) {
-          panelDataList.push({ title, type: chartType as 'table' | 'crosstable', tableData: tableInstance, ...gridPos });
-        }
-      } else if (['kpi', 'kpibar', 'kpiline', 'kpiarea'].includes(chartType)) {
-        const inject = panelComp.panelChart?.componentRef?.instance?.inject;
-        if (inject) {
-          const kpiData = {
-            value:              inject.value,
-            sufix:              inject.sufix              || '',
-            kpiColor:           inject.kpiColor           || '',
-            modifiedFontPoints: inject.modifiedFontPoints || 0,
-          };
-          if (chartType === 'kpi') {
-            // Pure KPI: text only
-            panelDataList.push({ title, type: 'kpi', kpiData, ...gridPos });
-          } else {
-            // KPI with chart: hide the number to capture only the chart
-            const kpiComp   = panelComp.panelChart?.componentRef?.instance;
-            const kpiNumEl  = kpiComp?.kpiContainer?.nativeElement as HTMLElement | undefined;
-            if (kpiNumEl) kpiNumEl.style.visibility = 'hidden';
-            const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
-            if (kpiNumEl) kpiNumEl.style.visibility = '';
-            panelDataList.push({
-              title,
-              type: 'kpi',
-              kpiData,
-              imageBase64:  captured.imageBase64,
-              imageWidth:   captured.imageWidth,
-              imageHeight:  captured.imageHeight,
-              ...gridPos,
-            });
-          }
-        }
-      } else {
-        const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
-        panelDataList.push({ ...captured, title, ...gridPos });
-      }
+    for (const panelComp of panels) {
+      const spec = this._prepareExportPanel(panelComp, hidden);
+      if (spec) specs.push(spec);
     }
-
-    return panelDataList;
-  }
-
-  /**
-   * Captures the chart area as PNG, previously hiding the header
-   * (.drag-handler) so the panel title does not appear in the image.
-   */
-  private async _captureChartImage(
-    hostEl: HTMLElement | undefined,
-    panelTitle: string
-  ): Promise<Pick<DashboardPanelExport, 'type' | 'imageBase64' | 'imageWidth' | 'imageHeight'>> {
-    if (!hostEl) return { type: 'other' };
-
-    const headerEl = hostEl.querySelector('.drag-handler') as HTMLElement | null;
-    if (headerEl) headerEl.style.visibility = 'hidden';
 
     try {
-      const SCALE = 1.5;
-      const canvas = await html2canvas(hostEl, {
-        backgroundColor: '#ffffff',
-        useCORS: false,
-        allowTaint: true,
-        logging: false,
-        scale: SCALE,
-      });
-      return {
-        type: 'chart',
-        imageBase64:  canvas.toDataURL('image/png'),
-        imageWidth:   Math.round(canvas.width  / SCALE),
-        imageHeight:  Math.round(canvas.height / SCALE),
-      };
-    } catch (err) {
-      console.warn(`[Export] No se pudo capturar imagen del panel "${panelTitle}":`, err);
-      return { type: 'other' };
+      const imageTargets = specs.map(s => s.hostEl).filter((el): el is HTMLElement => !!el);
+      const captured = await this._captureElementsBatched(imageTargets, 1.5);
+      for (const spec of specs) {
+        if (!spec.hostEl) continue;
+        const img = captured.get(spec.hostEl);
+        if (img) {
+          spec.entry.imageBase64 = img.dataUrl;
+          spec.entry.imageWidth  = img.width;
+          spec.entry.imageHeight = img.height;
+        } else if (spec.entry.type === 'chart') {
+          spec.entry.type = 'other';
+        }
+      }
     } finally {
-      if (headerEl) headerEl.style.visibility = '';
+      hidden.forEach(el => { el.style.visibility = ''; });
     }
+
+    return specs.map(s => s.entry);
+  }
+
+  /** Builds a panel's export entry without capturing anything yet. For chart / kpi-with-chart
+   *  panels, hides the header (and KPI number) now and returns the host element as the image
+   *  target for the caller's single batched capture; `hidden` collects everything to restore. */
+  private _prepareExportPanel(
+    panelComp: any,
+    hidden: HTMLElement[]
+  ): { entry: DashboardPanelExport; hostEl?: HTMLElement } | null {
+    const chartType = panelComp.panelChart?.props?.chartType ?? '';
+    const title     = panelComp.panel.title ?? '';
+    const gridPos   = {
+      gridX:    panelComp.panel.x    ?? 0,
+      gridY:    panelComp.panel.y    ?? 0,
+      gridCols: panelComp.panel.cols ?? 20,
+      gridRows: panelComp.panel.rows ?? 10,
+    };
+
+    if (['table', 'crosstable'].includes(chartType)) {
+      const tableInstance = panelComp.panelChart?.currentConfig;
+      return tableInstance ? { entry: { title, type: chartType as 'table' | 'crosstable', tableData: tableInstance, ...gridPos } } : null;
+    }
+
+    if (['kpi', 'kpibar', 'kpiline', 'kpiarea'].includes(chartType)) {
+      const inject = panelComp.panelChart?.componentRef?.instance?.inject;
+      if (!inject) return null;
+
+      const kpiData = {
+        value:              inject.value,
+        sufix:              inject.sufix              || '',
+        kpiColor:           inject.kpiColor           || '',
+        modifiedFontPoints: inject.modifiedFontPoints || 0,
+      };
+      if (chartType === 'kpi') return { entry: { title, type: 'kpi', kpiData, ...gridPos } };
+
+      // KPI with chart: hide the number so the capture only shows the chart
+      const kpiComp  = panelComp.panelChart?.componentRef?.instance;
+      const kpiNumEl = kpiComp?.kpiContainer?.nativeElement as HTMLElement | undefined;
+      if (kpiNumEl) { kpiNumEl.style.visibility = 'hidden'; hidden.push(kpiNumEl); }
+      const hostEl = this._prepareChartHost(panelComp.elRef?.nativeElement, hidden);
+      return { entry: { title, type: 'kpi', kpiData, ...gridPos }, hostEl };
+    }
+
+    const hostEl = this._prepareChartHost(panelComp.elRef?.nativeElement, hidden);
+    return { entry: { title, type: 'chart', ...gridPos }, hostEl };
+  }
+
+  /** Hides a panel's header (.drag-handler) so it doesn't appear in the captured image; returns
+   *  the host element to capture, or undefined if there's nothing to capture. */
+  private _prepareChartHost(hostEl: HTMLElement | undefined, hidden: HTMLElement[]): HTMLElement | undefined {
+    if (!hostEl) return undefined;
+    const headerEl = hostEl.querySelector('.drag-handler') as HTMLElement | null;
+    if (headerEl) { headerEl.style.visibility = 'hidden'; hidden.push(headerEl); }
+    return hostEl;
+  }
+
+  /** Captures several elements in ONE html2canvas call (same fixed ~4-5s cost as capturing a
+   *  single one), then crops each element's own region back out of the combined canvas. Reuses
+   *  _buildOffscreenCaptureContainer so every target gets an explicit pinned width/height -
+   *  without it, a panel reparented outside gridster can collapse/clip on percentage-based CSS
+   *  sizing that assumed its original gridster-item ancestor. */
+  private async _captureElementsBatched(
+    elements: HTMLElement[],
+    scale: number
+  ): Promise<Map<HTMLElement, { dataUrl: string; width: number; height: number }>> {
+    const result = new Map<HTMLElement, { dataUrl: string; width: number; height: number }>();
+    if (elements.length === 0) return result;
+
+    type Target = { el: HTMLElement; x: number; y: number; width: number; height: number };
+    const GAP = 20;
+    const targets: Target[] = [];
+    let cursorY = 0;
+    let maxWidth = 0;
+    for (const el of elements) {
+      const rect = el.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) continue;
+      targets.push({ el, x: 0, y: cursorY, width: rect.width, height: rect.height });
+      cursorY += rect.height + GAP;
+      maxWidth = Math.max(maxWidth, rect.width);
+    }
+    if (targets.length === 0) return result;
+
+    const contentWidth  = Math.ceil(maxWidth);
+    const contentHeight = Math.ceil(cursorY - GAP);
+    const container = await this._buildOffscreenCaptureContainer(targets, contentWidth, contentHeight);
+    try {
+      const canvas = await html2canvas(container, {
+        backgroundColor: '#ffffff',
+        // See _captureDashboardCanvas - the API's images are CORS-open, so this can be requested
+        // anonymously instead of skipped to avoid tainting the canvas.
+        useCORS: true,
+        allowTaint: false,
+        logging: false,
+        scale,
+        width: contentWidth,
+        height: contentHeight,
+      });
+      for (const t of targets) {
+        const sub = document.createElement('canvas');
+        sub.width  = Math.round(t.width  * scale);
+        sub.height = Math.round(t.height * scale);
+        const ctx = sub.getContext('2d');
+        if (!ctx) continue;
+        ctx.drawImage(
+          canvas,
+          Math.round(t.x * scale), Math.round(t.y * scale), sub.width, sub.height,
+          0, 0, sub.width, sub.height
+        );
+        result.set(t.el, { dataUrl: sub.toDataURL('image/png'), width: Math.round(t.width), height: Math.round(t.height) });
+      }
+    } catch (err) {
+      console.warn('[Export] No se pudieron capturar las imágenes de los paneles:', err);
+    } finally {
+      container.remove();
+    }
+    return result;
   }
 
   public getMailingAlertsEnabled(): boolean {
@@ -956,6 +1355,23 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.dashboard.globalFilter.onShowGlobalFilter(false, filtro)
   }
 
+  // Removes a global filter directly from the sidebar list, without opening its dialog.
+  // The affected panels aren't refreshed here so deleting several filters in a row doesn't
+  // re-run a query after every single click - they're refreshed once when the popover closes.
+  public removeFilterFromSidebar(filtro: any) {
+    (filtro.panelList || []).forEach((id: string) => this.pendingRefreshPanelIds.add(id));
+    this.dashboard.globalFilter.removeGlobalFilterOnClick(filtro, true);
+    this.hayFiltros = this.dashboard.globalFilter.globalFilters.length > 0;
+    this.initSidebar();
+  }
+
+  // Refreshes only the panels touched by filters removed since the popover was opened
+  private flushPendingFilterRemovalRefresh(): void {
+    if (this.pendingRefreshPanelIds.size === 0) return;
+    this.dashboard.refreshPanels(Array.from(this.pendingRefreshPanelIds));
+    this.pendingRefreshPanelIds.clear();
+  }
+
   public renameDashboard() {
     this.editableTitle = this.dashboard.title;
     this.editingTitle = true;
@@ -975,19 +1391,19 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
  public isReadOnlyCheck() {
     const user = localStorage.getItem('user');
-    const userName = JSON.parse(user).name;
-    const imProperty = userName === this.dashboard.dashboard.config.author;
+    const userName = JSON.parse(user)._id;
+    const imProperty = userName === this.dashboard.dashboard.user;
     const isObserver = JSON.parse(user).role.includes('135792467811111111111113');
     const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ? this.dashboard.dashboard.config.onlyIcanEdit: true ;
-    return userName === 'edaanonim' || (!onlyIcanEdit && !imProperty) || isObserver;
+    return userName === '135792467811111111111112' || (!onlyIcanEdit && !imProperty) || isObserver;
   }
 
   public isEditableCheck() {
     const user = localStorage.getItem('user');
-    const userName = JSON.parse(user).name;
+    const userId = JSON.parse(user)._id;
     const userRole = JSON.parse(user).role;
     const isAdmin = userRole.includes('135792467811111111111110');
-    const imProperty = userName === this.dashboard.dashboard.config.author
+    const imProperty = userId === this.dashboard.dashboard.user;
     return (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin );
   }
 
@@ -997,7 +1413,15 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
     // Toggle the state
     this.clickFiltersEnabled = !this.clickFiltersEnabled;
-    this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;    // Update label and icon based on state
+    this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
+
+    // Dashboard-level setting overrides each panel's local setting, regardless of its previous value
+    for (const panel of this.dashboard.panels) {
+      (panel as any).clickFiltersEnabled = this.clickFiltersEnabled;
+    }
+    this.dashboardService.setNotSaved(true);
+
+    // Update label and icon based on state
     clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
     clickItem.icon = this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban";
 
@@ -1023,7 +1447,36 @@ export class DashboardSidebarComponent implements AfterViewInit {
       : $localize`:@@disablePanelLockButton:Desbloquear los paneles`;
     lockItem.icon = this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock";
   }
-  
+
+  panelAnimationsButton() {
+    const animItem = this.sidebarItems.find(item => item.id === 'enablePanelAnimations');
+
+    this.clickPanelAnimationsButton = !this.clickPanelAnimationsButton;
+    this.dashboard.dashboard.config.panelAnimationsEnabled = this.clickPanelAnimationsButton;
+    this.dashboardService.setNotSaved(true);
+
+    // Overwrites each panel's own individually saved chartAnimation setting, same as
+    // panelLockButton() overwrites dragEnabled/resizeEnabled regardless of any prior per-panel value.
+    // Does NOT call dashboard.refreshPanels() afterwards (unlike saveStyles()) - that re-runs each
+    // panel's query from the backend and then nudges it with the assignedColors-gated
+    // updateComponent(), which would silently undo/ignore the direct re-render setChartAnimation()
+    // just did below via changeChartType().
+    this.dashboard.edaPanels.forEach(panel => {
+      if (panel.panelChart) {
+        try {
+          panel.panelChart.setChartAnimation(this.clickPanelAnimationsButton);
+        } catch (error) {
+          console.error(`Error al actualizar la animación del panel:`, error);
+        }
+      }
+    });
+
+    animItem.label = this.clickPanelAnimationsButton
+      ? $localize`:@@disablePanelAnimationsButton:Desactivar animaciones`
+      : $localize`:@@enablePanelAnimationsButton:Activar animaciones`;
+    animItem.icon = this.clickPanelAnimationsButton ? "pi pi-bolt" : "pi pi-ban";
+  }
+
   toggleEdit() {
     // Find the item once
     const clickItem = this.sidebarItems.find(item => item.id === 'enableEdition');

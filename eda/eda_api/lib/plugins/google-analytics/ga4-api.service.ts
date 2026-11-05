@@ -64,7 +64,7 @@ export class GA4ApiService {
         return new OAuth2Client(
             ga4Config.CLIENT_ID,
             ga4Config.CLIENT_SECRET,
-            ga4Config.REDIRECT_URI
+            ga4Config.PROXY_URL || ga4Config.REDIRECT_URI
         );
     }
 

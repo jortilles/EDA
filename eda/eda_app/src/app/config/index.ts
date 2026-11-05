@@ -1,2 +1,1 @@
-export * from './personalitzacio/customizables';
-export * from './aggretation-types';
+export * from './customizable/customizable_default';

@@ -11,7 +11,7 @@
   <!-- Main value (with prefix image if set) -->
   <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;min-width:0;" [ngStyle]="getContainerStyle()">
     @if(inject?.prefixImage) {
-      <img [src]="inject.prefixImage" style="height:1em;width:auto;object-fit:contain;flex-shrink:0;" />
+      <img [src]="inject.prefixImage | mediaSrc" style="height:1em;width:auto;object-fit:contain;flex-shrink:0;" />
     }
     <div class="font-bold" [ngStyle]="getValueStyle()"
          style="line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">

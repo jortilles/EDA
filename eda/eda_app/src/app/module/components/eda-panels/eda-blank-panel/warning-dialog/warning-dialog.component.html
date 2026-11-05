@@ -1,0 +1,32 @@
+<eda-dialog2 width="60vw" height="auto" [overflow]="'auto'" [showApply]="false" [showClose]="false" (close)="close(false)">
+  <div content class="center px-8 py-6">
+    <h1 class="warning-title" i18n="@@dangerQuery">¡Cuidado!</h1>
+
+    @switch (kind) {
+      @case ('heavyQuery') {
+        <h3 i18n="@@dangerQueryText1">La consulta que estás a punto de realizar es potencialmente pesada y puede tardar mas de lo normal en ejecutarse.</h3>
+        <h3 i18n="@@dangerQueryText2">Puedes añadir filtros o agregaciones para reducir el número de registros</h3>
+        <h3 i18n="@@dangerQueryText3">¿Deseas continuar?</h3>
+      }
+      @case ('cumsum') {
+        <h3 i18n="@@cumsumAlertMessage1">La suma acumulativa sólo se puede aplicar si se dispone de una única serie no numérica.</h3>
+        <h3 i18n="@@cumsumAlertMessage2">Puedes desactivar la función acumulativa en el campo de fecha o quitar una columna no numérica.</h3>
+      }
+    }
+
+    <div class="flex justify-center gap-2 mt-6">
+      @if (kind === 'cumsum') {
+        <button type="button" pButton (click)="close(false)" icon="pi pi-check" class="p-button-raised p-button-warning"
+          i18n-label="@@AddFiltersWarningButton" label="Entendido">
+        </button>
+      } @else {
+        <button type="submit" pButton (click)="close(true)" icon="fa fa-check" class="p-button-raised p-button-success"
+          i18n-label="@@guardarBtn" label="Confirmar">
+        </button>
+        <button type="button" pButton (click)="close(false)" icon="fa fa-times" class="p-button-raised p-button-danger"
+          i18n-label="@@cancelarBtn" label="Cancelar">
+        </button>
+      }
+    </div>
+  </div>
+</eda-dialog2>

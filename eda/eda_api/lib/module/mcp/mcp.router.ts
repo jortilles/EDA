@@ -222,6 +222,7 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
         const MAX_ITERATIONS = 10;
         let lastExplorationOptions: any[] = [];
         let lastChartData: any = null;
+        let lastDashboardProposal: any = null;
 
         while (iterations < MAX_ITERATIONS) {
             iterations++;
@@ -255,6 +256,19 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
                         dashboard_url: o.dashboard_url,
                     }));
                     lastExplorationOptions = [];
+                }
+                if (lastDashboardProposal) {
+                    console.log('[CHAT] done — incluyendo propuesta de dashboard:', lastDashboardProposal.proposed_title);
+                    responsePayload.options = [{
+                        num: 1,
+                        type: 'generate_confirm',
+                        label: lastDashboardProposal.proposed_title,
+                        datasource_id: lastDashboardProposal.datasource_id,
+                        datasource_name: lastDashboardProposal.datasource_name,
+                        proposed_title: lastDashboardProposal.proposed_title,
+                        description: lastDashboardProposal.description,
+                    }];
+                    lastDashboardProposal = null;
                 }
                 if (lastChartData) {
                     console.log('[CHAT] done — incluyendo chart en payload:', lastChartData.title);
@@ -313,6 +327,14 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
                                 }
                                 if (chartFound) lastChartData = chartFound;
                                 resultText = JSON.stringify(parsed);
+                            } catch (_) {}
+                        }
+                        if (tc.name === 'propose_dashboard') {
+                            try {
+                                const parsed = JSON.parse(resultText);
+                                if (parsed?.type === 'dashboard_proposal') {
+                                    lastDashboardProposal = parsed;
+                                }
                             } catch (_) {}
                         }
                     } catch (toolErr: any) {

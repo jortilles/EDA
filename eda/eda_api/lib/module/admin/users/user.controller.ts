@@ -8,6 +8,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { QueryOptions } from 'mongoose';
 import { GroupController } from '../groups/group.controller';
+import { randomSsoPasswordHash } from '../../../utils/sso-password.util';
 
 
 
@@ -72,7 +73,7 @@ export class UserController {
                         const userToSave: IUser = new User({
                             name: userAD.displayName,
                             email: userAD.username,
-                            password: bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10),
+                            password: randomSsoPasswordHash(),
                             img: body.img,
                             role: adGroupsInMongo,
                             creation_date: new Date()
@@ -404,14 +405,22 @@ export class UserController {
     static async provideToken(req: Request, res: Response, next: NextFunction) {
         try {
             // Buscar el usuario
-            const user = await User.findOne(
+            const userDoc = await User.findOne(
                 { email: req.params.usermail },
                 'name email img role google'
             );
 
-            if (!user) {
+            if (!userDoc) {
                 return next(new HttpException(404, `User with this email not found`));
             }
+
+            // fake-login sólo lo usa el render del PDF de mailing: el destinatario debe ver el
+            // informe con los mismos permisos de grupo que tendría al hacer login. User.role puede
+            // estar desactualizado, así que añadimos todo grupo cuya lista `users` lo contenga.
+            const memberGroups = await Group.find({ users: userDoc._id }, '_id');
+            const roleIds = new Set<string>((userDoc.role || []).map((r: any) => String(r)));
+            memberGroups.forEach(g => roleIds.add(String(g._id)));
+            const user = { ...userDoc.toObject(), role: Array.from(roleIds) };
 
             // Crear token JWT
             const token = jwt.sign({ user }, SEED, { expiresIn: 3600 }); // 1 hora
@@ -425,7 +434,8 @@ export class UserController {
 
 
     static async provideFakeToken(){
-        let token = await jwt.sign({ name:'fakeuser' }, SEED, { expiresIn: 60 });
+        // 1800s = 30 min (expiresIn is seconds, not minutes) — a Playwright render can take minutes.
+        let token = await jwt.sign({ name:'fakeuser' }, SEED, { expiresIn: 1800 });
         return token;
     }
 

@@ -45,13 +45,11 @@
                     class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Expresión SQL <span class="text-red-500">*</span>
                 </label>
-                <textarea id="eda_sqlExpression"
+                <eda-code-editor id="eda_sqlExpression"
                     formControlName="sqlExpression"
-                    [(ngModel)]="sqlExpressionString"
-                    rows="5"
-                    (keyup)="update()"
-                    class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                </textarea>
+                    language="sql" minHeight="60px"
+                    (valueChange)="onSqlExpressionChange($event)">
+                </eda-code-editor>
             </div>
 
             <div class="grid gap-2">

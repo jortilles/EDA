@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
-import { AlertService, GroupService, IGroup } from "@eda/services/service.index";
+import { AlertService, GroupService, IGroup, FileUtiles } from "@eda/services/service.index";
 import { EdaDialog, EdaDialog2Component, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { SharedModule } from "@eda/shared/shared.module";
 import { DashboardStyles, StyleProviderService } from "@eda/services/service.index";
@@ -14,7 +14,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { DropdownModule } from 'primeng/dropdown';
 import { CommonModule } from '@angular/common';
 import { DashboardPage } from "../../pages/dashboard/dashboard.page";
-import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/personalitzacio/customizables';
+import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/customizable/customizable_default';
+import { MediaLibraryComponent } from '@eda/components/media-library/media-library.component';
 
 
 @Component({
@@ -23,7 +24,7 @@ import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/personalitzacio/cust
   styleUrls: ['./dashboard-edit-style.dialog.css'],
   templateUrl: './dashboard-edit-style.dialog.html',
   imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule,
-    MultiSelectModule, FloatLabelModule, SliderModule, ColorPickerModule, RadioButtonModule, DropdownModule, CommonModule, EdaDialog2Component]
+    MultiSelectModule, FloatLabelModule, SliderModule, ColorPickerModule, RadioButtonModule, DropdownModule, CommonModule, EdaDialog2Component, MediaLibraryComponent]
 })
 export class DashboardEditStyleDialog {
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
@@ -38,7 +39,7 @@ export class DashboardEditStyleDialog {
   public backgroundColor: string = this.stylesProviderService.DEFAULT_BACKGROUND_COLOR;
   public panelColor: string = this.stylesProviderService.DEFAULT_PANEL_COLOR;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
-  public selectedPalette = this.stylesProviderService.ActualChartPalette !== undefined ? this.allPalettes.find(p => p?.name === this.stylesProviderService?.ActualChartPalette['name']) : this.allPalettes[0];
+  public selectedPalette: any = null;
   public properties: boolean = true;
   
   public fonts: Array<any> =
@@ -68,7 +69,8 @@ export class DashboardEditStyleDialog {
   public samplePanelName: string = $localize`:@@samplePanelName:Título del panel`;
   public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
   public css: string;
-  public backgroundImage: string | null = null;  // base64 data URI
+  public backgroundImage: string | null = null;  // base64 data URI (legacy) or media library url
+  public mediaPickerOpen: boolean = false;
 
   public left: string = $localize`:@@left:Izquierda`;
   public center: string = $localize`:@@center:Centro`;
@@ -117,7 +119,7 @@ export class DashboardEditStyleDialog {
   public positionType: string = GLOBAL_FILTER_BUTTON_POSITION;
 
   constructor(private formBuilder: UntypedFormBuilder, private alertService: AlertService
-    , private stylesProviderService: StyleProviderService) {
+    , private stylesProviderService: StyleProviderService, private fileUtils: FileUtiles) {
       this.dashBoardStyles = {} as DashboardStyles;
   }
 
@@ -285,28 +287,35 @@ export class DashboardEditStyleDialog {
     });
 }
 
-public onBackgroundImageSelected(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  const file = input?.files?.[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => { this.backgroundImage = reader.result as string; };
-  reader.readAsDataURL(file);
+public openMediaPicker(): void {
+  this.mediaPickerOpen = true;
+}
+
+public onMediaSelected(url: string): void {
+  this.backgroundImage = url;
+  this.mediaPickerOpen = false;
 }
 
 public removeBackgroundImage(): void {
   this.backgroundImage = null;
 }
 
+private resolveImageSrc(value: string): string {
+  if (!value) return value;
+  if (value.startsWith('data:') || /^https?:\/\//.test(value)) return value;
+  return this.fileUtils.connection(value);
+}
+
 public openImageInNewTab(): void {
   const win = window.open('', '_blank');
-  win.document.write(`<html><body style="margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="${this.backgroundImage}" style="max-width:100%;max-height:100vh"></body></html>`);
+  win.document.write(`<html><body style="margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="${this.resolveImageSrc(this.backgroundImage)}" style="max-width:100%;max-height:100vh"></body></html>`);
   win.document.close();
 }
 
 public saveConfig(): void {
-    // Apply palette to all dashboard charts
-    this.applyPaletteToAllCharts();
+    if (this.selectedPalette) {
+        this.applyPaletteToAllCharts();
+    }
     
     const response: DashboardStyles = {
         stylesApplied: true,
@@ -336,7 +345,7 @@ public saveConfig(): void {
             fontSize: this.panelFontSize,
             fontColor: this.panelFontColor
         },
-        palette: this.selectedPalette,
+        palette: this.selectedPalette ?? this.stylesProviderService.ActualChartPalette,
         filterButtonPosition: this.positionType
     }
     

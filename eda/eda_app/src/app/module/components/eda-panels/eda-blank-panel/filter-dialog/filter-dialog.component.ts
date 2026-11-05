@@ -14,7 +14,7 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
-import { aggTypes } from 'app/config/aggretation-types';
+import { AGG_TYPES } from '@eda/configs/customizable/customizable_default';
 
 const ANGULAR_MODULES = [
     FormsModule,
@@ -219,11 +219,11 @@ export class FilterDialogComponent {
     }
 
     getAggName(value: string) {
-        return aggTypes.filter(agg => agg.value === value)[0].label;
+        return AGG_TYPES.filter(agg => agg.value === value)[0].label;
     }
 
     getAggregationText(value: any) {
-        const label = aggTypes.filter(agg => {
+        const label = AGG_TYPES.filter(agg => {
             return (agg.value === value.aggregation_type);
         })[0].label;
         return label;

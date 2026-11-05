@@ -26,13 +26,95 @@
       </div>
     }
 
+    <!-- Lock button (visible in header when showLockInHeader is true) -->
+    @if (showLockInHeader && isEditable()) {
+      <i
+        [class]="isPanelLocked() ? 'pi pi-lock text-red-500' : 'pi pi-lock-open text-green-500'"
+        class="cursor-pointer ml-2 w-[28px] h-[28px] flex items-center justify-center text-center rounded-full content-center"
+        (click)="togglePanelLock()"
+        (mousedown)="$event.stopPropagation()"
+      ></i>
+    }
+
     <!-- Icon on the right -->
-    <i 
+    <i
       [ngClass]="{'edit-blink': lodash.isEmpty(panel.content)}"
       class="pi pi-ellipsis-v cursor-pointer ml-2  w-[28px] h-[28px] flex items-center justify-center text-center rounded-full content-center"
       (click)="openContextMenu($event)"
+      (mouseenter)="!lodash.isEmpty(panel.content) && showPanelInfoOverlay($event, panelInfoOverlay)"
+      (mouseleave)="hidePanelInfoOverlay(panelInfoOverlay)"
     >
     </i>
+
+    <!-- Panel info overlay (attributes + filters summary) -->
+    <p-overlayPanel #panelInfoOverlay appendTo="body" [style]="{'max-width': '35vw', 'min-width': '22vw'}">
+      <ng-template pTemplate>
+        <div class="max-h-[50vh] overflow-auto p-1">
+
+          <!-- Atributos -->
+          <div class="mb-3">
+            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenAtrH6Hover">¿Qué estoy viendo?</h4>
+            @if (currentQuery.length === 0) {
+              <span class="text-sm text-gray-400 italic" i18n="@@noAttributes">Sin atributos</span>
+            }
+            @for (column of currentQuery; track column.display_name.default) {
+              <div class="flex items-center gap-1 text-sm py-0.5">
+                <strong class="text-gray-400 text-xs" [innerHTML]="getColumnJoins(column)"></strong>
+                <span class="font-semibold text-gray-700">{{ getNiceTableName(column.table_id) }}</span>
+                <i class="pi pi-angle-right text-gray-400 text-xs"></i>
+                <span class="text-gray-700">{{ column.display_name.default }}</span>
+                @for (aggregation of column.aggregation_type; track aggregation.display_name) {
+                  @if (aggregation.selected && !['No', 'no'].includes(aggregation.display_name)) {
+                    <span class="text-gray-500 text-xs">({{ aggregation.display_name }})</span>
+                  }
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Filtros del panel -->
+          <div class="mb-3">
+            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenFiltrosPanelH6">Filtros del panel</h4>
+            @if (selectedFilters.length === 0) {
+              <span class="text-sm text-gray-400 italic" i18n="@@noFilters">Sin filtros</span>
+            }
+            @for (filter of selectedFilters; track filter) {
+              <div class="text-sm py-0.5">
+                <span class="text-gray-400 text-xs" [innerHTML]="getFilterJoins(filter)"></span>
+                <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+              </div>
+            }
+          </div>
+
+          <!-- Filtros del informe -->
+          <div class="mb-3">
+            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenFiltrosInformeH6">Filtros del informe</h4>
+            @if (globalFilters.length === 0) {
+              <span class="text-sm text-gray-400 italic" i18n="@@noFilters">Sin filtros</span>
+            }
+            @for (filter of globalFilters; track filter) {
+              <div class="text-sm py-0.5">
+                <span class="text-gray-400 text-xs" [innerHTML]="getFilterJoins(filter)"></span>
+                <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+              </div>
+            }
+          </div>
+
+          <!-- Paneles que afectan a este panel (filtros en click, bilateral) -->
+          <div>
+            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenPanelesAfectanH6">Paneles que me afectan</h4>
+            @if (getAffectingPanels().length === 0) {
+              <span class="text-sm text-gray-400 italic" i18n="@@noAffectingPanels">Sin paneles</span>
+            }
+            @for (affectingPanel of getAffectingPanels(); track affectingPanel.id) {
+              <div class="text-sm py-0.5 text-gray-700">{{ affectingPanel.title }}</div>
+            }
+          </div>
+
+        </div>
+      </ng-template>
+    </p-overlayPanel>
+
   </div>
 
 
@@ -70,7 +152,7 @@
 </div>
 
 @if(display_v.page_dialog) {
-  <eda-dialog2 [display]="display_v.page_dialog" width="95vw" [ngStyle]="panelContent" [overflow]="'hidden'" height="100vh">
+  <eda-dialog2 [display]="display_v.page_dialog" width="95vw" [ngStyle]="panelContent" [overflow]="'hidden'" [fillContent]="true" height="100vh">
 
     <!-- Header -->
     <div header class="w-full flex items-center px-2 py-0 gap-x-4">
@@ -131,11 +213,11 @@
     </div>
   
     <!-- Main Content -->
-    <div content class="flex w-full flex-col rounded-lg bg-background ">
-      <div class="flex-1 relative ">
+    <div content class="flex w-full h-full flex-col rounded-lg bg-background ">
+      <div class="relative min-h-0 flex flex-col" [class.flex-1]="indextab == 0">
 
         <!-- Tabs -->
-        <div class="flex mb-4 md:mb-1 space-x-4 pl-3">
+        <div class="flex mb-4 md:mb-1 space-x-4 pl-3 shrink-0">
           <h3 
             (click)="indextab = 0" 
             i18n="@@vistaSeleccionador"
@@ -161,10 +243,10 @@
           @if (selectedQueryMode !== 'SQL') {
             <!-- Edit Query View -->
             <!-- Left Sidebar -->
-            <div class="flex w-full border-r h-[68vh] overflow-y-hidden">
+            <div class="flex w-full border-r flex-1 min-h-0 overflow-y-hidden">
 
               <!-- Entities Section -->
-              <div class="w-1/6 border-r ">
+              <div class="w-1/6 border-r flex flex-col min-h-0">
 
                 <div class="border-b p-3 pt-0">
                   <h3 i18n="@@entidadesH4" class="text-lg mb-2 font-bold" i18n-title="@@entidadesTitle" title="Clique sobre un entidad para ver sus atributos.">
@@ -182,7 +264,7 @@
                   </div>
                 </div>
 
-                <div class="overflow-y-auto h-[58vh] text-base">
+                <div class="overflow-y-auto flex-1 min-h-0 text-base">
 
                     <ng-template #entityList>
                       <div class="space-y-1 p-2">
@@ -243,18 +325,31 @@
 
               <!-- ATTRIBUTES -->
               <!-- Attributes Section -->
-              <div class="w-1/6 border-r">
+              <div class="w-1/6 border-r flex flex-col min-h-0">
 
                 @if(userSelectedTable){
                   <div class="border-b p-3 pt-0">
-                    <h3 
-                      class="text-lg mb-2 font-bold" 
-                      i18n="@@atributosH4" 
-                      i18n-title="@@atributsTitle"
-                      title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes"
-                    >
-                      Atributos
-                    </h3>
+                    <div class="flex items-center justify-between mb-2">
+                      <h3
+                        class="text-lg font-bold"
+                        i18n="@@atributosH4"
+                        i18n-title="@@atributsTitle"
+                        title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes"
+                      >
+                        Atributos
+                      </h3>
+
+                      @if (showHiddenFieldsButton && (!showHiddenFieldsButtonAdminOnly || userService.isAdmin)) {
+                        <span
+                          i18n-title="@@hiddenAttributes"
+                          title="Mostrar/ocultar campos ocultos"
+                          class="cursor-pointer"
+                          (click)="changeHiddenMode()"
+                        >
+                          <i [class]="showHiddenColumn ? 'pi pi-eye' : 'pi pi-eye-slash'" style="font-size: 1.2rem"></i>
+                        </span>
+                      }
+                    </div>
                     <div class="relative w-full">
                       <eda-icon name="search" class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500"></eda-icon>
                       <input 
@@ -268,7 +363,7 @@
                   </div>
                 }
 
-                <div class="flex w-full overflow-y-auto h-[58vh] text-base">
+                <div class="flex w-full overflow-y-auto flex-1 min-h-0 text-base">
                   <div class="w-full">
                     <div class="space-y-1 p-2" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
                       [cdkDropListConnectedTo]="[selectList, filterList, 'result-sorting-list']" (cdkDropListDropped)="drop($event)"
@@ -433,15 +528,18 @@
                         <!-- Query container -->
                         @if(display_v.showQueryContainer) {
                           <div class="fixed inset-0 z-40" (click)="display_v.showQueryContainer = false"></div>
-                          <div id="query-container" class="absolute top-full left-0 mt-2 w-[42vw] bg-white z-50 shadow-xl rounded-xl border border-gray-200 flex flex-col overflow-hidden">
-                            <!-- Header -->
-                            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50">
+                          <div id="query-container" cdkDrag cdkDragBoundary="body"
+                            class="absolute top-full left-0 mt-2 bg-white z-50 shadow-xl rounded-xl border border-gray-200 flex flex-col resize overflow-auto"
+                            style="width:42vw; height:38vh; min-width:320px; min-height:220px; max-width:90vw; max-height:80vh;">
+                            <!-- Header (drag handle) -->
+                            <div cdkDragHandle class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50 shrink-0 cursor-move">
                               <div class="flex items-center gap-2">
                                 <i class="pi pi-code text-[var(--corporate-primary)] text-base"></i>
                                 <span class="text-base font-semibold text-gray-700" i18n="@@yourQuerySQL">Mi consulta SQL</span>
                               </div>
                               <button
                                 (click)="display_v.showQueryContainer = false"
+                                (mousedown)="$event.stopPropagation()"
                                 class="flex items-center justify-center w-6 h-6 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors"
                               >
                                 <i class="pi pi-times text-xs"></i>
@@ -454,14 +552,13 @@
                               </div>
                             }
                             @if(!display_v.minispinnerSQL) {
-                              <div class="flex flex-col gap-3 p-4">
+                              <div class="flex flex-col gap-3 p-4 flex-1 min-h-0">
                                 <textarea
-                                  class="w-full h-[22vh] p-3 border border-gray-200 rounded-lg resize-none text-base font-mono bg-gray-50 focus:outline-none focus:border-[var(--corporate-primary)] leading-relaxed"
+                                  class="w-full flex-1 min-h-0 p-3 border border-gray-200 rounded-lg resize-none text-base font-mono bg-gray-50 focus:outline-none focus:border-[var(--corporate-primary)] leading-relaxed"
                                   [(ngModel)]="queryFromServer"
                                   pInputTextarea
-                                  autoResize="autoResize"
                                 ></textarea>
-                                <div class="flex justify-end gap-2">
+                                <div class="flex justify-end gap-2 shrink-0">
                                   <button
                                     type="button"
                                     (click)="display_v.showQueryContainer = false"
@@ -663,21 +760,16 @@
                             </button>
                           </div>
 
-                          <!-- Dynamic filters -->
-                          <div class="flex items-center justify-between rounded-lg px-3 py-2">
-                            <span i18n="@@dynamicFiltersText" class="text-base font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" tooltipPosition="top">Filtros dinámicos</span>
-                            <button
-                              type="button"
-                              (click)="dynamicFiltersInteraction()"
-                              [ngClass]="{
-                                'btn-panel-active': dynamicFilters,
-                                'btn-panel-hover bg-white text-gray-600': !dynamicFilters
-                              }"
-                              class="px-3 py-1 text-base border rounded-md transition-all min-w-[3rem] text-center">
-                              {{ dynamicFilters ? 'Sí' : 'No' }}
-                            </button>
-                          </div>
-                          
+                          <!-- Click filter configuration (outgoing + bilateral) -->
+                          @if (selectedQueryMode !== 'SQL') {
+                            <div class="flex items-center justify-between rounded-lg px-3 py-2">
+                              <span i18n="@@clickFiltersConfigText" class="text-base font-medium text-gray-700" pTooltip="Decide si este panel es clicable y a qué paneles afecta su click" tooltipPosition="top">Filtros en click</span>
+                              <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onClickFilterConfig()">
+                                <span i18n="@@configurarClickFilters">Configurar</span>
+                              </button>
+                            </div>
+                          }
+
                         </div>
 
                         <!-- Instructions -->
@@ -775,29 +867,6 @@
                               </div>
                             </details>
 
-                            <!-- Dynamic filters -->
-                            <details class="group" name="sqlIndicationOpenSection">
-                              <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
-                                <div class="flex items-center gap-2">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--corporate-primary)] shrink-0">
-                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                                  </svg>
-                                  <span class="text-base font-medium" i18n="@@dynamicFiltersText">Filtros dinámicos</span>
-                                </div>
-                                <svg class="h-4 w-4 text-gray-400 group-open:rotate-180 transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                </svg>
-                              </summary>
-                              <div class="px-4 pb-4 pt-2 text-base text-gray-600 bg-gray-50">
-                                <p class="mb-2" i18n="@@dynamicFilters1">Al hacer clic en otros paneles del dashboard se crean <strong>filtros dinámicos</strong> que afectan al resto de paneles. Activar esta opción hace que este panel <strong>ignore</strong> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</p>
-                                <p class="text-sm font-semibold text-gray-500 mb-1" i18n="@@indicaciones2">Limitaciones:</p>
-                                <ul class="list-disc pl-4 text-sm space-y-0.5">
-                                  <li i18n="@@dynamicFilters3">Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</li>
-                                  <li i18n="@@dynamicFilters4">Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</li>
-                                </ul>
-                              </div>
-                            </details>
-
                           </div>
                         </div>
 
@@ -827,15 +896,15 @@
             </div>
           } @else {
             <!-- Edit SQL Query View -->
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-0 h-full">
-              <div class="md:col-span-3 p-4 border-r border-gray-200">
-                <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-0 flex-1 min-h-0">
+              <div class="md:col-span-3 p-4 border-r border-gray-200 min-h-0">
+                <div class="flex flex-col gap-4 h-full">
                   <h3 class="font-semibold text-gray-700" i18n="@@sqlExpColumn">Expresión SQL</h3>
-                  <div class="relative">
-                    <textarea [(ngModel)]="currentSQLQuery"
-                      class="w-full h-64 p-3 border border-gray-300 rounded-md font-mono text-base resize-none focus:outline-none focus:border-[var(--corporate-primary)]"
+                  <div class="relative flex-1 min-h-[16rem]">
+                    <eda-code-editor [(ngModel)]="currentSQLQuery"
+                      language="sql" [fillHeight]="true"
                       placeholder="SELECT * FROM customers">
-                    </textarea>
+                    </eda-code-editor>
 
                   </div>
       
@@ -1195,48 +1264,16 @@
   <app-table-dialog [controller]="tableController" [dashboard]="dashboard"></app-table-dialog>
 }
 
-@if(alertController){
-  <app-alert-dialog [controller]="alertController"></app-alert-dialog>
-}
-
-@if(cumsumAlertController){
-  <app-cumsum-alert-dialog [controller]="cumsumAlertController"></app-cumsum-alert-dialog>
-}
-
-@if(sankeyController){
-  <app-sankey-dialog [controller]="sankeyController"></app-sankey-dialog>
-}
-
-@if(bubblechartController){
-  <app-bubblechart-dialog [controller]="bubblechartController"></app-bubblechart-dialog>
-}
-
-@if(treeMapController){
-  <app-tree-map-dialog [controller]="treeMapController"></app-tree-map-dialog>
+@if(warningController){
+  <app-warning-dialog [controller]="warningController"></app-warning-dialog>
 }
 
 @if(treeTableController){
   <app-tree-table-dialog [controller]="treeTableController"></app-tree-table-dialog>
 }
 
-@if(funnelController){
-  <app-funnel-dialog [controller]="funnelController"></app-funnel-dialog>
-}
-
-@if(scatterPlotController){
-  <app-scatter-plot-dialog [controller]="scatterPlotController"></app-scatter-plot-dialog>
-}
-
 @if(linkDashboardController){
   <link-dashboards-dialog [controller]="linkDashboardController"></link-dashboards-dialog>
-}
-
-@if(knobController){
-  <knob-dialog [controller]="knobController"> </knob-dialog>
-}
-
-@if(sunburstController){
-  <sunburst-dialog [controller]="sunburstController"> </sunburst-dialog>
 }
 
 @if(contextMenu){
@@ -1245,6 +1282,10 @@
 
 @if(chartTypeSelectorController) {
   <app-chart-type-selector-dialog [controller]="chartTypeSelectorController"></app-chart-type-selector-dialog>
+}
+
+@if(sourceFieldsController) {
+  <app-source-fields-dialog [controller]="sourceFieldsController"></app-source-fields-dialog>
 }
 
 @if(isVisibleEbpChatGpt) {
@@ -1256,6 +1297,10 @@
 
 @if (display_v.filterMapperDialog) {
   <app-filter-mapper-dialog [dashboard]="dashboard" [panel]="panel" (close)="onCloseFilterMapperDialog($event)"></app-filter-mapper-dialog>
+}
+
+@if (display_v.clickFilterConfigDialog) {
+  <app-click-filter-config-dialog [dashboard]="dashboard" [panel]="panel" (close)="onCloseClickFilterConfigDialog()"></app-click-filter-config-dialog>
 }
 
 @if (display_v.filterAndOr_dialog) {

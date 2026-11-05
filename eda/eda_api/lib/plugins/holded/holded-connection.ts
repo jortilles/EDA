@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
 import { HoldedApiService } from './holded-api.service';
+import { addHoldedRelations } from './holded-relations';
 
 export class HoldedConnection extends DuckDBConnection {
 
@@ -16,6 +17,8 @@ export class HoldedConnection extends DuckDBConnection {
         const { database, password } = this.config;
         const folderPath = path.join(process.cwd(), 'duckdb', database);
         await HoldedApiService.downloadToFolder({ apiKey: password }, folderPath);
-        return super.generateDataModel(optimize, filter);
+        const tables = await super.generateDataModel(optimize, filter);
+        addHoldedRelations(tables);
+        return tables;
     }
 }

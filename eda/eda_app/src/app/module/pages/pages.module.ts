@@ -9,7 +9,6 @@ import { GridsterModule } from 'angular-gridster2';
 // Component
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
 import { AlertsManagementComponent } from './alerts-management/alerts-management.component';
-import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-mail-dialog.component';
 
 
 // Routes
@@ -31,7 +30,6 @@ import { PrimengModule } from 'app/core/primeng.module';
     declarations: [
         AccountSettingsComponent,
         AlertsManagementComponent,
-        DashboardMailDialogComponent,
         SaveAsDialogComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

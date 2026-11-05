@@ -8,7 +8,11 @@ import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import localeCa from '@angular/common/locales/ca';
 import localePl from '@angular/common/locales/pl';
+import localeFr from '@angular/common/locales/fr';
+import localeDe from '@angular/common/locales/de';
 import localeEn from '@angular/common/locales/en';
+import localePt from '@angular/common/locales/pt-PT';
+import localeIt from '@angular/common/locales/it';
 
 // MSAL
 import { MsalModule, MSAL_INSTANCE, MsalService } from '@azure/msal-angular';
@@ -17,12 +21,25 @@ import { MICROSOFT_ID, MICROSOFT_AUTHORITY, MICROSOFT_REDIRECT_URI } from '@eda/
 
 // API configuration
 import { URL_SERVICES } from '../src/app/config/config';
+import { ChartConfig } from './app/module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-config';
+
+// Disable chart entrance animations when the app is loaded headlessly to render a dashboard
+// PDF for email sending (see mail-dashboards.controller.ts), so the export screenshot isn't
+// taken mid-animation.
+if (new URLSearchParams(window.location.search).get('pdfExport') === 'true') {
+  ChartConfig.disableAnimations = true;
+}
 
 // Register locales
 registerLocaleData(localeEs);
 registerLocaleData(localeCa);
 registerLocaleData(localePl);
+registerLocaleData(localeFr);
+registerLocaleData(localeDe);
 registerLocaleData(localeEn);
+// European Portuguese formats under the 'pt' locale id (Angular's default 'pt' data is pt-BR)
+registerLocaleData(localePt, 'pt');
+registerLocaleData(localeIt);
 
 // Detect IE
 const isIE =

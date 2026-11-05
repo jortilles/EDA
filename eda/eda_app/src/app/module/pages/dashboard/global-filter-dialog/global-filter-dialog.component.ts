@@ -312,7 +312,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         for (const panel of panels) {
             const fields = panel.content.query.query.fields ?? [];
             for (const field of fields) {
-                queryTables.add(field.table_id.split(".")[0]);
+                if (field.table_id) queryTables.add(field.table_id.split(".")[0]);
             }
         }
 

@@ -68,8 +68,11 @@ export class MainLeftSidebarComponent {
           { lang: 'EN', label: 'English', icon: 'en-flag' },
           { lang: 'ES', label: 'Español', icon: 'es-flag' },
           { lang: 'CA', label: 'Català', icon: 'cat-flag' },
-          { lang: 'FR', label: 'Francés', icon: 'fr-flag' },
+          { lang: 'FR', label: 'Français', icon: 'fr-flag' },
           { lang: 'PL', label: 'Polski', icon: 'pl-flag' },
+          { lang: 'DE', label: 'Deutsch', icon: 'de-flag' },
+          { lang: 'PT', label: 'Português', icon: 'pt-flag' },
+          { lang: 'IT', label: 'Italiano', icon: 'it-flag' },
         ]
       },
       {
@@ -103,6 +106,7 @@ export class MainLeftSidebarComponent {
     moleculaSection.items.unshift(
       { path: '/admin/users', label: $localize`:@@adminUsers:Gestión de usuarios`, icon: 'users' },
       { path: '/admin/groups', label: $localize`:@@adminGroupsTitle:Gestión de grupos`, icon: 'groups' },
+      { path: '/admin/media', label: $localize`:@@adminMedia:Gestor de archivos`, icon: 'circle-stack' },
       { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de fuentes de datos`, icon: 'rectangle-group' },
       { path: '/admin/models/import-export', label: $localize`:@@dataExportImport:Data Export/Import`, icon: 'arrow-down-on-square-stack' },
       { path: '/admin/email-settings', label: $localize`:@@adminEmail:Gestión de email`, icon: 'at-symbol' },
@@ -179,6 +183,9 @@ menuCommand(item: any, event: MouseEvent) {
         baseUrl.slice(-4) == '/ca/' ||
         baseUrl.slice(-4) == '/pl/' ||
         baseUrl.slice(-4) == '/fr/' ||
+        baseUrl.slice(-4) == '/de/' ||
+        baseUrl.slice(-4) == '/pt/' ||
+        baseUrl.slice(-4) == '/it/' ||
         baseUrl.slice(-4) == '/en/') {
         baseUrl = baseUrl.slice(0, baseUrl.length - 3)
     }
@@ -188,6 +195,9 @@ menuCommand(item: any, event: MouseEvent) {
       case 'ES': window.location.href = baseUrl + 'es/#/home'; break;
       case 'FR': window.location.href = baseUrl + 'fr/#/home'; break;
       case 'PL'  : window.location.href = baseUrl + 'pl/#/home'; break;
+      case 'DE': window.location.href = baseUrl + 'de/#/home'; break;
+      case 'PT': window.location.href = baseUrl + 'pt/#/home'; break;
+      case 'IT': window.location.href = baseUrl + 'it/#/home'; break;
     }
   }
   private getUrlParams(): void {

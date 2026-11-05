@@ -1,0 +1,13 @@
+{
+  "spec_dir": ".",
+  "spec_files": [
+    "src/app/module/components/eda-table/**/*.spec.ts",
+    "src/app/module/components/eda-table-core/**/*.spec.ts",
+    "src/app/module/components/eda-crosstable/**/*.spec.ts"
+  ],
+  "helpers": [
+    "spec/support/globals.ts"
+  ],
+  "random": false,
+  "stopSpecOnExpectationFailure": false
+}

@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent,EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent,EdaDialog2Component, CodeEditorComponent } from '@eda/shared/components/shared-components.index';
 import { AlertService, DataSourceService, QueryBuilderService, QueryParams, SpinnerService} from '@eda/services/service.index';
 import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule, FormsModule} from '@angular/forms';
 import { SelectItem } from 'primeng/api';
 import { EditColumnPanel } from '@eda/models/data-source-model/data-source-models';
-import { aggTypes } from 'app/config/aggretation-types';
+import { AGG_TYPES } from '@eda/configs/customizable/customizable_default';
 import { AGG_COMPUTED } from '../aggregationConstants';
 
 
@@ -14,7 +14,7 @@ import { AGG_COMPUTED } from '../aggregationConstants';
   selector: 'app-calculated-column-dialog',
   templateUrl: './calculated-column-dialog.component.html',
   styleUrls: ['../../../../../../assets/sass/eda-styles/components/dialog-component.css', './calculated-column-dialog.component.css'],
-  imports: [ReactiveFormsModule, EdaDialog2Component, FormsModule, CommonModule]
+  imports: [ReactiveFormsModule, EdaDialog2Component, FormsModule, CommonModule, CodeEditorComponent]
 })
 
 export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
@@ -24,7 +24,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
   public title = $localize`:@@addCalculatedColTitle:Añadir columna calculada a la tabla `;
 
   // Aggregation Types
-  public aggTypes: SelectItem[] = aggTypes;
+  public aggTypes: SelectItem[] = AGG_TYPES;
 
   // Table Name
   public tableName = "";

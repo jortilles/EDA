@@ -5,17 +5,23 @@ import { ApiService } from './api.service';
 export interface ChatOption {
   num: number;
   label: string;
-  type?: 'dashboard' | 'datasource' | 'paste';
+  type?: 'dashboard' | 'datasource' | 'paste' | 'generate_confirm';
   dashboard_id?: string;
   panel_index?: number;
   dashboard_url?: string;
   pasteText?: string;
   datasource_id?: string;
+  datasource_name?: string;
   campos_consulta?: string[];
   dashboard_nombre?: string;
   panel_titulo?: string;
   tiene_filtros?: boolean;
   filtros_nombres?: string;
+  // generate_confirm fields
+  proposed_title?: string;
+  description?: string;
+  visibility?: string;
+  selectedGroupIds?: string[];
 }
 
 export interface BarChartDataset {
@@ -110,6 +116,10 @@ export class IaChatService extends ApiService {
 
       return () => controller.abort();
     });
+  }
+
+  generateDashboard(body: { datasource_id: string; description: string; title: string; visible: string; group?: string[] }): Observable<any> {
+    return this.post('/assistant/generate-dashboard', body) as Observable<any>;
   }
 
   getConfig(): Observable<{ available: boolean }> {

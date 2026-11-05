@@ -24,9 +24,17 @@
         <tr>
           <td class="p-3 cursor-pointer" (click)="handleEditDataSource(dataSource)">{{ dataSource.model_name }}</td>
           <td class="p-3 text-right">
-            <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="handleEditDataSource(dataSource)">
-              <eda-icon name="pencil"></eda-icon>
-            </button>
+            <div class="flex justify-end">
+              <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="handleEditDataSource(dataSource)">
+                <eda-icon name="pencil"></eda-icon>
+              </button>
+              <button class="rounded-md p-2 cursor-pointer hover:bg-muted" title="Descargar modelo como JSON" i18n-title="@@downloadModelJson" (click)="handleDownloadDataSource(dataSource)">
+                <eda-icon name="export"></eda-icon>
+              </button>
+              <button class="rounded-md p-2 cursor-pointer hover:bg-muted" title="Borrar modelo de datos" i18n-title="@@deleteModel" (click)="handleDeleteDataSource(dataSource)">
+                <eda-icon name="bin"></eda-icon>
+              </button>
+            </div>
           </td>
         </tr>
         }

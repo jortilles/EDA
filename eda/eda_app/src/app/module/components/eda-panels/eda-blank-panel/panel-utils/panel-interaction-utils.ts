@@ -29,8 +29,11 @@ export const PanelInteractionUtils = {
         return !matcher && tableColumn.visible === true;
     });
 
+    // Hide columns marked as hidden unless the user toggled them visible via the eye button
+    const visibleColumns = filteredColumns.filter((tableColumn: Column) => ebp.showHiddenColumn || !tableColumn.hidden);
+
     // Sort columns by default display name
-    ebp.columns = filteredColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
+    ebp.columns = visibleColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
 
     // Reload Inputs when call func from select table 
     if(reloadInputs){ ebp.columnInput = ''; }
@@ -775,7 +778,7 @@ export const PanelInteractionUtils = {
   tooManyDataForCharts(ebp: EdaBlankPanelComponent, tooManyDataForCharts: any[]) {
     for (const myElem of tooManyDataForCharts) {
       for (const chart of ebp.chartTypes) {
-        if (myElem === chart.value) {
+        if (myElem === chart.subValue) {
           chart.tooManyData = true;
         }
       }

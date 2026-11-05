@@ -1,13 +1,13 @@
 {
     "name": "api-edalitics",
-    "version": "3.1.0",
+    "version": "3.2.0",
     "description": "EDA api package",
     "main": "index.js",
     "scripts": {
         "start": "nodemon",
         "start:forever": "npm run build && forever start -c node ./dist/server.js",
         "start:cluster": "npm run build && node ./dist/server.js --log-date-format 'YYYY-MM-DD HH:mm:ss'  ",
-        "start:pm2": "npm run build && pm2 start ./dist/server.js --log-date-format 'YYYY-MM-DD HH:mm:ss'  -i max  --name eda3   ",
+        "start:pm2": "npm run build && pm2 start ./dist/server.js --log-date-format 'YYYY-MM-DD HH:mm:ss'  --name eda3   ",
         "edalitics": "npm run build && pm2 start ./dist/server.js --log-date-format 'YYYY-MM-DD HH:mm:ss'  --name eda3   ",
         "edapi": "forever start -c node ./dist/server.js",
         "build": "tsc && npm run movejpgs",
@@ -31,7 +31,6 @@
         "@types/object-hash": "^1.3.4",
         "@types/passport": "^1.0.17",
         "@types/pdfkit": "^0.17.6",
-        "@types/snowflake-sdk": "^1.5.1",
         "activedirectory2": "^1.3.0",
         "arima": "^0.2.5",
         "bcryptjs": "^2.4.3",

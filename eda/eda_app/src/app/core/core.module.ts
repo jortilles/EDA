@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { PrimengModule } from './primeng.module';
-import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
     imports: [
@@ -17,7 +16,6 @@ import { NgChartsModule } from 'ng2-charts';
         FormsModule,
         ReactiveFormsModule,
         HttpClientModule,
-        NgChartsModule,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

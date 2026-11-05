@@ -25,6 +25,9 @@ export class ApiService {
             case 404:
                 result.text = error.error.message;
                 break;
+            case 409: /* Conflict, e.g. the folder of a new DuckDB model already exists */
+                result.text = error.error.message;
+                break;
             case 500:
                 result.text = error.error.message;
                 break;
