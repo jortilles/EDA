@@ -6897,7 +6897,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       </trans-unit>
       <trans-unit id="signInOAUTH2">
         <source>Continuar con OAUTH2</source>
-        <target>Continuer avec OAUTH2</target>
+        <target>S'identifier avec un certificat numérique</target>
       </trans-unit>
       <trans-unit id="signInMicrosoft">
         <source>Continuar con Microsoft</source>

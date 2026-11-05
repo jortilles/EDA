@@ -6929,7 +6929,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
       <trans-unit id="signInOAUTH2">
         <source>Continuar con OAUTH2</source>
-        <target>Continuar amb OAUTH2</target>
+        <target>Identifica't amb certificat digital</target>
       </trans-unit>
       <trans-unit id="signInMicrosoft">
         <source>Continuar con Microsoft</source>

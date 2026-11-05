@@ -6558,7 +6558,7 @@ OR<ph id="5"/>
 </trans-unit>
 <trans-unit id="signInOAUTH2">
   <source>Continuar con OAUTH2</source>
-  <target>Continue with OAUTH2</target>
+  <target>Sign in with digital certificate</target>
 </trans-unit>
 <trans-unit id="signInMicrosoft">
   <source>Continuar con Microsoft</source>
