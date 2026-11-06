@@ -7912,6 +7912,10 @@ Best regards.</target>
   <source>¿Mover carpeta?</source>
   <target>Move folder?</target>
 </trans-unit>
+<trans-unit id="moveReportConfirmTitle">
+  <source>¿Mover informe?</source>
+  <target>Move report?</target>
+</trans-unit>
 <trans-unit id="confirmBtn">
   <source>Confirmar</source>
   <target>Confirm</target>

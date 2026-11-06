@@ -8650,6 +8650,10 @@ Cordialement.</target>
   <source>¿Mover carpeta?</source>
   <target>Déplacer le dossier ?</target>
 </trans-unit>
+<trans-unit id="moveReportConfirmTitle">
+  <source>¿Mover informe?</source>
+  <target>Déplacer le rapport ?</target>
+</trans-unit>
 <trans-unit id="confirmBtn">
   <source>Confirmar</source>
   <target>Confirmer</target>

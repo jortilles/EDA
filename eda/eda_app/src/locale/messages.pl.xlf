@@ -8327,6 +8327,10 @@ Pozdrawiam.</target>
   <source>¿Mover carpeta?</source>
   <target>Przenieść folder?</target>
 </trans-unit>
+<trans-unit id="moveReportConfirmTitle">
+  <source>¿Mover informe?</source>
+  <target>Przenieść raport?</target>
+</trans-unit>
 <trans-unit id="confirmBtn">
   <source>Confirmar</source>
   <target>Potwierdź</target>

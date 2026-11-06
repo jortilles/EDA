@@ -4953,6 +4953,10 @@ Cordiali saluti.</target>
         <source>¿Mover carpeta?</source>
         <target>Spostare la cartella?</target>
       </trans-unit>
+      <trans-unit id="moveReportConfirmTitle" datatype="html">
+        <source>¿Mover informe?</source>
+        <target>Spostare il report?</target>
+      </trans-unit>
       <trans-unit id="confirmBtn" datatype="html">
         <source>Confirmar</source>
         <target>Conferma</target>
