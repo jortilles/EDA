@@ -248,9 +248,7 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.tags.unshift({ label: $localize`:@@NoTag:Sin Etiqueta`, value: $localize`:@@NoTag:Sin Etiqueta`, });
     this.tags.push({ label: this.allTagsFlatLabel, value: this.allTagsFlatValue });
-    if (this.allDashboards.length >= 20) {
-      this.tags.push({ label: this.allTagsGroupedLabel, value: this.allTagsValue });
-    }
+    this.tags.push({ label: this.allTagsGroupedLabel, value: this.allTagsValue });
     this.reapplyFilters();
   }
 
