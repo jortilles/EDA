@@ -38,7 +38,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.02em;
-    color: #6b7280;
+    color: var(--corporate-primary);
     cursor: default;
     border-top: 1px solid #e5e7eb;
 }
@@ -68,7 +68,8 @@
     border-radius: 0.5rem;
     white-space: normal;
     text-align: left;
-    font-size: 0.875rem;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
 

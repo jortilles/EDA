@@ -177,10 +177,13 @@ export class IconService {
         <path d="M12 6V18M2 12H22" stroke="#C8102E" stroke-width="1.5" />
       </svg>
     `,
+    // Logotip Consorci AOC reconstruït a partir del manual d'identitat corporativa (colors oficials: negre, blanc i Pantone 485 R252 G14 B14)
     "aoc": `
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M4.5 21V10.5M19.5 21V10.5M12 3l8.25 6H3.75L12 3Z" />
-        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21v-7.5M12 21v-7.5M16.5 21v-7.5" />
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 50">
+        <rect x="0" y="0" width="120" height="50" fill="#000"/>
+        <text x="17" y="38" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="40" fill="#fff" text-anchor="middle">A</text>
+        <text x="60" y="39" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="46" fill="#fff" text-anchor="middle">O</text>
+        <text x="103" y="38" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="40" fill="#FC0E0E" text-anchor="middle">C</text>
       </svg>
     `,
     "fr-flag": `
