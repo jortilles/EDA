@@ -4,9 +4,9 @@
     <!-- AOC: Host -->
     <div class="space-y-2">
       <label class="block font-medium" i18n="@@aocHostLabel">
-        Host del servidor <span class="text-red-500">*</span>
+        Servidor (endpoint SQL de Fabric) <span class="text-red-500">*</span>
       </label>
-      <input type="text" formControlName="host" placeholder="sqlserver.aoc.cat"
+      <input type="text" formControlName="host" placeholder="xxxxx.datawarehouse.fabric.microsoft.com"
         class="w-full px-3 py-2 border border-gray-300 rounded-md"
         [class.border-red-500]="connectionForm.get('host')?.invalid && connectionForm.get('host')?.touched" />
     </div>
@@ -23,27 +23,27 @@
     <!-- AOC: Database -->
     <div class="space-y-2">
       <label class="block font-medium" i18n="@@inputNombreDB">
-        Base de datos <span class="text-red-500">*</span>
+        Base de datos (lakehouse/warehouse) <span class="text-red-500">*</span>
       </label>
-      <input type="text" formControlName="database" placeholder="datalake"
+      <input type="text" formControlName="database" placeholder="lakehouse_gold"
         class="w-full px-3 py-2 border border-gray-300 rounded-md"
         [class.border-red-500]="connectionForm.get('database')?.invalid && connectionForm.get('database')?.touched" />
     </div>
 
-    <!-- AOC: User -->
+    <!-- AOC: Client ID -->
     <div class="space-y-2">
-      <label class="block font-medium" i18n="@@placeholderInputUsuario">
-        Usuario <span class="text-red-500">*</span>
+      <label class="block font-medium" i18n="@@aocClientIdLabel">
+        Client ID del Service Principal <span class="text-red-500">*</span>
       </label>
-      <input type="text" formControlName="user" placeholder="usuario"
+      <input type="text" formControlName="user" placeholder="00000000-0000-0000-0000-000000000000"
         class="w-full px-3 py-2 border border-gray-300 rounded-md"
         [class.border-red-500]="connectionForm.get('user')?.invalid && connectionForm.get('user')?.touched" />
     </div>
 
-    <!-- AOC: Password -->
+    <!-- AOC: Client secret -->
     <div class="space-y-2">
-      <label class="block font-medium" i18n="@@password">
-        Contraseña <span class="text-red-500">*</span>
+      <label class="block font-medium" i18n="@@aocClientSecretLabel">
+        Client secret <span class="text-red-500">*</span>
       </label>
       <div class="relative">
         <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
@@ -68,12 +68,6 @@
           }
         </button>
       </div>
-    </div>
-
-    <!-- AOC: SSL -->
-    <div class="flex items-center gap-2 pt-7">
-      <input type="checkbox" formControlName="ssl" id="aoc-ssl" />
-      <label for="aoc-ssl" i18n="@@aocSslLabel">Conexión cifrada (SSL)</label>
     </div>
 
     <!-- AOC: detect ambitos -->

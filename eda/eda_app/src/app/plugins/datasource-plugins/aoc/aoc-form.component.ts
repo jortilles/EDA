@@ -62,7 +62,6 @@ export class AocFormComponent implements OnInit, OnDestroy {
                 database: value.database,
                 user: value.user,
                 password: value.password,
-                ssl: value.ssl,
             }));
             this.ambitos = res.ambitos || [];
             if (this.ambitos.length === 0) {
@@ -105,7 +104,6 @@ export class AocFormComponent implements OnInit, OnDestroy {
                 database: value.database,
                 user: value.user,
                 password: value.password,
-                ssl: value.ssl,
                 schema: this.selectedAmbito.technicalName,
                 optimize: value.optimize ? 1 : 0,
                 allowCache: value.allowCache ? 1 : 0,

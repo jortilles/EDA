@@ -100,7 +100,7 @@
           </div>
 
 
-          @if (!['bigquery', 'excel', 'csv', 'duckdb', 'jsonwebservice', 'odoo', 'googleanalytics', 'holded' ].includes(connectionForm.get('type')?.value)) {
+          @if (!['bigquery', 'excel', 'csv', 'duckdb', 'jsonwebservice', 'odoo', 'googleanalytics', 'holded', 'aoc' ].includes(connectionForm.get('type')?.value)) {
           <!-- Server Field -->
           <div class="space-y-2">
             @if (connectionForm.get('type')?.value !== 'snowflake') {

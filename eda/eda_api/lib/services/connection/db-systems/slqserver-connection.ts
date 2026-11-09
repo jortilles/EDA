@@ -180,7 +180,7 @@ export class SQLserverConnection extends AbstractConnection {
     }
 
 
-    private async countTable(tableName: string, schema: string): Promise<any> {
+    protected async countTable(tableName: string, schema: string): Promise<any> {
         const query = `SELECT count(*) as count from ${schema}.${tableName}`;
 
         return new Promise(async (resolve, reject) => {

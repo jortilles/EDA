@@ -4,5 +4,5 @@
  * Mantenido a mano por jortilles a medida que se identifican nuevos ámbitos.
  */
 export const AOC_AMBITOS_MAP: Record<string, string> = {
-    ACA: 'Agència Catalana de l\'Aigua',
+    aca_ddoo: 'Agència Catalana de l\'Aigua',
 };
