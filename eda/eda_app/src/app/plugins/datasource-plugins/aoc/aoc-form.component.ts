@@ -35,6 +35,15 @@ export class AocFormComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.saveSub = this.pluginFormService.onSave$.subscribe(() => this.save());
+
+        // Servidor y base de datos son siempre los mismos para cualquier ámbito de AOC;
+        // se rellenan por defecto para no tener que volver a escribirlos en cada datasource.
+        const value = this.connectionForm.value;
+        this.connectionForm.patchValue({
+            host: value.host || 'xgqkqn3udbou5mpvcecayhah7q-fiwqrus6447e7kuvxqvqmfrceq.datawarehouse.fabric.microsoft.com',
+            port: value.port || 1433,
+            database: value.database || 'lakehouse_gold',
+        });
     }
 
     ngOnDestroy(): void {
@@ -75,11 +84,9 @@ export class AocFormComponent implements OnInit, OnDestroy {
     }
 
     selectAmbito(ambito: AocAmbito): void {
+        // El ámbito solo determina el esquema a consultar; el nombre del datasource es siempre
+        // el que escriba el usuario en el campo "Nombre" de arriba, nunca se sobreescribe aquí.
         this.selectedAmbito = ambito;
-        // El usuario nunca escribe el nombre técnico: se sugiere el nombre legible, editable como el resto de conectores
-        if (!this.connectionForm.value.name) {
-            this.connectionForm.patchValue({ name: ambito.label });
-        }
     }
 
     async save(): Promise<void> {
