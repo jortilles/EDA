@@ -7275,7 +7275,51 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Fuente de datos Odoo creada correctamente</source>
         <target>Font de dades Odoo creada correctament</target>
       </trans-unit>
-      <trans-unit id="ga4PropertyIdLabel">
+            <trans-unit id="aocHostLabel">
+        <source>Servidor (endpoint SQL de Fabric) <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Servidor (endpoint SQL de Fabric) <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocPortLabel">
+        <source>Puerto</source>
+        <target>Port</target>
+      </trans-unit>
+      <trans-unit id="aocClientIdLabel">
+        <source>Client ID del Service Principal <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client ID del Service Principal <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocClientSecretLabel">
+        <source>Client secret <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client secret <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocDetecting">
+        <source>Detectando ámbitos...</source>
+        <target>Detectant àmbits...</target>
+      </trans-unit>
+      <trans-unit id="aocDetectAmbitos">
+        <source>Detectar ámbitos</source>
+        <target>Detectar àmbits</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAmbito">
+        <source>Ámbito a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Àmbit a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocInfoMessage">
+        <source>Cada ámbito seleccionado se guarda como una fuente de datos independiente. Para importar otro ámbito, cree una nueva fuente de datos AOC y repita el proceso.</source>
+        <target>Cada àmbit seleccionat es desa com una font de dades independent. Per importar un altre àmbit, creeu una nova font de dades AOC i repetiu el procés.</target>
+      </trans-unit>
+      <trans-unit id="aocNoAmbitosFound">
+        <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
+        <target>No s'ha detectat cap àmbit reconegut en aquest datalake.</target>
+      </trans-unit>
+      <trans-unit id="aocNoAmbitoSelected">
+        <source>Debe detectar y seleccionar un ámbito antes de guardar.</source>
+        <target>Cal detectar i seleccionar un àmbit abans de desar.</target>
+      </trans-unit>
+      <trans-unit id="aocCreated">
+        <source>Fuente de datos AOC creada correctamente</source>
+        <target>Font de dades AOC creada correctament</target>
+      </trans-unit>
+<trans-unit id="ga4PropertyIdLabel">
         <source>ID de Propiedad GA4</source>
         <target>ID de Propietat GA4</target>
       </trans-unit>

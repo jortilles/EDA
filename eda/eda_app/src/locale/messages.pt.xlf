@@ -5189,7 +5189,51 @@ Cumprimentos.</target>
         <source>Error al registrarse</source>
         <target>Erro ao registar</target>
       </trans-unit>
-      <trans-unit id="ga4PropertyIdLabel" datatype="html">
+            <trans-unit id="aocHostLabel" datatype="html">
+        <source>Servidor (endpoint SQL de Fabric) <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Servidor (endpoint SQL do Fabric) <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocPortLabel" datatype="html">
+        <source>Puerto</source>
+        <target>Porta</target>
+      </trans-unit>
+      <trans-unit id="aocClientIdLabel" datatype="html">
+        <source>Client ID del Service Principal <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client ID do Service Principal <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocClientSecretLabel" datatype="html">
+        <source>Client secret <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client secret <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocDetecting" datatype="html">
+        <source>Detectando ámbitos...</source>
+        <target>Deteção de âmbitos...</target>
+      </trans-unit>
+      <trans-unit id="aocDetectAmbitos" datatype="html">
+        <source>Detectar ámbitos</source>
+        <target>Detetar âmbitos</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAmbito" datatype="html">
+        <source>Ámbito a importar <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Âmbito a importar <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocInfoMessage" datatype="html">
+        <source>Cada ámbito seleccionado se guarda como una fuente de datos independiente. Para importar otro ámbito, cree una nueva fuente de datos AOC y repita el proceso.</source>
+        <target>Cada âmbito selecionado é guardado como uma fonte de dados independente. Para importar outro âmbito, crie uma nova fonte de dados AOC e repita o processo.</target>
+      </trans-unit>
+      <trans-unit id="aocNoAmbitosFound" datatype="html">
+        <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
+        <target>Não foi detetado nenhum âmbito reconhecido neste datalake.</target>
+      </trans-unit>
+      <trans-unit id="aocNoAmbitoSelected" datatype="html">
+        <source>Debe detectar y seleccionar un ámbito antes de guardar.</source>
+        <target>Deve detetar e selecionar um âmbito antes de guardar.</target>
+      </trans-unit>
+      <trans-unit id="aocCreated" datatype="html">
+        <source>Fuente de datos AOC creada correctamente</source>
+        <target>Fonte de dados AOC criada com sucesso</target>
+      </trans-unit>
+<trans-unit id="ga4PropertyIdLabel" datatype="html">
         <source> ID de Propiedad GA4 <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <target> ID da propriedade GA4 <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>

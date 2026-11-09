@@ -6968,6 +6968,50 @@ OR<ph id="5"/>
   <source>Fuente de datos Odoo creada correctamente</source>
   <target>Odoo data source created successfully</target>
 </trans-unit>
+      <trans-unit id="aocHostLabel">
+        <source>Servidor (endpoint SQL de Fabric) <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Server (Fabric SQL endpoint) <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocPortLabel">
+        <source>Puerto</source>
+        <target>Port</target>
+      </trans-unit>
+      <trans-unit id="aocClientIdLabel">
+        <source>Client ID del Service Principal <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Service Principal Client ID <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocClientSecretLabel">
+        <source>Client secret <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client secret <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocDetecting">
+        <source>Detectando ámbitos...</source>
+        <target>Detecting scopes...</target>
+      </trans-unit>
+      <trans-unit id="aocDetectAmbitos">
+        <source>Detectar ámbitos</source>
+        <target>Detect scopes</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAmbito">
+        <source>Ámbito a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Scope to import <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocInfoMessage">
+        <source>Cada ámbito seleccionado se guarda como una fuente de datos independiente. Para importar otro ámbito, cree una nueva fuente de datos AOC y repita el proceso.</source>
+        <target>Each selected scope is saved as an independent data source. To import another scope, create a new AOC data source and repeat the process.</target>
+      </trans-unit>
+      <trans-unit id="aocNoAmbitosFound">
+        <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
+        <target>No recognized scope was detected in this datalake.</target>
+      </trans-unit>
+      <trans-unit id="aocNoAmbitoSelected">
+        <source>Debe detectar y seleccionar un ámbito antes de guardar.</source>
+        <target>You must detect and select a scope before saving.</target>
+      </trans-unit>
+      <trans-unit id="aocCreated">
+        <source>Fuente de datos AOC creada correctamente</source>
+        <target>AOC data source created successfully</target>
+      </trans-unit>
 <trans-unit id="ga4PropertyIdLabel">
   <source>ID de Propiedad GA4</source>
   <target>GA4 Property ID</target>
