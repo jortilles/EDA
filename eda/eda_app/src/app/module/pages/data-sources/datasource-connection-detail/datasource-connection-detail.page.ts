@@ -55,24 +55,51 @@ export class DataSourceConnectionDetailPage implements OnInit {
   activeTab: "basic" | "advanced" = "basic"
   showPassword = false
 
-  public databaseTypes: any[] = [
-    { label: 'Postgres', value: 'postgres', port: 5432 },
-    { label: 'Sql Server', value: 'sqlserver', port: 1433 },
-    { label: 'MySQL', value: 'mysql', port: 3306 },
-    { label: 'Vertica', value: 'vertica', port: 5433 },
-    { label: 'Oracle', value: 'oracle', port: 1521 },
-    { label: 'BigQuery', value: 'bigquery', port: null },
-    { label: 'SnowFlake', value: 'snowflake', port: null },
-    { label: 'ClickHouse', value: 'clickhouse', port: 8123 },
-    { label: 'jsonWebService', value: 'jsonwebservice' },
-
-    { label: 'Excel', value: 'excel', port: 27017 },
-    { label: 'Csv', value: 'csv', port: 27017 },
-    { label: 'DuckDB (CSV)', value: 'duckdb' },
-    { label: 'Odoo', value: 'odoo', port: null },
-    { label: 'Google Analytics 4', value: 'googleanalytics', port: null },
-    { label: 'Holded', value: 'holded', port: null },
+  /**
+   * Options for the "Tipo" dropdown, grouped so the list stays readable as more types are added.
+   * The "Conectores" group is built from DATASOURCE_PLUGINS, so a new plugin (Shopify, AOC...)
+   * appears here automatically.
+   */
+  public databaseTypeGroups: { label: string; icon: string; items: any[] }[] = [
+    {
+      label: $localize`:@@dsGroupSql:Bases de datos SQL`,
+      icon: 'circle-stack',
+      items: [
+        { label: 'Postgres', value: 'postgres', port: 5432, icon: 'postgresql' },
+        { label: 'Sql Server', value: 'sqlserver', port: 1433, icon: 'sqlserver' },
+        { label: 'MySQL', value: 'mysql', port: 3306, icon: 'mysql' },
+        { label: 'Vertica', value: 'vertica', port: 5433, icon: 'vertica' },
+        { label: 'Oracle', value: 'oracle', port: 1521, icon: 'oracle' },
+        { label: 'ClickHouse', value: 'clickhouse', port: 8123, icon: 'clickhouse' },
+        { label: 'BigQuery', value: 'bigquery', port: null, icon: 'bigquery' },
+        { label: 'SnowFlake', value: 'snowflake', port: null, icon: 'snowflake' },
+      ],
+    },
+    {
+      label: $localize`:@@dsGroupFiles:Archivos`,
+      icon: 'document-duplicated',
+      items: [
+        { label: 'Excel', value: 'excel', port: 27017, icon: 'document-duplicated' },
+        { label: 'Csv', value: 'csv', port: 27017, icon: 'document-duplicated' },
+        { label: 'DuckDB (CSV)', value: 'duckdb', icon: 'duckdb' },
+      ],
+    },
+    {
+      label: $localize`:@@dsGroupWeb:Servicios web`,
+      icon: 'link',
+      items: [
+        { label: 'jsonWebService', value: 'jsonwebservice', icon: 'link' },
+      ],
+    },
+    {
+      label: $localize`:@@dsGroupConnectors:Conectores`,
+      icon: 'molecula',
+      items: DATASOURCE_PLUGINS.map(p => ({ label: p.label, value: p.type, port: p.port, icon: p.icon || 'molecula' })),
+    },
   ];
+
+  /** Flat view of databaseTypeGroups, used for value lookups (e.g. selectDefaultPort) */
+  public databaseTypes: any[] = this.databaseTypeGroups.flatMap(g => g.items);
 
   public sidOptions: any[] = [
     { label: 'SID', value: 1 },

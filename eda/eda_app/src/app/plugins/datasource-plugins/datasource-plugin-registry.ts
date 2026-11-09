@@ -4,7 +4,7 @@ import { OdooFormComponent } from './odoo/odoo-form.component';
 import { HoldedFormComponent } from './holded/holded-form.component';
 
 export const DATASOURCE_PLUGINS: IDatasourcePlugin[] = [
-    { type: 'googleanalytics', label: 'Google Analytics 4', port: null, formComponent: Ga4FormComponent,    apiBasePath: '/google-analytics' },
-    { type: 'odoo',            label: 'Odoo',               port: null, formComponent: OdooFormComponent,   apiBasePath: '/odoo' },
-    { type: 'holded',          label: 'Holded',             port: null, formComponent: HoldedFormComponent, apiBasePath: '/holded' },
+    { type: 'googleanalytics', label: 'Google Analytics 4', port: null, formComponent: Ga4FormComponent,    apiBasePath: '/google-analytics', icon: 'googleanalytics' },
+    { type: 'odoo',            label: 'Odoo',               port: null, formComponent: OdooFormComponent,   apiBasePath: '/odoo',             icon: 'odoo' },
+    { type: 'holded',          label: 'Holded',             port: null, formComponent: HoldedFormComponent, apiBasePath: '/holded',           icon: 'holded' },
 ];

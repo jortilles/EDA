@@ -62,12 +62,31 @@
             <p-dropdown
               inputId="type"
               formControlName="type"
-              [options]="databaseTypes"
+              [options]="databaseTypeGroups"
               optionLabel="label"
               optionValue="value"
+              [group]="true"
+              optionGroupLabel="label"
+              optionGroupChildren="items"
+              panelStyleClass="ds-type-panel"
+              scrollHeight="auto"
               [style]="{'width': '100%'}"
               appendTo="body"
               (onChange)="selectDefaultPort()">
+              <ng-template let-group pTemplate="group">
+                <eda-icon [name]="group.icon" size="sm"></eda-icon>
+                <span>{{ group.label }}</span>
+              </ng-template>
+              <ng-template let-item pTemplate="item">
+                <eda-icon [name]="item.icon" size="2xl"></eda-icon>
+                <span class="leading-tight">{{ item.label }}</span>
+              </ng-template>
+              <ng-template let-item pTemplate="selectedItem">
+                <div class="flex items-center gap-2">
+                  <eda-icon [name]="item.icon" size="sm"></eda-icon>
+                  <span>{{ item.label }}</span>
+                </div>
+              </ng-template>
             </p-dropdown>
           </div>
 

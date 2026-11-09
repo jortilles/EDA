@@ -35,6 +35,8 @@ import { CalculatedColumnEditDialogComponent } from './calculated-column-edit-di
 import { AddDuckdbTableDialogComponent } from './add-duckdb-table-dialog/add-duckdb-table-dialog.component';
 import { AGG_COMPUTED } from './aggregationConstants';
 import { unwrapViewQuery } from '@eda/services/utils/view-query.util';
+import { DATASOURCE_PLUGINS } from '../../../../plugins/datasource-plugins/datasource-plugin-registry';
+import { IconComponent } from '@eda/shared/components/icon/icon.component';
 
 // Angular Modules
 const ANGULAR_MODULES = [
@@ -62,7 +64,8 @@ const STANDALONE_COMPONENTS = [
   EdaTableComponent,
   CalculatedColumnEditDialogComponent,
   AddDuckdbTableDialogComponent,
-  CodeEditorComponent
+  CodeEditorComponent,
+  IconComponent
 ];
 
 @Component({
@@ -198,25 +201,48 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     // Relations
     public tmpRelations: any = [];
 
-    // DB types[]
-    public tiposBD: SelectItem[] = [
-        { label: 'Postgres', value: 'postgres' },
-        { label: 'ClickHouse', value: 'clickhouse' },
-        { label: 'Sql Server', value: 'sqlserver' },
-        { label: 'MySQL', value: 'mysql' },
-        { label: 'Vertica', value: 'vertica' },
-        { label: 'Oracle', value: 'oracle' },
-        { label: 'BigQuery', value: 'bigquery' },
-        { label: 'SnowFlake', value: 'snowflake'},
-        { label: 'JsonWebService', value: 'jsonwebservice'},
-
-        { label: 'Excel', value: 'excel'},
-        { label: 'Csv', value: 'csv'},
-        { label: 'DuckDB (CSV)', value: 'duckdb'},
-        { label: 'Odoo', value: 'odoo'},
-        { label: 'Google Analytics 4', value: 'googleanalytics'},
-        { label: 'Holded', value: 'holded'}
+    // DB types, grouped so the dropdown stays readable as more types are added.
+    // "Conectores" comes from DATASOURCE_PLUGINS, so a new plugin appears here automatically.
+    public tiposBDGroups: { label: string; icon: string; items: SelectItem[] }[] = [
+        {
+            label: $localize`:@@dsGroupSql:Bases de datos SQL`,
+            icon: 'circle-stack',
+            items: [
+                { label: 'Postgres', value: 'postgres', icon: 'postgresql' },
+                { label: 'ClickHouse', value: 'clickhouse', icon: 'clickhouse' },
+                { label: 'Sql Server', value: 'sqlserver', icon: 'sqlserver' },
+                { label: 'MySQL', value: 'mysql', icon: 'mysql' },
+                { label: 'Vertica', value: 'vertica', icon: 'vertica' },
+                { label: 'Oracle', value: 'oracle', icon: 'oracle' },
+                { label: 'BigQuery', value: 'bigquery', icon: 'bigquery' },
+                { label: 'SnowFlake', value: 'snowflake', icon: 'snowflake' },
+            ],
+        },
+        {
+            label: $localize`:@@dsGroupFiles:Archivos`,
+            icon: 'document-duplicated',
+            items: [
+                { label: 'Excel', value: 'excel', icon: 'document-duplicated' },
+                { label: 'Csv', value: 'csv', icon: 'document-duplicated' },
+                { label: 'DuckDB (CSV)', value: 'duckdb', icon: 'duckdb' },
+            ],
+        },
+        {
+            label: $localize`:@@dsGroupWeb:Servicios web`,
+            icon: 'link',
+            items: [
+                { label: 'JsonWebService', value: 'jsonwebservice', icon: 'link' },
+            ],
+        },
+        {
+            label: $localize`:@@dsGroupConnectors:Conectores`,
+            icon: 'molecula',
+            items: DATASOURCE_PLUGINS.map(p => ({ label: p.label, value: p.type, icon: p.icon || 'molecula' })),
+        },
     ];
+
+    /** Flat view of tiposBDGroups, used to look up the SelectItem matching the stored connection type */
+    public tiposBD: SelectItem[] = this.tiposBDGroups.flatMap(g => g.items);
 
     public SID_Types: SelectItem[] = [
         { label: 'SID', value: "0" },

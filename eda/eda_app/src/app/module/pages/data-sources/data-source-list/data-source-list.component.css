@@ -98,5 +98,63 @@
 .btn-type-active                { background-color: var(--corporate-primary) !important; color: white !important; border-color: var(--corporate-primary) !important; }
 .text-corporate-primary         { color: var(--corporate-primary); }
 
+/* ── "Tipo" dropdown (data-source-detail): icon grid grouped by category (scoped to panelStyleClass="ds-type-panel") ── */
+::ng-deep .ds-type-panel .p-dropdown-items {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.25rem;
+    padding: 0.5rem;
+}
+
+@media (max-width: 640px) {
+    ::ng-deep .ds-type-panel .p-dropdown-items {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+::ng-deep .ds-type-panel .p-dropdown-item-group {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.25rem 0.25rem;
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: #6b7280;
+    cursor: default;
+    border-top: 1px solid #e5e7eb;
+}
+
+::ng-deep .ds-type-panel .p-dropdown-item-group:first-child {
+    border-top: none;
+    padding-top: 0.25rem;
+}
+
+::ng-deep .ds-type-panel p-dropdownitem {
+    display: block;
+}
+
+::ng-deep .ds-type-panel .p-dropdown-item eda-icon {
+    flex-shrink: 0;
+}
+
+::ng-deep .ds-type-panel .p-dropdown-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    height: 100%;
+    min-height: 3.5rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.5rem;
+    white-space: normal;
+    text-align: left;
+    font-size: 0.875rem;
+}
+
 
 

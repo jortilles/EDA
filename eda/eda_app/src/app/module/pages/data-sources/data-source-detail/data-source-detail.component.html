@@ -487,8 +487,25 @@
             <div class="grid gap-2">
               <label for="type" class="font-medium" i18n="@@type">Tipo</label>
               <p-dropdown inputId="type" [(ngModel)]="selectedTipoBD"
-                [options]="tiposBD" optionLabel="label"
+                [options]="tiposBDGroups" optionLabel="label"
+                [group]="true" optionGroupLabel="label" optionGroupChildren="items"
+                panelStyleClass="ds-type-panel"
+                scrollHeight="auto"
                 appendTo="body" [style]="{'width':'100%'}">
+                <ng-template let-group pTemplate="group">
+                  <eda-icon [name]="group.icon" size="sm"></eda-icon>
+                  <span>{{ group.label }}</span>
+                </ng-template>
+                <ng-template let-item pTemplate="item">
+                  <eda-icon [name]="item.icon" size="2xl"></eda-icon>
+                  <span class="leading-tight">{{ item.label }}</span>
+                </ng-template>
+                <ng-template let-item pTemplate="selectedItem">
+                  <div class="flex items-center gap-2">
+                    <eda-icon [name]="item.icon" size="sm"></eda-icon>
+                    <span>{{ item.label }}</span>
+                  </div>
+                </ng-template>
               </p-dropdown>
             </div>
             

@@ -6,4 +6,6 @@ export interface IDatasourcePlugin {
     port: number | null;
     formComponent: Type<any>;
     apiBasePath: string;
+    /** IconService key for this plugin's brand logo, shown next to its label in the "Tipo" dropdown */
+    icon?: string;
 }
