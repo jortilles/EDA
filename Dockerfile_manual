@@ -26,6 +26,14 @@ RUN echo " la ubicacion de oracle sera /eda/oracle/instantclient "
 RUN echo "  "
 RUN echo "export LD_LIBRARY_PATH=/eda/oracle/instantclient" >/root/.bashrc
 
+# Driver ODBC de Microsoft para SQL Server (lo usa el conector AOC: el driver mssql/tedious
+# de Node no es compatible con Microsoft Fabric, https://github.com/tediousjs/tedious/issues/1563)
+RUN curl -sSL -O https://packages.microsoft.com/config/debian/13/packages-microsoft-prod.deb \
+    && dpkg -i packages-microsoft-prod.deb \
+    && rm packages-microsoft-prod.deb \
+    && apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev libgssapi-krb5-2
+
 RUN echo n | npm install -g --silent @angular/cli
 RUN npm install -g pm2 nodemon http-server  
 
