@@ -215,7 +215,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'DuckDB (CSV)', value: 'duckdb'},
         { label: 'Odoo', value: 'odoo'},
         { label: 'Google Analytics 4', value: 'googleanalytics'},
-        { label: 'Holded', value: 'holded'}
+        { label: 'Holded', value: 'holded'},
+        { label: 'Shopify', value: 'shopify'}
     ];
 
     public SID_Types: SelectItem[] = [
