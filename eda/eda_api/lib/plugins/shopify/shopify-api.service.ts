@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 const SHOPIFY_API_VERSION = '2024-01';
+const SHOPIFY_SCOPES = 'read_orders,read_customers,read_products,read_inventory'; // always same fields
 const shopifyConfig = require('../../../config/shopify.config');
 
 export interface ShopifyDownloadParams {
@@ -217,7 +218,7 @@ export class ShopifyApiService {
     static buildAuthUrl(shop: string, clientId: string, state: string): string {
         const params = new URLSearchParams({
             client_id:    clientId,
-            scope:        shopifyConfig.SCOPES,
+            scope:        SHOPIFY_SCOPES,
             redirect_uri: shopifyConfig.REDIRECT_URI,
             state,
         });
