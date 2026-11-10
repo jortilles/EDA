@@ -6,6 +6,8 @@ import { ShopifyApiService } from './shopify-api.service';
 import { applyShopifyLabels, resolveShopifyLocale } from './shopify-labels';
 import { dropSyncControlTables, linkTables } from '../plugin-relations';
 
+const cache_config = require('../../../config/cache.config');
+
 export const ShopifyPlugin: IEDAPlugin = {
     kind: 'datasource',
     type: 'shopify',
@@ -13,6 +15,7 @@ export const ShopifyPlugin: IEDAPlugin = {
     router: ShopifyRouter,
     routerPath: '/shopify',
     syncService: ShopifySyncService,
+    scheduleExpression: cache_config.SHOPIFY_SYNC_SCHEDULE,
     downloadData: (params, folderPath) => ShopifyApiService.downloadToFolder(params as any, folderPath),
     applyLabels: (tables, locale) => applyShopifyLabels(tables, locale as any),
     resolveLocale: resolveShopifyLocale,

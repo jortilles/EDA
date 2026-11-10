@@ -19,6 +19,12 @@ module.exports = {
 
   UPDATING_SCHEDULE: '1 * * * *',               /* Schedule to check updates for cached queries */
   CLEANNING_SCHEDULE: '1 5 * * *',              /* Schedule to check removes for cached queries */
+
+  /* How often we CHECK whether each plugin's datasources are due for a sync */
+  ODOO_SYNC_SCHEDULE: '5 * * * *', // every hour min 5
+  HOLDED_SYNC_SCHEDULE: '20 * * * *', // every hour min 20
+  GA4_SYNC_SCHEDULE: '35 * * * *',
+  SHOPIFY_SYNC_SCHEDULE: '50 * * * *',
   MAX_MILIS_STORED: MINUTES * MS_PER_MINUTE,    /* Max miliseconds a cached query can be stored */
   DEFAULT_CACHE_CONFIG: {                       /* Default cache config when model is created   */
     units: 'days',
