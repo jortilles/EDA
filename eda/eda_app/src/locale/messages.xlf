@@ -2049,7 +2049,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">179</context>
+          <context context-type="linenumber">181</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-update-file/datasource-update-file.page.ts</context>
@@ -3541,7 +3541,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">179</context>
+          <context context-type="linenumber">181</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-update-file/datasource-update-file.page.ts</context>
@@ -8151,15 +8151,15 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">255</context>
+          <context context-type="linenumber">257</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">274</context>
+          <context context-type="linenumber">276</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.ts</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">55</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/odoo/odoo-form.component.ts</context>
@@ -8273,7 +8273,7 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">179</context>
+          <context context-type="linenumber">181</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-update-file/datasource-update-file.page.html</context>
@@ -8300,7 +8300,7 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">179</context>
+          <context context-type="linenumber">181</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-update-file/datasource-update-file.page.ts</context>
@@ -8319,7 +8319,7 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">196</context>
+          <context context-type="linenumber">198</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-update-file/datasource-update-file.page.ts</context>
@@ -8338,7 +8338,7 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">197</context>
+          <context context-type="linenumber">199</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-update-file/datasource-update-file.page.ts</context>
@@ -8353,7 +8353,7 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">839</context>
+          <context context-type="linenumber">841</context>
         </context-group>
       </trans-unit>
       <trans-unit id="duckdbTableAdded" datatype="html">
@@ -9072,10 +9072,6 @@ Un saludo.</source>
           <context context-type="linenumber">252,253</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.html</context>
-          <context context-type="linenumber">26,28</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/odoo/odoo-form.component.html</context>
           <context context-type="linenumber">24,26</context>
         </context-group>
@@ -9287,11 +9283,11 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">301</context>
+          <context context-type="linenumber">303</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">325</context>
+          <context context-type="linenumber">327</context>
         </context-group>
       </trans-unit>
       <trans-unit id="no" datatype="html">
@@ -9306,11 +9302,11 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">302</context>
+          <context context-type="linenumber">304</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">326</context>
+          <context context-type="linenumber">328</context>
         </context-group>
       </trans-unit>
       <trans-unit id="valueListSourceHeader" datatype="html">
@@ -9391,7 +9387,7 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">65</context>
+          <context context-type="linenumber">67</context>
         </context-group>
       </trans-unit>
       <trans-unit id="dsGroupFiles" datatype="html">
@@ -9402,7 +9398,7 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">79</context>
+          <context context-type="linenumber">81</context>
         </context-group>
       </trans-unit>
       <trans-unit id="dsGroupWeb" datatype="html">
@@ -9413,7 +9409,7 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="linenumber">90</context>
         </context-group>
       </trans-unit>
       <trans-unit id="dsGroupConnectors" datatype="html">
@@ -9424,7 +9420,7 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">95</context>
+          <context context-type="linenumber">97</context>
         </context-group>
       </trans-unit>
       <trans-unit id="userTable" datatype="html">
@@ -9956,7 +9952,7 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">708</context>
+          <context context-type="linenumber">710</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/model-settings/model-import-export.page.ts</context>
@@ -10093,7 +10089,7 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">41</context>
+          <context context-type="linenumber">43</context>
         </context-group>
       </trans-unit>
       <trans-unit id="succesAddTable" datatype="html">
@@ -10413,7 +10409,7 @@ Un saludo.</source>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">38</context>
         </context-group>
       </trans-unit>
       <trans-unit id="optimizedQueriesTooltipDescription" datatype="html">
@@ -10483,75 +10479,75 @@ Un saludo.</source>
         <source>Configurar nueva fuente de datos</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="enableCache" datatype="html">
         <source> Habilitar caché</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">37</context>
+          <context context-type="linenumber">39</context>
         </context-group>
       </trans-unit>
       <trans-unit id="filterTooltip" datatype="html">
         <source>Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">38</context>
+          <context context-type="linenumber">40</context>
         </context-group>
       </trans-unit>
       <trans-unit id="allowSSL" datatype="html">
         <source>Conexión mediante SSL</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
       <trans-unit id="connectedWithServer" datatype="html">
         <source>Conectado con el servidor</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">277</context>
+          <context context-type="linenumber">279</context>
         </context-group>
       </trans-unit>
       <trans-unit id="dsConnectionRefused" datatype="html">
         <source>No se ha podido conectar a la base de datos.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">280</context>
+          <context context-type="linenumber">282</context>
         </context-group>
       </trans-unit>
       <trans-unit id="confirmationExcel" datatype="html">
         <source>Confirmación</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">297</context>
+          <context context-type="linenumber">299</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">321</context>
+          <context context-type="linenumber">323</context>
         </context-group>
       </trans-unit>
       <trans-unit id="confirmationExcelMessage" datatype="html">
         <source>¿Estás seguro de que quieres sobreescribir este modelo de datos?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">298</context>
+          <context context-type="linenumber">300</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">322</context>
+          <context context-type="linenumber">324</context>
         </context-group>
       </trans-unit>
       <trans-unit id="DatadourceTitle" datatype="html">
         <source>Fuente de datos: </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">356</context>
+          <context context-type="linenumber">358</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">382</context>
+          <context context-type="linenumber">384</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/home/home.page.html</context>
@@ -10562,37 +10558,37 @@ Un saludo.</source>
         <source>Creada correctamente</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">360</context>
+          <context context-type="linenumber">362</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">386</context>
+          <context context-type="linenumber">388</context>
         </context-group>
       </trans-unit>
       <trans-unit id="CollectionText" datatype="html">
         <source>Colección creada correctamente</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">420</context>
+          <context context-type="linenumber">422</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">458</context>
+          <context context-type="linenumber">460</context>
         </context-group>
       </trans-unit>
       <trans-unit id="noNameProvided" datatype="html">
         <source>Debe proporcionar un nombre para el datasource</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">436</context>
+          <context context-type="linenumber">438</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">871</context>
+          <context context-type="linenumber">873</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.ts</context>
-          <context context-type="linenumber">93</context>
+          <context context-type="linenumber">94</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/google-analytics/ga4-form.component.ts</context>
@@ -10611,7 +10607,7 @@ Un saludo.</source>
         <source>Debe cargar un archivo CSV primero</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">439</context>
+          <context context-type="linenumber">441</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-update-file/datasource-update-file.page.ts</context>
@@ -10622,14 +10618,14 @@ Un saludo.</source>
         <source>No se detectaron columnas en el archivo CSV. Verifique el separador.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">442</context>
+          <context context-type="linenumber">444</context>
         </context-group>
       </trans-unit>
       <trans-unit id="ErrorExcel" datatype="html">
         <source>Cargue un archivo .xls o .xlsx</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">519</context>
+          <context context-type="linenumber">521</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-update-file/datasource-update-file.page.ts</context>
@@ -10640,21 +10636,21 @@ Un saludo.</source>
         <source>El archivo CSV está vacío o no se pudo leer con este separador</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">621</context>
+          <context context-type="linenumber">623</context>
         </context-group>
       </trans-unit>
       <trans-unit id="errorParseCsv" datatype="html">
         <source>Error al parsear el archivo CSV con el separador especificado</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">645</context>
+          <context context-type="linenumber">647</context>
         </context-group>
       </trans-unit>
       <trans-unit id="errorParseCsv2" datatype="html">
         <source>Error al parsear el archivo CSV. Verifica el separador.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">686</context>
+          <context context-type="linenumber">688</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-update-file/datasource-update-file.page.ts</context>
@@ -10665,32 +10661,32 @@ Un saludo.</source>
         <source>El archivo CSV está vacío o no se pudo leer</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">729</context>
+          <context context-type="linenumber">731</context>
         </context-group>
       </trans-unit>
       <trans-unit id="errorParseCsv3" datatype="html">
         <source>Error al parsear el archivo CSV. Verifique el separador y formato del archivo.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">755</context>
+          <context context-type="linenumber">757</context>
         </context-group>
       </trans-unit>
       <trans-unit id="noDuckDbFile" datatype="html">
         <source>Debe cargar un archivo CSV primero</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">845</context>
+          <context context-type="linenumber">847</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">889</context>
+          <context context-type="linenumber">891</context>
         </context-group>
       </trans-unit>
       <trans-unit id="noFolderName" datatype="html">
         <source>Debe proporcionar el nombre de la carpeta</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">875</context>
+          <context context-type="linenumber">877</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/google-analytics/ga4-form.component.ts</context>
@@ -10701,7 +10697,7 @@ Un saludo.</source>
         <source>Fuente de datos DuckDB creada correctamente</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/datasource-connection-detail/datasource-connection-detail.page.ts</context>
-          <context context-type="linenumber">911</context>
+          <context context-type="linenumber">913</context>
         </context-group>
       </trans-unit>
       <trans-unit id="updateFileTitle" datatype="html">
@@ -11931,81 +11927,67 @@ Un saludo.</source>
           <context context-type="linenumber">184</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="aocHostLabel" datatype="html">
-        <source> Servidor (endpoint SQL de Fabric) <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.html</context>
-          <context context-type="linenumber">7,9</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="aocPortLabel" datatype="html">
-        <source> Puerto </source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.html</context>
-          <context context-type="linenumber">17,19</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="aocClientIdLabel" datatype="html">
         <source> Client ID del Service Principal <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.html</context>
-          <context context-type="linenumber">36,38</context>
+          <context context-type="linenumber">7,9</context>
         </context-group>
       </trans-unit>
       <trans-unit id="aocClientSecretLabel" datatype="html">
         <source> Client secret <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.html</context>
-          <context context-type="linenumber">46,48</context>
+          <context context-type="linenumber">17,19</context>
         </context-group>
       </trans-unit>
       <trans-unit id="aocDetecting" datatype="html">
         <source>Detectando ámbitos...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.html</context>
-          <context context-type="linenumber">80,81</context>
+          <context context-type="linenumber">51,53</context>
         </context-group>
       </trans-unit>
       <trans-unit id="aocDetectAmbitos" datatype="html">
         <source>Detectar ámbitos</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.html</context>
-          <context context-type="linenumber">82,84</context>
+          <context context-type="linenumber">53,55</context>
         </context-group>
       </trans-unit>
       <trans-unit id="aocSelectAmbito" datatype="html">
         <source> Ámbito a importar <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.html</context>
-          <context context-type="linenumber">91,93</context>
+          <context context-type="linenumber">62,64</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="aocInfoMessage" datatype="html">
-        <source> Cada ámbito seleccionado se guarda como una fuente de datos independiente. Para importar otro ámbito, cree una nueva fuente de datos AOC y repita el proceso. </source>
+      <trans-unit id="aocSelectAmbitoPlaceholder" datatype="html">
+        <source>Selecciona un ámbito</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.html</context>
-          <context context-type="linenumber">111,114</context>
+          <context context-type="linenumber">70,71</context>
         </context-group>
       </trans-unit>
       <trans-unit id="aocNoAmbitosFound" datatype="html">
         <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.ts</context>
-          <context context-type="linenumber">68</context>
+          <context context-type="linenumber">70</context>
         </context-group>
       </trans-unit>
       <trans-unit id="aocNoAmbitoSelected" datatype="html">
         <source>Debe detectar y seleccionar un ámbito antes de guardar.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.ts</context>
-          <context context-type="linenumber">89</context>
+          <context context-type="linenumber">90</context>
         </context-group>
       </trans-unit>
       <trans-unit id="aocCreated" datatype="html">
         <source>Fuente de datos AOC creada correctamente</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.ts</context>
-          <context context-type="linenumber">115</context>
+          <context context-type="linenumber">113</context>
         </context-group>
       </trans-unit>
       <trans-unit id="ga4PropertyIdLabel" datatype="html">
@@ -12195,7 +12177,7 @@ Un saludo.</source>
         <source>La carpeta &quot;<x id="PH" equiv-text="folderName"/>&quot; ya existe. Elija otro nombre de carpeta.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/plugin-form.service.ts</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">65</context>
         </context-group>
       </trans-unit>
       <trans-unit id="SureDeleteModel" datatype="html">

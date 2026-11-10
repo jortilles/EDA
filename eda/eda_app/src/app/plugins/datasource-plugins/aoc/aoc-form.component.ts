@@ -1,7 +1,8 @@
 import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { DropdownModule } from 'primeng/dropdown';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DataSourceService, SpinnerService, AlertService } from '@eda/services/service.index';
 import { PluginFormService } from '../plugin-form.service';
@@ -15,7 +16,7 @@ interface AocAmbito {
     standalone: true,
     selector: 'eda-aoc-form',
     templateUrl: './aoc-form.component.html',
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [CommonModule, ReactiveFormsModule, FormsModule, DropdownModule],
 })
 export class AocFormComponent implements OnInit, OnDestroy {
     @Input() connectionForm!: FormGroup;
@@ -35,19 +36,15 @@ export class AocFormComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.saveSub = this.pluginFormService.onSave$.subscribe(() => this.save());
-
-        // Servidor y base de datos son siempre los mismos para cualquier ámbito de AOC;
-        // se rellenan por defecto para no tener que volver a escribirlos en cada datasource.
-        const value = this.connectionForm.value;
-        this.connectionForm.patchValue({
-            host: value.host || 'xgqkqn3udbou5mpvcecayhah7q-fiwqrus6447e7kuvxqvqmfrceq.datawarehouse.fabric.microsoft.com',
-            port: value.port || 1433,
-            database: value.database || 'lakehouse_gold',
-        });
+        // Diferido: si se hace en el mismo ciclo que el padre ya comprobó "disabled" en el botón
+        // Confirmar, Angular lanza ExpressionChangedAfterItHasBeenCheckedError (NG0100).
+        Promise.resolve().then(() => this.pluginFormService.setReady(false));
     }
 
     ngOnDestroy(): void {
         this.saveSub?.unsubscribe();
+        // No dejar el formulario de otro tipo de datasource bloqueado por este estado
+        this.pluginFormService.setReady(true);
     }
 
     togglePasswordVisibility(): void {
@@ -56,7 +53,7 @@ export class AocFormComponent implements OnInit, OnDestroy {
 
     async detectAmbitos(): Promise<void> {
         const value = this.connectionForm.value;
-        if (!value.host || !value.database || !value.user || !value.password) {
+        if (!value.user || !value.password) {
             this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
             return;
         }
@@ -64,11 +61,9 @@ export class AocFormComponent implements OnInit, OnDestroy {
         this.detecting = true;
         this.ambitos = [];
         this.selectedAmbito = null;
+        this.pluginFormService.setReady(false);
         try {
             const res = await lastValueFrom(this.dataSourceService.callPluginPost(this.apiBasePath, '/ambitos', {
-                host: value.host,
-                port: value.port,
-                database: value.database,
                 user: value.user,
                 password: value.password,
             }));
@@ -87,6 +82,7 @@ export class AocFormComponent implements OnInit, OnDestroy {
         // El ámbito solo determina el esquema a consultar; el nombre del datasource es siempre
         // el que escriba el usuario en el campo "Nombre" de arriba, nunca se sobreescribe aquí.
         this.selectedAmbito = ambito;
+        this.pluginFormService.setReady(!!ambito);
     }
 
     async save(): Promise<void> {
@@ -96,7 +92,9 @@ export class AocFormComponent implements OnInit, OnDestroy {
             this.alertService.addError($localize`:@@aocNoAmbitoSelected:Debe detectar y seleccionar un ámbito antes de guardar.`);
             return;
         }
-        if (!value.name) {
+        // Si no se ha escrito un nombre, se usa el del ámbito como nombre del datasource
+        const name = value.name || this.selectedAmbito.label;
+        if (!name) {
             this.alertService.addError($localize`:@@noNameProvided:Debe proporcionar un nombre para el datasource`);
             return;
         }
@@ -104,11 +102,8 @@ export class AocFormComponent implements OnInit, OnDestroy {
         this.spinnerService.on();
         try {
             const payload = {
-                name: value.name,
+                name,
                 description: value.description || '',
-                host: value.host,
-                port: value.port,
-                database: value.database,
                 user: value.user,
                 password: value.password,
                 schema: this.selectedAmbito.technicalName,

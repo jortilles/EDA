@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { lastValueFrom, Subject } from 'rxjs';
+import { BehaviorSubject, lastValueFrom, Subject } from 'rxjs';
 import { DataSourceService } from '@eda/services/service.index';
 
 /** HTTP status returned by the API when the folder of a new DuckDB-backed model already exists */
@@ -30,6 +30,18 @@ export class PluginFormService {
 
     triggerSave(): void {
         this.saveSubject.next();
+    }
+
+    /**
+     * Whether the active plugin form considers itself ready to save (e.g. AOC: an ámbito has
+     * been selected). Defaults to true so plugins that don't opt in behave as before. Plugins
+     * must reset it to true on destroy so it doesn't leak into an unrelated datasource type.
+     */
+    private readonly readySubject = new BehaviorSubject<boolean>(true);
+    readonly readyToSave$ = this.readySubject.asObservable();
+
+    setReady(ready: boolean): void {
+        this.readySubject.next(ready);
     }
 
     /**

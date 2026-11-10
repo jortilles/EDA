@@ -6967,15 +6967,7 @@ OR<ph id="5"/>
 <trans-unit id="odooCreated">
   <source>Fuente de datos Odoo creada correctamente</source>
   <target>Odoo data source created successfully</target>
-</trans-unit>
-      <trans-unit id="aocHostLabel">
-        <source>Servidor (endpoint SQL de Fabric) <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
-        <target>Server (Fabric SQL endpoint) <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
-      </trans-unit>
-      <trans-unit id="aocPortLabel">
-        <source>Puerto</source>
-        <target>Port</target>
-      </trans-unit>
+</trans-unit>
       <trans-unit id="aocClientIdLabel">
         <source>Client ID del Service Principal <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
         <target>Service Principal Client ID <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
@@ -6995,12 +6987,12 @@ OR<ph id="5"/>
       <trans-unit id="aocSelectAmbito">
         <source>Ámbito a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
         <target>Scope to import <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+            <trans-unit id="aocSelectAmbitoPlaceholder">
+        <source>Selecciona un ámbito</source>
+        <target>Select a scope</target>
       </trans-unit>
-      <trans-unit id="aocInfoMessage">
-        <source>Cada ámbito seleccionado se guarda como una fuente de datos independiente. Para importar otro ámbito, cree una nueva fuente de datos AOC y repita el proceso.</source>
-        <target>Each selected scope is saved as an independent data source. To import another scope, create a new AOC data source and repeat the process.</target>
-      </trans-unit>
-      <trans-unit id="aocNoAmbitosFound">
+<trans-unit id="aocNoAmbitosFound">
         <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
         <target>No recognized scope was detected in this datalake.</target>
       </trans-unit>

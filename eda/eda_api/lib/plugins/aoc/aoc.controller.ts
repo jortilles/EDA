@@ -5,23 +5,25 @@ import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 import DataSource, { IDataSource } from '../../module/datasource/model/datasource.model';
 
 const cache_config = require('../../../config/cache.config');
+const aoc_config = require('../../../config/aoc.config');
 
 export class AOCController {
 
     static async listAmbitos(req: Request, res: Response, next: NextFunction) {
         try {
-            const { host, port, database, user, password } = req.body;
+            const { user, password } = req.body;
 
-            if (!host || !database || !user || !password) {
-                return next(new HttpException(400, 'Se requieren: host, database, user (clientId), password (clientSecret)'));
+            if (!user || !password) {
+                return next(new HttpException(400, 'Se requieren: user (clientId), password (clientSecret)'));
             }
 
-            const conn = new AOCConnection({ type: 'aoc', host, port, database, user, password });
+            const conn = new AOCConnection({ type: 'aoc', host: aoc_config.host, port: aoc_config.port, database: aoc_config.database, user, password });
             const ambitos = await conn.listAmbitos();
             return res.status(200).json({ ok: true, ambitos });
 
         } catch (err: any) {
             console.error('[AOC] listAmbitos error:', err.message);
+            console.error('[AOC] listAmbitos odbcErrors:', JSON.stringify(err.odbcErrors, null, 2));
             console.error('[AOC] listAmbitos error detail:', { code: err.code, name: err.name, originalError: err.originalError, stack: err.stack });
             return next(new HttpException(500, `Error al conectar con AOC: ${err.message}`));
         }
@@ -29,13 +31,13 @@ export class AOCController {
 
     static async addDataSource(req: Request, res: Response, next: NextFunction) {
         try {
-            const { name, description, host, port, database, user, password, schema, optimize, allowCache, filter } = req.body;
+            const { name, description, user, password, schema, optimize, allowCache, filter } = req.body;
 
-            if (!name || !host || !database || !user || !password || !schema) {
-                return next(new HttpException(400, 'Se requieren: name, host, database, user (clientId), password (clientSecret), schema'));
+            if (!name || !user || !password || !schema) {
+                return next(new HttpException(400, 'Se requieren: name, user (clientId), password (clientSecret), schema'));
             }
 
-            const config = { type: 'aoc', host, port, database, schema, user, password };
+            const config = { type: 'aoc', host: aoc_config.host, port: aoc_config.port, database: aoc_config.database, schema, user, password };
             const conn = new AOCConnection(config);
             const tables = await conn.generateDataModel(optimize ? 1 : 0, filter || '');
 

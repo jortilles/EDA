@@ -25,6 +25,8 @@ import { DropdownModule } from 'primeng/dropdown';
 export class DataSourceConnectionDetailPage implements OnInit {
   private uploadFileService  = inject(UploadFileService);
   private pluginFormService  = inject(PluginFormService);
+  /** Para gatear el botón "Confirmar" (p.ej. AOC lo bloquea hasta que hay un ámbito seleccionado) */
+  public pluginReadyToSave$ = this.pluginFormService.readyToSave$;
 
   @ViewChild('fileUploader', { static: false }) fileUploader: UploadFileComponent;
   @ViewChild('excelFile', { static: false }) excelFile: ElementRef<HTMLInputElement>;

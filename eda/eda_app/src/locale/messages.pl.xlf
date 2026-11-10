@@ -6907,15 +6907,7 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="odooCreated">
         <source>Fuente de datos Odoo creada correctamente</source>
         <target>Źródło danych Odoo zostało pomyślnie utworzone</target>
-      </trans-unit>
-            <trans-unit id="aocHostLabel">
-        <source>Servidor (endpoint SQL de Fabric) <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
-        <target>Serwer (punkt końcowy SQL Fabric) <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
-      </trans-unit>
-      <trans-unit id="aocPortLabel">
-        <source>Puerto</source>
-        <target>Port</target>
-      </trans-unit>
+      </trans-unit>
       <trans-unit id="aocClientIdLabel">
         <source>Client ID del Service Principal <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
         <target>Client ID jednostki usługowej (Service Principal) <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
@@ -6935,12 +6927,12 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="aocSelectAmbito">
         <source>Ámbito a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
         <target>Zakres do zaimportowania <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+            <trans-unit id="aocSelectAmbitoPlaceholder">
+        <source>Selecciona un ámbito</source>
+        <target>Wybierz zakres</target>
       </trans-unit>
-      <trans-unit id="aocInfoMessage">
-        <source>Cada ámbito seleccionado se guarda como una fuente de datos independiente. Para importar otro ámbito, cree una nueva fuente de datos AOC y repita el proceso.</source>
-        <target>Każdy wybrany zakres jest zapisywany jako niezależne źródło danych. Aby zaimportować inny zakres, utwórz nowe źródło danych AOC i powtórz proces.</target>
-      </trans-unit>
-      <trans-unit id="aocNoAmbitosFound">
+<trans-unit id="aocNoAmbitosFound">
         <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
         <target>Nie wykryto żadnego rozpoznanego zakresu w tym datalake.</target>
       </trans-unit>

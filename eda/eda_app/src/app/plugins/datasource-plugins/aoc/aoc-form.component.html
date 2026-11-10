@@ -1,77 +1,49 @@
-<div class="p-6" [formGroup]="connectionForm">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div [formGroup]="connectionForm">
+  <div class="flex flex-col gap-6">
 
-    <!-- AOC: Host -->
-    <div class="space-y-2">
-      <label class="block font-medium" i18n="@@aocHostLabel">
-        Servidor (endpoint SQL de Fabric) <span class="text-red-500">*</span>
-      </label>
-      <input type="text" formControlName="host" placeholder="xxxxx.datawarehouse.fabric.microsoft.com"
-        class="w-full px-3 py-2 border border-gray-300 rounded-md"
-        [class.border-red-500]="connectionForm.get('host')?.invalid && connectionForm.get('host')?.touched" />
-    </div>
+    <!-- AOC: Client ID + Client secret, en una sola fila a todo lo ancho -->
+    <div class="flex flex-col md:flex-row gap-6">
+      <div class="flex-1 space-y-2">
+        <label class="block font-medium" i18n="@@aocClientIdLabel">
+          Client ID del Service Principal <span class="text-red-500">*</span>
+        </label>
+        <input type="text" formControlName="user" placeholder="00000000-0000-0000-0000-000000000000"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md"
+          [class.border-red-500]="connectionForm.get('user')?.invalid && connectionForm.get('user')?.touched" />
+      </div>
 
-    <!-- AOC: Port -->
-    <div class="space-y-2">
-      <label class="block font-medium" i18n="@@aocPortLabel">
-        Puerto
-      </label>
-      <input type="text" formControlName="port" placeholder="1433"
-        class="w-full px-3 py-2 border border-gray-300 rounded-md" />
-    </div>
-
-    <!-- AOC: Database -->
-    <div class="space-y-2">
-      <label class="block font-medium" i18n="@@inputNombreDB">
-        Base de datos (lakehouse/warehouse) <span class="text-red-500">*</span>
-      </label>
-      <input type="text" formControlName="database" placeholder="lakehouse_gold"
-        class="w-full px-3 py-2 border border-gray-300 rounded-md"
-        [class.border-red-500]="connectionForm.get('database')?.invalid && connectionForm.get('database')?.touched" />
-    </div>
-
-    <!-- AOC: Client ID -->
-    <div class="space-y-2">
-      <label class="block font-medium" i18n="@@aocClientIdLabel">
-        Client ID del Service Principal <span class="text-red-500">*</span>
-      </label>
-      <input type="text" formControlName="user" placeholder="00000000-0000-0000-0000-000000000000"
-        class="w-full px-3 py-2 border border-gray-300 rounded-md"
-        [class.border-red-500]="connectionForm.get('user')?.invalid && connectionForm.get('user')?.touched" />
-    </div>
-
-    <!-- AOC: Client secret -->
-    <div class="space-y-2">
-      <label class="block font-medium" i18n="@@aocClientSecretLabel">
-        Client secret <span class="text-red-500">*</span>
-      </label>
-      <div class="relative">
-        <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
-          placeholder="••••••••"
-          class="w-full pr-10 px-3 py-2 border border-gray-300 rounded-md"
-          [class.border-red-500]="connectionForm.get('password')?.invalid && connectionForm.get('password')?.touched" />
-        <button type="button" class="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-          (click)="togglePasswordVisibility()">
-          @if (!showPassword) {
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-          } @else {
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-            </svg>
-          }
-        </button>
+      <div class="flex-1 space-y-2">
+        <label class="block font-medium" i18n="@@aocClientSecretLabel">
+          Client secret <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
+            placeholder="••••••••"
+            class="w-full pr-10 px-3 py-2 border border-gray-300 rounded-md"
+            [class.border-red-500]="connectionForm.get('password')?.invalid && connectionForm.get('password')?.touched" />
+          <button type="button" class="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+            (click)="togglePasswordVisibility()">
+            @if (!showPassword) {
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+              </svg>
+            }
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- AOC: detect ambitos -->
-    <div class="md:col-span-2">
+    <div>
       <button type="button"
         class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
         [disabled]="detecting"
@@ -86,30 +58,23 @@
 
     <!-- AOC: ambitos detected -->
     @if (ambitos.length > 0) {
-    <div class="md:col-span-2 space-y-2">
+    <div class="space-y-2">
       <label class="block font-medium" i18n="@@aocSelectAmbito">
         Ámbito a importar <span class="text-red-500">*</span>
       </label>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-        @for (ambito of ambitos; track ambito.technicalName) {
-        <button type="button"
-          class="text-left px-3 py-2 border rounded-md"
-          [class.border-blue-500]="selectedAmbito?.technicalName === ambito.technicalName"
-          [class.bg-blue-50]="selectedAmbito?.technicalName === ambito.technicalName"
-          [class.border-gray-300]="selectedAmbito?.technicalName !== ambito.technicalName"
-          (click)="selectAmbito(ambito)">
-          {{ ambito.label }}
-        </button>
-        }
-      </div>
+      <p-dropdown
+        [options]="ambitos"
+        optionLabel="label"
+        [ngModel]="selectedAmbito"
+        [ngModelOptions]="{standalone: true}"
+        (onChange)="selectAmbito($event.value)"
+        placeholder="Selecciona un ámbito"
+        i18n-placeholder="@@aocSelectAmbitoPlaceholder"
+        styleClass="w-full"
+        appendTo="body">
+      </p-dropdown>
     </div>
     }
-
-    <!-- AOC: info -->
-    <div class="md:col-span-2 p-3 bg-blue-50 rounded-md border border-blue-200 text-sm text-blue-700"
-         i18n="@@aocInfoMessage">
-      Cada ámbito seleccionado se guarda como una fuente de datos independiente. Para importar otro ámbito, cree una nueva fuente de datos AOC y repita el proceso.
-    </div>
 
   </div>
 </div>

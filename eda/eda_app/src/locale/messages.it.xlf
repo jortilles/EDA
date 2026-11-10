@@ -5308,15 +5308,7 @@ Cordiali saluti.</target>
       <trans-unit id="RegisterError" datatype="html">
         <source>Error al registrarse</source>
         <target>Errore durante la registrazione</target>
-      </trans-unit>
-            <trans-unit id="aocHostLabel" datatype="html">
-        <source>Servidor (endpoint SQL de Fabric) <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-        <target>Server (endpoint SQL di Fabric) <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
-      </trans-unit>
-      <trans-unit id="aocPortLabel" datatype="html">
-        <source>Puerto</source>
-        <target>Porta</target>
-      </trans-unit>
+      </trans-unit>
       <trans-unit id="aocClientIdLabel" datatype="html">
         <source>Client ID del Service Principal <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <target>Client ID del Service Principal <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
@@ -5336,12 +5328,12 @@ Cordiali saluti.</target>
       <trans-unit id="aocSelectAmbito" datatype="html">
         <source>Ámbito a importar <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <target>Ambito da importare <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+            <trans-unit id="aocSelectAmbitoPlaceholder" datatype="html">
+        <source>Selecciona un ámbito</source>
+        <target>Seleziona un ambito</target>
       </trans-unit>
-      <trans-unit id="aocInfoMessage" datatype="html">
-        <source>Cada ámbito seleccionado se guarda como una fuente de datos independiente. Para importar otro ámbito, cree una nueva fuente de datos AOC y repita el proceso.</source>
-        <target>Ogni ambito selezionato viene salvato come fonte dati indipendente. Per importare un altro ambito, crea una nuova fonte dati AOC e ripeti il processo.</target>
-      </trans-unit>
-      <trans-unit id="aocNoAmbitosFound" datatype="html">
+<trans-unit id="aocNoAmbitosFound" datatype="html">
         <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
         <target>Non è stato rilevato nessun ambito riconosciuto in questo datalake.</target>
       </trans-unit>
