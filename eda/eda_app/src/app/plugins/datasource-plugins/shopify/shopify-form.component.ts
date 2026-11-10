@@ -1,9 +1,9 @@
-import { Component, Input, OnInit, OnDestroy, ChangeDetectorRef, inject, LOCALE_ID } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DataSourceService, SpinnerService, AlertService } from '@eda/services/service.index';
-import { PluginFormService } from '../plugin-form.service';
+import { PluginFormService, currentAppLocale } from '../plugin-form.service';
 
 @Component({
     standalone: true,
@@ -21,7 +21,6 @@ export class ShopifyFormComponent implements OnInit, OnDestroy {
     private router            = inject(Router);
     private cdr               = inject(ChangeDetectorRef);
     private pluginFormService = inject(PluginFormService);
-    private localeId          = inject(LOCALE_ID);
 
     public shopUrl      = '';
     public folderName   = '';
@@ -123,7 +122,7 @@ export class ShopifyFormComponent implements OnInit, OnDestroy {
                 folderName:   this.folderName,
                 optimize:     value.optimize   ? 1 : 0,
                 allowCache:   value.allowCache ? 1 : 0,
-                locale:       this.localeId,
+                locale:       currentAppLocale(),
             };
 
             const res: any = await lastValueFrom(this.dataSourceService.callPluginPost(this.apiBasePath, '/add-data-source', payload));
