@@ -1,5 +1,6 @@
 import { SQLserverConnection } from '../../services/connection/db-systems/slqserver-connection';
 import { AOC_AMBITOS_MAP } from './aoc-ambitos.map';
+import { AOC_TABLES_MAP } from './aoc-tables.map';
 
 const odbc = require('odbc');
 
@@ -56,6 +57,31 @@ export class AOCConnection extends SQLserverConnection {
             console.log(err);
             return { recordset: [{ count: 0 }] };
         }
+    }
+
+    /** Igual que SQLserverConnection.generateDataModel, pero aplicando los nombres legibles de AOC_TABLES_MAP */
+    async generateDataModel(optimize: number, filter: string): Promise<any> {
+        const tables = await super.generateDataModel(optimize, filter);
+        return tables.map((table: any) => this.applyAocLabels(table));
+    }
+
+    private applyAocLabels(table: any): any {
+        const mapping = AOC_TABLES_MAP[table.table_name];
+
+        if (mapping?.label) {
+            table.display_name = { default: mapping.label, localized: [] };
+            table.description = { default: mapping.label, localized: [] };
+        }
+
+        table.columns.forEach((column: any) => {
+            const label = mapping?.columns?.[column.column_name];
+            if (label) {
+                column.display_name = { default: label, localized: [] };
+                column.description = { default: label, localized: [] };
+            }
+        });
+
+        return table;
     }
 
     /** Esquemas del datalake presentes en AOC_AMBITOS_MAP, ya traducidos a su nombre legible */
