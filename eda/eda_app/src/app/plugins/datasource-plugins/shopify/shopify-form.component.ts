@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, OnDestroy, ChangeDetectorRef, inject, LOCALE_ID } from '@angular/core';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DataSourceService, SpinnerService, AlertService } from '@eda/services/service.index';
 import { PluginFormService } from '../plugin-form.service';
@@ -10,7 +9,7 @@ import { PluginFormService } from '../plugin-form.service';
     standalone: true,
     selector: 'eda-shopify-form',
     templateUrl: './shopify-form.component.html',
-    imports: [CommonModule, FormsModule],
+    imports: [FormsModule],
 })
 export class ShopifyFormComponent implements OnInit, OnDestroy {
     @Input() connectionForm!: FormGroup;
