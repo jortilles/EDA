@@ -7,6 +7,7 @@ import { PluginRegistry } from '../plugin-registry';
 import DataSource, { IDataSource } from '../../module/datasource/model/datasource.model';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import { DUCKDB_FOLDER_EXISTS_STATUS, duckdbBaseFolder, duckdbFolderExists, sanitizeDuckdbFolderName } from '../../utils/duckdb-folder.util';
 
 const cache_config = require('../../../config/cache.config');
 
@@ -34,8 +35,12 @@ export class ShopifyController {
                 return next(new HttpException(400, 'Se requieren: name, shop, accessToken, folderName'));
             }
 
-            const safeFolderName = folderName.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
-            const folderPath = path.join(process.cwd(), 'duckdb', safeFolderName);
+            const safeFolderName = sanitizeDuckdbFolderName(folderName);
+            if (duckdbFolderExists(safeFolderName)) {
+                return next(new HttpException(DUCKDB_FOLDER_EXISTS_STATUS,
+                    `Ya existe un modelo de datos para la carpeta "${safeFolderName}". Elija otro nombre de carpeta.`));
+            }
+            const folderPath = path.join(duckdbBaseFolder(), safeFolderName);
 
             const plugin = PluginRegistry.getDatasource('shopify');
             await plugin.downloadData({ shop, accessToken }, folderPath);
