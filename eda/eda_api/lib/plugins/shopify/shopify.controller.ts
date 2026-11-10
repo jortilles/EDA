@@ -8,20 +8,9 @@ import DataSource, { IDataSource } from '../../module/datasource/model/datasourc
 import * as path from 'path';
 import * as crypto from 'crypto';
 import { DUCKDB_FOLDER_EXISTS_STATUS, duckdbBaseFolder, duckdbFolderExists, sanitizeDuckdbFolderName } from '../../utils/duckdb-folder.util';
+import OAuthPendingState from '../../services/oauth-pending-state/oauth-pending-state.model';
 
 const cache_config = require('../../../config/cache.config');
-
-// In-memory store for pending OAuth states { state → { shop, token, expiresAt } }
-const pendingTokens = new Map<string, { shop: string; clientId: string; clientSecret: string; token: string; expiresAt: number }>();
-
-const TOKEN_TTL_MS = 10 * 60 * 1000; // 10 minutes
-
-setInterval(() => {
-    const now = Date.now();
-    for (const [state, entry] of pendingTokens.entries()) {
-        if (entry.expiresAt < now) pendingTokens.delete(state);
-    }
-}, 60_000);
 
 export class ShopifyController {
 
@@ -90,7 +79,7 @@ export class ShopifyController {
 
     // ── OAuth2 flow ───────────────────────────────────────────────────────────
 
-    static getAuthUrl(req: Request, res: Response, next: NextFunction) {
+    static async getAuthUrl(req: Request, res: Response, next: NextFunction) {
         try {
             const { shop, clientId, clientSecret } = (req as any).qs as Record<string, string>;
             if (!shop)         return next(new HttpException(400, 'Parámetro shop requerido'));
@@ -100,7 +89,7 @@ export class ShopifyController {
             const state = crypto.randomBytes(16).toString('hex');
             const authUrl = ShopifyApiService.buildAuthUrl(shop, clientId, state);
 
-            pendingTokens.set(state, { shop, clientId, clientSecret, token: '', expiresAt: Date.now() + TOKEN_TTL_MS });
+            await OAuthPendingState.create({ state, data: { shop, clientId, clientSecret }, token: '' });
 
             return res.json({ ok: true, authUrl, state });
         } catch (err: any) {
@@ -121,21 +110,17 @@ export class ShopifyController {
                 return next(new HttpException(400, 'Parámetros code y state requeridos'));
             }
 
-            const pending = pendingTokens.get(state);
+            const pending = await OAuthPendingState.findOne({ state }).exec();
             if (!pending) {
                 return res.send(`<script>window.close();</script>
                     <p>Estado OAuth inválido o expirado. Cierra esta ventana e inténtalo de nuevo.</p>`);
             }
 
-            const accessToken = await ShopifyApiService.exchangeCodeForToken(pending.shop, pending.clientId, pending.clientSecret, code);
+            const { shop, clientId, clientSecret } = pending.data;
+            const accessToken = await ShopifyApiService.exchangeCodeForToken(shop, clientId, clientSecret, code);
 
-            pendingTokens.set(state, {
-                shop:         pending.shop,
-                clientId:     pending.clientId,
-                clientSecret: pending.clientSecret,
-                token:        accessToken,
-                expiresAt:    Date.now() + TOKEN_TTL_MS,
-            });
+            pending.token = accessToken;
+            await pending.save();
 
             return res.send(`<!DOCTYPE html><html><body>
                 <p style="font-family:sans-serif;text-align:center;margin-top:40px">
@@ -151,18 +136,19 @@ export class ShopifyController {
         }
     }
 
-    static pollToken(req: Request, res: Response, next: NextFunction) {
+    static async pollToken(req: Request, res: Response, next: NextFunction) {
         const { state } = (req as any).qs as { state: string };
         if (!state) return next(new HttpException(400, 'state requerido'));
 
-        const entry = pendingTokens.get(state);
-        if (!entry || entry.expiresAt < Date.now() || !entry.token) {
+        const entry = await OAuthPendingState.findOne({ state }).exec();
+        if (!entry || !entry.token) {
             return res.json({ ok: true, ready: false });
         }
 
-        const { shop, token } = entry;
-        pendingTokens.delete(state); // consume once
-        return res.json({ ok: true, ready: true, accessToken: token, shop });
+        const { shop } = entry.data;
+        const accessToken = entry.token;
+        await OAuthPendingState.deleteOne({ _id: entry._id }).exec(); // consume once
+        return res.json({ ok: true, ready: true, accessToken, shop });
     }
 
     // ── Manual download ───────────────────────────────────────────────────────
