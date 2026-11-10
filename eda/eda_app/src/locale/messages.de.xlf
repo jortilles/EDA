@@ -5951,6 +5951,10 @@ Un saludo.</source>
         <source>¿Mover carpeta?</source>
         <target>Ordner verschieben?</target>
       </trans-unit>
+      <trans-unit id="moveReportConfirmTitle">
+        <source>¿Mover informe?</source>
+        <target>Bericht verschieben?</target>
+      </trans-unit>
       <trans-unit id="confirmBtn">
         <source>Confirmar</source>
         <target>Bestätigen</target>

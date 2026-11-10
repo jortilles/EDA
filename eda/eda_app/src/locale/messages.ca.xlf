@@ -8218,6 +8218,10 @@ Salutacions.</target>
   <source>¿Mover carpeta?</source>
   <target>Vols moure la carpeta?</target>
 </trans-unit>
+<trans-unit id="moveReportConfirmTitle">
+  <source>¿Mover informe?</source>
+  <target>Vols moure l'informe?</target>
+</trans-unit>
 <trans-unit id="confirmBtn">
   <source>Confirmar</source>
   <target>Confirmar</target>
