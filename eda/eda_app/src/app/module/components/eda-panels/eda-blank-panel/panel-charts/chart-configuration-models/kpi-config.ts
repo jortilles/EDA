@@ -40,6 +40,9 @@ export class KpiConfig {
     alertLimits: any[] = [];
     edaChart: KpiEdaChart;
     modifiedFontPoints: number = 0;
+    /** Suffix/image size, independent of modifiedFontPoints - 0 = same size as the value. */
+    modifiedSufixFontPoints: number = 0;
+    modifiedImageFontPoints: number = 0;
     backgroundColor: string = '';
     kpiColor: string = '';
     prefixImage: string = '';

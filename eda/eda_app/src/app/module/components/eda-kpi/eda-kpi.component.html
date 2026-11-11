@@ -28,13 +28,15 @@
 <ng-template #kpiValueContainer>
     <div #sufixContainer class="pointer" title="Añadir unidades"
          style="max-width: 100%; overflow: hidden;">
-        <span [ngStyle]="getStyle()" (click)="setSufix()"
+        <span (click)="setSufix()"
               style="display: block; text-align: center; overflow-wrap: break-word; word-break: break-word;">
             @if (inject.prefixImage) {
-              <img [src]="inject.prefixImage | mediaSrc" alt=""
-                   style="height: 1em; width: auto; vertical-align: middle; object-fit: contain; display: inline;" />
+              <img [src]="inject.prefixImage | mediaSrc" alt="" [ngStyle]="getImageStyle()" />
             }
-            {{inject.value | number:getNumberFormat():'es' }} {{inject.sufix}}
+            <span [ngStyle]="getStyle()">{{inject.value | number:getNumberFormat():'es' }}</span>
+            @if (inject.sufix) {
+              <span [ngStyle]="getSufixStyle()"> {{inject.sufix}}</span>
+            }
         </span>
 
         @if(!!sufixClick){

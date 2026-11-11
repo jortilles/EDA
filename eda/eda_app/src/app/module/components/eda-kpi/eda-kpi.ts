@@ -15,6 +15,13 @@ export class EdaKpi {
     edaChart: any;
     showChart: boolean;
     modifiedFontPoints: number;
+    /** Suffix size, independent of the value: additive px on top of the value's own computed
+     *  base size (same pattern as modifiedFontPoints). 0/undefined = same size as the value. */
+    modifiedSufixFontPoints?: number;
+    /** Prefix image size, independent of the value: additive px on top of the value's own
+     *  computed base size (same pattern as modifiedFontPoints). 0/undefined = same size as
+     *  the value (matches the previous height:1em behaviour). */
+    modifiedImageFontPoints?: number;
     backgroundColor: string;
     kpiColor: string;
     prefixImage: string;

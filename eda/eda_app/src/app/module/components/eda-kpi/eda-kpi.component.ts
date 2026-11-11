@@ -158,17 +158,44 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         };
     }
 
+    /** Suffix's own style: same base size as the value, independently nudged by
+     * inject.modifiedSufixFontPoints (same additive-px pattern as the value's modifiedFontPoints,
+     * defaulting to 0 so it matches the value's size exactly when untouched). */
+    getSufixStyle(): any {
+        return {
+            'font-weight': 'bold',
+            'font-size': `${this.getSufixFontSizePx()}px`,
+            'line-height': '1',
+            color: this.color,
+            'font-family': this.family,
+        };
+    }
+
+    private getSufixFontSizePx(): number {
+        const base = this.computeValueFontSizePx();
+        return this.inject.modifiedSufixFontPoints
+            ? Math.max(this.minFontSize, base + this.inject.modifiedSufixFontPoints)
+            : base;
+    }
+
+    /** Prefix image's own size: same base size as the value, independently nudged by
+     * inject.modifiedImageFontPoints (same additive-px pattern, defaults to 0 = same as the value,
+     * matching the previous height:1em behaviour). */
     getImageStyle(): any {
-        const size = this.getFontSize();
+        const base = this.computeValueFontSizePx();
+        const size = this.inject.modifiedImageFontPoints
+            ? Math.max(this.minFontSize, base + this.inject.modifiedImageFontPoints)
+            : base;
         const maxW = this.containerWidth > 0 ? `${Math.round(this.containerWidth * 0.5)}px` : '50%';
         return {
-            height: size,
-            'max-height': size,
+            height: `${size}px`,
+            'max-height': `${size}px`,
             width: 'auto',
             'max-width': maxW,
             'object-fit': 'contain',
             'flex-shrink': '0',
-            display: 'block',
+            'vertical-align': 'middle',
+            display: 'inline-block',
         };
     }
 
@@ -204,12 +231,12 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     /**
-     * This function returns a string with the font size (in px) that fits the value (plus
-     * suffix and prefix image, if any) inside the panel, measured against the actual rendered
-     * text width instead of counting characters.
-     * @returns {string}
-    */
-    getFontSize(): string {
+     * Base font size (px) that fits the value (plus suffix and prefix image, if any) inside the
+     * panel, measured against the actual rendered text width instead of counting characters, plus
+     * the value's own modifiedFontPoints adjustment. Suffix and image start from this same base
+     * (see getSufixFontSizePx()/getImageStyle()) and nudge it independently from there.
+     */
+    private computeValueFontSizePx(): number {
         this.initDimensions();
 
         const hasImage = !!this.inject.prefixImage;
@@ -228,7 +255,17 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.inject.modifiedFontPoints) {
             resultSize = Math.max(this.minFontSize, resultSize + this.inject.modifiedFontPoints);
         }
-        return resultSize.toFixed().toString() + 'px';
+        return resultSize;
+    }
+
+    /**
+     * This function returns a string with the font size (in px) that fits the value (plus
+     * suffix and prefix image, if any) inside the panel, measured against the actual rendered
+     * text width instead of counting characters.
+     * @returns {string}
+    */
+    getFontSize(): string {
+        return this.computeValueFontSizePx().toFixed().toString() + 'px';
     }
 
     public updateChart(): void {

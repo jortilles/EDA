@@ -56,11 +56,29 @@
                   <span i18n="@@kpiSize">Modificar el tamaño del KPI</span>
                 </h3>
               </div>
-              <div class="p-4 inline-flex w-full gap-4 items-center justify-between">
-                <span i18n="@@increaseKpiSize">Incrementar el tamaño del KPI</span>
-                <input type="number" [ngModel]="modifiedFontPoints" min="-90" max="300"
-                  (ngModelChange)="modifyKpiSize($event)"
-                  class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
+              <div class="p-4 flex flex-col gap-3">
+                <div class="inline-flex w-full gap-4 items-center justify-between">
+                  <span i18n="@@increaseKpiSize">Incrementar el tamaño del KPI</span>
+                  <input type="number" [ngModel]="modifiedFontPoints" min="-90" max="300"
+                    (ngModelChange)="modifyKpiSize($event)"
+                    class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
+                </div>
+                @if (currentSufix) {
+                  <div class="inline-flex w-full gap-4 items-center justify-between">
+                    <span i18n="@@increaseKpiSufixSize">Tamaño del sufijo (relativo al KPI)</span>
+                    <input type="number" [ngModel]="modifiedSufixFontPoints" min="-90" max="300"
+                      (ngModelChange)="modifySufixSize($event)"
+                      class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
+                  </div>
+                }
+                @if (prefixImage) {
+                  <div class="inline-flex w-full gap-4 items-center justify-between">
+                    <span i18n="@@increaseKpiImageSize">Tamaño de la imagen (relativo al KPI)</span>
+                    <input type="number" [ngModel]="modifiedImageFontPoints" min="-90" max="300"
+                      (ngModelChange)="modifyImageSize($event)"
+                      class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
+                  </div>
+                }
               </div>
             </div>
 

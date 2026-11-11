@@ -45,6 +45,9 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public ptooltipViewAlerts: string = $localize`:@@ptooltipViewAlerts:Configurar alertas`;
 
     public modifiedFontPoints: number = 0;
+    /** Suffix/image size, independent of the value's own modifiedFontPoints - 0 = same size as the value. */
+    public modifiedSufixFontPoints: number = 0;
+    public modifiedImageFontPoints: number = 0;
     public previewAspectRatio: string = '4/3';
     public previewBoxStyle: any = {};
     public panelTitle: string = '';
@@ -104,6 +107,11 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
 
     get tabCount(): number {
         return 1 + (this.showGraphTab ? 1 : 0) + (!this.isKpiTrend ? 1 : 0);
+    }
+
+    /** Live suffix value, to only show its size control once there's actually a suffix to size. */
+    get currentSufix(): string {
+        return this.panelChartComponent?.componentRef?.instance?.inject?.sufix || '';
     }
 
     constructor(
@@ -168,6 +176,8 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.originalAlerts = [...(config.alertLimits || [])];
         this.alerts = [...this.originalAlerts];
         this.modifiedFontPoints = config.modifiedFontPoints || 0;
+        this.modifiedSufixFontPoints = config.modifiedSufixFontPoints || 0;
+        this.modifiedImageFontPoints = config.modifiedImageFontPoints || 0;
         // '' would show as red in p-colorPicker (its default hue when no valid hex is bound) -
         // fall back to the same defaults the KPI itself actually renders with when unset.
         this.kpiBackgroundColor = config.backgroundColor || '#ffffff';
@@ -248,6 +258,8 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             chartSubType: this.panelChartConfig.edaChart,
             assignedColors: [...this.assignedColors],
             modifiedFontPoints: this.modifiedFontPoints,
+            modifiedSufixFontPoints: this.modifiedSufixFontPoints,
+            modifiedImageFontPoints: this.modifiedImageFontPoints,
             backgroundColor: this.kpiBackgroundColor,
             kpiColor: this.kpiTextColor,
             prefixImage: this.prefixImage,
@@ -533,6 +545,24 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         }
         const instance = this.panelChartComponent.componentRef.instance;
         instance.inject.modifiedFontPoints = this.modifiedFontPoints;
+        this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+    }
+
+    modifySufixSize(newValue?: number) {
+        const min = -90;
+        const max = 300;
+        this.modifiedSufixFontPoints = Math.min(max, Math.max(min, (newValue ?? this.modifiedSufixFontPoints) || 0));
+        const instance = this.panelChartComponent.componentRef.instance;
+        instance.inject.modifiedSufixFontPoints = this.modifiedSufixFontPoints;
+        this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+    }
+
+    modifyImageSize(newValue?: number) {
+        const min = -90;
+        const max = 300;
+        this.modifiedImageFontPoints = Math.min(max, Math.max(min, (newValue ?? this.modifiedImageFontPoints) || 0));
+        const instance = this.panelChartComponent.componentRef.instance;
+        instance.inject.modifiedImageFontPoints = this.modifiedImageFontPoints;
         this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
     }
 }
