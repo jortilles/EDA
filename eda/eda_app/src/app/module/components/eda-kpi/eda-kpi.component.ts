@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, HostBinding } from '@angular/core';
 import { StyleProviderService } from '@eda/services/service.index';
-import { registerLocaleData } from '@angular/common';
+import { formatNumber, registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
 import { EdaBarD3Component } from '../eda-bar-d3/eda-bar.component';
@@ -42,16 +42,26 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
     warningColor = '#ff8100';
     containerHeight: number = 20;
     containerWidth: number = 20;
-    baseResultSize: number = 0;
-    showChart: boolean = true;
+    /** Smallest size we are willing to render (below it the text would be unreadable). */
+    private readonly minFontSize = 10;
+    /** Safety margin so sub-pixel rounding and synthetic-bold width never make the text overflow. */
+    private readonly fitSafety = 0.96;
+    /** Width share reserved for the inline prefix image, matching getImageStyle()'s 50% cap. */
+    private readonly imageWidthShare = 0.35;
+    /** Reusable canvas context used to measure the rendered text (no layout thrashing). */
+    private measureCanvas?: HTMLCanvasElement;
     private resizeObserver?: ResizeObserver;
 
     constructor(private styleProviderService : StyleProviderService, private cdr: ChangeDetectorRef) { }
 
     ngAfterViewInit() {
         this.initDimensions();
-        this.baseResultSize = this.computeBaseSize();
         this.observeContainerResize();
+        // The web font may load after the first paint: the measured width changes,
+        // so the fit has to be recalculated once the font is actually ready.
+        (document as any).fonts?.ready
+            ?.then(() => this.cdr.detectChanges())
+            .catch(() => undefined);
         this.cdr.detectChanges();
     }
 
@@ -125,24 +135,6 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    private computeBaseSize(): number {
-        let resultSize: number = this.containerHeight / 2;
-        const sufix = this.inject.sufix || '';
-        const ratio = (this.containerHeight / this.containerWidth);
-        const textLongitude = this.inject.value.toString().length;
-        let textWidth = textLongitude * resultSize;
-        if ((textWidth > this.containerWidth) && (sufix.length < 4)) resultSize = (this.containerWidth / textLongitude) * 1.4;
-        if (resultSize > this.containerHeight && ratio < 0.4) resultSize = this.containerHeight;
-        if (textLongitude * resultSize > this.containerWidth * 1.2 && ratio < 0.4) resultSize = resultSize / 1.5;
-        if (sufix.length > 4 && this.containerHeight < (resultSize * 4) && this.containerWidth < textWidth) {
-            resultSize = resultSize / 1.8;
-        }
-        if (this.showChart) {
-            resultSize = resultSize / 1.8;
-        }
-        return resultSize;
-    }
-
     setSufix(): void {
         this.sufixClick = !this.sufixClick;
         this.onNotify.emit({ sufix: this.inject.sufix })
@@ -180,43 +172,61 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         };
     }
 
+    /** Value + suffix exactly as rendered by the template, for width measurement. */
+    private getDisplayText(): string {
+        const value = formatNumber(this.inject.value, 'es', this.getNumberFormat());
+        const sufix = this.inject.sufix || '';
+        return sufix ? `${value} ${sufix}` : value;
+    }
+
+    /** Width in px that `text` would take at `fontSize`, measured with a hidden canvas (no layout impact). */
+    private measureTextWidth(text: string, fontSize: number): number {
+        if (!this.measureCanvas) this.measureCanvas = document.createElement('canvas');
+        const ctx = this.measureCanvas.getContext('2d');
+        if (!ctx) return text.length * fontSize * 0.6; // rough fallback
+        ctx.font = `700 ${fontSize}px ${this.family || 'Questrial'}`;
+        return ctx.measureText(text).width;
+    }
+
     /**
-     * This function returns a string with the given font size (in px) based on the panel width and height 
+     * Largest font size (px) that fits `text` inside a `width` x `height` box. Glyph widths scale
+     * linearly with the font size, so a single reference measurement is enough:
+     *   sizeByWidth  = availableWidth / widthAtReference * reference
+     *   sizeByHeight = availableHeight   (line-height is 1, so the line box is one em tall)
+     */
+    private computeFitSize(width: number, height: number, text: string): number {
+        if (!text || width <= 0 || height <= 0) return this.minFontSize;
+        const reference = 100;
+        const widthAtReference = this.measureTextWidth(text, reference) || 1;
+        const sizeByWidth = (width * reference) / widthAtReference;
+        const sizeByHeight = height;
+        return Math.max(this.minFontSize, Math.floor(Math.min(sizeByWidth, sizeByHeight) * this.fitSafety));
+    }
+
+    /**
+     * This function returns a string with the font size (in px) that fits the value (plus
+     * suffix and prefix image, if any) inside the panel, measured against the actual rendered
+     * text width instead of counting characters.
      * @returns {string}
     */
     getFontSize(): string {
         this.initDimensions();
 
-        let resultSize: number = this.containerHeight / 3;
-        let textLongitude = (this.inject.value + this.inject.sufix).length;
-        const ratio = (  this.containerHeight / this.containerWidth ) ;
+        const hasImage = !!this.inject.prefixImage;
+        const availableWidth = this.containerWidth * (hasImage ? 1 - this.imageWidthShare : 1);
+        // When there's a chart below, the value only occupies the top 30% of the panel's height
+        // (see the template's `height: 30%` on #kpiContainer) — initDimensions() measures the full
+        // panel, so that share has to be applied here too.
+        const availableHeight = this.containerHeight * (this.inject.showChart ? 0.3 : 1);
 
-        const sufix = this.inject.sufix || '';
+        let resultSize = this.computeFitSize(availableWidth, availableHeight, this.getDisplayText());
 
-        textLongitude = this.inject.value.toString().length
-
-        // Checks
-        let textWidth = textLongitude * resultSize;
-        // Resize based on width
-        if ( ( textWidth > this.containerWidth )  && ( sufix.length < 4 ) ) resultSize = (this.containerWidth / textLongitude) * 1.4;
-        // Resize based on height
-        if (resultSize > this.containerHeight   && ratio < 0.4  ) resultSize = this.containerHeight;
-        // Final check
-        if (textLongitude * resultSize > this.containerWidth * 1.2   && ratio < 0.4  )  resultSize = resultSize / 1.5;
-        // If there is a suffix and it is very large, check that it does not overflow
-        if (sufix.length > 4 && this.containerHeight < (resultSize * 4) && this.containerWidth < textWidth) {
-            resultSize = resultSize / 1.8;
-        }
-        // If there is a chart, make it smaller
-        if (this.inject.showChart) {
-            resultSize = resultSize / 1.8;
-        }
         const isMobile = window.innerWidth < 640;
-        if(isMobile) {
-            resultSize = 40;
+        if (isMobile) {
+            resultSize = Math.min(resultSize, 40);
         }
         if (this.inject.modifiedFontPoints) {
-            resultSize += this.inject.modifiedFontPoints;
+            resultSize = Math.max(this.minFontSize, resultSize + this.inject.modifiedFontPoints);
         }
         return resultSize.toFixed().toString() + 'px';
     }
