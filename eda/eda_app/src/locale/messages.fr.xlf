@@ -8746,6 +8746,34 @@ Cordialement.</target>
   <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
   <target>Un modèle de données existe déjà pour la base de données Odoo « <x id="PH" equiv-text="value.database"/> ».</target>
 </trans-unit>
+<trans-unit id="dashboardExportPdfError" datatype="html">
+  <source>No se ha podido generar el PDF del informe. Inténtalo de nuevo.</source>
+  <target>Impossible de générer le PDF du rapport. Réessayez.</target>
+</trans-unit>
+<trans-unit id="dashboardExportImageError" datatype="html">
+  <source>No se ha podido generar la imagen del informe. Inténtalo de nuevo.</source>
+  <target>Impossible de générer l'image du rapport. Réessayez.</target>
+</trans-unit>
+<trans-unit id="dashboardExportExcelError" datatype="html">
+  <source>No se ha podido generar el Excel del informe. Inténtalo de nuevo.</source>
+  <target>Impossible de générer l'Excel du rapport. Réessayez.</target>
+</trans-unit>
+<trans-unit id="dashboardExportWordError" datatype="html">
+  <source>No se ha podido generar el Word del informe. Inténtalo de nuevo.</source>
+  <target>Impossible de générer le Word du rapport. Réessayez.</target>
+</trans-unit>
+<trans-unit id="groupFilterPlaceholder" datatype="html">
+  <source>Selecciona grupos...</source>
+  <target>Sélectionner des groupes...</target>
+</trans-unit>
+<trans-unit id="groupFilterLabel" datatype="html">
+  <source>Grupo</source>
+  <target>Groupe</target>
+</trans-unit>
+<trans-unit id="hidePaginator" datatype="html">
+  <source>Ocultar paginador</source>
+  <target>Masquer le paginateur</target>
+</trans-unit>
 </body>
   </file>
 </xliff>

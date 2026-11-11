@@ -8318,6 +8318,490 @@ Salutacions.</target>
   <source>Este nombre ya existe. Escribe un nombre diferente.</source>
   <target>Aquest nom ja existeix. Escriu un nom diferent.</target>
 </trans-unit>
+<trans-unit id="noInitialDashboard" datatype="html">
+  <source>No hay ningún dashboard inicial configurado.</source>
+  <target>No hi ha cap dashboard inicial configurat.</target>
+</trans-unit>
+<trans-unit id="configureInitialDashboard" datatype="html">
+  <source>Edita el portal para seleccionar uno.</source>
+  <target>Edita el portal per seleccionar-ne un.</target>
+</trans-unit>
+<trans-unit id="initialDashboardLabel" datatype="html">
+  <source> Dashboard inicial: </source>
+  <target> Dashboard inicial: </target>
+</trans-unit>
+<trans-unit id="noneOption" datatype="html">
+  <source>— Ninguno —</source>
+  <target>— Cap —</target>
+</trans-unit>
+<trans-unit id="noPublicDashboards" datatype="html">
+  <source>No hay dashboards públicos disponibles.</source>
+  <target>No hi ha dashboards públics disponibles.</target>
+</trans-unit>
+<trans-unit id="holdedFolderRequired" datatype="html">
+  <source>Debe indicar el nombre de la carpeta</source>
+  <target>Cal indicar el nom de la carpeta</target>
+</trans-unit>
+<trans-unit id="noExcelFile" datatype="html">
+  <source>Debe cargar un archivo Excel primero</source>
+  <target>Cal carregar un fitxer Excel primer</target>
+</trans-unit>
+<trans-unit id="updateFileTitle" datatype="html">
+  <source>Actualizar fichero de datos</source>
+  <target>Actualitzar fitxer de dades</target>
+</trans-unit>
+<trans-unit id="updateFileDescription" datatype="html">
+  <source> Sube un nuevo fichero para reemplazar los datos de esta fuente </source>
+  <target> Puja un fitxer nou per substituir les dades d'aquesta font </target>
+</trans-unit>
+<trans-unit id="goBack" datatype="html">
+  <source>Volver</source>
+  <target>Tornar</target>
+</trans-unit>
+<trans-unit id="lockedType" datatype="html">
+  <source><x id="INTERPOLATION" equiv-text="{{ connectionType }}"/></source>
+  <target><x id="INTERPOLATION" equiv-text="{{ connectionType }}"/></target>
+</trans-unit>
+<trans-unit id="cancel" datatype="html">
+  <source>Cancelar</source>
+  <target>Cancel·lar</target>
+</trans-unit>
+<trans-unit id="excelFile" datatype="html">
+  <source>Archivo Excel</source>
+  <target>Fitxer Excel</target>
+</trans-unit>
+<trans-unit id="testingMailConfig" datatype="html">
+  <source>Enviando prueba...</source>
+  <target>Enviant prova...</target>
+</trans-unit>
+<trans-unit id="testMailConfig" datatype="html">
+  <source>Probar y enviar correo de prueba</source>
+  <target>Provar i enviar un correu de prova</target>
+</trans-unit>
+<trans-unit id="testMailConfigTitle" datatype="html">
+  <source>Envía un correo de prueba a la cuenta configurada para verificar que la configuración es correcta</source>
+  <target>Envia un correu de prova al compte configurat per comprovar que la configuració és correcta</target>
+</trans-unit>
+<trans-unit id="aiConfigSaved" datatype="html">
+  <source>Configuración de IA guardada correctamente</source>
+  <target>Configuració d'IA desada correctament</target>
+</trans-unit>
+<trans-unit id="aiBaseUrl" datatype="html">
+  <source>BASE URL</source>
+  <target>BASE URL</target>
+</trans-unit>
+<trans-unit id="dashboardSidebarDownloadWord" datatype="html">
+  <source>Descargar Word</source>
+  <target>Descarregar Word</target>
+</trans-unit>
+<trans-unit id="dashboardExportPdfError" datatype="html">
+  <source>No se ha podido generar el PDF del informe. Inténtalo de nuevo.</source>
+  <target>No s'ha pogut generar el PDF de l'informe. Torna-ho a provar.</target>
+</trans-unit>
+<trans-unit id="dashboardExportImageError" datatype="html">
+  <source>No se ha podido generar la imagen del informe. Inténtalo de nuevo.</source>
+  <target>No s'ha pogut generar la imatge de l'informe. Torna-ho a provar.</target>
+</trans-unit>
+<trans-unit id="dashboardExportExcelError" datatype="html">
+  <source>No se ha podido generar el Excel del informe. Inténtalo de nuevo.</source>
+  <target>No s'ha pogut generar l'Excel de l'informe. Torna-ho a provar.</target>
+</trans-unit>
+<trans-unit id="dashboardExportWordError" datatype="html">
+  <source>No se ha podido generar el Word del informe. Inténtalo de nuevo.</source>
+  <target>No s'ha pogut generar el Word de l'informe. Torna-ho a provar.</target>
+</trans-unit>
+<trans-unit id="chatResetBtn" datatype="html">
+  <source>Nueva conversación</source>
+  <target>Nova conversa</target>
+</trans-unit>
+<trans-unit id="chartInfoRaceBar" datatype="html">
+  <source>Un gráfico de barras en carrera necesita una categoría, un valor numérico y una fecha</source>
+  <target>Un gràfic de barres en cursa necessita una categoria, un valor numèric i una data</target>
+</trans-unit>
+<trans-unit id="chartInfoTreetable" datatype="html">
+  <source>Una tabla árbol necesita al menos 2 columnas. Si los dos primeros campos son numéricos se usarán como ID padre e ID hijo (se necesita además un campo a mostrar); si no, la jerarquía se agrupará automáticamente por las columnas con valores repetidos.</source>
+  <target>Una taula arbre necessita com a mínim 2 columnes. Si els dos primers camps són numèrics s'utilitzaran com a ID pare i ID fill (a més cal un camp a mostrar); si no, la jerarquia s'agruparà automàticament per les columnes amb valors repetits.</target>
+</trans-unit>
+<trans-unit id="globalFilter" datatype="html">
+  <source>Filtro de informe</source>
+  <target>Filtre d'informe</target>
+</trans-unit>
+<trans-unit id="panelFilter" datatype="html">
+  <source>Filtro de panel</source>
+  <target>Filtre de panell</target>
+</trans-unit>
+<trans-unit id="filterSettingsHeader" datatype="html">
+  <source>Configuración de filtros</source>
+  <target>Configuració de filtres</target>
+</trans-unit>
+<trans-unit id="descriptionFilterSettings" datatype="html">
+  <source>Configuración avanzada de todos los filtros</source>
+  <target>Configuració avançada de tots els filtres</target>
+</trans-unit>
+<trans-unit id="filterSettingsReboot" datatype="html">
+  <source>La configuración de filtros se ha reiniciado</source>
+  <target>La configuració de filtres s'ha reiniciat</target>
+</trans-unit>
+<trans-unit id="globalFilterSettingsReboot" datatype="html">
+  <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
+  <target>La configuració de filtres del panell afectat s'ha reiniciat</target>
+</trans-unit>
+<trans-unit id="withoutFilters" datatype="html">
+  <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
+  <target>Encara no has configurat filtres. Utilitza el panell de filtres o els filtres globals</target>
+</trans-unit>
+<trans-unit id="panelTitlePlaceholder" datatype="html">
+  <source>Título del panel</source>
+  <target>Títol del panell</target>
+</trans-unit>
+<trans-unit id="panelDescriptionPlaceholder" datatype="html">
+  <source>Descripción (opcional)</source>
+  <target>Descripció (opcional)</target>
+</trans-unit>
+<trans-unit id="hiddenAttributes" datatype="html">
+  <source>Mostrar/ocultar campos ocultos</source>
+  <target>Mostrar/amagar camps ocults</target>
+</trans-unit>
+<trans-unit id="configurarFiltrosAvanzados" datatype="html">
+  <source>Configurar</source>
+  <target>Configurar</target>
+</trans-unit>
+<trans-unit id="selectOriginTable" datatype="html">
+  <source>Seleccionar tabla</source>
+  <target>Seleccionar taula</target>
+</trans-unit>
+<trans-unit id="duckdbTableAdded" datatype="html">
+  <source>Tabla añadida correctamente</source>
+  <target>Taula afegida correctament</target>
+</trans-unit>
+<trans-unit id="addDuckdbTableTitle" datatype="html">
+  <source>Añadir tabla CSV a DuckDB</source>
+  <target>Afegir taula CSV a DuckDB</target>
+</trans-unit>
+<trans-unit id="deleteDuckdbTable" datatype="html">
+  <source>Eliminar tabla CSV</source>
+  <target>Eliminar taula CSV</target>
+</trans-unit>
+<trans-unit id="addDuckdbTable" datatype="html">
+  <source>Añadir tabla CSV</source>
+  <target>Afegir taula CSV</target>
+</trans-unit>
+<trans-unit id="buscarTabla" datatype="html">
+  <source>Buscar...</source>
+  <target>Cercar...</target>
+</trans-unit>
+<trans-unit id="unsupportedGeoJsonType" datatype="html">
+  <source>El tipo de geometría &quot;<x id="PH" equiv-text="unsupportedType"/>&quot; no está admitido. Solo se admiten &quot;Polygon&quot; y &quot;MultiPolygon&quot;.</source>
+  <target>El tipus de geometria "<x id="PH" equiv-text="unsupportedType"/>" no és compatible. Només s’admeten "Polygon" i "MultiPolygon".</target>
+</trans-unit>
+<trans-unit id="whereHavingLabel" datatype="html">
+  <source>Ámbito del filtro</source>
+  <target>Àmbit del filtre</target>
+</trans-unit>
+<trans-unit id="panelColHeader" datatype="html">
+  <source>Panel</source>
+  <target>Panell</target>
+</trans-unit>
+<trans-unit id="filterPathColHeader" datatype="html">
+  <source>Ruta del filtro</source>
+  <target>Ruta del filtre</target>
+</trans-unit>
+<trans-unit id="raceBarMonthJan" datatype="html">
+  <source>Ene</source>
+  <target>Gen</target>
+</trans-unit>
+<trans-unit id="raceBarMonthFeb" datatype="html">
+  <source>Feb</source>
+  <target>Febr</target>
+</trans-unit>
+<trans-unit id="raceBarMonthMar" datatype="html">
+  <source>Mar</source>
+  <target>Març</target>
+</trans-unit>
+<trans-unit id="raceBarMonthApr" datatype="html">
+  <source>Abr</source>
+  <target>Abr</target>
+</trans-unit>
+<trans-unit id="raceBarMonthMay" datatype="html">
+  <source>May</source>
+  <target>Maig</target>
+</trans-unit>
+<trans-unit id="raceBarMonthJun" datatype="html">
+  <source>Jun</source>
+  <target>Juny</target>
+</trans-unit>
+<trans-unit id="raceBarMonthJul" datatype="html">
+  <source>Jul</source>
+  <target>Jul</target>
+</trans-unit>
+<trans-unit id="raceBarMonthAug" datatype="html">
+  <source>Ago</source>
+  <target>Ag</target>
+</trans-unit>
+<trans-unit id="raceBarMonthSep" datatype="html">
+  <source>Sep</source>
+  <target>Set</target>
+</trans-unit>
+<trans-unit id="raceBarMonthOct" datatype="html">
+  <source>Oct</source>
+  <target>Oct</target>
+</trans-unit>
+<trans-unit id="raceBarMonthNov" datatype="html">
+  <source>Nov</source>
+  <target>Nov</target>
+</trans-unit>
+<trans-unit id="raceBarMonthDec" datatype="html">
+  <source>Dic</source>
+  <target>Des</target>
+</trans-unit>
+<trans-unit id="raceBarQuarterPrefix" datatype="html">
+  <source>T</source>
+  <target>T</target>
+</trans-unit>
+<trans-unit id="raceBarWeekPrefix" datatype="html">
+  <source>Sem</source>
+  <target>Set</target>
+</trans-unit>
+<trans-unit id="raceBarPlayAria" datatype="html">
+  <source>Reproducir</source>
+  <target>Reproduir</target>
+</trans-unit>
+<trans-unit id="raceBarPauseAria" datatype="html">
+  <source>Pausa</source>
+  <target>Pausa</target>
+</trans-unit>
+<trans-unit id="raceBarTimelineAria" datatype="html">
+  <source>Línea de tiempo</source>
+  <target>Línia de temps</target>
+</trans-unit>
+<trans-unit id="raceBarPrevAria" datatype="html">
+  <source>Periodo anterior</source>
+  <target>Període anterior</target>
+</trans-unit>
+<trans-unit id="raceBarNextAria" datatype="html">
+  <source>Periodo siguiente</source>
+  <target>Període següent</target>
+</trans-unit>
+<trans-unit id="raceBarSpeedAria" datatype="html">
+  <source>Velocidad de reproducción</source>
+  <target>Velocitat de reproducció</target>
+</trans-unit>
+<trans-unit id="raceBarNoData" datatype="html">
+  <source>No hay suficientes datos temporales para animar este gráfico.</source>
+  <target>No hi ha prou dades temporals per animar aquest gràfic.</target>
+</trans-unit>
+<trans-unit id="rangeTitle" datatype="html">
+  <source>Rangos</source>
+  <target>Rangs</target>
+</trans-unit>
+<trans-unit id="rangeDescriptionB" datatype="html">
+  <source>• Rango:</source>
+  <target>• Rang:</target>
+</trans-unit>
+<trans-unit id="dateNavLabel" datatype="html">
+  <source>Navegación por fecha</source>
+  <target>Navegació per data</target>
+</trans-unit>
+<trans-unit id="RemovePredictionTitle" datatype="html">
+  <source>¿Quieres quitar la predicción?</source>
+  <target>Vols eliminar la predicció?</target>
+</trans-unit>
+<trans-unit id="RemovePredictionText" datatype="html">
+  <source>Se quitará la predicción y se ejecutará la consulta del gráfico.</source>
+  <target>S'eliminarà la predicció i s'executarà la consulta del gràfic.</target>
+</trans-unit>
+<trans-unit id="RemovePredictionYes" datatype="html">
+  <source>Sí, quitar</source>
+  <target>Sí, eliminar</target>
+</trans-unit>
+<trans-unit id="RemovePredictionNo" datatype="html">
+  <source>No, mantener</source>
+  <target>No, mantenir</target>
+</trans-unit>
+<trans-unit id="iconsNoCategories" datatype="html">
+  <source>Sin categorías disponibles todavía.</source>
+  <target>Encara no hi ha categories disponibles.</target>
+</trans-unit>
+<trans-unit id="innerRadius" datatype="html">
+  <source>Radio interno</source>
+  <target>Radi interior</target>
+</trans-unit>
+<trans-unit id="raceBarTopN" datatype="html">
+  <source>Barras a mostrar (Top N)</source>
+  <target>Barres a mostrar (Top N)</target>
+</trans-unit>
+<trans-unit id="raceBarTransitionMs" datatype="html">
+  <source>Duración de la transición (ms)</source>
+  <target>Durada de la transició (ms)</target>
+</trans-unit>
+<trans-unit id="raceBarShowTimeline" datatype="html">
+  <source>Mostrar línea de tiempo</source>
+  <target>Mostrar línia de temps</target>
+</trans-unit>
+<trans-unit id="knobSemaphoreLabel" datatype="html">
+  <source>Color semafórico</source>
+  <target>Color semafòric</target>
+</trans-unit>
+<trans-unit id="knobSemaphoreDesc" datatype="html">
+  <source>Rojo → amarillo → verde según el valor</source>
+  <target>Vermell → groc → verd segons el valor</target>
+</trans-unit>
+<trans-unit id="mpa" datatype="html">
+  <source>Aplica escala logarítmica a los valores del mapa</source>
+  <target>Aplica una escala logarítmica als valors del mapa</target>
+</trans-unit>
+<trans-unit id="kpiAspecto" datatype="html">
+  <source> KPI </source>
+  <target> KPI </target>
+</trans-unit>
+<trans-unit id="kpiVisualStyle" datatype="html">
+  <source>Estilo visual del KPI</source>
+  <target>Estil visual del KPI</target>
+</trans-unit>
+<trans-unit id="kpiBgColor" datatype="html">
+  <source>Color de fondo</source>
+  <target>Color de fons</target>
+</trans-unit>
+<trans-unit id="kpiTextColor" datatype="html">
+  <source>Color del texto</source>
+  <target>Color del text</target>
+</trans-unit>
+<trans-unit id="kpiPrefixImage" datatype="html">
+  <source>Imagen prefijo</source>
+  <target>Imatge de prefix</target>
+</trans-unit>
+<trans-unit id="selectMeasure" datatype="html">
+  <source>Seleccionar mesura</source>
+  <target>Seleccionar mesura</target>
+</trans-unit>
+<trans-unit id="selectOperation" datatype="html">
+  <source>Seleccionar operació</source>
+  <target>Seleccionar operació</target>
+</trans-unit>
+<trans-unit id="generateAliasTooltip" datatype="html">
+  <source> Generar alias automático </source>
+  <target> Generar àlies automàtic </target>
+</trans-unit>
+<trans-unit id="treeTableRowBanding" datatype="html">
+  <source>Bandas alternas en filas</source>
+  <target>Bandes alternes en files</target>
+</trans-unit>
+<trans-unit id="chatStatusConnecting" datatype="html">
+  <source>Conectando con las fuentes de datos...</source>
+  <target>Connectant amb les fonts de dades...</target>
+</trans-unit>
+<trans-unit id="chatStatusAnalyzing" datatype="html">
+  <source>Analizando tu pregunta...</source>
+  <target>Analitzant la teva pregunta...</target>
+</trans-unit>
+<trans-unit id="chatStatusSearching" datatype="html">
+  <source>Buscando datos...</source>
+  <target>Cercant dades...</target>
+</trans-unit>
+<trans-unit id="chatStatusProcessing" datatype="html">
+  <source>Procesando resultados...</source>
+  <target>Processant resultats...</target>
+</trans-unit>
+<trans-unit id="chatStatusPreparing" datatype="html">
+  <source>Preparando respuesta...</source>
+  <target>Preparant la resposta...</target>
+</trans-unit>
+<trans-unit id="chatScrollDown" datatype="html">
+  <source>Ir al final</source>
+  <target>Anar al final</target>
+</trans-unit>
+<trans-unit id="chatStopBtn" datatype="html">
+  <source>Parar generación</source>
+  <target>Aturar generació</target>
+</trans-unit>
+<trans-unit id="chatGeneratingDashboard" datatype="html">
+  <source>Generando dashboard...</source>
+  <target>Generant dashboard...</target>
+</trans-unit>
+<trans-unit id="folderReportCount" datatype="html">
+  <source>informes</source>
+  <target>informes</target>
+</trans-unit>
+<trans-unit id="groupFilterPlaceholder" datatype="html">
+  <source>Selecciona grupos...</source>
+  <target>Selecciona grups...</target>
+</trans-unit>
+<trans-unit id="groupFilterLabel" datatype="html">
+  <source>Grupo</source>
+  <target>Grup</target>
+</trans-unit>
+<trans-unit id="tagsTooltipLabel" datatype="html">
+  <source>Tags:</source>
+  <target>Etiquetes:</target>
+</trans-unit>
+<trans-unit id="edaBarUnitBillion" datatype="html">
+  <source>MM</source>
+  <target>MM</target>
+</trans-unit>
+<trans-unit id="edaBarUnitMillion" datatype="html">
+  <source>M</source>
+  <target>M</target>
+</trans-unit>
+<trans-unit id="edaBarUnitThousand" datatype="html">
+  <source>K</source>
+  <target>K</target>
+</trans-unit>
+<trans-unit id="mediaInvalidBatchError" datatype="html">
+  <source>No se pudieron subir estas imágenes (formato no válido o superan 1MB): <x id="PH" equiv-text="detail"/></source>
+  <target>No s'han pogut pujar aquestes imatges (format no vàlid o superen 1MB): <x id="PH" equiv-text="detail"/></target>
+</trans-unit>
+<trans-unit id="mediaDuplicateProgress" datatype="html">
+  <source>Archivo</source>
+  <target>Fitxer</target>
+</trans-unit>
+<trans-unit id="mediaDuplicateTitleSingle" datatype="html">
+  <source>Ya existe una imagen con este nombre</source>
+  <target>Ja existeix una imatge amb aquest nom</target>
+</trans-unit>
+<trans-unit id="mediaDuplicateKeepBoth" datatype="html">
+  <source>Mantener ambas</source>
+  <target>Mantenir ambdues</target>
+</trans-unit>
+<trans-unit id="mediaDuplicateReplace" datatype="html">
+  <source>Reemplazar</source>
+  <target>Reemplaçar</target>
+</trans-unit>
+<trans-unit id="mediaDuplicateSkip" datatype="html">
+  <source>Omitir esta</source>
+  <target>Ometre aquesta</target>
+</trans-unit>
+<trans-unit id="mediaUploadErrorSingle" datatype="html">
+  <source>No se pudo subir una de las imágenes.</source>
+  <target>No s'ha pogut pujar una de les imatges.</target>
+</trans-unit>
+<trans-unit id="mediaUploadErrorMultiple" datatype="html">
+  <source>No se pudieron subir <x id="PH" equiv-text="failedCount"/> imágenes.</source>
+  <target>No s'han pogut pujar <x id="PH" equiv-text="failedCount"/> imatges.</target>
+</trans-unit>
+<trans-unit id="openInNewTabBtn" datatype="html">
+  <source>Abrir en NUEVA pestaña</source>
+  <target>Obrir en pestanya NOVA</target>
+</trans-unit>
+<trans-unit id="openInSameTabBtn" datatype="html">
+  <source>Abrir en MISMA pestaña</source>
+  <target>Obrir en la MATEIXA pestanya</target>
+</trans-unit>
+<trans-unit id="codeEditorZoomOut" datatype="html">
+  <source>Reducir tamaño de letra</source>
+  <target>Reduir mida de lletra</target>
+</trans-unit>
+<trans-unit id="codeEditorZoomIn" datatype="html">
+  <source>Aumentar tamaño de letra</source>
+  <target>Augmentar mida de lletra</target>
+</trans-unit>
+<trans-unit id="chartTypesRaceBar" datatype="html">
+  <source>Barras en carrera</source>
+  <target>Barres en cursa</target>
+</trans-unit>
+<trans-unit id="hidePaginator" datatype="html">
+  <source>Ocultar paginador</source>
+  <target>Amagar paginador</target>
+</trans-unit>
 </body>
   </file>
 </xliff>

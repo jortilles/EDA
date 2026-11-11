@@ -6047,6 +6047,18 @@ Un saludo.</source>
   <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
   <target>Für die Odoo-Datenbank „<x id="PH" equiv-text="value.database"/>“ existiert bereits ein Datenmodell.</target>
 </trans-unit>
-  </body>
+  <trans-unit id="groupFilterPlaceholder" datatype="html">
+  <source>Selecciona grupos...</source>
+  <target>Gruppen auswählen...</target>
+</trans-unit>
+<trans-unit id="groupFilterLabel" datatype="html">
+  <source>Grupo</source>
+  <target>Gruppe</target>
+</trans-unit>
+<trans-unit id="hidePaginator" datatype="html">
+  <source>Ocultar paginador</source>
+  <target>Paginierung ausblenden</target>
+</trans-unit>
+</body>
   </file>
 </xliff>

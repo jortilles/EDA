@@ -8012,6 +8012,490 @@ Best regards.</target>
   <source>Este nombre ya existe. Escribe un nombre diferente.</source>
   <target>This name already exists. Enter a different name.</target>
 </trans-unit>
+<trans-unit id="noInitialDashboard" datatype="html">
+  <source>No hay ningún dashboard inicial configurado.</source>
+  <target>No initial dashboard has been configured.</target>
+</trans-unit>
+<trans-unit id="configureInitialDashboard" datatype="html">
+  <source>Edita el portal para seleccionar uno.</source>
+  <target>Edit the portal to select one.</target>
+</trans-unit>
+<trans-unit id="initialDashboardLabel" datatype="html">
+  <source> Dashboard inicial: </source>
+  <target> Initial dashboard: </target>
+</trans-unit>
+<trans-unit id="noneOption" datatype="html">
+  <source>— Ninguno —</source>
+  <target>— None —</target>
+</trans-unit>
+<trans-unit id="noPublicDashboards" datatype="html">
+  <source>No hay dashboards públicos disponibles.</source>
+  <target>No public dashboards available.</target>
+</trans-unit>
+<trans-unit id="holdedFolderRequired" datatype="html">
+  <source>Debe indicar el nombre de la carpeta</source>
+  <target>You must specify the folder name</target>
+</trans-unit>
+<trans-unit id="noExcelFile" datatype="html">
+  <source>Debe cargar un archivo Excel primero</source>
+  <target>You must upload an Excel file first</target>
+</trans-unit>
+<trans-unit id="updateFileTitle" datatype="html">
+  <source>Actualizar fichero de datos</source>
+  <target>Update data file</target>
+</trans-unit>
+<trans-unit id="updateFileDescription" datatype="html">
+  <source> Sube un nuevo fichero para reemplazar los datos de esta fuente </source>
+  <target> Upload a new file to replace this source's data </target>
+</trans-unit>
+<trans-unit id="goBack" datatype="html">
+  <source>Volver</source>
+  <target>Back</target>
+</trans-unit>
+<trans-unit id="lockedType" datatype="html">
+  <source><x id="INTERPOLATION" equiv-text="{{ connectionType }}"/></source>
+  <target><x id="INTERPOLATION" equiv-text="{{ connectionType }}"/></target>
+</trans-unit>
+<trans-unit id="cancel" datatype="html">
+  <source>Cancelar</source>
+  <target>Cancel</target>
+</trans-unit>
+<trans-unit id="excelFile" datatype="html">
+  <source>Archivo Excel</source>
+  <target>Excel file</target>
+</trans-unit>
+<trans-unit id="testingMailConfig" datatype="html">
+  <source>Enviando prueba...</source>
+  <target>Sending test...</target>
+</trans-unit>
+<trans-unit id="testMailConfig" datatype="html">
+  <source>Probar y enviar correo de prueba</source>
+  <target>Test and send a test email</target>
+</trans-unit>
+<trans-unit id="testMailConfigTitle" datatype="html">
+  <source>Envía un correo de prueba a la cuenta configurada para verificar que la configuración es correcta</source>
+  <target>Sends a test email to the configured account to verify the configuration is correct</target>
+</trans-unit>
+<trans-unit id="aiConfigSaved" datatype="html">
+  <source>Configuración de IA guardada correctamente</source>
+  <target>AI configuration saved successfully</target>
+</trans-unit>
+<trans-unit id="aiBaseUrl" datatype="html">
+  <source>BASE URL</source>
+  <target>BASE URL</target>
+</trans-unit>
+<trans-unit id="dashboardSidebarDownloadWord" datatype="html">
+  <source>Descargar Word</source>
+  <target>Download Word</target>
+</trans-unit>
+<trans-unit id="dashboardExportPdfError" datatype="html">
+  <source>No se ha podido generar el PDF del informe. Inténtalo de nuevo.</source>
+  <target>The report's PDF could not be generated. Please try again.</target>
+</trans-unit>
+<trans-unit id="dashboardExportImageError" datatype="html">
+  <source>No se ha podido generar la imagen del informe. Inténtalo de nuevo.</source>
+  <target>The report's image could not be generated. Please try again.</target>
+</trans-unit>
+<trans-unit id="dashboardExportExcelError" datatype="html">
+  <source>No se ha podido generar el Excel del informe. Inténtalo de nuevo.</source>
+  <target>The report's Excel file could not be generated. Please try again.</target>
+</trans-unit>
+<trans-unit id="dashboardExportWordError" datatype="html">
+  <source>No se ha podido generar el Word del informe. Inténtalo de nuevo.</source>
+  <target>The report's Word file could not be generated. Please try again.</target>
+</trans-unit>
+<trans-unit id="chatResetBtn" datatype="html">
+  <source>Nueva conversación</source>
+  <target>New conversation</target>
+</trans-unit>
+<trans-unit id="chartInfoRaceBar" datatype="html">
+  <source>Un gráfico de barras en carrera necesita una categoría, un valor numérico y una fecha</source>
+  <target>A race bar chart needs a category, a numeric value and a date</target>
+</trans-unit>
+<trans-unit id="chartInfoTreetable" datatype="html">
+  <source>Una tabla árbol necesita al menos 2 columnas. Si los dos primeros campos son numéricos se usarán como ID padre e ID hijo (se necesita además un campo a mostrar); si no, la jerarquía se agrupará automáticamente por las columnas con valores repetidos.</source>
+  <target>A tree table needs at least 2 columns. If the first two fields are numeric they will be used as parent ID and child ID (an extra field to display is also required); otherwise, the hierarchy will be grouped automatically by the columns with repeated values.</target>
+</trans-unit>
+<trans-unit id="globalFilter" datatype="html">
+  <source>Filtro de informe</source>
+  <target>Report filter</target>
+</trans-unit>
+<trans-unit id="panelFilter" datatype="html">
+  <source>Filtro de panel</source>
+  <target>Panel filter</target>
+</trans-unit>
+<trans-unit id="filterSettingsHeader" datatype="html">
+  <source>Configuración de filtros</source>
+  <target>Filter settings</target>
+</trans-unit>
+<trans-unit id="descriptionFilterSettings" datatype="html">
+  <source>Configuración avanzada de todos los filtros</source>
+  <target>Advanced configuration for all filters</target>
+</trans-unit>
+<trans-unit id="filterSettingsReboot" datatype="html">
+  <source>La configuración de filtros se ha reiniciado</source>
+  <target>The filter configuration has been reset</target>
+</trans-unit>
+<trans-unit id="globalFilterSettingsReboot" datatype="html">
+  <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
+  <target>The filter configuration of the affected panel has been reset</target>
+</trans-unit>
+<trans-unit id="withoutFilters" datatype="html">
+  <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
+  <target>You haven't configured any filters yet. Use the filter panel or the global filters</target>
+</trans-unit>
+<trans-unit id="panelTitlePlaceholder" datatype="html">
+  <source>Título del panel</source>
+  <target>Panel title</target>
+</trans-unit>
+<trans-unit id="panelDescriptionPlaceholder" datatype="html">
+  <source>Descripción (opcional)</source>
+  <target>Description (optional)</target>
+</trans-unit>
+<trans-unit id="hiddenAttributes" datatype="html">
+  <source>Mostrar/ocultar campos ocultos</source>
+  <target>Show/hide hidden fields</target>
+</trans-unit>
+<trans-unit id="configurarFiltrosAvanzados" datatype="html">
+  <source>Configurar</source>
+  <target>Configure</target>
+</trans-unit>
+<trans-unit id="selectOriginTable" datatype="html">
+  <source>Seleccionar tabla</source>
+  <target>Select table</target>
+</trans-unit>
+<trans-unit id="duckdbTableAdded" datatype="html">
+  <source>Tabla añadida correctamente</source>
+  <target>Table added successfully</target>
+</trans-unit>
+<trans-unit id="addDuckdbTableTitle" datatype="html">
+  <source>Añadir tabla CSV a DuckDB</source>
+  <target>Add CSV table to DuckDB</target>
+</trans-unit>
+<trans-unit id="deleteDuckdbTable" datatype="html">
+  <source>Eliminar tabla CSV</source>
+  <target>Delete CSV table</target>
+</trans-unit>
+<trans-unit id="addDuckdbTable" datatype="html">
+  <source>Añadir tabla CSV</source>
+  <target>Add CSV table</target>
+</trans-unit>
+<trans-unit id="buscarTabla" datatype="html">
+  <source>Buscar...</source>
+  <target>Search...</target>
+</trans-unit>
+<trans-unit id="unsupportedGeoJsonType" datatype="html">
+  <source>El tipo de geometría &quot;<x id="PH" equiv-text="unsupportedType"/>&quot; no está admitido. Solo se admiten &quot;Polygon&quot; y &quot;MultiPolygon&quot;.</source>
+  <target>The geometry type "<x id="PH" equiv-text="unsupportedType"/>" is not supported. Only "Polygon" and "MultiPolygon" are supported.</target>
+</trans-unit>
+<trans-unit id="whereHavingLabel" datatype="html">
+  <source>Ámbito del filtro</source>
+  <target>Filter scope</target>
+</trans-unit>
+<trans-unit id="panelColHeader" datatype="html">
+  <source>Panel</source>
+  <target>Panel</target>
+</trans-unit>
+<trans-unit id="filterPathColHeader" datatype="html">
+  <source>Ruta del filtro</source>
+  <target>Filter path</target>
+</trans-unit>
+<trans-unit id="raceBarMonthJan" datatype="html">
+  <source>Ene</source>
+  <target>Jan</target>
+</trans-unit>
+<trans-unit id="raceBarMonthFeb" datatype="html">
+  <source>Feb</source>
+  <target>Feb</target>
+</trans-unit>
+<trans-unit id="raceBarMonthMar" datatype="html">
+  <source>Mar</source>
+  <target>Mar</target>
+</trans-unit>
+<trans-unit id="raceBarMonthApr" datatype="html">
+  <source>Abr</source>
+  <target>Apr</target>
+</trans-unit>
+<trans-unit id="raceBarMonthMay" datatype="html">
+  <source>May</source>
+  <target>May</target>
+</trans-unit>
+<trans-unit id="raceBarMonthJun" datatype="html">
+  <source>Jun</source>
+  <target>Jun</target>
+</trans-unit>
+<trans-unit id="raceBarMonthJul" datatype="html">
+  <source>Jul</source>
+  <target>Jul</target>
+</trans-unit>
+<trans-unit id="raceBarMonthAug" datatype="html">
+  <source>Ago</source>
+  <target>Aug</target>
+</trans-unit>
+<trans-unit id="raceBarMonthSep" datatype="html">
+  <source>Sep</source>
+  <target>Sep</target>
+</trans-unit>
+<trans-unit id="raceBarMonthOct" datatype="html">
+  <source>Oct</source>
+  <target>Oct</target>
+</trans-unit>
+<trans-unit id="raceBarMonthNov" datatype="html">
+  <source>Nov</source>
+  <target>Nov</target>
+</trans-unit>
+<trans-unit id="raceBarMonthDec" datatype="html">
+  <source>Dic</source>
+  <target>Dec</target>
+</trans-unit>
+<trans-unit id="raceBarQuarterPrefix" datatype="html">
+  <source>T</source>
+  <target>Q</target>
+</trans-unit>
+<trans-unit id="raceBarWeekPrefix" datatype="html">
+  <source>Sem</source>
+  <target>Wk</target>
+</trans-unit>
+<trans-unit id="raceBarPlayAria" datatype="html">
+  <source>Reproducir</source>
+  <target>Play</target>
+</trans-unit>
+<trans-unit id="raceBarPauseAria" datatype="html">
+  <source>Pausa</source>
+  <target>Pause</target>
+</trans-unit>
+<trans-unit id="raceBarTimelineAria" datatype="html">
+  <source>Línea de tiempo</source>
+  <target>Timeline</target>
+</trans-unit>
+<trans-unit id="raceBarPrevAria" datatype="html">
+  <source>Periodo anterior</source>
+  <target>Previous period</target>
+</trans-unit>
+<trans-unit id="raceBarNextAria" datatype="html">
+  <source>Periodo siguiente</source>
+  <target>Next period</target>
+</trans-unit>
+<trans-unit id="raceBarSpeedAria" datatype="html">
+  <source>Velocidad de reproducción</source>
+  <target>Playback speed</target>
+</trans-unit>
+<trans-unit id="raceBarNoData" datatype="html">
+  <source>No hay suficientes datos temporales para animar este gráfico.</source>
+  <target>There isn't enough time-series data to animate this chart.</target>
+</trans-unit>
+<trans-unit id="rangeTitle" datatype="html">
+  <source>Rangos</source>
+  <target>Ranges</target>
+</trans-unit>
+<trans-unit id="rangeDescriptionB" datatype="html">
+  <source>• Rango:</source>
+  <target>• Range:</target>
+</trans-unit>
+<trans-unit id="dateNavLabel" datatype="html">
+  <source>Navegación por fecha</source>
+  <target>Date navigation</target>
+</trans-unit>
+<trans-unit id="RemovePredictionTitle" datatype="html">
+  <source>¿Quieres quitar la predicción?</source>
+  <target>Do you want to remove the prediction?</target>
+</trans-unit>
+<trans-unit id="RemovePredictionText" datatype="html">
+  <source>Se quitará la predicción y se ejecutará la consulta del gráfico.</source>
+  <target>The prediction will be removed and the chart's query will run.</target>
+</trans-unit>
+<trans-unit id="RemovePredictionYes" datatype="html">
+  <source>Sí, quitar</source>
+  <target>Yes, remove</target>
+</trans-unit>
+<trans-unit id="RemovePredictionNo" datatype="html">
+  <source>No, mantener</source>
+  <target>No, keep</target>
+</trans-unit>
+<trans-unit id="iconsNoCategories" datatype="html">
+  <source>Sin categorías disponibles todavía.</source>
+  <target>No categories available yet.</target>
+</trans-unit>
+<trans-unit id="innerRadius" datatype="html">
+  <source>Radio interno</source>
+  <target>Inner radius</target>
+</trans-unit>
+<trans-unit id="raceBarTopN" datatype="html">
+  <source>Barras a mostrar (Top N)</source>
+  <target>Bars to show (Top N)</target>
+</trans-unit>
+<trans-unit id="raceBarTransitionMs" datatype="html">
+  <source>Duración de la transición (ms)</source>
+  <target>Transition duration (ms)</target>
+</trans-unit>
+<trans-unit id="raceBarShowTimeline" datatype="html">
+  <source>Mostrar línea de tiempo</source>
+  <target>Show timeline</target>
+</trans-unit>
+<trans-unit id="knobSemaphoreLabel" datatype="html">
+  <source>Color semafórico</source>
+  <target>Traffic-light color</target>
+</trans-unit>
+<trans-unit id="knobSemaphoreDesc" datatype="html">
+  <source>Rojo → amarillo → verde según el valor</source>
+  <target>Red → yellow → green depending on the value</target>
+</trans-unit>
+<trans-unit id="mpa" datatype="html">
+  <source>Aplica escala logarítmica a los valores del mapa</source>
+  <target>Applies a logarithmic scale to the map values</target>
+</trans-unit>
+<trans-unit id="kpiAspecto" datatype="html">
+  <source> KPI </source>
+  <target> KPI </target>
+</trans-unit>
+<trans-unit id="kpiVisualStyle" datatype="html">
+  <source>Estilo visual del KPI</source>
+  <target>KPI visual style</target>
+</trans-unit>
+<trans-unit id="kpiBgColor" datatype="html">
+  <source>Color de fondo</source>
+  <target>Background color</target>
+</trans-unit>
+<trans-unit id="kpiTextColor" datatype="html">
+  <source>Color del texto</source>
+  <target>Text color</target>
+</trans-unit>
+<trans-unit id="kpiPrefixImage" datatype="html">
+  <source>Imagen prefijo</source>
+  <target>Prefix image</target>
+</trans-unit>
+<trans-unit id="selectMeasure" datatype="html">
+  <source>Seleccionar mesura</source>
+  <target>Select measure</target>
+</trans-unit>
+<trans-unit id="selectOperation" datatype="html">
+  <source>Seleccionar operació</source>
+  <target>Select operation</target>
+</trans-unit>
+<trans-unit id="generateAliasTooltip" datatype="html">
+  <source> Generar alias automático </source>
+  <target> Generate automatic alias </target>
+</trans-unit>
+<trans-unit id="treeTableRowBanding" datatype="html">
+  <source>Bandas alternas en filas</source>
+  <target>Alternating row bands</target>
+</trans-unit>
+<trans-unit id="chatStatusConnecting" datatype="html">
+  <source>Conectando con las fuentes de datos...</source>
+  <target>Connecting to data sources...</target>
+</trans-unit>
+<trans-unit id="chatStatusAnalyzing" datatype="html">
+  <source>Analizando tu pregunta...</source>
+  <target>Analyzing your question...</target>
+</trans-unit>
+<trans-unit id="chatStatusSearching" datatype="html">
+  <source>Buscando datos...</source>
+  <target>Searching for data...</target>
+</trans-unit>
+<trans-unit id="chatStatusProcessing" datatype="html">
+  <source>Procesando resultados...</source>
+  <target>Processing results...</target>
+</trans-unit>
+<trans-unit id="chatStatusPreparing" datatype="html">
+  <source>Preparando respuesta...</source>
+  <target>Preparing response...</target>
+</trans-unit>
+<trans-unit id="chatScrollDown" datatype="html">
+  <source>Ir al final</source>
+  <target>Go to bottom</target>
+</trans-unit>
+<trans-unit id="chatStopBtn" datatype="html">
+  <source>Parar generación</source>
+  <target>Stop generating</target>
+</trans-unit>
+<trans-unit id="chatGeneratingDashboard" datatype="html">
+  <source>Generando dashboard...</source>
+  <target>Generating dashboard...</target>
+</trans-unit>
+<trans-unit id="folderReportCount" datatype="html">
+  <source>informes</source>
+  <target>reports</target>
+</trans-unit>
+<trans-unit id="groupFilterPlaceholder" datatype="html">
+  <source>Selecciona grupos...</source>
+  <target>Select groups...</target>
+</trans-unit>
+<trans-unit id="groupFilterLabel" datatype="html">
+  <source>Grupo</source>
+  <target>Group</target>
+</trans-unit>
+<trans-unit id="tagsTooltipLabel" datatype="html">
+  <source>Tags:</source>
+  <target>Tags:</target>
+</trans-unit>
+<trans-unit id="edaBarUnitBillion" datatype="html">
+  <source>MM</source>
+  <target>B</target>
+</trans-unit>
+<trans-unit id="edaBarUnitMillion" datatype="html">
+  <source>M</source>
+  <target>M</target>
+</trans-unit>
+<trans-unit id="edaBarUnitThousand" datatype="html">
+  <source>K</source>
+  <target>K</target>
+</trans-unit>
+<trans-unit id="mediaInvalidBatchError" datatype="html">
+  <source>No se pudieron subir estas imágenes (formato no válido o superan 1MB): <x id="PH" equiv-text="detail"/></source>
+  <target>These images could not be uploaded (invalid format or larger than 1MB): <x id="PH" equiv-text="detail"/></target>
+</trans-unit>
+<trans-unit id="mediaDuplicateProgress" datatype="html">
+  <source>Archivo</source>
+  <target>File</target>
+</trans-unit>
+<trans-unit id="mediaDuplicateTitleSingle" datatype="html">
+  <source>Ya existe una imagen con este nombre</source>
+  <target>An image with this name already exists</target>
+</trans-unit>
+<trans-unit id="mediaDuplicateKeepBoth" datatype="html">
+  <source>Mantener ambas</source>
+  <target>Keep both</target>
+</trans-unit>
+<trans-unit id="mediaDuplicateReplace" datatype="html">
+  <source>Reemplazar</source>
+  <target>Replace</target>
+</trans-unit>
+<trans-unit id="mediaDuplicateSkip" datatype="html">
+  <source>Omitir esta</source>
+  <target>Skip this one</target>
+</trans-unit>
+<trans-unit id="mediaUploadErrorSingle" datatype="html">
+  <source>No se pudo subir una de las imágenes.</source>
+  <target>One of the images could not be uploaded.</target>
+</trans-unit>
+<trans-unit id="mediaUploadErrorMultiple" datatype="html">
+  <source>No se pudieron subir <x id="PH" equiv-text="failedCount"/> imágenes.</source>
+  <target><x id="PH" equiv-text="failedCount"/> images could not be uploaded.</target>
+</trans-unit>
+<trans-unit id="openInNewTabBtn" datatype="html">
+  <source>Abrir en NUEVA pestaña</source>
+  <target>Open in NEW tab</target>
+</trans-unit>
+<trans-unit id="openInSameTabBtn" datatype="html">
+  <source>Abrir en MISMA pestaña</source>
+  <target>Open in SAME tab</target>
+</trans-unit>
+<trans-unit id="codeEditorZoomOut" datatype="html">
+  <source>Reducir tamaño de letra</source>
+  <target>Decrease font size</target>
+</trans-unit>
+<trans-unit id="codeEditorZoomIn" datatype="html">
+  <source>Aumentar tamaño de letra</source>
+  <target>Increase font size</target>
+</trans-unit>
+<trans-unit id="chartTypesRaceBar" datatype="html">
+  <source>Barras en carrera</source>
+  <target>Race bar chart</target>
+</trans-unit>
+<trans-unit id="hidePaginator" datatype="html">
+  <source>Ocultar paginador</source>
+  <target>Hide paginator</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

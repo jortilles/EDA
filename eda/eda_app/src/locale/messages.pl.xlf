@@ -8423,6 +8423,18 @@ Pozdrawiam.</target>
   <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
   <target>Model danych dla bazy danych Odoo „<x id="PH" equiv-text="value.database"/>” już istnieje.</target>
 </trans-unit>
+<trans-unit id="groupFilterPlaceholder" datatype="html">
+  <source>Selecciona grupos...</source>
+  <target>Wybierz grupy...</target>
+</trans-unit>
+<trans-unit id="groupFilterLabel" datatype="html">
+  <source>Grupo</source>
+  <target>Grupa</target>
+</trans-unit>
+<trans-unit id="hidePaginator" datatype="html">
+  <source>Ocultar paginador</source>
+  <target>Ukryj paginator</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

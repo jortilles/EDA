@@ -5917,6 +5917,18 @@ Cumprimentos.</target>
   <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
   <target>Já existe um modelo de dados para a base de dados do Odoo "<x id="PH" equiv-text="value.database"/>".</target>
 </trans-unit>
-    </body>
+    <trans-unit id="groupFilterPlaceholder" datatype="html">
+  <source>Selecciona grupos...</source>
+  <target>Selecione grupos...</target>
+</trans-unit>
+<trans-unit id="groupFilterLabel" datatype="html">
+  <source>Grupo</source>
+  <target>Grupo</target>
+</trans-unit>
+<trans-unit id="hidePaginator" datatype="html">
+  <source>Ocultar paginador</source>
+  <target>Ocultar paginador</target>
+</trans-unit>
+</body>
   </file>
 </xliff>

@@ -6013,6 +6013,10 @@ Cordiali saluti.</target>
         <source>elementos disponibles</source>
         <target>elementi disponibili</target>
       </trans-unit>
-  </body>
+  <trans-unit id="hidePaginator" datatype="html">
+  <source>Ocultar paginador</source>
+  <target>Nascondi il paginatore</target>
+</trans-unit>
+</body>
   </file>
 </xliff>
