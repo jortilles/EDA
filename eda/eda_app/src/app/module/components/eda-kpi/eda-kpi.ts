@@ -15,14 +15,15 @@ export class EdaKpi {
     edaChart: any;
     showChart: boolean;
     modifiedFontPoints: number;
-    /** Suffix size, independent of the value: additive px on top of the value's own computed
-     *  base size (same pattern as modifiedFontPoints). 0/undefined = same size as the value. */
-    modifiedSufixFontPoints?: number;
-    /** Prefix image size, independent of the value: additive px on top of the value's own
-     *  computed base size (same pattern as modifiedFontPoints). 0/undefined = same size as
-     *  the value (matches the previous height:1em behaviour). */
-    modifiedImageFontPoints?: number;
+    /** Multiplicative font-size factor used in forks mode (hover +/- buttons). Only applies when KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC is false. */
+    fontScale: number;
+    /** Whether the hover +/- resize buttons should be shown (forks mode only, computed from edit/lock state by the panel). */
+    showResizeControls?: boolean;
     backgroundColor: string;
     kpiColor: string;
     prefixImage: string;
+    /** Edalitics mode only (KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC true) **/
+    imageScale?: number;
+    valueFontScale?: number;
+    sufixFontScale?: number;
 }

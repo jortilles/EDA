@@ -6,6 +6,7 @@ import es from '@angular/common/locales/es';
 import { EdaBarD3Component } from '../eda-bar-d3/eda-bar.component';
 import { EdaLineComponent } from '../eda-line-d3/eda-line.component';
 import { EdaAreaComponent } from '../eda-area-d3/eda-area.component';
+import { KPI_CONFIG } from '@eda/configs/customizable/customizable_default';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -42,14 +43,33 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
     warningColor = '#ff8100';
     containerHeight: number = 20;
     containerWidth: number = 20;
-    /** Smallest size we are willing to render (below it the text would be unreadable). */
+
+    /** true → Edalitics mode (numeric input in the KPI dialog) | false → forks mode (hover +/- buttons over the KPI) */
+    public readonly useHoverResize: boolean = !KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC;
+    /** Smallest size we are willing to render (below it the text is clipped with an ellipsis). */
     private readonly minFontSize = 10;
-    /** Safety margin so sub-pixel rounding and synthetic-bold width never make the text overflow. */
-    private readonly fitSafety = 0.96;
-    /** Width share reserved for the inline prefix image, matching getImageStyle()'s 50% cap. */
-    private readonly imageWidthShare = 0.35;
+    /** Scale limits and default, configurable per product via feature flags. */
+    private readonly minFontScale = KPI_CONFIG.MIN_FONT_SCALE;
+    private readonly maxFontScale = KPI_CONFIG.MAX_FONT_SCALE;
+    private readonly defaultFontScale = KPI_CONFIG.DEFAULT_FONT_SCALE;
+    private readonly fontScaleStep = 0.1;
+    /** Width-share bounds for the prefix image (rest of the width goes to value/suffix). */
+    private readonly minImageScale = KPI_CONFIG.IMAGE_MIN_SCALE;
+    private readonly maxImageScale = KPI_CONFIG.IMAGE_MAX_SCALE;
+    private readonly defaultImageScale = KPI_CONFIG.IMAGE_DEFAULT_SCALE;
+    /** Fixed headroom so the up-front (pre-render) size estimate never overflows once actually rendered. */
+    private readonly edaSafetyMargin = 0.9;
+    /** Panel width/height ratio above which the value+suffix stay on one line (plain kpi vs kpi+chart, which needs a lower threshold since the chart eats most of the panel's height). */
+    private readonly edaStackRatio = KPI_CONFIG.STACK_RATIO;
+    private readonly edaChartStackRatio = KPI_CONFIG.CHART_STACK_RATIO;
+    /** Safety margin so sub-pixel rounding never makes the text overflow. */
+    private readonly fitSafety = 0.98;
+    public isHovered = false;
+
     /** Reusable canvas context used to measure the rendered text (no layout thrashing). */
     private measureCanvas?: HTMLCanvasElement;
+    /** Percentage and +/- availability, cached per (fit, scale). */
+    private controlsCache = { fit: -1, scale: -1, percent: KPI_CONFIG.DEFAULT_FONT_SCALE * 100, canUp: false, canDown: false };
     private resizeObserver?: ResizeObserver;
 
     constructor(private styleProviderService : StyleProviderService, private cdr: ChangeDetectorRef) { }
@@ -69,15 +89,15 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         this.resizeObserver?.disconnect();
     }
 
-    /** Recalculates the font size whenever the panel itself resizes (drag, zoom, layout change...). */
+    /** Recalculates the size whenever the value box changes (panel resize, zoom, chart on/off...). */
     private observeContainerResize(): void {
-        const container: HTMLElement | undefined = this.kpiContainer?.nativeElement;
-        if (!container || typeof ResizeObserver === 'undefined') return;
+        const el: HTMLElement | undefined = this.kpiContainer?.nativeElement;
+        if (!el || typeof ResizeObserver === 'undefined') return;
         this.resizeObserver = new ResizeObserver(() => {
             this.initDimensions();
             this.cdr.detectChanges();
         });
-        this.resizeObserver.observe(container);
+        this.resizeObserver.observe(el);
     }
 
     ngOnInit() {
@@ -87,6 +107,10 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
             if (this.inject.kpiColor) {
                 this.defaultColor = this.inject.kpiColor;
                 this.color = this.inject.kpiColor;
+            }
+
+            if (typeof this.inject.valueFontScale !== 'number') {
+                this.inject.valueFontScale = this.defaultFontScale;
             }
 
             if (this.inject.alertLimits?.length > 0) {
@@ -133,7 +157,19 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
 
     setSufix(): void {
         this.sufixClick = !this.sufixClick;
-        this.onNotify.emit({ sufix: this.inject.sufix })
+        this.onNotify.emit({ sufix: this.inject.sufix });
+    }
+
+    onMouseEnter(): void {
+        this.isHovered = true;
+    }
+
+    onMouseLeave(): void {
+        this.isHovered = false;
+    }
+
+    shouldShowControls(): boolean {
+        return this.useHoverResize && !!this.inject?.showResizeControls && this.isHovered;
     }
 
     /** Format string for the value's `number` pipe - fixes it at exactly `inject.decimals`
@@ -144,65 +180,18 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         return d != null ? `1.${d}-${d}` : '1.0-10';
     }
 
-    getStyle(): any {
-        return {
-            'font-weight': 'bold',
-            'font-size': this.getFontSize(),
-            'line-height': '1',
-            color: this.color,
-            'font-family': this.family,
-        };
+    /** Formats a raw KPI value the same way the template's `number` pipe would, for width measurement. */
+    private formatValue(raw: any): string {
+        if (raw === null || raw === undefined || raw === '') return '';
+        const numeric = Array.isArray(raw) ? Number(raw[0]) : Number(raw);
+        try {
+            return Number.isFinite(numeric) ? formatNumber(numeric, 'es', this.getNumberFormat()) : String(raw);
+        } catch {
+            return String(raw);
+        }
     }
 
-    /** Suffix's own style: same base size as the value, independently nudged by
-     * inject.modifiedSufixFontPoints (same additive-px pattern as the value's modifiedFontPoints,
-     * defaulting to 0 so it matches the value's size exactly when untouched). */
-    getSufixStyle(): any {
-        return {
-            'font-weight': 'bold',
-            'font-size': `${this.getSufixFontSizePx()}px`,
-            'line-height': '1',
-            color: this.color,
-            'font-family': this.family,
-        };
-    }
-
-    private getSufixFontSizePx(): number {
-        const base = this.computeValueFontSizePx();
-        return this.inject.modifiedSufixFontPoints
-            ? Math.max(this.minFontSize, base + this.inject.modifiedSufixFontPoints)
-            : base;
-    }
-
-    /** Prefix image's own size: same base size as the value, independently nudged by
-     * inject.modifiedImageFontPoints (same additive-px pattern, defaults to 0 = same as the value,
-     * matching the previous height:1em behaviour). */
-    getImageStyle(): any {
-        const base = this.computeValueFontSizePx();
-        const size = this.inject.modifiedImageFontPoints
-            ? Math.max(this.minFontSize, base + this.inject.modifiedImageFontPoints)
-            : base;
-        const maxW = this.containerWidth > 0 ? `${Math.round(this.containerWidth * 0.5)}px` : '50%';
-        return {
-            height: `${size}px`,
-            'max-height': `${size}px`,
-            width: 'auto',
-            'max-width': maxW,
-            'object-fit': 'contain',
-            'flex-shrink': '0',
-            'vertical-align': 'middle',
-            display: 'inline-block',
-        };
-    }
-
-    /** Value + suffix exactly as rendered by the template, for width measurement. */
-    private getDisplayText(): string {
-        const value = formatNumber(this.inject.value, 'es', this.getNumberFormat());
-        const sufix = this.inject.sufix || '';
-        return sufix ? `${value} ${sufix}` : value;
-    }
-
-    /** Width in px that `text` would take at `fontSize`, measured with a hidden canvas (no layout impact). */
+    /** Width in px of the text at the given font size (canvas metrics, no layout impact). */
     private measureTextWidth(text: string, fontSize: number): number {
         if (!this.measureCanvas) this.measureCanvas = document.createElement('canvas');
         const ctx = this.measureCanvas.getContext('2d');
@@ -212,56 +201,313 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     /**
-     * Largest font size (px) that fits `text` inside a `width` x `height` box. Glyph widths scale
-     * linearly with the font size, so a single reference measurement is enough:
-     *   sizeByWidth  = availableWidth / widthAtReference * reference
-     *   sizeByHeight = availableHeight   (line-height is 1, so the line box is one em tall)
+     * Largest font size (px) that fits a box. Glyph widths scale linearly with the font size,
+     * so a single measurement at a reference size is enough:
+     *   sizeByWidth = availableWidth / widthAtReference * reference
+     *   sizeByHeight = availableHeight / lineHeight   (line-height is 1)
      */
     private computeFitSize(width: number, height: number, text: string): number {
         if (!text || width <= 0 || height <= 0) return this.minFontSize;
         const reference = 100;
         const widthAtReference = this.measureTextWidth(text, reference) || 1;
         const sizeByWidth = (width * reference) / widthAtReference;
-        const sizeByHeight = height;
+        const sizeByHeight = height; // line-height: 1 → the line box is one em tall
         return Math.max(this.minFontSize, Math.floor(Math.min(sizeByWidth, sizeByHeight) * this.fitSafety));
     }
 
-    /**
-     * Base font size (px) that fits the value (plus suffix and prefix image, if any) inside the
-     * panel, measured against the actual rendered text width instead of counting characters, plus
-     * the value's own modifiedFontPoints adjustment. Suffix and image start from this same base
-     * (see getSufixFontSizePx()/getImageStyle()) and nudge it independently from there.
-     */
-    private computeValueFontSizePx(): number {
-        this.initDimensions();
+    // --- Image/value/suffix sizing: shared by both modes. KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC only
+    // moves where the value's +/- control lives (KPI dialog vs hover overlay on the panel) — image
+    // and suffix are always adjusted from the dialog, for both modes. ---
 
-        const hasImage = !!this.inject.prefixImage;
-        const availableWidth = this.containerWidth * (hasImage ? 1 - this.imageWidthShare : 1);
-        // containerHeight already IS just the value's own share of the panel (see
-        // initDimensions(): #kpiContainer itself is only 30% tall when there's a chart below),
-        // no extra adjustment needed here.
-        const availableHeight = this.containerHeight;
+    public edaHasImage(): boolean {
+        return !!this.inject?.prefixImage;
+    }
 
-        let resultSize = this.computeFitSize(availableWidth, availableHeight, this.getDisplayText());
+    private edaImageScale(): number {
+        const raw = this.inject?.imageScale;
+        const value = typeof raw === 'number' ? raw : this.defaultImageScale;
+        return Math.min(this.maxImageScale, Math.max(this.minImageScale, value));
+    }
 
-        const isMobile = window.innerWidth < 640;
-        if (isMobile) {
-            resultSize = Math.min(resultSize, 40);
-        }
-        if (this.inject.modifiedFontPoints) {
-            resultSize = Math.max(this.minFontSize, resultSize + this.inject.modifiedFontPoints);
-        }
-        return resultSize;
+    private edaScale(raw: any): number {
+        const value = typeof raw === 'number' ? raw : this.defaultFontScale;
+        return Math.min(this.maxFontScale, Math.max(this.minFontScale, value));
+    }
+
+    private edaSizeForScale(fit: number, scale: number): number {
+        return Math.max(this.minFontSize, Math.round(fit * scale));
     }
 
     /**
-     * This function returns a string with the font size (in px) that fits the value (plus
-     * suffix and prefix image, if any) inside the panel, measured against the actual rendered
-     * text width instead of counting characters.
-     * @returns {string}
-    */
-    getFontSize(): string {
-        return this.computeValueFontSizePx().toFixed().toString() + 'px';
+     * Box (px) available to the value/suffix block: the container, minus the image's width share
+     * and its gap, shrunk by a fixed safety margin. The margin exists because every size below
+     * is computed from a canvas text measurement *before* the DOM renders — it can't be perfectly
+     * exact (web font not loaded yet, synthetic bold, sub-pixel rounding), so every fit is solved
+     * for a slightly smaller box than the real one. That is the one and only place slack is added;
+     * nothing downstream needs to re-check or correct anything.
+     */
+    private edaTextBoxSize(): { width: number; height: number } {
+        const el: HTMLElement | undefined = this.kpiContainer?.nativeElement;
+        const width = el?.clientWidth ?? this.containerWidth;
+        const height = el?.clientHeight ?? this.containerHeight;
+        const imageFraction = this.edaHasImage() ? this.edaImageScale() : 0;
+        const imageGap = this.edaHasImage() ? 12 : 0; // matches the row's 0.75rem gap
+        return {
+            width: Math.max(0, (width - imageGap) * (1 - imageFraction)) * this.edaSafetyMargin,
+            height: height * this.edaSafetyMargin,
+        };
+    }
+
+    private edaValueText(): string {
+        return this.formatValue(this.inject?.value);
+    }
+
+    public edaSufixText(): string {
+        return (this.inject?.sufix ?? '').toString().trim();
+    }
+
+    /** Inline: value and suffix share one line, sized together as a single string. */
+    private edaInlineFit(): number {
+        const { width, height } = this.edaTextBoxSize();
+        const value = this.edaValueText();
+        const sufix = this.edaSufixText();
+        const text = sufix ? `${value} ${sufix}` : value;
+        return this.computeFitSize(width, height, text);
+    }
+
+    /** Value's fit when stacked: solved against the top half of the box. */
+    private edaValueFit(): number {
+        if (!this.edaShouldStack()) return this.edaInlineFit();
+        const { width, height } = this.edaTextBoxSize();
+        return this.computeFitSize(width, height / 2, this.edaValueText());
+    }
+
+    /** Suffix's fit when stacked: solved against the bottom half of the box. */
+    private edaSufixFit(): number {
+        if (!this.edaShouldStack()) return this.edaInlineFit();
+        const { width, height } = this.edaTextBoxSize();
+        return this.computeFitSize(width, height / 2, this.edaSufixText());
+    }
+
+    /**
+     * Stacked (number above, suffix below) only when the suffix is long enough to read as a unit
+     * (3+ chars) and the panel's shape is "square-ish" rather than elongated: a wide panel keeps
+     * both on one line; a squarer one stacks them. kpi+chart uses a lower threshold (5:4) than a
+     * plain kpi (16:9) because the chart below eats most of the panel's height, leaving a squarer
+     * strip for the value even on a panel that is itself quite wide.
+     */
+    public edaShouldStack(): boolean {
+        const sufix = this.edaSufixText();
+        if (sufix.length < 3) return false;
+        const el = this.edaRatioElement();
+        const width = el?.clientWidth ?? this.containerWidth;
+        const height = el?.clientHeight ?? this.containerHeight;
+        if (width <= 0 || height <= 0) return false;
+        const ratio = this.inject?.showChart ? this.edaChartStackRatio : this.edaStackRatio;
+        return (width / height) < ratio;
+    }
+
+    /**
+     * Element whose box best represents the panel's settled shape. While the panel is actively
+     * being resized, gridster keeps the item itself following the cursor at raw pixel size (not
+     * snapped) and instead shows a separate `<gridster-preview>` overlay snapped to the target
+     * grid cell — that overlay is what we want, since it already is the shape the panel will have
+     * once released, with no pixel-by-pixel flicker before it settles. Otherwise, the panel card
+     * itself (data-eda-panel-root) is just as good, and avoids the header/padding skewing the
+     * KPI's own (smaller) content box.
+     */
+    private edaRatioElement(): HTMLElement | null {
+        const root: HTMLElement | undefined = this.kpiContainer?.nativeElement;
+        if (!root) return null;
+        const item = root.closest('gridster-item');
+        if (item?.classList.contains('gridster-item-resizing')) {
+            const preview = item.closest('gridster')?.querySelector('gridster-preview') as HTMLElement | null;
+            if (preview) return preview;
+        }
+        return root.closest('[data-eda-panel-root]');
+    }
+
+    /**
+     * Rendered size: fit × scale, floored at minFontSize. At the default 100% scale this always
+     * fits (computeFitSize solved for it); above 100% it can wrap/overflow, which is an explicit
+     * admin choice via the scale control.
+     */
+    private edaValueSize(): number {
+        return this.edaSizeForScale(this.edaValueFit(), this.edaScale(this.inject?.valueFontScale));
+    }
+
+    private edaSufixSize(): number {
+        return this.edaSizeForScale(this.edaSufixFit(), this.edaScale(this.inject?.sufixFontScale));
+    }
+
+    public edaImageWrapStyle(): any {
+        const pct = this.edaImageScale() * 100;
+        return {
+            flex: `0 0 ${pct}%`,
+            width: `${pct}%`,
+            'max-width': `${pct}%`,
+            height: '100%',
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'center',
+            'text-align': 'center',
+            overflow: 'hidden',
+        };
+    }
+
+    public edaImageTagStyle(): any {
+        return {
+            height: '100%',
+            width: 'auto',
+            'max-width': '100%',
+            'object-fit': 'contain',
+            'object-position': 'center',
+            display: 'block',
+            margin: 'auto',
+        };
+    }
+
+    public edaTextWrapStyle(): any {
+        const stacked = this.edaShouldStack();
+        return {
+            flex: '1 1 0%',
+            'min-width': '0',
+            height: '100%',
+            display: 'flex',
+            'flex-direction': stacked ? 'column' : 'row',
+            'align-items': 'center',
+            'justify-content': 'center',
+            overflow: 'hidden',
+        };
+    }
+
+    /**
+     * The value never wraps: at the default 100% scale computeFitSize() already guarantees it
+     * fits on one line, so nowrap + ellipsis is the right pairing (only reachable if the admin
+     * manually scales above 100%) — letting it wrap would risk breaking a number mid-digit.
+     */
+    public edaValueStyle(): any {
+        const stacked = this.edaShouldStack();
+        const size = this.edaValueSize();
+        return {
+            'font-weight': 'bold',
+            'font-size': `${size}px`,
+            'line-height': '1',
+            color: this.color,
+            'font-family': this.family,
+            'white-space': 'nowrap',
+            'text-overflow': 'ellipsis',
+            overflow: 'hidden',
+            'max-width': '100%',
+            'min-width': '0',
+            'flex-shrink': stacked ? '1' : '0',
+            'text-align': 'center',
+            cursor: 'pointer',
+        };
+    }
+
+    public edaSufixStyle(): any {
+        const stacked = this.edaShouldStack();
+        const size = this.edaSufixSize();
+        return {
+            'font-weight': 'bold',
+            'font-size': `${size}px`,
+            'line-height': '1.15',
+            color: this.color,
+            'font-family': this.family,
+            'white-space': stacked ? 'normal' : 'nowrap',
+            'overflow-wrap': stacked ? 'break-word' : 'normal',
+            'word-break': 'normal',
+            overflow: 'hidden',
+            'max-width': '100%',
+            'min-width': '0',
+            'flex-shrink': '0',
+            'text-align': 'center',
+            'margin-top': stacked ? '0.1em' : '0',
+            'margin-left': stacked ? '0' : '0.3em',
+            cursor: 'pointer',
+        };
+    }
+
+    // --- END image/value/suffix sizing ---
+
+    // --- Hover +/- for the value (forks only — Edalitics adjusts the same inject.valueFontScale from the dialog instead) ---
+
+    increaseFont(): void {
+        const next = this.nextScaleWithSize(1);
+        if (next !== null) this.applyScale(next);
+    }
+
+    decreaseFont(): void {
+        const next = this.nextScaleWithSize(-1);
+        if (next !== null) this.applyScale(next);
+    }
+
+    /**
+     * Percentage actually rendered, relative to the size that fits (100% = as big as
+     * the container allows). It is the effective value, so when the 10 px floor is
+     * active the label stops at that percentage instead of showing a scale that is
+     * not being applied.
+     */
+    getScalePercent(): number {
+        return this.getControls().percent;
+    }
+
+    /** False when no bigger size is reachable (already at the fit). */
+    canIncreaseFont(): boolean {
+        return this.getControls().canUp;
+    }
+
+    /** False when no smaller size is reachable (minimum scale or 10 px floor). */
+    canDecreaseFont(): boolean {
+        return this.getControls().canDown;
+    }
+
+    /**
+     * Percentage and +/- availability for the current fit and scale. It is computed
+     * once per (fit, scale) because the three template bindings would otherwise
+     * repeat the whole calculation several times per change detection cycle.
+     */
+    private getControls(): { percent: number; canUp: boolean; canDown: boolean } {
+        const fit = this.edaValueFit();
+        const scale = this.edaScale(this.inject?.valueFontScale);
+        if (this.controlsCache.fit === fit && this.controlsCache.scale === scale) {
+            return this.controlsCache;
+        }
+        const size = this.edaValueSize();
+        this.controlsCache = {
+            fit,
+            scale,
+            percent: fit > 0 ? Math.min(this.maxFontScale * 100, Math.round((size / fit) * 100)) : Math.round(this.defaultFontScale * 100),
+            canUp: this.useHoverResize && this.nextScaleWithSize(1) !== null,
+            canDown: this.useHoverResize && this.nextScaleWithSize(-1) !== null,
+        };
+        return this.controlsCache;
+    }
+
+    /**
+     * Next scale (in the direction given) that actually changes the rendered size.
+     * Steps that fall inside the 10 px floor (or that round to the same pixels) are
+     * skipped, so the buttons never look stuck on very small panels.
+     */
+    private nextScaleWithSize(direction: 1 | -1): number | null {
+        const fit = this.edaValueFit();
+        if (fit <= 0) return null;
+        const currentSize = this.edaValueSize();
+        let scale = this.edaScale(this.inject?.valueFontScale);
+        for (let i = 0; i < 50; i++) {
+            scale = +(scale + direction * this.fontScaleStep).toFixed(2);
+            if (scale > this.maxFontScale + 1e-9 || scale < this.minFontScale - 1e-9) return null;
+            scale = Math.min(this.maxFontScale, Math.max(this.minFontScale, scale));
+            const size = this.edaSizeForScale(fit, scale);
+            if (direction > 0 ? size > currentSize : size < currentSize) return scale;
+        }
+        return null;
+    }
+
+    private applyScale(scale: number): void {
+        this.inject.valueFontScale = Math.min(this.maxFontScale, Math.max(this.minFontScale, scale));
+        this.onNotify.emit({ sufix: this.inject.sufix });
     }
 
     public updateChart(): void {

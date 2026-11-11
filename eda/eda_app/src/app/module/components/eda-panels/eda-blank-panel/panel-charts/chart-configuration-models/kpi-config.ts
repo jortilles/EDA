@@ -40,9 +40,12 @@ export class KpiConfig {
     alertLimits: any[] = [];
     edaChart: KpiEdaChart;
     modifiedFontPoints: number = 0;
-    /** Suffix/image size, independent of modifiedFontPoints - 0 = same size as the value. */
-    modifiedSufixFontPoints: number = 0;
-    modifiedImageFontPoints: number = 0;
+    /** Multiplicative font-size factor used in forks mode (hover +/- buttons). Only applies when KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC is false. */
+    fontScale: number = 1;
+    /** Edalitics mode only (KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC true). */
+    imageScale?: number;
+    valueFontScale?: number;
+    sufixFontScale?: number;
     backgroundColor: string = '';
     kpiColor: string = '';
     prefixImage: string = '';

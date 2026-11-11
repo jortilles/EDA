@@ -4,6 +4,7 @@ import { KpiMailConfigModal } from '@eda/components/kpi-mail-config/kpi-mail-con
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService, FileUtiles } from '@eda/services/service.index';
+import { KPI_CONFIG } from '@eda/configs/customizable/customizable_default';
 import { StyleProviderService, ChartUtilsService } from '@eda/services/service.index';
 import * as _ from 'lodash';
 import { FormsModule } from '@angular/forms';
@@ -44,10 +45,19 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public alertInfo: string = $localize`:@@alertsInfo: Cuando el valor del kpi sea (=, <,>) que el valor definido cambiará el color del texto`;
     public ptooltipViewAlerts: string = $localize`:@@ptooltipViewAlerts:Configurar alertas`;
 
+    /** Legacy single numeric "Tamaño" input - kpitrend/kpideviation only (unchanged, different components). */
     public modifiedFontPoints: number = 0;
-    /** Suffix/image size, independent of the value's own modifiedFontPoints - 0 = same size as the value. */
-    public modifiedSufixFontPoints: number = 0;
-    public modifiedImageFontPoints: number = 0;
+    /** true → Edalitics mode (numeric inputs below) | false → forks mode (hover +/- buttons on the KPI itself) */
+    public readonly useHoverResize: boolean = !KPI_CONFIG.USE_EDALITICS_SIZE_LOGIC;
+    /** Edalitics mode only (plain kpi / kpi+chart, not kpitrend/kpideviation): image-vs-text and independent value/suffix scales. */
+    public imageScale: number = KPI_CONFIG.IMAGE_DEFAULT_SCALE;
+    public valueFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
+    public sufixFontScale: number = KPI_CONFIG.DEFAULT_FONT_SCALE;
+    public readonly fontScaleMin = KPI_CONFIG.MIN_FONT_SCALE;
+    public readonly fontScaleMax = KPI_CONFIG.MAX_FONT_SCALE;
+    public readonly imageScaleMin = KPI_CONFIG.IMAGE_MIN_SCALE;
+    public readonly imageScaleMax = KPI_CONFIG.IMAGE_MAX_SCALE;
+    public readonly scaleStep = 0.1;
     public previewAspectRatio: string = '4/3';
     public previewBoxStyle: any = {};
     public panelTitle: string = '';
@@ -114,6 +124,21 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         return this.panelChartComponent?.componentRef?.instance?.inject?.sufix || '';
     }
 
+    /** Image + suffix size: plain kpi / kpi+chart, both modes — always adjusted from the dialog. */
+    get showImageSufixSizeControls(): boolean {
+        return !this.isKpiTrend && !this.isKpiDeviation;
+    }
+
+    /** Value size: plain kpi / kpi+chart, Edalitics mode only — forks adjusts it via the hover +/- on the KPI itself instead. */
+    get showValueSizeControl(): boolean {
+        return !this.useHoverResize && !this.isKpiTrend && !this.isKpiDeviation;
+    }
+
+    /** Old single numeric "Tamaño" input: kpitrend/kpideviation only, Edalitics mode only (unchanged). */
+    get showLegacySizeControl(): boolean {
+        return !this.useHoverResize && (this.isKpiTrend || this.isKpiDeviation);
+    }
+
     constructor(
         private userService: UserService,
         private stylesProviderService: StyleProviderService,
@@ -176,8 +201,9 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.originalAlerts = [...(config.alertLimits || [])];
         this.alerts = [...this.originalAlerts];
         this.modifiedFontPoints = config.modifiedFontPoints || 0;
-        this.modifiedSufixFontPoints = config.modifiedSufixFontPoints || 0;
-        this.modifiedImageFontPoints = config.modifiedImageFontPoints || 0;
+        this.imageScale = typeof config.imageScale === 'number' ? config.imageScale : KPI_CONFIG.IMAGE_DEFAULT_SCALE;
+        this.valueFontScale = typeof config.valueFontScale === 'number' ? config.valueFontScale : KPI_CONFIG.DEFAULT_FONT_SCALE;
+        this.sufixFontScale = typeof config.sufixFontScale === 'number' ? config.sufixFontScale : KPI_CONFIG.DEFAULT_FONT_SCALE;
         // '' would show as red in p-colorPicker (its default hue when no valid hex is bound) -
         // fall back to the same defaults the KPI itself actually renders with when unset.
         this.kpiBackgroundColor = config.backgroundColor || '#ffffff';
@@ -258,8 +284,9 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             chartSubType: this.panelChartConfig.edaChart,
             assignedColors: [...this.assignedColors],
             modifiedFontPoints: this.modifiedFontPoints,
-            modifiedSufixFontPoints: this.modifiedSufixFontPoints,
-            modifiedImageFontPoints: this.modifiedImageFontPoints,
+            imageScale: this.imageScale,
+            valueFontScale: this.valueFontScale,
+            sufixFontScale: this.sufixFontScale,
             backgroundColor: this.kpiBackgroundColor,
             kpiColor: this.kpiTextColor,
             prefixImage: this.prefixImage,
@@ -535,6 +562,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         }
     }
 
+    /** Legacy single numeric "Tamaño" input - kpitrend/kpideviation only, unrelated to KPI_CONFIG's scale limits. */
     modifyKpiSize(newValue?: number) {
         const min = -90;
         const max = 300;
@@ -548,21 +576,24 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
     }
 
-    modifySufixSize(newValue?: number) {
-        const min = -90;
-        const max = 300;
-        this.modifiedSufixFontPoints = Math.min(max, Math.max(min, (newValue ?? this.modifiedSufixFontPoints) || 0));
+    setValueFontScale(newValue?: number): void {
+        this.valueFontScale = Math.min(this.fontScaleMax, Math.max(this.fontScaleMin, (newValue ?? this.valueFontScale) || KPI_CONFIG.DEFAULT_FONT_SCALE));
         const instance = this.panelChartComponent.componentRef.instance;
-        instance.inject.modifiedSufixFontPoints = this.modifiedSufixFontPoints;
+        instance.inject.valueFontScale = this.valueFontScale;
         this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
     }
 
-    modifyImageSize(newValue?: number) {
-        const min = -90;
-        const max = 300;
-        this.modifiedImageFontPoints = Math.min(max, Math.max(min, (newValue ?? this.modifiedImageFontPoints) || 0));
+    setSufixFontScale(newValue?: number): void {
+        this.sufixFontScale = Math.min(this.fontScaleMax, Math.max(this.fontScaleMin, (newValue ?? this.sufixFontScale) || KPI_CONFIG.DEFAULT_FONT_SCALE));
         const instance = this.panelChartComponent.componentRef.instance;
-        instance.inject.modifiedImageFontPoints = this.modifiedImageFontPoints;
+        instance.inject.sufixFontScale = this.sufixFontScale;
+        this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+    }
+
+    setImageScale(newValue?: number): void {
+        this.imageScale = Math.min(this.imageScaleMax, Math.max(this.imageScaleMin, (newValue ?? this.imageScale) || KPI_CONFIG.IMAGE_DEFAULT_SCALE));
+        const instance = this.panelChartComponent.componentRef.instance;
+        instance.inject.imageScale = this.imageScale;
         this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
     }
 }

@@ -233,6 +233,20 @@ export const CHART_RENDER_LIMITS = {
     maxCrosstableColumns:  50,    // cross tables generating more columns than this are rendered as a plain table
 };
 
+/** KPI sizing (eda-kpi/kpi-dialog). Same shape/names as SinergiaDA's KPI_CONFIG, so future
+ * merges from their migration/kpiFitContainer_v2 line don't conflict on this block. */
+export const KPI_CONFIG = {
+    USE_EDALITICS_SIZE_LOGIC: true, // moves where the value's +/- control lives — true → Edalitics (dialog) false -> forks (hover buttons on the KPI, not implemented here)
+    MIN_FONT_SCALE: 0.2,      // 20% minimum
+    MAX_FONT_SCALE: 2.5,      // maximum scale (250%)
+    DEFAULT_FONT_SCALE: 0.8,  // default scale (80%)
+    IMAGE_MIN_SCALE: 0.1,     // 10% minimum width share for the image
+    IMAGE_MAX_SCALE: 0.7,     // 70% maximum width share for the image
+    IMAGE_DEFAULT_SCALE: 0.2, // 20% default width share for the image
+    STACK_RATIO: 16 / 9,      // plain kpi (a "widescreen" shape)
+    CHART_STACK_RATIO: 5 / 4, // kpi+chart — the chart eats most of the panel's height, leaving a squarer strip for the value
+};
+
 export const  AGG_TYPES  = [
     { label: $localize`:@@aggTsum:Suma`, value: 'sum' },
     { label: $localize`:@@aggTmean:Media`, value: 'avg' },

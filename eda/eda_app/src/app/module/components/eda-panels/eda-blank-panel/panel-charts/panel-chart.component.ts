@@ -627,8 +627,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.sufix = kpiCfg?.sufix || '';
             chartConfig.alertLimits = alertLimits;
             chartConfig.modifiedFontPoints = kpiCfg?.modifiedFontPoints || 0;
-            chartConfig.modifiedSufixFontPoints = kpiCfg?.modifiedSufixFontPoints || 0;
-            chartConfig.modifiedImageFontPoints = kpiCfg?.modifiedImageFontPoints || 0;
+            chartConfig.fontScale = kpiCfg?.fontScale || 1;
+            chartConfig.valueFontScale = kpiCfg?.valueFontScale;
+            chartConfig.sufixFontScale = kpiCfg?.sufixFontScale;
+            chartConfig.imageScale = kpiCfg?.imageScale;
             chartConfig.edaChart = kpiCfg?.edaChart;
             chartConfig.backgroundColor = kpiCfg?.backgroundColor || '';
             chartConfig.kpiColor = kpiCfg?.kpiColor || '';
@@ -637,8 +639,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.sufix = '';
             chartConfig.alertLimits = [];
             chartConfig.modifiedFontPoints = 0;
-            chartConfig.modifiedSufixFontPoints = 0;
-            chartConfig.modifiedImageFontPoints = 0;
+            chartConfig.fontScale = 1;
+            chartConfig.valueFontScale = undefined;
+            chartConfig.sufixFontScale = undefined;
+            chartConfig.imageScale = undefined;
             chartConfig.backgroundColor = '';
             chartConfig.kpiColor = '';
             chartConfig.prefixImage = '';
@@ -649,7 +653,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * creates a kpiComponent
-     * @param inject 
+     * @param inject
     */
     private createEdaKpiComponent(inject: any) {
         this.entry.clear();
@@ -660,8 +664,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 sufix: data.sufix,
                 alertLimits: inject.alertLimits,
                 modifiedFontPoints: inject.modifiedFontPoints || 0,
-                modifiedSufixFontPoints: inject.modifiedSufixFontPoints || 0,
-                modifiedImageFontPoints: inject.modifiedImageFontPoints || 0,
+                fontScale: inject.fontScale || 1,
+                valueFontScale: inject.valueFontScale,
+                sufixFontScale: inject.sufixFontScale,
+                imageScale: inject.imageScale,
                 backgroundColor: inject.backgroundColor || '',
                 kpiColor: inject.kpiColor || '',
                 prefixImage: inject.prefixImage || '',
@@ -856,8 +862,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.sufix = kpiCfgChart?.sufix || '';
         chartConfig.alertLimits = alertLimits;
         chartConfig.modifiedFontPoints = kpiCfgChart?.modifiedFontPoints || 0;
-        chartConfig.modifiedSufixFontPoints = kpiCfgChart?.modifiedSufixFontPoints || 0;
-        chartConfig.modifiedImageFontPoints = kpiCfgChart?.modifiedImageFontPoints || 0;
+        chartConfig.fontScale = kpiCfgChart?.fontScale || 1;
+        chartConfig.valueFontScale = kpiCfgChart?.valueFontScale;
+        chartConfig.sufixFontScale = kpiCfgChart?.sufixFontScale;
+        chartConfig.imageScale = kpiCfgChart?.imageScale;
         chartConfig.backgroundColor = kpiCfgChart?.backgroundColor || '';
         chartConfig.kpiColor = kpiCfgChart?.kpiColor || '';
         chartConfig.prefixImage = kpiCfgChart?.prefixImage || '';
@@ -865,8 +873,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.sufix = '';
         chartConfig.alertLimits = [];
         chartConfig.modifiedFontPoints = 0;
-        chartConfig.modifiedSufixFontPoints = 0;
-        chartConfig.modifiedImageFontPoints = 0;
+        chartConfig.fontScale = 1;
+        chartConfig.valueFontScale = undefined;
+        chartConfig.sufixFontScale = undefined;
+        chartConfig.imageScale = undefined;
         chartConfig.backgroundColor = '';
         chartConfig.kpiColor = '';
         chartConfig.prefixImage = '';
@@ -902,8 +912,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 alertLimits: inject.alertLimits || [],
                 edaChart: inject.edaChart,
                 modifiedFontPoints: inject.modifiedFontPoints || 0,
-                modifiedSufixFontPoints: inject.modifiedSufixFontPoints || 0,
-                modifiedImageFontPoints: inject.modifiedImageFontPoints || 0,
+                fontScale: inject.fontScale || 1,
+                valueFontScale: inject.valueFontScale,
+                sufixFontScale: inject.sufixFontScale,
+                imageScale: inject.imageScale,
                 backgroundColor: inject.backgroundColor || '',
                 kpiColor: inject.kpiColor || '',
                 prefixImage: inject.prefixImage || '',

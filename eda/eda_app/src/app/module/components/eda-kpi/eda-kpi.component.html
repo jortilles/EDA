@@ -26,18 +26,46 @@
 }
 
 <ng-template #kpiValueContainer>
+  @if (useHoverResize) {
+    <div class="relative w-full h-full flex items-center justify-center" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+      @if (shouldShowControls()) {
+        <div class="absolute top-1 right-1 flex items-center gap-1.5 z-10">
+          <button type="button" i18n-title="@@kpiDecreaseFontSize" title="Reducir tamaño" (click)="decreaseFont()"
+                  [disabled]="!canDecreaseFont()"
+                  class="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 text-sm leading-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white">-</button>
+          <button type="button" i18n-title="@@kpiIncreaseFontSize" title="Aumentar tamaño" (click)="increaseFont()"
+                  [disabled]="!canIncreaseFont()"
+                  class="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-100 text-gray-700 text-sm leading-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white">+</button>
+          <span class="text-xs text-gray-500" style="min-width: 2.75rem; text-align: right;">{{getScalePercent()}}%</span>
+        </div>
+      }
+      <ng-container *ngTemplateOutlet="kpiValueContent;"></ng-container>
+    </div>
+  } @else {
+    <ng-container *ngTemplateOutlet="kpiValueContent;"></ng-container>
+  }
+</ng-template>
+
+<ng-template #kpiValueContent>
     <div #sufixContainer class="pointer" title="Añadir unidades"
-         style="max-width: 100%; overflow: hidden;">
-        <span (click)="setSufix()"
-              style="display: block; text-align: center; overflow-wrap: break-word; word-break: break-word;">
-            @if (inject.prefixImage) {
-              <img [src]="inject.prefixImage | mediaSrc" alt="" [ngStyle]="getImageStyle()" />
+         style="max-width: 100%; overflow: hidden;"
+         [style.width]="'100%'"
+         [style.height]="sufixClick ? null : '100%'">
+        <div class="w-full h-full flex items-center justify-center"
+             [style.gap]="edaHasImage() ? '0.75rem' : '0'"
+             (click)="setSufix()">
+          @if (edaHasImage()) {
+            <div [ngStyle]="edaImageWrapStyle()">
+              <img [src]="inject.prefixImage | mediaSrc" alt="" [ngStyle]="edaImageTagStyle()" />
+            </div>
+          }
+          <div [ngStyle]="edaTextWrapStyle()">
+            <div [ngStyle]="edaValueStyle()" (click)="setSufix(); $event.stopPropagation()">{{ inject.value | number:getNumberFormat():'es' }}</div>
+            @if (edaSufixText()) {
+              <div [ngStyle]="edaSufixStyle()" (click)="setSufix(); $event.stopPropagation()">{{ inject.sufix }}</div>
             }
-            <span [ngStyle]="getStyle()">{{inject.value | number:getNumberFormat():'es' }}</span>
-            @if (inject.sufix) {
-              <span [ngStyle]="getSufixStyle()"> {{inject.sufix}}</span>
-            }
-        </span>
+          </div>
+        </div>
 
         @if(!!sufixClick){
           <div class="ui-inputgroup w-100" style="margin-top: 0.25em;">
