@@ -1,42 +1,55 @@
+@if(isProtectedDataSource()){
+  <div class="w-full mx-auto px-6 mb-4">
+    <div class="flex items-start gap-2 rounded-md border border-blue-200 bg-blue-50 text-blue-800 p-4" role="alert">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <div i18n="@@protectedDataSourceNotice">Algunas áreas de la configuración de esta fuente de datos se encuentran desactivadas porque es una fuente de datos protegida.</div>
+    </div>
+  </div>
+}
+
 @if(typePanel==='tabla' && tablePanel.technical_name){
   <div class="w-full mx-auto px-6">
     <div class="bg-card rounded-lg border shadow-sm">
       <div class="flex items-center justify-between p-6 border-b">
         <h3 class="text-2xl font-semibold leading-none tracking-tight" i18n="@@editModelHeaders">{{tablePanel.type ? tablePanel.name : ''}}</h3>
-        <div class="flex items-center gap-2">
-          <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
-            <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
-            <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
-                  i18n="@@mcpVisibilityTooltipTableModel">
-              Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.
+        @if(aiControlEnabled && !isProtectedDataSource()){
+          <div class="flex items-center gap-2">
+            <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
+              <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
+              <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
+                    i18n="@@mcpVisibilityTooltipTableModel">
+                Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.
+              </span>
             </span>
-          </span>
-          <div class="flex p-1 rounded-lg bg-gray-200">
-            @for (opt of iaVisibilityOptionsSimple; track opt.value) {
-              <button type="button"
-                (click)="tablePanel.ia_visibility = opt.value; update()"
-                class="px-3 py-1 rounded-md text-xs font-medium transition-all"
-                [ngClass]="{'bg-white shadow text-foreground': tablePanel.ia_visibility === opt.value, 'text-gray-500': tablePanel.ia_visibility !== opt.value}">
-                {{ opt.label }}
-              </button>
-            }
+            <div class="flex p-1 rounded-lg bg-gray-200">
+              @for (opt of iaVisibilityOptionsSimple; track opt.value) {
+                <button type="button"
+                  (click)="tablePanel.ia_visibility = opt.value; update()"
+                  class="px-3 py-1 rounded-md text-xs font-medium transition-all"
+                  [ngClass]="{'bg-white shadow text-foreground': tablePanel.ia_visibility === opt.value, 'text-gray-500': tablePanel.ia_visibility !== opt.value}">
+                  {{ opt.label }}
+                </button>
+              }
+            </div>
           </div>
-        </div>
+        }
       </div>
       <div class="p-6 space-y-6">
         <div class="grid gap-4">
-          <div class="grid gap-2">
-            <label for="name"
-              i18n="@@inputNombre"
-              class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Nombre <span class="text-red-500">*</span>
-            </label>
-            <input id="name" value="Customers"
-              [(ngModel)]="tablePanel.name" (keyup)="update()"
-              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            />
-          </div>
+          @if(!isProtectedDataSource()){
+            <div class="grid gap-2">
+              <label for="name"
+                i18n="@@inputNombre"
+                class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Nombre <span class="text-red-500">*</span>
+              </label>
+              <input id="name" value="Customers"
+                [(ngModel)]="tablePanel.name" (keyup)="update()"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+          }
           <div class="grid gap-2">
             <label for="technical-name"
               i18n="@@inputNombreTecnico"
@@ -49,35 +62,59 @@
             />
           </div>
           
-          <div class="grid gap-2">
-            <label
-              for="description"
-              i18n="@@inputDescripcion"
-              class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Descripción
-            </label>
-            <textarea id="description"
-              [(ngModel)]="tablePanel.description" (keyup)="update()"  
-              class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-            </textarea>
-          </div>
-          
-          <div class="flex items-center space-x-2">
-            <button type="button" role="switch"
-              [attr.aria-checked]="!tablePanel.visible" (click)="toggle_table(tablePanel.visible)"
-              class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              [ngClass]="{'toggle-active': !tablePanel.visible, 'bg-input': tablePanel.visible}">
-              <span
-                class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
-                [ngClass]="{'translate-x-5': !tablePanel.visible, 'translate-x-0': tablePanel.visible}">
-              </span>
-            </button>
-            <label i18n="@@inputEsconderTabla"
-              class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Ocultar tabla
-            </label>
-          </div>
+          @if(!isProtectedDataSource()){
+            <div class="grid gap-2">
+              <label
+                for="description"
+                i18n="@@inputDescripcion"
+                class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Descripción
+              </label>
+              <textarea id="description"
+                [(ngModel)]="tablePanel.description" (keyup)="update()"
+                class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+              </textarea>
+            </div>
+          }
+
+          @if(!isProtectedDataSource()){
+            <div class="flex items-center space-x-2">
+              <button type="button" role="switch"
+                [attr.aria-checked]="!tablePanel.visible" (click)="toggle_table(tablePanel.visible)"
+                class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                [ngClass]="{'toggle-active': !tablePanel.visible, 'bg-input': tablePanel.visible}">
+                <span
+                  class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+                  [ngClass]="{'translate-x-5': !tablePanel.visible, 'translate-x-0': tablePanel.visible}">
+                </span>
+              </button>
+              <label i18n="@@inputEsconderTabla"
+                class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Ocultar tabla
+              </label>
+            </div>
+          }
+
+          @if(tableTypesButtonGroupEnabled && !isProtectedDataSource()){
+            <div class="mb-4">
+              <label class="block font-medium text-gray-700 mb-2" i18n="@@inputTipoTabla">
+                Tipo de tabla
+              </label>
+              <div class="inline-flex rounded-md border border-gray-300 overflow-hidden">
+                @for (type of tableTypes; track type.value; let first = $first) {
+                  <button
+                    type="button"
+                    (click)="updateTableType(type.value)"
+                    class="px-4 py-2 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    [ngClass]="[tablePanel.table_type === type.value ? 'btn-type-active' : 'bg-white text-gray-700 hover:bg-gray-100', !first ? 'border-l border-gray-300' : '']"
+                  >
+                    {{ type.label }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
 
           @if(tablePanel.query){
             <div>
@@ -102,13 +139,16 @@
         <div class="h-px bg-border"></div>
         
         <!-- Relations section -->
-        <div class="space-y-4">
-          <h3 class="text-lg font-medium" i18n="@@listRelations">Relaciones</h3>
-          <eda-table [inject]="relationsTable"></eda-table>
-        </div>
-        
-        <div class="h-px bg-border"></div>
-        
+        @if(!isProtectedDataSource()){
+          <div class="space-y-4">
+            <h3 class="text-lg font-medium" i18n="@@listRelations">Relaciones</h3>
+            <eda-table [inject]="relationsTable"></eda-table>
+          </div>
+          
+          <div class="h-px bg-border"></div>
+        }
+
+
         <!-- Table visibility section -->
         <div class="space-y-4">
           <h3 class="text-lg font-medium" i18n="@@rolesPermisosTabla">Visibilidad de tabla</h3>
@@ -137,16 +177,19 @@
             </svg>
             {{addPermission}}
           </button>
-          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
-            (click)="openTableRelationDialog()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M12 5v14M5 12h14"/></svg>
-            {{addRelation}}
-          </button>
+          @if(addRelationshipToTableButtonEnabled && !isProtectedDataSource()){
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+              (click)="openTableRelationDialog()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M12 5v14M5 12h14"/></svg>
+              {{addRelation}}
+            </button>
+          }
           <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
             (click)="openNewColDialog()">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M12 5v14M5 12h14"/></svg>
             {{addCalculatedCol}}
           </button>
+          @if(hideAllColumnsButtonEnabled && !isProtectedDataSource()){
           <button
             class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium
                   ring-offset-background transition-colors focus-visible:outline-none
@@ -158,7 +201,7 @@
             }"
             (click)="hideAllColumns(tablePanel)"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" 
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"
             >
               <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
@@ -169,6 +212,7 @@
 
             {{ hideColumnsString }}
           </button>
+          }
         </div>
       </div>
     </div>
@@ -179,28 +223,30 @@
 
 @if(typePanel==='columna' && columnPanel.technical_name){
   <div class="w-full mx-auto px-6">
-    <div class="bg-card rounded-lg border shadow-sm">
+    <div class="bg-card rounded-lg border shadow-sm" [ngClass]="{'opacity-50 pointer-events-none': isProtectedDataSource() && columnPanel.computed_column === 'no'}">
       <div class="flex items-center justify-between p-6 border-b">
         <h3 class="text-2xl font-semibold leading-none tracking-tight" i18n="@@editModelHeaders">{{columnPanel.type ? columnPanel.name : ''}}</h3>
-        <div class="flex items-center gap-2">
-          <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
-            <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
-            <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
-                  i18n="@@mcpVisibilityTooltipCol">
-              Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.
+        @if(aiControlEnabled && !isProtectedDataSource()){
+          <div class="flex items-center gap-2">
+            <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
+              <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
+              <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
+                    i18n="@@mcpVisibilityTooltipCol">
+                Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.
+              </span>
             </span>
-          </span>
-          <div class="flex p-1 rounded-lg bg-gray-200">
-            @for (opt of iaVisibilityOptions; track opt.value) {
-              <button type="button"
-                (click)="columnPanel.ia_visibility = opt.value; update()"
-                class="px-3 py-1 rounded-md text-xs font-medium transition-all"
-                [ngClass]="{'bg-white shadow text-foreground': columnPanel.ia_visibility === opt.value, 'text-gray-500': columnPanel.ia_visibility !== opt.value}">
-                {{ opt.label }}
-              </button>
-            }
+            <div class="flex p-1 rounded-lg bg-gray-200">
+              @for (opt of iaVisibilityOptions; track opt.value) {
+                <button type="button"
+                  (click)="columnPanel.ia_visibility = opt.value; update()"
+                  class="px-3 py-1 rounded-md text-xs font-medium transition-all"
+                  [ngClass]="{'bg-white shadow text-foreground': columnPanel.ia_visibility === opt.value, 'text-gray-500': columnPanel.ia_visibility !== opt.value}">
+                  {{ opt.label }}
+                </button>
+              }
+            </div>
           </div>
-        </div>
+        }
       </div>
       
       <div class="p-6 space-y-6">
@@ -312,7 +358,7 @@
           </div>
         }
 
-        @if(columnPanel.valueListSource){
+        @if(columnPanel.valueListSource && defineListOfPossibleValuesButtonEnabled && !isProtectedDataSource()){
         <h3 class="text-lg font-medium text-gray-700 mb-3" i18n="@@rolesPermisos">Valores para filtro</h3>
         
         <div class="border rounded-lg">
@@ -363,25 +409,31 @@
 
         
 
-      <div class="mb-6">
-        <h3 class="text-lg font-medium text-gray-700 mb-3" i18n="@@rolesPermisos">Roles y permisos de fila</h3>
-        <eda-table [inject]="permissionsColumn"></eda-table>
-      </div>
+      @if(addPermissionButtonEnabled && !isProtectedDataSource() || columnPanel.computed_column !== 'computed'){
+        <div class="mb-6">
+          <h3 class="text-lg font-medium text-gray-700 mb-3" i18n="@@rolesPermisos">Roles y permisos de fila</h3>
+          <eda-table [inject]="permissionsColumn"></eda-table>
+        </div>
+      }
 
         
 
           <!-- Action Buttons -->
           <div class="flex flex-wrap gap-2 mb-6">
-            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
-              (click)="openValueListDialog()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
-              {{addValueList}}
-            </button>
-            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
-              (click)="openPermissionsRelationDialog()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
-              {{addPermission}}
-            </button>
+            @if(defineListOfPossibleValuesButtonEnabled && !isProtectedDataSource() || columnPanel.computed_column !== 'computed'){
+              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+                (click)="openValueListDialog()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+                {{addValueList}}
+              </button>
+            }
+            @if(addPermissionButtonEnabled && !isProtectedDataSource() || columnPanel.computed_column !== 'computed'){
+              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+                (click)="openPermissionsRelationDialog()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+                {{addPermission}}
+              </button>
+            }
           </div>
 
         @if (columnPanel.computed_column === 'no') {
@@ -429,56 +481,60 @@
     <div class="bg-card rounded-lg border shadow-sm">
       <div class="flex items-center justify-between p-6 border-b">
         <h2 class="text-2xl font-semibold" i18n="@@editModelHeaders">Editar {{modelPanel.type ? modelPanel.metadata.model_name : ''}}</h2>
-        <div class="flex items-center gap-2">
-          <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
-            <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
-            <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
-                  i18n="@@mcpVisibilityTooltipTableModel">
-              Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.
+        @if(aiControlEnabled && !isProtectedDataSource()){
+          <div class="flex items-center gap-2">
+            <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
+              <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
+              <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
+                    i18n="@@mcpVisibilityTooltipTableModel">
+                Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.
+              </span>
             </span>
-          </span>
-          <div class="flex p-1 rounded-lg bg-gray-200">
-            @for (opt of iaVisibilityOptionsSimple; track opt.value) {
-              <button type="button"
-                (click)="$any(modelPanel.metadata).ia_visibility = opt.value; update()"
-                class="px-3 py-1 rounded-md text-xs font-medium transition-all"
-                [ngClass]="{'bg-white shadow text-foreground': $any(modelPanel.metadata).ia_visibility === opt.value, 'text-gray-500': $any(modelPanel.metadata).ia_visibility !== opt.value}">
-                {{ opt.label }}
-              </button>
-            }
+            <div class="flex p-1 rounded-lg bg-gray-200">
+              @for (opt of iaVisibilityOptionsSimple; track opt.value) {
+                <button type="button"
+                  (click)="$any(modelPanel.metadata).ia_visibility = opt.value; update()"
+                  class="px-3 py-1 rounded-md text-xs font-medium transition-all"
+                  [ngClass]="{'bg-white shadow text-foreground': $any(modelPanel.metadata).ia_visibility === opt.value, 'text-gray-500': $any(modelPanel.metadata).ia_visibility !== opt.value}">
+                  {{ opt.label }}
+                </button>
+              }
+            </div>
           </div>
-        </div>
+        }
       </div>
       <div class="p-6 space-y-6">
         <!-- Metadata Section -->
-        <div class="mb-8">
-          <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2" i18n="@@metadata">Metadata</h3>
-          <div class="grid gap-4">
-            <div class="grid gap-2">
-              <label for="name" class="font-medium" i18n="@@inputNombre">
-                Nombre <span class="text-red-500">*</span>
-              </label>
-              <input
-                id="name"
-                [(ngModel)]="modelPanel.metadata.model_name"
-                (keyup)="update()"
-                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              />
-            </div>
-            <div class="grid gap-2">
-              <label for="model_description" class="font-medium" i18n="@@inputDescripcionModelo">Descripción</label>
-              <textarea
-                id="model_description"
-                [(ngModel)]="$any(modelPanel.metadata).model_description"
-                (keyup)="update()"
-                rows="3"
-                class="flex w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
-                i18n-placeholder="@@placeholderDescripcionModelo"
-                placeholder="Describe el propósito y contenido de este modelo de datos..."
-              ></textarea>
+        @if(!isProtectedDataSource()){
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2" i18n="@@metadata">Metadata</h3>
+            <div class="grid gap-4">
+              <div class="grid gap-2">
+                <label for="name" class="font-medium" i18n="@@inputNombre">
+                  Nombre <span class="text-red-500">*</span>
+                </label>
+                <input
+                  id="name"
+                  [(ngModel)]="modelPanel.metadata.model_name"
+                  (keyup)="update()"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </div>
+              <div class="grid gap-2">
+                <label for="model_description" class="font-medium" i18n="@@inputDescripcionModelo">Descripción</label>
+                <textarea
+                  id="model_description"
+                  [(ngModel)]="$any(modelPanel.metadata).model_description"
+                  (keyup)="update()"
+                  rows="3"
+                  class="flex w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                  i18n-placeholder="@@placeholderDescripcionModelo"
+                  placeholder="Describe el propósito y contenido de este modelo de datos..."
+                ></textarea>
+              </div>
             </div>
           </div>
-        </div>
+        }
 
         <!-- Connection Section -->
         <div class="mb-8">
@@ -488,7 +544,7 @@
               <label for="type" class="font-medium" i18n="@@type">Tipo</label>
               <p-dropdown inputId="type" [(ngModel)]="selectedTipoBD"
                 [options]="tiposBD" optionLabel="label"
-                appendTo="body" [style]="{'width':'100%'}">
+                appendTo="body" [style]="{'width':'100%'}" [disabled]="isProtectedDataSource()">
               </p-dropdown>
             </div>
             
@@ -499,41 +555,45 @@
                 } @else {
                   <label for="host" class="font-medium" i18n="@@inputHost">Host</label>
                 }
-                <input 
-                  id="host" 
+                <input
+                  id="host"
                   [(ngModel)]="modelPanel.connection.host"
                   (keyup)="update()"
-                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                  [disabled]="isProtectedDataSource()"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
             }
             <div class="grid gap-2">
               <label for="database" class="font-medium" i18n="@@inputNombreDB">Base de datos</label>
               <input 
-                id="database" 
+                id="database"
                 [(ngModel)]="modelPanel.connection.database"
                 (keyup)="update()"
-                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                [disabled]="isProtectedDataSource()"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
             @if (!['bigquery', 'excel', 'csv', 'duckdb'].includes(selectedTipoBD?.value)) {
               <div class="grid gap-2">
                 <label for="port" class="font-medium" i18n="@@port">Puerto</label>
                 <input 
-                  id="port" 
+                  id="port"
                   [(ngModel)]="modelPanel.connection.port"
                   (keyup)="update()"
-                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                  [disabled]="isProtectedDataSource()"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
 
               <div class="grid gap-2">
                 <label for="schema" class="font-medium" i18n="@@schema">Esquema</label>
                 <input 
-                  id="schema" 
+                  id="schema"
                   [(ngModel)]="modelPanel.connection.schema"
                   (keyup)="update()"
-                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                  [disabled]="isProtectedDataSource()"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
             }
@@ -541,10 +601,11 @@
               <div class="grid gap-2">
                 <label for="poolLimit" class="font-medium">Pool Limit</label>
                 <input 
-                  id="poolLimit" 
+                  id="poolLimit"
                   [(ngModel)]="modelPanel.connection.poolLimit"
                   (keyup)="update()"
-                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                  [disabled]="isProtectedDataSource()"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
             }
@@ -553,10 +614,11 @@
               <div class="grid gap-2">
                 <label for="warehouse" class="font-medium">Warehouse</label>
                 <input 
-                  id="warehouse" 
+                  id="warehouse"
                   [(ngModel)]="modelPanel.connection.warehouse"
                   (keyup)="update()"
-                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                  [disabled]="isProtectedDataSource()"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
             }
@@ -565,10 +627,11 @@
               <div class="grid gap-2">
                 <label for="user" class="font-medium" i18n="@@placeholderInputUsuario">Usuario</label>
                 <input 
-                  id="user" 
+                  id="user"
                   [(ngModel)]="modelPanel.connection.user"
                   (keyup)="update()"
-                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                  [disabled]="isProtectedDataSource()"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
               
@@ -577,12 +640,13 @@
                   Password <span class="text-red-500">*</span>
                 </label>
                 <input 
-                  id="password" 
+                  id="password"
                   type="password"
                   [(ngModel)]="modelPanel.connection.password"
                   (keyup)="update()"
                   autocomplete="new-password"
-                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                  [disabled]="isProtectedDataSource()"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
             }
@@ -590,10 +654,11 @@
             <div class="grid gap-2">
               <label for="filters" class="font-medium" i18n="@@filters">Filtros</label>
               <input 
-                id="filters" 
-                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                id="filters"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 [(ngModel)]="modelPanel.metadata.filter"
                 (keyup)="update()"
+                [disabled]="isProtectedDataSource()"
               />
             </div>
 
@@ -608,7 +673,7 @@
             }
           </div>
           
-          @if (['mysql', 'postgres', 'sqlserver', 'clickhouse'].includes(selectedTipoBD?.value)) {
+          @if (sslConnectionSwitchEnabled && !isProtectedDataSource() && ['mysql', 'postgres', 'sqlserver', 'clickhouse'].includes(selectedTipoBD?.value)) {
             <div class="mt-4 flex items-center space-x-2">
               <button 
                 type="button" 
@@ -651,12 +716,14 @@
               {{addMap}}
             </button>
             @if(selectedTipoBD?.value !== 'mongodb'){
-              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
-                (click)="openNewViewDialog()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
-                {{addView}}
-              </button>
-              @if(selectedTipoBD?.value !== 'duckdb'){
+              @if(addViewButtonEnabled && !isProtectedDataSource()){
+                <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+                  (click)="openNewViewDialog()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+                  {{addView}}
+                </button>
+              }
+              @if(selectedTipoBD?.value !== 'duckdb' && addTableFromCsvButtonEnabled && !isProtectedDataSource()){
                 <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
                   (click)="openCSVDialog()">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
@@ -664,18 +731,20 @@
                 </button>
               }
             }
-            @if(selectedTipoBD?.value === 'duckdb'){
+            @if(selectedTipoBD?.value === 'duckdb' && addTableFromCsvButtonEnabled && !isProtectedDataSource()){
               <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
                 (click)="openAddDuckdbTableDialog()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
                 <ng-container i18n="@@addDuckdbTable">Añadir tabla CSV</ng-container>
               </button>
             }
-            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
-              (click)="openTagDialog()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
-              {{addTagDataSource}}
-            </button>
+            @if(addTagButtonEnabled && !isProtectedDataSource()){
+              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+                (click)="openTagDialog()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+                {{addTagDataSource}}
+              </button>
+            }
           </div>
         </div>
         
@@ -688,17 +757,20 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg>
               {{addCacheConfig}}
             </button>
-            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
-              (click)="openModelPermissionsDialog()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
-              {{addPermission}}
-            </button>
+            @if(!isProtectedDataSource()){
+              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
+                (click)="openModelPermissionsDialog()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+                {{addPermission}}
+              </button>
+            }
             <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 btn-corporate-primary h-10 px-4 py-2"
               (click)="openSecurityDialog()">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
               {{viewsecurity}}
             </button>
 
+            @if(!isProtectedDataSource()){
             <button
               class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium
                     ring-offset-background transition-colors focus-visible:outline-none
@@ -743,9 +815,10 @@
               </svg>
               {{ hideAllRelationsString }}
             </button>
+            }
           </div>
         </div>
-        
+
         <!-- Model-level visibility Section -->
         <div class="mb-8">
           <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2" i18n="@@rolesPermisosModelo">Visibilidad a nivel de modelo</h3>

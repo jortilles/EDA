@@ -4,6 +4,7 @@ import { EdaDialog, EdaDialog2Component } from "@eda/shared/components/shared-co
 import { CommonModule } from "@angular/common";
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from '@angular/forms';
+import { PROTECTED_MODEL_DATA_SOURCES_ARRAY } from '@eda/configs/customizable/customizable_default';
 @Component({
     standalone: true,
     selector: 'app-table-permission-dialog',
@@ -51,11 +52,16 @@ export class TablePermissionDialogComponent implements OnInit {
 
     ngOnInit() {
         this.load();
+        if (this.isProtectedDataSource()) this.type = 'groups';
     }
 
     load() {
         this.loadDataSource();
         this.loadUsers();
+    }
+
+    isProtectedDataSource(): boolean {
+        return PROTECTED_MODEL_DATA_SOURCES_ARRAY.includes(this.dataSourceService.model_id);
     }
 
     loadDataSource() {

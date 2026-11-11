@@ -57,23 +57,25 @@
         </div>
         <div class="p-3 space-y-4">
           <!-- User Permissions Radio -->
-          <div
-            class="perm-row flex items-center space-x-3 p-3 rounded-lg border bg-white border-gray-200 transition-colors cursor-pointer"
-            (click)="setPermissionType('users')">
-            <input type="radio" id="user-permissions" name="permissionType" value="users"
-              [checked]="type === 'users'"
-              class="perm-radio w-4 h-4 bg-gray-100 border-gray-300">
-            <label for="user-permissions" class="flex items-center gap-2 cursor-pointer flex-1">
-              <svg class="h-4 w-4 text-[var(--corporate-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-              </svg>
-              <div>
-                <div class="text-base font-medium text-gray-900" i18n="@@permissionTypeUser">Permisos por Usuario</div>
-                <div class="text-sm text-gray-600" i18n="@@permissionTypeUserDescription">Asignar permisos individualmente a usuarios específicos</div>
-              </div>
-            </label>
-          </div>
+          @if(!isProtectedDataSource()){
+            <div
+              class="perm-row flex items-center space-x-3 p-3 rounded-lg border bg-white border-gray-200 transition-colors cursor-pointer"
+              (click)="setPermissionType('users')">
+              <input type="radio" id="user-permissions" name="permissionType" value="users"
+                [checked]="type === 'users'"
+                class="perm-radio w-4 h-4 bg-gray-100 border-gray-300">
+              <label for="user-permissions" class="flex items-center gap-2 cursor-pointer flex-1">
+                <svg class="h-4 w-4 text-[var(--corporate-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                <div>
+                  <div class="text-base font-medium text-gray-900" i18n="@@permissionTypeUser">Permisos por Usuario</div>
+                  <div class="text-sm text-gray-600" i18n="@@permissionTypeUserDescription">Asignar permisos individualmente a usuarios específicos</div>
+                </div>
+              </label>
+            </div>
+          }
 
           <!-- Group Permissions Radio -->
           <div
@@ -96,7 +98,7 @@
           </div>
 
           <!-- User Selection -->
-          @if(type === 'users'){
+          @if(type === 'users' && !isProtectedDataSource()){
             <div class="space-y-3 mt-4">
               <label class="text-base font-medium text-gray-900" i18n="@@selectUsers">Seleccionar Usuarios</label>
               <p-multiSelect
