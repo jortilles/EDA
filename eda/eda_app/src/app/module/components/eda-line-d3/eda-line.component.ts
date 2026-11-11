@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaLineD3 } from './eda-line';
-import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, truncateLabelExact, DASH_TREND, DASH_PREDICTION } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, applyLabelHalo, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, truncateLabelExact, DASH_TREND, DASH_PREDICTION, getLineDash } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface LinePoint {
@@ -221,7 +221,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
       const tickLabels = probeScale.ticks(tickCount).map(v => formatAxisValue(v));
       leftMargin = Math.min(Math.max(measureMaxLabelWidth(tickLabels, 11, this.fontFamily) + 16, 40), width * 0.3);
     }
-    const showCompactCategoryAxis = compact && this.inject.showGridLines === true;
+    const showCompactCategoryAxis = compact && (this.inject.showGridLines === true || this.inject.showXAxis === true || this.inject.showXAxisLabels === true);
     const showCompactLabels = compact && (this.inject.showLabels || this.inject.showLabelsPercent);
     const margin = compact
       ? { top: showCompactLabels ? 20 : 4, right: 4, bottom: showCompactCategoryAxis ? 18 : 4, left: showValueAxis ? leftMargin : 4 }
@@ -276,15 +276,33 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
       catAxisG.selectAll('text').style('text-anchor', 'middle')
         .style('font-family', this.fontFamily).style('font-size', '10px').style('font-weight', 500).style('fill', '#000000');
 
-      // At 1/4, 1/2 and 3/4 rather than first/middle/last - the very edge categories sit right at
-      // the plot boundary, where a centered label's text overflows past the SVG edge and clips.
-      const n = axisCategories.length;
-      const keepIdx = n <= 3 ? new Set(axisCategories.map((_, i) => i)) : new Set([
-        Math.round((n - 1) * 2 / 8),
-        Math.round((n - 1) * 4 / 8),
-        Math.round((n - 1) * 6 / 8)
-      ]);
-      catAxisG.selectAll('.tick').style('display', (_: any, i: number) => keepIdx.has(i) ? null : 'none');
+      if (this.inject.showXAxis === false) {
+        catAxisG.select('.domain').style('display', 'none');
+      }
+
+      if (this.inject.showXAxisLabels === false) {
+        catAxisG.selectAll('.tick').style('display', 'none');
+      } else {
+        // At 1/4, 1/2 and 3/4 rather than first/middle/last - the very edge categories sit right at
+        // the plot boundary, where a centered label's text overflows past the SVG edge and clips.
+        // xAxisLabelCount>0 overrides this fixed 3-sample default with N evenly-spaced labels
+        // (always including the first and last index).
+        const n = axisCategories.length;
+        const labelCount = this.inject.xAxisLabelCount || 0;
+        let keepIdx: Set<number>;
+        if (labelCount > 0) {
+          const count = Math.min(labelCount, n);
+          const steps = Math.max(count - 1, 1);
+          keepIdx = new Set(Array.from({ length: count }, (_, i) => Math.round((i * (n - 1)) / steps)));
+        } else {
+          keepIdx = n <= 3 ? new Set(axisCategories.map((_, i) => i)) : new Set([
+            Math.round((n - 1) * 2 / 8),
+            Math.round((n - 1) * 4 / 8),
+            Math.round((n - 1) * 6 / 8)
+          ]);
+        }
+        catAxisG.selectAll('.tick').style('display', (_: any, i: number) => keepIdx.has(i) ? null : 'none');
+      }
     }
 
     const lineGen: any = d3.line<LinePoint>()
@@ -315,7 +333,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
     // Hovered-line highlight, same feel as eda-bar-d3's hovered bar: the stroke darkens and (only
     // with chartAnimation on, like the bar's widen) gets thicker. Only real series' strokes are
     // registered - trend/prediction overlays never highlight.
-    const LINE_WIDTH = 2;
+    const LINE_WIDTH = this.inject.lineWidth ?? 2;
     const LINE_HOVER_WIDTH = 4;
     // "Serie principal": the real series the user chose to stand out - twice as thick as the rest
     // (hover grows it by the same factor) and painted last, so no other line can cover it.
@@ -324,12 +342,15 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
       : null;
     const lineWidthFor = (s: LineSeries) => s === mainSeries ? LINE_WIDTH * 2 : LINE_WIDTH;
     const lineHoverWidthFor = (s: LineSeries) => s === mainSeries ? LINE_HOVER_WIDTH * 2 : LINE_HOVER_WIDTH;
+    // The configurable chartLineColor override only applies to real series (trend/prediction
+    // overlays keep following their own source series' color).
+    const strokeColorFor = (s: LineSeries) => (!s.isTrend && !s.isPrediction && this.inject.chartLineColor) ? this.inject.chartLineColor : s.color;
     const linePaths = new Map<LineSeries, any>();
     const highlightLine = (series: LineSeries, on: boolean) => {
       const path = linePaths.get(series);
       if (!path) return;
       path.interrupt('hlColor').transition('hlColor').duration(hoverMs(150))
-        .attr('stroke', on ? darkenHex(series.color, 40) : series.color);
+        .attr('stroke', on ? darkenHex(strokeColorFor(series), 40) : strokeColorFor(series));
       if (chartAnimOn) {
         path.interrupt('hlWidth').transition('hlWidth').duration(hoverMs(150))
           .attr('stroke-width', on ? lineHoverWidthFor(series) : lineWidthFor(series));
@@ -359,13 +380,15 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
         points = anchor ? [anchor, ...predPoints] : predPoints;
       }
 
+      const isRealSeries = !series.isTrend && !series.isPrediction;
+      const strokeDash = series.isTrend ? DASH_TREND : series.isPrediction ? DASH_PREDICTION : (isRealSeries ? getLineDash(this.inject.lineStyle) : null);
       const path = linesGroup.append('path')
         .datum(points)
         .attr('class', series.isTrend ? 'eda-line-trend' : series.isPrediction ? 'eda-line-prediction' : 'eda-line-stroke')
         .attr('fill', 'none')
-        .attr('stroke', series.color)
+        .attr('stroke', strokeColorFor(series))
         .attr('stroke-width', series.isTrend ? 1.5 : lineWidthFor(series))
-        .attr('stroke-dasharray', series.isTrend ? DASH_TREND : series.isPrediction ? DASH_PREDICTION : null)
+        .attr('stroke-dasharray', strokeDash)
         .attr('d', gen(points));
 
       if (!series.isTrend && !series.isPrediction) linePaths.set(series, path);
@@ -381,7 +404,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
           .transition().duration(ENTRANCE_MS).ease(d3.easeCubicOut)
           .attr('stroke-dashoffset', 0)
           .on('end', function () {
-            d3.select(this).attr('stroke-dasharray', series.isTrend ? DASH_TREND : series.isPrediction ? DASH_PREDICTION : null);
+            d3.select(this).attr('stroke-dasharray', strokeDash);
           });
       }
 
@@ -390,7 +413,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
       if (series.isTrend) {
         if (showLabelsOn) {
           const trendVertexData = series.points.filter(p => p.value !== null).map(p => ({ series, point: p }));
-          labelsGroup.selectAll(null)
+          const trendLabelSel = labelsGroup.selectAll(null)
             .data(trendVertexData)
             .enter()
             .append('text')
@@ -402,6 +425,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
             .attr('x', (d: any) => xFor(d.point.catIndex))
             .attr('y', (d: any) => valueScale(d.point.value) - 10)
             .text((d: any) => this.formatLabel(series, d.point.catIndex, d.point.value));
+          applyLabelHalo(trendLabelSel, this.inject.labelBackgroundColor);
         }
         return;
       }
@@ -472,6 +496,7 @@ export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
           .attr('y', (d: any) => valueScale(d.value as number) - 10)
           .text((d: any) => this.formatLabel(series, d.catIndex, d.value as number))
           .style('opacity', animateEntrance ? 0 : 1);
+        applyLabelHalo(labelSel, this.inject.labelBackgroundColor);
 
         if (animateEntrance) {
           const LABEL_FADE_MS = 200;

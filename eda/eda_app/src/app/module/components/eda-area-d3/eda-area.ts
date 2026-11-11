@@ -18,6 +18,22 @@ export class EdaAreaD3 {
   labelColorMode?: string;
   labelCustomColor?: string;
   showGridLines: boolean;
+  /** KPI mini-chart only: X axis line, independent of showGridLines. Undefined → falls back to showGridLines (legacy behaviour). */
+  showXAxis?: boolean;
+  /** KPI mini-chart only: X axis tick labels, independent of showGridLines. Undefined → falls back to showGridLines (legacy behaviour). */
+  showXAxisLabels?: boolean;
+  /** KPI mini-chart only: how many X axis labels to show, evenly spaced (always includes the first and last). 0/undefined → legacy fixed 3-sample behaviour. */
+  xAxisLabelCount?: number;
+  /** Data label background color (chip behind the text). Empty/undefined → no background. */
+  labelBackgroundColor?: string;
+  /** Main line's border width in px. Undefined → default (2). */
+  lineWidth?: number;
+  /** Main line's dash style. Undefined → 'solid'. */
+  lineStyle?: 'solid' | 'dashed' | 'dotted';
+  /** Line stroke color override, independent of the series/palette color. Empty/undefined → no override. */
+  chartLineColor?: string;
+  /** Area fill color override, independent of the series/palette color. Empty/undefined → no override. */
+  chartFillColor?: string;
   showPointLines: boolean;
   useGradient: boolean;
   linkedDashboard: LinkedDashboardProps;

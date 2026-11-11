@@ -45,7 +45,6 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public ptooltipViewAlerts: string = $localize`:@@ptooltipViewAlerts:Configurar alertas`;
 
     public modifiedFontPoints: number = 0;
-    public panelBaseResultSize: number = 0;
     public previewAspectRatio: string = '4/3';
     public previewBoxStyle: any = {};
     public panelTitle: string = '';
@@ -79,6 +78,14 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public showComparative: boolean = false;
     public chartLegend: boolean = true;
     public showGridLines: boolean = true;
+    public showXAxis: boolean = true;
+    public showXAxisLabels: boolean = true;
+    public xAxisLabelCount: number = 0;
+    public labelBackgroundColor: string = '';
+    public lineWidth: number = 2;
+    public lineStyle: 'solid' | 'dashed' | 'dotted' = 'solid';
+    public chartLineColor: string = '';
+    public chartFillColor: string = '';
     public useGradient: boolean = true;
     public useRoundedBars: boolean = true;
     public chartAnimation: boolean = true;
@@ -149,7 +156,6 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     ngOnInit(): void {
         this.panelChartConfig = this.controller.params.panelChart;
         this.edaChart = this.controller.params.panelChart.edaChart;
-        this.panelBaseResultSize = this.controller.params.panelBaseResultSize || 0;
         this.panelWidth = this.controller.params.panelWidth || 400;
         this.panelHeight = this.controller.params.panelHeight || 300;
         this.panelTitle = this.controller.params.panelTitle || '';
@@ -179,6 +185,14 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         const edaCfg: any = config.edaChart || {};
         this.chartLegend = edaCfg.chartLegend ?? false;
         this.showGridLines = edaCfg.showGridLines ?? false;
+        this.showXAxis = edaCfg.showXAxis ?? true;
+        this.showXAxisLabels = edaCfg.showXAxisLabels ?? true;
+        this.xAxisLabelCount = edaCfg.xAxisLabelCount || 0;
+        this.labelBackgroundColor = edaCfg.labelBackgroundColor || '';
+        this.lineWidth = edaCfg.lineWidth ?? 2;
+        this.lineStyle = edaCfg.lineStyle || 'solid';
+        this.chartLineColor = edaCfg.chartLineColor || '';
+        this.chartFillColor = edaCfg.chartFillColor || '';
         this.useGradient = edaCfg.useGradient ?? true;
         this.useRoundedBars = edaCfg.useRoundedBars ?? true;
         this.chartAnimation = edaCfg.chartAnimation ?? true;
@@ -189,16 +203,6 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.showPointLines = edaCfg.showPointLines ?? false;
         this.addTrend = edaCfg.addTrend ?? false;
         this.addComparative = edaCfg.addComparative ?? false;
-
-        if (this.panelBaseResultSize > 0) {
-        setTimeout(() => {
-            const kpiInstance = this.panelChartComponent?.componentRef?.instance;
-                if (kpiInstance) {
-                    kpiInstance.baseResultSize = this.panelBaseResultSize;
-                    this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
-                }
-            }, 100);
-        }
     }
 
     setActiveTab(tab: "aspecto" | "grafico" | "alerts"): void {
@@ -209,6 +213,14 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         return {
             chartLegend: this.chartLegend,
             showGridLines: this.showGridLines,
+            showXAxis: this.showXAxis,
+            showXAxisLabels: this.showXAxisLabels,
+            xAxisLabelCount: this.xAxisLabelCount,
+            labelBackgroundColor: this.labelBackgroundColor,
+            lineWidth: this.lineWidth,
+            lineStyle: this.lineStyle,
+            chartLineColor: this.chartLineColor,
+            chartFillColor: this.chartFillColor,
             useGradient: this.useGradient,
             useRoundedBars: this.useRoundedBars,
             chartAnimation: this.chartAnimation,
@@ -338,6 +350,14 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
 
     setChartLegend(): void { this.refreshGraphPreview(); }
     setShowGridLines(): void { this.refreshGraphPreview(); }
+    setShowXAxis(): void { this.refreshGraphPreview(); }
+    setShowXAxisLabels(): void { this.refreshGraphPreview(); }
+    setXAxisLabelCount(): void { this.refreshGraphPreview(); }
+    setLabelBackgroundColor(): void { this.refreshGraphPreview(); }
+    setLineWidth(): void { this.refreshGraphPreview(); }
+    setLineStyle(style: 'solid' | 'dashed' | 'dotted'): void { this.lineStyle = style; this.refreshGraphPreview(); }
+    setChartLineColor(): void { this.refreshGraphPreview(); }
+    setChartFillColor(): void { this.refreshGraphPreview(); }
     setUseGradient(): void { this.refreshGraphPreview(); }
     setChartAnimation(): void { this.refreshGraphPreview(); }
     setUseRoundedBars(): void { this.refreshGraphPreview(); }
@@ -363,6 +383,10 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
 
     labelColorButtonClass(mode: string): Record<string, boolean> {
         return { 'bg-[var(--corporate-primary)] text-white': this.labelColorMode === mode };
+    }
+
+    lineStyleButtonClass(style: 'solid' | 'dashed' | 'dotted'): Record<string, boolean> {
+        return { 'bg-[var(--corporate-primary)] text-white': this.lineStyle === style };
     }
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {

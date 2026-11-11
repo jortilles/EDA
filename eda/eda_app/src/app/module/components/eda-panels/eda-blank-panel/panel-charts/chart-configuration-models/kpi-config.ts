@@ -13,6 +13,22 @@ export interface KpiEdaChart {
     showPredictionLines: boolean;
     chartLegend: boolean;
     showGridLines: boolean;
+    /** X axis line, independent of showGridLines (which also controls the value axis). */
+    showXAxis: boolean;
+    /** X axis tick labels, independent of showGridLines. */
+    showXAxisLabels: boolean;
+    /** How many X axis labels to show, evenly spaced. 0 = legacy fixed-sample default. */
+    xAxisLabelCount: number;
+    /** Data label background color (halo behind the text). Empty = no background. */
+    labelBackgroundColor: string;
+    /** Main line's border width in px (kpiline/kpiarea only). */
+    lineWidth: number;
+    /** Main line's dash style (kpiline/kpiarea only). */
+    lineStyle: 'solid' | 'dashed' | 'dotted';
+    /** Line/border color override, independent of the series color (kpibar/kpiline/kpiarea). Empty = no override. */
+    chartLineColor: string;
+    /** Fill color override, independent of the series color (kpiarea only). Empty = no override. */
+    chartFillColor: string;
     useGradient: boolean;
     useRoundedBars: boolean;
     chartAnimation: boolean;
@@ -43,6 +59,14 @@ export class KpiConfig {
             showPredictionLines: init?.edaChart?.showPredictionLines || false,
             chartLegend: init?.edaChart?.chartLegend ?? false,
             showGridLines: init?.edaChart?.showGridLines ?? false,
+            showXAxis: init?.edaChart?.showXAxis ?? true,
+            showXAxisLabels: init?.edaChart?.showXAxisLabels ?? true,
+            xAxisLabelCount: init?.edaChart?.xAxisLabelCount || 0,
+            labelBackgroundColor: init?.edaChart?.labelBackgroundColor || '',
+            lineWidth: init?.edaChart?.lineWidth ?? 2,
+            lineStyle: init?.edaChart?.lineStyle || 'solid',
+            chartLineColor: init?.edaChart?.chartLineColor || '',
+            chartFillColor: init?.edaChart?.chartFillColor || '',
             useGradient: init?.edaChart?.useGradient ?? true,
             useRoundedBars: init?.edaChart?.useRoundedBars ?? true,
             chartAnimation: init?.edaChart?.chartAnimation ?? true,

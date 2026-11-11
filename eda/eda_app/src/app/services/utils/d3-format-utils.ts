@@ -30,3 +30,15 @@ export function resolveLabelColor(labelColorMode: string | undefined, labelCusto
   if (labelColorMode === 'custom') return labelCustomColor || '#000000';
   return '#000000';
 }
+
+/** Paints a colored halo behind a data label's text (via a thick stroke drawn under the fill,
+ * `paint-order: stroke`) so it stays legible over any bar/line/area color, without needing a
+ * separate background rect per label. No-op when `backgroundColor` is empty/undefined. */
+export function applyLabelHalo(selection: any, backgroundColor: string | undefined): void {
+  if (!backgroundColor) return;
+  selection
+    .style('paint-order', 'stroke')
+    .style('stroke', backgroundColor)
+    .style('stroke-width', '3px')
+    .style('stroke-linejoin', 'round');
+}

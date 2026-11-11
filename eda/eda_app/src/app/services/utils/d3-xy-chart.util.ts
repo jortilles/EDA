@@ -42,6 +42,15 @@ export const DASH_TREND = '5,3';
 /** Dash pattern for a predicted continuation of a real series - same value eda-kpi-trend already uses for its comparison line. */
 export const DASH_PREDICTION = '4,3';
 
+/** Dash pattern for a real (non-trend, non-prediction) series' own configurable line style. null (solid) means no dasharray at all. */
+export function getLineDash(style: 'solid' | 'dashed' | 'dotted' | undefined): string | null {
+  switch (style) {
+    case 'dashed': return '8,4';
+    case 'dotted': return '2,4';
+    default: return null;
+  }
+}
+
 /**
  * Path for a rect rounded only on its "tip" end (the end away from the zero baseline) - top for
  * vertical bars, right for horizontal ones - so the base where the bar meets the axis (or, for a

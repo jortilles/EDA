@@ -322,6 +322,83 @@
                 </label>
               </div>
 
+              <div class="flex items-center justify-between">
+                <label class="font-medium" i18n="@@showXAxis">Mostrar eje X</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" [(ngModel)]="showXAxis" (ngModelChange)="setShowXAxis()" class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                </label>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <label class="font-medium" i18n="@@showXAxisLabels">Mostrar etiquetas del eje X</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" [(ngModel)]="showXAxisLabels" (ngModelChange)="setShowXAxisLabels()" class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                </label>
+              </div>
+
+              @if (showXAxisLabels) {
+                <div class="flex items-center justify-between">
+                  <label class="font-medium" i18n="@@xAxisLabelCount">Número de etiquetas</label>
+                  <input type="number" min="0" [(ngModel)]="xAxisLabelCount" (ngModelChange)="setXAxisLabelCount()"
+                    placeholder="Auto" i18n-placeholder="@@xAxisLabelCountAuto"
+                    class="w-20 px-3 py-1.5 border rounded-md text-sm text-right" />
+                </div>
+              }
+
+              @if (showTrendComparative) {
+                <div class="flex items-center justify-between">
+                  <label class="font-medium" i18n="@@lineWidth">Ancho de línea</label>
+                  <input type="number" min="1" max="10" [(ngModel)]="lineWidth" (ngModelChange)="setLineWidth()"
+                    class="w-20 px-3 py-1.5 border rounded-md text-sm text-right" />
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <label class="font-medium" i18n="@@lineStyle">Estilo de línea</label>
+                  <div class="flex border rounded-md overflow-hidden text-sm">
+                    <button type="button" class="px-3 py-1.5" [ngClass]="lineStyleButtonClass('solid')"
+                      (click)="setLineStyle('solid')" i18n="@@lineStyleSolid">Sólida</button>
+                    <button type="button" class="px-3 py-1.5 border-l" [ngClass]="lineStyleButtonClass('dashed')"
+                      (click)="setLineStyle('dashed')" i18n="@@lineStyleDashed">Discontinua</button>
+                    <button type="button" class="px-3 py-1.5 border-l" [ngClass]="lineStyleButtonClass('dotted')"
+                      (click)="setLineStyle('dotted')" i18n="@@lineStyleDotted">Punteada</button>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between md:col-span-2">
+                  <label class="font-medium" i18n="@@chartLineColor">Color de línea</label>
+                  <div class="flex items-center gap-3">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" [ngModel]="!!chartLineColor"
+                        (ngModelChange)="chartLineColor = $event ? (chartLineColor || '#000000') : ''; setChartLineColor()"
+                        class="sr-only peer">
+                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                    </label>
+                    @if (chartLineColor) {
+                      <p-colorPicker [(ngModel)]="chartLineColor" (onChange)="setChartLineColor()" format="hex" appendTo="body" />
+                    }
+                  </div>
+                </div>
+              }
+
+              @if (edaChart === 'kpiarea') {
+                <div class="flex items-center justify-between md:col-span-2">
+                  <label class="font-medium" i18n="@@chartFillColor">Color de relleno</label>
+                  <div class="flex items-center gap-3">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" [ngModel]="!!chartFillColor"
+                        (ngModelChange)="chartFillColor = $event ? (chartFillColor || '#000000') : ''; setChartFillColor()"
+                        class="sr-only peer">
+                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                    </label>
+                    @if (chartFillColor) {
+                      <p-colorPicker [(ngModel)]="chartFillColor" (onChange)="setChartFillColor()" format="hex" appendTo="body" />
+                    }
+                  </div>
+                </div>
+              }
+
               @if (showTrendComparative) {
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
@@ -433,6 +510,21 @@
                         <input [(ngModel)]="labelCustomColor" (input)="setLabelColor()" class="text-sm text-slate-600 font-mono w-20 px-3 py-1.5 focus:outline-none">
                         <p-colorPicker [(ngModel)]="labelCustomColor" (onChange)="setLabelColor()" format="hex" appendTo="body" />
                       </div>
+                    }
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between md:col-span-2">
+                  <label class="font-medium" i18n="@@labelBackgroundColorOption">Fondo de las etiquetas</label>
+                  <div class="flex items-center gap-3">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" [ngModel]="!!labelBackgroundColor"
+                        (ngModelChange)="labelBackgroundColor = $event ? (labelBackgroundColor || '#ffffff') : ''; setLabelBackgroundColor()"
+                        class="sr-only peer">
+                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                    </label>
+                    @if (labelBackgroundColor) {
+                      <p-colorPicker [(ngModel)]="labelBackgroundColor" (onChange)="setLabelBackgroundColor()" format="hex" appendTo="body" />
                     }
                   </div>
                 </div>

@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaAreaD3 } from './eda-area';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, truncateLabelExact, opacityFraction, DASH_TREND } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, applyLabelHalo, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, truncateLabelExact, opacityFraction, DASH_TREND, getLineDash } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface AreaPoint {
@@ -170,15 +170,21 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     return `area-grad-${this.id}-${key}`;
   }
 
+  /** chartFillColor only overrides a real (non-trend) series' own fill, independent of its stroke/border color. */
+  private fillColorFor(series: AreaSeries): string {
+    return (!series.isTrend && this.inject.chartFillColor) ? this.inject.chartFillColor : series.color;
+  }
+
   private areaFill(defs: any, series: AreaSeries): string {
     const opacity = opacityFraction(series.opacity);
+    const color = this.fillColorFor(series);
     if (!(this.inject.useGradient ?? true)) {
-      const rgb = d3.rgb(series.color);
+      const rgb = d3.rgb(color);
       return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`;
     }
     return ensureLinearGradient(defs, this.gradientId(series.originalIndex), [
-      { offset: '0%', color: lightenHex(series.color, 30), opacity },
-      { offset: '100%', color: series.color, opacity }
+      { offset: '0%', color: lightenHex(color, 30), opacity },
+      { offset: '100%', color, opacity }
     ], { x1: '0%', y1: '0%', x2: '0%', y2: '100%' });
   }
 
@@ -222,7 +228,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     // Compact + explicit grid lines also earns a (capped, horizontal) category axis below - needs
     // a little vertical room the otherwise-axisless compact layout doesn't normally allocate.
-    const showCompactCategoryAxis = compact && this.inject.showGridLines === true;
+    const showCompactCategoryAxis = compact && (this.inject.showGridLines === true || this.inject.showXAxis === true || this.inject.showXAxisLabels === true);
     // Compact + value labels need headroom above the topmost point too, or a point near the very
     // top gets its label clipped by the SVG's own edge.
     const showCompactLabels = compact && (this.inject.showLabels || this.inject.showLabelsPercent);
@@ -280,15 +286,33 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       catAxisG.selectAll('text').style('text-anchor', 'middle')
         .style('font-family', this.fontFamily).style('font-size', '10px').style('font-weight', 500).style('fill', '#000000');
 
-      // At 1/4, 1/2 and 3/4 rather than first/middle/last - the very edge categories sit right at
-      // the plot boundary, where a centered label's text overflows past the SVG edge and clips.
-      const n = axisCategories.length;
-      const keepIdx = n <= 3 ? new Set(axisCategories.map((_, i) => i)) : new Set([
-        Math.round((n - 1) * 2 / 8),
-        Math.round((n - 1) * 4 / 8),
-        Math.round((n - 1) * 6 / 8)
-      ]);
-      catAxisG.selectAll('.tick').style('display', (_: any, i: number) => keepIdx.has(i) ? null : 'none');
+      if (this.inject.showXAxis === false) {
+        catAxisG.select('.domain').style('display', 'none');
+      }
+
+      if (this.inject.showXAxisLabels === false) {
+        catAxisG.selectAll('.tick').style('display', 'none');
+      } else {
+        // At 1/4, 1/2 and 3/4 rather than first/middle/last - the very edge categories sit right at
+        // the plot boundary, where a centered label's text overflows past the SVG edge and clips.
+        // xAxisLabelCount>0 overrides this fixed 3-sample default with N evenly-spaced labels
+        // (always including the first and last index).
+        const n = axisCategories.length;
+        const labelCount = this.inject.xAxisLabelCount || 0;
+        let keepIdx: Set<number>;
+        if (labelCount > 0) {
+          const count = Math.min(labelCount, n);
+          const steps = Math.max(count - 1, 1);
+          keepIdx = new Set(Array.from({ length: count }, (_, i) => Math.round((i * (n - 1)) / steps)));
+        } else {
+          keepIdx = n <= 3 ? new Set(axisCategories.map((_, i) => i)) : new Set([
+            Math.round((n - 1) * 2 / 8),
+            Math.round((n - 1) * 4 / 8),
+            Math.round((n - 1) * 6 / 8)
+          ]);
+        }
+        catAxisG.selectAll('.tick').style('display', (_: any, i: number) => keepIdx.has(i) ? null : 'none');
+      }
     }
 
     const areaGen: any = d3.area<AreaPoint>()
@@ -355,7 +379,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (showLabelsOn) {
           const trendVertexData = series.points.filter(p => p.value !== null).map(p => ({ series, point: p }));
-          labelsGroup.selectAll(null)
+          const trendLabelSel = labelsGroup.selectAll(null)
             .data(trendVertexData)
             .enter()
             .append('text')
@@ -367,6 +391,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
             .attr('x', (d: any) => xFor(d.point.catIndex))
             .attr('y', (d: any) => valueScale(d.point.value) - 10)
             .text((d: any) => this.formatLabel(series, d.point.catIndex, d.point.value));
+          applyLabelHalo(trendLabelSel, this.inject.labelBackgroundColor);
         }
         return;
       }
@@ -383,12 +408,16 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
         fillPath.transition().duration(ENTRANCE_MS).ease(d3.easeCubicOut).attr('d', areaGen(series.points));
       }
 
+      const strokeColor = this.inject.chartLineColor || series.color;
+      const strokeWidth = this.inject.lineWidth ?? 2;
+      const strokeDash = getLineDash(this.inject.lineStyle);
       const strokePath = fillGroup.append('path')
         .datum(series.points)
         .attr('class', 'eda-area-stroke')
         .attr('fill', 'none')
-        .attr('stroke', series.color)
-        .attr('stroke-width', 2)
+        .attr('stroke', strokeColor)
+        .attr('stroke-width', strokeWidth)
+        .attr('stroke-dasharray', strokeDash)
         .attr('d', lineGen(series.points));
 
       // Computed unconditionally (cheap) rather than only inside the animateEntrance branch below,
@@ -400,7 +429,10 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
       if (animateEntrance) {
         strokePath.attr('stroke-dasharray', `${pathLength} ${pathLength}`).attr('stroke-dashoffset', pathLength)
           .transition().duration(ENTRANCE_MS).ease(d3.easeCubicOut)
-          .attr('stroke-dashoffset', 0);
+          .attr('stroke-dashoffset', 0)
+          .on('end', function () {
+            d3.select(this).attr('stroke-dasharray', strokeDash);
+          });
       }
 
       const showDots = this.inject.showPointLines ?? false;
@@ -457,6 +489,7 @@ export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
           .attr('y', (d: any) => valueScale(d.value as number) - 10)
           .text((d: any) => this.formatLabel(series, d.catIndex, d.value as number))
           .style('opacity', animateEntrance ? 0 : 1);
+        applyLabelHalo(labelSel, this.inject.labelBackgroundColor);
 
         if (animateEntrance) {
           const LABEL_FADE_MS = 200;

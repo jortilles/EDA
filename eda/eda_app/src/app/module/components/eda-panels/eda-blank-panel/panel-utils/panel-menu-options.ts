@@ -109,7 +109,6 @@ export const PanelOptions = {
                 panelChart: panelComponent.panelChartConfig,
                 alertLimits: panelComponent.panelChart.componentRef.instance.alertLimits || [],
                 edaChart: panelComponent.panelChart.componentRef.instance.edaChartComponent?.inject,
-                panelBaseResultSize: panelComponent.panelChart.componentRef.instance.baseResultSize || 0,
                 panelWidth: panelComponent.panelChart.getDimensions().width || 400,
                 panelHeight: panelComponent.panelChart.getDimensions().height || 300,
                 panelTitle: panelComponent.panel.title || '',

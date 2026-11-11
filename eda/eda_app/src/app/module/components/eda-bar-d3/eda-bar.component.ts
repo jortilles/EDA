@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaBarD3 } from './eda-bar';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatDePercent, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, roundedTipRectPath, FileUtiles } from '@eda/services/service.index';
+import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatDePercent, formatValueLabel, resolveLabelColor, applyLabelHalo, initD3ResizeObserver, teardownD3Chart, roundedTipRectPath, FileUtiles } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 import { buildIconMap, resolveIconHref } from '../eda-panels/eda-blank-panel/panel-charts/category-icons.util';
 
@@ -507,7 +507,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       verticalBottomMargin = Math.min(Math.max(footprintPx + 20, 50), height * 0.4);
       verticalExtraGapPx = Math.max(0, (verticalBottomMargin - 20) - actualFootprintPx);
     }
-    const showCompactCategoryAxis = compact && !horizontal && this.inject.showGridLines === true;
+    const showCompactCategoryAxis = compact && !horizontal && (this.inject.showGridLines === true || this.inject.showXAxis === true || this.inject.showXAxisLabels === true);
     const showCompactLabels = compact && !horizontal && (this.inject.showLabels || this.inject.showLabelsPercent);
     const margin = compact
       ? { top: showCompactLabels ? 20 : 4, right: 4, bottom: showCompactCategoryAxis ? 18 : 4, left: (!horizontal && showGrid) ? leftMargin : 4 }
@@ -636,15 +636,33 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
       catAxisG.selectAll('text').style('text-anchor', 'middle')
         .style('font-family', this.fontFamily).style('font-size', '10px').style('font-weight', 500).style('fill', '#000000');
 
-      // At 1/4, 1/2 and 3/4 rather than first/middle/last - the very edge categories sit right at
-      // the plot boundary, where a centered label's text overflows past the SVG edge and clips.
-      const n = axisCategories.length;
-      const keepIdx = n <= 3 ? new Set(axisCategories.map((_, i) => i)) : new Set([
-        Math.round((n - 1) * 2 / 8),
-        Math.round((n - 1) * 4 / 8),
-        Math.round((n - 1) * 6 / 8)
-      ]);
-      catAxisG.selectAll('.tick').style('display', (_: any, i: number) => keepIdx.has(i) ? null : 'none');
+      if (this.inject.showXAxis === false) {
+        catAxisG.select('.domain').style('display', 'none');
+      }
+
+      if (this.inject.showXAxisLabels === false) {
+        catAxisG.selectAll('.tick').style('display', 'none');
+      } else {
+        // At 1/4, 1/2 and 3/4 rather than first/middle/last - the very edge categories sit right at
+        // the plot boundary, where a centered label's text overflows past the SVG edge and clips.
+        // xAxisLabelCount>0 overrides this fixed 3-sample default with N evenly-spaced labels
+        // (always including the first and last index).
+        const n = axisCategories.length;
+        const labelCount = this.inject.xAxisLabelCount || 0;
+        let keepIdx: Set<number>;
+        if (labelCount > 0) {
+          const count = Math.min(labelCount, n);
+          const steps = Math.max(count - 1, 1);
+          keepIdx = new Set(Array.from({ length: count }, (_, i) => Math.round((i * (n - 1)) / steps)));
+        } else {
+          keepIdx = n <= 3 ? new Set(axisCategories.map((_, i) => i)) : new Set([
+            Math.round((n - 1) * 2 / 8),
+            Math.round((n - 1) * 4 / 8),
+            Math.round((n - 1) * 6 / 8)
+          ]);
+        }
+        catAxisG.selectAll('.tick').style('display', (_: any, i: number) => keepIdx.has(i) ? null : 'none');
+      }
     }
 
     const showLabelsOn = this.inject.showLabels || this.inject.showLabelsPercent;
@@ -865,6 +883,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
             })
             .style('opacity', animateEntrance ? 0 : 1)
           : null;
+        if (labelSel) applyLabelHalo(labelSel, this.inject.labelBackgroundColor);
 
         // Left-to-right sequence, same as the segments themselves: a label only fades in once its
         // own segment (catDelay(d) above) has finished growing.
@@ -1079,6 +1098,7 @@ export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
               : this.formatCompactBarLabel(d.value, this.percentOfSeries(series, d.catIdx), barOwnWidth))
             .style('opacity', animateEntrance ? 0 : 1)
           : null;
+        if (labelSel) applyLabelHalo(labelSel, this.inject.labelBackgroundColor);
 
         // Left-to-right sequence, same as the bars themselves: a label only fades in once its own
         // bar (catDelay(d) above) has finished growing, rather than every label appearing at once

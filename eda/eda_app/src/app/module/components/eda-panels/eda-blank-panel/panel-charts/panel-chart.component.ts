@@ -754,6 +754,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.edaChart.showLabelsPercent = edaCfg.showLabelsPercent ?? false;
     chartConfig.edaChart.labelColorMode = edaCfg.labelColorMode ?? 'series';
     chartConfig.edaChart.labelCustomColor = edaCfg.labelCustomColor;
+    chartConfig.edaChart.showXAxis = edaCfg.showXAxis ?? true;
+    chartConfig.edaChart.showXAxisLabels = edaCfg.showXAxisLabels ?? true;
+    chartConfig.edaChart.xAxisLabelCount = edaCfg.xAxisLabelCount || 0;
+    chartConfig.edaChart.labelBackgroundColor = edaCfg.labelBackgroundColor || '';
+    chartConfig.edaChart.lineWidth = edaCfg.lineWidth ?? 2;
+    chartConfig.edaChart.lineStyle = edaCfg.lineStyle || 'solid';
+    chartConfig.edaChart.chartLineColor = edaCfg.chartLineColor || '';
+    chartConfig.edaChart.chartFillColor = edaCfg.chartFillColor || '';
     chartConfig.edaChart.linkedDashboard = this.props.linkedDashboardProps;
     if (supportsTrendCompare) {
         chartConfig.edaChart.showPointLines = edaCfg.showPointLines ?? false;
