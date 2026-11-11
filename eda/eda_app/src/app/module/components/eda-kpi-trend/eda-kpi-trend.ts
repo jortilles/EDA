@@ -19,6 +19,7 @@ export class EdaKpiTrend {
     decimals: number = 0;
     backgroundColor: string = '';
     kpiColor: string = '';
+    prefixImage: string = '';
     currentYearColor: string = '';
     previousYearColor: string = '';
     // Dropdown / recalculation data

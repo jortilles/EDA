@@ -1034,6 +1034,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.periodTitle = this._periodTitle(dateFormat);
         chartConfig.comparisonLabel = compLabel;
         chartConfig.decimals = decimals;
+        chartConfig.prefixImage = cfg?.prefixImage || '';
 
         // --- Style config – same pattern as renderEdaKpiChart ---
         const propsConfig: any = this.props.config;

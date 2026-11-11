@@ -59,8 +59,11 @@
           {{ displayPeriodTitle }}
         </div>
         <div class="font-bold" [ngStyle]="getValueStyle()"
-             style="line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-          {{ formatValue(displayKpiValue) }}{{ displaySufix }}
+             style="line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:4px;">
+          @if (inject?.prefixImage) {
+            <img [src]="inject.prefixImage" alt="" style="height:1em;width:auto;object-fit:contain;flex-shrink:0;" />
+          }
+          <span>{{ formatValue(displayKpiValue) }}{{ displaySufix }}</span>
         </div>
       </div>
 
