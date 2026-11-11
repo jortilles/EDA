@@ -19,6 +19,7 @@ import { ButtonModule } from "primeng/button";
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { AutoCompleteModule } from "primeng/autocomplete";
+import { SHOW_EMPTY_VALUE_IN_FILTERS } from '@eda/configs/customizable/customizable_default';
 
 const ANGULAR_MODULES = [
     CommonModule,
@@ -430,7 +431,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             if (Array.isArray(response) && response.length > 1) {
                 const data = response[1];
                 this.totalValues = data;
-                this.columnValues = data.filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
+                this.columnValues = data.filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
+
+                // If I have empty values I replace them with the empty string text — equivalent to IS NULL OR EMPTY
+                if (SHOW_EMPTY_VALUE_IN_FILTERS && data.filter(item => item[0]?.toString() === '').length > 0) {
+                    this.columnValues.unshift({ label: $localize`:@@emptyStringTxt:Vacío`, value: 'emptyString' });
+                }
             }
         } catch (err) {
             this.alertService.addError(err)
@@ -794,8 +800,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             }
         }
         if(this.isMandatory){
-            valid = this.globalFilter.selectedItems.length > 0;  
-            this.isMandatoryError = !valid;      
+            // Date operators that filter on the field being (not) empty do not need a value
+            const noValueDateTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+            valid = noValueDateTypes.includes(this.globalFilter.dateFilterType) || this.globalFilter.selectedItems.length > 0;
+            this.isMandatoryError = !valid;
         }
 
         return valid;
@@ -1098,6 +1106,9 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
     }
 
     public disableApply(): boolean {
+        // Date operators that filter on the field being (not) empty do not need a value
+        const noValueDateTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+        if (noValueDateTypes.includes(this.globalFilter?.dateFilterType)) return false;
         return this.isMandatory && this.globalFilter.selectedItems.length < 1;
     }
 

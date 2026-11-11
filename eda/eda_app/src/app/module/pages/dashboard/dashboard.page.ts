@@ -1357,6 +1357,12 @@ export class DashboardPage implements OnInit {
       throw new Error('empty_query');
     }
 
+    const mandatoryFilters = this.globalFilter?.checkAllMandatoryFilters();
+    if (mandatoryFilters && !mandatoryFilters.value) {
+      this.alertService.addError($localize`:@@AddMandatoryFilters:Los siguientes filtros son obligatorios y no tienen valor asignado:` + mandatoryFilters.items);
+      return;
+    }
+
     this.triggerTimer();
     const body = {
       config: {

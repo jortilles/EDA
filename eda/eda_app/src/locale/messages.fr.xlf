@@ -4459,6 +4459,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Este panel no está disponible: falta asignar un valor a un filtro obligatorio</source>
         <target>Ce panneau n'est pas disponible : il manque une valeur pour un filtre obligatoire</target>
       </trans-unit>
+      <trans-unit id="emptyStringTxt">
+        <source>Vacío</source>
+        <target>Vide</target>
+      </trans-unit>
       <trans-unit id="aplicarBtn">
         <source>Aplicar</source>
         <target>Appliquer</target>

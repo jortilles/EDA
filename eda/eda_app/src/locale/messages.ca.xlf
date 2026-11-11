@@ -4523,6 +4523,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Este panel no está disponible: falta asignar un valor a un filtro obligatorio</source>
         <target>Aquest panell no està disponible: falta assignar un valor a un filtre obligatori</target>
       </trans-unit>
+      <trans-unit id="emptyStringTxt">
+        <source>Vacío</source>
+        <target>Buit</target>
+      </trans-unit>
       <trans-unit id="aplicarBtn">
         <source>Aplicar</source>
         <target>Aplicar</target>

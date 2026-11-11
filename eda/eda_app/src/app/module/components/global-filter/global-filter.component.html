@@ -111,7 +111,7 @@
                     @for (item of filter.selectedItems; track item) {
                       <div class="filter-tooltip-container bg-[white] px-4 py-2 rounded flex items-center mr-1">
                         <span class="customMultiselect filters-size filter-tooltip-text">
-                          {{ item }}
+                          {{ getFilterItemLabel(filter, item) }}
                           @if(filter.visible !== "readOnly" || isAdmin) {
                             <button type="button" class="pi pi-times-circle filter-tooltip-button"
                                 (click)="removeFilterItem(filter, item)">
@@ -159,7 +159,7 @@
                           @for (item of filter.selectedItems; track item) {
                             <div class="filter-tooltip-container bg-[white]  px-4 py-2 rounded flex items-center mr-1">
                                 <span class="customMultiselect filters-size filter-tooltip-text">
-                                    {{ item }}
+                                    {{ getFilterItemLabel(filter, item) }}
                                         @if(filter.visible !== "readOnly" || isAdmin) {
                                           <button type="button" class=" pi pi-times-circle filter-tooltip-button"
                                               (click)="removeFilterItem(filter, item)">

@@ -2703,6 +2703,29 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     }
 
     const filters = myQuery.filters;
+    // Global filter's "Vacío" option (SHOW_EMPTY_VALUE_IN_FILTERS) sends a literal 'emptyString'
+    // sentinel among the selected values - turn it into a real null_or_empty filter, same as the
+    // null-handling below does for 'null'/'1900-01-01'.
+    filters.forEach(a => {
+      a.filter_elements.forEach(b => {
+        if (b.value1) {
+          if (b.value1.includes('emptyString') && b.value1.length == 1) {
+            // Only value selected: the whole filter becomes a null-or-empty check.
+            a.filter_type = 'null_or_empty';
+          } else if (b.value1.includes('emptyString') && b.value1.length > 1) {
+            // Combined with other values: split into its own filter, same pattern as the
+            // null-handling below.
+            const emptyFilter = JSON.parse(JSON.stringify(a));
+            emptyFilter.filter_id = 'is_null';
+            emptyFilter.filter_type = 'null_or_empty';
+            emptyFilter.source_filter_id = a.filter_id;
+            emptyFilter.filter_elements = [{ value1: ['null'] }];
+            b.value1 = b.value1.filter(c => c != 'emptyString');
+            filters.push(emptyFilter);
+          }
+        }
+      });
+    });
     filters.forEach(a => {
       a.filter_elements.forEach(b => {
         if (b.value1) {

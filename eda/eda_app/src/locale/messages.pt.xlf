@@ -1516,6 +1516,10 @@
         <source>Este panel no está disponible: falta asignar un valor a un filtro obligatorio</source>
         <target>Este painel não está disponível: falta atribuir um valor a um filtro obrigatório</target>
       </trans-unit>
+      <trans-unit id="emptyStringTxt" datatype="html">
+        <source>Vacío</source>
+        <target>Vazio</target>
+      </trans-unit>
       <trans-unit id="histoGramRangesTxt" datatype="html">
         <source>Rango</source>
         <target>Intervalo</target>

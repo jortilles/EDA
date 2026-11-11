@@ -3927,6 +3927,10 @@ Co widzę?
     <source>Este panel no está disponible: falta asignar un valor a un filtro obligatorio</source>
     <target>Ten panel jest niedostępny: brakuje wartości dla obowiązkowego filtra</target>
   </trans-unit>
+  <trans-unit id="emptyStringTxt">
+    <source>Vacío</source>
+    <target>Puste</target>
+  </trans-unit>
 
 
 

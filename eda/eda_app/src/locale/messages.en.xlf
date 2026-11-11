@@ -4215,6 +4215,10 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>Este panel no está disponible: falta asignar un valor a un filtro obligatorio</source>
 <target>This panel is not available: a mandatory filter is missing a value</target>
 </trans-unit>
+<trans-unit id="emptyStringTxt">
+<source>Vacío</source>
+<target>Empty</target>
+</trans-unit>
 <trans-unit id="disenoTablaCruzada">
 <source>Diseño de la tabla cruzada: </source>
 <target>Crosstab design: </target>

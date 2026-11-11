@@ -1,5 +1,6 @@
 import { EdaQueryParams, QueryBuilderService } from '../query-builder.service';
 import * as _ from 'lodash';
+const eda_api_config = require('../../../../config/eda_api_config');
 
 
 
@@ -302,6 +303,11 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     //HAVING
     myQuery += this.getHavingFilters(havingFilters);
+
+    /** Always offer an empty/null row in the selector values */
+    if (forSelector === true && eda_api_config.custom_behaviour.SHOW_EMPTY_VALUE_IN_FILTERS) {
+      myQuery += `\nUNION\nSELECT ${columns.map(() => `''`).join(', ')} `;
+    }
 
     // OrderBy
     let orderColumns: string[];
