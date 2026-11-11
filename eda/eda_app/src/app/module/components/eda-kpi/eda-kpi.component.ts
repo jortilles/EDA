@@ -71,16 +71,13 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
 
     /** Recalculates the font size whenever the panel itself resizes (drag, zoom, layout change...). */
     private observeContainerResize(): void {
-        const realContainer: HTMLElement | undefined = this.kpiContainer?.nativeElement
-            ?.parentElement
-            ?.parentElement
-            ?.parentElement;
-        if (!realContainer || typeof ResizeObserver === 'undefined') return;
+        const container: HTMLElement | undefined = this.kpiContainer?.nativeElement;
+        if (!container || typeof ResizeObserver === 'undefined') return;
         this.resizeObserver = new ResizeObserver(() => {
             this.initDimensions();
             this.cdr.detectChanges();
         });
-        this.resizeObserver.observe(realContainer);
+        this.resizeObserver.observe(container);
     }
 
     ngOnInit() {
@@ -115,11 +112,10 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public initDimensions() {
         if (this.kpiContainer) {
-            // Move up three levels from the original container
-            const realContainer = this.kpiContainer.nativeElement
-                ?.parentElement
-                ?.parentElement
-                ?.parentElement;
+            // #kpiContainer is itself `absolute inset-0` (or, with an embedded chart, `height: 30%`
+            // of that), so its own rendered box already *is* the exact space available to the
+            // value/suffix/image - no need to climb to an ancestor to find it.
+            const realContainer = this.kpiContainer.nativeElement;
 
             const widthKpiContainer = realContainer.offsetWidth;
             const heightKpiContainer = realContainer.offsetHeight;
@@ -241,10 +237,10 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const hasImage = !!this.inject.prefixImage;
         const availableWidth = this.containerWidth * (hasImage ? 1 - this.imageWidthShare : 1);
-        // When there's a chart below, the value only occupies the top 30% of the panel's height
-        // (see the template's `height: 30%` on #kpiContainer) — initDimensions() measures the full
-        // panel, so that share has to be applied here too.
-        const availableHeight = this.containerHeight * (this.inject.showChart ? 0.3 : 1);
+        // containerHeight already IS just the value's own share of the panel (see
+        // initDimensions(): #kpiContainer itself is only 30% tall when there's a chart below),
+        // no extra adjustment needed here.
+        const availableHeight = this.containerHeight;
 
         let resultSize = this.computeFitSize(availableWidth, availableHeight, this.getDisplayText());
 
