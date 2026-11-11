@@ -110,6 +110,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public TOO_MANY_DATA: boolean = false;
     /** TOO_MANY_DATA was caused by a cross table with too many generated columns (shows its own message) */
     public TOO_MANY_CROSSTABLE_COLUMNS: boolean = false;
+    /** The panel's query was blocked because a mandatory global filter has no value (see dashboard.controller.ts's isMandatoryFilterMissing). */
+    public MANDATORY_FILTER_MISSING: boolean = false;
 
     /**Styles */
     public fontColor: string;
@@ -161,6 +163,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.NO_DATA = false;
         this.NO_DATA_ALLOWED = false;
         this.NO_FILTER_ALLOWED = false;
+        this.MANDATORY_FILTER_MISSING = false;
     }
 
     ngAfterContentInit(): void {
@@ -197,10 +200,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     this.NO_DATA = false;
                     this.NO_DATA_ALLOWED = true;
                     this.NO_FILTER_ALLOWED = false;
+                    this.MANDATORY_FILTER_MISSING = false;
                 }else if( this.props.data?.labels[0]== "noFilterAllowed") {
                     this.NO_DATA = false;
                     this.NO_DATA_ALLOWED = false;
                     this.NO_FILTER_ALLOWED = true;
+                    this.MANDATORY_FILTER_MISSING = false;
+                }else if( this.props.data?.labels[0]== "mandatoryFilterMissing") {
+                    this.NO_DATA = false;
+                    this.NO_DATA_ALLOWED = false;
+                    this.NO_FILTER_ALLOWED = false;
+                    this.MANDATORY_FILTER_MISSING = true;
                 }
                 this.cdr.markForCheck();
             })

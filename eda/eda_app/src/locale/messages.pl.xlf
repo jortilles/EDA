@@ -3923,6 +3923,10 @@ Co widzę?
     <source>Este panel no está disponible por falta de permisos en un filtro</source>
     <target>Ten panel jest niedostępny ze względu na brak uprawnień do filtra</target>
   </trans-unit>
+  <trans-unit id="mandatoryFilterMissing">
+    <source>Este panel no está disponible: falta asignar un valor a un filtro obligatorio</source>
+    <target>Ten panel jest niedostępny: brakuje wartości dla obowiązkowego filtra</target>
+  </trans-unit>
 
 
 

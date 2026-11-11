@@ -44,3 +44,13 @@
     </div>
   </ng-container>
 }
+
+@if(MANDATORY_FILTER_MISSING){
+  <ng-container>
+    <div class="h-full w-full flex items-center justify-center">
+      <p class="no-permission-alert text-center mb-0">
+        <span i18n="@@mandatoryFilterMissing" class="ml-2">Este panel no está disponible: falta asignar un valor a un filtro obligatorio</span>
+      </p>
+    </div>
+  </ng-container>
+}

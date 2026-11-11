@@ -1512,6 +1512,10 @@
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>Dieses Panel ist aufgrund fehlender Berechtigungen für einen Filter nicht verfügbar</target>
       </trans-unit>
+      <trans-unit id="mandatoryFilterMissing" datatype="html">
+        <source>Este panel no está disponible: falta asignar un valor a un filtro obligatorio</source>
+        <target>Dieses Panel ist nicht verfügbar: Für einen Pflichtfilter fehlt ein Wert</target>
+      </trans-unit>
       <trans-unit id="histoGramRangesTxt" datatype="html">
         <source>Rango</source>
         <target>Bereich</target>

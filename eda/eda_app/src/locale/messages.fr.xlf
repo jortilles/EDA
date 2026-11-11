@@ -4455,6 +4455,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>Ce panneau est indisponible en raison d'autorisations insuffisantes sur un filtre</target>
       </trans-unit>
+      <trans-unit id="mandatoryFilterMissing">
+        <source>Este panel no está disponible: falta asignar un valor a un filtro obligatorio</source>
+        <target>Ce panneau n'est pas disponible : il manque une valeur pour un filtre obligatoire</target>
+      </trans-unit>
       <trans-unit id="aplicarBtn">
         <source>Aplicar</source>
         <target>Appliquer</target>

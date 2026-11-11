@@ -1469,6 +1469,19 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         }
       }
       const { query, myQuery, mylabels } = edaQueryResult;
+
+      if (!myQuery.forSelector) {
+        const mandatoryFilterMissing = await DashboardController.isMandatoryFilterMissing(
+          req.body.dashboard?.dashboard_id,
+          req.body.dashboard?.panel_id,
+          myQuery.filters
+        );
+        if (mandatoryFilterMissing) {
+          console.log('a mandatory global filter has no value, query blocked');
+          return res.status(200).json([['mandatoryFilterMissing'], [[]]]);
+        }
+      }
+
       builtQuery = query;
 
       /**---------------------------------------------------------------------------------------------------------*/
@@ -1842,6 +1855,18 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       if (notAllowedQuery) {
         console.log('Not allowed table in query')
         return res.status(200).json("[['noDataAllowed'],[]]")
+      }
+
+      if (!req.body.query?.forSelector) {
+        const mandatoryFilterMissing = await DashboardController.isMandatoryFilterMissing(
+          req.body.dashboard?.dashboard_id,
+          req.body.dashboard?.panel_id,
+          req.body.query?.filters
+        );
+        if (mandatoryFilterMissing) {
+          console.log('a mandatory global filter has no value, query blocked')
+          return res.status(200).json("[['mandatoryFilterMissing'],[]]")
+        }
       }
 
       const query = connection.BuildSqlQuery(
@@ -2811,6 +2836,38 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
   private static canManagePublicDashboards(req: Request): boolean {
     const isAdmin = req.user.role.includes('135792467811111111111110');
     return isAdmin || !!eda_api_config.custom_behaviour?.ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS;
+  }
+
+  /**
+   * A global filter marked as mandatory (config.filters[].isMandatory, set from the Global Filter
+   * dialog) must always have a value for the panels it applies to. The client already strips empty
+   * filters out of the filters array before sending a query, so if a mandatory filter's id isn't
+   * present here (or carries no value), it means the user removed it — whether by clearing the chip,
+   * a dependent-filter cascade emptying it, or editing the URL of a public report — and the query
+   * must be refused rather than silently run unfiltered. Not used for forSelector queries: those are
+   * what populate the filter's own value list / dependent filter options, so they must run even
+   * while the filter has no value yet.
+   */
+  private static async isMandatoryFilterMissing(dashboardId: string, panelId: string, filters: any[]): Promise<boolean> {
+    if (!dashboardId) return false;
+
+    const dashboard = await Dashboard.findById(dashboardId, 'config.filters').exec();
+    const definedFilters: any[] = (dashboard as any)?.config?.filters || [];
+
+    const mandatoryFilters = definedFilters.filter((f: any) =>
+      f.isMandatory === true && (!panelId || (f.panelList || []).includes(panelId))
+    );
+
+    if (mandatoryFilters.length === 0) return false;
+
+    const noValueDateTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+
+    return mandatoryFilters.some((mf: any) => {
+      const applied = (filters || []).find((f: any) => f.filter_id === mf.id);
+      if (!applied) return true;
+      if (noValueDateTypes.includes(applied.filter_type)) return false;
+      return !(applied.filter_elements || []).some((el: any) => el.value1?.length > 0 || el.value2?.length > 0);
+    });
   }
 
   /**
