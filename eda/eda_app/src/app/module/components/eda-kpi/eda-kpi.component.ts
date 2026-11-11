@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, HostBinding } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, HostBinding } from '@angular/core';
 import { StyleProviderService } from '@eda/services/service.index';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
@@ -18,9 +18,11 @@ import { PipesModule } from '@eda/pipes/pipes.module';
     imports: [FormsModule, CommonModule, EdaBarD3Component, EdaLineComponent, EdaAreaComponent, PipesModule]
 })
 
-export class EdaKpiComponent implements OnInit, AfterViewInit {
+export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() inject: EdaKpi;
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
+    // Re-emits the click of the embedded bar/line/area chart
+    @Output() onClick: EventEmitter<any> = new EventEmitter();
 
     @HostBinding('style.display') readonly hostDisplay = 'block';
     @HostBinding('style.position') readonly hostPosition = 'relative';
@@ -42,13 +44,33 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
     containerWidth: number = 20;
     baseResultSize: number = 0;
     showChart: boolean = true;
+    private resizeObserver?: ResizeObserver;
 
     constructor(private styleProviderService : StyleProviderService, private cdr: ChangeDetectorRef) { }
 
     ngAfterViewInit() {
         this.initDimensions();
         this.baseResultSize = this.computeBaseSize();
+        this.observeContainerResize();
         this.cdr.detectChanges();
+    }
+
+    ngOnDestroy() {
+        this.resizeObserver?.disconnect();
+    }
+
+    /** Recalculates the font size whenever the panel itself resizes (drag, zoom, layout change...). */
+    private observeContainerResize(): void {
+        const realContainer: HTMLElement | undefined = this.kpiContainer?.nativeElement
+            ?.parentElement
+            ?.parentElement
+            ?.parentElement;
+        if (!realContainer || typeof ResizeObserver === 'undefined') return;
+        this.resizeObserver = new ResizeObserver(() => {
+            this.initDimensions();
+            this.cdr.detectChanges();
+        });
+        this.resizeObserver.observe(realContainer);
     }
 
     ngOnInit() {

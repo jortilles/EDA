@@ -266,4 +266,4 @@ export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService regist
     information: 'global',
     logout: 'logout',
 };
-export const ENABLED_LANGUAGES: string[] = ['es', 'ca', 'de', 'en', 'fr', 'pl', 'pt']; // Locale codes shown in the language selector (EDA's 7 locales, all enabled by default). Each one must have a matching build in angular.json's i18n.locales (or be the sourceLocale) — this flag only controls what's offered in the UI, it doesn't build/remove locales.
+export const ENABLED_LANGUAGES: string[] = ['es', 'ca', 'de', 'en', 'fr', 'it', 'pl', 'pt']; // Locale codes shown in the language selector (EDA's 8 locales, all enabled by default). Each one must have a matching build in angular.json's i18n.locales (or be the sourceLocale) — this flag only controls what's offered in the UI, it doesn't build/remove locales.

@@ -2269,7 +2269,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
   }
 
   static resolveDbErrorLangFromRequest(req: Request): string {
-    const supportedLangs = ['es', 'ca', 'en', 'fr', 'pl', 'gl', 'de', 'pt'];
+    const supportedLangs = ['es', 'ca', 'en', 'fr', 'pl', 'gl', 'de', 'pt', 'it'];
     const queryLang = (req?.query as any)?.lang;
     const paramLang = (req?.params as any)?.lang;
     const bodyLang = (req?.body as any)?.lang;
@@ -2355,7 +2355,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     let isNotNumeric = false;
     try {
       if (
-        isNaN(val) || val.toString().indexOf('-') >= 0 || val.toString().indexOf('/') >= 0 ||
+        isNaN(val) || val.toString().indexOf('-') > 0 || val.toString().indexOf('/') >= 0 ||
         val.toString().indexOf('|') >= 0 || val.toString().indexOf(':') >= 0 || val.toString().indexOf('T') >= 0 ||
         val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0 || val.toString().replace(/['"]+/g, '').length == 0) {
         isNotNumeric = true;

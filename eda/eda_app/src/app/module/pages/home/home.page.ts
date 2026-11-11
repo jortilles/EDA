@@ -248,9 +248,7 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.tags.unshift({ label: $localize`:@@NoTag:Sin Etiqueta`, value: $localize`:@@NoTag:Sin Etiqueta`, });
     this.tags.push({ label: this.allTagsFlatLabel, value: this.allTagsFlatValue });
-    if (this.allDashboards.length >= 20) {
-      this.tags.push({ label: this.allTagsGroupedLabel, value: this.allTagsValue });
-    }
+    this.tags.push({ label: this.allTagsGroupedLabel, value: this.allTagsValue });
     this.reapplyFilters();
   }
 
@@ -500,6 +498,17 @@ export class HomePage implements OnInit, OnDestroy {
   private async handleReportDroppedOnColumn(report: any, fromColKey: string, fromTag: string | null, toColKey: string): Promise<void> {
     if (fromColKey === toColKey) return; // dropped back where it already was
 
+    const confirmed = await Swal.fire({
+      title: $localize`:@@moveReportConfirmTitle:¿Mover informe?`,
+      text: `"${report.config.title}" → ${this.columnTitle(toColKey)}`,
+      icon: 'question',
+      showCancelButton: true,
+      reverseButtons: true,
+      confirmButtonText: $localize`:@@confirmBtn:Confirmar`,
+      cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
+    });
+    if (!confirmed.value) return;
+
     let newGroupIds: string[] | null = null;
     if (toColKey === 'group') {
       newGroupIds = await this.pickGroupForAssignment();
@@ -524,6 +533,18 @@ export class HomePage implements OnInit, OnDestroy {
   private async handleReportDroppedOnFolder(report: any, fromColKey: string, fromTag: string | null, toColKey: string, toTag: string): Promise<void> {
     const sameColumn = fromColKey === toColKey;
     if (sameColumn && fromTag === toTag) return; // dropped back into the same folder
+
+    const destination = sameColumn ? `"${toTag}"` : `"${toTag}" (${this.columnTitle(toColKey)})`;
+    const confirmed = await Swal.fire({
+      title: $localize`:@@moveReportConfirmTitle:¿Mover informe?`,
+      text: `"${report.config.title}" → ${destination}`,
+      icon: 'question',
+      showCancelButton: true,
+      reverseButtons: true,
+      confirmButtonText: $localize`:@@confirmBtn:Confirmar`,
+      cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
+    });
+    if (!confirmed.value) return;
 
     let newGroupIds: string[] | null = null;
     if (!sameColumn && toColKey === 'group') {

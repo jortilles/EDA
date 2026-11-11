@@ -1,16 +1,17 @@
-import { Component, Input, OnInit, OnDestroy, inject, LOCALE_ID } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DataSourceService, SpinnerService, AlertService } from '@eda/services/service.index';
-import { PluginFormService } from '../plugin-form.service';
+import { PluginFormService, sanitizeDuckdbFolderName, currentAppLocale } from '../plugin-form.service';
 
 @Component({
     standalone: true,
     selector: 'eda-holded-form',
     templateUrl: './holded-form.component.html',
-    imports: [CommonModule, FormsModule, ReactiveFormsModule],
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, TooltipModule],
 })
 export class HoldedFormComponent implements OnInit, OnDestroy {
     @Input() connectionForm!: FormGroup;
@@ -21,7 +22,6 @@ export class HoldedFormComponent implements OnInit, OnDestroy {
     private alertService      = inject(AlertService);
     private router            = inject(Router);
     private pluginFormService = inject(PluginFormService);
-    private localeId          = inject(LOCALE_ID);
 
     public showPassword = false;
     private saveSub!: Subscription;
@@ -54,16 +54,22 @@ export class HoldedFormComponent implements OnInit, OnDestroy {
             return;
         }
 
+        const folderName = sanitizeDuckdbFolderName(value.database);
+        if (await this.pluginFormService.duckdbFolderExists(this.dataSourceService, folderName)) {
+            this.alertService.addError(this.pluginFormService.folderExistsMessage(folderName));
+            return;
+        }
+
         this.spinnerService.on();
         try {
             const payload = {
                 name: value.name,
                 description: value.description || '',
-                folderName: value.database,
+                folderName,
                 apiKey: value.password,
                 optimize: value.optimize ? 1 : 0,
                 allowCache: value.allowCache ? 1 : 0,
-                locale: this.localeId,
+                locale: currentAppLocale(),
             };
 
             const res = await lastValueFrom(this.dataSourceService.callPluginPost(this.apiBasePath, '/add-data-source', payload));
@@ -72,7 +78,9 @@ export class HoldedFormComponent implements OnInit, OnDestroy {
             this.router.navigate(['/data-source/', res.data_source_id]);
         } catch (err) {
             this.spinnerService.off();
-            this.alertService.addError(err);
+            this.alertService.addError(this.pluginFormService.isFolderExistsError(err)
+                ? this.pluginFormService.folderExistsMessage(folderName)
+                : err);
         }
     }
 }

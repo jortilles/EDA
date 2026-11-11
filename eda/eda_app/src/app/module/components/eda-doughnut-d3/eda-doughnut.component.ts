@@ -433,18 +433,18 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
     this.currentIconsContainer = iconG;
     const iconMap = buildIconMap(this.inject.assignedIcons, this.inject.useIcons);
     const ringThickness = outerRadius - innerRadius;
-    const midRadius = (innerRadius + outerRadius) / 2;
     renderCategoryIcons<any>({
       group: iconG,
       data: iconMap.size ? arcs : [],
       key: (d: any) => String(d.data.label),
       x: (d: any) => arcGen.centroid(d)[0],
       y: (d: any) => arcGen.centroid(d)[1],
-      size: (d: any) => arcIconSize(d.startAngle, d.endAngle, midRadius, ringThickness),
+      size: (d: any) => arcIconSize(d.startAngle, d.endAngle, innerRadius, ringThickness),
       href: (d: any) => resolveIconHref(iconMap.get(String(d.data.label)) || '', this.fileUtils),
       // Icons pop in only once the 2000ms radial sweep entrance (above) has finished, instead of
       // sitting there fully visible while the ring is still sweeping in underneath them.
       entrance: animateEntrance ? { delay: 2000 } : undefined,
+      rounded: true,
     });
   }
 }

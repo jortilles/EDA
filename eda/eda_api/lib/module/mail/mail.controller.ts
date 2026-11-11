@@ -49,8 +49,8 @@ export class MailController {
       await MailController.verifyAndSend(config, {
         from: senderEmail,
         to: senderEmail,
-        subject: 'EDA - Test de configuración de correo',
-        text: `La configuración de correo de EDA es correcta.\n\nTipo: ${configType}\nHost: ${config.host}:${config.port}\nUsuario: ${senderEmail}`
+        subject: 'Edalitics - Test de configuración de correo',
+        text: `La configuración de correo de Edalitics es correcta.\n\nTipo: ${configType}\nHost: ${config.host}:${config.port}\nUsuario: ${senderEmail}`
       });
       return res.status(200).json({ ok: true });
 
