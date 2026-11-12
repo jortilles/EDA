@@ -8318,6 +8318,130 @@ Salutacions.</target>
   <source>Este nombre ya existe. Escribe un nombre diferente.</source>
   <target>Aquest nom ja existeix. Escriu un nom diferent.</target>
 </trans-unit>
+      <trans-unit id="sendToRemoteTitle" datatype="html">
+        <source>Enviar a otro servidor Edalitics</source>
+        <target>Enviar a un altre servidor Edalitics</target>
+      </trans-unit>
+      <trans-unit id="sendBtn" datatype="html">
+        <source>Enviar</source>
+        <target>Enviar</target>
+      </trans-unit>
+      <trans-unit id="remoteLoginError" datatype="html">
+        <source>No se ha podido iniciar sesión en el servidor remoto</source>
+        <target>No s'ha pogut iniciar sessió al servidor remot</target>
+      </trans-unit>
+      <trans-unit id="remoteModelSent" datatype="html">
+        <source>Modelo enviado correctamente</source>
+        <target>Model enviat correctament</target>
+      </trans-unit>
+      <trans-unit id="remoteDashboardSent" datatype="html">
+        <source>Dashboard enviado correctamente</source>
+        <target>Dashboard enviat correctament</target>
+      </trans-unit>
+      <trans-unit id="remoteSessionExpired" datatype="html">
+        <source>La sesión en el servidor remoto ha caducado. Vuelve a iniciar sesión.</source>
+        <target>La sessió al servidor remot ha caducat. Torna a iniciar sessió.</target>
+      </trans-unit>
+      <trans-unit id="remoteSendError" datatype="html">
+        <source>Ha ocurrido un error al enviar al servidor remoto</source>
+        <target>S'ha produït un error en enviar al servidor remot</target>
+      </trans-unit>
+      <trans-unit id="remoteObjectModel" datatype="html">
+        <source>Modelo de datos</source>
+        <target>Model de dades</target>
+      </trans-unit>
+      <trans-unit id="remotePasswordNotSentWarning" datatype="html">
+        <source>La contraseña de la conexión no se envía nunca. Si es la primera vez que se envía este modelo, deberás establecer la contraseña en el servidor de destino. Si el modelo ya existe en el destino, se sobrescribirá y se conservará la contraseña que tenga allí.</source>
+        <target>La contrasenya de la connexió no s'envia mai. Si és la primera vegada que s'envia aquest model, hauràs d'establir la contrasenya al servidor de destinació. Si el model ja existeix a la destinació, se sobreescriurà i es conservarà la contrasenya que hi tingui.</target>
+      </trans-unit>
+      <trans-unit id="remoteDashboardInfo" datatype="html">
+        <source>El dashboard se envía con el mismo identificador. Si ya existe en el destino, se sobrescribirá. El modelo de datos que utiliza debe existir en el destino con el mismo identificador.</source>
+        <target>El dashboard s'envia amb el mateix identificador. Si ja existeix a la destinació, se sobreescriurà. El model de dades que utilitza ha d'existir a la destinació amb el mateix identificador.</target>
+      </trans-unit>
+      <trans-unit id="remoteLoginInfo" datatype="html">
+        <source>Inicia sesión en el servidor de destino con un usuario administrador.</source>
+        <target>Inicia sessió al servidor de destinació amb un usuari administrador.</target>
+      </trans-unit>
+      <trans-unit id="remoteServerUrl" datatype="html">
+        <source>URL del servidor de destino</source>
+        <target>URL del servidor de destinació</target>
+      </trans-unit>
+      <trans-unit id="remoteEmail" datatype="html">
+        <source>Usuario (email)</source>
+        <target>Usuari (email)</target>
+      </trans-unit>
+      <trans-unit id="remotePassword" datatype="html">
+        <source>Contraseña</source>
+        <target>Contrasenya</target>
+      </trans-unit>
+      <trans-unit id="remoteConnectedTo" datatype="html">
+        <source>Conectado a</source>
+        <target>Connectat a</target>
+      </trans-unit>
+      <trans-unit id="remoteChangeServer" datatype="html">
+        <source>Cambiar servidor</source>
+        <target>Canviar servidor</target>
+      </trans-unit>
+      <trans-unit id="remoteObjectCreated" datatype="html">
+        <source>Se ha creado en el servidor de destino.</source>
+        <target>S'ha creat al servidor de destinació.</target>
+      </trans-unit>
+      <trans-unit id="remoteObjectOverwritten" datatype="html">
+        <source>Ya existía en el servidor de destino y se ha sobrescrito.</source>
+        <target>Ja existia al servidor de destinació i s'ha sobreescrit.</target>
+      </trans-unit>
+      <trans-unit id="remoteSetPasswordReminder" datatype="html">
+        <source>Recuerda establecer la contraseña de la conexión del modelo en el servidor de destino.</source>
+        <target>Recorda establir la contrasenya de la connexió del model al servidor de destinació.</target>
+      </trans-unit>
+      <trans-unit id="remoteDataSourceMissing" datatype="html">
+        <source>El modelo de datos de este dashboard no existe en el servidor de destino. Envía también el modelo de datos.</source>
+        <target>El model de dades d'aquest dashboard no existeix al servidor de destinació. Envia també el model de dades.</target>
+      </trans-unit>
+      <trans-unit id="remoteLoginBtn" datatype="html">
+        <source>Iniciar sesión</source>
+        <target>Iniciar sessió</target>
+      </trans-unit>
+      <trans-unit id="transferUsersRemapped" datatype="html">
+        <source>Usuarios asociados por email o nombre:</source>
+        <target>Usuaris associats per email o nom:</target>
+      </trans-unit>
+      <trans-unit id="transferGroupsRemapped" datatype="html">
+        <source>Grupos asociados por nombre:</source>
+        <target>Grups associats per nom:</target>
+      </trans-unit>
+      <trans-unit id="transferUsersUnresolvedModel" datatype="html">
+        <source>Usuarios no encontrados. Se conserva el permiso original para no abrir datos; revisa los permisos del modelo:</source>
+        <target>Usuaris no trobats. Es conserva el permís original per no obrir dades; revisa els permisos del model:</target>
+      </trans-unit>
+      <trans-unit id="transferGroupsUnresolvedModel" datatype="html">
+        <source>Grupos no encontrados. Se conserva el permiso original para no abrir datos; revisa los permisos del modelo:</source>
+        <target>Grups no trobats. Es conserva el permís original per no obrir dades; revisa els permisos del model:</target>
+      </trans-unit>
+      <trans-unit id="transferGroupsUnresolvedDashboard" datatype="html">
+        <source>Grupos no encontrados, se han quitado del dashboard:</source>
+        <target>Grups no trobats, s'han tret del dashboard:</target>
+      </trans-unit>
+      <trans-unit id="transferOwnerNotMatched" datatype="html">
+        <source>El propietario no existe en el destino; el dashboard queda a nombre del usuario que lo importa.</source>
+        <target>El propietari no existeix a la destinació; el dashboard queda a nom de l'usuari que l'importa.</target>
+      </trans-unit>
+      <trans-unit id="importDataSourceMissing" datatype="html">
+        <source>El modelo de datos de este dashboard no existe. Importa también el modelo de datos.</source>
+        <target>El model de dades d'aquest dashboard no existeix. Importa també el model de dades.</target>
+      </trans-unit>
+      <trans-unit id="importSetPasswordReminder" datatype="html">
+        <source>Es un modelo nuevo: la contraseña no se importa, establece la contraseña de la conexión del modelo.</source>
+        <target>És un model nou: la contrasenya no s'importa, estableix la contrasenya de la connexió del model.</target>
+      </trans-unit>
+      <trans-unit id="transferMapsImported" datatype="html">
+        <source>Mapas incluidos:</source>
+        <target>Mapes inclosos:</target>
+      </trans-unit>
+      <trans-unit id="transferMapsMissing" datatype="html">
+        <source>Mapas no disponibles; vuelve a subirlos en el modelo de datos:</source>
+        <target>Mapes no disponibles; torna a pujar-los al model de dades:</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>

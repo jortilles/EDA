@@ -39,6 +39,16 @@ export class DashboardService extends ApiService {
         return this.post(this.route, dashboard);
     }
 
+    /** Dashboard ready to export, labelled with the names of its groups and owner */
+    exportDashboard(id): Observable<any> {
+        return this.get(`${this.route}${id}/export`);
+    }
+
+    /** Imports a dashboard keeping its _id; groups are matched by name and the owner by email */
+    importDashboard(dashboard): Observable<any> {
+        return this.post(`${this.route}import`, dashboard);
+    }
+
     updateDashboard(id, body): Observable<any> {
         return this.put(`${this.route}${id}`, body);
     }

@@ -1,5 +1,6 @@
 import * as  express from 'express';
 import { authGuard } from '../../guards/auth-guard';
+import { roleGuard } from '../../guards/role-guard';
 import { DashboardController } from './dashboard.controller';
 
 const router = express.Router();
@@ -370,6 +371,53 @@ router.post('/view-query', authGuard, DashboardController.execView)
 *        - Dashboard Routes
  */     
 router.put('/:id', authGuard, DashboardController.update);
+
+/**
+ * @openapi
+ * /dashboard/import:
+ *   post:
+ *     description: Imports a dashboard keeping its _id. Groups are matched by name (groupsName) and the owner by email (userEmail).
+ *     parameters:
+ *     - in: query
+ *       name: token
+ *       required: true
+ *       description: authorization token
+ *     - in: body
+ *       name: dashboard
+ *       description: dashboard as returned by GET /dashboard/{id}/export
+ *     responses:
+ *       200:
+ *         description: Existing dashboard overwritten. Returns the users / groups report.
+ *       201:
+ *         description: Dashboard created with the given _id. Returns the users / groups report.
+ *       400:
+ *         description: Missing config or invalid _id
+ *       403:
+ *         description: Admin or datasource creator role required
+ *     tags:
+ *       - Dashboard Routes
+ */
+router.post('/import', authGuard, roleGuard, DashboardController.importDashboard);
+
+/**
+ * @openapi
+ * /dashboard/{id}/export:
+ *   get:
+ *     description: Returns a dashboard ready to be exported, labelled with the current names of its groups and owner.
+ *     parameters:
+ *     - in: query
+ *       name: token
+ *       required: true
+ *       description: authorization token
+ *     responses:
+ *       200:
+ *         description: Dashboard to export
+ *       404:
+ *         description: Dashboard not found
+ *     tags:
+ *       - Dashboard Routes
+ */
+router.get('/:id/export', authGuard, roleGuard, DashboardController.exportDashboard);
 
 /**
  * @openapi

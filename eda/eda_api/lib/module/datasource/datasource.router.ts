@@ -424,6 +424,51 @@ router.post('/remove-cache', authGuard, roleGuard, DataSourceController.removeCa
  */
 router.put('/:id', authGuard, roleGuard, DataSourceController.UpdateDataSource);
 
+/**
+ * @openapi
+ * /datasource/import:
+ *   post:
+ *     description: Imports a data model keeping its _id. Users are matched by email / name and groups by name. The password is never accepted; an existing model keeps its stored password.
+ *     parameters:
+ *     - in: query
+ *       name: token
+ *       required: true
+ *       description: authorization token
+ *     - in: body
+ *       name: datasource
+ *       description: data model as returned by GET /datasource/{id}/export
+ *     responses:
+ *       200:
+ *         description: Model created or overwritten. Returns whether it was created and the users / groups report.
+ *       400:
+ *         description: Invalid model or _id
+ *       403:
+ *         description: Admin or datasource creator role required
+ *     tags:
+ *       - DataSource Routes
+ */
+router.post('/import', authGuard, roleGuard, DataSourceController.ImportDataSource);
+
+/**
+ * @openapi
+ * /datasource/{id}/export:
+ *   get:
+ *     description: Returns a data model ready to be exported, with the password masked and the permissions labelled with the current user / group names and emails.
+ *     parameters:
+ *     - in: query
+ *       name: token
+ *       required: true
+ *       description: authorization token
+ *     responses:
+ *       200:
+ *         description: Data model to export
+ *       404:
+ *         description: Datasource not found
+ *     tags:
+ *       - DataSource Routes
+ */
+router.get('/:id/export', authGuard, roleGuard, DataSourceController.ExportDataSource);
+
 
 
 /**

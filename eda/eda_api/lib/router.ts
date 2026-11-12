@@ -16,6 +16,7 @@ import AuthRouter from './module/auth/auth.router';
 import CustomHTMLRouter from './module/customHTML/customHTML.router';
 import McpRouter from './module/mcp/mcp.router';
 import MediaRouter from './module/media/media.router';
+import RemoteTransferRouter from './module/remote-transfer/remote-transfer.router';
 import { PluginRegistry } from './plugins';
 
 const router = express.Router();
@@ -51,6 +52,8 @@ router.use('/customHTML', CustomHTMLRouter);
 router.use('/ia', McpRouter);
 
 router.use('/media', MediaRouter);
+
+router.use('/remote-transfer', RemoteTransferRouter);
 
 for (const plugin of PluginRegistry.getAll()) {
     if (plugin.router && plugin.routerPath) {

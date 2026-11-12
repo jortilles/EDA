@@ -8423,6 +8423,130 @@ Pozdrawiam.</target>
   <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
   <target>Model danych dla bazy danych Odoo „<x id="PH" equiv-text="value.database"/>” już istnieje.</target>
 </trans-unit>
+      <trans-unit id="sendToRemoteTitle" datatype="html">
+        <source>Enviar a otro servidor Edalitics</source>
+        <target>Wyślij na inny serwer Edalitics</target>
+      </trans-unit>
+      <trans-unit id="sendBtn" datatype="html">
+        <source>Enviar</source>
+        <target>Wyślij</target>
+      </trans-unit>
+      <trans-unit id="remoteLoginError" datatype="html">
+        <source>No se ha podido iniciar sesión en el servidor remoto</source>
+        <target>Nie udało się zalogować na serwerze zdalnym</target>
+      </trans-unit>
+      <trans-unit id="remoteModelSent" datatype="html">
+        <source>Modelo enviado correctamente</source>
+        <target>Model wysłany pomyślnie</target>
+      </trans-unit>
+      <trans-unit id="remoteDashboardSent" datatype="html">
+        <source>Dashboard enviado correctamente</source>
+        <target>Dashboard wysłany pomyślnie</target>
+      </trans-unit>
+      <trans-unit id="remoteSessionExpired" datatype="html">
+        <source>La sesión en el servidor remoto ha caducado. Vuelve a iniciar sesión.</source>
+        <target>Sesja na serwerze zdalnym wygasła. Zaloguj się ponownie.</target>
+      </trans-unit>
+      <trans-unit id="remoteSendError" datatype="html">
+        <source>Ha ocurrido un error al enviar al servidor remoto</source>
+        <target>Wystąpił błąd podczas wysyłania na serwer zdalny</target>
+      </trans-unit>
+      <trans-unit id="remoteObjectModel" datatype="html">
+        <source>Modelo de datos</source>
+        <target>Model danych</target>
+      </trans-unit>
+      <trans-unit id="remotePasswordNotSentWarning" datatype="html">
+        <source>La contraseña de la conexión no se envía nunca. Si es la primera vez que se envía este modelo, deberás establecer la contraseña en el servidor de destino. Si el modelo ya existe en el destino, se sobrescribirá y se conservará la contraseña que tenga allí.</source>
+        <target>Hasło połączenia nigdy nie jest wysyłane. Jeśli ten model jest wysyłany po raz pierwszy, musisz ustawić hasło na serwerze docelowym. Jeśli model już istnieje na serwerze docelowym, zostanie nadpisany, a zapisane tam hasło zostanie zachowane.</target>
+      </trans-unit>
+      <trans-unit id="remoteDashboardInfo" datatype="html">
+        <source>El dashboard se envía con el mismo identificador. Si ya existe en el destino, se sobrescribirá. El modelo de datos que utiliza debe existir en el destino con el mismo identificador.</source>
+        <target>Dashboard jest wysyłany z tym samym identyfikatorem. Jeśli już istnieje na serwerze docelowym, zostanie nadpisany. Używany przez niego model danych musi istnieć na serwerze docelowym z tym samym identyfikatorem.</target>
+      </trans-unit>
+      <trans-unit id="remoteLoginInfo" datatype="html">
+        <source>Inicia sesión en el servidor de destino con un usuario administrador.</source>
+        <target>Zaloguj się na serwerze docelowym jako administrator.</target>
+      </trans-unit>
+      <trans-unit id="remoteServerUrl" datatype="html">
+        <source>URL del servidor de destino</source>
+        <target>URL serwera docelowego</target>
+      </trans-unit>
+      <trans-unit id="remoteEmail" datatype="html">
+        <source>Usuario (email)</source>
+        <target>Użytkownik (email)</target>
+      </trans-unit>
+      <trans-unit id="remotePassword" datatype="html">
+        <source>Contraseña</source>
+        <target>Hasło</target>
+      </trans-unit>
+      <trans-unit id="remoteConnectedTo" datatype="html">
+        <source>Conectado a</source>
+        <target>Połączono z</target>
+      </trans-unit>
+      <trans-unit id="remoteChangeServer" datatype="html">
+        <source>Cambiar servidor</source>
+        <target>Zmień serwer</target>
+      </trans-unit>
+      <trans-unit id="remoteObjectCreated" datatype="html">
+        <source>Se ha creado en el servidor de destino.</source>
+        <target>Został utworzony na serwerze docelowym.</target>
+      </trans-unit>
+      <trans-unit id="remoteObjectOverwritten" datatype="html">
+        <source>Ya existía en el servidor de destino y se ha sobrescrito.</source>
+        <target>Już istniał na serwerze docelowym i został nadpisany.</target>
+      </trans-unit>
+      <trans-unit id="remoteSetPasswordReminder" datatype="html">
+        <source>Recuerda establecer la contraseña de la conexión del modelo en el servidor de destino.</source>
+        <target>Pamiętaj, aby ustawić hasło połączenia modelu na serwerze docelowym.</target>
+      </trans-unit>
+      <trans-unit id="remoteDataSourceMissing" datatype="html">
+        <source>El modelo de datos de este dashboard no existe en el servidor de destino. Envía también el modelo de datos.</source>
+        <target>Model danych tego dashboardu nie istnieje na serwerze docelowym. Wyślij również model danych.</target>
+      </trans-unit>
+      <trans-unit id="remoteLoginBtn" datatype="html">
+        <source>Iniciar sesión</source>
+        <target>Zaloguj się</target>
+      </trans-unit>
+      <trans-unit id="transferUsersRemapped" datatype="html">
+        <source>Usuarios asociados por email o nombre:</source>
+        <target>Użytkownicy dopasowani po emailu lub nazwie:</target>
+      </trans-unit>
+      <trans-unit id="transferGroupsRemapped" datatype="html">
+        <source>Grupos asociados por nombre:</source>
+        <target>Grupy dopasowane po nazwie:</target>
+      </trans-unit>
+      <trans-unit id="transferUsersUnresolvedModel" datatype="html">
+        <source>Usuarios no encontrados. Se conserva el permiso original para no abrir datos; revisa los permisos del modelo:</source>
+        <target>Nie znaleziono użytkowników. Zachowano oryginalne uprawnienie, aby nie udostępnić danych; sprawdź uprawnienia modelu:</target>
+      </trans-unit>
+      <trans-unit id="transferGroupsUnresolvedModel" datatype="html">
+        <source>Grupos no encontrados. Se conserva el permiso original para no abrir datos; revisa los permisos del modelo:</source>
+        <target>Nie znaleziono grup. Zachowano oryginalne uprawnienie, aby nie udostępnić danych; sprawdź uprawnienia modelu:</target>
+      </trans-unit>
+      <trans-unit id="transferGroupsUnresolvedDashboard" datatype="html">
+        <source>Grupos no encontrados, se han quitado del dashboard:</source>
+        <target>Nie znaleziono grup, zostały usunięte z dashboardu:</target>
+      </trans-unit>
+      <trans-unit id="transferOwnerNotMatched" datatype="html">
+        <source>El propietario no existe en el destino; el dashboard queda a nombre del usuario que lo importa.</source>
+        <target>Właściciel nie istnieje na serwerze docelowym; dashboard należy teraz do użytkownika, który go importuje.</target>
+      </trans-unit>
+      <trans-unit id="importDataSourceMissing" datatype="html">
+        <source>El modelo de datos de este dashboard no existe. Importa también el modelo de datos.</source>
+        <target>Model danych tego dashboardu nie istnieje. Zaimportuj również model danych.</target>
+      </trans-unit>
+      <trans-unit id="importSetPasswordReminder" datatype="html">
+        <source>Es un modelo nuevo: la contraseña no se importa, establece la contraseña de la conexión del modelo.</source>
+        <target>To nowy model: hasło nie jest importowane, ustaw hasło połączenia modelu.</target>
+      </trans-unit>
+      <trans-unit id="transferMapsImported" datatype="html">
+        <source>Mapas incluidos:</source>
+        <target>Dołączone mapy:</target>
+      </trans-unit>
+      <trans-unit id="transferMapsMissing" datatype="html">
+        <source>Mapas no disponibles; vuelve a subirlos en el modelo de datos:</source>
+        <target>Mapy niedostępne; prześlij je ponownie w modelu danych:</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

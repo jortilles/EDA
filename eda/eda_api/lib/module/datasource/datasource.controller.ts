@@ -19,6 +19,8 @@ import { checkNewDuckdbFolder, duckdbBaseFolder, sanitizeDuckdbFolderName } from
 import { PluginRegistry } from '../../plugins/plugin-registry';
 import { resolvePluginModelLocale } from '../../plugins/plugin-locale';
 import { dropSyncControlTables, mergePluginRelations } from '../../plugins/plugin-relations';
+import mongoose from 'mongoose';
+import { ObjectTransferService, PASSWORD_MASK } from '../../services/object-transfer/object-transfer.service';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -250,108 +252,158 @@ export class DataSourceController {
     }
 
     static async UpdateDataSource(req: Request, res: Response, next: NextFunction) {
-
         try {
-            // Validation request
-            const body = req.body;
-            const psswd = body.ds.connection.password;
-            let ds: IDataSource;
-            let id = req.body._id;
-            if (id === undefined) {
-                id = req.params.id;
-            }
-            if (typeof id == 'object') {
-                id = id.$oid;
-                body._id = id;
-            }
-
-            try {
-                const dataSource: IDataSource = await DataSource.findById(id);
-                if (!dataSource) {
-                    console.log('Importing new datasource');
-                    let cadena = JSON.stringify(body);
-                    cadena = cadena.split('$oid').join('id');
-                    ds = new DataSource(JSON.parse(cadena.toString()));
-                    ds.ds.metadata.model_owner = req.user?._id;
-
-                } else {
-                    console.log('Importing existing datasource');
-                    const originalOwner = dataSource.ds.metadata.model_owner;
-                    body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
-                    let cadena = JSON.stringify(body.ds);
-                    cadena = cadena.split('$oid').join('id');
-                    dataSource.ds = JSON.parse(cadena.toString());
-                    ds = dataSource;
-                    ds.ds.metadata.model_owner = originalOwner;
-
-                    if (String(req.user._id) !== String(originalOwner)) {
-                        const groups = await Group.find({ users: { $in: req.user._id } }).exec();
-                        const editorRole = groups.length > 0 ? groups[0].role : 'UNKNOWN';
-                        if (!Array.isArray(ds.ds.metadata.model_updates)) {
-                            ds.ds.metadata.model_updates = [];
-                        }
-                        ds.ds.metadata.model_updates.push({
-                            user: req.user._id,
-                            role: editorRole,
-                            date: new Date().toISOString()
-                        });
-                        if (ds.ds.metadata.model_updates.length > 50) {
-                            ds.ds.metadata.model_updates = ds.ds.metadata.model_updates.slice(-50);
-                        }
-                    }
-                }
-
-
-                //aparto las relaciones ocultas para optimizar el modelo.
-                ds.ds.model.tables.forEach(t => {
-                    t.no_relations = t ? t.relations.filter(r => r.visible == false) : [];
-                });
-                ds.ds.model.tables.forEach(t => {
-                    t.relations = t ? t.relations.filter(r => r.visible !== false) : [];
-                });
-                /** Comprobacionde la reciprocidad de las relaciones */
-                ds.ds.model.tables.forEach(tabla => {
-                    tabla.relations.forEach(relacion => {
-                        const tablas_dstino_array = ds.ds.model.tables.filter(t => t.table_name == relacion.target_table);
-                        tablas_dstino_array.forEach(t => {
-                            const r = t.relations.filter(r => r.source_table == relacion.target_table &&
-                                JSON.stringify(r.source_column) == JSON.stringify(relacion.target_column) &&
-                                r.target_table == relacion.source_table &&
-                                JSON.stringify(r.target_column) == JSON.stringify(relacion.source_column));
-                            if (r.length == 0) {
-                                // si la relacion no se encuentra la meto
-                                const mi_relacion = {
-                                    source_table: relacion.target_table,
-                                    source_column: relacion.target_column,
-                                    target_table: relacion.source_table,
-                                    target_column: relacion.source_column,
-                                    visible: true
-                                }
-                                t.relations.push(mi_relacion);
-                                ds.ds.model.tables = JSON.parse(JSON.stringify(ds.ds.model.tables.filter(item => item.table_name !== t.table_name)));
-                                ds.ds.model.tables.push(t);
-                            }
-                        })
-                    })
-                });
-
-
-                const iDataSource = new DataSource(ds);
-
-                try {
-                    const dataSource = await iDataSource.save();
-                    return res.status(200).json({ ok: true, message: 'Modelo actualizado correctamente' });
-                } catch (error) {
-                    console.log(error);
-                    next(new HttpException(500, 'Error updating dataSource'));
-                }
-            } catch (err) {
-                console.log(err);
-                return next(new HttpException(500, 'Datasouce not found'));
-            }
+            await DataSourceController.upsertDataSource(req.body, req.params.id, req.user);
+            return res.status(200).json({ ok: true, message: 'Modelo actualizado correctamente' });
         } catch (err) {
-            next(err);
+            console.log(err);
+            next(new HttpException(500, 'Error updating dataSource'));
         }
+    }
+
+    /**
+     * Imports a data model keeping its _id (JSON import or a model sent from another Edalitics instance).
+     * Users and groups referenced by the permissions are matched by email / name in this instance.
+     * The connection password never comes in the payload: an existing model keeps its stored password.
+     */
+    static async ImportDataSource(req: Request, res: Response, next: NextFunction) {
+        try {
+            const body = req.body;
+            if (!body?.ds?.connection || !body?.ds?.metadata || !body?.ds?.model) {
+                return next(new HttpException(400, 'Invalid datasource'));
+            }
+            const id = typeof body._id === 'object' ? body._id?.$oid : body._id;
+            if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+                return next(new HttpException(400, 'A valid datasource _id is required'));
+            }
+            body._id = id;
+            // The password is never accepted in an import
+            body.ds.connection.password = PASSWORD_MASK;
+
+            const permissions = await ObjectTransferService.resolveDataSourcePermissions(body);
+            // Maps are created before the model, which references them by mapID
+            const maps = await ObjectTransferService.importMaps(body);
+            const { created } = await DataSourceController.upsertDataSource(body, id, req.user);
+
+            return res.status(200).json({
+                ok: true,
+                created,
+                _id: id,
+                passwordRequired: created,
+                permissions,
+                maps
+            });
+        } catch (err) {
+            console.log(err);
+            next(new HttpException(500, 'Error importing dataSource'));
+        }
+    }
+
+    /**
+     * Returns a data model ready to be exported or sent to another instance:
+     * password masked and permissions labelled with the current user / group names and emails.
+     */
+    static async ExportDataSource(req: Request, res: Response, next: NextFunction) {
+        try {
+            const dataSource = await ObjectTransferService.buildDataSourceExport(req.params.id);
+            if (!dataSource) return next(new HttpException(404, 'Datasource not found'));
+            return res.status(200).json({ ok: true, dataSource });
+        } catch (err) {
+            console.log(err);
+            next(new HttpException(500, 'Error exporting dataSource'));
+        }
+    }
+
+    /**
+     * Creates or overwrites a data model (shared by the model editor save and the import).
+     * - New model: created with the given _id, owned by the current user.
+     * - Existing model: overwritten, the owner and the stored password are kept when the password comes masked.
+     */
+    static async upsertDataSource(body: any, paramId: string, user: any): Promise<{ created: boolean }> {
+        const psswd = body.ds.connection.password;
+        let ds: IDataSource;
+        let id = body._id;
+        if (id === undefined) {
+            id = paramId;
+        }
+        if (typeof id == 'object') {
+            id = id.$oid;
+            body._id = id;
+        }
+
+        const dataSource: IDataSource = await DataSource.findById(id);
+        if (!dataSource) {
+            console.log('Importing new datasource');
+            let cadena = JSON.stringify(body);
+            cadena = cadena.split('$oid').join('id');
+            ds = new DataSource(JSON.parse(cadena.toString()));
+            ds.ds.metadata.model_owner = user?._id;
+
+        } else {
+            console.log('Importing existing datasource');
+            const originalOwner = dataSource.ds.metadata.model_owner;
+            body.ds.connection.password = psswd === PASSWORD_MASK ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
+            let cadena = JSON.stringify(body.ds);
+            cadena = cadena.split('$oid').join('id');
+            dataSource.ds = JSON.parse(cadena.toString());
+            ds = dataSource;
+            ds.ds.metadata.model_owner = originalOwner;
+
+            if (String(user._id) !== String(originalOwner)) {
+                const groups = await Group.find({ users: { $in: user._id } }).exec();
+                const editorRole = groups.length > 0 ? groups[0].role : 'UNKNOWN';
+                if (!Array.isArray(ds.ds.metadata.model_updates)) {
+                    ds.ds.metadata.model_updates = [];
+                }
+                ds.ds.metadata.model_updates.push({
+                    user: user._id,
+                    role: editorRole,
+                    date: new Date().toISOString()
+                });
+                if (ds.ds.metadata.model_updates.length > 50) {
+                    ds.ds.metadata.model_updates = ds.ds.metadata.model_updates.slice(-50);
+                }
+            }
+        }
+
+
+        //aparto las relaciones ocultas para optimizar el modelo.
+        ds.ds.model.tables.forEach(t => {
+            t.no_relations = t ? t.relations.filter(r => r.visible == false) : [];
+        });
+        ds.ds.model.tables.forEach(t => {
+            t.relations = t ? t.relations.filter(r => r.visible !== false) : [];
+        });
+        /** Comprobacionde la reciprocidad de las relaciones */
+        ds.ds.model.tables.forEach(tabla => {
+            tabla.relations.forEach(relacion => {
+                const tablas_dstino_array = ds.ds.model.tables.filter(t => t.table_name == relacion.target_table);
+                tablas_dstino_array.forEach(t => {
+                    const r = t.relations.filter(r => r.source_table == relacion.target_table &&
+                        JSON.stringify(r.source_column) == JSON.stringify(relacion.target_column) &&
+                        r.target_table == relacion.source_table &&
+                        JSON.stringify(r.target_column) == JSON.stringify(relacion.source_column));
+                    if (r.length == 0) {
+                        // si la relacion no se encuentra la meto
+                        const mi_relacion = {
+                            source_table: relacion.target_table,
+                            source_column: relacion.target_column,
+                            target_table: relacion.source_table,
+                            target_column: relacion.source_column,
+                            visible: true
+                        }
+                        t.relations.push(mi_relacion);
+                        ds.ds.model.tables = JSON.parse(JSON.stringify(ds.ds.model.tables.filter(item => item.table_name !== t.table_name)));
+                        ds.ds.model.tables.push(t);
+                    }
+                })
+            })
+        });
+
+
+        const iDataSource = new DataSource(ds);
+        await iDataSource.save();
+        return { created: !dataSource };
     }
 
     static async DeleteDataSource(req: Request, res: Response, next: NextFunction) {

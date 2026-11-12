@@ -1,0 +1,115 @@
+<eda-dialog2 [display]="true" [header]="header" width="34vw" height="auto" [overflow]="'auto'"
+  [showApply]="false" (close)="onClose()"
+  [breakpoints]="{ lg: '60vw', md: '80vw', sm: '95vw' }">
+
+  <div content class="p-2 space-y-4">
+    <!-- Object to send -->
+    <div class="rounded-md border border-gray-200 dark:border-gray-700 p-3">
+      <p class="text-xs text-gray-500 dark:text-gray-400">
+        @if (type === 'datasource') {
+        <span i18n="@@remoteObjectModel">Modelo de datos</span>
+        } @else {
+        <span>Dashboard</span>
+        }
+      </p>
+      <p class="font-semibold">{{ objectName }}</p>
+      <p class="text-xs text-gray-400">ID: {{ objectId }}</p>
+    </div>
+
+    <!-- The datasource password never travels -->
+    @if (type === 'datasource') {
+    <div class="rounded-md border border-amber-300 bg-amber-50 text-amber-800 p-3 text-sm" i18n="@@remotePasswordNotSentWarning">
+      La contraseña de la conexión no se envía nunca. Si es la primera vez que se envía este modelo, deberás establecer la contraseña en el servidor de destino. Si el modelo ya existe en el destino, se sobrescribirá y se conservará la contraseña que tenga allí.
+    </div>
+    } @else {
+    <div class="rounded-md border border-gray-200 bg-gray-50 text-gray-700 p-3 text-sm" i18n="@@remoteDashboardInfo">
+      El dashboard se envía con el mismo identificador. Si ya existe en el destino, se sobrescribirá. El modelo de datos que utiliza debe existir en el destino con el mismo identificador.
+    </div>
+    }
+
+    @if (!session()) {
+    <!-- Remote login -->
+    <div class="space-y-3">
+      <p class="text-sm text-gray-600 dark:text-gray-300" i18n="@@remoteLoginInfo">
+        Inicia sesión en el servidor de destino con un usuario administrador.
+      </p>
+      <div>
+        <label class="block text-sm font-medium mb-1" for="remoteUrl" i18n="@@remoteServerUrl">URL del servidor de destino</label>
+        <input id="remoteUrl" type="url" class="w-full rounded-md border border-gray-300 px-3 py-2"
+          placeholder="https://edalitics.example.com" [(ngModel)]="url" (keyup.enter)="login()" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1" for="remoteEmail" i18n="@@remoteEmail">Usuario (email)</label>
+        <input id="remoteEmail" type="email" autocomplete="off" class="w-full rounded-md border border-gray-300 px-3 py-2"
+          [(ngModel)]="email" (keyup.enter)="login()" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1" for="remotePassword" i18n="@@remotePassword">Contraseña</label>
+        <input id="remotePassword" type="password" autocomplete="new-password" class="w-full rounded-md border border-gray-300 px-3 py-2"
+          [(ngModel)]="password" (keyup.enter)="login()" />
+      </div>
+    </div>
+    } @else {
+    <!-- Remote session open -->
+    <div class="flex items-center justify-between rounded-md border border-gray-200 dark:border-gray-700 p-3 text-sm">
+      <div>
+        <p>
+          <span i18n="@@remoteConnectedTo">Conectado a</span>
+          <span class="font-semibold"> {{ session().url }}</span>
+        </p>
+        <p class="text-gray-500">{{ session().user?.email }}</p>
+      </div>
+      <button type="button" class="text-corporate-primary underline" (click)="changeServer()" [disabled]="loading()"
+        i18n="@@remoteChangeServer">Cambiar servidor</button>
+    </div>
+    }
+
+    <!-- Send result -->
+    @if (result(); as res) {
+    <div class="rounded-md border border-emerald-300 bg-emerald-50 text-emerald-800 p-3 text-sm space-y-1">
+      @if (res.created) {
+      <p i18n="@@remoteObjectCreated">Se ha creado en el servidor de destino.</p>
+      } @else {
+      <p i18n="@@remoteObjectOverwritten">Ya existía en el servidor de destino y se ha sobrescrito.</p>
+      }
+      @if (res.passwordRequired) {
+      <p class="font-semibold text-amber-800" i18n="@@remoteSetPasswordReminder">
+        Recuerda establecer la contraseña de la conexión del modelo en el servidor de destino.
+      </p>
+      }
+      @if (res.dataSourceMissing) {
+      <p class="font-semibold text-amber-800" i18n="@@remoteDataSourceMissing">
+        El modelo de datos de este dashboard no existe en el servidor de destino. Envía también el modelo de datos.
+      </p>
+      }
+      @for (line of reportLines().info; track line) {
+      <p>{{ line }}</p>
+      }
+    </div>
+    <!-- Users / groups not found in the destination -->
+    @if (reportLines().warnings.length) {
+    <div class="rounded-md border border-amber-300 bg-amber-50 text-amber-800 p-3 text-sm space-y-1">
+      @for (line of reportLines().warnings; track line) {
+      <p>{{ line }}</p>
+      }
+    </div>
+    }
+    }
+
+    @if (errorMessage()) {
+    <div class="rounded-md border border-red-300 bg-red-50 text-red-700 p-3 text-sm">{{ errorMessage() }}</div>
+    }
+  </div>
+
+  <div footer class="flex gap-1.5">
+    @if (!session()) {
+    <button class="confirm-button" [disabled]="!canLogin" (click)="login()">
+      <i class="fa fa-sign-in"></i> <span i18n="@@remoteLoginBtn">Iniciar sesión</span>
+    </button>
+    } @else {
+    <button class="confirm-button" [disabled]="loading()" (click)="send()">
+      <i class="fa fa-paper-plane"></i> <span i18n="@@sendBtn">Enviar</span>
+    </button>
+    }
+  </div>
+</eda-dialog2>

@@ -765,6 +765,16 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this.put(`${this.globalDSRoute}/${id}`, body);
     }
 
+    /** Data model ready to export: password masked, permissions labelled with user / group names and emails */
+    exportDataSource(id: string): Observable<any> {
+        return this.get(`${this.globalDSRoute}/${id}/export`);
+    }
+
+    /** Imports a data model keeping its _id; users and groups are matched by email / name in this instance */
+    importDataSource(body: any): Observable<any> {
+        return this.post(`${this.globalDSRoute}/import`, body);
+    }
+
     /** Raw datasource document, without loading it into the model editor state */
     getDataSourceById(id: string): Observable<any> {
         return this.get(`${this.globalDSRoute}/${id}`);

@@ -8,13 +8,16 @@ import { DropdownModule } from 'primeng/dropdown';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { AlertService } from '@eda/services/service.index';
+import { RemoteTransferType } from '@eda/services/api/remote-transfer.service';
+import { RemoteSendDialogComponent } from './remote-send-dialog/remote-send-dialog.component';
+import { describeTransferReport } from './transfer-report';
 
 
 @Component({
   selector: 'app-model-import-export',
   templateUrl: './model-import-export.page.html',
   standalone: true,
-  imports: [CommonModule, FormsModule, DropdownModule, IconComponent],
+  imports: [CommonModule, FormsModule, DropdownModule, IconComponent, RemoteSendDialogComponent],
   styleUrls: ['./model-import-export.page.css'],
   encapsulation: ViewEncapsulation.None
 })
@@ -36,6 +39,8 @@ export class ModelImportExportPage implements OnInit {
   dashboardData = signal<any>(null);
   isDraggingDashboard = signal<boolean>(false);
   isDraggingModel = signal<boolean>(false);
+  // Object being sent to another Edalitics instance (null = send dialog closed)
+  remoteSend = signal<{ type: RemoteTransferType; id: string; name: string } | null>(null);
 
   private globalDSRoute = '/datasource';
   public downloadJsonDashboardHref: any;
@@ -139,6 +144,30 @@ export class ModelImportExportPage implements OnInit {
     }
   }
 
+  // Methods to send models/dashboards to another Edalitics instance
+  openModelSend() {
+    const id = this.selectedModel();
+    if (!id) {
+      this.alertService.addError($localize`:@@selectModelToExport:Por favor selecciona un modelo para exportar`);
+      return;
+    }
+    const name = this.dataSources.find(ds => ds.value === id)?.label || id;
+    this.remoteSend.set({ type: 'datasource', id, name });
+  }
+
+  openDashboardSend() {
+    const dashboard = this.selectedDashboard() as any;
+    if (!dashboard?._id) {
+      this.alertService.addError($localize`:@@selectDashboardToExport:Por favor selecciona un dashboard para exportar`);
+      return;
+    }
+    this.remoteSend.set({ type: 'dashboard', id: dashboard._id, name: dashboard.config?.title || dashboard._id });
+  }
+
+  closeRemoteSend() {
+    this.remoteSend.set(null);
+  }
+
   // Methods to handle export/import
 handleModelExport() {
   const selected = this.selectedModel();
@@ -148,7 +177,8 @@ handleModelExport() {
   }
 
   const id = selected; 
-  this.dataSourceService.get(`${this.globalDSRoute}/${id}`).subscribe(
+  // Export version: password masked and permissions labelled with user / group names and emails
+  this.dataSourceService.exportDataSource(id).subscribe(
     (data: any) => {
       const theJSON = JSON.stringify(data.dataSource);
       const blob = new Blob([theJSON], { type: 'application/json' });
@@ -178,7 +208,8 @@ handleDashboardExport() {
     return;
   }
 
-  this.dashboardService.getDashboard(dashboardId).subscribe(
+  // Export version: labelled with the names of its groups and owner
+  this.dashboardService.exportDashboard(dashboardId).subscribe(
     data => {
       const theJSON = JSON.stringify(data.dashboard);
       const blob = new Blob([theJSON], { type: 'application/json' });
@@ -250,11 +281,16 @@ handleModelImport() {
         });
       });
 
-      // Update the model on the server --> Old importModel()
-      this.dataSourceService.updateModelInServer(modelId, json).subscribe({
-        next: () => this.alertService.addSuccess($localize`:@@modelImportedSuccessfully:Modelo importado correctamente`),
+      // Import keeping the _id; users and groups are matched by email / name in this instance
+      this.dataSourceService.importDataSource(json).subscribe({
+        next: (res: any) => {
+          this.alertService.addSuccess($localize`:@@modelImportedSuccessfully:Modelo importado correctamente`);
+          if (res?.passwordRequired) {
+            this.alertService.addWarning($localize`:@@importSetPasswordReminder:Es un modelo nuevo: la contraseña no se importa, establece la contraseña de la conexión del modelo.`);
+          }
+          this.showTransferReport('datasource', res);
+        },
         error: () => this.alertService.addError($localize`:@@errorImportModel:Ha ocurrido un error al importar el modelo`)
-
       });
     } catch {
       this.alertService.addError($localize`:@@noCorrectJsonFormat:El archivo no tiene un formato JSON válido`);
@@ -283,21 +319,21 @@ handleDashboardImport() {
       // Save the imported dashboard in memory
       this.dashboardFile.set(importedDashboard);
 
-      // Try to update
-      this.dashboardService.updateDashboard(importedDashboard._id, importedDashboard).subscribe(
-        () => {
-          this.alertService.addSuccess($localize`:@@dashboardUpdatedSuccessfully:Dashboard actualizado correctamente`)
+      // Import keeping the _id; groups are matched by name and the owner by email in this instance
+      this.dashboardService.importDashboard(importedDashboard).subscribe(
+        (res: any) => {
+          if (res?.created) {
+            this.alertService.addSuccess($localize`:@@dashboardCreatedSuccessfully:Dashboard creado correctamente`);
+          } else {
+            this.alertService.addSuccess($localize`:@@dashboardUpdatedSuccessfully:Dashboard actualizado correctamente`);
+          }
+          if (res?.dataSourceMissing) {
+            this.alertService.addWarning($localize`:@@importDataSourceMissing:El modelo de datos de este dashboard no existe. Importa también el modelo de datos.`);
+          }
+          this.showTransferReport('dashboard', res);
         },
-        () => {
-          // If it fails, try to create
-          this.dashboardService.addNewDashboard(importedDashboard).subscribe(
-            () => {
-              this.alertService.addSuccess($localize`:@@dashboardCreatedSuccessfully:Dashboard creado correctamente`)
-            },
-            err => {
-              this.alertService.addError($localize`:@@notPossibleImportDashboard:No se pudo importar el dashboard:` + err.message + 'error')
-            }
-          );
+        err => {
+          this.alertService.addError($localize`:@@notPossibleImportDashboard:No se pudo importar el dashboard:` + ' ' + (err?.text || ''))
         }
       );
     } catch (e) {
@@ -314,6 +350,13 @@ handleDashboardImport() {
   this.dashboardFile.set(null);
   this.dashboardFileName.set('');
 }
+
+  /** Shows which users / groups were matched or not found in this instance */
+  private showTransferReport(type: RemoteTransferType, res: any) {
+    const { info, warnings } = describeTransferReport(type, res?.permissions, res?.ownerMatched, res?.maps);
+    info.forEach(line => this.alertService.addInfo(line));
+    warnings.forEach(line => this.alertService.addWarning(line));
+  }
 
   // Method to show notifications
   showToast(title: string, message: string, type: 'success' | 'error') {

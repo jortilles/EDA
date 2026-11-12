@@ -38,6 +38,7 @@ export * from './api/mail.service';
 export * from './api/excel-formatter.service';
 export * from './api/log.service';
 export * from './api/media.service'; // Media library
+export * from './api/remote-transfer.service'; // Send models and dashboards to another Edalitics instance
 
 
 

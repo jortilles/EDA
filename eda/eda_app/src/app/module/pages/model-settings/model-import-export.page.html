@@ -45,6 +45,12 @@
                   <eda-icon name="export" class="mr-2"></eda-icon>
                   <span i18n="@@export"> Exportar</span>
                 </button>
+                <button (click)="openModelSend()"
+                  class="btn-corporate-primary inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
+                  [disabled]="!selectedModel()">
+                  <eda-icon name="send" class="mr-2"></eda-icon>
+                  <span i18n="@@sendBtn">Enviar</span>
+                </button>
               </div>
             </div>
           </div>
@@ -141,6 +147,12 @@
                   <eda-icon name="export" class="mr-2"></eda-icon>
                   <span i18n="@@export"> Exportar</span>
                 </button>
+                <button (click)="openDashboardSend()"
+                  class="btn-corporate-primary inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
+                  [disabled]="!selectedDashboard()">
+                  <eda-icon name="send" class="mr-2"></eda-icon>
+                  <span i18n="@@sendBtn">Enviar</span>
+                </button>
               </div>
             </div>
           </div>
@@ -194,3 +206,9 @@
     </div>
   </div>
 </div>
+
+<!-- Send a model or a dashboard to another Edalitics instance -->
+@if (remoteSend(); as item) {
+<app-remote-send-dialog [type]="item.type" [objectId]="item.id" [objectName]="item.name"
+  (close)="closeRemoteSend()"></app-remote-send-dialog>
+}

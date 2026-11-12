@@ -10,11 +10,12 @@ import { CachedQueryService } from '../../services/cache-service/cached-query.se
 import { ArimaService } from '../../services/prediction/arima.service'
 import { TensorflowService } from '../../services/prediction/tensorflow.service'
 import { TimeFormatService } from '../../services/time-format/time-format.service'
-import { QueryOptions } from 'mongoose'
+import mongoose, { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
 import { DateUtil } from '../../utils/date.util'
 import _ from 'lodash'
 import { getDbErrorMessage, resolveDbLang } from './DbErrorMessages'
+import { ObjectTransferService } from '../../services/object-transfer/object-transfer.service'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
@@ -726,7 +727,70 @@ export class DashboardController {
       return res.status(201).json({ ok: true, dashboard })
     } catch (err) {
       console.log(err);
-      return new HttpException(400, 'Some error ocurred while creating the dashboard')
+      return next(new HttpException(400, 'Some error ocurred while creating the dashboard'))
+    }
+  }
+
+  /**
+   * Imports a dashboard keeping its _id (JSON import or a dashboard sent from another Edalitics instance).
+   * - Groups are matched by name in this instance (groupsName labels); unknown groups are dropped,
+   *   which never opens the dashboard because groups only grant access.
+   * - New dashboard: owned by the user with the same email (userEmail label) or by the importing user.
+   * - Existing dashboard: config and groups are overwritten, the owner is kept.
+   */
+  static async importDashboard(req: Request, res: Response, next: NextFunction) {
+    try {
+      const body = req.body;
+      if (!body?.config) {
+        return next(new HttpException(400, 'Dashboard config is required'));
+      }
+      // Files exported by Mongo tools may contain { $oid }; files without _id get a new one
+      const id = (typeof body._id === 'object' ? body._id?.$oid : body._id) || String(new mongoose.Types.ObjectId());
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return next(new HttpException(400, 'Invalid dashboard _id'));
+      }
+
+      const { group, ownerId, report } = await ObjectTransferService.resolveDashboardReferences(body);
+      if (body.config.title === null || body.config.title === undefined) body.config.title = '-';
+
+      let dashboard = await Dashboard.findById(id);
+      const created = !dashboard;
+      if (created) {
+        dashboard = new Dashboard({ _id: id, config: body.config, user: ownerId || req.user._id, group });
+      } else {
+        dashboard.config = body.config;
+        dashboard.group = group as any;
+        dashboard.markModified('config');
+      }
+      await dashboard.save();
+
+      // Warn when the data model used by the dashboard does not exist in this instance
+      const dsId = body.config?.ds?._id;
+      const dataSourceMissing = dsId && mongoose.Types.ObjectId.isValid(dsId) ? !(await DataSource.exists({ _id: dsId })) : !!dsId;
+
+      return res.status(created ? 201 : 200).json({
+        ok: true,
+        created,
+        _id: id,
+        ownerMatched: created ? !!ownerId : undefined,
+        dataSourceMissing,
+        permissions: report
+      });
+    } catch (err) {
+      console.log(err);
+      return next(new HttpException(500, 'Error importing dashboard'));
+    }
+  }
+
+  /** Returns a dashboard ready to be exported or sent to another instance, labelled with group and owner names. */
+  static async exportDashboard(req: Request, res: Response, next: NextFunction) {
+    try {
+      const dashboard = await ObjectTransferService.buildDashboardExport(req.params.id);
+      if (!dashboard) return next(new HttpException(404, 'Dashboard not found'));
+      return res.status(200).json({ ok: true, dashboard });
+    } catch (err) {
+      console.log(err);
+      return next(new HttpException(500, 'Error exporting dashboard'));
     }
   }
 
