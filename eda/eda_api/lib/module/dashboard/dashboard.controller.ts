@@ -1474,7 +1474,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         const mandatoryFilterMissing = await DashboardController.isMandatoryFilterMissing(
           req.body.dashboard?.dashboard_id,
           req.body.dashboard?.panel_id,
-          myQuery.filters
+          myQuery.filters,
+          req.body.dashboard?.clientMandatoryFilters
         );
         if (mandatoryFilterMissing) {
           console.log('a mandatory global filter has no value, query blocked');
@@ -1861,7 +1862,8 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
         const mandatoryFilterMissing = await DashboardController.isMandatoryFilterMissing(
           req.body.dashboard?.dashboard_id,
           req.body.dashboard?.panel_id,
-          req.body.query?.filters
+          req.body.query?.filters,
+          req.body.dashboard?.clientMandatoryFilters
         );
         if (mandatoryFilterMissing) {
           console.log('a mandatory global filter has no value, query blocked')
@@ -2871,15 +2873,24 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
    * what populate the filter's own value list / dependent filter options, so they must run even
    * while the filter has no value yet.
    */
-  private static async isMandatoryFilterMissing(dashboardId: string, panelId: string, filters: any[]): Promise<boolean> {
+  private static async isMandatoryFilterMissing(dashboardId: string, panelId: string, filters: any[], clientMandatoryFilters?: any[]): Promise<boolean> {
     if (!dashboardId) return false;
 
     const dashboard = await Dashboard.findById(dashboardId, 'config.filters').exec();
     const definedFilters: any[] = (dashboard as any)?.config?.filters || [];
 
-    const mandatoryFilters = definedFilters.filter((f: any) =>
-      f.isMandatory === true && (!panelId || (f.panelList || []).includes(panelId))
-    );
+    const mandatoryFilters = definedFilters.filter((f: any) => {
+      const override = (clientMandatoryFilters || []).find((o: any) => o.filter_id === f.id);
+      let isMandatory: boolean;
+      if (override) {
+        isMandatory = override.isMandatory === true;
+      } else {
+        const applied = (filters || []).find((x: any) => x.filter_id === f.id);
+        const clientMandatory = applied?.isMandatory;
+        isMandatory = clientMandatory !== undefined ? clientMandatory === true : f.isMandatory === true;
+      }
+      return isMandatory && (!panelId || (f.panelList || []).includes(panelId));
+    });
 
     if (mandatoryFilters.length === 0) return false;
 

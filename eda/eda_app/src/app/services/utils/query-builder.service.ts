@@ -128,6 +128,14 @@ export class QueryBuilderService extends ApiService {
             || ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
         );
 
+        // Current mandatory state of EVERY report filter, captured before the drop
+        // above removes the empty ones: the backend needs it to honor a mandatory
+        // toggle that has not been saved yet (a just-emptied mandatory filter is
+        // no longer in `filters`, so the DB value would wrongly block the query).
+        const clientMandatoryFilters = params.filters
+            .filter((f: any) => f.isMandatory !== undefined)
+            .map((f: any) => ({ filter_id: f.filter_id, isMandatory: f.isMandatory === true }));
+
         return {
             id: '1',
             model_id: params.dataSource,
@@ -138,7 +146,8 @@ export class QueryBuilderService extends ApiService {
             dashboard: {
                 dashboard_id: params.dashboard,
                 panel_id: params.panel,
-                connectionProperties: params.connectionProperties
+                connectionProperties: params.connectionProperties,
+                ...(clientMandatoryFilters.length ? { clientMandatoryFilters } : {})
             },
             query: {
                 fields: queryColumns,

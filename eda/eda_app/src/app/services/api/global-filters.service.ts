@@ -359,6 +359,7 @@ export class GlobalFiltersService {
             isGlobal: true,
             isAutocompleted: globalFilter.isAutocompleted,
             applyToAll: globalFilter.applyToAll,
+            isMandatory: globalFilter.isMandatory ?? false,
             valueListSource: valueListSource,
             autorelation: globalFilter.autorelation,
             joins: globalFilter.joins,
@@ -399,6 +400,7 @@ export class GlobalFiltersService {
             isGlobal: true,
             isAutocompleted: globalFilter.isAutocompleted,
             applyToAll: globalFilter.applyToAll,
+            isMandatory: globalFilter.isMandatory ?? false,
             autorelation: globalFilter.autorelation,
             valueListSource: globalFilter.selectedColumn.valueListSource,
             filterBeforeGrouping: true, // For all global filters it is Where
