@@ -5,7 +5,7 @@ import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 import DataSource, { IDataSource } from '../../module/datasource/model/datasource.model';
 
 const cache_config = require('../../../config/cache.config');
-const aoc_config = require('../../../config/aoc.config');
+import { loadAOCConfig } from './aoc-config.loader';
 
 export class AOCController {
 
@@ -15,6 +15,11 @@ export class AOCController {
 
             if (!user || !password) {
                 return next(new HttpException(400, 'Se requieren: user (clientId), password (clientSecret)'));
+            }
+
+            const { config: aoc_config, error: configError } = loadAOCConfig();
+            if (!aoc_config) {
+                return next(new HttpException(503, configError));
             }
 
             const conn = new AOCConnection({ type: 'aoc', host: aoc_config.host, port: aoc_config.port, database: aoc_config.database, user, password });
@@ -35,6 +40,11 @@ export class AOCController {
 
             if (!name || !user || !password || !schema) {
                 return next(new HttpException(400, 'Se requieren: name, user (clientId), password (clientSecret), schema'));
+            }
+
+            const { config: aoc_config, error: configError } = loadAOCConfig();
+            if (!aoc_config) {
+                return next(new HttpException(503, configError));
             }
 
             const config = { type: 'aoc', host: aoc_config.host, port: aoc_config.port, database: aoc_config.database, schema, user, password };
