@@ -1,4 +1,8 @@
-FROM node:26.13-trixie-slim
+# Debian base + Debian's nodejs package instead of the official node image: official Node builds
+# embed a static OpenSSL whose symbols clash with the system libssl used by msodbcsql18  
+# causing a SIGSEGV during TLS certificate verification. Debian's nodejs links the
+# system OpenSSL, so Node and the ODBC driver share a single OpenSSL.
+FROM debian:trixie-slim
 
 
 
@@ -9,7 +13,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Install mongodb
 RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive  apt-get install -y wget git curl apt-transport-https ca-certificates apt-utils gnupg build-essential apache2  libaio1t64
+RUN DEBIAN_FRONTEND=noninteractive  apt-get install -y wget git curl apt-transport-https ca-certificates apt-utils gnupg build-essential apache2  libaio1t64 nodejs npm
 RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc |  gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg  --dearmor
 RUN echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] http://repo.mongodb.org/apt/debian bookworm/mongodb-org/8.0 main" | tee /etc/apt/sources.list.d/mongodb-org-8.0.list
 RUN apt-get update
@@ -25,6 +29,9 @@ RUN echo "  "
 RUN echo " la ubicacion de oracle sera /eda/oracle/instantclient "
 RUN echo "  "
 RUN echo "export LD_LIBRARY_PATH=/eda/oracle/instantclient" >/root/.bashrc
+# Debian trixie renamed libaio1 to libaio1t64 (ships libaio.so.1t64), but Oracle Instant Client
+# still looks for libaio.so.1 -> without this link oracledb fails with DPI-1047
+RUN ln -sf /usr/lib/$(uname -m)-linux-gnu/libaio.so.1t64 /usr/lib/$(uname -m)-linux-gnu/libaio.so.1
 
 # Driver ODBC de Microsoft para SQL Server (lo usa el conector AOC: el driver mssql/tedious
 # de Node no es compatible con Microsoft Fabric, https://github.com/tediousjs/tedious/issues/1563)
