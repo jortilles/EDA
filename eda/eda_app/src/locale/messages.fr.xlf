@@ -744,10 +744,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
     <source> Vista generada correctamente</source>
     <target> Vue générée avec succès</target>
   </trans-unit>
-<trans-unit id="import">
-  <source>Importar</source>
-  <target>Matière</target>
-</trans-unit>
+
   <trans-unit id="resetStylesBtn">
     <source>Volver a los valores por defecto</source>
     <target>Retour aux valeurs par défaut</target>
@@ -2343,10 +2340,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <context context-type="linenumber">71</context>
 </context-group>
 </trans-unit>
-<trans-unit id="DatasourceTitle">
-  <source>Fuente de datos </source>
-  <target>Source de données </target>
-</trans-unit>
+
 <trans-unit id="inputNombreDb" datatype="html">
 <source>BASE DE DATOS *</source>
 <target>BASE DE DONNÉES *</target>
@@ -2371,6 +2365,86 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
             <trans-unit id="protectedDataSourceNotice" datatype="html">
         <source>Algunas áreas de la configuración de esta fuente de datos se encuentran desactivadas porque es una fuente de datos protegida.</source>
         <target>Certaines zones de la configuration de cette source de données sont désactivées car il s'agit d'une source de données protégée.</target>
+      </trans-unit>
+      <trans-unit id="dsGroupSql" datatype="html">
+        <source>Bases de datos SQL</source>
+        <target>Bases de données SQL</target>
+      </trans-unit>
+      <trans-unit id="dsGroupFiles" datatype="html">
+        <source>Archivos</source>
+        <target>Fichiers</target>
+      </trans-unit>
+      <trans-unit id="dsGroupWeb" datatype="html">
+        <source>Servicios web</source>
+        <target>Services web</target>
+      </trans-unit>
+      <trans-unit id="dsGroupConnectors" datatype="html">
+        <source>Conectores</source>
+        <target>Connecteurs</target>
+      </trans-unit>
+      <trans-unit id="shopifyShopLabel" datatype="html">
+        <source> URL de la tienda <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> URL de la boutique <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="shopifyFolderLabel" datatype="html">
+        <source> Nombre de carpeta <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Nom du dossier <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="shopifyClientIdLabel" datatype="html">
+        <source> ID de cliente <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> ID client <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="shopifyClientIdHint" datatype="html">
+        <source> Encuéntralo en tu app de Shopify Partners → Credenciales → ID de cliente </source>
+        <target> Retrouvez-le dans votre application Shopify Partners → Identifiants → ID client </target>
+      </trans-unit>
+      <trans-unit id="shopifyClientSecretLabel" datatype="html">
+        <source> Secreto <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Secret <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="shopifyClientSecretHint" datatype="html">
+        <source> Encuéntralo en tu app de Shopify Partners → Credenciales → Secreto </source>
+        <target> Retrouvez-le dans votre application Shopify Partners → Identifiants → Secret </target>
+      </trans-unit>
+      <trans-unit id="shopifyAuthLabel" datatype="html">
+        <source> Autorización <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Autorisation <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="shopifyAuthButton" datatype="html">
+        <source>Autorizar con Shopify</source>
+        <target>Autoriser avec Shopify</target>
+      </trans-unit>
+      <trans-unit id="shopifyAuthError" datatype="html">
+        <source> Error durante la autorización. Inténtalo de nuevo. </source>
+        <target> Erreur lors de l'autorisation. Veuillez réessayer. </target>
+      </trans-unit>
+      <trans-unit id="shopifyAuthWaiting" datatype="html">
+        <source>Esperando autorización en la ventana emergente...</source>
+        <target>En attente d'autorisation dans la fenêtre contextuelle...</target>
+      </trans-unit>
+      <trans-unit id="shopifyAuthSuccess" datatype="html">
+        <source>Tienda Shopify autorizada correctamente</source>
+        <target>Boutique Shopify autorisée avec succès</target>
+      </trans-unit>
+      <trans-unit id="shopifyAuthRevoke" datatype="html">
+        <source> Cambiar cuenta </source>
+        <target> Changer de compte </target>
+      </trans-unit>
+      <trans-unit id="shopifyShopRequired" datatype="html">
+        <source>Debe indicar la URL de la tienda Shopify</source>
+        <target>Vous devez indiquer l'URL de la boutique Shopify</target>
+      </trans-unit>
+      <trans-unit id="shopifyCredentialsRequired" datatype="html">
+        <source>Debe proporcionar el ID de cliente y el Secreto de la app Shopify</source>
+        <target>Vous devez fournir l'ID client et le Secret de l'application Shopify</target>
+      </trans-unit>
+      <trans-unit id="shopifyAuthRequired" datatype="html">
+        <source>Debes autorizar el acceso a Shopify primero</source>
+        <target>Vous devez d'abord autoriser l'accès à Shopify</target>
+      </trans-unit>
+      <trans-unit id="shopifyCreated" datatype="html">
+        <source>Fuente de datos Shopify creada correctamente</source>
+        <target>Source de données Shopify créée avec succès</target>
       </trans-unit>
 <!-- SECTION: FILTROS, AGREGACIONES Y RANGOS -->
 
@@ -3228,18 +3302,9 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <context context-type="linenumber">60</context>
 </context-group>
 </trans-unit>
-<trans-unit id="thresholdValuePercent">
-  <source>Valor umbral (%)</source>
-  <target>Valeur seuil (%)</target>
-</trans-unit>
-<trans-unit id="deviationPercTrigAlert">
-  <source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
-  <target>% d'écart qui déclenchera l'alerte (ex: -10 = lorsque l'écart est inférieur à -10%)</target>
-</trans-unit>
-<trans-unit id="whenKpiDeviationIs">
-  <source>Cuando el % es</source>
-  <target>Quand le % est</target>
-</trans-unit>
+
+
+
 <trans-unit id="addAlert" datatype="html">
 <source> Añadir alerta    </source>
 <target> Ajouter une alerte    </target>
@@ -4108,18 +4173,12 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   </trans-unit>  <trans-unit id="urlAction">
     <source>Acciones: </source>
     <target>Actes: </target>
-  </trans-unit><trans-unit id="dashboardSidebarEditStyles">
-  <source>Editar estilos</source>
-  <target>Modifier les styles</target>
-</trans-unit>
+  </trans-unit>
   <trans-unit id="ChangeDefaultsColors">
     <source>Color del los gráficos</source>
     <target>Couleur des graphismes</target>
   </trans-unit>
-  <trans-unit id="selectPalette">
-    <source>Seleccionar paleta</source>
-    <target>Sélectionner la palette</target>
-  </trans-unit>
+  
   <trans-unit id="properties">
     <source>Propiedades</source>
     <target>Propriétés</target>
@@ -4134,10 +4193,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
     <source>Guardar como...</source>
     <target>Enregistrer sous...</target>
   </trans-unit>
-<trans-unit id="multiSelectDefaultLabel">
-  <source>Selecciona un grupo *</source>
-  <target>Sélectionnez un groupe *</target>
-</trans-unit>
+
 <trans-unit id="publicPanel">
 <source>Publico</source>
 <target>Publique</target>
@@ -4146,573 +4202,258 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <source>Grupo</source>
   <target>Grappe</target>
 </trans-unit>
-<trans-unit id="adminDatasource">
-  <source>Gestión de fuentes de datos</source>
-  <target>Gestion des sources de données</target>
-</trans-unit>
-<trans-unit id="addDatasource">
-  <source>Crear fuente de datos</source>
-  <target>Créer une source de données</target>
-</trans-unit>
-<trans-unit id="foundDatasource">
-  <source>fuentes de datos encontradas</source>
-  <target>sources de données trouvées</target>
-</trans-unit>
-<trans-unit id="profileSubtitle"><source>Administra tu información personal y preferencias de cuenta</source><target>Gérez vos informations personnelles et vos préférences de compte</target></trans-unit>
-<trans-unit id="profileInfoTitle"><source>Información Personal</source><target>Informations personnelles</target></trans-unit>
-<trans-unit id="profileInfoSubtitle"><source>Actualiza tu información básica de perfil</source><target>Mettez à jour les informations de base de votre profil</target></trans-unit>
-<trans-unit id="usernameLengthValidation"><source>El nombre de usuario debe tener al menos 2 caracteres.</source><target>Le nom d'utilisateur doit comporter au moins 2 caractères.</target></trans-unit>
-<trans-unit id="emailValidation"><source>Por favor ingresa un email válido.</source><target>S'il vous plaît, mettez une adresse email valide.</target></trans-unit>
-<trans-unit id="changePassword"><source>Cambiar contraseña</source><target>Changer le mot de passe</target></trans-unit>
-<trans-unit id="newPassword"><source>Nueva contraseña</source><target>Nouveau mot de passe</target></trans-unit>
-<trans-unit id="confirmNewPassword"><source>Confirmar nueva contraseña</source><target>Confirmer le nouveau mot de passe</target></trans-unit>
-<trans-unit id="passwordValidation"><source>Las contraseñas no coinciden</source><target>Les mots de passe ne correspondent pas</target></trans-unit>
-<trans-unit id="saveChanges"><source>Guardar cambios</source><target>Enregistrer les modifications</target></trans-unit>
-<trans-unit id="profileImage"><source>Foto de perfil</source><target>Photo de profil</target></trans-unit>
-<trans-unit id="profileImageSubtitle"><source>Actualiza tu foto de perfil</source><target>Mettez à jour votre photo de profil</target></trans-unit>
-<trans-unit id="uploadImage"><source>Subir imagen</source><target>Télécharger une image</target></trans-unit>
-<trans-unit id="profilePreferences"><source>Preferencias de cuenta</source><target>Préférences du compte</target></trans-unit>
-<trans-unit id="profileNotificationsPrefrences"><source>Administra tus preferencias de notificaciones</source><target>Gérez vos préférences de notification</target></trans-unit>
-<trans-unit id="profileNotifications"><source>Notificaciones</source><target>Notifications</target></trans-unit>
-<trans-unit id="profileUpdates"><source>Actualizaciones</source><target>Mises à jour</target></trans-unit>
-<trans-unit id="profileUpdatesSubtitle"><source>Recibe actualizaciones sobre nuevas funciones</source><target>Recevez des mises à jour sur les nouvelles fonctionnalités</target></trans-unit>
-<trans-unit id="activated"><source>Activado</source><target>Activé</target></trans-unit>
-<trans-unit id="newsletter"><source>Boletín</source><target>Bulletin</target></trans-unit>
-<trans-unit id="newsletterDescription"><source>Recibe nuestro boletín mensual</source><target>Abonnez-vous à notre newsletter mensuelle</target></trans-unit>
-<trans-unit id="inactivated"><source>Desactivado</source><target>Désactivé</target></trans-unit>
-<trans-unit id="profileMessages"><source>Mensajes</source><target>Messages</target></trans-unit>
-<trans-unit id="profileMessagesDescription"><source>Recibe notificaciones de nuevos mensajes</source><target>Recevoir des notifications de nouveaux messages</target></trans-unit>
-<trans-unit id="selectedImage"><source>Imagen seleccionada</source><target>Image sélectionnée</target></trans-unit>
-<trans-unit id="noImageSelected"><source>No hay imagen seleccionada</source><target>Aucune image sélectionnée</target></trans-unit>
-<trans-unit id="chartDisplayTitle">
-  <source>Visualización</source>
-  <target>Afficher</target>
-</trans-unit>
 
-<trans-unit id="chartDisplayOptionsTitle">
-  <source>Opciones de visualización</source>
-  <target>Options d'affichage</target>
-</trans-unit>
 
-<trans-unit id="chartTrendOption">
-  <source>Mostrar línea de tendencia en el gráfico</source>
-  <target>Afficher la ligne de tendance sur le graphique</target>
-</trans-unit>
 
-<trans-unit id="chartTrendOptionDescription">
-  <source>Muestra la línea de tendencia en el gráfico</source>
-  <target>Afficher la ligne de tendance sur le graphique</target>
-</trans-unit>
 
-<trans-unit id="chartComparationOption">
-  <source>Habilita la comparación con períodos anteriores</source>
-  <target>Permet la comparaison avec les périodes précédentes</target>
-</trans-unit>
 
-<trans-unit id="chartComparationOptionDescription">
-  <source>Compara con datos de períodos anteriores</source>
-  <target>Comparer avec les données des périodes précédentes</target>
-</trans-unit>
 
-<trans-unit id="tooltipBlockedByComparative">
-  <source>Bloqueado porque comparativa está activa</source>
-  <target>Bloqué car la comparaison est active</target>
-</trans-unit>
 
-<trans-unit id="tooltipBlockedByTrendOrPrediction">
-  <source>Bloqueado porque tendencia o predicción está activa</source>
-  <target>Bloqué car la tendance ou la prédiction est active</target>
-</trans-unit>
 
-<trans-unit id="showLegend">
-  <source>Mostrar Leyenda</source>
-  <target>Afficher la légende</target>
-</trans-unit>
 
-<trans-unit id="internRadius">
-  <source>Radio Interno</source>
-  <target>Radio interne</target>
-</trans-unit>
 
-<trans-unit id="useGradient">
-  <source>Usar Gradiente</source>
-  <target>Utiliser un dégradé</target>
-</trans-unit>
 
-<trans-unit id="useRoundedBars">
-  <source>Redondear barras</source>
-  <target>Arrondir les barres</target>
-</trans-unit>
 
-<trans-unit id="chartRoundedBarsOptionDescription">
-  <source>Redondea la punta de las barras</source>
-  <target>Arrondit la pointe des barres</target>
-</trans-unit>
 
-<trans-unit id="chartLegendOptionDescription">
-  <source>Muestra la leyenda del gráfico</source>
-  <target>Afficher la légende du graphique</target>
-</trans-unit>
 
-<trans-unit id="showGridLines">
-  <source>Mostrar Líneas Guía</source>
-  <target>Afficher les lignes de grille</target>
-</trans-unit>
 
-<trans-unit id="chartGridLinesOptionDescription">
-  <source>Muestra u oculta las líneas guía del gráfico</source>
-  <target>Afficher ou masquer les lignes de grille du graphique</target>
-</trans-unit>
 
-<trans-unit id="chartAnimation">
-  <source>Animar Gráfico</source>
-  <target>Animer le graphique</target>
-</trans-unit>
 
-<trans-unit id="chartAnimationOptionDescription">
-  <source>Anima la aparición de los datos al cargar el gráfico</source>
-  <target>Anime l'apparition des données lors du chargement du graphique</target>
-</trans-unit>
 
-<trans-unit id="histogramColum">
-  <source>Columnas</source>
-  <target>Colonnes</target>
-</trans-unit>
 
-<trans-unit id="chartLabelOption">
-  <source>Muestra las etiquetas de cada segmento</source>
-  <target>Il affiche les étiquettes de chaque segment.</target>
-</trans-unit>
 
-<trans-unit id="chartLabelOptionDescription">
-  <source>Muestra el nombre de cada segmento</source>
-  <target>Affiche le nom de chaque segment</target>
-</trans-unit>
 
-<trans-unit id="chartLabelPercentOption">
-  <source>Muestra los porcentajes en las etiquetas</source>
-  <target>Affiche les pourcentages dans les étiquettes</target>
-</trans-unit>
 
-<trans-unit id="chartLabelPercentOptionDescription">
-  <source>Muestra el valor porcentual de cada segmento</source>
-  <target>Il indique la valeur en pourcentage de chaque segment</target>
-</trans-unit>
 
-<trans-unit id="uniqueColorsTab">
-  <source> Colores Únicos </source>
-  <target> Couleurs uniques </target>
-</trans-unit>
 
-<trans-unit id="chartUniqueColorsOptionDescription">
-  <source>Cada elemento tendrá un color diferente</source>
-  <target>Chaque élément aura une couleur différente</target>
-</trans-unit>
 
-<trans-unit id="chartLabelLinesOptionDescription">
-  <source>Muestra las líneas en los puntos</source>
-  <target>Représentez les lignes aux points</target>
-</trans-unit>
 
-<trans-unit id="panelOptions6">
-  <source>Pregunte a la IA</source>
-  <target>Demandez à l'IA</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaP1">
- <source>Analítica de datos sin complicaciones.</source>
-  <target>Analyse de données simple.</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaH1">
-  <source>Código Abierto</source>
-  <target>Source libre</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaP2">
-  <source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión <a href="https://www.edalitics.com" target="_blank" rel="noopener noreferrer" class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</source>
-  <target>Edalitics est une application qui peut être installée sur vos propres serveurs ou utilisée dans sa version <a href="https://www.edalitics.com" target="_blank" rel="noopener noreferrer" class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaA1">
-  <source>Ver en Github</source>
-  <target>Voir sur Github</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaH2">
-  <source>Documentación</source>
-  <target>Documentation</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaP3">
-  <source>Accede a nuestra documentación completa para aprender a sacar el máximo provecho de Edalitics.</source>
-  <target>Accédez à notre documentation complète pour découvrir comment tirer le meilleur parti de l'Edalitics.</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaA2">
-  <source>Ver Documentación</source>
-  <target>Consulter la documentation</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaH3">
-  <source>Comunidad</source>
-  <target>Communauté</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaP4">
-  <source>Únete a nuestra comunidad para compartir experiencias y obtener ayuda.</source>
-  <target>Rejoignez notre communauté pour partager vos expériences et obtenir de l'aide.</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaA3">
-  <source>Ir al Foro</source>
-  <target>Rendez-vous sur le forum</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaP5">
-  <source>Aprende a usar edalitics con nuestros tutoriales paso a paso.</source>
-  <target>Apprenez à utiliser edalitics grâce à nos tutoriels étape par étape.</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaB1">
-  <source>Crear Modelo de Datos</source>
-  <target>Créer un modèle de données</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaB2">
-  <source>Crear Informe</source>
-  <target>Créer un rapport</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaH4">
-  <source>¿Quieres probar edalitics en el cloud?</source>
-  <target>Souhaitez-vous essayer l'edalitics dans le cloud ?</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaP6">
-  <source>Edalitics te permitirá estar siempre a la última sin preocuparte por nada.</source>
-  <target>Edalitics vous permettra d'être toujours au courant sans vous soucier de rien.</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaH5">
-  <source>Tutoriales en video</source>
-  <target>Tutoriels vidéo</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaA4">
-  <source>Prueba Edalitics gratis </source>
-  <target>Essayez Edalitics gratuitement </target>
-</trans-unit>
 
-<trans-unit id="aboutEdaA5">
-  <source>Edalitics ha sido desarrollado por</source>
-  <target>Edalitics a été développé par</target>
-</trans-unit>
 
-<trans-unit id="aboutEdaP7">
-  <source>Si necesita soporte empresarial o desea solicitar nuevas funcionalidades, no dude en contactar con nosotros.</source>
-  <target>Si vous avez besoin d'assistance commerciale ou si vous souhaitez demander de nouvelles fonctionnalités, n'hésitez pas à nous contacter.</target>
-</trans-unit>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <trans-unit id="multiSelectDefaultLabel">
   <source>Selecciona un grupo *</source>
   <target>Sélectionnez un groupe *</target>
 </trans-unit>
 
-<trans-unit id="allElementsConnected">
-  <source>Todos los elementos están conectados</source>
-  <target>Tous les éléments sont connectés</target>
-</trans-unit>
 
-<trans-unit id="dashboardFiltersMin">
-  <source>Filtros del dashboard</source>
-  <target>Filtres du tableau de bord</target>
-</trans-unit>
 
-<trans-unit id="noConnection">
-  <source>No hay conexiones activas</source>
-  <target>Il n'y a aucune connexion active</target>
-</trans-unit>
 
-<trans-unit id="select1to1">
-  <source>Selecciona un elemento del listado izquierdo y luego uno del listado derecho para crear una conexión 1:1.</source>
-  <target>Sélectionnez un élément dans la liste de gauche, puis un autre dans la liste de droite pour créer une connexion 1:1.</target>
-</trans-unit>
 
-<trans-unit id="connectDashboardPanel">
-  <source>Conecta los filtros entre el dashboard y el panel, (los únicos filtros de panel que se visualizan son aquellos cuyo tipo de filtro es IN)</source>
-  <target>Connectez les filtres entre le tableau de bord et le panneau (les seuls filtres de panneau affichés sont ceux dont le type de filtre est IN)</target>
-</trans-unit>
 
-<trans-unit id="mapFilters">
-  <source>Mapear Filtros</source>
-  <target>Filtres de carte</target>
-</trans-unit>
 
-<trans-unit id="searcherInput">
-  <source>Buscador</source>
-  <target>Chercheur</target>
-</trans-unit>
 
-<trans-unit id="manageDBModels">
-  <source>Gestiona la importación y exportación de fuentes de datos</source>
-  <target>Gère l'importation et l'exportation des sources de données</target>
-</trans-unit>
 
-<trans-unit id="SelectModelToExport">
-  <source>Selecciona una fuente de datos para exportar</source>
-  <target>Sélectionnez une source de données à exporter</target>
-</trans-unit>
 
-<trans-unit id="SelectDashboardToExport">
-  <source>Selecciona un dashboard para exportar</source>
-  <target>Sélectionnez un tableau de bord à exporter</target>
-</trans-unit>
 
-<trans-unit id="SelectModel">
-  <source>Selecciona una fuente de datos</source>
-  <target>Sélectionnez une source de données</target>
-</trans-unit>
 
-<trans-unit id="SelectDashboard">
-  <source>Selecciona un dashboard</source>
-  <target>Sélectionnez un tableau de bord</target>
-</trans-unit>
 
-<trans-unit id="UploadModel">
-  <source>Sube un archivo de modelo</source>
-  <target>Téléverser un fichier modèle</target>
-</trans-unit>
 
-<trans-unit id="UploadDashboard">
-  <source>Sube un archivo de dashboard</source>
-  <target>Téléverser un fichier de tableau de bord</target>
-</trans-unit>
 
-<trans-unit id="export">
-  <source>Exportar</source>
-  <target>Exporter</target>
-</trans-unit>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <trans-unit id="import">
   <source>Importar</source>
   <target>Matière</target>
 </trans-unit>
 
-<trans-unit id="clickToUpload">
-  <source>Click para subir</source>
-  <target>Cliquez pour télécharger</target>
-</trans-unit>
 
-<trans-unit id="dragDrop">
-  <source> o arrastra y suelta</source>
-  <target> ou glisser-déposer</target>
-</trans-unit>
 
-<trans-unit id="manageModels">
-  <source>Gestiona la importación y exportación de modelos</source>
-  <target>Gérer l'importation et l'exportation des modèles</target>
-</trans-unit>
 
-<trans-unit id="manageDashboards">
-  <source>Gestiona la importación y exportación de dashboards</source>
-  <target>Gérer l'importation et l'exportation des tableaux de bord</target>
-</trans-unit>
 
-<trans-unit id="askPanelData">
-  <source>Pregunta sobre los datos de tu panel ...</source>
-  <target>Renseignez-vous sur les données de votre panel ...</target>
-</trans-unit>
 
-<trans-unit id="askEdaliticsText">
-  <source>Pregúntale a Edalitics</source>
-  <target>Demandez à Edalitics</target>
-</trans-unit>
 
-<trans-unit id="GPTChat">
-  <source>Chat con ChatGPT</source>
-  <target>Discutez avec ChatGPT</target>
-</trans-unit>
 
-<trans-unit id="escribiendo">
-  <source>Escribiendo...</source>
-  <target>En écrivant...</target>
-</trans-unit>
 
-<trans-unit id="escribeMensaje">
-  <source>Escribe tu mensaje...</source>
-  <target>Écrivez votre message...</target>
-</trans-unit>
 
-<trans-unit id="enviar">
-  <source>Enviar</source>
-  <target>Envoyer</target>
-</trans-unit>
 
-<trans-unit id="viewName">
-  <source>Introduzca el nombre de la vista</source>
-  <target>Saisissez le nom de la vue</target>
-</trans-unit>
 
-<trans-unit id="viewDescription">
-  <source>Introduce una breve descripción</source>
-  <target>Veuillez saisir une brève description</target>
-</trans-unit>
 
-<trans-unit id="viewTNameP">
-  <source>Introduzca el identificador técnico</source>
-  <target>Saisissez l'identifiant technique</target>
-</trans-unit>
 
-<trans-unit id="enterSQLExpression">
-  <source>Ingrese su consulta SQL aquí</source>
-  <target>Saisissez votre requête SQL ici</target>
-</trans-unit>
 
-<trans-unit id="generating">
-  <source>Generando...</source>
-  <target>Générateur...</target>
-</trans-unit>
 
-<trans-unit id="selectedTags">
-  <source>Tags seleccionados</source>
-  <target>Étiquettes sélectionnées</target>
-</trans-unit>
 
-<trans-unit id="SSLConnection">
-  <source>Conexión sin SSL</source>
-  <target>Connexion sans SSL</target>
-</trans-unit>
 
-<trans-unit id="emptyMessageTags">
-  <source>No se encontraron resultados</source>
-  <target>Aucun résultat n'a été trouvé.</target>
-</trans-unit>
 
-<trans-unit id="dimensionLabel">
-  <source>Dimension</source>
-  <target>Dimension</target>
-</trans-unit>
 
-<trans-unit id="factLabel">
-  <source>Hecho</source>
-  <target>Fait</target>
-</trans-unit>
 
-<trans-unit id="viewLabel">
-  <source>Vista</source>
-  <target>Voir</target>
-</trans-unit>
 
-<trans-unit id="tagCreated">
-  <source>Etiqueta creada correctamente</source>
-  <target>Étiquette créée avec succès</target>
-</trans-unit>
 
-<trans-unit id="tagAssigned">
-  <source>Etiqueta asignada correctamente</source>
-  <target>Étiquette correctement attribuée</target>
-</trans-unit>
 
-<trans-unit id="validCredentials">
-  <source>Las credenciales son válidas</source>
-  <target>Les identifiants sont valides</target>
-</trans-unit>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <trans-unit id="DatasourceTitle">
   <source>Fuente de datos </source>
   <target>Source de données </target>
 </trans-unit>
 
-<trans-unit id="Cargando">
-  <source>Cargando... </source>
-  <target>Chargement... </target>
-</trans-unit>
 
-<trans-unit id="Initial">
-  <source>Inicio</source>
-  <target>Commencer</target>
-</trans-unit>
 
-<trans-unit id="Final">
-  <source>Final</source>
-  <target>Fin</target>
-</trans-unit>
 
-<trans-unit id="DashboardUpdatedInfo">
-  <source>El dashboard ha sido actualizado correctamente.</source>
-  <target>Le tableau de bord a été mis à jour avec succès.</target>
-</trans-unit>
 
-<trans-unit id="dsConnectionRefused">
-  <source>No se ha podido conectar a la base de datos.</source>
-  <target>Nous n'avons pas pu nous connecter à la base de données.</target>
-</trans-unit>
 
-<trans-unit id="searchDatasource">
-  <source>Buscar fuente de datos</source>
-  <target>Recherche de la source de données</target>
-</trans-unit>
+
+
+
+
+
+
 
 <trans-unit id="selectPalette">
   <source>-- Seleccione una paleta --</source>
   <target>-- Sélectionnez une palette --</target>
 </trans-unit>
 
-<trans-unit id="scenarios">
-  <source>Escenarios</source>
-  <target>Scénarios</target>
-</trans-unit>
 
-<trans-unit id="AdvanceOptions">
-  <source>Opciones avanzadas</source>
-  <target>Options avancées</target>
-</trans-unit>
 
-<trans-unit id="condition">
-  <source>Condición</source>
-  <target>Condition</target>
-</trans-unit>
 
-<trans-unit id="alertColor">
-  <source>Color de la alerta</source>
-  <target>Couleur d'alerte</target>
-</trans-unit>
 
-<trans-unit id="noAlertsConfigured">
-  <source>No hay alertas configuradas </source>
-  <target>Aucune alerte n'est configurée</target>
-</trans-unit>
 
-<trans-unit id="alertsConfigured">
-  <source>Alertas configuradas </source>
-  <target>Alertes configurées</target>
-</trans-unit>
 
-<trans-unit id="lessThan">
-  <source>Menor que </source>
-  <target>Moins que</target>
-</trans-unit>
 
-<trans-unit id="equalTo">
-  <source>Igual a </source>
-  <target>Égal à</target>
-</trans-unit>
 
-<trans-unit id="greaterThan">
-  <source>Mayor que</source>
-  <target>Supérieur à</target>
-</trans-unit>
 
-<trans-unit id="thresholdValue">
-  <source>Valor umbral</source>
-  <target>Valeur seuil</target>
-</trans-unit>
 
-<trans-unit id="numValTrigAlert">
-  <source>Valor numérico que activará la alerta</source>
-  <target>Valeur numérique qui déclenchera l'alerte</target>
-</trans-unit>
+
+
+
+
+
+
+
+
+
+
+
 
 <trans-unit id="thresholdValuePercent">
   <source>Valor umbral (%)</source>
@@ -4729,95 +4470,44 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Quand le % est</target>
 </trans-unit>
 
-<trans-unit id="textChangeColor">
-  <source>el texto cambiará a este color</source>
-  <target>le texte changera de couleur</target>
-</trans-unit>
 
-<trans-unit id="value">
-  <source>Valor</source>
-  <target>Valeur</target>
-</trans-unit>
 
-<trans-unit id="actions">
-  <source>Acciones</source>
-  <target>Actes</target>
-</trans-unit>
 
-<trans-unit id="orderAlerts">
-  <source>Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.</source>
-  <target>Les alertes seront appliquées dans l'ordre de leur création. Cliquez sur le bouton X pour supprimer une alerte.</target>
-</trans-unit>
 
-<trans-unit id="useFormAlertConfigure">
-  <source>Configure una alerta usando el formulario de arriba para visualizar cambios en el gráfico.</source>
-  <target>Configurez une alerte à l'aide du formulaire ci-dessus pour visualiser les modifications apportées au graphique.</target>
-</trans-unit>
 
-<trans-unit id="dashboardSidebarNewText">
-  <source>Nuevo texto</source>
-  <target>Nouveau texte</target>
-</trans-unit>
 
-<trans-unit id="dashboardSidebarNewFilter">
-  <source>Nuevo filtro</source>
-  <target>Nouveau filtre</target>
-</trans-unit>
 
-<trans-unit id="dashboardSidebarEditFilter">
-  <source>Editar filtro</source>
-  <target>Modifier le filtre</target>
-</trans-unit>
 
-<trans-unit id="dashboardSidebarImportPanel">
-  <source>Importar panel</source>
-  <target>Panneau d'importation</target>
-</trans-unit>
 
-<trans-unit id="dashboardSidebarRefreshDashboard">
-  <source>Recargar informe</source>
-  <target>Recharger le rapport</target>
-</trans-unit>
+
+
+
+
+
+
+
+
+
+
 
 <trans-unit id="dashboardSidebarCompactPanels">
   <source>Compactar paneles</source>
   <target>Compacter les panneaux</target>
 </trans-unit>
 
-<trans-unit id="dashboardSidebarDashboardPrivacity">
-  <source>Privacidad informe</source>
-  <target>Rapport sur la confidentialité</target>
-</trans-unit>
 
-<trans-unit id="dashboardSidebarLiveDashboard">
-  <source>Live Dashboard</source>
-  <target>Live Dashboard</target>
-</trans-unit>
 
-<trans-unit id="secondsToRefresh">
-  <source>Segundos para refrescar</source>
-  <target>Secondes pour rafraîchir</target>
-</trans-unit>
 
-<trans-unit id="dashboardSidebarSave">
-  <source>Guardar</source>
-  <target>Garder</target>
-</trans-unit>
 
-<trans-unit id="dashboardSidebarSaveAs">
-  <source>Guardar como</source>
-  <target>Enregistrer sous</target>
-</trans-unit>
 
-<trans-unit id="dashboardSidebarDeleteDashboard">
-  <source>Eliminar informe</source>
-  <target>Supprimer le rapport</target>
-</trans-unit>
 
-<trans-unit id="dashboardSidebarMoreOptions">
-  <source>Más opciones</source>
-  <target>Plus d'options</target>
-</trans-unit>
+
+
+
+
+
+
+
 
 <trans-unit id="dashboardSidebarEditStyles">
   <source>Editar estilos</source>
@@ -4834,115 +4524,49 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Modifier le style du panneau</target>
 </trans-unit>
 
-<trans-unit id="dashboardSidebarDownloadPDF">
-  <source>Descargar PDF</source>
-  <target>Télécharger le PDF</target>
-</trans-unit>
 
-<trans-unit id="dashboardSidebarDownloadImage">
-  <source>Descargar imagen</source>
-  <target>Télécharger l'image</target>
-</trans-unit>
 
-<trans-unit id="dashboardSidebarDownloadExcel">
-  <source>Descargar Excel</source>
-  <target>Télécharger Excel</target>
-</trans-unit>
 
-<trans-unit id="dashboardSidebarDownload">
-  <source>Descargar</source>
-  <target>Télécharger</target>
-</trans-unit>
 
-<trans-unit id="dashboardSidebarCustomAction">
-  <source>Acción personalizada</source>
-  <target>Action personnalisée</target>
-</trans-unit>
 
-<trans-unit id="deleteBtn">
-  <source>Eliminar</source>
-  <target>Éliminer</target>
-</trans-unit>
 
-<trans-unit id="valueKPI">
-  <source>Cuando el valor KPI es</source>
-  <target>Lorsque la valeur de KPI est</target>
-</trans-unit>
 
-<trans-unit id="alertsPreview">
-  <source>Vista previa:</source>
-  <target>Aperçu:</target>
-</trans-unit>
 
-<trans-unit id="enableFilters">
-  <source>Click en filtros habilitado</source>
-  <target>Cliquez sur les filtres activés</target>
-</trans-unit>
 
-<trans-unit id="disableFilters">
-  <source>Click en filtros deshabilitado</source>
-  <target>Cliquez sur les filtres désactivés</target>
-</trans-unit>
 
-<trans-unit id="selectFileImport">
-  <source>Por favor selecciona un archivo para importar</source>
-  <target>Veuillez sélectionner un fichier à importer</target>
-</trans-unit>
 
-<trans-unit id="logarithmicScale">
-  <source>Escala logarítmica</source>
-  <target>Échelle logarithmique</target>
-</trans-unit>
 
-<trans-unit id="activeMouseFunctions">
-  <source>Activar funciones del ratón</source>
-  <target>Activer les fonctions de la souris</target>
-</trans-unit>
 
-<trans-unit id="enableBaseLayer">
-  <source>Activar capa base</source>
-  <target>Activer la couche de base</target>
-</trans-unit>
 
-<trans-unit id="logarithmicScaleTooltip">
-  <source>Aplica escala logarítmica a los valores del mapa</source>
-  <target>Applique une échelle logarithmique aux valeurs de la carte</target>
-</trans-unit>
 
-<trans-unit id="activeMouseFunctionsTooltip">
-  <source>Permite arrastrar y hacer zoom con el ratón</source>
-  <target>Permet de faire glisser et de zoomer avec la souris</target>
-</trans-unit>
 
-<trans-unit id="enableBaseLayerTooltip">
-  <source>Muestra u oculta la capa base del mapa</source>
-  <target>Afficher ou masquer la couche de base de la carte</target>
-</trans-unit>
 
-<trans-unit id="layerColor">
-  <source>Color de capa</source>
-  <target>Couleur de couche</target>
-</trans-unit>
 
-<trans-unit id="topleftPosition">
-  <source>Superior izquierda</source>
-  <target>En haut à gauche</target>
-</trans-unit>
 
-<trans-unit id="bottomleftPosition">
-  <source>Inferior izquierda</source>
-  <target>En bas à gauche</target>
-</trans-unit>
 
-<trans-unit id="toprightPosition">
-  <source>Superior derecha</source>
-  <target>En haut à droite</target>
-</trans-unit>
 
-<trans-unit id="bottomrightPosition">
-  <source>Inferior derecha</source>
-  <target>En bas à droite</target>
-</trans-unit>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <trans-unit id="selectDashboardPrivacity">
   <source>Selecciona la privacidad del informe</source>

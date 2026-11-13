@@ -106,6 +106,10 @@
         <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
         <target>Ci sono modifiche non salvate. Sei sicuro di voler uscire?</target>
       </trans-unit>
+      <trans-unit id="dashboardSidebarCompactPanels" datatype="html">
+        <source> Compactar paneles</source>
+        <target> Comprimi pannelli</target>
+      </trans-unit>
 <!-- SECTION: GESTIÓN DE INFORMES (DASHBOARDS) -->
 
       <trans-unit id="urlString" datatype="html">
@@ -642,6 +646,14 @@
       <trans-unit id="ResetZoom" datatype="html">
         <source>Restablecer (100%)</source>
         <target>Ripristina (100%)</target>
+      </trans-unit>
+      <trans-unit id="editPanelStyleTitle" datatype="html">
+        <source>Editar estilo del panel</source>
+        <target>Modifica stile del pannello</target>
+      </trans-unit>
+      <trans-unit id="panelOptionsEditStyle" datatype="html">
+        <source>Editar estilo del panel</source>
+        <target>Modifica stile del pannello</target>
       </trans-unit>
 <!-- SECTION: TIPOS DE GRÁFICOS Y DOCUMENTACIÓN -->
 
@@ -1636,6 +1648,86 @@
       <trans-unit id="inputTipoTabla" datatype="html">
         <source> Tipo de tabla </source>
         <target> Tipo di tabella </target>
+      </trans-unit>
+      <trans-unit id="dsGroupSql" datatype="html">
+        <source>Bases de datos SQL</source>
+        <target>Database SQL</target>
+      </trans-unit>
+      <trans-unit id="dsGroupFiles" datatype="html">
+        <source>Archivos</source>
+        <target>File</target>
+      </trans-unit>
+      <trans-unit id="dsGroupWeb" datatype="html">
+        <source>Servicios web</source>
+        <target>Servizi web</target>
+      </trans-unit>
+      <trans-unit id="dsGroupConnectors" datatype="html">
+        <source>Conectores</source>
+        <target>Connettori</target>
+      </trans-unit>
+      <trans-unit id="shopifyShopLabel" datatype="html">
+        <source> URL de la tienda <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> URL del negozio <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="shopifyFolderLabel" datatype="html">
+        <source> Nombre de carpeta <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Nome della cartella <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="shopifyClientIdLabel" datatype="html">
+        <source> ID de cliente <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> ID cliente <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="shopifyClientIdHint" datatype="html">
+        <source> Encuéntralo en tu app de Shopify Partners → Credenciales → ID de cliente </source>
+        <target> Lo trovi nella tua app Shopify Partners → Credenziali → ID cliente </target>
+      </trans-unit>
+      <trans-unit id="shopifyClientSecretLabel" datatype="html">
+        <source> Secreto <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Segreto <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="shopifyClientSecretHint" datatype="html">
+        <source> Encuéntralo en tu app de Shopify Partners → Credenciales → Secreto </source>
+        <target> Lo trovi nella tua app Shopify Partners → Credenziali → Segreto </target>
+      </trans-unit>
+      <trans-unit id="shopifyAuthLabel" datatype="html">
+        <source> Autorización <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Autorizzazione <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="shopifyAuthButton" datatype="html">
+        <source>Autorizar con Shopify</source>
+        <target>Autorizza con Shopify</target>
+      </trans-unit>
+      <trans-unit id="shopifyAuthError" datatype="html">
+        <source> Error durante la autorización. Inténtalo de nuevo. </source>
+        <target> Errore durante l'autorizzazione. Riprova. </target>
+      </trans-unit>
+      <trans-unit id="shopifyAuthWaiting" datatype="html">
+        <source>Esperando autorización en la ventana emergente...</source>
+        <target>In attesa di autorizzazione nella finestra popup...</target>
+      </trans-unit>
+      <trans-unit id="shopifyAuthSuccess" datatype="html">
+        <source>Tienda Shopify autorizada correctamente</source>
+        <target>Negozio Shopify autorizzato con successo</target>
+      </trans-unit>
+      <trans-unit id="shopifyAuthRevoke" datatype="html">
+        <source> Cambiar cuenta </source>
+        <target> Cambia account </target>
+      </trans-unit>
+      <trans-unit id="shopifyShopRequired" datatype="html">
+        <source>Debe indicar la URL de la tienda Shopify</source>
+        <target>Devi indicare l'URL del negozio Shopify</target>
+      </trans-unit>
+      <trans-unit id="shopifyCredentialsRequired" datatype="html">
+        <source>Debe proporcionar el ID de cliente y el Secreto de la app Shopify</source>
+        <target>Devi fornire l'ID cliente e il Segreto dell'app Shopify</target>
+      </trans-unit>
+      <trans-unit id="shopifyAuthRequired" datatype="html">
+        <source>Debes autorizar el acceso a Shopify primero</source>
+        <target>Devi prima autorizzare l'accesso a Shopify</target>
+      </trans-unit>
+      <trans-unit id="shopifyCreated" datatype="html">
+        <source>Fuente de datos Shopify creada correctamente</source>
+        <target>Fonte di dati Shopify creata con successo</target>
       </trans-unit>
 <!-- SECTION: FILTROS, AGREGACIONES Y RANGOS -->
 
