@@ -1,4 +1,7 @@
 import { Component, type ElementRef, OnInit, ViewChild, type AfterViewInit, type OnDestroy } from "@angular/core"
+import { HOME_SCREEN_BACKGROUND_COLOR, HOME_SCREEN_PARTICLE_COLOR } from "@eda/configs/customizable/customizable_default"
+
+const DEFAULT_PARTICLE_COLOR = "hsl(210, 80%, 50%)"
 
 interface Particle {
     x: number
@@ -12,7 +15,7 @@ interface Particle {
 @Component({
     selector: "app-particles-background",
     standalone: true,
-    template: "<canvas #particlesCanvas></canvas>",
+    template: `<canvas #particlesCanvas [style.background]="backgroundColor || null"></canvas>`,
     styles: [
         `
     canvas {
@@ -31,6 +34,8 @@ export class ParticlesBackgroundComponent implements AfterViewInit, OnDestroy {
     private ctx!: CanvasRenderingContext2D
     private animationFrameId: number | null = null
     private particles: Particle[] = []
+    private particleColor: string = HOME_SCREEN_PARTICLE_COLOR || DEFAULT_PARTICLE_COLOR
+    public backgroundColor: string = HOME_SCREEN_BACKGROUND_COLOR
 
     ngAfterViewInit() {
         const canvas = this.canvasRef.nativeElement
@@ -85,9 +90,11 @@ export class ParticlesBackgroundComponent implements AfterViewInit, OnDestroy {
             if (particle.y < 0) particle.y = canvas.height
             if (particle.y > canvas.height) particle.y = 0
 
+            // The color comes from a feature flag (any CSS color), so opacity is applied with globalAlpha
             this.ctx.beginPath()
             this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
-            this.ctx.fillStyle = `hsla(210, 80%, 50%, ${particle.opacity})`
+            this.ctx.fillStyle = this.particleColor
+            this.ctx.globalAlpha = particle.opacity
             this.ctx.fill()
 
             this.particles.forEach((otherParticle) => {
@@ -97,7 +104,8 @@ export class ParticlesBackgroundComponent implements AfterViewInit, OnDestroy {
 
                 if (distance < 150) {
                     this.ctx.beginPath()
-                    this.ctx.strokeStyle = `hsla(210, 80%, 50%, ${0.1 * (1 - distance / 150)})`
+                    this.ctx.strokeStyle = this.particleColor
+                    this.ctx.globalAlpha = 0.1 * (1 - distance / 150)
                     this.ctx.lineWidth = 0.8
                     this.ctx.moveTo(particle.x, particle.y)
                     this.ctx.lineTo(otherParticle.x, otherParticle.y)
@@ -105,6 +113,7 @@ export class ParticlesBackgroundComponent implements AfterViewInit, OnDestroy {
                 }
             })
         })
+        this.ctx.globalAlpha = 1
 
         this.animationFrameId = requestAnimationFrame(() => this.animate())
     }

@@ -299,3 +299,5 @@ export const PROTECTED_MODEL_ADD_PERMISSION_BUTTON_ENABLED: boolean = true; // t
 /** Data model - Protected data sources*/
 export const PROTECTED_MODEL_DATA_SOURCES_ARRAY: string[] = []; // Array of all the protected data sources
 export const SHOW_EMPTY_VALUE_IN_FILTERS: boolean = false; // true → "Vacío" option shown in global filter dropdown/dialog for null-or-empty values | false → hidden
+export const HOME_SCREEN_PARTICLE_COLOR: string = ''; // any CSS color (e.g. '#00BFB3') for the particles and the lines between them | '' → default blue
+export const HOME_SCREEN_BACKGROUND_COLOR: string = ''; // any CSS color/background (e.g. '#F5F5F5') for the login background | '' → default light gradient

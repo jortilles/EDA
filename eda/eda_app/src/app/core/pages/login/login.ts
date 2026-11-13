@@ -9,6 +9,7 @@ import { User } from '@eda/models/model.index';
 import { lastValueFrom } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 import { GOOGLE_CLIENT_ID } from '@eda/configs/config';
+import { HOME_SCREEN_PARTICLE_COLOR } from '@eda/configs/customizable/customizable_default';
 import { MsalModule, MsalService } from '@azure/msal-angular';
 import Swal from 'sweetalert2';
 
@@ -35,6 +36,7 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
     readonly subLogo = SubLogoImage
     readonly backgroundImage = BackgroundImage
     readonly currentYear = new Date().getFullYear().toString()
+    readonly orbColor = HOME_SCREEN_PARTICLE_COLOR // '' → default Tailwind orb colors
 
     loginForm: FormGroup;
     urlParams: any;
