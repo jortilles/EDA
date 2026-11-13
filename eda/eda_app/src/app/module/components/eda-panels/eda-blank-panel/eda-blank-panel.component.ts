@@ -1857,6 +1857,9 @@ public tableNodeExpand(event: any): void {
             backgroundColor: response.backgroundColor || '',
             kpiColor: response.kpiColor || '',
             prefixImage: response.prefixImage || '',
+            imageScale: response.imageScale,
+            valueFontScale: response.valueFontScale,
+            sufixFontScale: response.sufixFontScale,
         };
 
         if (response.edaChart) {
@@ -1883,6 +1886,9 @@ public tableNodeExpand(event: any): void {
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
                 prefixImage: response.prefixImage || '',
+                imageScale: response.imageScale,
+                valueFontScale: response.valueFontScale,
+                sufixFontScale: response.sufixFontScale,
             })
         );
 

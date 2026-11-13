@@ -140,6 +140,9 @@ export const ChartsConfigUtils = {
         backgroundColor: ebp.panelChart.componentRef.instance.inject.backgroundColor || '',
         kpiColor: ebp.panelChart.componentRef.instance.inject.kpiColor || '',
         prefixImage: ebp.panelChart.componentRef.instance.inject.prefixImage || '',
+        imageScale: ebp.panelChart.componentRef.instance.inject.imageScale || '',
+        valueFontScale: ebp.panelChart.componentRef.instance.inject.valueFontScale || '',
+        sufixFontScale: ebp.panelChart.componentRef.instance.inject.sufixFontScale || '',
         edaChart: {}
       }
 
