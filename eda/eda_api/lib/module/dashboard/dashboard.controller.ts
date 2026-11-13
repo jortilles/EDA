@@ -1475,7 +1475,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
           req.body.dashboard?.dashboard_id,
           req.body.dashboard?.panel_id,
           myQuery.filters,
-          req.body.dashboard?.clientMandatoryFilters
+          req.body.dashboard?.liveMandatoryFilters
         );
         if (mandatoryFilterMissing) {
           console.log('a mandatory global filter has no value, query blocked');
@@ -1863,7 +1863,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
           req.body.dashboard?.dashboard_id,
           req.body.dashboard?.panel_id,
           req.body.query?.filters,
-          req.body.dashboard?.clientMandatoryFilters
+          req.body.dashboard?.liveMandatoryFilters
         );
         if (mandatoryFilterMissing) {
           console.log('a mandatory global filter has no value, query blocked')
@@ -2872,32 +2872,33 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
    * must be refused rather than silently run unfiltered. Not used for forSelector queries: those are
    * what populate the filter's own value list / dependent filter options, so they must run even
    * while the filter has no value yet.
+   *
+   * liveMandatoryFilters: the dashboard's own in-memory mandatory filter list (id + panelList), so
+   * an unsaved change to "obligatorio" is reflected immediately, without waiting for a page reload.
    */
-  private static async isMandatoryFilterMissing(dashboardId: string, panelId: string, filters: any[], clientMandatoryFilters?: any[]): Promise<boolean> {
+  private static async isMandatoryFilterMissing(dashboardId: string, panelId: string, filters: any[],
+    liveMandatoryFilters?: { id: string; panelList: string[] }[]): Promise<boolean> {
     if (!dashboardId) return false;
 
-    const dashboard = await Dashboard.findById(dashboardId, 'config.filters').exec();
-    const definedFilters: any[] = (dashboard as any)?.config?.filters || [];
+    let mandatoryFilterIds: string[];
+    if (liveMandatoryFilters) {
+      mandatoryFilterIds = liveMandatoryFilters
+        .filter((f) => !panelId || (f.panelList || []).includes(panelId))
+        .map((f) => f.id);
+    } else {
+      const dashboard = await Dashboard.findById(dashboardId, 'config.filters').exec();
+      const definedFilters: any[] = (dashboard as any)?.config?.filters || [];
+      mandatoryFilterIds = definedFilters
+        .filter((f: any) => f.isMandatory === true && (!panelId || (f.panelList || []).includes(panelId)))
+        .map((f: any) => f.id);
+    }
 
-    const mandatoryFilters = definedFilters.filter((f: any) => {
-      const override = (clientMandatoryFilters || []).find((o: any) => o.filter_id === f.id);
-      let isMandatory: boolean;
-      if (override) {
-        isMandatory = override.isMandatory === true;
-      } else {
-        const applied = (filters || []).find((x: any) => x.filter_id === f.id);
-        const clientMandatory = applied?.isMandatory;
-        isMandatory = clientMandatory !== undefined ? clientMandatory === true : f.isMandatory === true;
-      }
-      return isMandatory && (!panelId || (f.panelList || []).includes(panelId));
-    });
-
-    if (mandatoryFilters.length === 0) return false;
+    if (mandatoryFilterIds.length === 0) return false;
 
     const noValueDateTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
 
-    return mandatoryFilters.some((mf: any) => {
-      const applied = (filters || []).find((f: any) => f.filter_id === mf.id);
+    return mandatoryFilterIds.some((mfId: string) => {
+      const applied = (filters || []).find((f: any) => f.filter_id === mfId);
       if (!applied) return true;
       if (noValueDateTypes.includes(applied.filter_type)) return false;
       return !(applied.filter_elements || []).some((el: any) => el.value1?.length > 0 || el.value2?.length > 0);

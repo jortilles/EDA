@@ -448,6 +448,15 @@ export const QueryUtils = {
     return effectiveFields;
   },
 
+  /** The dashboard's mandatory report filters, read live from the global filter bar (not the
+   * saved dashboard config), so the backend's isMandatoryFilterMissing check honors an unsaved
+   * "obligatorio" toggle immediately instead of waiting for a page reload. */
+  buildLiveMandatoryFilters: (ebp: EdaBlankPanelComponent): { id: string; panelList: string[] }[] => {
+    return (ebp.dashboard?.globalFilter?.globalFilters || [])
+      .filter((f: any) => f.isMandatory === true)
+      .map((f: any) => ({ id: f.id, panelList: f.panelList || [] }));
+  },
+
   /**
    * Builds a query object
    */
@@ -471,7 +480,8 @@ export const QueryUtils = {
       prediction: ebp.panel?.content?.query?.query?.prediction ? ebp.panel.content.query.query.prediction:'None',
       predictionConfig: ebp.panel?.content?.query?.query?.predictionConfig || undefined,
       sortedFilters: ebp.sortedFilters,
-      resultSortingColumns: ebp.resultSortingColumns
+      resultSortingColumns: ebp.resultSortingColumns,
+      liveMandatoryFilters: QueryUtils.buildLiveMandatoryFilters(ebp)
     };
     return ebp.queryBuilder.normalQuery(fields, params, ebp.selectedQueryMode);
   },
@@ -489,7 +499,8 @@ export const QueryUtils = {
       dashboard: ebp.inject.dashboard_id,
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),
       config: config.getConfig(),
-      connectionProperties: ebp.connectionProperties
+      connectionProperties: ebp.connectionProperties,
+      liveMandatoryFilters: QueryUtils.buildLiveMandatoryFilters(ebp)
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode, ebp.currentSQLQuery);
 

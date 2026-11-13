@@ -20,6 +20,7 @@ export interface QueryParams {
     rootTable?: string;
     sortedFilters?: any[];
     resultSortingColumns?: any[];
+    liveMandatoryFilters?: { id: string; panelList: string[] }[];
 }
 
 @Injectable()
@@ -123,18 +124,10 @@ export class QueryBuilderService extends ApiService {
         }
 
 
-        const filters = params.filters.filter((f) => 
-            (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0) 
+        const filters = params.filters.filter((f) =>
+            (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0)
             || ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
         );
-
-        // Current mandatory state of EVERY report filter, captured before the drop
-        // above removes the empty ones: the backend needs it to honor a mandatory
-        // toggle that has not been saved yet (a just-emptied mandatory filter is
-        // no longer in `filters`, so the DB value would wrongly block the query).
-        const clientMandatoryFilters = params.filters
-            .filter((f: any) => f.isMandatory !== undefined)
-            .map((f: any) => ({ filter_id: f.filter_id, isMandatory: f.isMandatory === true }));
 
         return {
             id: '1',
@@ -147,7 +140,7 @@ export class QueryBuilderService extends ApiService {
                 dashboard_id: params.dashboard,
                 panel_id: params.panel,
                 connectionProperties: params.connectionProperties,
-                ...(clientMandatoryFilters.length ? { clientMandatoryFilters } : {})
+                liveMandatoryFilters: params.liveMandatoryFilters
             },
             query: {
                 fields: queryColumns,

@@ -528,9 +528,16 @@ export class GlobalFilterComponent implements OnInit {
         // by another call while this one is awaiting the filter data.
         const currentFilter = this.globalFilter;
 
+        // Only panels gaining or losing this filter need their query re-run.
+        let affectedPanelIds: Set<string> | undefined;
+
         if (apply && currentFilter) {
+            affectedPanelIds = new Set<string>(currentFilter.panelList || []);
             this.dashboard.edaPanels.forEach(panel => {
                 if (!currentFilter.isdeleted) {
+                    if (panel.globalFilters.some((f: any) => f.filter_id === currentFilter.id)) {
+                        affectedPanelIds.add(panel.panel.id);
+                    }
                     panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== currentFilter.id);
                     // Reset advanced (AND/OR) filters of panels that no longer apply this report filter
                     if (!currentFilter.panelList.includes(panel.panel.id)) {
@@ -614,7 +621,7 @@ export class GlobalFilterComponent implements OnInit {
 
         this.globalFilter = undefined;
         this.cdr.detectChanges();
-        this.dashboard.refreshPanels();
+        this.dashboard.refreshPanels(affectedPanelIds ? Array.from(affectedPanelIds) : undefined);
     }
 
     public deleteFilterEvent(event: any) {
