@@ -5337,8 +5337,8 @@
 </context-group>
 </trans-unit>
 <trans-unit id="panelsSelectedLabel" datatype="html">
-<source>{0} paneles seleccionados</source>
-<target>{0} Panels ausgewählt</target>
+<source>&#123;0&#125; paneles seleccionados</source>
+<target>&#123;0&#125; Panels ausgewählt</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
 </context-group>
@@ -5616,7 +5616,7 @@
 
 Este es un texto de prueba para el correo. Reemplaza este contenido por tu mensaje real.
 
-Primer KPI — ${p1.title}: ${p1.value}
+Primer KPI — $&#123;p1.title&#125;: $&#123;p1.value&#125;
 
 &quot;&quot;CODE
 if p1.value &gt; 0
@@ -5626,7 +5626,7 @@ else
 end
 CODE&quot;&quot;
 </source>
-        <target>Hallo,\n\nDies ist ein Testtext für die E-Mail. Ersetzen Sie diesen Inhalt durch Ihre eigentliche Nachricht.\n\nErster KPI — ${p1.title}: ${p1.value}\n\n&quot;&quot;CODE\nif p1.value &gt; 0\n  Der KPI hat einen positiven Wert.\nelse\n  Für den KPI sind keine Daten verfügbar.\nend\nCODE&quot;&quot;</target>
+        <target>Hallo,\n\nDies ist ein Testtext für die E-Mail. Ersetzen Sie diesen Inhalt durch Ihre eigentliche Nachricht.\n\nErster KPI — $&#123;p1.title&#125;: $&#123;p1.value&#125;\n\n&quot;&quot;CODE\nif p1.value &gt; 0\n  Der KPI hat einen positiven Wert.\nelse\n  Für den KPI sind keine Daten verfügbar.\nend\nCODE&quot;&quot;</target>
       </trans-unit>
       <trans-unit id="mailRefVarTitle" datatype="html">
         <source>el título del KPI</source>
@@ -5653,13 +5653,13 @@ CODE&quot;&quot;
         <target>alle Kategorien mit ihrem Wert</target>
       </trans-unit>
       <trans-unit id="mailRefExample" datatype="html">
-        <source>Asunto: Resumen de ${p1.title}
+        <source>Asunto: Resumen de $&#123;p1.title&#125;
 
 Hola,
 
-El valor de ${p1.title} es ${p1.value}.
-Media por categoría: ${p1.value.average}
-Categoría más alta: ${p1.value.top}
+El valor de $&#123;p1.title&#125; es $&#123;p1.value&#125;.
+Media por categoría: $&#123;p1.value.average&#125;
+Categoría más alta: $&#123;p1.value.top&#125;
 
 &quot;&quot;CODE
 if p1.value &gt; 1000000
@@ -5672,9 +5672,9 @@ end
 CODE&quot;&quot;
 
 Desglose por categoría:
-${p1.value.breakdown}
+$&#123;p1.value.breakdown&#125;
 </source>
-        <target>Betreff: Zusammenfassung von ${p1.title}\n\nHallo,\n\nDer Wert von ${p1.title} ist ${p1.value}.\nDurchschnitt pro Kategorie: ${p1.value.average}\nHöchste Kategorie: ${p1.value.top}\n\n&quot;&quot;CODE\nif p1.value &gt; 1000000\n  Ausgezeichneter Monat 🎉\nelif p1.value &gt; 500000\n  Ordentlicher Monat\nelse\n  Unter den Erwartungen\nend\nCODE&quot;&quot;\n\nAufschlüsselung nach Kategorie:\n${p1.value.breakdown}</target>
+        <target>Betreff: Zusammenfassung von $&#123;p1.title&#125;\n\nHallo,\n\nDer Wert von $&#123;p1.title&#125; ist $&#123;p1.value&#125;.\nDurchschnitt pro Kategorie: $&#123;p1.value.average&#125;\nHöchste Kategorie: $&#123;p1.value.top&#125;\n\n&quot;&quot;CODE\nif p1.value &gt; 1000000\n  Ausgezeichneter Monat 🎉\nelif p1.value &gt; 500000\n  Ordentlicher Monat\nelse\n  Unter den Erwartungen\nend\nCODE&quot;&quot;\n\nAufschlüsselung nach Kategorie:\n$&#123;p1.value.breakdown&#125;</target>
       </trans-unit>
       <trans-unit id="mailRefResult" datatype="html">
         <source>Asunto: Resumen de «Ventas 2024»

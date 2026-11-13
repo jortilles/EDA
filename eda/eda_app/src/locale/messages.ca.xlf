@@ -7140,8 +7140,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="panelsSelectedLabel" datatype="html">
-<source>{0} paneles seleccionados</source>
-<target>{0} panells seleccionats</target>
+<source>&#123;0&#125; paneles seleccionados</source>
+<target>&#123;0&#125; panells seleccionats</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/click-filter-config-dialog/click-filter-config.dialog.html</context>
 </context-group>
@@ -7471,7 +7471,7 @@ Qué estic veient?
 
 Este es un texto de prueba para el correo. Reemplaza este contenido por tu mensaje real.
 
-Primer KPI — ${p1.title}: ${p1.value}
+Primer KPI — $&#123;p1.title&#125;: $&#123;p1.value&#125;
 
 ""CODE
 if p1.value > 0
@@ -7485,7 +7485,7 @@ CODE""
 
 Aquest és un text de prova per al correu. Reemplaça aquest contingut pel teu missatge real.
 
-Primer KPI — ${p1.title}: ${p1.value}
+Primer KPI — $&#123;p1.title&#125;: $&#123;p1.value&#125;
 
 ""CODE
 if p1.value > 0
@@ -7521,13 +7521,13 @@ CODE""
     <target>totes les categories amb el seu valor</target>
   </trans-unit>
   <trans-unit id="mailRefExample">
-    <source>Asunto: Resumen de ${p1.title}
+    <source>Asunto: Resumen de $&#123;p1.title&#125;
 
 Hola,
 
-El valor de ${p1.title} es ${p1.value}.
-Media por categoría: ${p1.value.average}
-Categoría más alta: ${p1.value.top}
+El valor de $&#123;p1.title&#125; es $&#123;p1.value&#125;.
+Media por categoría: $&#123;p1.value.average&#125;
+Categoría más alta: $&#123;p1.value.top&#125;
 
 ""CODE
 if p1.value > 1000000
@@ -7540,15 +7540,15 @@ end
 CODE""
 
 Desglose por categoría:
-${p1.value.breakdown}
+$&#123;p1.value.breakdown&#125;
 </source>
-    <target>Assumpte: Resum de ${p1.title}
+    <target>Assumpte: Resum de $&#123;p1.title&#125;
 
 Hola,
 
-El valor de ${p1.title} és ${p1.value}.
-Mitjana per categoria: ${p1.value.average}
-Categoria més alta: ${p1.value.top}
+El valor de $&#123;p1.title&#125; és $&#123;p1.value&#125;.
+Mitjana per categoria: $&#123;p1.value.average&#125;
+Categoria més alta: $&#123;p1.value.top&#125;
 
 ""CODE
 if p1.value > 1000000
@@ -7561,7 +7561,7 @@ end
 CODE""
 
 Desglossament per categoria:
-${p1.value.breakdown}
+$&#123;p1.value.breakdown&#125;
 </target>
   </trans-unit>
   <trans-unit id="mailRefResult">
@@ -8523,72 +8523,6 @@ Salutacions.</target>
 <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
 <context context-type="linenumber">4</context>
 </context-group>
-</trans-unit>
-<trans-unit id="firstAboutParagraphSpan" datatype="html">
-  <source>  
-                <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar 
-                informes gráficos e interactivos de forma sencilla. Edalitics es una aplicación que se puede instalar
-                en tus propios servidores o se puede difrutar en su versión SaaS 
-                <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>. 
-                Edalitics permite disfrutar de toda la potencia de Edalitics sin tener que preocuparte de instalaciones, 
-                configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.  </source>
-  <target>
-                <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> és una aplicació web de codi lliure que permet realitzar
-                 informes gràfics i interactius de forma senzilla. Edalitics és una aplicació que es pot instal·lar
-                 als teus propis servidors o es pot gaudir en la seva versió SaaS
-                 <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>.
-                 Edalitics permet gaudir de tota la potència d'Edalitics sense haver de preocupar-te d'instal·lacions,
-                 configuracions, actualitzacions, etc. Connectes les teves fonts de dades i llest. </target>
-  <context-group purpose="location">
-    <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-    <context context-type="linenumber">7</context>
-  </context-group>
-</trans-unit>
-<trans-unit id="secondAboutParagraph" datatype="html">
-  <source>
-                Edalitics ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
-                Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
-                funcionalidades o carácteristicas. Jortilles financia el desarrollo de Edalitics mediante las suscripciones a Edalitics
-                y el soporte empresarial que ofrece a sus clientes.  </source>
-  <target>
-                Edalitics ha estat desenvolupat per <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
-                 Si necessiteu suport empresarial, no dubteu a contactar amb nosaltres. Així mateix com si voleu sol·licitar-ne de noves
-                 funcionalitats o característiques. Jortilles finança el desenvolupament d'Edalitics mitjançant les subscripcions a Edalitics
-                 i el suport empresarial que ofereix als clients. </target>
-  <context-group purpose="location">
-    <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-    <context context-type="linenumber">15</context>
-  </context-group>
-</trans-unit>
-<trans-unit id="thirdAboutParagraph" datatype="html">
-  <source>
-   El código fuente de Edalitics está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
-  </source>
-  <target>
-   El codi font d'Edalitics està disponible a <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
-  </target>
-  <context-group purpose="location">
-    <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-    <context context-type="linenumber">19</context>
-  </context-group>
-</trans-unit>
-<trans-unit id="fourthAboutParagraph" datatype="html">
-  <source>
-   La documentación de Edalitics está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
-  </source>
-  <target>
-  La documentació d'Edalitics està disponible a <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Aquest Link</a>
-  </target>
-</trans-unit>
-<trans-unit id="fifthAboutParagraph" datatype="html">
-  <source>
-                  Existe un foro donde puedes compartir tu experiencia con la comunidad en  
-                <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Este Link</a>
-  </source>
-  <target>
-                 Hi ha un fòrum on pots compartir la teva experiència amb la comunitat a
-                 <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Aquest Link</a>
-  </target>
 </trans-unit>
   <trans-unit id="eliminarInforme">
     <source>ELIMINAR INFORME</source>

@@ -402,9 +402,9 @@ function processLocale({
             parser,
             issues,
         });
-    } else {
-        add('warning', 'custom-missing', `no ${rel(projectRoot, paths.custom)}, locale left as upstream`);
     }
+    // A missing custom_messages file is expected: it's an optional per-deployment override
+    // layer, not every locale needs one. Nothing to warn about - the locale just uses the base catalog.
 
     // A structurally invalid input cannot produce a usable output: the parse
     // diagnostics are already reported, so nothing is generated for this locale.

@@ -2137,8 +2137,8 @@
         <target>Adicionar painel...</target>
       </trans-unit>
       <trans-unit id="panelsSelectedLabel" datatype="html">
-        <source>{0} paneles seleccionados</source>
-        <target>{0} painéis selecionados</target>
+        <source>&#123;0&#125; paneles seleccionados</source>
+        <target>&#123;0&#125; painéis selecionados</target>
       </trans-unit>
 <!-- SECTION: SELECTOR DE FECHAS (DATEPICKER) -->
 
@@ -5625,7 +5625,7 @@
 
 Este es un texto de prueba para el correo. Reemplaza este contenido por tu mensaje real.
 
-Primer KPI — ${p1.title}: ${p1.value}
+Primer KPI — $&#123;p1.title&#125;: $&#123;p1.value&#125;
 
 &quot;&quot;CODE
 if p1.value &gt; 0
@@ -5639,7 +5639,7 @@ CODE&quot;&quot;
 
 Este é um texto de teste para o email. Substitua este conteúdo pela sua mensagem real.
 
-Primeiro KPI — ${p1.title}: ${p1.value}
+Primeiro KPI — $&#123;p1.title&#125;: $&#123;p1.value&#125;
 
 &quot;&quot;CODE
 if p1.value &gt; 0
@@ -5675,13 +5675,13 @@ CODE&quot;&quot;
         <target>todas as categorias com o seu valor</target>
       </trans-unit>
       <trans-unit id="mailRefExample" datatype="html">
-        <source>Asunto: Resumen de ${p1.title}
+        <source>Asunto: Resumen de $&#123;p1.title&#125;
 
 Hola,
 
-El valor de ${p1.title} es ${p1.value}.
-Media por categoría: ${p1.value.average}
-Categoría más alta: ${p1.value.top}
+El valor de $&#123;p1.title&#125; es $&#123;p1.value&#125;.
+Media por categoría: $&#123;p1.value.average&#125;
+Categoría más alta: $&#123;p1.value.top&#125;
 
 &quot;&quot;CODE
 if p1.value &gt; 1000000
@@ -5694,15 +5694,15 @@ end
 CODE&quot;&quot;
 
 Desglose por categoría:
-${p1.value.breakdown}
+$&#123;p1.value.breakdown&#125;
 </source>
-        <target>Assunto: Resumo de ${p1.title}
+        <target>Assunto: Resumo de $&#123;p1.title&#125;
 
 Olá,
 
-O valor de ${p1.title} é ${p1.value}.
-Média por categoria: ${p1.value.average}
-Categoria mais alta: ${p1.value.top}
+O valor de $&#123;p1.title&#125; é $&#123;p1.value&#125;.
+Média por categoria: $&#123;p1.value.average&#125;
+Categoria mais alta: $&#123;p1.value.top&#125;
 
 &quot;&quot;CODE
 if p1.value &gt; 1000000
@@ -5715,7 +5715,7 @@ end
 CODE&quot;&quot;
 
 Detalhe por categoria:
-${p1.value.breakdown}
+$&#123;p1.value.breakdown&#125;
 </target>
       </trans-unit>
       <trans-unit id="mailRefResult" datatype="html">
