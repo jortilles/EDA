@@ -113,8 +113,8 @@ export abstract class MailConfigModalBase implements OnInit {
   protected reconcileSelectedUsers(): void {
     const refs = this.savedUserRefs || [];
     this.selectedUsers = (this.users || []).filter((opt: any) =>
-      refs.some((r: any) => (r?._id && r._id === opt.value?._id) || (r?.email && r.email === opt.value?.email)),
-    );
+        refs.some((r: any) => (r?._id && r._id === opt.value?._id) || (r?.email && r.email === opt.value?.email)),
+    ).map((opt: any) => opt.value);
   }
 
   // ---- schedule ---------------------------------------------------------------

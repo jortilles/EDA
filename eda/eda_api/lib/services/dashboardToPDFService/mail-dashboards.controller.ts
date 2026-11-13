@@ -34,7 +34,8 @@ export class MailDashboardsController {
     try {
       browser = await chromium.launch({
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        // --no-zygote: skips Chromium's warn
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--no-zygote']
       });
       console.log(`[Dashboard] Chromium lanzado`);
     } catch (err: any) {
