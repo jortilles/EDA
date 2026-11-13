@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { sankeyLinkHorizontal } from 'd3-sankey'
 import { sankey as Sankey } from 'd3-sankey';
 import { EdaD3 } from './eda-d3-sankey';
-import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, sanitizeId, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, sanitizeId, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, PanelStyleOverride } from '@eda/services/service.index';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -20,6 +20,7 @@ import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.co
 export class EdaD3Component implements AfterViewInit, OnInit {
 
   @Input() inject: EdaD3;
+  @Input() panelStyleOverride?: PanelStyleOverride;
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
@@ -238,7 +239,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
           d3.selectAll(`#${this.id}`).selectAll('text')
             .filter((t: any) => data.names.includes(t.name))
             .interrupt('grow').transition('grow').duration(HOVER_MS)
-            .style('font-size', `${(12 + this.styleProviderService.panelFontSize.source['_value'] * 2) * 1.3}px`);
+            .style('font-size', `${(12 + this.styleProviderService.resolveContentFontSize(this.panelStyleOverride) * 2) * 1.3}px`);
         }
 
         const metricLabel = this.inject.dataDescription.numericColumns[0].name;
@@ -262,7 +263,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
         if (chartAnimOn) {
           d3.selectAll(`#${this.id}`).selectAll('text')
             .interrupt('grow').transition('grow').duration(HOVER_MS)
-            .style('font-size', `${12 + this.styleProviderService.panelFontSize.source['_value'] * 2}px`);
+            .style('font-size', `${12 + this.styleProviderService.resolveContentFontSize(this.panelStyleOverride) * 2}px`);
         }
 
         this.tooltipService.hide();
@@ -296,11 +297,11 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("y", d => (d.y1 + d.y0) / 2)
       .attr("dy", "0.35em")
       .attr("text-anchor", d => d.x0 < width / 2 ? "start" : "end")
-      .style("font-family", this.styleProviderService.panelFontFamily.source['_value'])
+      .style("font-family", this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride))
       //.attr("fill", "var(--panel-font-color)")
       .style("pointer-events", "none")
-      .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
-      .style("font-size", (12 + this.styleProviderService.panelFontSize.source['_value'] * 2) + 'px')
+      .attr("fill", this.styleProviderService.resolveContentFontColor(this.panelStyleOverride))
+      .style("font-size", (12 + this.styleProviderService.resolveContentFontSize(this.panelStyleOverride) * 2) + 'px')
       .attr("opacity", animateEntrance ? 0 : 1)
       .text(d => d.name)
       .append("tspan")

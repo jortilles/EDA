@@ -1,4 +1,4 @@
-import { ChartUtilsService, StyleProviderService, lightenHex, sanitizeId, ensureRadialGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, lightenHex, sanitizeId, ensureRadialGradient, initD3ResizeObserver, teardownD3Chart, PanelStyleOverride } from '@eda/services/service.index';
 import * as d3 from 'd3'
 import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter, OnDestroy} from '@angular/core'
 import { SunBurst } from './eda-sunbrust'
@@ -16,6 +16,7 @@ import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.co
 })
 export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   @Input() inject: SunBurst
+  @Input() panelStyleOverride?: PanelStyleOverride;
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
@@ -266,8 +267,8 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
           .style('visibility', null)
           .select('.percentage')
           .text(percentage + '%')
-          .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
-          .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
+          .attr("font-family", this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride))
+          .attr("fill", this.styleProviderService.resolveContentFontColor(this.panelStyleOverride))
 
         var my_path = ''
         sequence.forEach(path => {
@@ -283,10 +284,10 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
             ': ' +
             d.value.toLocaleString(undefined, { maximumFractionDigits: 6 })
           )
-          .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
+          .attr("font-family", this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride))
           .attr("pointer-events", "none")
 
-          .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
+          .attr("fill", this.styleProviderService.resolveContentFontColor(this.panelStyleOverride))
         // bring it to the top
         label.raise();
         

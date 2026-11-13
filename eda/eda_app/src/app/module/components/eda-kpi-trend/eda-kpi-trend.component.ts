@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { EdaKpiTrend, TrendPeriodGroup } from './eda-kpi-trend';
 import { EdaBarlineComponent } from '../eda-barline-d3/eda-barline.component';
-import { StyleProviderService } from '@eda/services/service.index';
+import { StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
 
 @Component({
     standalone: true,
@@ -16,6 +16,7 @@ import { StyleProviderService } from '@eda/services/service.index';
 })
 export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     @Input() inject: EdaKpiTrend;
+    @Input() panelStyleOverride?: PanelStyleOverride;
     @ViewChild('edaTrendChart') edaTrendChart: EdaBarlineComponent;
     @ViewChild('kpiLeft') kpiLeftRef: ElementRef;
 
@@ -54,8 +55,6 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
         @Self() private hostRef: ElementRef,
         @Inject(LOCALE_ID) private locale: string
     ) {
-        this.color = this.styleProviderService.panelFontColor.source['_value'] || '#67757c';
-        this.family = this.styleProviderService.panelFontFamily.source['_value'] || 'inherit';
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -65,6 +64,8 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
     }
 
     ngOnInit(): void {
+        this.color = this.styleProviderService.resolveContentFontColor(this.panelStyleOverride) || '#67757c';
+        this.family = this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride) || 'inherit';
         this._syncFromInject();
     }
 

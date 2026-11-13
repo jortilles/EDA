@@ -1,4 +1,4 @@
-import { DashboardStyles } from '@eda/services/service.index';
+import { DashboardStyles, PanelStyleOverride } from '@eda/services/service.index';
 import { LinkedDashboardProps } from '../link-dashboards/link-dashboard-props';
 import { ChartConfig } from './chart-configuration-models/chart-config';
 import { GroupedSubtotalLevel } from '../panel-utils/grouped-subtotals-utils';
@@ -20,6 +20,7 @@ export class PanelChart {
   public coordinates: Array<Array<number>>;
   public zoom: number;
   public predictionConfig?: any;
+  public panelStyleOverride?: PanelStyleOverride;
   public childNavConfig?: {
     parentFields: string[];
     childFieldMap: {[columnName: string]: string};

@@ -1,5 +1,5 @@
 
-import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, FileUtiles } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, FileUtiles, PanelStyleOverride } from '@eda/services/service.index';
 import { buildIconMap, renderCategoryIcons, resolveIconHref } from '../eda-panels/eda-blank-panel/panel-charts/category-icons.util';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import * as d3 from 'd3';
@@ -21,6 +21,7 @@ import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.co
 })
 export class EdaTreeMap implements AfterViewInit {
   @Input() inject: TreeMap;
+  @Input() panelStyleOverride?: PanelStyleOverride;
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild("svgContainer", { static: false }) svgContainer: ElementRef;
 
@@ -246,7 +247,7 @@ export class EdaTreeMap implements AfterViewInit {
         if (chartAnimOn) {
           d3.select(d.currentTarget.parentNode).selectAll('tspan')
             .interrupt('grow').transition('grow').duration(HOVER_MS)
-            .style('font-size', `${(12 + this.styleProviderService.panelFontSize.source['_value'] * 2) * 1.3}px`)
+            .style('font-size', `${(12 + this.styleProviderService.resolveContentFontSize(this.panelStyleOverride) * 2) * 1.3}px`)
             .style('font-weight', 'bold');
         }
 
@@ -272,7 +273,7 @@ export class EdaTreeMap implements AfterViewInit {
         if (chartAnimOn) {
           d3.select(d.currentTarget.parentNode).selectAll('tspan')
             .interrupt('grow').transition('grow').duration(HOVER_MS)
-            .style('font-size', `${12 + this.styleProviderService.panelFontSize.source['_value'] * 2}px`)
+            .style('font-size', `${12 + this.styleProviderService.resolveContentFontSize(this.panelStyleOverride) * 2}px`)
             .style('font-weight', null);
         }
 
@@ -303,11 +304,11 @@ export class EdaTreeMap implements AfterViewInit {
         return value;
       })
       .join("tspan")
-      .style("font-size", (12 + this.styleProviderService.panelFontSize.source['_value'] * 2)+'px')
+      .style("font-size", (12 + this.styleProviderService.resolveContentFontSize(this.panelStyleOverride) * 2)+'px')
       // Check color
       .style("pointer-events", "none")
-      .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
-      .style("font-family", this.styleProviderService.panelFontFamily.source['_value'])
+      .attr("fill", this.styleProviderService.resolveContentFontColor(this.panelStyleOverride))
+      .style("font-family", this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride))
       .attr("x", 3)
       .attr(
         "y",

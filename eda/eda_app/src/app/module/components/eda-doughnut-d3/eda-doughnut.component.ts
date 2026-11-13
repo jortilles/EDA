@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaDoughnutD3 } from './eda-doughnut';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, FileUtiles } from '@eda/services/service.index';
+import { StyleProviderService, PanelStyleOverride, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, FileUtiles } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 import { buildIconMap, resolveIconHref, renderCategoryIcons, arcIconSize } from '../eda-panels/eda-blank-panel/panel-charts/category-icons.util';
 
@@ -27,6 +27,7 @@ const GRADIENT_LIGHTEN_AMOUNT =30;
 })
 export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
   @Input() inject: EdaDoughnutD3;
+  @Input() panelStyleOverride?: PanelStyleOverride;
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
 
@@ -59,7 +60,7 @@ export class EdaDoughnut implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.id = `doughnut_${this.inject.id}`;
     this.chartLegend = this.inject.chartLegend ?? true;
-    this.styleProviderService.panelFontFamily.subscribe(v => this.fontFamily = v).unsubscribe();
+    this.fontFamily = this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride);
     this.styleProviderService.panelColor.subscribe(v => this.panelBackgroundColor = v || '#ffffff').unsubscribe();
     this.buildSlices();
   }

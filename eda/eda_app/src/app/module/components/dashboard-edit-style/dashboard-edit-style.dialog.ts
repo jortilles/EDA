@@ -312,11 +312,33 @@ public openImageInNewTab(): void {
   win.document.close();
 }
 
+/** Applying the global style must win over any per-panel override, so every panel goes
+ * back to following the global style instead of staying frozen at its individual one.
+ * KPI panels also carry their own backgroundColor inside the chart config (set from the
+ * KPI dialog's "Color de fondo"), which paints over the panel and isn't part of
+ * styleOverride - clear that too, on both the persisted config and the live instance. */
+private clearIndividualPanelOverrides(): void {
+    this.dashboard?.dashboard?.config?.panel?.forEach(panel => {
+        panel.styleOverride = undefined;
+
+        if (String(panel.content?.chart || '').startsWith('kpi')) {
+            const config = panel.content?.query?.output?.config;
+            if (config) config.backgroundColor = '';
+
+            const edaPanel = this.dashboard.edaPanels['_results'].find(p => p.panel.id === panel.id);
+            const instance = edaPanel?.panelChart?.componentRef?.instance;
+            if (instance?.inject) instance.inject.backgroundColor = '';
+        }
+    });
+}
+
 public saveConfig(): void {
     if (this.selectedPalette) {
         this.applyPaletteToAllCharts();
     }
-    
+
+    this.clearIndividualPanelOverrides();
+
     const response: DashboardStyles = {
         stylesApplied: true,
         backgroundColor: this.backgroundColor,

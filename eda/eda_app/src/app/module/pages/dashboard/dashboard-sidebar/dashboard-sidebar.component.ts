@@ -243,6 +243,15 @@ export class DashboardSidebarComponent implements AfterViewInit {
         command: () => this.cleanPanelsCache()
       },
       {
+        id: 'compactPanels',
+        label: $localize`:@@dashboardSidebarCompactPanels: Compactar paneles`,
+        icon: "pi pi-th-large",
+        command: () => {
+          this.dashboard.compactPanels();
+          this.hidePopover();
+        }
+      },
+      {
         id: 'liveDashboard',
         label: $localize`:@@dashboardSidebarLiveDashboard: Live Dashboard`,
         icon: "pi pi-desktop",
@@ -1352,16 +1361,20 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
 
   // Sidebar creation methods
+  private visibleSidebarItems() {
+    return this.sidebarItems.filter(item => item.id !== 'compactPanels' || this.dashboard.isCompactionNeeded());
+  }
+
   public indiceMasOpciones(): number {
-    return this.sidebarItems.findIndex(item => item.id === 'moreOptions');
+    return this.visibleSidebarItems().findIndex(item => item.id === 'moreOptions');
   }
 
   public itemsVisibles() {
-    return this.sidebarItems.slice(0, this.indiceMasOpciones());
+    return this.visibleSidebarItems().slice(0, this.indiceMasOpciones());
   }
 
   public itemsDesplegables() {
-    return this.sidebarItems.slice(this.indiceMasOpciones());
+    return this.visibleSidebarItems().slice(this.indiceMasOpciones());
   }
 
   public toggleOpciones() {

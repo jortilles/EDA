@@ -1,4 +1,4 @@
-import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, initD3ResizeObserver, teardownD3Chart } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, initD3ResizeObserver, teardownD3Chart, PanelStyleOverride } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import * as d3 from 'd3';
 import { ScatterPlot } from "./eda-scatter";
@@ -21,6 +21,7 @@ import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.co
 export class EdaScatter implements AfterViewInit {
 
   @Input() inject: ScatterPlot;
+  @Input() panelStyleOverride?: PanelStyleOverride;
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
@@ -144,8 +145,8 @@ export class EdaScatter implements AfterViewInit {
       .call(g => g.append("text")
         .attr("x", -margin.left )
         .attr("y", 30)
-        .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
-        .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
+        .attr("fill", this.styleProviderService.resolveContentFontColor(this.panelStyleOverride))
+        .attr("font-family", this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride))
         .attr("font-size", "var(--panel-big)")
         .attr("text-anchor", "start")
         .text(`↑ ${this.inject.dataDescription.numericColumns[1].name}`))
@@ -157,8 +158,8 @@ export class EdaScatter implements AfterViewInit {
       .call(g => g.append("text")
         .attr("x", width)
         .attr("y", margin.bottom )
-        .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
-        .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
+        .attr("fill", this.styleProviderService.resolveContentFontColor(this.panelStyleOverride))
+        .attr("font-family", this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride))
         .attr("font-size", "var(--panel-big)")
         .attr("text-anchor", "end")
         .text(`→ ${this.inject.dataDescription.numericColumns[0].name}`));
@@ -279,7 +280,7 @@ export class EdaScatter implements AfterViewInit {
     .attr("r", (d: any) => d.radius + 1)
     .attr("opacity", 1);
     svg.selectAll(".tick text")
-      .style("font-family", this.styleProviderService.panelFontFamily.source['_value'])
+      .style("font-family", this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride))
       .style("font-size", "11px")
       .style("font-weight", 500)
       .style("fill", "#000000");

@@ -14,7 +14,7 @@ import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicTex
 import { EdaTableComponent } from '../../../eda-tables/eda-table/eda-table.component';
 import { EdaCrosstableComponent } from '../../../eda-tables/eda-crosstable/eda-crosstable.component';
 import { PanelChart } from './panel-chart';
-import { ChartUtilsService, StyleConfig, StyleProviderService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleConfig, StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
 import { EdaKpiComponent } from '@eda/components/eda-kpi/eda-kpi.component';
 import { Column } from '@eda/models/model.index';
 import { EdaColumnDate } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-date';
@@ -133,19 +133,19 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         private cdr: ChangeDetectorRef,
         @Inject(LOCALE_ID) private locale: string) {
 
-        this.fontColor = this.styleProviderService.panelFontColor.source['value'];
+        this.fontColor = this.styleProviderService.resolveContentFontColor(this.props?.panelStyleOverride);
         this.paletaActual = this.styleProviderService.ActualChartPalette !== undefined ?
             this.styleProviderService.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
 
 
-        this.styleProviderService.panelFontFamily.subscribe(family => {
-            this.fontFamily = family;
+        this.styleProviderService.panelFontFamily.subscribe(() => {
+            this.fontFamily = this.styleProviderService.resolveContentFontFamily(this.props?.panelStyleOverride);
             if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
             this.cdr.markForCheck();
         });
 
-        this.styleProviderService.panelFontSize.subscribe(size => {
-            this.fontSize = size;
+        this.styleProviderService.panelFontSize.subscribe(() => {
+            this.fontSize = this.styleProviderService.resolveContentFontSize(this.props?.panelStyleOverride);
             if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line','area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
             this.cdr.markForCheck();
         });
@@ -406,6 +406,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         } else {
             this.componentRef = this.entry.createComponent(EdaTableComponent);
         }
+        this.componentRef.instance.panelStyleOverride = this.props.panelStyleOverride;
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.inject.value = tableRows;
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
@@ -617,6 +618,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createEdaKnobComponent(inject) {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaKnobComponent);
+        this.componentRef.instance.panelStyleOverride = this.props.panelStyleOverride;
         this.componentRef.instance.inject = inject;
     }
 
@@ -668,6 +670,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createEdaKpiComponent(inject: any) {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaKpiComponent);
+        this.componentRef.instance.panelStyleOverride = this.props.panelStyleOverride;
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onNotify.subscribe(data => {
             const kpiConfig = new KpiConfig({
@@ -910,6 +913,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createEdaKpiChartComponent(inject: any) {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaKpiComponent);
+        this.componentRef.instance.panelStyleOverride = this.props.panelStyleOverride;
         this.componentRef.instance.inject = inject;
         // Clicks on the embedded bar/line/area chart filter the dashboard like the standalone chart
         this.chartClickSubscription = this.componentRef.instance.onClick.subscribe(
@@ -1281,6 +1285,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createEdaKpiTrendComponent(inject: any) {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaKpiTrendComponent);
+        this.componentRef.instance.panelStyleOverride = this.props.panelStyleOverride;
         this.componentRef.instance.inject = inject;
         this.currentConfig = inject;
         this.configUpdated.emit(this.currentConfig);
@@ -1360,6 +1365,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createEdaKpiDeviationComponent(inject: any): void {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaKpiDeviationComponent);
+        this.componentRef.instance.panelStyleOverride = this.props.panelStyleOverride;
         this.componentRef.instance.inject = inject;
         this.currentConfig = inject;
         this.configUpdated.emit(this.currentConfig);
@@ -1386,7 +1392,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createEdadynamicTextComponent(inject: any) {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdadynamicTextComponent);
-        this.componentRef.instance.inject = inject;  
+        this.componentRef.instance.panelStyleOverride = this.props.panelStyleOverride;
+        this.componentRef.instance.inject = inject;
         this.componentRef.instance.onNotify.subscribe(data => {
             const dynamicTextConfig = new DynamicTextConfig(data.color);
             (<DynamicTextConfig><unknown>this.props.config.setConfig(dynamicTextConfig));
@@ -1467,6 +1474,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createMapComponent(inject: EdaMap) {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaMapComponent);
+        this.componentRef.instance.panelStyleOverride = this.props.panelStyleOverride;
         this.componentRef.instance.inject = inject;
         //this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
@@ -1474,6 +1482,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createGeoJsonMapComponent(inject: EdaMap) {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaGeoJsonMapComponent);
+        this.componentRef.instance.panelStyleOverride = this.props.panelStyleOverride;
         this.componentRef.instance.inject = inject;
         // Review click filter 
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
@@ -1528,6 +1537,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.currentConfig = inject;
         this.entry.clear();
         this.componentRef = this.entry.createComponent(componentType);
+        this.componentRef.instance.panelStyleOverride = this.props.panelStyleOverride;
         this.componentRef.instance.inject = inject;
         this.chartClickSubscription = this.componentRef.instance.onClick.subscribe(
             (event) => this.onChartClick.emit({...event, query: this.props.query})
@@ -2099,6 +2109,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.sortLegendAlphabetically = this.props.config.getConfig()?.['sortLegendAlphabetically'] ?? false;
         this.entry.clear();
         this.componentRef = this.entry.createComponent(componentType);
+        this.componentRef.instance.panelStyleOverride = this.props.panelStyleOverride;
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({ ...event, query: this.props.query }));
     }

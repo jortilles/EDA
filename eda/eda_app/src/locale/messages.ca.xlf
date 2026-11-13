@@ -4173,6 +4173,805 @@ Resum d'atributs
   <source>Grupo</source>
   <target>Grup</target>
 </trans-unit>
+<trans-unit id="adminDatasource">
+  <source>Gestión de fuentes de datos</source>
+  <target>Gestió de fonts de dades</target>
+</trans-unit>
+<trans-unit id="addDatasource">
+  <source>Crear fuente de datos</source>
+  <target>Crear font de dades</target>
+</trans-unit>
+<trans-unit id="foundDatasource">
+  <source>fuentes de datos encontradas</source>
+  <target>font de dades trobades</target>
+</trans-unit>
+<trans-unit id="profileSubtitle"><source>Administra tu información personal y preferencias de cuenta</source><target>Administra la teva informació personal i preferències del compte</target></trans-unit>
+<trans-unit id="profileInfoTitle"><source>Información Personal</source><target>Informació personal</target></trans-unit>
+<trans-unit id="profileInfoSubtitle"><source>Actualiza tu información básica de perfil</source><target>Actualitza la teva informació bàsica del perfil</target></trans-unit>
+<trans-unit id="usernameLengthValidation"><source>El nombre de usuario debe tener al menos 2 caracteres.</source><target>El nom d'usuari ha de tenir almenys 2 caràcters.</target></trans-unit>
+<trans-unit id="emailValidation"><source>Por favor ingresa un email válido.</source><target>Si us plau, introdueix un correu electrònic vàlid.</target></trans-unit>
+<trans-unit id="changePassword"><source>Cambiar contraseña</source><target>Canviar contrasenya</target></trans-unit>
+<trans-unit id="newPassword"><source>Nueva contraseña</source><target>Nova contrasenya</target></trans-unit>
+<trans-unit id="confirmNewPassword"><source>Confirmar nueva contraseña</source><target>Confirmar nova contrasenya</target></trans-unit>
+<trans-unit id="passwordValidation"><source>Las contraseñas no coinciden</source><target>Les contrasenyes no coincideixen</target></trans-unit>
+<trans-unit id="saveChanges"><source>Guardar cambios</source><target>Desar canvis</target></trans-unit>
+<trans-unit id="profileImage"><source>Foto de perfil</source><target>Foto de perfil</target></trans-unit>
+<trans-unit id="profileImageSubtitle"><source>Actualiza tu foto de perfil</source><target>Actualitza la teva foto de perfil</target></trans-unit>
+<trans-unit id="uploadImage"><source>Subir imagen</source><target>Pujar imatge</target></trans-unit>
+<trans-unit id="profilePreferences"><source>Preferencias de cuenta</source><target>Preferències del compte</target></trans-unit>
+<trans-unit id="profileNotificationsPrefrences"><source>Administra tus preferencias de notificaciones</source><target>Administra les teves preferències de notificacions</target></trans-unit>
+<trans-unit id="profileNotifications"><source>Notificaciones</source><target>Notificacions</target></trans-unit>
+<trans-unit id="profileUpdates"><source>Actualizaciones</source><target>Actualitzacions</target></trans-unit>
+<trans-unit id="profileUpdatesSubtitle"><source>Recibe actualizaciones sobre nuevas funciones</source><target>Rep actualitzacions sobre noves funcions</target></trans-unit>
+<trans-unit id="activated"><source>Activado</source><target>Activat</target></trans-unit>
+<trans-unit id="newsletter"><source>Boletín</source><target>Butlletí</target></trans-unit>
+<trans-unit id="newsletterDescription"><source>Recibe nuestro boletín mensual</source><target>Rep el nostre butlletí mensual</target></trans-unit>
+<trans-unit id="inactivated"><source>Desactivado</source><target>Desactivat</target></trans-unit>
+<trans-unit id="profileMessages"><source>Mensajes</source><target>Missatges</target></trans-unit>
+<trans-unit id="profileMessagesDescription"><source>Recibe notificaciones de nuevos mensajes</source><target>Rep notificacions de nous missatges</target></trans-unit>
+<trans-unit id="selectedImage"><source>Imagen seleccionada</source><target>Imatge seleccionada</target></trans-unit>
+<trans-unit id="noImageSelected"><source>No hay imagen seleccionada</source><target>Cap imatge seleccionada</target></trans-unit>
+<trans-unit id="chartDisplayTitle">
+  <source>Visualización</source>
+  <target>Visualització</target>
+</trans-unit>
+
+<trans-unit id="chartDisplayOptionsTitle">
+  <source>Opciones de visualización</source>
+  <target>Opcions de visualització</target>
+</trans-unit>
+
+<trans-unit id="chartTrendOption">
+  <source>Mostrar línea de tendencia en el gráfico</source>
+  <target>Mostra la línia de tendència al gràfic</target>
+</trans-unit>
+
+<trans-unit id="chartTrendOptionDescription">
+  <source>Muestra la línea de tendencia en el gráfico</source>
+  <target>Mostra la línia de tendència al gràfic</target>
+</trans-unit>
+
+<trans-unit id="chartComparationOption">
+  <source>Habilita la comparación con períodos anteriores</source>
+  <target>Habilita la comparació amb períodes anteriors</target>
+</trans-unit>
+
+<trans-unit id="chartComparationOptionDescription">
+  <source>Compara con datos de períodos anteriores</source>
+  <target>Compara amb dades de períodes anteriors</target>
+</trans-unit>
+
+<trans-unit id="showLegend">
+  <source>Mostrar Leyenda</source>
+  <target>Mostra la llegenda</target>
+</trans-unit>
+
+<trans-unit id="internRadius">
+  <source>Radio Interno</source>
+  <target>Radi Intern</target>
+</trans-unit>
+
+<trans-unit id="useGradient">
+  <source>Usar Gradiente</source>
+  <target>Utilitza gradient</target>
+</trans-unit>
+
+<trans-unit id="useRoundedBars">
+  <source>Redondear barras</source>
+  <target>Arrodonir barres</target>
+</trans-unit>
+
+<trans-unit id="chartRoundedBarsOptionDescription">
+  <source>Redondea la punta de las barras</source>
+  <target>Arrodoneix la punta de les barres</target>
+</trans-unit>
+
+<trans-unit id="chartLegendOptionDescription">
+  <source>Muestra la leyenda del gráfico</source>
+  <target>Mostra la llegenda del gràfic</target>
+</trans-unit>
+
+<trans-unit id="showGridLines">
+  <source>Mostrar Líneas Guía</source>
+  <target>Mostra les línies guia</target>
+</trans-unit>
+
+<trans-unit id="chartGridLinesOptionDescription">
+  <source>Muestra u oculta las líneas guía del gráfico</source>
+  <target>Mostra o amaga les línies guia del gràfic</target>
+</trans-unit>
+
+<trans-unit id="chartAnimation">
+  <source>Animar Gráfico</source>
+  <target>Anima el gràfic</target>
+</trans-unit>
+
+<trans-unit id="chartAnimationOptionDescription">
+  <source>Anima la aparición de los datos al cargar el gráfico</source>
+  <target>Anima l'aparició de les dades en carregar el gràfic</target>
+</trans-unit>
+
+<trans-unit id="histogramColum">
+  <source>Columnas</source>
+  <target>Columnes</target>
+</trans-unit>
+
+<trans-unit id="tooltipBlockedByComparative">
+  <source>Bloqueado porque comparativa está activa</source>
+  <target>Blocat perquè la comparativa està activa</target>
+</trans-unit>
+
+<trans-unit id="tooltipBlockedByTrendOrPrediction">
+  <source>Bloqueado porque tendencia o predicción está activa</source>
+  <target>Blocat perquè la tendència o la predicció està activa</target>
+</trans-unit>
+
+<trans-unit id="chartLabelOption">
+  <source>Muestra las etiquetas de cada segmento</source>
+  <target>Mostra les etiquetes de cada segment</target>
+</trans-unit>
+
+<trans-unit id="chartLabelOptionDescription">
+  <source>Muestra el nombre de cada segmento</source>
+  <target>Mostra el nom de cada segment</target>
+</trans-unit>
+
+<trans-unit id="chartLabelPercentOption">
+  <source>Muestra los porcentajes en las etiquetas</source>
+  <target>Mostra els percentatges a les etiquetes</target>
+</trans-unit>
+
+<trans-unit id="chartLabelPercentOptionDescription">
+  <source>Muestra el valor porcentual de cada segmento</source>
+  <target>Mostra el valor percentual de cada segment</target>
+</trans-unit>
+
+<trans-unit id="uniqueColorsTab">
+  <source> Colores Únicos </source>
+  <target> Colors Únics </target>
+</trans-unit>
+
+<trans-unit id="chartUniqueColorsOptionDescription">
+  <source>Cada elemento tendrá un color diferente</source>
+  <target>Cada element tindrà un color diferent</target>
+</trans-unit>
+
+<trans-unit id="chartLabelLinesOptionDescription">
+  <source>Muestra las líneas en los puntos</source>
+  <target>Mostra les línies en els punts</target>
+</trans-unit>
+
+<trans-unit id="panelOptions6">
+  <source>Pregunte a la IA</source>
+  <target>Pregunta a la IA</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP1">
+  <source>Analítica de datos sin complicaciones.</source>
+  <target>Analítica de dades sense complicacions.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH1">
+  <source>Código Abierto</source>
+  <target>Codi obert</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP2">
+  <source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión <a href="https://www.edalitics.com" target="_blank"   class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</source>
+  <target>Edalitics és una aplicació que es pot instal·lar als teus propis servidors o gaudir a la seva versió <a href="https://www.edalitics.com" target="_blank"   class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA1">
+  <source>Ver en Github</source>
+  <target>Veure a Github</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH2">
+  <source>Documentación</source>
+  <target>Documentació</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP3">
+  <source>Accede a nuestra documentación completa para aprender a sacar el máximo provecho de Edalitics.</source>
+  <target>Accediu a la nostra documentació completa per aprendre a treure el màxim profit d'Edalitics.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA2">
+  <source>Ver Documentación</source>
+  <target>Veure Documentació</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP4">
+  <source>Únete a nuestra comunidad para compartir experiencias y obtener ayuda.</source>
+  <target>Uneix-te a la nostra comunitat per compartir experiències i obtenir ajuda.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA3">
+  <source>Ir al Foro</source>
+  <target>Anar al Fòrum</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP5">
+  <source>Aprende a usar Edalitics con nuestros tutoriales paso a paso.</source>
+  <target>Aprèn a fer servir Edalitics amb els nostres tutorials pas a pas.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaB1">
+  <source>Crear Modelo de Datos</source>
+  <target>Crear Model de Dades</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaB2">
+  <source>Crear Informe</source>
+  <target>Crear informe</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH4">
+  <source>¿Quieres probar Edalitics en el cloud?</source>
+  <target>Vols provar Edalitics al cloud?</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP6">
+  <source>Edalitics te permitirá estar siempre a la última sin preocuparte por nada.</source>
+  <target>Edalitics et permetrà estar sempre a l'última sense preocupar-te de res.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH5">
+  <source>Tutoriales en video</source>
+  <target>Tutorials en vídeo</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA4">
+  <source>Prueba Edalitics gratis </source>
+  <target>Prova Edalitics gratis </target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA5">
+  <source>Edalitics ha sido desarrollado por</source>
+  <target>Edalitics ha estat desenvolupat per</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP7">
+  <source>Si necesita soporte empresarial o desea solicitar nuevas funcionalidades, no dude en contactar con nosotros.</source>
+  <target>Si necessiteu suport empresarial o voleu sol·licitar noves funcionalitats, no dubteu a contactar amb nosaltres.</target>
+</trans-unit>
+
+<trans-unit id="multiSelectDefaultLabel">
+  <source>Selecciona un grupo *</source>
+  <target>Selecciona un grup *</target>
+</trans-unit>
+
+<trans-unit id="allElementsConnected">
+  <source>Todos los elementos están conectados</source>
+  <target>Tots els elements estan connectats</target>
+</trans-unit>
+
+<trans-unit id="dashboardFiltersMin">
+  <source>Filtros del dashboard</source>
+  <target>Filtres del dashboard</target>
+</trans-unit>
+
+<trans-unit id="noConnection">
+  <source>No hay conexiones activas</source>
+  <target>No hi ha connexions actives</target>
+</trans-unit>
+
+<trans-unit id="select1to1">
+  <source>Selecciona un elemento del listado izquierdo y luego uno del listado derecho para crear una conexión 1:1.</source>
+  <target>Seleccioneu un element del llistat esquerre i després un del llistat dret per crear una connexió 1:1.</target>
+</trans-unit>
+
+<trans-unit id="connectDashboardPanel">
+  <source>Conecta los filtros entre el dashboard y el panel, (los únicos filtros de panel que se visualizan son aquellos cuyo tipo de filtro es IN)</source>
+  <target>Connecta els filtres entre el tauler i el panell (els únics filtres de panell que es visualitzen són aquells el tipus de filtre dels quals és IN)</target>
+</trans-unit>
+
+<trans-unit id="mapFilters">
+  <source>Mapear Filtros</source>
+  <target>Mapejar Filtres</target>
+</trans-unit>
+
+<trans-unit id="searcherInput">
+  <source>Buscador</source>
+  <target>Cercador</target>
+</trans-unit>
+
+<trans-unit id="manageDBModels">
+  <source>Gestiona la importación y exportación de fuentes de datos</source>
+  <target>Gestiona la importació i exportació de fonts de dades</target>
+</trans-unit>
+
+<trans-unit id="SelectModelToExport">
+  <source>Selecciona una fuente de datos para exportar</source>
+  <target>Selecciona una font de dades per exportar</target>
+</trans-unit>
+
+<trans-unit id="SelectDashboardToExport">
+  <source>Selecciona un dashboard para exportar</source>
+  <target>Seleccioneu un dashboard per exportar</target>
+</trans-unit>
+
+<trans-unit id="SelectModel">
+  <source>Selecciona una fuente de datos</source>
+  <target>Selecciona una font de dades</target>
+</trans-unit>
+
+<trans-unit id="SelectDashboard">
+  <source>Selecciona un dashboard</source>
+  <target>Selecciona un dashboard</target>
+</trans-unit>
+
+<trans-unit id="UploadModel">
+  <source>Sube un archivo de modelo</source>
+  <target>Puja un fitxer de model</target>
+</trans-unit>
+
+<trans-unit id="UploadDashboard">
+  <source>Sube un archivo de dashboard</source>
+  <target>Puja un fitxer de dashboard</target>
+</trans-unit>
+
+<trans-unit id="export">
+  <source>Exportar</source>
+  <target>Exportar</target>
+</trans-unit>
+
+<trans-unit id="import">
+  <source>Importar</source>
+  <target>Importar</target>
+</trans-unit>
+
+<trans-unit id="clickToUpload">
+  <source>Click para subir</source>
+  <target>Click per pujar</target>
+</trans-unit>
+
+<trans-unit id="dragDrop">
+  <source> o arrastra y suelta</source>
+  <target> o arrossega i deixa anar</target>
+</trans-unit>
+
+<trans-unit id="manageModels">
+  <source>Gestiona la importación y exportación de modelos</source>
+  <target>Gestiona la importació i exportació de models</target>
+</trans-unit>
+
+<trans-unit id="manageDashboards">
+  <source>Gestiona la importación y exportación de dashboards</source>
+  <target>Gestiona la importació i exportació de dashboards</target>
+</trans-unit>
+
+<trans-unit id="askPanelData">
+  <source>Pregunta sobre los datos de tu panel ...</source>
+  <target>Pregunta sobre les dades del teu panell ...</target>
+</trans-unit>
+
+<trans-unit id="askEdaliticsText">
+  <source>Pregúntale a Edalitics</source>
+  <target>Pregunta-li a Edalitics</target>
+</trans-unit>
+
+<trans-unit id="GPTChat">
+  <source>Chat con ChatGPT</source>
+  <target>Xat amb ChatGPT</target>
+</trans-unit>
+
+<trans-unit id="escribiendo">
+  <source>Escribiendo...</source>
+  <target>Escrivint...</target>
+</trans-unit>
+
+<trans-unit id="escribeMensaje">
+  <source>Escribe tu mensaje...</source>
+  <target>Escriu el teu missatge...</target>
+</trans-unit>
+
+<trans-unit id="enviar">
+  <source>Enviar</source>
+  <target>Enviar</target>
+</trans-unit>
+
+<trans-unit id="viewName">
+  <source>Introduzca el nombre de la vista</source>
+  <target>Introdueix el nom de la vista</target>
+</trans-unit>
+
+<trans-unit id="viewDescription">
+  <source>Introduce una breve descripción</source>
+  <target>Introdueix una breu descripció</target>
+</trans-unit>
+
+<trans-unit id="viewTNameP">
+  <source>Introduzca el identificador técnico</source>
+  <target>Introduïu l'identificador tècnic</target>
+</trans-unit>
+
+<trans-unit id="enterSQLExpression">
+  <source>Ingrese su consulta SQL aquí</source>
+  <target>Introduïu la vostra consulta SQL aquí</target>
+</trans-unit>
+
+<trans-unit id="generating">
+  <source>Generando...</source>
+  <target>Generant...</target>
+</trans-unit>
+
+<trans-unit id="selectedTags">
+  <source>Tags seleccionados</source>
+  <target>Tags seleccionats</target>
+</trans-unit>
+
+<trans-unit id="SSLConnection">
+  <source>Conexión sin SSL</source>
+  <target>Connexió sense SSL</target>
+</trans-unit>
+
+<trans-unit id="emptyMessageTags">
+  <source>No se encontraron resultados</source>
+  <target>No s'ha trobat cap resultat</target>
+</trans-unit>
+
+<trans-unit id="dimensionLabel">
+  <source>Dimension</source>
+  <target>Dimensió</target>
+</trans-unit>
+
+<trans-unit id="factLabel">
+  <source>Hecho</source>
+  <target>Fet</target>
+</trans-unit>
+
+<trans-unit id="viewLabel">
+  <source>Vista</source>
+  <target>Vista</target>
+</trans-unit>
+
+<trans-unit id="tagCreated">
+  <source>Etiqueta creada correctamente</source>
+  <target>Etiqueta creada correctament</target>
+</trans-unit>
+
+<trans-unit id="tagAssigned">
+  <source>Etiqueta asignada correctamente</source>
+  <target>Etiqueta assignada correctament</target>
+</trans-unit>
+
+<trans-unit id="validCredentials">
+  <source>Las credenciales son válidas</source>
+  <target>Les credencials són vàlides</target>
+</trans-unit>
+
+<trans-unit id="DatasourceTitle">
+  <source>Fuente de datos </source>
+  <target>Font de dades </target>
+</trans-unit>
+
+<trans-unit id="Cargando">
+  <source>Cargando... </source>
+  <target>Carregant... </target>
+</trans-unit>
+
+
+<trans-unit id="Initial">
+  <source>Inicio</source>
+  <target>Inici</target>
+</trans-unit>
+
+
+<trans-unit id="Final">
+  <source>Final</source>
+  <target>Final</target>
+</trans-unit>
+<trans-unit id="DashboardUpdatedInfo">
+  <source>El dashboard ha sido actualizado correctamente.</source>
+  <target>El dashboard ha sigut actualitzat correctament.</target>
+</trans-unit>
+
+<trans-unit id="dsConnectionRefused">
+  <source>No se ha podido conectar a la base de datos.</source>
+  <target>No s'ha pogut connectar a la base de dades.</target>
+</trans-unit>
+
+<trans-unit id="searchDatasource">
+  <source>Buscar fuente de datos</source>
+  <target>Buscar font de dades</target>
+</trans-unit>
+
+<trans-unit id="selectPalette">
+  <source>-- Seleccione una paleta --</source>
+  <target>-- Seleccioneu una paleta --</target>
+</trans-unit>
+
+<trans-unit id="scenarios">
+  <source>Escenarios</source>
+  <target>Escenaris</target>
+</trans-unit>
+
+<trans-unit id="AdvanceOptions">
+  <source>Opciones avanzadas</source>
+  <target>Opcions avançades</target>
+</trans-unit>
+
+<trans-unit id="condition">
+  <source>Condición</source>
+  <target>Condició</target>
+</trans-unit>
+
+<trans-unit id="alertColor">
+  <source>Color de la alerta</source>
+  <target>Color d'alerta</target>
+</trans-unit>
+
+<trans-unit id="noAlertsConfigured">
+  <source>No hay alertas configuradas </source>
+  <target>No hi ha alertes configurades</target>
+</trans-unit>
+
+<trans-unit id="alertsConfigured">
+  <source>Alertas configuradas </source>
+  <target>Alertes configurades</target>
+</trans-unit>
+
+<trans-unit id="lessThan">
+  <source>Menor que </source>
+  <target>Menor que</target>
+</trans-unit>
+
+<trans-unit id="equalTo">
+  <source>Igual a </source>
+  <target>Igual a</target>
+</trans-unit>
+
+<trans-unit id="greaterThan">
+  <source>Mayor que</source>
+  <target>Major que</target>
+</trans-unit>
+
+<trans-unit id="thresholdValue">
+  <source>Valor umbral</source>
+  <target>Valor llindar</target>
+</trans-unit>
+
+<trans-unit id="numValTrigAlert">
+  <source>Valor numérico que activará la alerta</source>
+  <target>Valor numèric que activarà l'alerta</target>
+</trans-unit>
+
+<trans-unit id="thresholdValuePercent">
+  <source>Valor umbral (%)</source>
+  <target>Valor llindar (%)</target>
+</trans-unit>
+
+<trans-unit id="deviationPercTrigAlert">
+  <source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
+  <target>% de desviació que activarà l'alerta (ex: -10 = quan la desviació sigui inferior al -10%)</target>
+</trans-unit>
+
+<trans-unit id="whenKpiDeviationIs">
+  <source>Cuando el % es</source>
+  <target>Quan el % és</target>
+</trans-unit>
+
+<trans-unit id="textChangeColor">
+  <source>el texto cambiará a este color</source>
+  <target>el text canviarà a aquest color</target>
+</trans-unit>
+
+<trans-unit id="value">
+<source>Valor</source>
+<target>Valor</target>
+</trans-unit>
+
+<trans-unit id="actions">
+<source>Acciones</source>
+<target>Accions</target>
+</trans-unit>
+
+<trans-unit id="orderAlerts">
+<source>Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.</source>
+<target>Les alertes s'han d'aplicar en ordre de creació. Feu clic al botó X per eliminar una alerta.</target>
+</trans-unit>
+
+<trans-unit id="useFormAlertConfigure">
+<source>Configure una alerta usando el formulario de arriba para visualizar cambios en el gráfico.</source>
+<target>Configureu una alerta usant el formulari de dalt per visualitzar canvis al gràfic.</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarNewText">
+  <source>Nuevo texto</source>
+  <target>Nou text</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarNewFilter">
+  <source>Nuevo filtro</source>
+  <target>Nou filtre</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarEditFilter">
+  <source>Editar filtro</source>
+  <target>Editar filtre</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarImportPanel">
+  <source>Importar panel</source>
+  <target>Importar panell</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarRefreshDashboard">
+  <source>Recargar informe</source>
+  <target>Recarregar informe</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarCompactPanels">
+  <source>Compactar paneles</source>
+  <target>Compactar panells</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDashboardPrivacity">
+  <source>Privacidad informe</source>
+  <target>Privacitat informe</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarLiveDashboard">
+  <source>Live Dashboard</source>
+  <target>Live Dashboard</target>
+</trans-unit>
+
+<trans-unit id="secondsToRefresh">
+  <source>Segundos para refrescar</source>
+  <target>Segons per refrescar</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarSave">
+  <source>Guardar</source>
+  <target>Guardar</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarSaveAs">
+  <source>Guardar como</source>
+  <target>Guardar com</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDeleteDashboard">
+  <source>Eliminar informe</source>
+  <target>Eliminar informe</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarMoreOptions">
+  <source>Más opciones</source>
+  <target>Més opcions</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarEditStyles">
+  <source>Editar estilos</source>
+  <target>Editar estils</target>
+</trans-unit>
+
+<trans-unit id="panelOptionsEditStyle">
+  <source>Editar estilo del panel</source>
+  <target>Editar estil del panell</target>
+</trans-unit>
+
+<trans-unit id="editPanelStyleTitle">
+  <source>Editar estilo del panel</source>
+  <target>Editar estil del panell</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadPDF">
+  <source>Descargar PDF</source>
+  <target>Descarregar PDF</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadImage">
+  <source>Descargar imagen</source>
+  <target>Descarregar imatge</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadExcel">
+  <source>Descargar Excel</source>
+  <target>Descarregar Excel</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownload">
+  <source>Descargar</source>
+  <target>Descarregar</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarCustomAction">
+  <source>Acción personalizada</source>
+  <target>Acció personalitzada</target>
+</trans-unit>
+
+<trans-unit id="deleteBtn">
+  <source>Eliminar</source>
+  <target>Eliminar</target>
+</trans-unit>
+
+<trans-unit id="valueKPI">
+  <source>Cuando el valor KPI es</source>
+  <target>Quan el valor KPI és</target>
+</trans-unit>
+
+<trans-unit id="alertsPreview">
+<source>Vista previa:</source>
+<target>Vista prèvia:</target>
+</trans-unit>
+
+<trans-unit id="enableFilters">
+  <source>Click en filtros habilitado</source>
+  <target>Click en filtres habilitat</target>
+</trans-unit>
+
+<trans-unit id="disableFilters">
+  <source>Click en filtros deshabilitado</source>
+  <target>Click en filtres deshabilitat</target>
+</trans-unit>
+
+<trans-unit id="selectFileImport">
+  <source>Por favor selecciona un archivo para importar</source>
+  <target>Si us plau selecciona un fitxer per importar</target>
+</trans-unit>
+
+<trans-unit id="logarithmicScale">
+  <source>Escala logarítmica</source>
+  <target>Escala logarítmica</target>
+</trans-unit>
+
+<trans-unit id="activeMouseFunctions">
+  <source>Activar funciones del ratón</source>
+  <target>Activar funcions del ratolí</target>
+</trans-unit>
+
+<trans-unit id="enableBaseLayer">
+  <source>Activar capa base</source>
+  <target>Activar capa base</target>
+</trans-unit>
+
+<trans-unit id="logarithmicScaleTooltip">
+  <source>Aplica escala logarítmica a los valores del mapa</source>
+  <target>Aplica escala logarítmica als valors del mapa</target>
+</trans-unit>
+
+<trans-unit id="activeMouseFunctionsTooltip">
+  <source>Permite arrastrar y hacer zoom con el ratón</source>
+  <target>Permet arrossegar i fer zoom amb el ratolí</target>
+</trans-unit>
+
+<trans-unit id="enableBaseLayerTooltip">
+  <source>Muestra u oculta la capa base del mapa</source>
+  <target>Mostra o amaga la capa base del mapa</target>
+</trans-unit>
+
+<trans-unit id="layerColor">
+  <source>Color de capa</source>
+  <target>Color de capa</target>
+</trans-unit>
+
+<trans-unit id="topleftPosition">
+  <source>Superior izquierda</source>
+  <target>Superior esquerra</target>
+</trans-unit>
+
+<trans-unit id="bottomleftPosition">
+  <source>Inferior izquierda</source>
+  <target>Inferior esquerra</target>
+</trans-unit>
+
+<trans-unit id="toprightPosition">
+  <source>Superior derecha</source>
+  <target>Superior dreta</target>
+</trans-unit>
+
+<trans-unit id="bottomrightPosition">
+  <source>Inferior derecha</source>
+  <target>Inferior dreta</target>
+</trans-unit>
+
 <trans-unit id="selectDashboardPrivacity">
   <source>Selecciona la privacidad del informe</source>
   <target>Seleccioneu la privacitat de l'informe</target>

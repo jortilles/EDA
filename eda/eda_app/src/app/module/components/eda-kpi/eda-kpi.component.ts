@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, HostBinding } from '@angular/core';
-import { StyleProviderService } from '@eda/services/service.index';
+import { StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
 import { formatNumber, registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
@@ -21,6 +21,7 @@ import { PipesModule } from '@eda/pipes/pipes.module';
 
 export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() inject: EdaKpi;
+    @Input() panelStyleOverride?: PanelStyleOverride;
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
     // Re-emits the click of the embedded bar/line/area chart
     @Output() onClick: EventEmitter<any> = new EventEmitter();
@@ -37,8 +38,8 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
     // the same updateChart() convention, so a loose type is fine here.
     @ViewChild('EdaChart', { static: false }) edaChartComponent: any;
     sufixClick: boolean = false;
-    color: string = this.styleProviderService.panelFontColor.source['_value'];
-    family: string = this.styleProviderService.panelFontFamily.source['_value'];
+    color: string;
+    family: string;
     defaultColor = '#67757c';
     warningColor = '#ff8100';
     containerHeight: number = 20;
@@ -101,6 +102,8 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.color = this.styleProviderService.resolveContentFontColor(this.panelStyleOverride);
+        this.family = this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride);
         try {
             registerLocaleData(es);
 

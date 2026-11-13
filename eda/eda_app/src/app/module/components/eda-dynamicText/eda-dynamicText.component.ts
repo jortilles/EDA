@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef} from '@angular/core';
 import { EdadynamicText } from './eda-dynamicText';
-import { StyleProviderService } from '@eda/services/service.index';
+import { StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
 @Component({
@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 export class EdadynamicTextComponent implements OnInit {
     @Input() inject: EdadynamicText;
     @Input() color;
+    @Input() panelStyleOverride?: PanelStyleOverride;
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
     @ViewChild('dynamicTextContainer', { static: false }) dynamicTextContainer!: ElementRef;
 
@@ -27,8 +28,8 @@ export class EdadynamicTextComponent implements OnInit {
         let color = this.inject?.color;
         
         if (this.styleProviderService.loadingFromPalette) {
-            color = this.styleProviderService.panelFontColor.source['_value'];
-            this.inject.color = this.styleProviderService.panelFontColor.source['_value'];
+            color = this.styleProviderService.resolveContentFontColor(this.panelStyleOverride);
+            this.inject.color = this.styleProviderService.resolveContentFontColor(this.panelStyleOverride);
         }
         const fontSize = this.getFontSize();
         color = this.findColor(color);

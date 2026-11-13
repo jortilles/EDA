@@ -25,6 +25,14 @@ export interface DashboardStyles {
 	filterButtonPosition?: string;
 }
 
+/** Per-panel override of the global DashboardStyles. Every field is optional at every level:
+ * an absent field falls back to the current global value via StyleProviderService's resolve* methods. */
+export interface PanelStyleOverride {
+	panelColor?: string;
+	panelTitle?: Partial<StyleConfig> & { align?: string };
+	panelContent?: Partial<StyleConfig>;
+}
+
 
 @Injectable()
 export class StyleProviderService {
@@ -246,5 +254,39 @@ export class StyleProviderService {
 		if (this.loadedPanels === -1) {
 			this.loadingFromPalette = false;
 		}
+	}
+
+	/** Panel color, resolving the panel's own override before falling back to the global value. */
+	public resolvePanelColor(override?: PanelStyleOverride): string {
+		return override?.panelColor ?? this._panelColor.value;
+	}
+
+	public resolvePanelTitleFontColor(override?: PanelStyleOverride): string {
+		return override?.panelTitle?.fontColor ?? this._panelTitleFontColor.value;
+	}
+
+	public resolvePanelTitleFontFamily(override?: PanelStyleOverride): string {
+		return override?.panelTitle?.fontFamily ?? this._panelTitleFontFamily.value;
+	}
+
+	public resolvePanelTitleFontSize(override?: PanelStyleOverride): number {
+		return override?.panelTitle?.fontSize ?? this._panelTitleFontSize.value;
+	}
+
+	public resolvePanelTitleAlign(override?: PanelStyleOverride): string {
+		return override?.panelTitle?.align ?? this._panelTitleAlign.value;
+	}
+
+	/** Content font (chart/table/KPI internal text), resolving the panel's own override first. */
+	public resolveContentFontColor(override?: PanelStyleOverride): string {
+		return override?.panelContent?.fontColor ?? this._panelFontColor.value;
+	}
+
+	public resolveContentFontFamily(override?: PanelStyleOverride): string {
+		return override?.panelContent?.fontFamily ?? this._panelFontFamily.value;
+	}
+
+	public resolveContentFontSize(override?: PanelStyleOverride): number {
+		return override?.panelContent?.fontSize ?? this._panelFontSize.value;
 	}
 }

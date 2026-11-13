@@ -1,4 +1,5 @@
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
+import { PanelStyleOverride } from '@eda/services/service.index';
 
 export enum EdaPanelType {
     BLANK,
@@ -34,6 +35,7 @@ export class EdaPanel {
     public clickFilterTargets: string[] = [];
     public backgroundTransparent?: boolean;
     public _isDuplicate?: boolean;
+    public styleOverride?: PanelStyleOverride;
 
     constructor(init?: Partial<EdaPanel>) {
         Object.assign(this, init);

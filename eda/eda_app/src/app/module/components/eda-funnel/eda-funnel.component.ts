@@ -1,7 +1,7 @@
 import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import * as d3 from 'd3';
 import { EdaFunnel } from './eda-funnel';
-import { ChartUtilsService, StyleProviderService, D3TooltipService, initD3ResizeObserver, teardownD3Chart, FileUtiles } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService, PanelStyleOverride, D3TooltipService, initD3ResizeObserver, teardownD3Chart, FileUtiles } from '@eda/services/service.index';
 import { buildIconMap, renderCategoryIcons, resolveIconHref } from '../eda-panels/eda-blank-panel/panel-charts/category-icons.util';
 
 import { FormsModule } from '@angular/forms';
@@ -26,6 +26,7 @@ interface FunnelData {
 export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
 
   @Input() inject: EdaFunnel;
+  @Input() panelStyleOverride?: PanelStyleOverride;
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
@@ -136,8 +137,8 @@ draw() {
   }
   
   let labels = this.data.labels;
-  const colorPanel = this.styleProviderService.panelFontColor.source['_value'];
-  const fontPanel = this.styleProviderService.panelFontFamily.source['_value'];
+  const colorPanel = this.styleProviderService.resolveContentFontColor(this.panelStyleOverride);
+  const fontPanel = this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride);
 
   const margin = ({ top: 25, right: 25, bottom: 35, left: 70 });
   const ledge = 0.2;

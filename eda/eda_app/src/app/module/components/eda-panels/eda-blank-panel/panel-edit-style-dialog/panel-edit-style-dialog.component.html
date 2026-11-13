@@ -1,0 +1,90 @@
+<eda-dialog2 header="Editar estilo del panel" i18n-header="@@editPanelStyleTitle" width="55vw" height="fit-content"
+  [showReset]="true" [overflow]="'auto'"
+  (apply)="onApply()" (close)="onClose()" (reset)="onReset()">
+  <div content class="p-6">
+    <div class="grid grid-flow-col grid-cols-4 gap-6">
+
+      <div class="bg-white border-black rounded shadow p-4">
+        <h6 class="text-base font-semibold mb-3" i18n="@@ChangePaneColor">Color del panel</h6>
+        <p-colorPicker [(ngModel)]="panelColor" format="hex" appendTo="body" (onChange)="updateSamples()" />
+        <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="panelColor" minlength="7"
+          (focusout)="updateSamples()" />
+      </div>
+
+      <div class="bg-white border-black rounded shadow p-4">
+        <h6 class="text-base font-semibold mb-3" i18n="@@samplePanelName">Título del panel</h6>
+        <div style="display: flex; flex-direction: column;" class="div-card-body">
+          <div>
+            <h6 i18n="@@ChangeFontFamily" class="text-base font-medium mb-1">Tipo de fuente</h6>
+            <p-dropdown class="edit-style-dropdown" [(ngModel)]="selectedPanelTitleFont" (ngModelChange)="updateSamples()"
+              [options]="fonts" optionLabel="value" optionValue="value" appendTo="body" [style]="{'width':'100%'}">
+            </p-dropdown>
+          </div>
+          <div>
+            <h6 i18n="@@ChangeFontSize" class="text-base font-medium mb-1 mt-2">Tamaño de fuente</h6>
+            <input type="range" min="-5" max="5" step="0.5" [(ngModel)]="panelTitleFontSize" (change)="updateSamples()"
+              class="w-full border border-black rounded h-2 bg-gray-200 accent-[var(--corporate-primary)]" />
+          </div>
+          <div>
+            <h6 i18n="@@ChangeFontColor" class="text-base font-medium mb-1 mt-2">Color de la fuente</h6>
+            <p-colorPicker [(ngModel)]="panelTitleFontColor" format="hex" appendTo="body" (onChange)="updateSamples()" />
+            <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="panelTitleFontColor" (focusout)="updateSamples()" />
+          </div>
+          <div>
+            <h6 i18n="@@ChangelignTitle" class="text-base font-medium mb-1 mt-2">Alineación</h6>
+            <div class="space-y-4">
+              <label class="flex items-center space-x-2">
+                <input type="radio" name="alignPanelTitle" value="flex-start" [(ngModel)]="alignPanelTitle"
+                  class="edit-style-radio w-5 h-5 bg-gray-100 border-gray-300" (ngModelChange)="updateSamples()" />
+                <span class="text-base">{{left}}</span>
+              </label>
+              <label class="flex items-center space-x-2">
+                <input type="radio" name="alignPanelTitle" value="center" [(ngModel)]="alignPanelTitle"
+                  class="edit-style-radio w-5 h-5 bg-gray-100 border-gray-300" (ngModelChange)="updateSamples()" />
+                <span class="text-base">{{center}}</span>
+              </label>
+              <label class="flex items-center space-x-2">
+                <input type="radio" name="alignPanelTitle" value="flex-end" [(ngModel)]="alignPanelTitle"
+                  class="edit-style-radio w-5 h-5 bg-gray-100 border-gray-300" (ngModelChange)="updateSamples()" />
+                <span class="text-base">{{right}}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white border-black rounded shadow p-4">
+        <h6 class="text-base font-semibold mb-3" i18n="@@panelContentEdit">Contenido del panel</h6>
+        <div style="display: flex; flex-direction: column;" class="div-card-body">
+          <div>
+            <h6 i18n="@@ChangeFontFamily" class="text-base font-medium mb-1">Tipo de fuente</h6>
+            <p-dropdown class="edit-style-dropdown" [(ngModel)]="selectedPanelFont" (ngModelChange)="updateSamples()"
+              [options]="fonts" optionLabel="value" optionValue="value" appendTo="body" [style]="{'width':'100%'}">
+            </p-dropdown>
+          </div>
+          <div>
+            <h6 i18n="@@ChangeFontSize" class="text-base font-medium mb-1 mt-2">Tamaño de fuente</h6>
+            <input type="range" min="-5" max="5" step="0.5" [(ngModel)]="panelFontSize" (change)="updateSamples()"
+              class="w-full border border-black rounded h-2 bg-gray-200 accent-[var(--corporate-primary)]" />
+          </div>
+          <div>
+            <h6 i18n="@@ChangeFontColor" class="text-base font-medium mb-1 mt-2">Color de la fuente</h6>
+            <p-colorPicker [(ngModel)]="panelFontColor" format="hex" appendTo="body" (onChange)="updateSamples()" />
+            <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="panelFontColor" (focusout)="updateSamples()" />
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4">
+        <h6 class="text-base font-semibold mb-3" i18n="@@samplePanelTitle">Previsualización</h6>
+        <div [ngStyle]="samplePanelStyle" class="preview-card">
+          <h6 [style]="samplePanelTitleStyle">{{samplePanelName}}</h6>
+          <p [style]="samplePanelContentStyle">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</eda-dialog2>

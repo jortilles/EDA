@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaRadar } from './eda-radar';
-import { StyleProviderService, D3TooltipService, lightenHex, darkenHex, formatAxisValue, ensureRadialGradient, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, opacityFraction } from '@eda/services/service.index';
+import { StyleProviderService, PanelStyleOverride, D3TooltipService, lightenHex, darkenHex, formatAxisValue, ensureRadialGradient, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, opacityFraction } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface RadarPoint {
@@ -38,6 +38,7 @@ const GRADIENT_LIGHTEN_AMOUNT = 30;
 })
 export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() inject: EdaRadar;
+  @Input() panelStyleOverride?: PanelStyleOverride;
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
 
@@ -60,7 +61,7 @@ export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.id = `radar_${this.inject.id}`;
     this.chartLegend = this.inject.chartLegend ?? true;
-    this.styleProviderService.panelFontFamily.subscribe(v => this.fontFamily = v).unsubscribe();
+    this.fontFamily = this.styleProviderService.resolveContentFontFamily(this.panelStyleOverride);
     this.styleProviderService.panelColor.subscribe(v => this.panelBackgroundColor = v || '#ffffff').unsubscribe();
     this.buildSeries();
   }
