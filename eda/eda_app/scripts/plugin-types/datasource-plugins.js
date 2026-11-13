@@ -9,7 +9,7 @@ module.exports = {
             .join('\n');
 
         const entries = plugins
-            .map((p) => `    { type: '${p.type}', label: '${p.label}', port: ${p.port === null ? 'null' : p.port}, formComponent: ${p.componentExport}, apiBasePath: '${p.apiBasePath}' },`)
+            .map((p) => `    { type: '${p.type}', label: '${p.label}', port: ${p.port === null ? 'null' : p.port}, formComponent: ${p.componentExport}, apiBasePath: '${p.apiBasePath}'${p.icon ? `, icon: '${p.icon}'` : ''} },`)
             .join('\n');
 
         return `// AUTO-GENERADO por scripts/generate-plugins.js — no editar a mano.
