@@ -4946,6 +4946,21 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>If you need business support or want to request new features, please feel free to contact us.</target>
 </trans-unit>
 
+<trans-unit id="aboutTutorialBannerTitle">
+<source>Tutorial para los usuarios del portal</source>
+<target>Tutorial for portal users</target>
+</trans-unit>
+
+<trans-unit id="aboutTutorialBannerDesc">
+<source>Consulta la guía para empezar a utilizar el portal.</source>
+<target>Check the guide to get started with the portal.</target>
+</trans-unit>
+
+<trans-unit id="aboutTutorialBannerCta">
+<source>Abrir tutorial</source>
+<target>Open tutorial</target>
+</trans-unit>
+
 
 <trans-unit id="multiSelectDefaultLabel">
 <source>Selecciona un grupo *</source>

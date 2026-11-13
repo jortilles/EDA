@@ -40,8 +40,8 @@
   width: 1.15rem;
   height: 1.15rem;
   border-radius: 9999px;
-  background: #0d3230;
-  color: #7be9dd;
+  background: var(--corporate-primary-dark);
+  color: var(--corporate-primary-light);
   font-size: 0.62rem;
   font-weight: 800;
   display: flex;

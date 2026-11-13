@@ -8,7 +8,24 @@ import { GettingStartedComponent } from '@eda/shared/components/getting-started/
   templateUrl: 'about-eda.page.html',
   standalone: true,
   imports: [CommonModule, GettingStartedComponent],
-  styles: []
+  styles: [`
+    .tutorial-banner {
+      border-color: var(--corporate-primary-light-alt);
+      background-color: var(--corporate-primary-surface);
+    }
+    .tutorial-banner:hover {
+      background-color: var(--corporate-primary-light);
+    }
+    .tutorial-banner-icon {
+      color: var(--corporate-primary);
+    }
+    .tutorial-banner-cta {
+      background-color: var(--corporate-primary);
+    }
+    .tutorial-banner:hover .tutorial-banner-cta {
+      background-color: var(--corporate-primary-darkest);
+    }
+  `]
 })
 export class AboutEdaPage {
   public readonly version: string = version;

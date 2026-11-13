@@ -95,6 +95,10 @@
         <source>Entrar</source>
         <target>Entrar</target>
       </trans-unit>
+      <trans-unit id="signInOAUTH2" datatype="html">
+        <source>Continuar con OAUTH2</source>
+        <target>Iniciar sessão com certificado digital</target>
+      </trans-unit>
       <trans-unit id="chatAssistantTitle" datatype="html">
         <source>Asistente Edalitics</source>
         <target>Assistente Edalitics</target>
@@ -3180,6 +3184,18 @@ Cumprimentos.</target>
       <trans-unit id="aboutEdaP7" datatype="html">
         <source> Si necesita soporte empresarial o desea solicitar nuevas funcionalidades, no dude en contactar con nosotros. </source>
         <target> Se precisar de suporte empresarial ou quiser solicitar novas funcionalidades, não hesite em contactar-nos. </target>
+      </trans-unit>
+      <trans-unit id="aboutTutorialBannerTitle" datatype="html">
+        <source>Tutorial para los usuarios del portal</source>
+        <target>Tutorial para os utilizadores do portal</target>
+      </trans-unit>
+      <trans-unit id="aboutTutorialBannerDesc" datatype="html">
+        <source>Consulta la guía para empezar a utilizar el portal.</source>
+        <target>Consulte o guia para começar a utilizar o portal.</target>
+      </trans-unit>
+      <trans-unit id="aboutTutorialBannerCta" datatype="html">
+        <source>Abrir tutorial</source>
+        <target>Abrir tutorial</target>
       </trans-unit>
       <trans-unit id="temasColors" datatype="html">
         <source>Temas</source>
