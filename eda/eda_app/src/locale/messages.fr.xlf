@@ -5312,6 +5312,21 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Si vous avez besoin d'assistance commerciale ou si vous souhaitez demander de nouvelles fonctionnalités, n'hésitez pas à nous contacter.</target>
 </trans-unit>
 
+<trans-unit id="aboutTutorialBannerTitle">
+  <source>Tutorial para los usuarios del portal</source>
+  <target>Tutoriel pour les utilisateurs du portail</target>
+</trans-unit>
+
+<trans-unit id="aboutTutorialBannerDesc">
+  <source>Consulta la guía para empezar a utilizar el portal.</source>
+  <target>Consultez le guide pour commencer à utiliser le portail.</target>
+</trans-unit>
+
+<trans-unit id="aboutTutorialBannerCta">
+  <source>Abrir tutorial</source>
+  <target>Ouvrir le tutoriel</target>
+</trans-unit>
+
 <trans-unit id="multiSelectDefaultLabel">
   <source>Selecciona un grupo *</source>
   <target>Sélectionnez un groupe *</target>
@@ -6897,7 +6912,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       </trans-unit>
       <trans-unit id="signInOAUTH2">
         <source>Continuar con OAUTH2</source>
-        <target>Continuer avec OAUTH2</target>
+        <target>S'identifier avec un certificat numérique</target>
       </trans-unit>
       <trans-unit id="signInMicrosoft">
         <source>Continuar con Microsoft</source>

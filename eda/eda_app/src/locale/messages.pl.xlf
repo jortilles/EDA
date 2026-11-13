@@ -4810,6 +4810,21 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Jeśli potrzebujesz wsparcia biznesowego lub chcesz zgłosić zapotrzebowanie na nowe funkcje, skontaktuj się z nami.</target>
 </trans-unit>
 
+<trans-unit id="aboutTutorialBannerTitle">
+  <source>Tutorial para los usuarios del portal</source>
+  <target>Samouczek dla użytkowników portalu</target>
+</trans-unit>
+
+<trans-unit id="aboutTutorialBannerDesc">
+  <source>Consulta la guía para empezar a utilizar el portal.</source>
+  <target>Zapoznaj się z przewodnikiem, aby rozpocząć korzystanie z portalu.</target>
+</trans-unit>
+
+<trans-unit id="aboutTutorialBannerCta">
+  <source>Abrir tutorial</source>
+  <target>Otwórz samouczek</target>
+</trans-unit>
+
 <trans-unit id="multiSelectDefaultLabel">
   <source>Selecciona un grupo *</source>
   <target>Wybierz grupę *</target>
@@ -6562,7 +6577,7 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       </trans-unit>
       <trans-unit id="signInOAUTH2">
         <source>Continuar con OAUTH2</source>
-        <target>Kontynuuj z OAUTH2</target>
+        <target>Zaloguj się certyfikatem cyfrowym</target>
       </trans-unit>
       <trans-unit id="signInMicrosoft">
         <source>Continuar con Microsoft</source>

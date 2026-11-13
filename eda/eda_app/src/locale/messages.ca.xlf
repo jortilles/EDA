@@ -5377,6 +5377,21 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Si necessiteu suport empresarial o voleu sol·licitar noves funcionalitats, no dubteu a contactar amb nosaltres.</target>
 </trans-unit>
 
+<trans-unit id="aboutTutorialBannerTitle">
+  <source>Tutorial para los usuarios del portal</source>
+  <target>Tutorial per als usuaris del portal</target>
+</trans-unit>
+
+<trans-unit id="aboutTutorialBannerDesc">
+  <source>Consulta la guía para empezar a utilizar el portal.</source>
+  <target>Consulta la guia per començar a fer servir el portal.</target>
+</trans-unit>
+
+<trans-unit id="aboutTutorialBannerCta">
+  <source>Abrir tutorial</source>
+  <target>Obrir tutorial</target>
+</trans-unit>
+
 <trans-unit id="multiSelectDefaultLabel">
   <source>Selecciona un grupo *</source>
   <target>Selecciona un grup *</target>
@@ -6929,7 +6944,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
       <trans-unit id="signInOAUTH2">
         <source>Continuar con OAUTH2</source>
-        <target>Continuar amb OAUTH2</target>
+        <target>Identifica't amb certificat digital</target>
       </trans-unit>
       <trans-unit id="signInMicrosoft">
         <source>Continuar con Microsoft</source>
