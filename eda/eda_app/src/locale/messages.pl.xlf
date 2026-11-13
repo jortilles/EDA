@@ -4638,9 +4638,9 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <source>Código Abierto</source>
   <target>Otwarte źródło</target>
 </trans-unit>
-<trans-unit id="aboutEdaP2">
-  <source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión <a href="https://www.edalitics.com" target="_blank" rel="noopener noreferrer" class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</source>
-  <target>Edalitics to aplikacja, którą można zainstalować na własnych serwerach lub użytkować w wersji <a href="https://www.edalitics.com" target="_blank" rel="noopener noreferrer" class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</target>
+<trans-unit id="aboutEdaP2" datatype="html">
+  <source> Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://www.edalitics.com&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; class=&quot;text-[#00BFB3] hover:underline font-medium&quot;&gt;"/>SaaS Edalitics<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. </source>
+  <target> Edalitics to aplikacja, którą można zainstalować na własnych serwerach lub użytkować w wersji <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://www.edalitics.com&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; class=&quot;text-[#00BFB3] hover:underline font-medium&quot;&gt;"/>SaaS Edalitics<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. </target>
 </trans-unit>
 <trans-unit id="aboutEdaA1">
   <source>Ver en Github</source>

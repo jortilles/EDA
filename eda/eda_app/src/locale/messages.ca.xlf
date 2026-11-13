@@ -4970,9 +4970,9 @@ Resum d'atributs
   <source>Código Abierto</source>
   <target>Codi obert</target>
 </trans-unit>
-<trans-unit id="aboutEdaP2">
-  <source>Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión <a href="https://www.edalitics.com" target="_blank"   class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</source>
-  <target>Edalitics és una aplicació que es pot instal·lar als teus propis servidors o gaudir a la seva versió <a href="https://www.edalitics.com" target="_blank"   class="text-[#00BFB3] hover:underline font-medium">SaaS Edalitics</a>.</target>
+<trans-unit id="aboutEdaP2" datatype="html">
+  <source> Edalitics es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://www.edalitics.com&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; class=&quot;text-[#00BFB3] hover:underline font-medium&quot;&gt;"/>SaaS Edalitics<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. </source>
+  <target> Edalitics és una aplicació que es pot instal·lar als teus propis servidors o gaudir a la seva versió <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://www.edalitics.com&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; class=&quot;text-[#00BFB3] hover:underline font-medium&quot;&gt;"/>SaaS Edalitics<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. </target>
 </trans-unit>
 <trans-unit id="aboutEdaA1">
   <source>Ver en Github</source>
