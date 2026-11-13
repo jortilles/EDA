@@ -421,8 +421,11 @@ export class GlobalFiltersService {
         const isDate = columnType === 'date';
 
         if (!isDate) {
+            // Legacy 2.x dashboards persist an empty `selectedIdValues: []`, which is truthy and
+            // hijacked code-mode filters into an empty IN(). Only use codes when the array
+            // actually has content; otherwise fall back to the selected values.
             // false (EDA) -> compare against the raw selected values | true (SinergiaDA) -> compare against the internal codes
-            const useCodes = USE_VALUE_LIST_CODE_FOR_FILTERS && globalFilter.selectedIdValues;
+            const useCodes = USE_VALUE_LIST_CODE_FOR_FILTERS && globalFilter.selectedIdValues?.length > 0;
             return [{ value1: useCodes ? globalFilter.selectedIdValues : globalFilter.selectedItems }];
         }
 
