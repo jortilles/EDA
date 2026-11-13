@@ -791,12 +791,12 @@
                                     'btn-panel-hover bg-white text-gray-600': !groupByEnabled
                                   }"
                                   class="px-3 py-1 text-base border rounded-md transition-all min-w-[3rem] text-center">
-                                  {{ groupByEnabled ? 'Sí' : 'No' }}
+                                  {{ groupByEnabled ? yesText : noText }}
                                 </button>
                               </div>
 
                               <!-- Dynamic filters -->
-                              @if (dashboard.dynamicFiltersAvailable()) {
+                              @if (dynamicFiltersAvailable) {
                                 <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
                                   <span i18n="@@dynamicFiltersText" class="text-base font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" tooltipPosition="top">Filtros dinámicos</span>
                                   <button
@@ -807,7 +807,7 @@
                                       'btn-panel-hover bg-white text-gray-600': !dynamicFilters
                                     }"
                                     class="px-3 py-1 text-base border rounded-md transition-all min-w-[3rem] text-center">
-                                    {{ dynamicFilters ? 'Sí' : 'No' }}
+                                    {{ dynamicFilters ? yesText : noText }}
                                   </button>
                                 </div>
                               }
