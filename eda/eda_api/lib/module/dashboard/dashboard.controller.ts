@@ -1475,7 +1475,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
           req.body.dashboard?.dashboard_id,
           req.body.dashboard?.panel_id,
           myQuery.filters,
-          req.body.dashboard?.liveMandatoryFilters
+          req.body.dashboard?.liveFilters
         );
         if (mandatoryFilterMissing) {
           console.log('a mandatory global filter has no value, query blocked');
@@ -1863,7 +1863,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
           req.body.dashboard?.dashboard_id,
           req.body.dashboard?.panel_id,
           req.body.query?.filters,
-          req.body.dashboard?.liveMandatoryFilters
+          req.body.dashboard?.liveFilters
         );
         if (mandatoryFilterMissing) {
           console.log('a mandatory global filter has no value, query blocked')
@@ -2873,17 +2873,17 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
    * what populate the filter's own value list / dependent filter options, so they must run even
    * while the filter has no value yet.
    *
-   * liveMandatoryFilters: the dashboard's own in-memory mandatory filter list (id + panelList), so
-   * an unsaved change to "obligatorio" is reflected immediately, without waiting for a page reload.
+   * liveFilters: the client's own in-memory report filters (id, isMandatory, panelList) for every
+   * filter so an unsaved change is reflected immediately, without a page reload. Falls back to the saved config below.
    */
   private static async isMandatoryFilterMissing(dashboardId: string, panelId: string, filters: any[],
-    liveMandatoryFilters?: { id: string; panelList: string[] }[]): Promise<boolean> {
+    liveFilters?: { id: string; isMandatory: boolean; panelList: string[] }[]): Promise<boolean> {
     if (!dashboardId) return false;
 
     let mandatoryFilterIds: string[];
-    if (liveMandatoryFilters) {
-      mandatoryFilterIds = liveMandatoryFilters
-        .filter((f) => !panelId || (f.panelList || []).includes(panelId))
+    if (liveFilters) {
+      mandatoryFilterIds = liveFilters
+        .filter((f) => f.isMandatory === true && (!panelId || (f.panelList || []).includes(panelId)))
         .map((f) => f.id);
     } else {
       const dashboard = await Dashboard.findById(dashboardId, 'config.filters').exec();

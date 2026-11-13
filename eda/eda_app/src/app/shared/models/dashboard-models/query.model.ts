@@ -11,7 +11,7 @@ export interface Query {
         dashboard_id: string,
         panel_id: string,
         connectionProperties: any,
-        liveMandatoryFilters?: { id: string; panelList: string[] }[]
+        liveFilters?: { id: string; isMandatory: boolean; panelList: string[] }[]
     };
     query: {
         fields: Column[]

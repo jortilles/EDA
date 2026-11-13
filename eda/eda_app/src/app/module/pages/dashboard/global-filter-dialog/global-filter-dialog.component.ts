@@ -282,8 +282,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         this.allPanels = this.allPanels.sort(this.sortByTittle);
 
         for (const displayPanel of this.allPanels) {
-            if (this.globalFilter.panelList?.length) {
-                const selectedPanelList = this.globalFilter.panelList;
+            // A new filter has no saved selection yet, so keep panelsToDisplay()'s defaults
+            // (all compatible panels active). An existing filter's selection, even empty ("no panels"), must still be applied.
+            if (!this.globalFilter.isnew) {
+                const selectedPanelList = this.globalFilter.panelList || [];
                  for (let displayPanel of this.allPanels) {
                     if (!selectedPanelList.some((id: any) => displayPanel.id === id)) {
                         displayPanel.active = false;

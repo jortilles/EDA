@@ -20,7 +20,7 @@ export interface QueryParams {
     rootTable?: string;
     sortedFilters?: any[];
     resultSortingColumns?: any[];
-    liveMandatoryFilters?: { id: string; panelList: string[] }[];
+    liveFilters?: { id: string; isMandatory: boolean; panelList: string[] }[];
 }
 
 @Injectable()
@@ -140,7 +140,7 @@ export class QueryBuilderService extends ApiService {
                 dashboard_id: params.dashboard,
                 panel_id: params.panel,
                 connectionProperties: params.connectionProperties,
-                liveMandatoryFilters: params.liveMandatoryFilters
+                liveFilters: params.liveFilters
             },
             query: {
                 fields: queryColumns,
