@@ -9,24 +9,12 @@ import DataSource, { IDataSource } from '../../module/datasource/model/datasourc
 import * as path from 'path';
 import * as crypto from 'crypto';
 import { checkNewDuckdbFolder, duckdbBaseFolder, sanitizeDuckdbFolderName } from '../../utils/duckdb-folder.util';
+import OAuthPendingState from '../../services/oauth-pending-state/oauth-pending-state.model';
 
 const cache_config = require('../../../config/cache.config');
 const ga4Config = require('../../../config/google-analytics.config');
 
-// In-memory store for pending OAuth states (state → refresh_token).
-// Entries are cleaned up after retrieval or after 10 minutes.
-const pendingTokens = new Map<string, { token: string; expiresAt: number }>();
-
 const SCOPES = ['https://www.googleapis.com/auth/analytics.readonly'];
-const TOKEN_TTL_MS = 10 * 60 * 1000; // 10 minutes
-
-// Periodically clean expired entries
-setInterval(() => {
-    const now = Date.now();
-    for (const [state, entry] of pendingTokens.entries()) {
-        if (entry.expiresAt < now) pendingTokens.delete(state);
-    }
-}, 60_000);
 
 export class GoogleAnalyticsController {
 
@@ -142,9 +130,10 @@ export class GoogleAnalyticsController {
                     y vuelve a intentarlo.</p>`);
             }
 
-            pendingTokens.set(state, {
+            await OAuthPendingState.create({
+                state,
+                data: {},
                 token: JSON.stringify({ type: 'oauth2', refresh_token: tokens.refresh_token }),
-                expiresAt: Date.now() + TOKEN_TTL_MS
             });
 
             // Close the popup — the main window is polling poll-token
@@ -162,16 +151,16 @@ export class GoogleAnalyticsController {
         }
     }
 
-    static pollToken(req: Request, res: Response, next: NextFunction) {
+    static async pollToken(req: Request, res: Response, next: NextFunction) {
         const { state } = (req as any).qs as { state: string };
         if (!state) return next(new HttpException(400, 'state requerido'));
 
-        const entry = pendingTokens.get(state);
-        if (!entry || entry.expiresAt < Date.now()) {
+        const entry = await OAuthPendingState.findOne({ state }).exec();
+        if (!entry || !entry.token) {
             return res.json({ ok: true, ready: false });
         }
 
-        pendingTokens.delete(state); // consume once
+        await OAuthPendingState.deleteOne({ _id: entry._id }).exec(); // consume once
         return res.json({ ok: true, ready: true, credentialsJson: entry.token });
     }
 

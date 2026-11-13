@@ -822,7 +822,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this.get(`${apiBasePath}${endpoint}`);
     }
 
-    deleteDuckDbCsv(datasourceId: string, tableName: string): Observable<any> {
+deleteDuckDbCsv(datasourceId: string, tableName: string): Observable<any> {
         return this.delete(`${this.globalDSRoute}/duckdb-table/${datasourceId}/${tableName}`);
     }
 
