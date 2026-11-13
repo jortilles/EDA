@@ -1276,11 +1276,15 @@ export class DashboardPage implements OnInit {
 
   /** Selects the mode in which queries will be allowed. EDA and Tree type queries cannot be mixed in the same report. */
   private setPanelsQueryMode(): void {
-    const treeQueryMode = this.panels.some((p) => resolveQueryMode(p.content?.query?.query?.queryMode, p.content?.query?.query?.modeSQL) === 'TREE');
-    const standardQueryMode = this.panels.some((p) => isEdaQueryMode(p.content?.query?.query?.queryMode, p.content?.query?.query?.modeSQL));
+    // Only panels with a saved query define the report's mode: an empty (new) panel would
+    // otherwise resolve to the legacy default 'EDA' and wrongly lock the report / re-add EDA.
+    const savedPanels = this.panels.filter((p) => p.content?.query?.query);
+    const treeQueryMode = savedPanels.some((p) => resolveQueryMode(p.content.query.query.queryMode, p.content.query.query.modeSQL) === 'TREE');
+    const standardQueryMode = savedPanels.some((p) => isEdaQueryMode(p.content.query.query.queryMode, p.content.query.query.modeSQL));
 
     for (const panel of this.edaPanels) {
-      const ownMode = resolveQueryMode(panel.panel?.content?.query?.query?.queryMode, panel.panel?.content?.query?.query?.modeSQL);
+      const savedQuery = panel.panel?.content?.query?.query;
+      const ownMode = savedQuery ? resolveQueryMode(savedQuery.queryMode, savedQuery.modeSQL) : null;
       let allowedModes = [...ALLOWED_QUERY_MODES];
 
       if (treeQueryMode) {
