@@ -6,7 +6,7 @@ import es from '@angular/common/locales/es';
 import { EdaBarD3Component } from '../eda-bar-d3/eda-bar.component';
 import { EdaLineComponent } from '../eda-line-d3/eda-line.component';
 import { EdaAreaComponent } from '../eda-area-d3/eda-area.component';
-import { KPI_CONFIG } from '@eda/configs/customizable/customizable_default';
+import { KPI_CONFIG } from '@eda/configs/customizable/customizable_merged';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';

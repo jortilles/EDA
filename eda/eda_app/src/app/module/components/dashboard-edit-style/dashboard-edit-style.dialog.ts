@@ -14,7 +14,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { DropdownModule } from 'primeng/dropdown';
 import { CommonModule } from '@angular/common';
 import { DashboardPage } from "../../pages/dashboard/dashboard.page";
-import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/customizable/customizable_default';
+import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/customizable/customizable_merged';
 import { MediaLibraryComponent } from '@eda/components/media-library/media-library.component';
 
 

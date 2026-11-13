@@ -5,7 +5,7 @@ import { TreeNode } from 'primeng/api';
 import { ApiService } from './api.service';
 import { EditModelPanel, EditColumnPanel, EditTablePanel, Relation, ValueListSource } from '@eda/models/data-source-model/data-source-models';
 import { AlertService } from '../alerts/alert.service';
-import { AGG_TYPES } from '../../config/customizable/customizable_default';
+import { AGG_TYPES } from '../../config/customizable/customizable_merged';
 import { map } from 'rxjs/internal/operators/map';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { SweetAlertOptions } from 'sweetalert2';

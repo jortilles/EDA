@@ -5,7 +5,7 @@ import { Table } from 'primeng/table';
 // import { FilterUtils } from 'primeng/utils';
 import { EdaTableModel } from './eda-table.model';
 import { computeTableColorStyles, getNiceName, ColorStyleSpec } from '@eda/services/utils/eda-table-utils/eda-table.color';
-import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR, DEFAULT_TABLE_TOTAL_COLOR } from '@eda/configs/customizable/customizable_default';
+import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR, DEFAULT_TABLE_TOTAL_COLOR } from '@eda/configs/customizable/customizable_merged';
 import { registerLocaleData } from '@angular/common';
 
 import es from '@angular/common/locales/es';

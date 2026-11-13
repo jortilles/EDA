@@ -15,7 +15,7 @@ import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
-import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, SHOW_HIDDEN_FIELDS_BUTTON, SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY, ALLOWED_QUERY_MODES, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER, SHOW_HIDDEN_FIELDS_BUTTON, SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY, ALLOWED_QUERY_MODES, SHOW_WHAT_IF, ALLOWED_JOIN_TYPES } from '@eda/configs/customizable/customizable_merged';
 import { resolveQueryMode } from '@eda/shared/utils/query-mode.util';
 
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';

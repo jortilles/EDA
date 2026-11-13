@@ -5,7 +5,7 @@ import { AlertService, DataSourceService, QueryBuilderService, QueryParams, Spin
 import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule, FormsModule} from '@angular/forms';
 import { SelectItem } from 'primeng/api';
 import { EditColumnPanel } from '@eda/models/data-source-model/data-source-models';
-import { AGG_TYPES } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES } from '@eda/configs/customizable/customizable_merged';
 import { AGG_COMPUTED } from '../aggregationConstants';
 
 

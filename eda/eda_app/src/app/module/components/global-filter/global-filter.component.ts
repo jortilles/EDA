@@ -7,7 +7,7 @@ import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-pan
 import { OverlayPanelModule } from "primeng/overlaypanel";
 import * as _ from 'lodash';
 import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
-import { GLOBAL_FILTER_BUTTON_POSITION, SHOW_EMPTY_VALUE_IN_FILTERS } from '@eda/configs/customizable/customizable_default';
+import { GLOBAL_FILTER_BUTTON_POSITION, SHOW_EMPTY_VALUE_IN_FILTERS } from '@eda/configs/customizable/customizable_merged';
 import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from "@angular/forms";

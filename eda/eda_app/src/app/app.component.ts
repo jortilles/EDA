@@ -3,7 +3,7 @@ import { MessageService } from 'primeng/api';
 import { AlertService, UserService, SpinnerService } from './services/service.index';
 import { Router, RouterModule } from '@angular/router';
 import { Title } from '@angular/platform-browser';
-import { APPLICATION_NAME, CORPORATE_COLORS, DEFAULT_HOME_BACKGROUND_COLOR } from './config/customizable/customizable_default';
+import { APPLICATION_NAME, CORPORATE_COLORS, DEFAULT_HOME_BACKGROUND_COLOR } from './config/customizable/customizable_merged';
 
 import { PrimeNGConfig } from 'primeng/api';
 

@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TitleDialogComponent } from './edit-title/quill-editor.component';
 import { FileUtiles } from '@eda/services/service.index';
-import { SHOW_LOCK_IN_PANEL_HEADER } from '@eda/configs/customizable/customizable_default';
+import { SHOW_LOCK_IN_PANEL_HEADER } from '@eda/configs/customizable/customizable_merged';
 @Component({
     standalone: true,
     selector: 'eda-title-panel',

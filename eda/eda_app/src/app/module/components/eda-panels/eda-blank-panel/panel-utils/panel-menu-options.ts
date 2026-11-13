@@ -4,7 +4,7 @@ import { SourceFieldsUtils } from '../source-fields-dialog/source-fields-utils';
 import * as _ from 'lodash';
 
 import { EdaContextMenuItem, EdaDialogController, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
-import { SHOW_LOCK_IN_PANEL_HEADER } from '@eda/configs/customizable/customizable_default';
+import { SHOW_LOCK_IN_PANEL_HEADER } from '@eda/configs/customizable/customizable_merged';
 
 export const PanelOptions = {
   editQuery: (panelComponent: EdaBlankPanelComponent) => {

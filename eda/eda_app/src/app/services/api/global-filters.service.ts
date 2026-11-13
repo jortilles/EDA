@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { EdaPanel } from '@eda/models/model.index';
-import { USE_VALUE_LIST_CODE_FOR_FILTERS } from '@eda/configs/customizable/customizable_default';
+import { USE_VALUE_LIST_CODE_FOR_FILTERS } from '@eda/configs/customizable/customizable_merged';
 import { ChartUtilsService } from '@eda/services/utils/chart-utils.service';
 import * as _ from 'lodash';
 

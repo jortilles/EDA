@@ -15,7 +15,7 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
-import { AGG_TYPES } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES } from '@eda/configs/customizable/customizable_merged';
 
 const ANGULAR_MODULES = [
     FormsModule,

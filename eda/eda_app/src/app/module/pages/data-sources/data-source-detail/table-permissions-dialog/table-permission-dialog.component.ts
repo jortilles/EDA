@@ -4,7 +4,7 @@ import { EdaDialog, EdaDialog2Component } from "@eda/shared/components/shared-co
 import { CommonModule } from "@angular/common";
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from '@angular/forms';
-import { PROTECTED_MODEL_DATA_SOURCES_ARRAY } from '@eda/configs/customizable/customizable_default';
+import { PROTECTED_MODEL_DATA_SOURCES_ARRAY } from '@eda/configs/customizable/customizable_merged';
 @Component({
     standalone: true,
     selector: 'app-table-permission-dialog',

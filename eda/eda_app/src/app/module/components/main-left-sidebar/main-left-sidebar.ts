@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { UserService } from '@eda/services/service.index';
 import { LogoSidebar } from '@eda/configs/index';
-import { AI_ASSISTANT_MANAGEMENT_AVAILABLE, CUSTOMIZE_SIDE_MENU_ICONS, ENABLED_LANGUAGES } from '@eda/configs/customizable/customizable_default';
+import { AI_ASSISTANT_MANAGEMENT_AVAILABLE, CUSTOMIZE_SIDE_MENU_ICONS, ENABLED_LANGUAGES } from '@eda/configs/customizable/customizable_merged';
 import { IconService } from '@eda/services/utils/icons.service';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import { GroupService } from '@eda/services/api/group.service';

@@ -4,7 +4,7 @@ import { KpiMailConfigModal } from '@eda/components/kpi-mail-config/kpi-mail-con
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService, FileUtiles } from '@eda/services/service.index';
-import { KPI_CONFIG } from '@eda/configs/customizable/customizable_default';
+import { KPI_CONFIG } from '@eda/configs/customizable/customizable_merged';
 import { StyleProviderService, ChartUtilsService } from '@eda/services/service.index';
 import * as _ from 'lodash';
 import { FormsModule } from '@angular/forms';

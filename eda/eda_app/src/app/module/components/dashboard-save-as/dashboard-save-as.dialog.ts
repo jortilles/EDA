@@ -6,7 +6,7 @@ import { SharedModule } from "@eda/shared/shared.module";
 import { SelectItem } from "primeng/api";
 import { MultiSelectModule } from "primeng/multiselect";
 import { SelectButtonModule } from "primeng/selectbutton";
-import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_default";
+import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_merged";
 
 @Component({
   selector: 'app-dashboard-save-as',

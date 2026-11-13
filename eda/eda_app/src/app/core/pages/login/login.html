@@ -7,21 +7,20 @@
 
     <app-particles-background></app-particles-background>
 
-    <!-- Animated gradient orbs (tinted with HOME_SCREEN_PARTICLE_COLOR when it is set) -->
+    <!-- Animated gradient orbs (hidden when HOME_SCREEN_PARTICLE_COLOR or HOME_SCREEN_BACKGROUND_COLOR is set) -->
+    @if (showOrbs) {
     <div class="absolute inset-0 overflow-hidden">
         <div
-            class="absolute -left-[10%] top-[20%] w-[500px] h-[500px] bg-blue-200/30 rounded-full blur-3xl animate-blob"
-            [style.background-color]="orbColor || null" [style.opacity]="orbColor ? 0.3 : null">
+            class="absolute -left-[10%] top-[20%] w-[500px] h-[500px] bg-blue-200/30 rounded-full blur-3xl animate-blob">
         </div>
         <div
-            class="absolute -right-[10%] top-[10%] w-[400px] h-[400px] bg-purple-200/20 rounded-full blur-3xl animate-blob animation-delay-2000"
-            [style.background-color]="orbColor || null" [style.opacity]="orbColor ? 0.2 : null">
+            class="absolute -right-[10%] top-[10%] w-[400px] h-[400px] bg-purple-200/20 rounded-full blur-3xl animate-blob animation-delay-2000">
         </div>
         <div
-            class="absolute left-[20%] -bottom-[10%] w-[600px] h-[600px] bg-cyan-200/20 rounded-full blur-3xl animate-blob animation-delay-4000"
-            [style.background-color]="orbColor || null" [style.opacity]="orbColor ? 0.2 : null">
+            class="absolute left-[20%] -bottom-[10%] w-[600px] h-[600px] bg-cyan-200/20 rounded-full blur-3xl animate-blob animation-delay-4000">
         </div>
     </div>
+    }
 
     <!-- Login Card -->
     <div

@@ -12,7 +12,7 @@ interface Column {
   header: string;
 }
 
-import { FATHER_ID, DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '../../../config/customizable/customizable_default'
+import { FATHER_ID, DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '../../../config/customizable/customizable_merged'
 
 @Component({
   selector: 'app-eda-treetable',

@@ -7,7 +7,7 @@ import { SelectItem } from "primeng/api";
 import { MultiSelectModule } from "primeng/multiselect";
 import { SelectButtonModule } from "primeng/selectbutton";
 import { DashboardPage } from "../../pages/dashboard/dashboard.page";
-import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_default";
+import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_merged";
 
 @Component({
   selector: 'app-dashboard-visible',

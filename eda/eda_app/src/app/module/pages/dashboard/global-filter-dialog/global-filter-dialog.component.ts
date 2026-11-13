@@ -19,7 +19,7 @@ import { ButtonModule } from "primeng/button";
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { AutoCompleteModule } from "primeng/autocomplete";
-import { SHOW_EMPTY_VALUE_IN_FILTERS } from '@eda/configs/customizable/customizable_default';
+import { SHOW_EMPTY_VALUE_IN_FILTERS } from '@eda/configs/customizable/customizable_merged';
 
 const ANGULAR_MODULES = [
     CommonModule,

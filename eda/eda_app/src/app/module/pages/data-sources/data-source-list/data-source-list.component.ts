@@ -8,7 +8,7 @@ import { DataSourceDetailComponent } from '../data-source-detail/data-source-det
 import { PrimengModule } from 'app/core/primeng.module';
 import { DatasourceSaveAsDialog } from '../data-source-save-as/datasource-save-as.dialog';
 import { DataSourceMapComponent } from './data-source-map/data-source-map.component';
-import { PROTECTED_MODEL_DATA_SOURCES_ARRAY } from '@eda/configs/customizable/customizable_default';
+import { PROTECTED_MODEL_DATA_SOURCES_ARRAY } from '@eda/configs/customizable/customizable_merged';
 
 import * as _ from 'lodash';
 

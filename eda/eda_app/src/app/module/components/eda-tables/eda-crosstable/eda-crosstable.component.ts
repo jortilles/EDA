@@ -4,7 +4,7 @@ import { StyleProviderService, AlertService, PanelStyleOverride } from '@eda/ser
 import { Table } from 'primeng/table';
 import { EdaCrosstableModel } from './eda-crosstable.model';
 import { computeTableColorStyles, getNiceName, ColorStyleSpec } from '@eda/services/utils/eda-table-utils/eda-table.color';
-import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_default';
+import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_merged';
 import { registerLocaleData } from '@angular/common';
 
 import es from '@angular/common/locales/es';

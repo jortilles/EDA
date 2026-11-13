@@ -11,7 +11,7 @@ import { SelectButtonModule } from "primeng/selectbutton";
 import { EdaDialog2Component } from "../shared-components.index";
 import * as _ from 'lodash';
 import { DataSourceNamesService } from "@eda/services/shared/datasource-names.service";
-import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_default";
+import { ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS } from "@eda/configs/customizable/customizable_merged";
 
 @Component({
     standalone: true,

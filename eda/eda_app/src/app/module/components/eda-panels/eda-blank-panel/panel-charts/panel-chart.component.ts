@@ -71,7 +71,7 @@ import { EdaAreaD3 } from '@eda/components/eda-area-d3/eda-area';
 import { EdaBarlineComponent } from '@eda/components/eda-barline-d3/eda-barline.component';
 import { EdaBarlineD3 } from '@eda/components/eda-barline-d3/eda-barline';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { CHART_RENDER_LIMITS } from '@eda/configs/customizable/customizable_default';
+import { CHART_RENDER_LIMITS } from '@eda/configs/customizable/customizable_merged';
 
 @Component({
     standalone: true,

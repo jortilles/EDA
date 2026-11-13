@@ -12,7 +12,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 import { DashboardService, FilterType, ChartUtilsService, AlertService, OrdenationType, ColumnUtilsService, FormatDates, QueryBuilderService} from '@eda/services/service.index';
 import { EdaDialog, EdaDialogCloseEvent, EdaDialog2Component, EdaDialogAbstract, DatePickerComponent } from '@eda/shared/components/shared-components.index';
 import { getDynamicRangeLabel } from '@eda/shared/components/date-picker/date-filter-display.util';
-import { AGG_TYPES } from '@eda/configs/customizable/customizable_default';
+import { AGG_TYPES } from '@eda/configs/customizable/customizable_merged';
 import * as _ from 'lodash';
 import { firstValueFrom } from 'rxjs';
 import { InputTextModule } from 'primeng/inputtext';

@@ -16,7 +16,7 @@ import { EdaColumnChart } from '@eda/components/eda-tables/eda-table/eda-columns
 import { EdaColumnPercentage } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-percentage';
 import { EdaLineD3 } from '@eda/components/eda-line-d3/eda-line';
 import { HeaderModel, SyntheticColumnKind } from './eda-table.header';
-import { USE_EDA_TABLE_TOTALS_LOGIC } from '@eda/configs/customizable/customizable_default';
+import { USE_EDA_TABLE_TOTALS_LOGIC } from '@eda/configs/customizable/customizable_merged';
 
 export interface CellAggregationStrategy {
   /**

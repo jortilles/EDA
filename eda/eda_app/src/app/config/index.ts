@@ -1,1 +1,1 @@
-export * from './customizable/customizable_default';
+export * from './customizable/customizable_merged';

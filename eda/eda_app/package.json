@@ -16,7 +16,7 @@
     "start:ca": "ng serve -o --configuration=ca",
     "start:en": "ng serve -o --configuration=en",
     "copy-index": "node scripts/copy-index.js",
-    "build:prod": "node scripts/generate-plugins.js && node scripts/i18n-merge.js && ng build --configuration production --localize --build-optimizer --vendor-chunk && npm run copy-index",
+    "build:prod": "node scripts/apply-overwrites.js && node scripts/generate-plugins.js && node scripts/i18n-merge.js && ng build --configuration production --localize --build-optimizer --vendor-chunk && npm run copy-index",
     "test": "ng test",
     "test:characterization": "node --import tsx node_modules/jasmine/bin/jasmine.js --config=spec/support/jasmine.json",
     "lint": "ng lint",

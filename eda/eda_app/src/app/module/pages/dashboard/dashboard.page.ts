@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DateUtils } from '@eda/services/utils/date-utils.service';
 import { resolveQueryMode, isEdaQueryMode } from '@eda/shared/utils/query-mode.util';
-import { ALLOWED_QUERY_MODES } from '@eda/configs/customizable/customizable_default';
+import { ALLOWED_QUERY_MODES } from '@eda/configs/customizable/customizable_merged';
 import * as _ from 'lodash';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
@@ -22,7 +22,7 @@ import { AssistantService } from '@eda/services/api/assistant.service';
 import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/component.index';
 import { ZoomSdaComponent } from './zoom-control/zoom.component';
 import { ZoomStateService } from './zoom-control/zoom-state.service';
-import { SHOW_ZOOM_IN_SIDEBAR } from '@eda/configs/customizable/customizable_default';
+import { SHOW_ZOOM_IN_SIDEBAR } from '@eda/configs/customizable/customizable_merged';
 
 // Sidebar imports
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';

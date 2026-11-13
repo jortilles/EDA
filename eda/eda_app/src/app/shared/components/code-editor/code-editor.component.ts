@@ -34,7 +34,7 @@ import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { lintKeymap } from '@codemirror/lint';
 import { MSSQL, MySQL, PLSQL, PostgreSQL, SQLDialect, SQLite, StandardSQL, sql } from '@codemirror/lang-sql';
 import { html } from '@codemirror/lang-html';
-import { CODE_EDITOR_SYNTAX_COLORS } from '@eda/configs/customizable/customizable_default';
+import { CODE_EDITOR_SYNTAX_COLORS } from '@eda/configs/customizable/customizable_merged';
 
 /** Syntax-highlighting theme built from the (customizable) palette in
  * `customizable_default.ts` — same tag set and defaults as CodeMirror's own

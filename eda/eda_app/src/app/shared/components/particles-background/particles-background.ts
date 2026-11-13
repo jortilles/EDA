@@ -1,5 +1,5 @@
 import { Component, type ElementRef, OnInit, ViewChild, type AfterViewInit, type OnDestroy } from "@angular/core"
-import { HOME_SCREEN_BACKGROUND_COLOR, HOME_SCREEN_PARTICLE_COLOR } from "@eda/configs/customizable/customizable_default"
+import { HOME_SCREEN_BACKGROUND_COLOR, HOME_SCREEN_PARTICLE_COLOR } from "@eda/configs/customizable/customizable_merged"
 
 const DEFAULT_PARTICLE_COLOR = "hsl(210, 80%, 50%)"
 

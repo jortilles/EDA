@@ -11,7 +11,7 @@ import {
   renderMailPreview, renderMailPreviewHtml,
 } from "@eda/services/utils/mail-variables.util";
 import { renderMailLogic, hasMailLogic, buildKpiCtxNode } from "@eda/services/utils/mail-logic.util";
-import { SubLogoImage } from "@eda/configs/customizable/customizable_default";
+import { SubLogoImage } from "@eda/configs/customizable/customizable_merged";
 import { WEEKDAY_OPTIONS, MONTHLY_ORDINAL_OPTIONS, MONTH_DAY_OPTIONS } from "@eda/services/utils/mail-schedule.util";
 
 /** Shared dashboard / KPI-alert mail-config dialog. The two subclasses only supply where the
