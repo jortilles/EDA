@@ -69,6 +69,15 @@ function findExports(src) {
     return results;
 }
 
+/**
+ * Returns the assigned value of a declaration (text after `=` without the trailing semicolon),
+ * with whitespace collapsed so multi-line values fit on one log line.
+ */
+function extractValue(decl) {
+    const match = /^export const\s+\w+\s*(?::[^=]*)?=\s*([\s\S]*?);?$/.exec(decl.trim());
+    return match ? match[1].replace(/\s+/g, ' ').trim() : '';
+}
+
 const defaultsContent   = fs.readFileSync(DEFAULTS_PATH,   'utf8');
 const overwritesContent = fs.readFileSync(OVERWRITES_PATH, 'utf8');
 
@@ -88,7 +97,7 @@ for (const { name, start } of overwriteExports) {
 
     const defaultDecl = extractDeclaration(result, defaultMatch.index);
     result = result.slice(0, defaultMatch.index) + overwriteDecl + result.slice(defaultMatch.index + defaultDecl.length);
-    console.log(`\x1b[32m✓\x1b[0m ${name}`);
+    console.log(`\x1b[32m✓\x1b[0m ${name}: ${extractValue(overwriteDecl)}`);
     count++;
 }
 

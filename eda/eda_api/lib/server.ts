@@ -1,5 +1,7 @@
 import cluster from 'cluster';
 import os from 'os';
+import fs from 'fs';
+import { isFirstWorker } from './utils/cluster.util';
 
 const apiConfig = require('../config/eda_api_config');
 const numCPUs: number = (apiConfig.cluster_workers > 0) ? apiConfig.cluster_workers : os.cpus().length;
@@ -56,11 +58,20 @@ if (cluster.isMaster) {
 
     /**
      * Oracle client
+     * The client is initialized in every worker (it is loaded per process); the "not configured"
+     * message is only logged once (first worker) to avoid duplicates. Init errors are logged in
+     * every worker regardless — a restarted worker never gets isFirstWorker() again (see cluster.util.ts).
      */
-    try {
-        oracledb.initOracleClient({ libDir: EDA_ORACLE_CLIENT });
-    } catch (err) {
-        console.log('Para usar Oracle debes instalar instant_client y especificar la ruta en el archivo de configuración');
-        console.error(err);
+    const oracleConfigured = !!EDA_ORACLE_CLIENT && fs.existsSync(EDA_ORACLE_CLIENT);
+
+    if (!oracleConfigured) {
+        if (isFirstWorker()) console.log('[Oracle] Oracle no configurado');
+    } else {
+        try {
+            oracledb.initOracleClient({ libDir: EDA_ORACLE_CLIENT });
+        } catch (err) {
+            console.log('[Oracle] Error inicializando el cliente de Oracle en', EDA_ORACLE_CLIENT);
+            console.error(err);
+        }
     }
 }
