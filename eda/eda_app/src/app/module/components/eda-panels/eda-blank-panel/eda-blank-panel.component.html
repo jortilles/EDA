@@ -740,19 +740,28 @@
 
                               <!-- Intersection type -->
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
-                                <span i18n="@@joinTypeH4" class="text-base font-medium text-gray-700" pTooltip="Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN" i18n-pTooltip="@@tooltipJoinType" tooltipPosition="top">Tipo de intersección</span>
-                                <div class="flex gap-1">
-                                  <button *ngFor="let type of joinTypeOptions" (click)="onJoinTypeChange(type)"
-                                    [ngClass]="{'btn-panel-active': joinType === type.joinType, 'btn-panel-hover bg-white text-gray-600': joinType !== type.joinType}"
-                                    class="px-3 py-1 text-base border rounded-md transition-all">
+                                <div class="flex items-center gap-2">
+                                  <span i18n="@@joinTypeH4" class="text-base font-medium text-gray-700 cursor-default">Tipo de intersección</span>
+                                  <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN" i18n-pTooltip="@@tooltipJoinType"></i>
+                                </div>
+                                <!-- Segmented button group: one button per join type allowed in ALLOWED_JOIN_TYPES -->
+                                <div class="inline-flex rounded-md border border-gray-300 overflow-hidden">
+                                  <button *ngFor="let type of joinTypeOptions; let first = first"
+                                    type="button"
+                                    (click)="onJoinTypeChange(type)"
+                                    [ngClass]="[joinType === type.joinType ? 'btn-panel-active' : 'btn-panel-hover bg-white text-gray-600', !first ? 'border-l border-gray-300' : '']"
+                                    class="px-3 py-1 text-base min-w-[3rem] text-center transition-all focus:outline-none">
                                     {{ type.label }}
                                   </button>
                                 </div>
                               </div>
-    
+
                               <!-- AND/OR Advanced filters -->
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
-                                <span i18n="@@filtrosAvanzados" class="text-base font-medium text-gray-700" pTooltip="Combina los filtros del panel con operadores AND u OR" i18n-pTooltip="@@tooltipAdvancedFilters" tooltipPosition="top">Filtros avanzados (AND/OR)</span>
+                                <div class="flex items-center gap-2">
+                                  <span i18n="@@filtrosAvanzados" class="text-base font-medium text-gray-700 cursor-default">Filtros avanzados (AND/OR)</span>
+                                  <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Combina los filtros del panel con operadores AND u OR" i18n-pTooltip="@@tooltipAdvancedFilters"></i>
+                                </div>
                                 <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="filterAndOrDialog()">
                                   <span i18n="@@configurarFiltrosAvanzados">Configurar</span>
                                 </button>
@@ -763,7 +772,10 @@
                               <!-- What-If Scenarios -->
                               @if (showWhatIf) {
                                 <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
-                                  <span i18n="@@scenarios" class="text-base font-medium text-gray-700" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios" tooltipPosition="top">Escenarios</span>
+                                  <div class="flex items-center gap-2">
+                                    <span i18n="@@scenarios" class="text-base font-medium text-gray-700 cursor-default">Escenarios</span>
+                                    <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios"></i>
+                                  </div>
                                   <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onWhatIfDialog()">
                                     What If?
                                   </button>
@@ -773,7 +785,10 @@
                               <!-- Click filter configuration (outgoing + bilateral) -->
                               @if (selectedQueryMode !== 'SQL') {
                                 <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
-                                  <span i18n="@@clickFiltersConfigText" class="text-base font-medium text-gray-700" pTooltip="Decide si este panel es clicable y a qué paneles afecta su click" tooltipPosition="top">Filtros en click</span>
+                                  <div class="flex items-center gap-2">
+                                    <span i18n="@@clickFiltersConfigText" class="text-base font-medium text-gray-700 cursor-default">Filtros en click</span>
+                                    <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Decide si este panel es clicable y a qué paneles afecta su click"></i>
+                                  </div>
                                   <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onClickFilterConfig()">
                                     <span i18n="@@configurarClickFilters">Configurar</span>
                                   </button>
@@ -782,33 +797,53 @@
 
                               <!-- Unique records -->
                               <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
-                                <span i18n="@@uniqueRecordsGrouping" class="text-base font-medium text-gray-700" pTooltip="Aplica GROUP BY a todos los campos para eliminar duplicados" i18n-pTooltip="@@tooltipUniqueRecords" tooltipPosition="top">Registros únicos (agrupación)</span>
-                                <button
-                                  type="button"
-                                  (click)="toggleGroupBy()"
-                                  [ngClass]="{
-                                    'btn-panel-active': groupByEnabled,
-                                    'btn-panel-hover bg-white text-gray-600': !groupByEnabled
-                                  }"
-                                  class="px-3 py-1 text-base border rounded-md transition-all min-w-[3rem] text-center">
-                                  {{ groupByEnabled ? yesText : noText }}
-                                </button>
+                                <div class="flex items-center gap-2">
+                                  <span i18n="@@uniqueRecordsGrouping" class="text-base font-medium text-gray-700 cursor-default">Registros únicos (agrupación)</span>
+                                  <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Aplica GROUP BY a todos los campos para eliminar duplicados" i18n-pTooltip="@@tooltipUniqueRecords"></i>
+                                </div>
+                                <!-- No / Sí segmented button group: each button only toggles when it is not already the active one -->
+                                <div class="inline-flex rounded-md border border-gray-300 overflow-hidden">
+                                  <button
+                                    type="button"
+                                    (click)="groupByEnabled && toggleGroupBy()"
+                                    [ngClass]="!groupByEnabled ? 'btn-panel-active' : 'btn-panel-hover bg-white text-gray-600'"
+                                    class="px-3 py-1 text-base min-w-[3rem] text-center transition-all focus:outline-none">
+                                    {{ noText }}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    (click)="!groupByEnabled && toggleGroupBy()"
+                                    [ngClass]="groupByEnabled ? 'btn-panel-active' : 'btn-panel-hover bg-white text-gray-600'"
+                                    class="px-3 py-1 text-base min-w-[3rem] text-center border-l border-gray-300 transition-all focus:outline-none">
+                                    {{ yesText }}
+                                  </button>
+                                </div>
                               </div>
 
                               <!-- Dynamic filters -->
                               @if (dynamicFiltersAvailable) {
                                 <div class="flex items-center justify-between rounded-lg px-3 py-2 gap-2">
-                                  <span i18n="@@dynamicFiltersText" class="text-base font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" tooltipPosition="top">Filtros dinámicos</span>
-                                  <button
-                                    type="button"
-                                    (click)="dynamicFiltersInteraction()"
-                                    [ngClass]="{
-                                      'btn-panel-active': dynamicFilters,
-                                      'btn-panel-hover bg-white text-gray-600': !dynamicFilters
-                                    }"
-                                    class="px-3 py-1 text-base border rounded-md transition-all min-w-[3rem] text-center">
-                                    {{ dynamicFilters ? yesText : noText }}
-                                  </button>
+                                  <div class="flex items-center gap-2">
+                                    <span i18n="@@dynamicFiltersText" class="text-base font-medium text-gray-700 cursor-default">Filtros dinámicos</span>
+                                    <i class="pi pi-info-circle cursor-pointer text-gray-400 text-sm" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles"></i>
+                                  </div>
+                                  <!-- No / Sí segmented button group: each button only toggles when it is not already the active one -->
+                                  <div class="inline-flex rounded-md border border-gray-300 overflow-hidden">
+                                    <button
+                                      type="button"
+                                      (click)="dynamicFilters && dynamicFiltersInteraction()"
+                                      [ngClass]="!dynamicFilters ? 'btn-panel-active' : 'btn-panel-hover bg-white text-gray-600'"
+                                      class="px-3 py-1 text-base min-w-[3rem] text-center transition-all focus:outline-none">
+                                      {{ noText }}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      (click)="!dynamicFilters && dynamicFiltersInteraction()"
+                                      [ngClass]="dynamicFilters ? 'btn-panel-active' : 'btn-panel-hover bg-white text-gray-600'"
+                                      class="px-3 py-1 text-base min-w-[3rem] text-center border-l border-gray-300 transition-all focus:outline-none">
+                                      {{ yesText }}
+                                    </button>
+                                  </div>
                                 </div>
                               }
                             </div>
