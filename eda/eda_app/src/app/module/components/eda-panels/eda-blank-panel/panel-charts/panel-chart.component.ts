@@ -608,7 +608,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.data = this.chartUtils.transformData4Knob(this.props.data, dataTypes);
         
         chartConfig.dataDescription = this.chartUtils.describeData4Knob(this.props.query, this.chartUtils.transformData4Knob(this.props.data, dataTypes));
-        chartConfig.assignedColors = this.props.config['config']['assignedColors'] ? this.props.config['config']['assignedColors'] : null;
+        // 2.x stored the knob colour in config.color: map it to assignedColors
+        const knobCfg = this.props.config['config'] || {};
+        let knobColors = this.chartUtils.filterValidAssignedColors(knobCfg['assignedColors']);
+        if (knobColors.length === 0 && this.chartUtils.isValidCssColor(knobCfg['color'])) {
+            knobColors = [{ value: 'color', color: knobCfg['color'] }];
+            knobCfg['assignedColors'] = knobColors;
+        }
+        chartConfig.assignedColors = knobColors.length > 0 ? knobColors : null;
         chartConfig.limits = this.props.config['config']['limits'] ? this.props.config['config']['limits'] : null;
         chartConfig.semaphoreColor = !!this.props.config['config']['semaphoreColor'];
         chartConfig.chartAnimation = this.props.config.getConfig()['chartAnimation'] ?? true;
@@ -645,7 +652,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.imageScale = kpiCfg?.imageScale;
             chartConfig.edaChart = kpiCfg?.edaChart;
             chartConfig.backgroundColor = kpiCfg?.backgroundColor || '';
-            chartConfig.kpiColor = kpiCfg?.kpiColor || '';
+            // 2.x stored the KPI text color in config.color; 3.x reads kpiColor
+            chartConfig.kpiColor = kpiCfg?.kpiColor || (this.chartUtils.isValidCssColor((kpiCfg as any)?.color) ? (kpiCfg as any).color : '') || '';
             chartConfig.prefixImage = kpiCfg?.prefixImage || '';
         } else {
             chartConfig.sufix = '';
@@ -809,21 +817,28 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.edaChart.chartDataset = chartData[1];
 
     // Load assignedColors or use default colors
-    const existingColors = cfg['assignedColors'] || [];
+    // Load assignedColors or use default colors (legacy values are validated)
+    const existingColors = this.chartUtils.filterValidAssignedColors(cfg['assignedColors']);
     let assignedColors = [];
 
     if (existingColors.length > 0) {
         // Use saved colors
         assignedColors = existingColors;
     } else {
-        // Create default colors from dataset
-        const paletteColor = this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] ||
-                            this.styleProviderService?.DEFAULT_PALETTE_COLOR?.['paleta']?.[0];
+        // 2.x kept these series colours in the KPI's nested edaChart.colors
+        const seriesLabels = chartData[1].map((dataset: any, index: number) => dataset?.label || `Series ${index + 1}`);
+        assignedColors = this.chartUtils.assignedColorsFromLegacyColors({ colors: cfg?.edaChart?.colors }, seriesLabels, this.props.chartType);
 
-        assignedColors = chartData[1].filter((d: any) => !d.isTrend).map((dataset, index) => ({
-            value: dataset.label || `Series ${index + 1}`,
-            color: this.paletaActual[index % this.paletaActual.length] || paletteColor
-        }));
+        if (assignedColors.length === 0) {
+            // Create default colors from dataset
+            const paletteColor = this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] ||
+                                this.styleProviderService?.DEFAULT_PALETTE_COLOR?.['paleta']?.[0];
+
+            assignedColors = chartData[1].filter((d: any) => !d.isTrend).map((dataset, index) => ({
+                value: dataset.label || `Series ${index + 1}`,
+                color: this.paletaActual[index % this.paletaActual.length] || paletteColor
+            }));
+        }
 
         // Save default assignedColors
         cfg['assignedColors'] = assignedColors;
@@ -880,7 +895,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.sufixFontScale = kpiCfgChart?.sufixFontScale;
         chartConfig.imageScale = kpiCfgChart?.imageScale;
         chartConfig.backgroundColor = kpiCfgChart?.backgroundColor || '';
-        chartConfig.kpiColor = kpiCfgChart?.kpiColor || '';
+        // 2.x stored the KPI text color in config.color; 3.x reads kpiColor
+        chartConfig.kpiColor = kpiCfgChart?.kpiColor || (this.chartUtils.isValidCssColor((kpiCfgChart as any)?.color) ? (kpiCfgChart as any).color : '') || '';
         chartConfig.prefixImage = kpiCfgChart?.prefixImage || '';
     } else {
         chartConfig.sufix = '';
@@ -1430,12 +1446,22 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         // Legend Position
         inject.legendPosition = config['legendPosition'] || 'bottomleft';
 
-        // Load assignedColors according to map type
-        let assignedColors = config['assignedColors'];
+        // Load assignedColors according to map type (legacy invalid values are ignored)
+        let assignedColors = this.chartUtils.filterValidAssignedColors(config['assignedColors']);
 
         // Create default colors according to map type
         if (!assignedColors || !Array.isArray(assignedColors) || assignedColors.length === 0) {
-            if (type === 'geoJsonMap') {
+            // 2.x stored map colours in config.color (geoJsonMap) or config.initialColor/finalColor
+            // (coordinatesMap): keep supporting them
+            if (type === 'geoJsonMap' && this.chartUtils.isValidCssColor(config['color'])) {
+                assignedColors = [{ value: 'start', color: config['color'] }];
+            } else if (type === 'coordinatesMap'
+                && this.chartUtils.isValidCssColor(config['initialColor']) && this.chartUtils.isValidCssColor(config['finalColor'])) {
+                assignedColors = [
+                    { value: 'start', color: config['initialColor'] },
+                    { value: 'end', color: config['finalColor'] }
+                ];
+            } else if (type === 'geoJsonMap') {
                 // geoJsonMap: single color
                 assignedColors = [
                     {value: 'start', color: this.paletaActual[0]}
@@ -1551,11 +1577,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     // backgroundColor baking needed. renderBar() isn't included - it layers 3 additional color
     // modes (threshold/unique/assigned) on top that don't apply here.
     private applySingleSeriesColors(inject: any): void {
-        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        let assignedColors = this.chartUtils.filterValidAssignedColors(this.props.config.getConfig()['assignedColors']);
         const currentLabels = this.getLabelsForChartType(inject);
 
         if (assignedColors.length === 0) {
-            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            // Recover the colours 2.x saved (config.colors) before falling back to the palette
+            assignedColors = this.chartUtils.assignedColorsFromLegacyColors(this.props.config.getConfig(), currentLabels, inject.chartType);
+            if (assignedColors.length === 0) {
+                assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            }
             this.props.config.getConfig()['assignedColors'] = assignedColors;
         } else {
             const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
@@ -1636,11 +1666,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.categoryFieldName = dataDescription.otherColumns[0]?.name;
         inject.chartDataset = chartData[1];
 
-        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        let assignedColors = this.chartUtils.filterValidAssignedColors(this.props.config.getConfig()['assignedColors']);
         const currentLabels = this.getLabelsForChartType(inject);
 
         if (assignedColors.length === 0) {
-            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            // Recover the colours 2.x saved (config.colors) before falling back to the palette
+            assignedColors = this.chartUtils.assignedColorsFromLegacyColors(this.props.config.getConfig(), currentLabels, inject.chartType);
+            if (assignedColors.length === 0) {
+                assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            }
             this.props.config.getConfig()['assignedColors'] = assignedColors;
         } else {
             const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
@@ -1740,11 +1774,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.stackedBar100MeasureAsCategory = this.props.edaChart === 'stackedbar100' && dataDescription.otherColumns.length === 1;
         inject.chartDataset = chartData[1];
 
-        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        let assignedColors = this.chartUtils.filterValidAssignedColors(this.props.config.getConfig()['assignedColors']);
         const currentLabels = this.getLabelsForChartType(inject);
 
         if (assignedColors.length === 0) {
-            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            // Recover the colours 2.x saved (config.colors) before falling back to the palette
+            assignedColors = this.chartUtils.assignedColorsFromLegacyColors(this.props.config.getConfig(), currentLabels, inject.chartType);
+            if (assignedColors.length === 0) {
+                assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            }
             this.props.config.getConfig()['assignedColors'] = assignedColors;
         } else {
             const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
@@ -1889,11 +1927,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         inject.chartDataset = chartData[1];
 
-        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        let assignedColors = this.chartUtils.filterValidAssignedColors(this.props.config.getConfig()['assignedColors']);
         const currentLabels = this.getLabelsForChartType(inject);
 
         if (assignedColors.length === 0) {
-            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            // Recover the colours 2.x saved (config.colors) before falling back to the palette
+            assignedColors = this.chartUtils.assignedColorsFromLegacyColors(this.props.config.getConfig(), currentLabels, inject.chartType);
+            if (assignedColors.length === 0) {
+                assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            }
             this.props.config.getConfig()['assignedColors'] = assignedColors;
         } else {
             const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
@@ -1989,11 +2031,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         inject.chartDataset = chartData[1];
 
-        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        let assignedColors = this.chartUtils.filterValidAssignedColors(this.props.config.getConfig()['assignedColors']);
         const currentLabels = this.getLabelsForChartType(inject);
 
         if (assignedColors.length === 0) {
-            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            // Recover the colours 2.x saved (config.colors) before falling back to the palette
+            assignedColors = this.chartUtils.assignedColorsFromLegacyColors(this.props.config.getConfig(), currentLabels, inject.chartType);
+            if (assignedColors.length === 0) {
+                assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            }
             this.props.config.getConfig()['assignedColors'] = assignedColors;
         } else {
             const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
@@ -2061,11 +2107,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.categoryFieldName = dataDescription.otherColumns[0]?.name;
         inject.chartDataset = chartData[1];
 
-        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        let assignedColors = this.chartUtils.filterValidAssignedColors(this.props.config.getConfig()['assignedColors']);
         const currentLabels = this.getLabelsForChartType(inject);
 
         if (assignedColors.length === 0) {
-            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            // Recover the colours 2.x saved (config.colors) before falling back to the palette
+            assignedColors = this.chartUtils.assignedColorsFromLegacyColors(this.props.config.getConfig(), currentLabels, inject.chartType);
+            if (assignedColors.length === 0) {
+                assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
+            }
             this.props.config.getConfig()['assignedColors'] = assignedColors;
         } else {
             const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
@@ -2682,14 +2732,19 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         paletaActual = ['#10B4BD', '#1CEDB1', '#023E8A'];
     }
     
-    const savedAssignedColors = 
-        props.config.getConfig()['assignedColors'] || 
-        props.assignedColors || 
-        [];
-    
+    const savedAssignedColors = this.chartUtils.filterValidAssignedColors(
+        props.config.getConfig()['assignedColors'] || props.assignedColors
+    );
+
+    // 2.x saved these charts' colours (treeMap, parallelSets, bubblechart) as a plain
+    // array of colour strings in config.colors, which 3.x no longer reads
+    const legacyAssignedColors = savedAssignedColors.length === 0
+        ? this.chartUtils.assignedColorsFromLegacyStringColors(props.config.getConfig(), categories)
+        : [];
+
     let assignedColors: { value: string; color: string }[];
-    
-    // If there are already saved colors AND categories match, 
+
+    // If there are already saved colors AND categories match,
     // do not regenerate (avoids regeneration loop)
     if (savedAssignedColors.length > 0) {
         // Check if categories are the same
@@ -2721,15 +2776,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
     } 
     
-    // Final validation
+    // Final validation (recover 2.x colours before falling back to the palette)
     if (!assignedColors || assignedColors.length === 0) {
-        assignedColors = categories.map((cat, idx) => ({
-            value: cat,
-            color: paletaActual[idx % paletaActual.length]
-        }));
+        assignedColors = legacyAssignedColors.length > 0
+            ? legacyAssignedColors
+            : categories.map((cat, idx) => ({
+                value: cat,
+                color: paletaActual[idx % paletaActual.length]
+            }));
     }
-    
-    
+
+
     // ONLY persist if something actually changed
     // Compare with saved data to avoid unnecessary writes --> this comes from double render
     const needsUpdate = JSON.stringify(savedAssignedColors) !== JSON.stringify(assignedColors);
@@ -2745,23 +2802,33 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 }
 
     private resolveAndPersistGradientColors(props: any, paletaActual: string[]): { value: string; color: string }[] {
-        // Read from multiple sources
-        const savedAssignedColors = props.config.getConfig()['assignedColors'] || props.assignedColors || [];
+        // Read from multiple sources (legacy invalid values are ignored)
+        const savedAssignedColors = this.chartUtils.filterValidAssignedColors(props.config.getConfig()['assignedColors'] || props.assignedColors);
         let assignedColors: { value: string; color: string }[];
-        
+
         if (savedAssignedColors.length >= 2) {
             const startColor = savedAssignedColors.find(ac => ac.value === 'start');
             const endColor = savedAssignedColors.find(ac => ac.value === 'end');
-            
+
             assignedColors = [
                 startColor || { value: 'start', color: savedAssignedColors[0]?.color || paletaActual[0] },
                 endColor || { value: 'end', color: savedAssignedColors[1]?.color || paletaActual[paletaActual.length - 1] }
             ];
         } else {
-            assignedColors = [
-                { value: 'start', color: paletaActual[0] },
-                { value: 'end', color: paletaActual[paletaActual.length - 1] }
-            ];
+            // 2.x stored this gradient as a plain array of colours in config.colors
+            const legacyColors = (props.config.getConfig()?.['colors'] || [])
+                .map((c: any) => (typeof c === 'string' ? c : c?.backgroundColor))
+                .filter((c: any) => this.chartUtils.isValidCssColor(c));
+
+            assignedColors = legacyColors.length > 0
+                ? [
+                    { value: 'start', color: legacyColors[0] },
+                    { value: 'end', color: legacyColors[legacyColors.length - 1] }
+                ]
+                : [
+                    { value: 'start', color: paletaActual[0] },
+                    { value: 'end', color: paletaActual[paletaActual.length - 1] }
+                ];
         }
         
         // Persist in both places

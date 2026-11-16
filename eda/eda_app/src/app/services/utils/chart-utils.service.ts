@@ -2299,6 +2299,80 @@ export class ChartUtilsService {
         return resolved;
     }
 
+    /**
+     * Whether a value can be painted as a CSS colour. Legacy reports stored placeholders
+     * such as "r"/"g" in assignedColors; those must not be used as colours.
+     */
+    public isValidCssColor(color: any): boolean {
+        if (typeof color !== 'string') return false;
+        const value = color.trim();
+        if (!value) return false;
+        return /^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(value)
+            || /^(rgb|hsl)a?\(/i.test(value)
+            || /^[a-z]{3,20}$/i.test(value); // CSS named colours (red, transparent…)
+    }
+
+    /**
+     * Centralises the filtering of assignedColors entries whose colour is not a valid
+     * CSS colour. Avoids duplicating the same filter in several places.
+     */
+    public filterValidAssignedColors(colors: any): any[] {
+        return (Array.isArray(colors) ? colors : []).filter((ac: any) => this.isValidCssColor(ac?.color));
+    }
+
+    /**
+     * Recovers the colours that 2.x reports stored in `config.colors`, which 3.x no
+     * longer reads. 2.x saved one entry per series for bar/line/area/
+     * radar/histogram (`{ backgroundColor: '#hex' }`) and a single entry holding one
+     * colour per category for doughnut/polarArea. The result uses the same shape as
+     * `assignedColors`: one colour per label returned by getLabelsForChartType().
+     */
+    public assignedColorsFromLegacyColors(cfg: any, labels: string[], chartType: string): Array<{ value: string; color: string }> {
+        const colors = cfg?.colors;
+        if (!Array.isArray(colors) || colors.length === 0 || !labels || labels.length === 0) return [];
+
+        const type = (chartType || '').replace('kpi', '');
+
+        if (type === 'doughnut' || type === 'polarArea') {
+            const perCategory = colors[0]?.backgroundColor;
+            if (!Array.isArray(perCategory)) return [];
+            return labels
+                .map((label, index) => {
+                    const color = perCategory[index] ?? perCategory[0];
+                    return color ? { value: label, color } : null;
+                })
+                .filter(c => !!c);
+        }
+
+        // One colour per series
+        return labels
+            .map((label, index) => {
+                const entry = colors[index];
+                const color = typeof entry === 'string' ? entry : entry?.backgroundColor;
+                return color && typeof color === 'string' ? { value: label, color } : null;
+            })
+            .filter(c => !!c);
+    }
+
+    /**
+     * 2.x saved the colours of the D3 charts (treeMap, parallelSets, bubblechart) as a
+     * plain array of colour strings in `config.colors`. Map them to the current
+     * categories so those reports keep their colours (issue #651). Returns [] when there
+     * is nothing usable, so the caller falls back to the palette.
+     */
+    public assignedColorsFromLegacyStringColors(cfg: any, categories: string[]): Array<{ value: string; color: string }> {
+        const colors = cfg?.colors;
+        if (!Array.isArray(colors) || colors.length === 0 || !categories || categories.length === 0) return [];
+
+        return categories
+            .map((category, index) => {
+                const entry = colors[index] ?? colors[index % colors.length];
+                const color = typeof entry === 'string' ? entry : entry?.backgroundColor;
+                return typeof color === 'string' && color ? { value: category, color } : null;
+            })
+            .filter(c => !!c);
+    }
+
 
     // METHODS FOR GENERATING TREEMAP COLORS WITH PALETTE, CHECK IF CAN BE UNIFIED IN A SERVICE
     public generateRGBColorGradientScaleD3(
