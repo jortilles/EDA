@@ -6915,13 +6915,13 @@ Cordiali saluti.</target>
   </trans-unit>
 
   <trans-unit id="mailRefForIntro">
-    <source>Dentro de un bloque ""CODE, "for fila in p1.value.breakdown" repite su contenido una vez por cada categoría del desglose, hasta "end". Dentro del bucle puedes usar estas variables para escribir una fila de tabla por categoría:</source>
-    <target>All'interno di un blocco ""CODE, "for riga in p1.value.breakdown" ripete il suo contenuto una volta per ogni categoria del dettaglio, fino a "end". All'interno del ciclo puoi usare queste variabili per scrivere una riga di tabella per categoria:</target>
+    <source>Dentro de un bloque ""CODE, "for fila in p1.breakdown" repite su contenido una vez por cada categoría del desglose, hasta "end". Dentro del bucle puedes usar estas variables para escribir una fila de tabla por categoría:</source>
+    <target>All'interno di un blocco ""CODE, "for riga in p1.breakdown" ripete il suo contenuto una volta per ogni categoria del dettaglio, fino a "end". All'interno del ciclo puoi usare queste variabili per scrivere una riga di tabella per categoria:</target>
   </trans-unit>
 
   <trans-unit id="mailRefForIndexTip">
-    <source>También puedes numerar las filas: "for fila, i in p1.value.breakdown" añade además un índice (1, 2, 3…).</source>
-    <target>Puoi anche numerare le righe: "for riga, i in p1.value.breakdown" aggiunge anche un indice (1, 2, 3…).</target>
+    <source>También puedes numerar las filas: "for fila, i in p1.breakdown" añade además un índice (1, 2, 3…).</source>
+    <target>Puoi anche numerare le righe: "for riga, i in p1.breakdown" aggiunge anche un indice (1, 2, 3…).</target>
   </trans-unit>
 
   <trans-unit id="mailRefForTipLabel">

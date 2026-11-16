@@ -6935,13 +6935,13 @@ Cumprimentos.</target>
   </trans-unit>
 
   <trans-unit id="mailRefForIntro">
-    <source>Dentro de un bloque ""CODE, "for fila in p1.value.breakdown" repite su contenido una vez por cada categoría del desglose, hasta "end". Dentro del bucle puedes usar estas variables para escribir una fila de tabla por categoría:</source>
-    <target>Dentro de um bloco ""CODE, "for linha in p1.value.breakdown" repete o seu conteúdo uma vez por cada categoria do detalhamento, até "end". Dentro do loop podes usar estas variáveis para escrever uma linha de tabela por categoria:</target>
+    <source>Dentro de un bloque ""CODE, "for fila in p1.breakdown" repite su contenido una vez por cada categoría del desglose, hasta "end". Dentro del bucle puedes usar estas variables para escribir una fila de tabla por categoría:</source>
+    <target>Dentro de um bloco ""CODE, "for linha in p1.breakdown" repete o seu conteúdo uma vez por cada categoria do detalhamento, até "end". Dentro do loop podes usar estas variáveis para escrever uma linha de tabela por categoria:</target>
   </trans-unit>
 
   <trans-unit id="mailRefForIndexTip">
-    <source>También puedes numerar las filas: "for fila, i in p1.value.breakdown" añade además un índice (1, 2, 3…).</source>
-    <target>Também podes numerar as linhas: "for linha, i in p1.value.breakdown" acrescenta também um índice (1, 2, 3…).</target>
+    <source>También puedes numerar las filas: "for fila, i in p1.breakdown" añade además un índice (1, 2, 3…).</source>
+    <target>Também podes numerar as linhas: "for linha, i in p1.breakdown" acrescenta também um índice (1, 2, 3…).</target>
   </trans-unit>
 
   <trans-unit id="mailRefForTipLabel">

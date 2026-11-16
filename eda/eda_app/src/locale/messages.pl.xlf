@@ -9629,13 +9629,13 @@ Pozdrawiam.</target>
   </trans-unit>
 
   <trans-unit id="mailRefForIntro">
-    <source>Dentro de un bloque ""CODE, "for fila in p1.value.breakdown" repite su contenido una vez por cada categoría del desglose, hasta "end". Dentro del bucle puedes usar estas variables para escribir una fila de tabla por categoría:</source>
-    <target>Wewnątrz bloku ""CODE, "for wiersz in p1.value.breakdown" powtarza swoją zawartość raz dla każdej kategorii zestawienia, aż do "end". Wewnątrz pętli możesz użyć tych zmiennych, aby zapisać jeden wiersz tabeli na kategorię:</target>
+    <source>Dentro de un bloque ""CODE, "for fila in p1.breakdown" repite su contenido una vez por cada categoría del desglose, hasta "end". Dentro del bucle puedes usar estas variables para escribir una fila de tabla por categoría:</source>
+    <target>Wewnątrz bloku ""CODE, "for wiersz in p1.breakdown" powtarza swoją zawartość raz dla każdej kategorii zestawienia, aż do "end". Wewnątrz pętli możesz użyć tych zmiennych, aby zapisać jeden wiersz tabeli na kategorię:</target>
   </trans-unit>
 
   <trans-unit id="mailRefForIndexTip">
-    <source>También puedes numerar las filas: "for fila, i in p1.value.breakdown" añade además un índice (1, 2, 3…).</source>
-    <target>Możesz też ponumerować wiersze: "for wiersz, i in p1.value.breakdown" dodaje dodatkowo indeks (1, 2, 3…).</target>
+    <source>También puedes numerar las filas: "for fila, i in p1.breakdown" añade además un índice (1, 2, 3…).</source>
+    <target>Możesz też ponumerować wiersze: "for wiersz, i in p1.breakdown" dodaje dodatkowo indeks (1, 2, 3…).</target>
   </trans-unit>
 
   <trans-unit id="mailRefForTipLabel">

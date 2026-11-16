@@ -4,7 +4,8 @@
  *
  *   - `if` / `elif` / `else` / `end` lines pick which text is emitted.
  *   - `for <item> in <path>` / `end` repeats its body once per element of the array found at
- *     `<path>` (e.g. `p1.value.breakdown`), binding `<item>` to that element (`{label, value}`).
+ *     `<path>` (e.g. `p1.breakdown` — a sibling of `.value`, not nested under it), binding
+ *     `<item>` to that element (`{label, value}`).
  *     `for <item>, <idx> in <path>` also binds a 1-based index.
  *
  * `${…}` tokens found *inside* a CODE block are resolved against this same context (so `for`
@@ -25,7 +26,7 @@
  *   end
  *
  *   Informe del ${now.date}
- *   for row in p1.value.breakdown
+ *   for row in p1.breakdown
  *     <tr><td>${row.label}</td><td>${row.value}h</td></tr>
  *   end
  *   CODE""

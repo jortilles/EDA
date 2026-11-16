@@ -340,7 +340,7 @@ Un saludo.`;
     const base = this.kpiVariables[0]?.base || 'p1';
     this.activeField = 'message';
     this.msgArea?.insertAtCursor(
-      `\n""CODE\n<table>\nfor row in ${base}.value.breakdown\n  <tr><td>\${row.label}</td><td>\${row.value}</td></tr>\nend\n</table>\nCODE""\n`,
+      `\n""CODE\n<table>\nfor row in ${base}.breakdown\n  <tr><td>\${row.label}</td><td>\${row.value}</td></tr>\nend\n</table>\nCODE""\n`,
     );
   }
 

@@ -9146,13 +9146,13 @@ Cordialement.</target>
   </trans-unit>
 
   <trans-unit id="mailRefForIntro">
-    <source>Dentro de un bloque ""CODE, "for fila in p1.value.breakdown" repite su contenido una vez por cada categoría del desglose, hasta "end". Dentro del bucle puedes usar estas variables para escribir una fila de tabla por categoría:</source>
-    <target>À l'intérieur d'un bloc ""CODE, "for ligne in p1.value.breakdown" répète son contenu une fois par catégorie de la répartition, jusqu'à "end". À l'intérieur de la boucle, vous pouvez utiliser ces variables pour écrire une ligne de tableau par catégorie :</target>
+    <source>Dentro de un bloque ""CODE, "for fila in p1.breakdown" repite su contenido una vez por cada categoría del desglose, hasta "end". Dentro del bucle puedes usar estas variables para escribir una fila de tabla por categoría:</source>
+    <target>À l'intérieur d'un bloc ""CODE, "for ligne in p1.breakdown" répète son contenu une fois par catégorie de la répartition, jusqu'à "end". À l'intérieur de la boucle, vous pouvez utiliser ces variables pour écrire une ligne de tableau par catégorie :</target>
   </trans-unit>
 
   <trans-unit id="mailRefForIndexTip">
-    <source>También puedes numerar las filas: "for fila, i in p1.value.breakdown" añade además un índice (1, 2, 3…).</source>
-    <target>Vous pouvez aussi numéroter les lignes : "for ligne, i in p1.value.breakdown" ajoute en plus un index (1, 2, 3…).</target>
+    <source>También puedes numerar las filas: "for fila, i in p1.breakdown" añade además un índice (1, 2, 3…).</source>
+    <target>Vous pouvez aussi numéroter les lignes : "for ligne, i in p1.breakdown" ajoute en plus un index (1, 2, 3…).</target>
   </trans-unit>
 
   <trans-unit id="mailRefForTipLabel">
