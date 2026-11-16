@@ -1,4 +1,5 @@
 import { Directive, EventEmitter, Input, OnInit, Output, ViewChild, inject, signal } from "@angular/core";
+import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { Observable, lastValueFrom } from "rxjs";
 import { Completion, CompletionContext, CompletionResult } from "@codemirror/autocomplete";
 import { EditorView } from "@codemirror/view";
@@ -26,6 +27,7 @@ export abstract class MailConfigModalBase implements OnInit {
   /** Preview label for the KPI value line (alert dialog only). */
   @Input() kpiFieldName = '';
 
+  protected sanitizer = inject(DomSanitizer);
   protected alertService = inject(AlertService);
   protected userService = inject(UserService);
   protected dateUtils = inject(DateUtils);
@@ -245,9 +247,16 @@ CODE""
     { token: '${p1.value.bottom}', desc: $localize`:@@mailRefVarBottom:la categoría con el valor más bajo` },
     { token: '${p1.value.average}', desc: $localize`:@@mailRefVarAvg:la media de las categorías` },
     { token: '${p1.value.breakdown}', desc: $localize`:@@mailRefVarBreakdown:todas las categorías con su valor` },
+    { token: '${now.date}', desc: $localize`:@@mailRefVarNowDate:la fecha del envío (solo dentro de un bloque CODE)` },
+    { token: '${now.time}', desc: $localize`:@@mailRefVarNowTime:la hora del envío (solo dentro de un bloque CODE)` },
+    { token: '${now.datetime}', desc: $localize`:@@mailRefVarNowDatetime:la fecha y hora del envío juntas (solo dentro de un bloque CODE)` },
   ];
 
   public readonly condOps = '>   <   >=   <=   ==   !=   contains';
+  // plain (non-i18n) token examples — keeping ${...} out of i18n-tagged text avoids Angular's
+  // i18n runtime trying (and failing) to parse the braces as an ICU expression
+  public readonly forItemTokens = '${fila.label}   ${fila.value}';
+  public readonly nowTokens = '${now.date}   ${now.time}   ${now.datetime}';
 
   // full worked example shown on the left side of the reference card
   public readonly refExample =
@@ -326,6 +335,15 @@ Un saludo.`;
     this.msgArea?.insertAtCursor(`\n""CODE\nif ${base}.value > 0\n  \nelse\n  \nend\nCODE""\n`);
   }
 
+  public readonly forBlockTip = $localize`:@@mailRefInsertForTip:Inserta un bucle (for) que repite una fila de tabla por cada elemento del desglose`;
+  public insertForBlock(): void {
+    const base = this.kpiVariables[0]?.base || 'p1';
+    this.activeField = 'message';
+    this.msgArea?.insertAtCursor(
+      `\n""CODE\n<table>\nfor row in ${base}.value.breakdown\n  <tr><td>\${row.label}</td><td>\${row.value}</td></tr>\nend\n</table>\nCODE""\n`,
+    );
+  }
+
   /** CodeMirror completion source for `${pN...}` tokens — pops up while typing `${` in the
    * subject/message editors, mirroring the "Insertar" toolbox on the side. */
   public tokenCompletionSource = (context: CompletionContext): CompletionResult | null => {
@@ -385,9 +403,21 @@ Un saludo.`;
     let out = renderMailPreview(this.mailSubject, this.kpiVariables, id => this.getPanelCurrentValue(id), id => this.getPanelSeries(id));
     return hasMailLogic(out) ? renderMailLogic(out, this.logicCtx) : out;
   }
-  public get previewBody(): string {
+  private previewBodyCache = { raw: '', safe: null as SafeHtml | null };
+  /** Trusted as HTML (not sanitized) so the preview keeps inline `style` attributes, matching
+   * what the recipient's mail client actually renders — Angular's innerHTML sanitizer otherwise
+   * strips `style` since it isn't on its attribute allowlist. Safe here: this is the logged-in
+   * user's own editable template, rendered back to themselves, not third-party content.
+   * Cached by raw string: `bypassSecurityTrustHtml` mints a new object every call, and this is a
+   * getter re-read several times per change-detection cycle, so a fresh reference each time trips
+   * Angular's `ExpressionChangedAfterItHasBeenCheckedError` (dev mode) even when nothing changed. */
+  public get previewBody(): SafeHtml {
     let out = renderMailPreviewHtml(this.mailMessage, this.kpiVariables, id => this.getPanelCurrentValue(id), id => this.getPanelSeries(id));
-    return hasMailLogic(out) ? renderMailLogic(out, this.logicCtx) : out;
+    out = hasMailLogic(out) ? renderMailLogic(out, this.logicCtx) : out;
+    if (out !== this.previewBodyCache.raw) {
+      this.previewBodyCache = { raw: out, safe: this.sanitizer.bypassSecurityTrustHtml(out) };
+    }
+    return this.previewBodyCache.safe!;
   }
   public get previewLink(): string {
     const locale = window.location.pathname.split('/').filter(Boolean)[0] || 'es';

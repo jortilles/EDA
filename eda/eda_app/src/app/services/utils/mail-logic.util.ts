@@ -1,6 +1,19 @@
 /**
- * Conditional blocks for mail templates. A block is fenced by `""CODE` (own line) and `CODE""`
- * (own line); inside, `if` / `elif` / `else` / `end` lines drive which text is emitted:
+ * Conditional / loop blocks for mail templates. A block is fenced by `""CODE` (own line) and
+ * `CODE""` (own line); inside:
+ *
+ *   - `if` / `elif` / `else` / `end` lines pick which text is emitted.
+ *   - `for <item> in <path>` / `end` repeats its body once per element of the array found at
+ *     `<path>` (e.g. `p1.value.breakdown`), binding `<item>` to that element (`{label, value}`).
+ *     `for <item>, <idx> in <path>` also binds a 1-based index.
+ *
+ * `${…}` tokens found *inside* a CODE block are resolved against this same context (so `for`
+ * bodies can read their loop variable, and `if`/`for` can use the built-in `now` clock below). A
+ * token whose path isn't found in the context is left untouched — this is how plain `${pN...}`
+ * tokens, substituted by the caller *before* this module ever sees the text, pass through
+ * unharmed when they land inside a CODE block too.
+ *
+ * Built-in: `now.date` / `now.time` / `now.datetime` — today's date, caught fresh on every render.
  *
  *   ""CODE
  *   if p1.value > 1000000
@@ -10,19 +23,27 @@
  *   else
  *     Ojo, ventas bajas
  *   end
+ *
+ *   Informe del ${now.date}
+ *   for row in p1.value.breakdown
+ *     <tr><td>${row.label}</td><td>${row.value}h</td></tr>
+ *   end
  *   CODE""
  *
  * Conditions: `<operand> <op> <operand>` with `> < >= <= == != contains`, joined by `and` / `or`.
  * Operands are numbers, "quoted strings", true/false/null, or context paths (`p1.value`,
- * `p1.top.label`, …). `${…}` tokens are left untouched — resolve those separately.
+ * `p1.top.label`, `row.value`, …).
  *
- * One `""CODE` fence per region; nest with nested `if`, not nested fences.
+ * One `""CODE` fence per region; nest with nested `if`/`for`, not nested fences.
  * Kept dependency-free and identical on the backend (eda_api) on purpose.
  */
 
 export type MailLogicCtx = Record<string, any>;
 
-type Node = { t: 'text'; v: string } | { t: 'if'; branches: { cond: string | null; body: Node[] }[] };
+type Node =
+  | { t: 'text'; v: string }
+  | { t: 'if'; branches: { cond: string | null; body: Node[] }[] }
+  | { t: 'for'; varName: string; indexName: string | null; listPath: string; body: Node[] };
 
 const BLOCK_RE = /[ \t]*""CODE[ \t]*\r?\n([\s\S]*?)\r?\n[ \t]*CODE""[ \t]*/g;
 
@@ -47,13 +68,22 @@ export function buildKpiCtxNode(title: string, items: { label: string; value: nu
   };
 }
 
-/** Replaces every `""CODE … CODE""` block with the branch that matches `ctx`. A malformed block
- * is left exactly as the user typed it. */
+function nowCtx(): { date: string; time: string; datetime: string } {
+  const d = new Date();
+  const p2 = (n: number) => String(n).padStart(2, '0');
+  const date = `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;
+  const time = `${p2(d.getHours())}:${p2(d.getMinutes())}`;
+  return { date, time, datetime: `${date} ${time}` };
+}
+
+/** Replaces every `""CODE … CODE""` block with its rendered output (branch picked by `if`, body
+ * repeated by `for`). A malformed block is left exactly as the user typed it. */
 export function renderMailLogic(text: string, ctx: MailLogicCtx): string {
   if (!hasMailLogic(text)) return text || '';
+  const fullCtx: MailLogicCtx = { now: nowCtx(), ...(ctx || {}) };
   return text.replace(BLOCK_RE, (whole, body) => {
     try {
-      const out = renderNodes(parse(String(body).split(/\r?\n/)), ctx || {});
+      const out = renderNodes(parse(String(body).split(/\r?\n/)), fullCtx);
       return out.replace(/^\n+/, '').replace(/\n+$/, '');
     } catch {
       return whole;
@@ -64,16 +94,21 @@ export function renderMailLogic(text: string, ctx: MailLogicCtx): string {
 // ---- parse -----------------------------------------------------------------
 
 function keywordAt(lines: string[], i: number): string | null {
-  const m = String(lines[i] ?? '').trim().match(/^(if|elif|else|end)\b/);
+  const m = String(lines[i] ?? '').trim().match(/^(if|elif|else|end|for)\b/);
   return m ? m[1] : null;
 }
 function condOf(line: string): string {
   return String(line).trim().replace(/^(if|elif)\s+/, '').trim();
 }
+function forHeaderOf(line: string): { varName: string; indexName: string | null; listPath: string } {
+  const m = String(line).trim().match(/^for\s+(\w+)(?:\s*,\s*(\w+))?\s+in\s+(.+)$/i);
+  if (!m) throw new Error('bloque "for" mal formado');
+  return { varName: m[1], indexName: m[2] || null, listPath: m[3].trim() };
+}
 
 function parse(lines: string[]): Node[] {
   let i = 0;
-  const STOP = new Set(['elif', 'else', 'end']);
+  const IF_STOP = new Set(['elif', 'else', 'end']);
 
   function seq(stop: Set<string>): Node[] {
     const nodes: Node[] = [];
@@ -82,6 +117,8 @@ function parse(lines: string[]): Node[] {
       if (kw && stop.has(kw)) break;
       if (kw === 'if') {
         nodes.push(parseIf());
+      } else if (kw === 'for') {
+        nodes.push(parseFor());
       } else if (kw === 'elif' || kw === 'else' || kw === 'end') {
         throw new Error('bloque mal formado');
       } else {
@@ -94,9 +131,9 @@ function parse(lines: string[]): Node[] {
 
   function parseIf(): Node {
     const branches: { cond: string | null; body: Node[] }[] = [];
-    branches.push({ cond: condOf(lines[i++]), body: seq(STOP) });
+    branches.push({ cond: condOf(lines[i++]), body: seq(IF_STOP) });
     while (keywordAt(lines, i) === 'elif') {
-      branches.push({ cond: condOf(lines[i++]), body: seq(STOP) });
+      branches.push({ cond: condOf(lines[i++]), body: seq(IF_STOP) });
     }
     if (keywordAt(lines, i) === 'else') {
       i++;
@@ -107,6 +144,14 @@ function parse(lines: string[]): Node[] {
     return { t: 'if', branches };
   }
 
+  function parseFor(): Node {
+    const { varName, indexName, listPath } = forHeaderOf(lines[i++]);
+    const body = seq(new Set(['end']));
+    if (keywordAt(lines, i) !== 'end') throw new Error('falta "end" en for');
+    i++;
+    return { t: 'for', varName, indexName, listPath, body };
+  }
+
   return seq(new Set());
 }
 
@@ -114,13 +159,51 @@ function renderNodes(nodes: Node[], ctx: MailLogicCtx): string {
   const parts: string[] = [];
   for (const n of nodes) {
     if (n.t === 'text') {
-      parts.push(n.v);
-    } else {
+      parts.push(interpolate(n.v, ctx));
+    } else if (n.t === 'if') {
       const b = n.branches.find(br => br.cond === null || evalCondition(br.cond, ctx));
       if (b) parts.push(renderNodes(b.body, ctx));
+    } else {
+      const list = resolveOperand(n.listPath, ctx);
+      if (Array.isArray(list)) {
+        list.forEach((item, idx) => {
+          const childCtx: MailLogicCtx = { ...ctx, [n.varName]: item };
+          if (n.indexName) childCtx[n.indexName] = idx + 1;
+          parts.push(renderNodes(n.body, childCtx));
+        });
+      }
     }
   }
   return parts.join('\n');
+}
+
+// ---- `${…}` interpolation (inside CODE blocks only) ------------------------
+
+/** Replaces `${path}` with the value at `path` in `ctx`. A token whose path can't be fully
+ * resolved (missing segment) is left untouched — see the module doc comment. */
+function interpolate(text: string, ctx: MailLogicCtx): string {
+  if (text.indexOf('${') < 0) return text;
+  return text.replace(/\$\{\s*([^}]+?)\s*\}/g, (whole, path) => {
+    const { found, value } = resolvePath(String(path), ctx);
+    return found ? formatValue(value) : whole;
+  });
+}
+
+function resolvePath(path: string, ctx: MailLogicCtx): { found: boolean; value: any } {
+  let cur: any = ctx;
+  for (const seg of path.split('.')) {
+    if (cur === null || cur === undefined || typeof cur !== 'object' || !(seg in cur)) {
+      return { found: false, value: undefined };
+    }
+    cur = cur[seg];
+  }
+  return { found: true, value: cur };
+}
+
+function formatValue(v: any): string {
+  if (v === null || v === undefined) return '';
+  if (typeof v === 'number') return Number.isFinite(v) ? v.toLocaleString('de-DE') : String(v);
+  return String(v);
 }
 
 // ---- condition evaluation -----------------------------------------------

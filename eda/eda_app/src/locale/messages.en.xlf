@@ -9676,6 +9676,51 @@ OR<ph id="5"/>
         <source>Sin contenido.</source>
         <target>No content.</target>
       </trans-unit>
+  <trans-unit id="mailRefVarNowDate">
+    <source>la fecha del envío (solo dentro de un bloque CODE)</source>
+    <target>the date the email is sent (only inside a CODE block)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefVarNowTime">
+    <source>la hora del envío (solo dentro de un bloque CODE)</source>
+    <target>the time the email is sent (only inside a CODE block)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefVarNowDatetime">
+    <source>la fecha y hora del envío juntas (solo dentro de un bloque CODE)</source>
+    <target>the date and time the email is sent together (only inside a CODE block)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefInsertForTip">
+    <source>Inserta un bucle (for) que repite una fila de tabla por cada elemento del desglose</source>
+    <target>Inserts a loop (for) that repeats a table row for each item of the breakdown</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefInsertFor">
+    <source>Bucle FOR (tabla)</source>
+    <target>FOR loop (table)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefForTitle">
+    <source>Bucles (for)</source>
+    <target>Loops (for)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefForIntro">
+    <source>Dentro de un bloque ""CODE, "for fila in p1.value.breakdown" repite su contenido una vez por cada categoría del desglose, hasta "end". Dentro del bucle puedes usar estas variables para escribir una fila de tabla por categoría:</source>
+    <target>Inside a ""CODE block, "for row in p1.value.breakdown" repeats its content once per category of the breakdown, until "end". Inside the loop you can use these variables to write one table row per category:</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefForIndexTip">
+    <source>También puedes numerar las filas: "for fila, i in p1.value.breakdown" añade además un índice (1, 2, 3…).</source>
+    <target>You can also number the rows: "for row, i in p1.value.breakdown" also adds an index (1, 2, 3…).</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefForTipLabel">
+    <source>También disponibles dentro de un bloque ""CODE, para la fecha/hora del envío:</source>
+    <target>Also available inside a ""CODE block, for the sending date/time:</target>
+  </trans-unit>
+
 </body>
 </file>
 </xliff>

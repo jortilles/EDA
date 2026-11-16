@@ -9115,6 +9115,51 @@ Cordialement.</target>
         <source>Sin contenido.</source>
         <target>Aucun contenu.</target>
       </trans-unit>
+  <trans-unit id="mailRefVarNowDate">
+    <source>la fecha del envío (solo dentro de un bloque CODE)</source>
+    <target>la date d'envoi (uniquement dans un bloc CODE)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefVarNowTime">
+    <source>la hora del envío (solo dentro de un bloque CODE)</source>
+    <target>l'heure d'envoi (uniquement dans un bloc CODE)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefVarNowDatetime">
+    <source>la fecha y hora del envío juntas (solo dentro de un bloque CODE)</source>
+    <target>la date et l'heure d'envoi ensemble (uniquement dans un bloc CODE)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefInsertForTip">
+    <source>Inserta un bucle (for) que repite una fila de tabla por cada elemento del desglose</source>
+    <target>Insère une boucle (for) qui répète une ligne de tableau pour chaque élément de la répartition</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefInsertFor">
+    <source>Bucle FOR (tabla)</source>
+    <target>Boucle FOR (tableau)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefForTitle">
+    <source>Bucles (for)</source>
+    <target>Boucles (for)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefForIntro">
+    <source>Dentro de un bloque ""CODE, "for fila in p1.value.breakdown" repite su contenido una vez por cada categoría del desglose, hasta "end". Dentro del bucle puedes usar estas variables para escribir una fila de tabla por categoría:</source>
+    <target>À l'intérieur d'un bloc ""CODE, "for ligne in p1.value.breakdown" répète son contenu une fois par catégorie de la répartition, jusqu'à "end". À l'intérieur de la boucle, vous pouvez utiliser ces variables pour écrire une ligne de tableau par catégorie :</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefForIndexTip">
+    <source>También puedes numerar las filas: "for fila, i in p1.value.breakdown" añade además un índice (1, 2, 3…).</source>
+    <target>Vous pouvez aussi numéroter les lignes : "for ligne, i in p1.value.breakdown" ajoute en plus un index (1, 2, 3…).</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefForTipLabel">
+    <source>También disponibles dentro de un bloque ""CODE, para la fecha/hora del envío:</source>
+    <target>Également disponibles dans un bloc ""CODE, pour la date/l'heure d'envoi :</target>
+  </trans-unit>
+
 </body>
   </file>
 </xliff>

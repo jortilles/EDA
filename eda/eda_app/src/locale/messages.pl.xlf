@@ -9598,6 +9598,51 @@ Pozdrawiam.</target>
         <source>Sin contenido.</source>
         <target>Brak zawartości.</target>
       </trans-unit>
+  <trans-unit id="mailRefVarNowDate">
+    <source>la fecha del envío (solo dentro de un bloque CODE)</source>
+    <target>data wysyłki (tylko wewnątrz bloku CODE)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefVarNowTime">
+    <source>la hora del envío (solo dentro de un bloque CODE)</source>
+    <target>godzina wysyłki (tylko wewnątrz bloku CODE)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefVarNowDatetime">
+    <source>la fecha y hora del envío juntas (solo dentro de un bloque CODE)</source>
+    <target>data i godzina wysyłki razem (tylko wewnątrz bloku CODE)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefInsertForTip">
+    <source>Inserta un bucle (for) que repite una fila de tabla por cada elemento del desglose</source>
+    <target>Wstawia pętlę (for), która powtarza wiersz tabeli dla każdego elementu zestawienia</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefInsertFor">
+    <source>Bucle FOR (tabla)</source>
+    <target>Pętla FOR (tabela)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefForTitle">
+    <source>Bucles (for)</source>
+    <target>Pętle (for)</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefForIntro">
+    <source>Dentro de un bloque ""CODE, "for fila in p1.value.breakdown" repite su contenido una vez por cada categoría del desglose, hasta "end". Dentro del bucle puedes usar estas variables para escribir una fila de tabla por categoría:</source>
+    <target>Wewnątrz bloku ""CODE, "for wiersz in p1.value.breakdown" powtarza swoją zawartość raz dla każdej kategorii zestawienia, aż do "end". Wewnątrz pętli możesz użyć tych zmiennych, aby zapisać jeden wiersz tabeli na kategorię:</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefForIndexTip">
+    <source>También puedes numerar las filas: "for fila, i in p1.value.breakdown" añade además un índice (1, 2, 3…).</source>
+    <target>Możesz też ponumerować wiersze: "for wiersz, i in p1.value.breakdown" dodaje dodatkowo indeks (1, 2, 3…).</target>
+  </trans-unit>
+
+  <trans-unit id="mailRefForTipLabel">
+    <source>También disponibles dentro de un bloque ""CODE, para la fecha/hora del envío:</source>
+    <target>Dostępne również wewnątrz bloku ""CODE, dla daty/godziny wysyłki:</target>
+  </trans-unit>
+
 </body>
 </file>
 </xliff>

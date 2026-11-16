@@ -200,6 +200,10 @@
                   (mousedown)="$event.preventDefault()" (click)="insertCodeBlock()">
                   <i class="pi pi-plus text-[10px]"></i> <span i18n="@@mailRefInsertCode">Bloque CODE</span>
                 </button>
+                <button type="button" class="mail-insert-code" [pTooltip]="forBlockTip" tooltipPosition="top"
+                  (mousedown)="$event.preventDefault()" (click)="insertForBlock()">
+                  <i class="pi pi-plus text-[10px]"></i> <span i18n="@@mailRefInsertFor">Bucle FOR (tabla)</span>
+                </button>
               </div>
             </div>
 
@@ -257,6 +261,23 @@
                         </h5>
                         <p class="mb-2" i18n="@@mailRefCondIntro">Delimita el bloque con ""CODE y CODE"" en su propia línea. Dentro, if evalúa una condición y escribe el texto de esa rama; añade elif para más casos, else para el resto y cierra con end.</p>
                         <p><span i18n="@@mailRefCondOps">En la condición puedes comparar con:</span> <code class="mail-ref-tok">{{ condOps }}</code></p>
+                      </div>
+
+                      <div class="border-t border-gray-200 pt-3">
+                        <h5 class="mb-1 flex items-center gap-1.5 text-sm font-semibold text-gray-800">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-[var(--corporate-primary)]">
+                            <polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                            <polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                          </svg>
+                          <span i18n="@@mailRefForTitle">Bucles (for)</span>
+                        </h5>
+                        <p class="mb-2" i18n="@@mailRefForIntro">Dentro de un bloque ""CODE, "for fila in p1.value.breakdown" repite su contenido una vez por cada categoría del desglose, hasta "end". Dentro del bucle puedes usar estas variables para escribir una fila de tabla por categoría:</p>
+                        <p class="mb-2"><code class="mail-ref-tok">{{ forItemTokens }}</code></p>
+                        <p class="mb-2" i18n="@@mailRefForIndexTip">También puedes numerar las filas: "for fila, i in p1.value.breakdown" añade además un índice (1, 2, 3…).</p>
+                        <p><span i18n="@@mailRefForTipLabel">También disponibles dentro de un bloque ""CODE, para la fecha/hora del envío:</span></p>
+                        <p><code class="mail-ref-tok">{{ nowTokens }}</code></p>
                       </div>
 
                     </div>
