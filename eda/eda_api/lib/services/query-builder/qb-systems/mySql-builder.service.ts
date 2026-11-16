@@ -1474,9 +1474,12 @@ public getHavingColname(column: any){
     const colsInFilters = [];
 
     filters.forEach((filter, i) => {
-      let col = filter.type === 'in' ?
-        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf(' in ')).replace(/`/g, '') :
-        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('between')).replace(/`/g, '');
+      // Prefer the column name carried by the formatted filter; fall back to parsing the SQL fragment.
+      let col = filter.col;
+      if (!col) {
+        const m = (filter.string || '').match(/`[^`]+`\s*\.\s*`([^`]+)`/);
+        if (m) col = m[1];
+      }
       colsInFilters.push({ col: col, index: i });
     });
 

@@ -1148,7 +1148,7 @@ export abstract class QueryBuilderService {
         //Get sql formated filters ad types
         const formatedFilters: any[] = [];
         filters.forEach(filter => {
-            formatedFilters.push({ string: this.filterToString(filter ), type: filter.filter_type });
+            formatedFilters.push({ string: this.filterToString(filter ), type: filter.filter_type, col: filter.filter_column });
         });
 
         return this.sqlQuery(query, formatedFilters, filterMarks);
