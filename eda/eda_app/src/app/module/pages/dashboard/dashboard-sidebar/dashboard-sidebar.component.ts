@@ -499,6 +499,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
     this.dashboard.panels.push(panel);
     this.stylesProviderService.loadedPanels++;
+    this.dashboardService.setNotSaved(true);
     this.hidePopover();
   }
 
@@ -519,6 +520,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     });
 
     this.dashboard.panels.push(panel);
+    this.dashboardService.setNotSaved(true);
     this.hidePopover();
   }
 
@@ -537,6 +539,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     });
 
     this.dashboard.panels.push(panel);
+    this.dashboardService.setNotSaved(true);
     this.hidePopover();
   }
 
@@ -735,12 +738,13 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
   public closeTagModal(tags: any[]) {
     this.isTagModalVisible = false;
-    // Normalize tags to array of strings
-    const normalizedTags = tags ? tags.map(tag =>
-      typeof tag === 'string' ? tag : tag.value || tag.label
-    ) : [];
+    // Normalize tags to array of strings, dropping empty/null selections
+    const normalizedTags = tags ? tags
+      .map(tag => (typeof tag === 'string' ? tag : (tag?.value ?? tag?.label)))
+      .filter(tag => tag !== null && tag !== undefined && tag !== '') : [];
     this.dashboard.selectedTags = normalizedTags;
     this.dashboard.dashboard.config.tag = normalizedTags;
+    this.dashboardService.setNotSaved(true);
   }
 
   public removeDashboard() {
@@ -1522,15 +1526,24 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
     // Toggle the state
     this.onlyIcanEdit = !this.onlyIcanEdit;
+    this.dashboard.dashboard.config.onlyIcanEdit = this.onlyIcanEdit;
 
     // Update label and icon based on state
     clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`;
     clickItem.icon = this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban";
+
+    this.dashboardService.setNotSaved(true);
   }
 
   toggleDownload() {
     // Open downloads dropdown
     this.mostrarDescargas = !this.mostrarDescargas;
+  }
+
+  public onRefreshTimeInput(event: any): void {
+    this.refreshTime = (event.target as any).value;
+    this.dashboard.dashboard.config.refreshTime = this.refreshTime || null;
+    this.dashboardService.setNotSaved(true);
   }
 
   // EVENT FUNCTIONS THAT CONTROL FILTER DRAG AND DROP

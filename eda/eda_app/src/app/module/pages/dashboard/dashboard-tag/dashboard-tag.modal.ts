@@ -37,7 +37,8 @@ export class DashboardTagModal implements OnInit {
 
   ngOnInit(): void {
     const tags = this.dashboard.selectedTags;
-    this.selectedTags = tags == null ? [] : (Array.isArray(tags) ? tags : [tags]);
+    this.selectedTags = (tags == null ? [] : (Array.isArray(tags) ? tags : [tags]))
+      .filter(tag => tag !== null && tag !== undefined && tag !== '');
 
     this.loadExistingTags();
   }
@@ -91,10 +92,10 @@ export class DashboardTagModal implements OnInit {
 
   public onApply() {
     this.display = false;
-    // Normalize selectedTags: convert objects to strings
-    const normalizedTags = this.selectedTags.map(tag =>
-      typeof tag === 'string' ? tag : tag.value || tag.label
-    );
+    // Normalize selectedTags: convert objects to strings, dropping empty/null selections
+    const normalizedTags = this.selectedTags
+      .map(tag => (typeof tag === 'string' ? tag : (tag?.value ?? tag?.label)))
+      .filter(tag => tag !== null && tag !== undefined && tag !== '');
     this.close.emit(normalizedTags);
     this.alertService.addSuccess($localize`:@@tagAssigned:Etiqueta asignada correctamente`);
   }
