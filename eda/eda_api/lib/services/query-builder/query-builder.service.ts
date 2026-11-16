@@ -234,12 +234,38 @@ export abstract class QueryBuilderService {
         let separedCols = this.getSeparedColumns(origin, dest);
         let columns = separedCols[0];
         let grouping = separedCols[1];
-        
+
+        /**
+         * The advanced options allow sorting by columns that are not part of the query.
+         * Those columns may belong to related tables, so their table has to be treated
+         * like any other table needed by the query (join included): otherwise the
+         * ORDER BY / GROUP BY would reference a table that is not in the FROM/JOIN.
+         */
+        const sortingColumns: any[] = this.queryTODO.resultSortingColumns ?? [];
+        const sortingOnlyTables: string[] = [];
+        sortingColumns.forEach(col => {
+            if (col?.table_id && col.table_id !== origin && !dest.includes(col.table_id)) {
+                dest.push(col.table_id);
+                // The builders reference joined tables by their real name (the join key
+                // may be "table.column.column" in tree mode).
+                sortingOnlyTables.push(String(col.table_id).split('.')[0]);
+            }
+        });
+
         let joinTree = [];
         let tree = [];
         for (const query of this.queryTODO.fields) {
             if (query.joins && query.joins.length > 0) {
                 for (let join of query.joins) {
+                    tree.push(join);
+                }
+            }
+        }
+
+        /** Same for the joins of the columns used only for sorting (tree mode) */
+        for (const sortCol of sortingColumns) {
+            if (Array.isArray(sortCol?.joins) && sortCol.joins.length > 0) {
+                for (const join of sortCol.joins) {
                     tree.push(join);
                 }
             }
@@ -416,6 +442,12 @@ export abstract class QueryBuilderService {
         const forSelector = this.queryTODO.forSelector;
         const fields = this.queryTODO.fields;
         const sortedFilters = this.queryTODO.sortedFilters;
+        /**
+         * Tables joined only because a column of them is used for sorting must not filter
+         * the result, so they are joined with LEFT (the builders already do that for the
+         * tables in this list: value-list joins).
+         */
+        const joinTables = [...new Set([...(valueListJoins || []), ...sortingOnlyTables])];
 
         if (this.queryTODO.simple) {
             this.query = this.simpleQuery(columns, origin, view);
@@ -423,17 +455,17 @@ export abstract class QueryBuilderService {
         } else if (this.queryTODO.analized) {
             return this.analizedQuery({
                 tables, columns, fields, origin, dest, joinTree, grouping, filters, havingFilters,
-                queryLimit, joinType, valueListJoins, schema, database, forSelector
+                queryLimit, joinType, valueListJoins: joinTables, schema, database, forSelector
             })
         } else if (this.queryTODO.sourceFields) {
             this.query = this.sourceFieldsQuery(
-                origin, dest, joinTree, filters, tables, joinType, valueListJoins, schema, database, sortedFilters
+                origin, dest, joinTree, filters, tables, joinType, joinTables, schema, database, sortedFilters
             );
             return this.query;
         } else {
             this.query = this.normalQuery(
                 columns, origin, dest, joinTree, grouping,  filters, havingFilters, tables,
-                queryLimit, joinType, groupByEnabled,valueListJoins, schema, database, forSelector, sortedFilters
+                queryLimit, joinType, groupByEnabled, joinTables, schema, database, forSelector, sortedFilters
             );
             return this.query;
         }
