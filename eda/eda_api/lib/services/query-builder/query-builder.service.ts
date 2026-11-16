@@ -123,7 +123,7 @@ export abstract class QueryBuilderService {
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
 
         /** Check the permissions behaviour. If they are recursive get recursive permissions*/
-        if (eda_api_config.custom_behaviour.USE_RECURSIVE_PERMISSIONS) {
+        if (eda_api_config.custom_behaviour?.USE_RECURSIVE_PERMISSIONS ?? true) {
             this.permissions = this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO);
         } else {
             this.permissions = this.getFlatPermissions(modelPermissions, this.queryTODO);
@@ -1164,7 +1164,7 @@ export abstract class QueryBuilderService {
 
         /** Check the permissions behaviour. If they are recursive get recursive permissions*/
         const permissions =
-            eda_api_config.custom_behaviour.USE_RECURSIVE_PERMISSIONS?
+            (eda_api_config.custom_behaviour?.USE_RECURSIVE_PERMISSIONS ?? true)?
             this.getRecursivePermissions(modelPermissions, this.tables, origin, this.queryTODO):
             this.getFlatPermissions(modelPermissions, this.queryTODO)
             ;

@@ -241,7 +241,7 @@ export class DashboardController {
    */
   static async getOpenDashboards(req: Request, dss: any[], dashboards: any[], isAdmin: boolean = false) {
     try {
-      if (!isAdmin && !eda_api_config.custom_behaviour.ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS) {
+      if (!isAdmin && !eda_api_config.custom_behaviour?.ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS) {
         return [];
       }
       const openDashboards = []
@@ -1051,7 +1051,7 @@ export class DashboardController {
     let allowedColumns = [];
     // puede ser que me den permiso sobre una columna.
     // entonces tengo prohivida toda la tabla excepto esa columna en el caso de un modelo cerrado.
-    if (eda_api_config.custom_behaviour.RESTRICT_TABLE_TO_GRANTED_COLUMN &&
+    if ((eda_api_config.custom_behaviour?.RESTRICT_TABLE_TO_GRANTED_COLUMN ?? true) &&
       dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
       if ( open != true &&  // si el modelo es cerrado.
         dataModelObject.ds.metadata.model_granted_roles.filter(r => r.global == false && r.none == false).length > 0) {

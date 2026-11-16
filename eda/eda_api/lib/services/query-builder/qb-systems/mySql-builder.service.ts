@@ -305,7 +305,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     myQuery += this.getHavingFilters(havingFilters);
 
     /** Always offer an empty/null row in the selector values */
-    if (forSelector === true && eda_api_config.custom_behaviour.SHOW_EMPTY_VALUE_IN_FILTERS) {
+    if (forSelector === true && (eda_api_config.custom_behaviour?.SHOW_EMPTY_VALUE_IN_FILTERS ?? true)) {
       myQuery += `\nUNION\nSELECT ${columns.map(() => `''`).join(', ')} `;
     }
 
