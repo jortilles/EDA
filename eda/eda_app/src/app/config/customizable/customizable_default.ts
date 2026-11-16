@@ -281,6 +281,7 @@ export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService regist
     logout: 'logout',
 };
 export const ENABLED_LANGUAGES: string[] = ['es', 'ca', 'de', 'en', 'fr', 'it', 'pl', 'pt']; // Locale codes shown in the language selector (EDA's 8 locales, all enabled by default). Each one must have a matching build in angular.json's i18n.locales (or be the sourceLocale) — this flag only controls what's offered in the UI, it doesn't build/remove locales.
+export const MAP_BASEMAP_PROVIDER: 'esri' | 'osm' = 'esri'; // Basemap used by the map charts 'esri' → Esri World_Light_Gray_Base | 'osm' → OpenStreetMap standard tiles
 
 /** Feature flags - data-source page */
 /** Data model - General configuration*/

@@ -7,6 +7,34 @@ import { ApiService } from '../api/api.service';
 import { shareReplay } from 'rxjs/operators';
 import { LatLngExpression } from 'leaflet';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MAP_BASEMAP_PROVIDER } from '@eda/configs/customizable/customizable_merged';
+
+/** Basemap tile source per provider. Esri's World_Light_Gray_Base is the legacy
+ * ArcGIS Online service (grey, native up to z16, oversampled to z19) and its ToS may not cover
+ * unsubscribed third-party commercial use. OpenStreetMap's standard tiles are colored and native up
+ * to z19, but OSM's tile usage policy forbids heavy commercial use / bulk tile caching — fine for an
+ * internal dashboard, not for a mass-market deployment (self-hosting tiles is out of scope here). */
+const BASEMAP_CONFIG: Record<'esri' | 'osm', { url: string; options: L.TileLayerOptions; mapMaxZoom: number }> = {
+  esri: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    options: {
+      maxZoom: 19,
+      maxNativeZoom: 16,
+      attribution: 'Tiles &copy; <a href="https://www.esri.com" target="_blank">Esri</a> &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors, and the GIS user community',
+      crossOrigin: true,
+    },
+    mapMaxZoom: 16,
+  },
+  osm: {
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    options: {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
+      crossOrigin: true,
+    },
+    mapMaxZoom: 19,
+  },
+};
 
 @Injectable({ providedIn: "root" })
 export class MapUtilsService extends ApiService {
@@ -335,6 +363,17 @@ export class MapUtilsService extends ApiService {
   static scaledRadius = (val: number, maxVal: number): number => {
     return 20 * (val / maxVal) + 5;
   };
+
+  /** Basemap tile layer shared by eda-map and eda-geoJsonMap, picked via MAP_BASEMAP_PROVIDER*/
+  public getBaseLayer(): L.TileLayer {
+    const config = BASEMAP_CONFIG[MAP_BASEMAP_PROVIDER] ?? BASEMAP_CONFIG.esri;
+    return L.tileLayer(config.url, config.options);
+  }
+
+  /** Max zoom the map itself should allow for the active basemap provider*/
+  public getBasemapMaxZoom(): number {
+    return (BASEMAP_CONFIG[MAP_BASEMAP_PROVIDER] ?? BASEMAP_CONFIG.esri).mapMaxZoom;
+  }
 
   public setCoordinates(coordinates: Array<Array<number>>): void {
     this.coordinates = coordinates;

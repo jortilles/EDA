@@ -82,15 +82,7 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
         scrollWheelZoom: this.draggable,
       });
 
-      const tiles = L.tileLayer(
-        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-        {
-          maxZoom: 19,
-          maxNativeZoom: 16,
-          attribution: 'Tiles &copy; <a href="https://www.esri.com" target="_blank">Esri</a> &mdash; Esri, DeLorme, NAVTEQ',
-          crossOrigin: true,
-        }
-      );
+      const tiles = this.mapUtilsService.getBaseLayer();
 
       tiles.addTo(this.map);
 

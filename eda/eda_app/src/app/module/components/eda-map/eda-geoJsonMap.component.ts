@@ -94,15 +94,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     this.draggable = this.inject.draggable === undefined ? true : this.inject.draggable;
     this.legendPosition = this.inject.legendPosition ? this.inject.legendPosition : "bottomright";
     this.legend = new (L.Control.extend({ options: { position: this.legendPosition } }))();
-    this.baseLayerLayer = L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-      {
-        maxZoom: 19,
-        maxNativeZoom: 16,
-        attribution: 'Tiles &copy; <a href="https://www.esri.com" target="_blank">Esri</a> &mdash; Esri, DeLorme, NAVTEQ',
-        crossOrigin: true,
-      }
-    );
+    this.baseLayerLayer = this.mapUtilsService.getBaseLayer();
   }
   ngAfterViewInit(): void {
     if (this.serverMap) {
@@ -196,7 +188,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     if (L.DomUtil.get(this.inject.div_name) !== null) {
       this.map = L.map(this.inject.div_name, {
         minZoom: 0,
-        maxZoom: 16,
+        maxZoom: this.mapUtilsService.getBasemapMaxZoom(),
         center: this.getCenter(this.inject.data),
         zoom: this.mapUtilsService.getZoom() ?? this.inject.zoom ?? 12,
         dragging: this.draggable,
