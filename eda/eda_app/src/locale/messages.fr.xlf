@@ -689,8 +689,16 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Titre 2</target>
       </trans-unit>
   <trans-unit id="NotSavedWarning">
-    <source> Hay cambios sin guardar. ¿Seguro que quieres salir? </source>
-    <target> Des modifications n'ont pas été enregistrées. Voulez-vous vraiment quitter? </target>
+    <source>Hay cambios sin guardar. ¿Qué deseas hacer?</source>
+    <target>Il y a des modifications non enregistrées. Que voulez-vous faire?</target>
+  </trans-unit>
+  <trans-unit id="SaveAndExitButton">
+    <source>Guardar y salir</source>
+    <target>Enregistrer et quitter</target>
+  </trans-unit>
+  <trans-unit id="ExitWithoutSavingButton">
+    <source>Salir sin guardar</source>
+    <target>Quitter sans enregistrer</target>
   </trans-unit>
 <trans-unit id="temasColors" datatype="html">
 <source>Temas</source>

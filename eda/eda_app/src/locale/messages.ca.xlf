@@ -693,8 +693,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Títol 2</target>
       </trans-unit>
   <trans-unit id="NotSavedWarning">
-    <source> Hay cambios sin guardar. ¿Seguro que quieres salir? </source>
-    <target> Hi ha canvis sense guardar, segur que vols sortir? </target>
+    <source>Hay cambios sin guardar. ¿Qué deseas hacer?</source>
+    <target>Hi ha canvis sense desar. Què vols fer?</target>
+  </trans-unit>
+  <trans-unit id="SaveAndExitButton">
+    <source>Guardar y salir</source>
+    <target>Desa i surt</target>
+  </trans-unit>
+  <trans-unit id="ExitWithoutSavingButton">
+    <source>Salir sin guardar</source>
+    <target>Surt sense desar</target>
   </trans-unit>
 <trans-unit id="temasColors" datatype="html">
 <source>Temas</source>

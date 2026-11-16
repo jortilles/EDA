@@ -103,8 +103,16 @@
         <target>Tutorial</target>
       </trans-unit>
       <trans-unit id="NotSavedWarning" datatype="html">
-        <source>Hay cambios sin guardar. ¿Seguro que quieres salir?</source>
-        <target>Ci sono modifiche non salvate. Sei sicuro di voler uscire?</target>
+        <source>Hay cambios sin guardar. ¿Qué deseas hacer?</source>
+        <target>Ci sono modifiche non salvate. Cosa vuoi fare?</target>
+      </trans-unit>
+      <trans-unit id="SaveAndExitButton" datatype="html">
+        <source>Guardar y salir</source>
+        <target>Salva ed esci</target>
+      </trans-unit>
+      <trans-unit id="ExitWithoutSavingButton" datatype="html">
+        <source>Salir sin guardar</source>
+        <target>Esci senza salvare</target>
       </trans-unit>
       <trans-unit id="dashboardSidebarCompactPanels" datatype="html">
         <source> Compactar paneles</source>

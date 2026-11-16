@@ -556,8 +556,16 @@
 <target>Nagłówek 2</target>
 </trans-unit>
   <trans-unit id="NotSavedWarning">
-    <source> Hay cambios sin guardar. ¿Seguro que quieres salir? </source>
-    <target>  Nie zapisano zmian, czy chcesz kontynuować? </target>
+    <source>Hay cambios sin guardar. ¿Qué deseas hacer?</source>
+    <target>Są niezapisane zmiany. Co chcesz zrobić?</target>
+  </trans-unit>
+  <trans-unit id="SaveAndExitButton">
+    <source>Guardar y salir</source>
+    <target>Zapisz i wyjdź</target>
+  </trans-unit>
+  <trans-unit id="ExitWithoutSavingButton">
+    <source>Salir sin guardar</source>
+    <target>Wyjdź bez zapisywania</target>
   </trans-unit>
 <trans-unit id="temasColors" datatype="html">
 <source>Temas</source>

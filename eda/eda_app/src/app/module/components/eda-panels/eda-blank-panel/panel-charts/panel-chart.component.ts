@@ -14,7 +14,7 @@ import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicTex
 import { EdaTableComponent } from '../../../eda-tables/eda-table/eda-table.component';
 import { EdaCrosstableComponent } from '../../../eda-tables/eda-crosstable/eda-crosstable.component';
 import { PanelChart } from './panel-chart';
-import { ChartUtilsService, StyleConfig, StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
+import { ChartUtilsService, DashboardService, StyleConfig, StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
 import { EdaKpiComponent } from '@eda/components/eda-kpi/eda-kpi.component';
 import { Column } from '@eda/models/model.index';
 import { EdaColumnDate } from '@eda/components/eda-tables/eda-table/eda-columns/eda-column-date';
@@ -131,6 +131,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         @Self() private ownRef: ElementRef,
         public styleProviderService: StyleProviderService,
         private cdr: ChangeDetectorRef,
+        private dashboardService: DashboardService,
         @Inject(LOCALE_ID) private locale: string) {
 
         this.fontColor = this.styleProviderService.resolveContentFontColor(this.props?.panelStyleOverride);
@@ -681,6 +682,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.panelStyleOverride = this.props.panelStyleOverride;
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onNotify.subscribe(data => {
+            const previous = this.props.config.getConfig() as KpiConfig;
             const kpiConfig = new KpiConfig({
                 sufix: data.sufix,
                 alertLimits: inject.alertLimits,
@@ -694,7 +696,21 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 prefixImage: inject.prefixImage || '',
             });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
+            this.markKpiConfigChanged(previous, kpiConfig);
         })
+    }
+
+    /**
+     * The hover +/- buttons and the inline suffix edit of a KPI change its configuration without
+     * going through any dialog, so the report is marked as modified here. It is only marked when a
+     * value really changed (opening the suffix editor also emits the event).
+     */
+    private markKpiConfigChanged(previous: KpiConfig, next: KpiConfig): void {
+        const previousScale = previous?.fontScale ?? 1;
+        const previousSufix = previous?.sufix ?? '';
+        if (next.fontScale !== previousScale || next.sufix !== previousSufix) {
+            this.dashboardService.setNotSaved(true);
+        }
     }
 
     /**
@@ -937,6 +953,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         );
 
         this.componentRef.instance.onNotify.subscribe(data => {
+            const previous = this.props.config.getConfig() as KpiConfig;
             const kpiConfig = new KpiConfig({
                 sufix: data.sufix,
                 alertLimits: inject.alertLimits || [],
@@ -951,6 +968,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 prefixImage: inject.prefixImage || '',
             });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
+            this.markKpiConfigChanged(previous, kpiConfig);
         })
         this.configUpdated.emit(this.currentConfig);
     }

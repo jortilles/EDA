@@ -601,8 +601,16 @@
 <target>Heading 2</target>
 </trans-unit>
 <trans-unit id="NotSavedWarning">
-<source> Hay cambios sin guardar. ¿Seguro que quieres salir? </source>
-<target>  There are unsaved changes, do you want to continue anyway? </target>
+<source>Hay cambios sin guardar. ¿Qué deseas hacer?</source>
+<target>There are unsaved changes. What do you want to do?</target>
+</trans-unit>
+<trans-unit id="SaveAndExitButton">
+<source>Guardar y salir</source>
+<target>Save and exit</target>
+</trans-unit>
+<trans-unit id="ExitWithoutSavingButton">
+<source>Salir sin guardar</source>
+<target>Exit without saving</target>
 </trans-unit>
 <trans-unit id="temasColors" datatype="html">
 <source>Temas</source>
