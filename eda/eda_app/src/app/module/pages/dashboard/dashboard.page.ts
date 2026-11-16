@@ -23,6 +23,7 @@ import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/c
 import { ZoomSdaComponent } from './zoom-control/zoom.component';
 import { ZoomStateService } from './zoom-control/zoom-state.service';
 import { SHOW_ZOOM_IN_SIDEBAR } from '@eda/configs/customizable/customizable_merged';
+import { COMPONENT_PLUGINS } from '../../../plugins/component-plugins/component-plugin-registry';
 
 // Sidebar imports
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
@@ -139,6 +140,14 @@ export class DashboardPage implements OnInit {
   public hideWheel: boolean = false;
   public panelMode: boolean = false;
   public readonly showZoomInSidebar = SHOW_ZOOM_IN_SIDEBAR;
+
+  /**
+   * Optional component plugin that replaces the default three-dot menu button (and whatever
+   * it opens) with a fork's own dashboard toolbar. A fork only has to register a plugin of
+   * type 'dashboard-menu' in plugins/component-plugins; without one, the default button/sidebar
+   * mechanism below is used as-is.
+   */
+  public dashboardMenuPlugin = COMPONENT_PLUGINS.find(p => p.type === 'dashboard-menu');
   public connectionProperties: any;
 
 
