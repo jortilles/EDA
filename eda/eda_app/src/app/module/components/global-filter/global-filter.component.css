@@ -188,16 +188,18 @@
   max-width: 100%;
 }
 
-/* Main autocomplete container - fills the card */
+/* Main autocomplete container - fills the card, single line: input first, selected values scroll horizontally */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   flex-wrap: nowrap;
+  align-items: center;
   gap: 0.25rem;
-  padding: 0.4rem 0.6rem;
+  padding: 0.25rem 0.5rem;
   border: 1px solid #d1d5db;
   overflow-x: auto;
-  scrollbar-width: thin;
+  overflow-y: hidden;
+  scrollbar-width: none;
   height: 32px;
   width: 100%;
   box-shadow: none;
@@ -216,18 +218,14 @@
   line-height: 1;
 }
 
-/* Input area */
+/* Input area - fixed width at the start of the line, so it is always reachable */
 .modern-autocomplete ::ng-deep .p-autocomplete-input-token {
-  order: 999; 
-  flex: none;
-  font-size: 1.7vh;
-  width: 3vw;
-  height: 2.75vh;
-  border-right: 3px solid black;
-  margin-right: auto;
-  border: 1px solid #d1d5db;
-  border-radius: 1px;
-  background-color: #fff;
+  order: -1;
+  flex: 0 0 7rem;
+  width: 7rem;
+  height: auto;
+  border: none;
+  background-color: transparent;
 }
 
 /* Autocomplete loader */
@@ -245,9 +243,46 @@
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
+  width: 100%;
+  min-width: 0;
+  font-size: 0.875rem;
 }
 
-/* Scrollbar thumb, on mouse hover */
-.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container::-webkit-scrollbar-thumb {
-  background-color: var(--scrollbar-thumb);
+/* No visible scrollbar: the values stay reachable with the mouse wheel / shift+scroll and the input scrolls into view on focus */
+.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Resting state: values are summarised in text (like a multiselect) instead of chips */
+.ac-wrapper {
+  position: relative;
+  width: 100%;
+  height: 32px;
+}
+
+.modern-autocomplete.ac-collapsed ::ng-deep .p-autocomplete-token {
+  display: none;
+}
+
+.modern-autocomplete.ac-collapsed ::ng-deep .p-autocomplete-input-token input {
+  color: transparent;
+  caret-color: transparent;
+}
+
+.modern-autocomplete.ac-collapsed ::ng-deep .p-autocomplete-input-token input::placeholder {
+  color: transparent;
+}
+
+.ac-summary {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 0.6rem;
+  font-size: 14px;
+  color: #455a64;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
 }

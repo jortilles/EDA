@@ -217,11 +217,18 @@
                 </ng-template>
               </p-overlayPanel>
               } @else {
-              <p-autoComplete [(ngModel)]="filter.selectedItems" (keydown.enter)="onAddValue($event, filter)" [suggestions]="autoCompleteValues"
-                (completeMethod)="loadFilterAutoComplete($event, filter)" placeholder="abc..." [forceSelection]="false"
-                [multiple]="true" (onSelect)="onItemSelected(filter)" (onUnselect)="onItemSelected(filter)" class="modern-autocomplete w-full"
-                (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)" (onClick)="hideFilterTooltip(op)">
-              </p-autoComplete>
+              <div class="ac-wrapper">
+                <p-autoComplete [(ngModel)]="filter.selectedItems" (keydown.enter)="onAddValue($event, filter)" [suggestions]="autoCompleteValues"
+                  (completeMethod)="loadFilterAutoComplete($event, filter)" placeholder="abc..." [forceSelection]="false"
+                  [multiple]="true" (onSelect)="onItemSelected(filter)" (onUnselect)="onItemSelected(filter)"
+                  (onFocus)="onAutocompleteFocus(filter)" (onBlur)="onAutocompleteBlur()"
+                  [class.ac-collapsed]="isAutocompleteCollapsed(filter)" class="modern-autocomplete w-full"
+                  (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)" (onClick)="hideFilterTooltip(op)">
+                </p-autoComplete>
+                @if (isAutocompleteCollapsed(filter)) {
+                  <span class="ac-summary">{{ getAutocompleteSummary(filter) }}</span>
+                }
+              </div>
               <p-overlayPanel #op appendTo="body">
                 <ng-template pTemplate>
                      <div class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]"
@@ -235,7 +242,7 @@
                             @for (item of filter.selectedItems; track item) {
                               <div class="filter-tooltip-container bg-[white] px-4 py-2 rounded flex items-center mr-1">
                                   <span class="customMultiselect filters-size filter-tooltip-text">
-                                      {{ item }}
+                                      {{ getFilterItemLabel(filter, item) }}
                                           <button type="button" class="pi pi-times-circle filter-tooltip-button"
                                               (click)="removeFilterItem(filter, item)">
                                           </button>

@@ -93,6 +93,7 @@ export class GlobalFilterComponent implements OnInit {
     // Flag to view last panel
     private lastPanel: any;
     private isDropdownOpen: boolean = false;
+    private acFocusedFilterId: string | null = null;
 
     public autoCompleteValues: string[];
     public filterTimeout: any;
@@ -238,6 +239,9 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public setGlobalFilterItems(filter: any) {
+
+        // Changing the selected values of a report filter changes the report
+        this.dashboardService.setNotSaved(true);
 
         // Apply dependent filters if a sort order is configured
         if(this.orderDependentFilters.length !==0) this.applyingDependentFilter(filter, this.globalFilters);
@@ -494,8 +498,10 @@ export class GlobalFilterComponent implements OnInit {
     })
 }
     validateFilter(){
-        const mandatoryFilters: {value :boolean, items: any} = this.checkAllMandatoryFilters(); 
+        const mandatoryFilters: {value :boolean, items: any} = this.checkAllMandatoryFilters();
         if(mandatoryFilters.value){
+            // Applying the report filters changes the report (same as reloadOnGlobalFilter did)
+            this.dashboardService.setNotSaved(true);
             this.dashboard.refreshPanels()
         } else{
             this.alertService.addError($localize`:@@AddMandatoryFilters:Los siguientes filtros son obligatorios y no tienen valor asignado:` + mandatoryFilters.items);
@@ -532,6 +538,8 @@ export class GlobalFilterComponent implements OnInit {
         let affectedPanelIds: Set<string> | undefined;
 
         if (apply && currentFilter) {
+            // Adding, editing or removing a report filter changes the report
+            this.dashboardService.setNotSaved(true);
             affectedPanelIds = new Set<string>(currentFilter.panelList || []);
             this.dashboard.edaPanels.forEach(panel => {
                 if (!currentFilter.isdeleted) {
@@ -1108,7 +1116,8 @@ export class GlobalFilterComponent implements OnInit {
         const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
         this.globalFilters.find((gf: any) => gf.id == filtro.id).data = data;
 
-        this.autoCompleteValues = data;
+        const selected = filtro.selectedItems || [];
+        this.autoCompleteValues = data.filter(item => !selected.includes(item.value));
 
         }, delay);
 
@@ -1123,6 +1132,7 @@ export class GlobalFilterComponent implements OnInit {
             }
             return item;
         });
+        filtro.selectedItems = _.uniq(filtro.selectedItems);
         if (filtro.multipleSelection === false && filtro.selectedItems.length > 1) {
             filtro.selectedItems = [filtro.selectedItems[filtro.selectedItems.length - 1]];
         }
@@ -1140,14 +1150,14 @@ export class GlobalFilterComponent implements OnInit {
         event.preventDefault(); 
 
         if (this.autoCompleteValues && this.autoCompleteValues.length > 0) {
-            const firstItem = this.autoCompleteValues[0];
+            const selected = filter.selectedItems || [];
+            const firstItem: any = this.autoCompleteValues.find((item: any) => !selected.includes(item.value));
 
-            filter.selectedItems = [
-            ...(filter.selectedItems || []), firstItem
-            ];
-
-            (event.target as HTMLInputElement).value = '';
-            this.autoCompleteValues = [];
+            if (firstItem) {
+                filter.selectedItems = [...selected, firstItem];
+                (event.target as HTMLInputElement).value = '';
+                this.autoCompleteValues = [];
+            }
         }
 
         this.onItemSelected(filter);
@@ -1225,6 +1235,28 @@ export class GlobalFilterComponent implements OnInit {
 
     public setDropdownOpen(value: boolean): void {
         this.isDropdownOpen = value;
+    }
+
+    public onAutocompleteFocus(filter: any): void {
+        this.acFocusedFilterId = filter.id;
+    }
+
+    public onAutocompleteBlur(): void {
+        this.acFocusedFilterId = null;
+    }
+
+    /** Resting state of an autocomplete filter with values: chips hidden, summary shown */
+    public isAutocompleteCollapsed(filter: any): boolean {
+        return filter.selectedItems?.length > 0 && this.acFocusedFilterId !== filter.id;
+    }
+
+    /** Same rule as the multiselect: up to 3 labels joined, otherwise a count */
+    public getAutocompleteSummary(filter: any): string {
+        const items: any[] = filter.selectedItems ?? [];
+        if (items.length > 3) {
+            return `${items.length} ${this.selectedItemsLabel}`;
+        }
+        return items.map((item: any) => this.getFilterItemLabel(filter, item)).join(', ');
     }
 
     // Method to show the filter tooltip

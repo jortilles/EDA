@@ -821,14 +821,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         event.preventDefault(); 
 
         if (this.autoCompleteValues && this.autoCompleteValues.length > 0) {
-            const firstItem = this.autoCompleteValues[0];
+            const selected = filter.selectedItems || [];
+            const firstItem: any = this.autoCompleteValues.find((item: any) => !selected.includes(item.value));
 
-            filter.selectedItems = [
-            ...(filter.selectedItems || []), firstItem
-            ];
-
-            (event.target as HTMLInputElement).value = '';
-            this.autoCompleteValues = [];
+            if (firstItem) {
+                filter.selectedItems = [...selected, firstItem];
+                (event.target as HTMLInputElement).value = '';
+                this.autoCompleteValues = [];
+            }
         }
 
     }
@@ -912,7 +912,8 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
         gfItem.data = data.length ? data : [];
 
         // Safely assign to the autocomplete
-        this.autoCompleteValues = gfItem.data.filter(item => item?.label) || [];
+        const selected = filtro.selectedItems || [];
+        this.autoCompleteValues = (gfItem.data.filter(item => item?.label) || []).filter(item => !selected.includes(item.value));
 
         }, delay);
     }
@@ -981,6 +982,7 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
             }
             return item;
         });
+        filtro.selectedItems = _.uniq(filtro.selectedItems);
         // Update global filter
     }
 

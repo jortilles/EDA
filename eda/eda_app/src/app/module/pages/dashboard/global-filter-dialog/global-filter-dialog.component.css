@@ -80,14 +80,15 @@ span {
 /* ── Autocomplete (original styling) ────────────────────────── */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
     display: flex;
-    flex-direction: row-reverse;
-    flex-wrap: nowrap;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 0.25rem;
     padding: 0.4rem 0.6rem;
     border: 1px solid #d1d5db;
-    overflow-x: auto;
-    scrollbar-width: thin;
+    min-height: 3.2rem;
     height: auto;
+    box-sizing: border-box;
     width: 100%;
     box-shadow: none;
     border-radius: 10px;
@@ -112,13 +113,11 @@ span {
 }
 
 .modern-autocomplete ::ng-deep .p-autocomplete-input-token {
-    order: 999;
-    flex: none;
+    order: -1;
+    flex: 0 0 8rem;
+    width: 8rem;
+    height: 2rem;
     font-size: 1rem;
-    width: 3vw;
-    height: 2.75vh;
-    border-right: 3px solid black;
-    margin-right: auto;
     border: 1px solid #d1d5db;
     border-radius: 1px;
     background-color: #fff;
