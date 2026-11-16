@@ -414,7 +414,9 @@ export abstract class QueryBuilderService {
                     return true;
                 }
             }else{
-                return f.filterBeforeGrouping;
+                // A column that isn't among this query's own fields can never be an aggregate
+                // condition, so it always belongs in WHERE, regardless of filterBeforeGrouping.
+                return true;
             }
             });
 
@@ -439,7 +441,9 @@ export abstract class QueryBuilderService {
             if(column){
             return (column.column_type=='numeric' && column.aggregation_type!=='none'?true:false) && !f.filterBeforeGrouping;
             }else{
-                return !f.filterBeforeGrouping;
+                // Mirror image of the WHERE-clause rule above: such a column is never an
+                // aggregate condition, so it never belongs in HAVING.
+                return false;
             }
         }).filter(f=> ![ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type));
 
