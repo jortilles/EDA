@@ -1004,7 +1004,11 @@ export class PgBuilderService extends QueryBuilderService {
 public getHavingColname(column: any){
   let colname:String  ;
   if( column.computed_column === 'no'  || ! column.hasOwnProperty('computed_column')   ){
-    colname =   `ROUND( ${column.aggregation_type} ("${column.table_id}"."${column.column_name}")::numeric, ${column.minimumFractionDigits})::float` ;
+    // A HAVING filter on a column outside the query's own aggregated fields carries no
+    // aggregation_type; wrapping it in an aggregate ROUND would emit "ROUND( undefined (...))".
+    colname = (!column.aggregation_type || column.aggregation_type === 'none')
+      ? `"${column.table_id}"."${column.column_name}"`
+      : `ROUND( ${column.aggregation_type} ("${column.table_id}"."${column.column_name}")::numeric, ${column.minimumFractionDigits})::float` ;
   }else{
     if(column.column_type == 'numeric'){
       colname = `ROUND(   ${column.SQLexpression}  as numeric)  , ${column.minimumFractionDigits})::float`;

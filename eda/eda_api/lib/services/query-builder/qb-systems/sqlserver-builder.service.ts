@@ -778,7 +778,11 @@ public getHavingFilters(filters: any, type: any) {
   public getHavingColname(column: any){
     let colname:String  ;
     if( column.computed_column === 'no'  || ! column.hasOwnProperty('computed_column')   ){
-      colname =   `CAST( ${column.aggregation_type} ("${column.table_id}"."${column.column_name}") as DECIMAL(32, ${column.minimumFractionDigits})) `;
+      // A HAVING filter on a column outside the query's own aggregated fields carries no
+      // aggregation_type; wrapping it in an aggregate CAST would emit "CAST( undefined (...))".
+      colname = (!column.aggregation_type || column.aggregation_type === 'none')
+        ? `"${column.table_id}"."${column.column_name}"`
+        : `CAST( ${column.aggregation_type} ("${column.table_id}"."${column.column_name}") as DECIMAL(32, ${column.minimumFractionDigits})) `;
     }else{
       if(column.column_type == 'numeric'){
         colname = `CAST( ${column.SQLexpression} as DECIMAL(32, ${column.minimumFractionDigits}))`;

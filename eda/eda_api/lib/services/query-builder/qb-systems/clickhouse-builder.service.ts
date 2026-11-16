@@ -825,6 +825,11 @@ export class ClickHouseBuilderService extends QueryBuilderService {
 
   public getHavingColname(column: any): string {
     if (column.computed_column === 'no' || !column.hasOwnProperty('computed_column')) {
+      // A HAVING filter on a column outside the query's own aggregated fields carries no
+      // aggregation_type; wrapping it in an aggregate round() would emit "round(undefined(...))".
+      if (!column.aggregation_type || column.aggregation_type === 'none') {
+        return `\`${column.table_id}\`.\`${column.column_name}\``;
+      }
       return `toFloat64(round(${column.aggregation_type}(\`${column.table_id}\`.\`${column.column_name}\`), ${column.minimumFractionDigits}))`;
     } else {
       if (column.column_type === 'numeric') {

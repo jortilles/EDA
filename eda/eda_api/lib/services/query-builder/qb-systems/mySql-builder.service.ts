@@ -1313,6 +1313,11 @@ public getHavingColname(column: any){
 
     if(column.aggregation_type === 'count_distinct') {
       colname = `cast( count( distinct \`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+    } else if(!column.aggregation_type || column.aggregation_type === 'none') {
+      // A HAVING filter on a column outside the query's own aggregated fields (e.g. a date
+      // range filter) carries no aggregation_type; wrapping it in an aggregate cast would emit
+      // the literal "cast(undefined(...))" and break the SQL.
+      colname = `\`${table_id}\`.\`${column.column_name}\`` ;
     } else {
       colname = `cast(${column.aggregation_type}(\`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
     }

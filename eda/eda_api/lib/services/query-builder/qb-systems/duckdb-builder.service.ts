@@ -689,10 +689,16 @@ export class DuckDBBuilderService extends QueryBuilderService {
     public getHavingColname(column: any) {
         let colname: string;
         if (column.computed_column === 'no' || !column.hasOwnProperty('computed_column')) {
-            const colExpr = column.aggregation_type === 'count'
-                ? `"${column.table_id}"."${column.column_name}"`
-                : `"${column.table_id}"."${column.column_name}"::numeric`;
-            colname = `ROUND(${column.aggregation_type}(${colExpr}), ${column.minimumFractionDigits})`;
+            // A HAVING filter on a column outside the query's own aggregated fields carries no
+            // aggregation_type; wrapping it in an aggregate ROUND would emit "ROUND(undefined(...))".
+            if (!column.aggregation_type || column.aggregation_type === 'none') {
+                colname = `"${column.table_id}"."${column.column_name}"`;
+            } else {
+                const colExpr = column.aggregation_type === 'count'
+                    ? `"${column.table_id}"."${column.column_name}"`
+                    : `"${column.table_id}"."${column.column_name}"::numeric`;
+                colname = `ROUND(${column.aggregation_type}(${colExpr}), ${column.minimumFractionDigits})`;
+            }
         } else {
             if (column.column_type === 'numeric') {
                 colname = `cast(${column.SQLexpression} as numeric(32, ${column.minimumFractionDigits}))`;
