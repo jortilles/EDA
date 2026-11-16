@@ -223,6 +223,7 @@ export const NULL_VALUE: string = '';// null Agregado de null_value en diferente
 export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === "Gradiente");
 export const FATHER_ID: number = 0; // Parent ID value for the Treetable component
 export const GLOBAL_FILTER_BUTTON_POSITION: string = 'left'; // By default the is left but you be modified to 'right'
+export const CONCAT_URL_FILTER_VALUES: boolean = false; // false → URL filter params replace saved values (upstream behavior) | true → URL values are concatenated (union, deduped) with saved values, except date-range filters which are always replaced
 
 /** Chart rendering limits: above them a chart is disabled in the selector and, if already saved, rendered as a plain table
  * so the browser does not collapse. Tables and histogram have no limit (histogram bins the data). */

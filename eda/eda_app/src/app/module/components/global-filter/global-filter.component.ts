@@ -7,7 +7,7 @@ import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-pan
 import { OverlayPanelModule } from "primeng/overlaypanel";
 import * as _ from 'lodash';
 import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
-import { GLOBAL_FILTER_BUTTON_POSITION, SHOW_EMPTY_VALUE_IN_FILTERS } from '@eda/configs/customizable/customizable_merged';
+import { GLOBAL_FILTER_BUTTON_POSITION, SHOW_EMPTY_VALUE_IN_FILTERS, CONCAT_URL_FILTER_VALUES } from '@eda/configs/customizable/customizable_merged';
 import { normalizeQueryMode } from '@eda/shared/utils/query-mode.util';
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from "@angular/forms";
@@ -962,7 +962,16 @@ export class GlobalFilterComponent implements OnInit {
                     const columnName = filter.column?.value?.column_name || filter.selectedColumn.column_name;
 
                     if (columnName === paramColumn) {
-                        filter.selectedItems = _.split(urlParams[param], '|');
+                        const urlValues = _.split(urlParams[param], '|');
+                        const columnType = filter.column?.value?.column_type || filter.selectedColumn?.column_type;
+                        if (CONCAT_URL_FILTER_VALUES && columnType !== 'date') {
+                            // SDA: concatenate URL values with saved ones (union, deduped) instead of replacing them
+                            filter.selectedItems = _.union(filter.selectedItems || [], urlValues);
+                            // URL carries labels, not internal codes -> drop stale codes so the backend filters by labels
+                            filter.selectedIdValues = undefined;
+                        } else {
+                            filter.selectedItems = urlValues;
+                        }
 
                         filter.panelList
                             .map(id => this.dashboard.panels.find(p => p.id === id))
