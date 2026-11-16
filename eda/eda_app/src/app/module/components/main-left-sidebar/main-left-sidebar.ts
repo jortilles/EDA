@@ -1,6 +1,6 @@
 import { Component, inject, LOCALE_ID, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { NgClass } from '@angular/common';
+import { NgClass, NgComponentOutlet } from '@angular/common';
 import Swal from 'sweetalert2';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { UserService } from '@eda/services/service.index';
@@ -10,6 +10,7 @@ import { IconService } from '@eda/services/utils/icons.service';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import { GroupService } from '@eda/services/api/group.service';
 import { DashboardService } from '@eda/services/api/dashboard.service';
+import { COMPONENT_PLUGINS } from '../../../plugins/component-plugins/component-plugin-registry';
 
 interface NavItem {
   path?: string;
@@ -24,7 +25,7 @@ interface NavItem {
 @Component({
   selector: 'app-main-left-sidebar',
   standalone: true,
-  imports: [RouterLink, NgClass, IconComponent],
+  imports: [RouterLink, NgClass, IconComponent, NgComponentOutlet],
   templateUrl: './main-left-sidebar.html',
   styleUrls: ['./main-left-sidebar.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -43,6 +44,13 @@ export class MainLeftSidebarComponent {
   public panelMode: boolean = false;
   private route = inject(ActivatedRoute);
   navItems: NavItem[] = [];
+
+  /**
+   * Optional component plugin pinned to the bottom of the side menu (the user
+   * badge). A fork only has to register a plugin of type 'sidebar-user' in
+   * plugins/component-plugins.
+   */
+  public userPlugin = COMPONENT_PLUGINS.find(p => p.type === 'sidebar-user');
 
   // Anonymous and eda_RO control
   public isAnonim: boolean;
@@ -196,64 +204,80 @@ menuCommand(item: any, event: MouseEvent) {
     return;
   }
 
-  // Going to home can discard unsaved changes on the current dashboard, so confirm first
-  if (path === '/home' && !item.command) {
-    this.checkNotSavedHome();
+  // Side-menu sections (no route and no language) only open their submenu, they don't leave the report
+  if (!path && !item.lang) {
+    item.command ? item.command() : null;
     return;
   }
 
-  // Any other destination silently drops the unsaved-changes flag (page is left behind)
-  this.ignoreNotSaved();
+  // Any destination leaves the current report, so confirm first when it has unsaved changes
+  this.confirmLeaveNotSaved(() => {
+    if (path.includes('logout')) {
 
-  if (path.includes('logout')) {
+      const user = JSON.parse(localStorage.getItem('user'));
 
-    const user = JSON.parse(localStorage.getItem('user'));
+      if(user.nameID && user.nameIDFormat && user.sessionIndex) {
+        // SAML logout
+        this.userService.SAMLlogout();
+      }
+      else {
+        // Default logout
+        this.userService.logout();
+      }
 
-    if(user.nameID && user.nameIDFormat && user.sessionIndex) {
-      // SAML logout
-      this.userService.SAMLlogout();
+    } else if (path) {
+      item.command ? item.command() : this.router.navigate([path]);
+    } else if (item.lang) {
+      this.redirectLocale(item.lang);
+
     }
-    else {
-      // Default logout
-      this.userService.logout();
-    }
-
-  } else if (path) {
-    item.command ? item.command() : this.router.navigate([path]);
-  } else if (item.lang) {
-    this.redirectLocale(item.lang);
-
-  }
+  });
 }
 
   /**
-   * Navigates to home, warning the user first if the current dashboard has unsaved changes.
+   * Runs the given navigation only after confirming, when the report currently open has unsaved
+   * changes. Every side-menu destination goes through here, not only home. The default action is
+   * saving the report before leaving; the secondary one discards the changes.
    */
-  public checkNotSavedHome(): void {
+  public confirmLeaveNotSaved(action: () => void): void {
     if (!this.notSaved) {
-      this.router.navigate(['/home']);
+      action();
       return;
     }
 
     Swal.fire({
-      text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Seguro que quieres salir?`,
+      text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Qué deseas hacer?`,
       icon: 'warning',
-      showDenyButton: true,
+      // Wider dialog and no wrapping so the three actions stay on the same line.
+      width: '38em',
+      // The corporate SweetAlert theme paints the "cancel" role red as the discard action, so
+      // "Salir sin guardar" uses it. "Cancelar" keeps the deny role. Tailwind's order utilities
+      // restore the visual order Guardar y salir | Salir sin guardar | Cancelar.
+      customClass: {
+        actions: '!flex-nowrap',
+        confirmButton: 'order-1',
+        cancelButton: 'order-2',
+        denyButton: 'order-3',
+      },
+      confirmButtonText: $localize`:@@SaveAndExitButton:Guardar y salir`,
       denyButtonText: $localize`:@@cancelarButton:Cancelar`,
+      cancelButtonText: $localize`:@@ExitWithoutSavingButton:Salir sin guardar`,
+      showDenyButton: true,
+      showCancelButton: true,
+      focusConfirm: true,
+      showLoaderOnConfirm: true,
+      preConfirm: () => this.dashboardService.requestSave(),
+      // The button that opened the dialog keeps the focus, so the default action is focused here.
+      didOpen: () => (Swal.getConfirmButton() as HTMLElement)?.focus(),
     }).then(result => {
-      if (result.isConfirmed) {
+      // "Cancelar" (deny) closes the dialog without doing anything: the confirm button saves and
+      // leaves, and "Salir sin guardar" (cancel) leaves discarding the changes.
+      const discard = result.isDismissed && result.dismiss === Swal.DismissReason.cancel;
+      if (result.isConfirmed || discard) {
         this.dashboardService.setNotSaved(false);
-        this.router.navigate(['/home']);
+        action();
       }
     });
-  }
-
-  /**
-   * Drops the unsaved-changes flag without asking, used when navigating to a page
-   * other than home (the destination isn't the dashboard, so nothing to lose there).
-   */
-  public ignoreNotSaved(): void {
-    this.dashboardService.setNotSaved(false);
   }
 
   public redirectLocale(lan: string) {
