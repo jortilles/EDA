@@ -83,7 +83,9 @@ export class FilterDialogComponent {
     public inputType: string;
     public filterValue: any = {};
     public filterSelected: FilterType;
-    public dropDownFields: SelectItem[] = [];
+    // Each item also carries the value-list internal code (item[1] of the selector response) so that
+    // columnUtils.setFilter() can build filter_codes from the code instead of the label (issue #667).
+    public dropDownFields: (SelectItem & { id?: any })[] = [];
     public limitSelectionFields: number;
     public aggregationsTypes: any[] = [];
     public aggregationType: any = null;
@@ -338,8 +340,10 @@ export class FilterDialogComponent {
             
                 if (res.length > 1) {
                     for (const item of res[1]) {
-                        if (item[0] === '' || item[0] ) { 
-                            this.dropDownFields.push({ label : item[0], value: item[0] });
+                        if (item[0] === '' || item[0] ) {
+                            // item[1] is the value-list internal code: setFilter() uses it to build
+                            // filter_codes, so code-mode filters compare codes against the code column (issue #667).
+                            this.dropDownFields.push({ label : item[0], value: item[0], id: item[1] });
                         }
                     }
                 }

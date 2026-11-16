@@ -172,6 +172,11 @@ export abstract class QueryBuilderService {
                 }
             })
 
+            /** A selector must also return the internal code of each value-list column */
+            if (this.queryTODO.forSelector === true) {
+                this.addSelectorCodeFields(this.queryTODO.fields);
+            }
+
             /** Reviso si cap FILTRE de la  consulta es un multivalueliest.....  */
             this.queryTODO.filters.forEach(e=>{
                 if(e.valueListSource){
@@ -361,7 +366,12 @@ export abstract class QueryBuilderService {
             
             processFields(this.queryTODO.fields);
             processFields(this.queryTODO.filters);
-            
+
+            /** A selector must also return the internal code of each value-list column */
+            if (this.queryTODO.forSelector === true) {
+                this.addSelectorCodeFields(this.queryTODO.fields);
+            }
+
             for (const value of valueListJoins) {
                 const multiSourceJoin = `${value.source_table}.${value.source_column}`;
                 const multiTargetJoin = `${value.target_table}.${value.target_id_column}`;
@@ -999,6 +1009,31 @@ export abstract class QueryBuilderService {
      */
     public useValueListCodeForFilters(): boolean {
         return !!eda_api_config.custom_behaviour?.USE_VALUE_LIST_CODE_FOR_FILTERS;
+    }
+
+    /**
+     * A selector query has to return, for every value-list column, the display label AND its internal
+     * code (two columns). The frontend builds filter_codes from that code (column-utils.service.ts -> setFilter);
+     * without it the label ends up in filter_codes and code-mode filters compare labels against the code column,
+     * returning nothing. No-op for regular panel queries (forSelector is only set by the selectors).
+     */
+    private addSelectorCodeFields(fields: any[]) {
+        const extra: any[] = [];
+        for (const field of fields || []) {
+            const vls = field?.valueListSource;
+            if (!vls?.target_table || !vls?.target_id_column) continue;
+            if (field.table_id !== vls.target_table) continue;
+            const alreadyThere = fields.some(f => f.table_id === vls.target_table && f.column_name === vls.target_id_column);
+            if (alreadyThere) continue;
+            extra.push({
+                ...JSON.parse(JSON.stringify(field)),
+                column_name: vls.target_id_column,
+                display_name: vls.target_id_column,
+                column_type: 'text',
+                order: fields.length + extra.length,
+            });
+        }
+        if (extra.length > 0) fields.push(...extra);
     }
 
     public findColumn(table: string, column: string) {

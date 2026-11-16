@@ -86,7 +86,9 @@ export class ColumnDialogComponent {
     public aggregationsTypes: any[] = [];
     public aggregationSelected: any;
     public inputType: string;
-    public dropDownFields: SelectItem[] = [];
+    // Each item also carries the value-list internal code (item[1] of the selector response) so that
+    // columnUtils.setFilter() can build filter_codes from the code instead of the label (issue #667).
+    public dropDownFields: (SelectItem & { id?: any })[] = [];
     public limitSelectionFields: number;
     public cumulativeSum: boolean;
     public dateNavEnabled: boolean = false;
@@ -762,7 +764,9 @@ export class ColumnDialogComponent {
                 if (item[0] != null && item[0] !== '') {
                     this.dropDownFields.push({
                         label: item[0],
-                        value: item[0]
+                        value: item[0],
+                        // item[1] is the value-list internal code used to build filter_codes (issue #667)
+                        id: item[1]
                     });
                 }
             }

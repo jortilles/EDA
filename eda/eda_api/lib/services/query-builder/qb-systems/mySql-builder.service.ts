@@ -604,7 +604,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     // Adding needed permissions if we have some item in the array of permissions with toBeUsed in true
     if(sqlPermissionsExpresion !== '') stringQuery += `\n${sqlPermissionsExpresion}\nAND\n`;
 
-    // false (EDA) -> value-list filters use the description column | true (SinergiaDA) -> use the internal code column
+    // false (default) -> value-list filters use the description column | true (alternative) -> use the internal code column
     const useCodeForFilters = this.useValueListCodeForFilters();
 
     // Recursive function for the necessary nesting according to the AND/OR filter graph.
@@ -617,7 +617,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       // strip it down the same way the rest of this file does (col.table_id.split('.')[0]).
       const filterTableName = filter_table?.split('.')[0];
 
-      // false (EDA) -> compare against the raw selected values | true (SinergiaDA) -> compare against the internal codes
+      // false (default) -> compare against the raw selected values | true (alternative) -> compare against the internal codes
       const codesOrElements = useCodeForFilters ? filter_codes : filter_elements;
 
       ////////////////////////////////////////////////// filter_type //////////////////////////////////////////////////
@@ -1007,6 +1007,11 @@ export class MySqlBuilderService extends QueryBuilderService {
     if (!el.hasOwnProperty('minimumFractionDigits')) {
       el.minimumFractionDigits = 0;
     }
+    // AVG_DECIMALS only forces the decimals of the AVG aggregations when it is defined in the config.
+    // Otherwise, the decimals defined on the numeric column itself are respected (as in sum, max, min, ...)
+    if (el.aggregation_type === 'avg' && eda_api_config.custom_behaviour?.AVG_DECIMALS !== undefined) {
+      el.minimumFractionDigits = eda_api_config.custom_behaviour.AVG_DECIMALS;
+    }
     return el;
   }
 
@@ -1144,8 +1149,13 @@ export class MySqlBuilderService extends QueryBuilderService {
       column.filter_codes = filterObject.filter_codes;
       const colname=this.getFilterColname(column);
       const valueListSource = filterObject.valueListSource;
-      // false (EDA) -> compare against the raw selected values | true (SinergiaDA) -> compare against the internal codes
-      const filterValues = this.useValueListCodeForFilters() ? filterObject.filter_codes : filterObject.filter_elements;
+      // false (default) -> compare against the raw selected values | true (alternative) -> compare against the internal codes.
+      // Some queries (e.g. autocomplete suggestions) only send display values in filter_elements, so fall back to them
+      // when filter_codes is missing/empty instead of crashing on filterValues[0].
+      const hasFilterCodes = Array.isArray(filterObject.filter_codes) && filterObject.filter_codes.length > 0;
+      const filterValues = (this.useValueListCodeForFilters() && hasFilterCodes)
+        ? filterObject.filter_codes
+        : filterObject.filter_elements;
 
       switch (this.setFilterType(filterObject.filter_type)) {
         case 0:
@@ -1213,7 +1223,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       if (column.autorelation && !column.valueListSource) {
         colname = `\`${column.joins[column.joins.length-1][0]}\`.\`${column.column_name}\``;
-      } else if (this.useValueListCodeForFilters() && column.valueListSource?.target_id_column && column.filter_codes?.length !== undefined) {
+      } else if (this.useValueListCodeForFilters() && column.valueListSource?.target_id_column && column.filter_codes?.length > 0) {
         // SDA CUSTOM - Keep value-list filters on the internal code column when we have codes to compare against
         colname = `\`${column.valueListSource.target_table}\`.\`${column.valueListSource.target_id_column}\``;
       } else {

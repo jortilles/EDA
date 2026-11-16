@@ -107,7 +107,22 @@ export class DashboardPage implements OnInit {
   public gridsterDashboard: GridsterItem[];
   private edaPanelsSubscription: Subscription;
   private notSavedSubscription: Subscription;
-  
+  private routeParamsSubscription: Subscription;
+  /** Dashboard id currently shown, to tell real route changes from the initial emission. */
+  private routeDashboardId: string = null;
+
+  /**
+   * x/y/cols/rows of every panel as last loaded or saved. Gridster fires itemChange/itemResize not
+   * only when the user moves or resizes a panel, but also while initializing the grid and whenever
+   * the pixel size is recalculated (window resize, zoom), so those callbacks are only taken as a
+   * real layout change when the grid layout differs from this snapshot.
+   */
+  private savedLayout: string = null;
+
+  /** Right after loading a report gridster may still be placing/re-arranging items; until this
+   *  moment any layout callback is absorbed into the reference layout instead of marking changes. */
+  private layoutReadyAt = 0;
+
   public reportTitle: any;
   public reportPanel: any;
   public backgroundColor: any;
@@ -178,6 +193,20 @@ export class DashboardPage implements OnInit {
     this.notSavedSubscription = this.dashboardService.notSaved.subscribe(
       (data) => this.notSaved = data
     );
+
+    // Allow other components (e.g. the side menu) to save the report before leaving it.
+    this.dashboardService.registerSaveHandler(() => this.saveDashboard());
+
+    // When navigating between reports (same component, different id), reset the
+    // unsaved-changes flag and reload the dashboard so it never opens marked as modified.
+    this.routeDashboardId = this.route.snapshot.paramMap.get('id');
+    this.routeParamsSubscription = this.route.paramMap.subscribe(params => {
+      const newId = params.get('id');
+      if (!newId || newId === this.routeDashboardId) return;
+      this.routeDashboardId = newId;
+      this.dashboardService.setNotSaved(false);
+      this.loadDashboard();
+    });
 
     this.assistantService.availableChatGpt().subscribe((resp: any) => {
       if(resp.response.available) {
@@ -279,6 +308,10 @@ export class DashboardPage implements OnInit {
     if (this.notSavedSubscription) {
         this.notSavedSubscription.unsubscribe();
     }
+    if (this.routeParamsSubscription) {
+        this.routeParamsSubscription.unsubscribe();
+    }
+    this.dashboardService.clearSaveHandler();
     // Don't let this dashboard's "unsaved changes" state leak into the next dashboard navigated to.
     this.dashboardService.setNotSaved(false);
   }
@@ -313,7 +346,10 @@ export class DashboardPage implements OnInit {
       disableScrollHorizontal: true, // Disables horizontal scroll if needed
       disableScrollVertical: true, // Disables vertical scroll if needed
       itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
-      itemResizeCallback: (item: GridsterItem) => this.onItemChange(item)
+      itemResizeCallback: (item: GridsterItem) => this.onItemChange(item),
+      // Gridster places and re-arranges items during initialization (pushItems/avoidOverlapped/swap),
+      // so the layout that was actually loaded is captured once every item has been initialized.
+      itemInitCallback: () => this.captureLoadedLayout()
     };
       this.updateSquareCells();
       window.addEventListener('resize', () => this.updateSquareCells());
@@ -348,6 +384,10 @@ export class DashboardPage implements OnInit {
     // Reset before loading so a leftover "unsaved changes" flag from a previously viewed
     // dashboard (the service-level flag is shared/global) never leaks into this one.
     this.dashboardService.setNotSaved(false);
+    // Hide the previous report's layout: until the new one is placed, grid callbacks must not be
+    // mistaken for user changes.
+    this.savedLayout = null;
+    this.layoutReadyAt = Date.now() + 1000;
     const dashboardId = this.route.snapshot.paramMap.get('id');
     const data = await lastValueFrom(this.dashboardService.getDashboard(dashboardId));
     const dashboard = data.dashboard;
@@ -406,12 +446,18 @@ export class DashboardPage implements OnInit {
         dashboard.config.stopRefresh = false;
         this.startCountdown(dashboard.config.refreshTime);
       }
-      this.selectedTags = this.dashboard.config.tag || [];
+      this.selectedTags = Array.isArray(this.dashboard.config.tag)
+        ? this.dashboard.config.tag.filter(tag => tag !== null && tag !== undefined && tag !== '')
+        : (this.dashboard.config.tag ? [this.dashboard.config.tag] : []);
 
       // PROVISIONAL: migrate any legacy base64-embedded background/KPI images
       // to the media library. Fire-and-forget so it never blocks dashboard rendering.
       this.migrateEmbeddedImages(dashboard);
     }
+
+    // A dashboard that has just been loaded has no unsaved changes yet.
+    this.dashboardService.setNotSaved(false);
+    this.captureLoadedLayout();
 
     this.checkImportedPanels(dashboard);
     this.updateFilterDatesInPanels();
@@ -1399,6 +1445,8 @@ export class DashboardPage implements OnInit {
       await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
       this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
       this.dashboardService.setNotSaved(false);
+      // The layout just saved becomes the new reference for detecting further moves/resizes.
+      this.captureLoadedLayout();
     } catch (err) {
       this.alertService.addError(err);
       throw err;
@@ -1583,6 +1631,9 @@ public startCountdown(seconds: number) {
 
   // Function that updates the gridster height value each time an element changes
   onItemChange(item: GridsterItem): void {
+    // Gridster also calls this while initializing the grid and on pixel recalculations, so the
+    // report is only marked as modified when the grid layout really differs from the loaded one.
+    this.markLayoutChanged();
     if (this.panels) {
       const rowHeight = this.gridsterOptions.fixedRowHeight || 150;
       const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
@@ -1594,6 +1645,29 @@ public startCountdown(seconds: number) {
         this.cdr.detectChanges();
       }
     }
+  }
+
+  /** Marks the report as modified only when the panel layout differs from the last loaded/saved one. */
+  private markLayoutChanged(): void {
+    if (this.savedLayout === null) return;
+    if (Date.now() < this.layoutReadyAt) {
+      // Gridster is still placing or re-arranging items right after loading the report, so those
+      // internal moves become part of the reference layout rather than user changes.
+      this.captureLoadedLayout();
+      return;
+    }
+    if (this.currentLayout() !== this.savedLayout) {
+      this.dashboardService.setNotSaved(true);
+    }
+  }
+
+  /** Stores the current panel layout as the reference of what is saved. */
+  private captureLoadedLayout(): void {
+    this.savedLayout = this.currentLayout();
+  }
+
+  private currentLayout(): string {
+    return JSON.stringify((this.panels || []).map(p => ({ id: p.id, x: p.x, y: p.y, cols: p.cols, rows: p.rows })));
   }
 
 

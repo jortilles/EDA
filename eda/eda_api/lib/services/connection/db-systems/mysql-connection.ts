@@ -217,7 +217,37 @@ async execQuery(query: string): Promise<any> {
     }
 
 
+    /**
+     * value-list filters may carry the label (or nothing) in filter_codes — that is how
+     * 2.x kept them and how the old selector built them. When USE_VALUE_LIST_CODE_FOR_FILTERS is on the query must
+     * compare the internal `code` column against codes, so the selected values are translated to their codes here,
+     * before building the SQL (a small read per value-list table; never a subquery inside the panel query).
+     */
+    private async resolveValueListFilterCodes(query: any) {
+        if (!EDA_API_CONFIG.custom_behaviour?.USE_VALUE_LIST_CODE_FOR_FILTERS) return;
+        const maps = new Map<string, Map<string, string>>();
+        const resolve = async (filter: any) => {
+            const vls = filter?.valueListSource;
+            const elements = filter?.filter_elements?.[0]?.value1;
+            if (!vls?.target_table || !vls?.target_id_column || !Array.isArray(elements) || elements.length === 0) return;
+            let map = maps.get(vls.target_table);
+            if (!map) {
+                if (!this.client) this.client = await this.getclient();
+                const [rows] = await this.client.query(`SELECT code, value FROM \`${vls.target_table}\``) as any;
+                map = new Map((rows || []).map((r: any) => [String(r.value), String(r.code)]));
+                maps.set(vls.target_table, map);
+            }
+            filter.filter_codes = [{
+                ...(filter.filter_codes?.[0] || {}),
+                value1: elements.map((e: any) => map.has(String(e)) ? map.get(String(e)) : e)
+            }];
+        };
+        for (const filter of query?.filters || []) await resolve(filter);
+        for (const filter of query?.sortedFilters || []) await resolve(filter);
+    }
+
     async getQueryBuilded(queryData: any, dataModel: any, user: any) {
+        await this.resolveValueListFilterCodes(queryData);
         this.queryBuilder = new MySqlBuilderService(queryData, dataModel, user);
         return this.queryBuilder.builder();
     }
