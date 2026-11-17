@@ -1,49 +1,44 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
-import { SettingsService, StyleProviderService } from '@eda/services/service.index';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-
-declare function init_plugins();
+import { CommonModule } from "@angular/common";
+import { Component, inject, OnInit } from "@angular/core";
+import { Router, RouterModule } from "@angular/router";
+import { MainLeftSidebarComponent } from "@eda/components/main-left-sidebar/main-left-sidebar.component";
+import { CreateDashboardService } from "@eda/services/utils/create-dashboard.service";
+import { CreateDashboardComponent } from "@eda/shared/components/create-dashboard/create-dashboard.component";
+import { StyleProviderService} from '@eda/services/service.index';
+import { Subscription } from "rxjs";
 
 @Component({
     selector: 'app-pages',
     templateUrl: './pages.component.html',
     standalone: true,
-    imports: [RouterModule],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    imports: [CommonModule, RouterModule, MainLeftSidebarComponent, CreateDashboardComponent],
 })
 export class PagesComponent implements OnInit {
-
-    backgroundColor : string
+    private router = inject(Router);
+    public createDashboardService = inject(CreateDashboardService);
+    public styleProviderService = inject(StyleProviderService);
+    backgroundColor: string
     panelMode: boolean = false;
+    bgColor: string = '';
+    private bgSub?: Subscription;
 
-    constructor(
-        private route: ActivatedRoute,
-        private settingSerive: SettingsService,
-        private styleProviderService : StyleProviderService) {
-
-        this.styleProviderService.pageBackground.subscribe((backgroundColor)=>{
-            this.backgroundColor = backgroundColor;
-        })
-
+    constructor(router: Router) {
+        // Disabling route reuse so the page reloads even when only a URL parameter changes
+        router.routeReuseStrategy.shouldReuseRoute = () => false;
     }
+
 
     ngOnInit(): void {
-        this.settingSerive.loadingSettings();
-        this.getPanelMode();
-        init_plugins();
-    }
-
-
-    private getPanelMode(): void {
-
-        this.route.queryParams.subscribe(params => {
-            try{
-                    if(params['panelMode'] == 'true'){
-                        this.panelMode =true; // In panel mode, only panels are shown
-                    }
-            }catch(e){
-            }
+        this.bgSub = this.styleProviderService.pageBackground.subscribe(value => {
+          this.bgColor = value;
         });
     }
 
+    ngOnDestroy() {
+        this.bgSub?.unsubscribe();
+    }
+
+    onCloseCreateDashboard(event: any) {
+        if (event) this.router.navigate(['/dashboard', event._id]);
+    }
 }

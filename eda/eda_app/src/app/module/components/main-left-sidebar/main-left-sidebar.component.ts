@@ -26,7 +26,7 @@ interface NavItem {
   selector: 'app-main-left-sidebar',
   standalone: true,
   imports: [RouterLink, NgClass, IconComponent, NgComponentOutlet],
-  templateUrl: './main-left-sidebar.html',
+  templateUrl: './main-left-sidebar.component.html',
   styleUrls: ['./main-left-sidebar.component.css'],
   encapsulation: ViewEncapsulation.None
 })
@@ -129,6 +129,7 @@ export class MainLeftSidebarComponent {
       { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de fuentes de datos`, icon: 'rectangle-group' },
       { path: '/admin/models/import-export', label: $localize`:@@dataExportImport:Data Export/Import`, icon: 'arrow-down-on-square-stack' },
       { path: '/admin/email-settings', label: $localize`:@@adminEmail:Gestión de email`, icon: 'at-symbol' },
+      { path: '/admin/alerts-management', label: $localize`:@@alertsConfigTitle:Gestión de alertas`, icon: 'mail' },
       { path: '/logs', label: $localize`:@@logsManagement:Visor de logs`, icon: 'clipboard-document-list' },
       ...(AI_ASSISTANT_MANAGEMENT_AVAILABLE ? [{ path: '/admin/ai-settings', label: $localize`:@@AIManagement:Gestión del asistente`, icon: 'sparkles-ai' }] : []),
       { path: '/portal', label: $localize`:@@adminPortal:Portal de datos`, icon: 'global-mini' },

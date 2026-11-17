@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import { LogoImage, SubLogoImage, BackgroundImage } from '@eda/configs/index';
-import { ParticlesBackgroundComponent } from '@eda/shared/components/particles-background/particles-background';
+import { ParticlesBackgroundComponent } from '@eda/shared/components/particles-background/particles-background.component';
 import { UserService } from '@eda/services/service.index';
 import { User } from '@eda/models/model.index';
 import { lastValueFrom } from 'rxjs';
@@ -21,13 +21,13 @@ declare var google: any;
 
 declare function init_plugins();
 @Component({
-    selector: 'app-loginv2',
+    selector: 'app-login',
     standalone: true,
     imports: [RouterModule, ReactiveFormsModule, ParticlesBackgroundComponent, MsalModule],
-    templateUrl: './login.html',
-    styleUrls: ["./login.scss"],
+    templateUrl: './login.component.html',
+    styleUrls: ["./login.component.scss"],
 })
-export class LoginV2Component implements OnInit, AfterViewChecked {
+export class LoginComponent implements OnInit, AfterViewChecked {
 
 
     @ViewChild('googleBtn', { static: false }) googleBtn?: ElementRef<HTMLDivElement>;

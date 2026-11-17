@@ -1,17 +1,10 @@
-<div id="main-wrapper" style="height: 100%;">
-
-  <app-sidebar></app-sidebar>
-
-  <div id="psl-w" class="page-wrapper eda-page-class" [style.backgroundColor]="backgroundColor" [class.noSidebar]="panelMode">
-
-    <div class="container-fluid" style="height: 100%;">
-
-      <router-outlet></router-outlet>
-
-    </div>
-
-  </div>
-  
+<div class="flex w-full min-h-full">
+    <app-main-left-sidebar class="flex-shrink-0"></app-main-left-sidebar>
+    <main class="flex-grow overflow-hidden" [ngStyle]="bgColor ? {'background-color': bgColor} : {'background-color': 'var(--home-background)'}">
+        <router-outlet></router-outlet>
+    </main>
 </div>
 
-<p-confirmDialog  [style]="{width: '30vw'}" header="Confirmation" icon="pi pi-exclamation-triangle" appendTo="body"></p-confirmDialog>
+@if (createDashboardService.isOpen()) {
+  <app-create-dashboard (close)="onCloseCreateDashboard($event)"></app-create-dashboard>
+}

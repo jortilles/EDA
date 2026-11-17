@@ -4,31 +4,22 @@ import { Routes } from '@angular/router';
 import { PageNotFoundComponent } from './404/page-not-found.component';
 import { ConditionsComponent } from './conditions/conditions.component';
 import { AnonymousLoginComponent } from '../../module/pages/anonimous-login/anonymous-login.component';
-import { PagesComponent } from '../../module/pages/pages.component';
 
 // Guards
 import { LoginGuardGuard } from '../../services/guards/login-guard.guard'
-import { pagesV3Routes } from 'app/module/pages/pages-v3.routes';
+import { pagesRoutes } from 'app/module/pages/pages.routes';
 
 export const coreRoutes: Routes = [
-    { path: '', loadComponent: () => import('./login/login').then(c => c.LoginV2Component) },
-    // { path: 'login', component: LoginComponent },
-    { path: 'old/login', loadComponent: () => import('./login/login').then(c => c.LoginV2Component) },
-    { path: 'login', loadComponent: () => import('./login/login').then(c => c.LoginV2Component) },
+    { path: '', loadComponent: () => import('./login/login.component').then(c => c.LoginComponent) },
+    { path: 'login', loadComponent: () => import('./login/login.component').then(c => c.LoginComponent) },
     {path: 'portal',loadComponent: () => import('./customized-dashboard/customized-dashboard.component').then(c => c.CustomizedDashboardComponent)},
     { path: 'conditions', component: ConditionsComponent },
     { path: 'public/:dashboardID', component: AnonymousLoginComponent },
-    {
-        path: 'old',
-        component: PagesComponent,
-        canActivate: [LoginGuardGuard],
-        loadChildren: () => import('../../module/pages/pages.routes').then(m => m.pagesRoutes)
-    },
     // Internal v2 routes protected by the guard
     {
         path: '',
         canActivate: [LoginGuardGuard],
-        children: pagesV3Routes
+        children: pagesRoutes
     },
     { path: '**', component: PageNotFoundComponent }
 ];
