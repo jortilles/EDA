@@ -1,5 +1,5 @@
 <eda-dialog2 [display]="display"
-  width="88vw" height="86vh" overflow="auto"
+  width="88vw" height="86vh" [overflow]="'hidden'" [fillContent]="true"
   [showApply]="false" [showClose]="false">
 
   <!-- ===================== HEADER ===================== -->
@@ -19,7 +19,7 @@
   </div>
 
   <!-- ===================== CONTENT ===================== -->
-  <div content class="min-h-[calc(86vh-135px)]">
+  <div content class="h-full overflow-y-auto">
     <div class="grid grid-cols-1 items-start gap-6 px-6 py-4 lg:grid-cols-[minmax(0,1fr)_minmax(320px,35vw)]">
 
       <!-- ---------------- LEFT: steps ---------------- -->
