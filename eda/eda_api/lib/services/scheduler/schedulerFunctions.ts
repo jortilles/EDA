@@ -20,21 +20,21 @@ export class SchedulerFunctions {
 
   /**
    * Check schedule in days
-   * @param quantity 
-   * @param hours 
-   * @param minutes 
-   * @param currLastUpdated 
+   * @param quantity
+   * @param hours
+   * @param minutes
+   * @param currLastUpdated
    */
 
   static checkScheduleDays(quantity: number, hours: string, minutes: string, currLastUpdated: string) {
-    const now = new Date(this.totLocalISOTime(new Date()));
-    const lastUpdated = new Date(Date.parse(currLastUpdated));
+    const last = new Date(Date.parse(currLastUpdated));
+    const h = parseInt(hours) || 0;
+    const m = parseInt(minutes) || 0;
 
-    const nextSend = new Date(lastUpdated);
-    nextSend.setDate(nextSend.getDate() + quantity);
-    nextSend.setUTCHours(parseInt(hours), parseInt(minutes), 0, 0);
+    const lastDaySlot = new Date(Date.UTC(last.getUTCFullYear(), last.getUTCMonth(), last.getUTCDate(), h, m, 0, 0));
+    const nextDue = last < lastDaySlot ? lastDaySlot : new Date(lastDaySlot.getTime() + quantity * 24 * 60 * 60 * 1000);
 
-    return now >= nextSend;
+    return new Date() >= nextDue;
   }
 
   /**
