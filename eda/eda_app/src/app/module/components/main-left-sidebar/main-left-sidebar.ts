@@ -10,7 +10,7 @@ import { IconService } from '@eda/services/utils/icons.service';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import { GroupService } from '@eda/services/api/group.service';
 import { DashboardService } from '@eda/services/api/dashboard.service';
-import { COMPONENT_PLUGINS } from '../../../plugins/component-plugins/component-plugin-registry';
+import { COMPONENT_PLUGINS } from '@eda/plugins/component-plugins/component-plugin-registry';
 
 interface NavItem {
   path?: string;

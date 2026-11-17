@@ -4,7 +4,7 @@ import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEm
 import { SunBurst } from './eda-sunbrust'
 
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 @Component({
@@ -12,7 +12,7 @@ import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.co
   selector: 'eda-sunburst' /* tag assigned to this component */,
   templateUrl: './eda-sunburst.component.html' /** sdf */,
   styleUrls: ['./eda-sunburst.component.css'],
-  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
+  imports: [FormsModule, EdaChartLegendComponent]
 })
 export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   @Input() inject: SunBurst

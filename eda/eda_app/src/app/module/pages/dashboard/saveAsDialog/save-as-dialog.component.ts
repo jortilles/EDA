@@ -1,13 +1,27 @@
 import { Component } from "@angular/core";
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { AlertService, GroupService, IGroup } from "@eda/services/service.index";
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
+import { EdaDialogComponent } from "@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog.component";
 import { SelectItem } from "primeng/api";
+import { ButtonDirective } from "primeng/button";
+import { MultiSelectModule } from "primeng/multiselect";
+import { SelectButtonModule } from "primeng/selectbutton";
+import { InputTextModule } from "primeng/inputtext";
 
 @Component({
-  selector: 'save-as-dialog',
-  templateUrl: './save-as-dialog.component.html',
-
+    selector: 'save-as-dialog',
+    templateUrl: './save-as-dialog.component.html',
+    standalone: true,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        InputTextModule,
+        SelectButtonModule,
+        MultiSelectModule,
+        ButtonDirective,
+        EdaDialogComponent,
+    ],
 })
 
 export class SaveAsDialogComponent extends EdaDialogAbstract {

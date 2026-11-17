@@ -5,7 +5,7 @@ import { ScatterPlot } from "./eda-scatter";
 import * as _ from 'lodash';
 
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 @Component({
@@ -14,7 +14,7 @@ import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.co
   templateUrl: './eda-scatter.component.html',
   styleUrls: ['./eda-scatter.component.css'],
   encapsulation: ViewEncapsulation.Emulated,
-  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
+  imports: [FormsModule, EdaChartLegendComponent]
 })
 
 

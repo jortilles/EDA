@@ -10,9 +10,9 @@ import { EdaD3Component } from './../../../eda-d3-sankey/eda-d3-sankey.component
 import { TableConfig } from './chart-configuration-models/table-config';
 import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
     OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID, Type, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
-import { EdaTableComponent } from '../../../eda-tables/eda-table/eda-table.component';
-import { EdaCrosstableComponent } from '../../../eda-tables/eda-crosstable/eda-crosstable.component';
+import { EdadynamicTextComponent } from '@eda/components/eda-dynamicText/eda-dynamicText.component';
+import { EdaTableComponent } from '@eda/components/eda-tables/eda-table/eda-table.component';
+import { EdaCrosstableComponent } from '@eda/components/eda-tables/eda-crosstable/eda-crosstable.component';
 import { PanelChart } from './panel-chart';
 import { ChartUtilsService, DashboardService, StyleConfig, StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
 import { EdaKpiComponent } from '@eda/components/eda-kpi/eda-kpi.component';
@@ -47,7 +47,7 @@ import { SankeyConfig } from './chart-configuration-models/sankey-config';
 import { ScatterConfig } from './chart-configuration-models/scatter-config';
 import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';
 import { FormsModule } from '@angular/forms';
-import { CommonModule, getLocaleMonthNames, FormStyle, TranslationWidth } from '@angular/common';
+import { getLocaleMonthNames, FormStyle, TranslationWidth } from '@angular/common';
 import { FunnelConfig } from './chart-configuration-models/funnel.config';
 import { KnobConfig } from './chart-configuration-models/knob-config';
 import { MapConfig } from './chart-configuration-models/map-config';
@@ -77,7 +77,7 @@ import { CHART_RENDER_LIMITS } from '@eda/configs/customizable/customizable_merg
     standalone: true,
     selector: 'panel-chart',
     templateUrl: './panel-chart.component.html',
-    imports: [FormsModule, CommonModule, ProgressSpinnerModule],
+    imports: [FormsModule, ProgressSpinnerModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './panel-chart.component.css',
     // Custom elements default to display:inline, which ignores the parent's h-full/w-full

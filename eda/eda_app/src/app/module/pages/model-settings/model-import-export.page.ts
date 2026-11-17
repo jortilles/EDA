@@ -1,6 +1,6 @@
 
 import { Component, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { DashboardService, DataSourceService } from '@eda/services/service.index';
 import { DataSourceNamesService } from '@eda/services/shared/datasource-names.service';
@@ -14,7 +14,7 @@ import { AlertService } from '@eda/services/service.index';
   selector: 'app-model-import-export',
   templateUrl: './model-import-export.page.html',
   standalone: true,
-  imports: [CommonModule, FormsModule, DropdownModule, IconComponent],
+  imports: [FormsModule, DropdownModule, IconComponent],
   styleUrls: ['./model-import-export.page.css'],
   encapsulation: ViewEncapsulation.None
 })

@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from "@angular/core";
 import { EdaDialog, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 import { InputSwitchModule } from "primeng/inputswitch";
 import { PanelChartComponent } from "../../panel-charts/panel-chart.component";
@@ -14,7 +14,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
   standalone: true,
   selector: 'eda-table-gradient-dialog',
   templateUrl: './gradient-dialog.component.html',
-  imports: [FormsModule, CommonModule, EdaDialog2Component, InputSwitchModule, PanelChartComponent, ColorPickerModule, TabViewModule, InputNumberModule]
+  imports: [FormsModule, EdaDialog2Component, InputSwitchModule, PanelChartComponent, ColorPickerModule, TabViewModule, InputNumberModule]
 })
 
 export class TableGradientDialogComponent implements OnInit{

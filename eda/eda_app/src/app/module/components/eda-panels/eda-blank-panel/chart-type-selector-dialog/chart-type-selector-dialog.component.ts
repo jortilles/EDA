@@ -1,5 +1,5 @@
 import { Component, Input} from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { EbpUtils } from '../panel-utils/ebp-utils';
 import { EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { EdaDialog2Component } from '@eda/shared/components/eda-dialogs/eda-dialog2/eda-dialog2.component';
@@ -9,7 +9,7 @@ import { EdaDialog2Component } from '@eda/shared/components/eda-dialogs/eda-dial
     selector: 'app-chart-type-selector-dialog',
     templateUrl: './chart-type-selector-dialog.component.html',
     styleUrls: ['./chart-type-selector-dialog.component.css'],
-    imports: [CommonModule, EdaDialog2Component],
+    imports: [EdaDialog2Component],
 })
 export class ChartTypeSelectorDialogComponent {
     @Input() controller: any;

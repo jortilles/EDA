@@ -1,5 +1,5 @@
 // app/components/user-management/user-management.component.ts
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
@@ -16,7 +16,7 @@ import Swal from 'sweetalert2';
   selector: 'app-datasources-list',
   templateUrl: './datasources-list.page.html',
   standalone: true,
-  imports: [SharedModule, CommonModule, FormsModule, IconComponent, DropdownModule],
+  imports: [SharedModule, FormsModule, IconComponent, DropdownModule],
   styleUrls: ['./datasources-list.page.css']
 })
 export class DataSourceListPage implements OnInit {

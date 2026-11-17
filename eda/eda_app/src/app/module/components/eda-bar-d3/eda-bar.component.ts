@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { EdaBarD3 } from './eda-bar';
 import { StyleProviderService, PanelStyleOverride, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureLinearGradient, formatDeNumber, formatDePercent, formatValueLabel, resolveLabelColor, applyLabelHalo, initD3ResizeObserver, teardownD3Chart, roundedTipRectPath, FileUtiles } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
@@ -46,7 +46,7 @@ const TOOLTIP_OFFSET_Y = -20;
   templateUrl: './eda-bar.component.html',
   styleUrls: ['./eda-bar.component.css'],
   encapsulation: ViewEncapsulation.Emulated,
-  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
+  imports: [FormsModule, EdaChartLegendComponent]
 })
 export class EdaBarD3Component implements OnInit, AfterViewInit, OnDestroy {
   @Input() inject: EdaBarD3;

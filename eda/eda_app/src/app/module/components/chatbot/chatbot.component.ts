@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, AfterViewChecked, signal, ViewChild, ElementRef, NgZone, HostListener, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { EdaBarD3Component } from '@eda/components/eda-bar-d3/eda-bar.component';
 import { EdaBarD3 } from '@eda/components/eda-bar-d3/eda-bar';
@@ -12,7 +12,7 @@ import { CORPORATE_COLORS } from '@eda/configs/index';
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, EdaBarD3Component],
+  imports: [EdaBarD3Component],
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.css']
 })

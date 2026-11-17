@@ -9,7 +9,8 @@
         "@eda/models/*": ["app/shared/models/*"],
         "@eda/pipes/*": ["app/shared/pipes/*"],
         "@eda/shared/*": ["app/shared/*"],
-        "@eda/configs/*": ["app/config/*"]
+        "@eda/configs/*": ["app/config/*"],
+        "@eda/plugins/*": ["app/plugins/*"]
       },
       "outDir": "./dist/out-tsc",
       "sourceMap": true,

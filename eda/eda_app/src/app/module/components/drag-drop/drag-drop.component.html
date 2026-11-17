@@ -18,27 +18,25 @@
                   <p class="item-message">{{messageItemCrosstable}}</p>
                 }
 
-                <div *ngFor="let item of itemX" class="box-1" cdkDrag>
-
-                  <div class="col">
-
-                    @if(item.column_type == "text"){
-                      <span class="mdi mdi-alphabetical"
-                      style="margin-right:4px;"></span>
-                    }
-                    @if(item.column_type == "date"){
-                      <span class="mdi mdi-calendar-text"
-                      style="margin-right:4px;"></span>
-                    }
-                    @if(item.column_type == "numeric"){
-                      <span class="mdi mdi-numeric"
-                      style="margin-right:4px;"></span>
-                    } 
-
-                    <span>{{item.description}}</span>
+                @for (item of itemX; track item) {
+                  <div class="box-1" cdkDrag>
+                    <div class="col">
+                      @if(item.column_type == "text"){
+                        <span class="mdi mdi-alphabetical"
+                        style="margin-right:4px;"></span>
+                      }
+                      @if(item.column_type == "date"){
+                        <span class="mdi mdi-calendar-text"
+                        style="margin-right:4px;"></span>
+                      }
+                      @if(item.column_type == "numeric"){
+                        <span class="mdi mdi-numeric"
+                        style="margin-right:4px;"></span>
+                      }
+                      <span>{{item.description}}</span>
+                    </div>
                   </div>
-
-                </div>
+                }
 
               </div>
             </div>
@@ -61,27 +59,25 @@
                   @if(itemY.length < 1){
                     <p class="item-message">{{messageItemCrosstable}}</p>
                   }
-                  <div *ngFor="let item of itemY" class="box-1" cdkDrag>
-
-                    <div class="col">
-
-                      @if(item.column_type == "text"){
-                        <span class="mdi mdi-alphabetical"
-                        style="margin-right:4px;"></span>
-                      }
-                      @if(item.column_type == "date"){
-                        <span class="mdi mdi-calendar-text"
-                        style="margin-right:4px;"></span>
-                      }
-                      @if(item.column_type == "numeric"){
-                        <span class="mdi mdi-numeric"
-                        style="margin-right:4px;"></span>
-                      } 
-
-                      <span>{{item.description}}</span>
+                  @for (item of itemY; track item) {
+                    <div class="box-1" cdkDrag>
+                      <div class="col">
+                        @if(item.column_type == "text"){
+                          <span class="mdi mdi-alphabetical"
+                          style="margin-right:4px;"></span>
+                        }
+                        @if(item.column_type == "date"){
+                          <span class="mdi mdi-calendar-text"
+                          style="margin-right:4px;"></span>
+                        }
+                        @if(item.column_type == "numeric"){
+                          <span class="mdi mdi-numeric"
+                          style="margin-right:4px;"></span>
+                        }
+                        <span>{{item.description}}</span>
+                      </div>
                     </div>
-
-                  </div>
+                  }
 
                 </div>
               </div>
@@ -95,20 +91,18 @@
                   @if(itemZ.length < 1){
                     <p class="item-message">{{messageItemCrosstable}}</p>
                   }
-                  <div *ngFor="let item of itemZ" class="box-1" cdkDrag>
-
-                    <div class="col">
-
-                    <!-- Text and date removed because it only accepts numbers -->
-                      @if(item.column_type == "numeric"){
-                        <span class="mdi mdi-numeric"
+                  @for (item of itemZ; track item) {
+                    <div class="box-1" cdkDrag>
+                      <div class="col">
+                        <!-- Text and date removed because it only accepts numbers -->
+                        @if(item.column_type == "numeric"){
+                          <span class="mdi mdi-numeric"
                           style="margin-right:4px;"></span>
-                      }
-
-                      <span>{{item.description}}</span>
+                        }
+                        <span>{{item.description}}</span>
+                      </div>
                     </div>
-
-                  </div>
+                  }
 
                 </div>
               </div>

@@ -6,14 +6,14 @@ import { EdaMap } from "./eda-map";
 import { LatLngExpression } from "leaflet";
 
 import { FormsModule } from '@angular/forms'; 
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   standalone: true,
   selector: 'eda-map',
   templateUrl: './eda-map.component.html',
   styleUrls: ['./eda-map.component.css'],
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule]
 })
 export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked {
 

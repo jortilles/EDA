@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { EdaAreaD3 } from './eda-area';
 import { StyleProviderService, PanelStyleOverride, D3TooltipService, lightenHex, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, applyLabelHalo, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, truncateLabelExact, opacityFraction, DASH_TREND, getLineDash } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
@@ -34,7 +34,7 @@ const TOOLTIP_OFFSET_Y = -20;
   templateUrl: './eda-area.component.html',
   styleUrls: ['./eda-area.component.css'],
   encapsulation: ViewEncapsulation.Emulated,
-  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
+  imports: [FormsModule, EdaChartLegendComponent]
 })
 export class EdaAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() inject: EdaAreaD3;

@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core'
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService, DataSourceService, ExcelFormatterService, SpinnerService } from '@eda/services/service.index';
-import { CommonModule } from '@angular/common';
+
 import { SharedModule, SelectItem } from 'primeng/api';
 import { lastValueFrom } from 'rxjs';
 import { NgxCsvParser } from 'ngx-csv-parser';
@@ -12,7 +12,7 @@ import { ChangeDetectorRef } from '@angular/core';
     standalone: true,
     selector: 'app-datasource-update-file',
     templateUrl: './datasource-update-file.page.html',
-    imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule]
+    imports: [SharedModule, FormsModule, ReactiveFormsModule]
 })
 export class DataSourceUpdateFilePage implements OnInit {
 

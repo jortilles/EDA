@@ -1,7 +1,7 @@
 import { Component, AfterViewInit, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
 import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { RaceBar } from './eda-race-bar';
 import { StyleProviderService, PanelStyleOverride, D3TooltipService, lightenHex, sanitizeId, ensureLinearGradient, formatAxisValue, formatDeNumber, initD3ResizeObserver, teardownD3Chart, measureMaxLabelWidth, measureTextWidth, FileUtiles } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
@@ -69,7 +69,7 @@ const TIMELINE_THUMB_SIZE_PX = 14;
   selector: 'eda-race-bar',
   templateUrl: './eda-race-bar.component.html',
   styleUrls: ['./eda-race-bar.component.css'],
-  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
+  imports: [FormsModule, EdaChartLegendComponent]
 })
 export class EdaRaceBarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() inject: RaceBar;

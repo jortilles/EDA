@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { ApiService, FileUtiles } from '@eda/services/service.index';
 
 @Pipe({
-    name: 'image'
+    name: 'image',
+    standalone: true
 })
 export class ImagePipe extends ApiService implements PipeTransform {
     constructor(protected http: HttpClient, private fileUtiles: FileUtiles) {

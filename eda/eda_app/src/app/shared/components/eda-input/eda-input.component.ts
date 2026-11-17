@@ -1,11 +1,13 @@
 import { Component, Input, ViewChild, ElementRef, AfterViewInit, DoCheck } from "@angular/core";
-import { NgModel } from '@angular/forms';
+import { NgModel, FormsModule } from '@angular/forms';
 import { EdaInput } from './eda-input';
 import { EdaInputText } from './eda-input-text';
 
 @Component({
     selector: 'eda-input',
-    templateUrl: './eda-input.component.html'
+    templateUrl: './eda-input.component.html',
+    standalone: true,
+    imports: [FormsModule]
 })
 
 export class EdaInputComponent implements AfterViewInit, DoCheck {

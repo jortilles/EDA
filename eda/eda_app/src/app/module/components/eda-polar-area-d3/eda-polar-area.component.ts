@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { EdaPolarArea } from './eda-polar-area';
 import { StyleProviderService, PanelStyleOverride, D3TooltipService, lightenHex, darkenHex, sanitizeId, formatAxisValue, ensureRadialGradient, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, FileUtiles } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
@@ -23,7 +23,7 @@ const GRADIENT_LIGHTEN_AMOUNT = 30;
   templateUrl: './eda-polar-area.component.html',
   styleUrls: ['./eda-polar-area.component.css'],
   encapsulation: ViewEncapsulation.Emulated,
-  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
+  imports: [FormsModule, EdaChartLegendComponent]
 })
 export class EdaPolarAreaComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() inject: EdaPolarArea;

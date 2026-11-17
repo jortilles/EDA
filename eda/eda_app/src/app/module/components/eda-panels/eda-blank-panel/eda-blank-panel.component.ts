@@ -31,7 +31,7 @@ import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel
 // Eda Services
 import { EdaChartType, FilterType, OrdenationType, StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
 import { DashboardService, ChartUtilsService, AlertService, SpinnerService, FileUtiles, QueryBuilderService, UserService } from '@eda/services/service.index';
-import { GroupService } from '../../../../services/api/group.service';
+import { GroupService } from '@eda/services/api/group.service';
 import { QueryService } from '@eda/services/api/query.service';
 import { IaFormStateService } from '@eda/services/shared/IaFormState.service'; 
 

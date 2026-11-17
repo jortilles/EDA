@@ -16,6 +16,7 @@ import { CommonModule } from '@angular/common';
 import { DashboardPage } from "../../pages/dashboard/dashboard.page";
 import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/customizable/customizable_merged';
 import { MediaLibraryComponent } from '@eda/components/media-library/media-library.component';
+import { MediaSrcPipe } from '@eda/pipes/media-src.pipe';
 
 
 @Component({
@@ -24,7 +25,7 @@ import { MediaLibraryComponent } from '@eda/components/media-library/media-libra
   styleUrls: ['./dashboard-edit-style.dialog.css'],
   templateUrl: './dashboard-edit-style.dialog.html',
   imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule,
-    MultiSelectModule, FloatLabelModule, SliderModule, ColorPickerModule, RadioButtonModule, DropdownModule, CommonModule, EdaDialog2Component, MediaLibraryComponent]
+    MultiSelectModule, FloatLabelModule, SliderModule, ColorPickerModule, RadioButtonModule, DropdownModule, CommonModule, EdaDialog2Component, MediaLibraryComponent, MediaSrcPipe]
 })
 export class DashboardEditStyleDialog {
   @Output() close: EventEmitter<any> = new EventEmitter<any>();

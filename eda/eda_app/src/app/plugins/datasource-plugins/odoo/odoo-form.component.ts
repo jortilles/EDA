@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DataSourceService, SpinnerService, AlertService } from '@eda/services/service.index';
 import { PluginFormService, currentAppLocale } from '../plugin-form.service';
@@ -10,7 +10,7 @@ import { PluginFormService, currentAppLocale } from '../plugin-form.service';
     standalone: true,
     selector: 'eda-odoo-form',
     templateUrl: './odoo-form.component.html',
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [ReactiveFormsModule],
 })
 export class OdooFormComponent implements OnInit, OnDestroy {
     @Input() connectionForm!: FormGroup;

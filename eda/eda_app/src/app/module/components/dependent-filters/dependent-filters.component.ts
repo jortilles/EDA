@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, input, OnInit, Output } from "@angular/core";
 import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
-import { CommonModule } from "@angular/common";
+
 import { EdaDialog, EdaDialog2Component, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { SharedModule } from "@eda/shared/shared.module";
 import { SelectButtonModule } from "primeng/selectbutton";
@@ -23,7 +23,7 @@ import {
     selector:'app-dependent-filters',
     standalone: true,
     templateUrl: './dependent-filters.component.html',
-    imports: [SharedModule, ReactiveFormsModule, SelectButtonModule, CommonModule, GridsterModule, EdaDialog2Component, TooltipModule],
+    imports: [SharedModule, ReactiveFormsModule, SelectButtonModule, GridsterModule, EdaDialog2Component, TooltipModule],
     styleUrls: ["./dependent-filters.component.css"],
 
 })

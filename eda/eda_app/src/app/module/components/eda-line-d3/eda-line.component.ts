@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { EdaLineD3 } from './eda-line';
 import { StyleProviderService, PanelStyleOverride, D3TooltipService, darkenHex, formatAxisValue, formatDeNumber, formatValueLabel, resolveLabelColor, applyLabelHalo, initD3ResizeObserver, teardownD3Chart, computeYTickCount, measureTextWidth, measureMaxLabelWidth, truncateLabel, truncateLabelExact, DASH_TREND, DASH_PREDICTION, getLineDash } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
@@ -34,7 +34,7 @@ const TOOLTIP_OFFSET_Y = -20;
   templateUrl: './eda-line.component.html',
   styleUrls: ['./eda-line.component.css'],
   encapsulation: ViewEncapsulation.Emulated,
-  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
+  imports: [FormsModule, EdaChartLegendComponent]
 })
 export class EdaLineComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() inject: EdaLineD3;

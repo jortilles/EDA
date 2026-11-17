@@ -7,7 +7,8 @@ import { forkJoin, firstValueFrom } from 'rxjs';
 import { AlertService, MediaService, IMedia, IMediaFolder } from '@eda/services/service.index';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
-import { PipesModule } from '@eda/pipes/pipes.module';
+import { MediaSrcPipe } from '@eda/pipes/media-src.pipe';
+
 import Swal from 'sweetalert2';
 
 export const MEDIA_MAX_SIZE_BYTES = 1 * 1024 * 1024; // 1MB
@@ -32,7 +33,7 @@ const ROOT_FOLDER_LABEL = $localize`:@@mediaHome:Inicio`;
   selector: 'app-media-library',
   templateUrl: './media-library.component.html',
   styleUrls: ['./media-library.component.css'],
-  imports: [CommonModule, FormsModule, RouterLink, IconComponent, EdaDialog2Component, PipesModule, DropdownModule]
+  imports: [CommonModule, FormsModule, RouterLink, IconComponent, EdaDialog2Component, DropdownModule, MediaSrcPipe]
 })
 export class MediaLibraryComponent implements OnInit, OnDestroy {
   @Input() pickMode = false;

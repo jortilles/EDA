@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
@@ -12,7 +12,7 @@ import { lastValueFrom } from 'rxjs';
 @Component({
   selector: 'app-customized-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconComponent, EdaDialog2Component, CodeEditorComponent],
+  imports: [FormsModule, IconComponent, EdaDialog2Component, CodeEditorComponent],
   templateUrl: './customized-dashboard.component.html',
 })
 export class CustomizedDashboardComponent implements OnInit, OnDestroy {

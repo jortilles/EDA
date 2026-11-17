@@ -8,7 +8,7 @@ import { AddTableService } from '@eda/services/api/createTable.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { DropdownModule } from 'primeng/dropdown';
-import { CommonModule } from '@angular/common';
+
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 
 @Component({
@@ -16,7 +16,7 @@ import { IconComponent } from '@eda/shared/components/icon/icon.component';
   selector: 'app-add-csv-dialog',
   templateUrl: './add-csv.component.html',
   styleUrls: ['./add-csv.component.css'],
-  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, IconComponent, DropdownModule, EdaDialog2Component]
+  imports: [SharedModule, FormsModule, ReactiveFormsModule, IconComponent, DropdownModule, EdaDialog2Component]
 })
 
 export class AddCsvComponent implements OnInit {

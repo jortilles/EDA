@@ -1,8 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 
 // Module
-import { CoreModule } from '../core/core.module';
-import { PipesModule } from './pipes/pipes.module';
+
+
 
 // Directives
 import { FocusOnShowDirective } from './directives/autofocus.directive';
@@ -10,10 +10,7 @@ import { FocusOnShowDirective } from './directives/autofocus.directive';
 // Components
 import {
     EdaPageDialogComponent,
-    // EdaDialogComponent,
-    EdaDialog2Component,
     NavbarComponent,
-    // EdaContextMenuComponent,
     EdaInputComponent,
     EdaFieldComponent
 } from './components/shared-components.index';
@@ -22,33 +19,23 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { EdaListComponent } from './components/eda-list/eda-list.component';
 
 @NgModule({
-    declarations: [
-        EdaPageDialogComponent,
-        NavbarComponent,
-        // EdaDialogComponent,
-        // EdaContextMenuComponent,
-        EdaInputComponent,
-        EdaFieldComponent,
-    ],
     imports: [
-        PrimengModule,
-        CoreModule,
-        FocusOnShowDirective,
-        EdaListComponent,
-        SweetAlert2Module.forRoot(),
-        PipesModule
-    ],
+    PrimengModule,
+    FocusOnShowDirective,
+    EdaListComponent,
+    SweetAlert2Module.forRoot(),
+    EdaPageDialogComponent,
+    NavbarComponent,
+    EdaInputComponent,
+    EdaFieldComponent
+],
     exports: [
-        EdaPageDialogComponent,
-        NavbarComponent,
-        // EdaDialogComponent,
-        PipesModule,
-        // EdaDialogComponent,
-        // EdaContextMenuComponent,
-        EdaInputComponent,
-        FocusOnShowDirective,
-        EdaFieldComponent,
-    ],
+    EdaPageDialogComponent,
+    NavbarComponent,
+    EdaInputComponent,
+    FocusOnShowDirective,
+    EdaFieldComponent,
+],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SharedModule {}

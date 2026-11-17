@@ -7,9 +7,9 @@ import Swal from 'sweetalert2';
 
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './anonymous-login.component.html'
-
+    selector: 'app-login',
+    templateUrl: './anonymous-login.component.html',
+    standalone: true
 })
 export class AnonymousLoginComponent implements OnInit {
 

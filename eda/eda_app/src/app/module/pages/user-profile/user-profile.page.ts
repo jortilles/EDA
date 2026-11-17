@@ -1,19 +1,20 @@
 import { Component, inject, signal } from "@angular/core"
-import { CommonModule } from "@angular/common"
+
 import { FormBuilder, type FormGroup, ReactiveFormsModule, Validators } from "@angular/forms"
 import { UserService } from "@eda/services/service.index";
 import { User } from "@eda/models/model.index";
 import { SharedModule } from "@eda/shared/shared.module";
+import { ImagePipe } from "@eda/pipes/image.pipe";
 import Swal from 'sweetalert2';
 
 @Component({
   selector: "app-profile-edit",
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     SharedModule,
-  ],
+    ImagePipe
+],
   templateUrl: "./user-profile.page.html",
   styleUrls: ["./user-profile.page.css"]
 })

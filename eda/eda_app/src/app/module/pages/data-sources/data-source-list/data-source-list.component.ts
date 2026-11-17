@@ -1,4 +1,4 @@
-import { SpinnerService } from '../../../../services/shared/spinner.service';
+import { SpinnerService } from '@eda/services/shared/spinner.service';
 import { TreeNode } from 'primeng/api';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';

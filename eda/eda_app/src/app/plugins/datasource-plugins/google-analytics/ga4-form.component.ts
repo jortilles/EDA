@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DataSourceService, SpinnerService, AlertService } from '@eda/services/service.index';
 import { PluginFormService, sanitizeDuckdbFolderName, currentAppLocale } from '../plugin-form.service';
@@ -10,7 +10,7 @@ import { PluginFormService, sanitizeDuckdbFolderName, currentAppLocale } from '.
     standalone: true,
     selector: 'eda-ga4-form',
     templateUrl: './ga4-form.component.html',
-    imports: [CommonModule, FormsModule],
+    imports: [FormsModule],
 })
 export class Ga4FormComponent implements OnInit, OnDestroy {
     @Input() connectionForm!: FormGroup;

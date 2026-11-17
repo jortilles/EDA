@@ -4,7 +4,7 @@ import { AssistantService } from '@eda/services/api/assistant.service';
 import { IaChatService, ChatMessage } from '@eda/services/api/ia-chat.service';
 import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
 import { DialogModule } from 'primeng/dialog';
@@ -12,7 +12,7 @@ import { DialogModule } from 'primeng/dialog';
 @Component({
   selector: 'chat-eda-ai',
   standalone: true,
-  imports: [SharedModule, FormsModule, CommonModule, DialogModule],
+  imports: [SharedModule, FormsModule, DialogModule],
   templateUrl: './chat-eda-ai.component.html',
   styleUrl: './chat-eda-ai.component.css'
 })

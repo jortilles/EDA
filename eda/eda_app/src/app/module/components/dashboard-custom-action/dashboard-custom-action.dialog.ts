@@ -7,7 +7,7 @@ import { MultiSelectModule } from "primeng/multiselect";
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { SelectButtonModule } from "primeng/selectbutton";
 import * as _ from 'lodash';
-import { IconComponent } from "../../../shared/components/icon/icon.component";
+import { IconComponent } from "@eda/shared/components/icon/icon.component";
 import { DashboardPage } from "../../pages/dashboard/dashboard.page";
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 

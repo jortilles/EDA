@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, Input, Output, EventEmitter, ElementRef, NgZone, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Required for directives
+ // Required for directives
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import * as _ from 'lodash';
 
@@ -12,14 +12,14 @@ interface Column {
   header: string;
 }
 
-import { FATHER_ID, DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '../../../config/customizable/customizable_merged'
+import { FATHER_ID, DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_merged'
 
 @Component({
   selector: 'app-eda-treetable',
   templateUrl: './eda-treetable.component.html',
   styleUrls: ['./eda-treetable.component.css'],
   standalone: true, // A Standalone component indicates that it does not need to be declared in the modules
-  imports: [CommonModule, TreeTableModule],
+  imports: [TreeTableModule],
 })
 export class EdaTreeTable implements OnInit, AfterViewInit, OnDestroy {
 

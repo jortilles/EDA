@@ -10,7 +10,7 @@ import * as L from 'leaflet';
 import { feature } from "topojson-client";
 
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   standalone: true,
@@ -25,7 +25,7 @@ import { CommonModule } from '@angular/common';
       ]),
     ]),
   ],
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule]
 })
 export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewChecked {
   @Input() inject: EdaMap;

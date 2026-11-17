@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { Subscription, timer } from 'rxjs';
@@ -14,7 +14,7 @@ const POLL_INTERVAL_MS = 4000;
     selector: 'app-server-console',
     templateUrl: './server-console.component.html',
     styleUrls: ['./server-console.component.css'],
-    imports: [CommonModule, FormsModule, InputSwitchModule, LogPeriodFilterComponent]
+    imports: [FormsModule, InputSwitchModule, LogPeriodFilterComponent]
 })
 export class ServerConsoleComponent implements AfterViewInit, OnDestroy {
 

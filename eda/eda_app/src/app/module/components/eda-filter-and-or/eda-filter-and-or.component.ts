@@ -8,7 +8,7 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
 import { SelectButtonModule } from 'primeng/selectbutton';
@@ -29,7 +29,7 @@ import { getDateFilterOperatorLabel, getDynamicRangeLabel } from '@eda/shared/co
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, TooltipModule, SelectButtonModule, GridsterModule, ScrollPanelModule],
+  imports: [FormsModule, TooltipModule, SelectButtonModule, GridsterModule, ScrollPanelModule],
   selector: 'eda-filter-and-or',
   templateUrl: './eda-filter-and-or.component.html',
   styleUrls: ['./eda-filter-and-or.component.css'],

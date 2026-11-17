@@ -12,14 +12,15 @@ import { CommonModule } from '@angular/common';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
 import { MediaLibraryComponent } from '@eda/components/media-library/media-library.component';
-import { PipesModule } from '@eda/pipes/pipes.module';
+import { MediaSrcPipe } from '@eda/pipes/media-src.pipe';
+
 
 @Component({
     standalone: true,
     selector: 'app-kpi-dialog',
     templateUrl: './kpi-dialog.component.html',
     styleUrls: ['./kpi-dialog.component.css'],
-    imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent, KpiMailConfigModal, DropdownModule, MediaLibraryComponent, PipesModule]
+    imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent, KpiMailConfigModal, DropdownModule, MediaLibraryComponent, MediaSrcPipe]
 })
 export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
     @Input() controller: any;

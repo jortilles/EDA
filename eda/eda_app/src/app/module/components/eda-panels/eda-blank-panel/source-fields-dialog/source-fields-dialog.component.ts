@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { Subscription } from 'rxjs';
@@ -13,7 +13,7 @@ import { FileUtiles } from '@eda/services/utils/file-utils.service';
     selector: 'app-source-fields-dialog',
     templateUrl: './source-fields-dialog.component.html',
     styleUrls: ['./source-fields-dialog.component.css'],
-    imports: [CommonModule, TableModule, InputTextModule, EdaDialog2Component],
+    imports: [TableModule, InputTextModule, EdaDialog2Component],
 })
 export class SourceFieldsDialogComponent implements AfterViewInit, OnDestroy {
     @Input() controller: any;

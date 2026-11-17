@@ -23,7 +23,7 @@ import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/c
 import { ZoomSdaComponent } from './zoom-control/zoom.component';
 import { ZoomStateService } from './zoom-control/zoom-state.service';
 import { SHOW_ZOOM_IN_SIDEBAR } from '@eda/configs/customizable/customizable_merged';
-import { COMPONENT_PLUGINS } from '../../../plugins/component-plugins/component-plugin-registry';
+import { COMPONENT_PLUGINS } from '@eda/plugins/component-plugins/component-plugin-registry';
 
 // Sidebar imports
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';

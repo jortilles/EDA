@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
@@ -21,14 +21,13 @@ interface DashboardOption {
     templateUrl: './edit-tabs-dialog.component.html',
     styleUrls: ['./edit-tabs-dialog.component.css'],
     imports: [
-        FormsModule,
-        CommonModule,
-        DialogModule,
-        EdaDialog2Component,
-        DropdownModule,
-        InputTextModule,
-        DragDropModule
-    ]
+    FormsModule,
+    DialogModule,
+    EdaDialog2Component,
+    DropdownModule,
+    InputTextModule,
+    DragDropModule
+]
 })
 export class EditTabsDialogComponent implements OnInit {
     @Input() controller: any;

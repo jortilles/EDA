@@ -1,47 +1,48 @@
 <eda-dialog2
-    [display]="display"
-    i18n-header="@@dependentFiltersTitle"
-    header="Configuración de filtros dependientes"
-    width="60vw" 
-    height="82vh"
-    [disableApply]="disableApply()"
-    (apply)="onApply()"
-    (close)="onClose()"
+  [display]="display"
+  i18n-header="@@dependentFiltersTitle"
+  header="Configuración de filtros dependientes"
+  width="60vw"
+  height="82vh"
+  [disableApply]="disableApply()"
+  (apply)="onApply()"
+  (close)="onClose()"
 
->
-    <div content class="p-6">
-        <h6 i18n="@@preparingDependentFilters" class="mb-4 font-bold"> <span>{{dependentFilterGrid.length}}</span> filtros globales para la configuracion de los filtros dependientes: </h6>
-        <div class="content-gridster">
-            <gridster class="gridster" [options]="options">
-                <gridster-item 
-                    [item]="item" 
-                    *ngFor="let item of dependentFilterGrid" 
-                    class="gridster-item">
-                    <div class="button-holder">
-                        <div class="content-item flex items-center justify-between gap-1">
-                            <p><strong>{{item.description_column}}</strong></p>
-                            <ng-template #filterTooltip>
-                                <div class="space-y-1 text-sm">
-                                    <div class="flex gap-1">
-                                        <span class="text-muted-foreground shrink-0" style="color: #ffffff" i18n="@@tableDescriptionDependentFilter">Table:</span>
-                                        <span>{{ item.description_table }}</span>
-                                    </div>
-                                    <div class="flex gap-1">
-                                        <span class="text-muted-foreground shrink-0" style="color: #ffffff" i18n="@@columnDescriptionDependentFilter">Column:</span>
-                                        <span>{{ item.description_column }}</span>
-                                    </div>
-                                </div>
-                            </ng-template>
-                            <i class="pi pi-info-circle cursor-default text-gray-500 ml-auto shrink-0"
-                               [pTooltip]="filterTooltip"
-                               tooltipPosition="top"
-                               tooltipStyleClass="df-filter-tooltip"
-                               (mousedown)="$event.stopPropagation()"></i>
-                        </div>
+  >
+  <div content class="p-6">
+    <h6 i18n="@@preparingDependentFilters" class="mb-4 font-bold"> <span>{{dependentFilterGrid.length}}</span> filtros globales para la configuracion de los filtros dependientes: </h6>
+    <div class="content-gridster">
+      <gridster class="gridster" [options]="options">
+        @for (item of dependentFilterGrid; track item) {
+          <gridster-item
+            [item]="item"
+            class="gridster-item">
+            <div class="button-holder">
+              <div class="content-item flex items-center justify-between gap-1">
+                <p><strong>{{item.description_column}}</strong></p>
+                <ng-template #filterTooltip>
+                  <div class="space-y-1 text-sm">
+                    <div class="flex gap-1">
+                      <span class="text-muted-foreground shrink-0" style="color: #ffffff" i18n="@@tableDescriptionDependentFilter">Table:</span>
+                      <span>{{ item.description_table }}</span>
                     </div>
-                </gridster-item>
-            </gridster>
-        </div>
+                    <div class="flex gap-1">
+                      <span class="text-muted-foreground shrink-0" style="color: #ffffff" i18n="@@columnDescriptionDependentFilter">Column:</span>
+                      <span>{{ item.description_column }}</span>
+                    </div>
+                  </div>
+                </ng-template>
+                <i class="pi pi-info-circle cursor-default text-gray-500 ml-auto shrink-0"
+                  [pTooltip]="filterTooltip"
+                  tooltipPosition="top"
+                  tooltipStyleClass="df-filter-tooltip"
+                (mousedown)="$event.stopPropagation()"></i>
+              </div>
+            </div>
+          </gridster-item>
+        }
+      </gridster>
     </div>
+  </div>
 
 </eda-dialog2>

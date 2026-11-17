@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { NgClass } from '@angular/common';
 
 @Component({
     selector: 'eda-field',
@@ -7,7 +8,9 @@ import { Component, Input, OnInit } from '@angular/core';
         .edaFieldLabel {
            text-align: right;
         }
-    `]
+    `],
+    standalone: true,
+    imports: [NgClass]
 })
 export class EdaFieldComponent implements OnInit {
     @Input() customClass: any;

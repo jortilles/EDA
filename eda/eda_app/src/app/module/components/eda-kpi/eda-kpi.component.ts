@@ -10,13 +10,14 @@ import { KPI_CONFIG } from '@eda/configs/customizable/customizable_merged';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { PipesModule } from '@eda/pipes/pipes.module';
+import { MediaSrcPipe } from '@eda/pipes/media-src.pipe';
+
 
 @Component({
     standalone: true,
     selector: 'eda-kpi',
     templateUrl: './eda-kpi.component.html',
-    imports: [FormsModule, CommonModule, EdaBarD3Component, EdaLineComponent, EdaAreaComponent, PipesModule]
+    imports: [FormsModule, CommonModule, EdaBarD3Component, EdaLineComponent, EdaAreaComponent, MediaSrcPipe]
 })
 
 export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {

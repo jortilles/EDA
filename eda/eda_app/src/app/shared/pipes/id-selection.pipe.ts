@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-    name: 'ids'
+    name: 'ids',
+    standalone: true
 })
 export class IdSelectionPipe implements PipeTransform {
 

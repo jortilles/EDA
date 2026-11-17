@@ -4,7 +4,8 @@ import { SettingsService } from '@eda/services/service.index';
 @Component({
     selector: 'app-account-settings',
     templateUrl: './account-settings.component.html',
-    styles: []
+    styles: [],
+    standalone: true
 })
 export class AccountSettingsComponent implements OnInit {
 

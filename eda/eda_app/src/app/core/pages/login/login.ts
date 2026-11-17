@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, AfterViewChecked, NgZone, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { LogoImage, SubLogoImage, BackgroundImage } from '@eda/configs/index';
 import { ParticlesBackgroundComponent } from '@eda/shared/components/particles-background/particles-background';
 import { UserService } from '@eda/services/service.index';
@@ -23,7 +23,7 @@ declare function init_plugins();
 @Component({
     selector: 'app-loginv2',
     standalone: true,
-    imports: [CommonModule, RouterModule, ReactiveFormsModule, ParticlesBackgroundComponent, MsalModule],
+    imports: [RouterModule, ReactiveFormsModule, ParticlesBackgroundComponent, MsalModule],
     templateUrl: './login.html',
     styleUrls: ["./login.scss"],
 })

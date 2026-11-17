@@ -3,7 +3,7 @@ import { EdaDialog2 } from './eda-dialog2';
 import { Dialog } from 'primeng/dialog';
 
 
-import { CommonModule } from '@angular/common';
+
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button'; // if you use buttons inside the dialog
 import { FormsModule } from '@angular/forms'; // for [(ngModel)] if you use it
@@ -14,11 +14,10 @@ import { FormsModule } from '@angular/forms'; // for [(ngModel)] if you use it
     selector: 'eda-dialog2',
     templateUrl: './eda-dialog2.component.html',
     imports: [
-        CommonModule,
-        DialogModule,
-        ButtonModule,
-        FormsModule
-    ],
+    DialogModule,
+    ButtonModule,
+    FormsModule
+],
     styles: `
       ::ng-deep .p-dialog .p-dialog-footer {
         padding-bottom: 0.5rem;

@@ -5,7 +5,7 @@ import { DatePickerConfig } from './datePickerConfig';
 import { locales } from './date-locales';
 import { rangeDateFormats } from './date-picker.index';
 import { ChartUtilsService, FilterType } from '@eda/services/service.index';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Calendar, CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
@@ -20,10 +20,12 @@ import { RippleModule } from 'primeng/ripple';
 	templateUrl: './date-picker.component.html',
 	styleUrls: ['./date-picker.component.css'], 
 	imports: [
-		CommonModule, FormsModule,
-		CalendarModule, DropdownModule,
-		ButtonModule, RippleModule, 
-  	],
+    FormsModule,
+    CalendarModule,
+    DropdownModule,
+    ButtonModule,
+    RippleModule
+],
 })
 
 export class DatePickerComponent implements OnChanges {

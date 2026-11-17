@@ -11,18 +11,18 @@ import {
 import * as d3 from 'd3'
 import { EdaBubblechart } from './eda-bubblechart'
 import * as _ from 'lodash';
-import * as dataUtils from '../../../services/utils/transform-data-utils';
+import * as dataUtils from '@eda/services/utils/transform-data-utils';
 import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, darkenHex, sanitizeId, ensureRadialGradient, initD3ResizeObserver, teardownD3Chart, FileUtiles, PanelStyleOverride } from '@eda/services/service.index';
 
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 @Component({
   standalone: true,
   selector: 'eda-bubblechart',
   templateUrl: './eda-bubblechart.component.html',
   styleUrls: ['./eda-bubblechart.component.css'],
-  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
+  imports: [FormsModule, EdaChartLegendComponent]
 })
 export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   @Input() inject: EdaBubblechart

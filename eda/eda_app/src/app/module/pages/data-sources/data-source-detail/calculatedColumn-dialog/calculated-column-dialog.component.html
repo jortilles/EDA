@@ -7,7 +7,7 @@
   (close)="closeDialog()"
   [showCheckExpression]="true"
   (checkexpression)="checkCalculatedColumn()"
->
+  >
 
   <div content>
     <form [formGroup]="form" class="grid gap-4 pb-4">
@@ -16,106 +16,108 @@
         <label for="eda_colname"
           i18n="@@inputNombre"
           class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
+          >
           Nombre <span class="text-red-500">*</span>
         </label>
         <input id="eda_colname"
           formControlName="colName"
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-        />
-      </div>
+          />
+        </div>
 
-      <div class="grid gap-2">
-        <label for="eda_description"
-          i18n="@@inputDescripcion"
-          class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
+        <div class="grid gap-2">
+          <label for="eda_description"
+            i18n="@@inputDescripcion"
+            class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
           Descripción <span class="text-red-500">*</span>
         </label>
-        <input id="eda_description"
-          formControlName="colDescription"
-          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-        />
-      </div>
+          <input id="eda_description"
+            formControlName="colDescription"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
 
-      <div class="grid gap-2">
-        <label
-          for="eda_sqlExpression"
-          i18n="@@sqlExpColumn"
-          class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
+          <div class="grid gap-2">
+            <label
+              for="eda_sqlExpression"
+              i18n="@@sqlExpColumn"
+              class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
           Expresión SQL <span class="text-red-500">*</span>
         </label>
-        <eda-code-editor id="eda_sqlExpression"
-          formControlName="colSqlExpression"
-          language="sql" minHeight="60px">
-        </eda-code-editor>
-      </div>
+            <eda-code-editor id="eda_sqlExpression"
+              formControlName="colSqlExpression"
+              language="sql" minHeight="60px">
+            </eda-code-editor>
+          </div>
 
-      <div class="grid gap-2">
-        <label for="eda_typeSelector"
-          i18n="@@inputTipoColumna"
-          class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
+          <div class="grid gap-2">
+            <label for="eda_typeSelector"
+              i18n="@@inputTipoColumna"
+              class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
           Tipo de columna <span class="text-red-500">*</span>
         </label>
-        <div id="eda_typeSelector" class="flex gap-2">
-          <button
-            *ngFor="let type of columnTypes"
-            type="button"
-            (click)="onTypeChange(type)"
+            <div id="eda_typeSelector" class="flex gap-2">
+              @for (type of columnTypes; track type) {
+                <button
+                  type="button"
+                  (click)="onTypeChange(type)"
             [ngClass]="selectedcolumnType === type.value
               ? 'bg-[var(--corporate-primary)] text-white border-[var(--corporate-primary)]'
               : 'bg-white text-gray-700 border-gray-300 calc-btn-inactive'"
-            class="w-full px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-          >
-            {{ type.label }}
-          </button>
-        </div>
-      </div>
+                  class="w-full px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  >
+                  {{ type.label }}
+                </button>
+              }
+            </div>
+          </div>
 
-      <div class="grid gap-2">
-        <label for="eda_typeAggregation"
-          i18n="@@agregacionh5"
-          class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
+          <div class="grid gap-2">
+            <label for="eda_typeAggregation"
+              i18n="@@agregacionh5"
+              class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
           Agregación <span class="text-red-500">*</span>
         </label>
-        <div id="eda_typeAggregation" class="flex flex-wrap gap-2">
-          <button
-            *ngFor="let type of aggregation_type_cases"
-            type="button"
-            (click)="updateAgg(type.value)"
-            class="px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            <div id="eda_typeAggregation" class="flex flex-wrap gap-2">
+              @for (type of aggregation_type_cases; track type) {
+                <button
+                  type="button"
+                  (click)="updateAgg(type.value)"
+                  class="px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             [ngClass]="type.display
               ? 'bg-[var(--corporate-primary)] text-white border-[var(--corporate-primary)]'
               : 'bg-white text-gray-700 border-gray-300 calc-btn-inactive'"
-          >
-            {{ type.display_name }}
-          </button>
-        </div>
-      </div>
-      
-      @if(selectedcolumnType==='numeric'){
-        <div class="grid gap-2 pb-2">
-          <label for="eda_decimalNumber"
-            i18n="@@decimalNumberText"
-            class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
+                  >
+                  {{ type.display_name }}
+                </button>
+              }
+            </div>
+          </div>
+
+          @if(selectedcolumnType==='numeric'){
+            <div class="grid gap-2 pb-2">
+              <label for="eda_decimalNumber"
+                i18n="@@decimalNumberText"
+                class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
             Número de decimales <span class="text-red-500">*</span>
           </label>
-          <input 
-            id="eda_decimalNumber" 
-            type="number" 
-            size="50" 
-            formControlName="colDecimalNumber" 
-            class="h-10 rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-40"
-          >
+              <input
+                id="eda_decimalNumber"
+                type="number"
+                size="50"
+                formControlName="colDecimalNumber"
+                class="h-10 rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-40"
+                >
+              </div>
+            }
+
+          </form>
         </div>
-      }
-
-    </form>
-  </div>
 
 
-</eda-dialog2>
+      </eda-dialog2>

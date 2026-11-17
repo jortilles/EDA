@@ -4,8 +4,8 @@ import { coreRoutes } from './core/pages/core-pages.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { PrimengModule } from './core/primeng.module';
-import { CoreModule } from './core/core.module';
-import { AppModule } from './app.module';
+
+import { ServicesModule } from './services/services.module';
 import { GridsterErrorHandler } from './core/gridster-error-handler';
 
 export const appConfig: ApplicationConfig = {
@@ -18,6 +18,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     { provide: ErrorHandler, useClass: GridsterErrorHandler },
     importProvidersFrom(PrimengModule),
-    importProvidersFrom(AppModule)
+    importProvidersFrom(ServicesModule)
   ]
 };

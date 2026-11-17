@@ -3,14 +3,15 @@ import { Component, OnInit, OnChanges, SimpleChanges, Input, HostBinding,
 import { CommonModule } from '@angular/common';
 import { EdaKpiDeviation } from './eda-kpi-deviation';
 import { StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
-import { PipesModule } from '@eda/pipes/pipes.module';
+import { MediaSrcPipe } from '@eda/pipes/media-src.pipe';
+
 
 @Component({
     standalone: true,
     selector: 'eda-kpi-deviation',
     templateUrl: './eda-kpi-deviation.component.html',
     styleUrls: ['./eda-kpi-deviation.component.css'],
-    imports: [CommonModule, PipesModule]
+    imports: [CommonModule, MediaSrcPipe]
 })
 export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewInit {
     @Input() inject: EdaKpiDeviation;

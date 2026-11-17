@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
@@ -19,7 +19,7 @@ export interface LogDateRangeChange {
     selector: 'app-log-period-filter',
     templateUrl: './log-period-filter.component.html',
     styleUrls: ['./log-period-filter.component.css'],
-    imports: [CommonModule, FormsModule, CalendarModule, DropdownModule]
+    imports: [FormsModule, CalendarModule, DropdownModule]
 })
 export class LogPeriodFilterComponent implements OnInit {
 

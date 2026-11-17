@@ -12,22 +12,36 @@ export const KNOB_VALUE_ACCESSOR: any = {
     selector: 'p-knob',
     template: `
         <div [ngClass]="containerClass()" [class]="styleClass" [ngStyle]="style">
-        <svg viewBox="0 0 100 100" [style.width]="size + 'px'" [style.height]="size + 'px'" (click)="onClick($event)" (mousedown)="onMouseDown($event)" (mouseup)="onMouseUp($event)"
+          <svg viewBox="0 0 100 100" [style.width]="size + 'px'" [style.height]="size + 'px'" (click)="onClick($event)" (mousedown)="onMouseDown($event)" (mouseup)="onMouseUp($event)"
             (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
             <path [attr.d]="rangePath()" [attr.stroke-width]="strokeWidth" [attr.stroke]="rangeColor" class="p-knob-range"></path>
-            <ng-container *ngIf="gradientMode">
-                <path *ngFor="let seg of visibleSegments; trackBy: trackBySegmentIndex"
-                      [attr.d]="seg.path" [attr.stroke-width]="strokeWidth"
-                      [attr.stroke]="seg.color" fill="none" class="p-knob-value"></path>
-            </ng-container>
-            <path *ngIf="!gradientMode" [attr.d]="valuePath()" [attr.stroke-width]="strokeWidth" [attr.stroke]="valueColor" class="p-knob-value"></path>
-            <text *ngIf="showValue" [attr.x]="50" [attr.y]="57" text-anchor="middle"  [class]="textClass" [attr.name]="name">{{valueToDisplay()}}</text>
-            <text *ngIf="mustShow()" [attr.x]="50" [attr.y]="65" text-anchor="middle"  class="p-knob-infotext">{{compareValueToDisplay()}}</text>
+            @if (gradientMode) {
+              <ng-container>
+                <!-- track $index: visibleSegments rebuilds new objects every check, but segment
+                     index is stable (SEG_COLORS/band count never change, only how many are visible);
+                     tracking by object identity would destroy/recreate every <path> on each
+                     detectChanges() and lose the entrance reveal below. -->
+                @for (seg of visibleSegments; track $index) {
+                  <path
+                    [attr.d]="seg.path" [attr.stroke-width]="strokeWidth"
+                  [attr.stroke]="seg.color" fill="none" class="p-knob-value"></path>
+                }
+              </ng-container>
+            }
+            @if (!gradientMode) {
+              <path [attr.d]="valuePath()" [attr.stroke-width]="strokeWidth" [attr.stroke]="valueColor" class="p-knob-value"></path>
+            }
+            @if (showValue) {
+              <text [attr.x]="50" [attr.y]="57" text-anchor="middle"  [class]="textClass" [attr.name]="name">{{valueToDisplay()}}</text>
+            }
+            @if (mustShow()) {
+              <text [attr.x]="50" [attr.y]="65" text-anchor="middle"  class="p-knob-infotext">{{compareValueToDisplay()}}</text>
+            }
             <text [attr.x]="20" [attr.y]="100"  text-anchor="middle"  class="p-knob-infotext">{{min.toLocaleString('de-DE', {maximumFractionDigits: 6 })}}</text>
             <text [attr.x]="80" [attr.y]="100"  text-anchor="middle" class="p-knob-infotext">{{max.toLocaleString('de-DE', {maximumFractionDigits: 6 })}}</text>
-        </svg>
+          </svg>
         </div>
-    `,
+        `,
     providers: [KNOB_VALUE_ACCESSOR],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
@@ -129,18 +143,6 @@ export class Knob implements AfterViewInit, AfterViewChecked {
     onModelTouched: Function = () => {};
 
     constructor(private cd: ChangeDetectorRef, private el: ElementRef) {}
-
-    /** Stable per-segment identity for gradientMode's *ngFor - visibleSegments is a getter that
-     * builds a brand-new array of new objects on every check, so without trackBy Angular would
-     * treat every change-detection pass (e.g. the outer eda-knob's resize observer calling
-     * detectChanges()) as "all segments removed, all new ones added": it would destroy and
-     * recreate every segment <path>, permanently losing the entrance reveal below (the fresh
-     * paths never get animated, so they'd stay at the CSS opacity:0 they start at - segment index
-     * is stable across recomputes since SEG_COLORS/the band count never changes, only how many
-     * bands are visible. */
-    trackBySegmentIndex(index: number): number {
-        return index;
-    }
 
     ngAfterViewInit(): void {
         this.revealValuePaths();

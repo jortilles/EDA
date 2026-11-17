@@ -4,7 +4,7 @@ import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { MapUtilsService, StyleProviderService } from "@eda/services/service.index";
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { EdaDialog2Component } from '@eda/shared/components/eda-dialogs/eda-dialog2/eda-dialog2.component';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
@@ -13,7 +13,7 @@ import { DropdownModule } from 'primeng/dropdown';
   standalone: true,
   selector: 'app-mapedit-dialog',
   templateUrl: './mapedit-dialog.component.html',
-  imports: [CommonModule, FormsModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent, DropdownModule],
+  imports: [FormsModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent, DropdownModule],
 })
 export class MapEditDialogComponent implements OnInit, AfterViewChecked {
   @Input() controller: any;

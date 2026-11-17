@@ -5,10 +5,10 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, View
 import * as d3 from 'd3';
 import { TreeMap } from "./eda-treeMap";
 import * as _ from 'lodash';
-import * as dataUtils from '../../../services/utils/transform-data-utils';
+import * as dataUtils from '@eda/services/utils/transform-data-utils';
 
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 @Component({
@@ -17,7 +17,7 @@ import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.co
   templateUrl: "./eda-treemap.component.html",
   styleUrls: ["./eda-treemap.component.css"],
   encapsulation: ViewEncapsulation.Emulated,
-  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
+  imports: [FormsModule, EdaChartLegendComponent]
 })
 export class EdaTreeMap implements AfterViewInit {
   @Input() inject: TreeMap;

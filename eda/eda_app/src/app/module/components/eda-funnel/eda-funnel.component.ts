@@ -5,7 +5,7 @@ import { ChartUtilsService, StyleProviderService, PanelStyleOverride, D3TooltipS
 import { buildIconMap, renderCategoryIcons, resolveIconHref } from '../eda-panels/eda-blank-panel/panel-charts/category-icons.util';
 
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 interface FunnelData {
@@ -20,7 +20,7 @@ interface FunnelData {
   selector: 'eda-funnel',
   templateUrl: './eda-funnel.component.html',
   styleUrls: ['./eda-funnel.component.css'],
-  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
+  imports: [FormsModule, EdaChartLegendComponent]
 })
 
 export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {

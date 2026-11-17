@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, computed, signal, input } from "@angular/core"
-import { CommonModule } from "@angular/common"
+
 import { FormsModule } from "@angular/forms"
 
 export interface PickListItem {
@@ -20,7 +20,7 @@ export interface PickListConfig {
 @Component({
   selector: "eda-pick-list",
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './eda-pick-list.component.html',
   styleUrls: ['./eda-pick-list.component.css']
 })

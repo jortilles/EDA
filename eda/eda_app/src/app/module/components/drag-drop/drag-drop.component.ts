@@ -3,7 +3,7 @@ import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angul
 import { DragDropModule } from '@angular/cdk/drag-drop'; // <-- import this
 
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 
 
 @Component({
@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
   selector: 'drag-drop',
   templateUrl: './drag-drop.component.html',
   styleUrls: ['./drag-drop.component.css'],
-  imports: [FormsModule, CommonModule, DragDropModule],
+  imports: [FormsModule, DragDropModule],
 })
 export class DragDropComponent implements OnChanges {
 

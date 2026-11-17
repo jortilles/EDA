@@ -8,7 +8,7 @@ import { ChipModule } from 'primeng/chip';
 import * as _ from 'lodash';
 import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { ProgressBarModule } from 'primeng/progressbar';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 @Component({
@@ -16,7 +16,7 @@ import { EdaDialog2Component } from '@eda/shared/components/shared-components.in
   selector: 'link-dashboards-dialog',
   templateUrl: './link-dashboards.component.html',
   styleUrls: [],
-  imports: [FormsModule, CommonModule, DropdownModule, ProgressBarModule,EdaDialog2Component,ChipModule]
+  imports: [FormsModule, DropdownModule, ProgressBarModule, EdaDialog2Component, ChipModule]
 })
 
 export class LinkDashboardsComponent {

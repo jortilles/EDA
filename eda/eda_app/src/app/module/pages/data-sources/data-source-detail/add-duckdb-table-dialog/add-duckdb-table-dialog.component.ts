@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, signal, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { SharedModule, SelectItem } from 'primeng/api';
 import { DropdownModule } from 'primeng/dropdown';
@@ -14,7 +14,7 @@ import { SpinnerService } from '@eda/services/shared/spinner.service';
   standalone: true,
   selector: 'app-add-duckdb-table-dialog',
   templateUrl: './add-duckdb-table-dialog.component.html',
-  imports: [CommonModule, FormsModule, SharedModule, DropdownModule, EdaDialog2Component]
+  imports: [FormsModule, SharedModule, DropdownModule, EdaDialog2Component]
 })
 export class AddDuckdbTableDialogComponent implements OnInit {
   @Input() datasourceId: string;

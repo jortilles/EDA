@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { EdaRadar } from './eda-radar';
 import { StyleProviderService, PanelStyleOverride, D3TooltipService, lightenHex, darkenHex, formatAxisValue, ensureRadialGradient, formatValueLabel, resolveLabelColor, initD3ResizeObserver, teardownD3Chart, opacityFraction } from '@eda/services/service.index';
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
@@ -34,7 +34,7 @@ const GRADIENT_LIGHTEN_AMOUNT = 30;
   templateUrl: './eda-radar.component.html',
   styleUrls: ['./eda-radar.component.css'],
   encapsulation: ViewEncapsulation.Emulated,
-  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
+  imports: [FormsModule, EdaChartLegendComponent]
 })
 export class EdaRadarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() inject: EdaRadar;

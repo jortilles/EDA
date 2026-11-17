@@ -8,7 +8,7 @@ import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 import { StyleProviderService, SpinnerService } from '@eda/services/service.index';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { MenubarModule } from 'primeng/menubar';
@@ -26,7 +26,7 @@ import { resolveFieldDisplayName } from '../panel-utils/grouped-subtotals-utils'
   selector: 'app-table-dialog',
   templateUrl: './table-dialog.component.html',
   styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css'],
-  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent, PredictionDialogComponent, ColorPickerModule, MultiSelectModule, ProgressSpinnerModule]
+  imports: [FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent, PredictionDialogComponent, ColorPickerModule, MultiSelectModule, ProgressSpinnerModule]
 })
 
 export class TableDialogComponent{

@@ -1,7 +1,7 @@
 import { Component, inject, Input } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { ZoomStateService } from './zoom-state.service';
@@ -9,7 +9,7 @@ import { ZoomStateService } from './zoom-state.service';
 @Component({
     standalone: true,
     selector: 'zoom-control',
-    imports: [CommonModule, FormsModule, ButtonModule, TooltipModule],
+    imports: [FormsModule, ButtonModule, TooltipModule],
     templateUrl: './zoom.component.html',
     styleUrls: ["./zoom.component.css"],
     host: { '[class.zoom-sidebar]': "layout === 'sidebar'" }

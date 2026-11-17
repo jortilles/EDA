@@ -23,18 +23,18 @@
           KPI
         </button>
         @if (showGraphTab) {
-        <button
-          class="kpi-tab-btn"
-          [class.kpi-tab-btn--active]="activeTab === 'grafico'"
-          (click)="setActiveTab('grafico')" i18n="@@kpiGrafico">
+          <button
+            class="kpi-tab-btn"
+            [class.kpi-tab-btn--active]="activeTab === 'grafico'"
+            (click)="setActiveTab('grafico')" i18n="@@kpiGrafico">
           Gráfico
         </button>
         }
         @if (!isKpiTrend) {
-        <button
-          class="kpi-tab-btn"
-          [class.kpi-tab-btn--active]="activeTab === 'alerts'"
-          (click)="setActiveTab('alerts')" i18n="@@kpiAlerts">
+          <button
+            class="kpi-tab-btn"
+            [class.kpi-tab-btn--active]="activeTab === 'alerts'"
+            (click)="setActiveTab('alerts')" i18n="@@kpiAlerts">
           Alertas
         </button>
         }
@@ -43,828 +43,840 @@
       <!-- Tab content scrollable -->
       <div class="flex-1 overflow-y-auto px-6 pb-6">
 
-      <!-- TAB: Appearance -->
-      @if (activeTab === 'aspecto') {
-        <div class="space-y-6">
-          <div class="grid gap-6">
+        <!-- TAB: Appearance -->
+        @if (activeTab === 'aspecto') {
+          <div class="space-y-6">
+            <div class="grid gap-6">
 
-            <!-- Size -->
-            <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
-              <div class="px-4 py-1.5 border-b bg-white flex items-center justify-between"
-                [class.cursor-pointer]="useHoverResize" (click)="toggleSection('size')">
-                <h3 class="font-medium text-slate-800 flex items-center gap-2">
-                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">1</span>
-                  <span i18n="@@kpiSize">Modificar el tamaño del KPI</span>
-                </h3>
-                @if (useHoverResize) {
-                  <div class="flex items-center gap-3">
-                    <button type="button" class="kpi-section-reset"
-                      (click)="$event.stopPropagation(); resetSizeSection()" i18n="@@resetSectionButton">Restaurar</button>
-                    <i class="pi" [ngClass]="isSizeExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
-                  </div>
-                }
-              </div>
-              @if (!useHoverResize || isSizeExpanded) {
-              <div class="p-4 flex flex-col gap-3">
-                @if (showLegacySizeControl) {
-                  <div class="inline-flex w-full gap-4 items-center justify-between">
-                    <span i18n="@@increaseKpiSize">Incrementar el tamaño del KPI</span>
-                    <input type="number" [ngModel]="modifiedFontPoints" min="-90" max="300"
-                      (ngModelChange)="modifyKpiSize($event)"
-                      class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
-                  </div>
-                }
-                @if (showValueSizeControl) {
-                  <div class="inline-flex w-full gap-4 items-center justify-between">
-                    <span i18n="@@kpiValueScale">Tamaño del valor (%)</span>
-                    <input type="number" [ngModel]="valueFontScale * 100" [min]="fontScaleMin * 100" [max]="fontScaleMax * 100" [step]="scaleStep * 100"
-                      (ngModelChange)="setValueFontScale($event / 100)"
-                      class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
-                  </div>
-                }
-                @if (showImageSufixSizeControls && currentSufix) {
-                  <div class="inline-flex w-full gap-4 items-center justify-between">
-                    <span i18n="@@increaseKpiSufixSize">Tamaño del sufijo (%, relativo al KPI)</span>
-                    <input type="number" [ngModel]="sufixFontScale * 100" [min]="fontScaleMin * 100" [max]="fontScaleMax * 100" [step]="scaleStep * 100"
-                      (ngModelChange)="setSufixFontScale($event / 100)"
-                      class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
-                  </div>
-                }
-                @if (showImageSufixSizeControls && prefixImage) {
-                  <div class="inline-flex w-full gap-4 items-center justify-between">
-                    <span i18n="@@increaseKpiImageSize">Tamaño de la imagen (% del ancho)</span>
-                    <input type="number" [ngModel]="imageScale * 100" [min]="imageScaleMin * 100" [max]="imageScaleMax * 100" [step]="scaleStep * 100"
-                      (ngModelChange)="setImageScale($event / 100)"
-                      class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
-                  </div>
-                }
-              </div>
-              }
-            </div>
-
-            <!-- KPI colors -->
-            <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
-              <div class="px-4 py-1.5 border-b bg-white flex items-center justify-between"
-                [class.cursor-pointer]="useHoverResize" (click)="toggleSection('appearance')">
-                <h3 class="font-medium text-slate-800 flex items-center gap-2">
-                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">2</span>
-                  <span i18n="@@kpiVisualStyle">Estilo visual del KPI</span>
-                </h3>
-                @if (useHoverResize) {
-                  <div class="flex items-center gap-3">
-                    <button type="button" class="kpi-section-reset"
-                      (click)="$event.stopPropagation(); resetAppearanceSection()" i18n="@@resetSectionButton">Restaurar</button>
-                    <i class="pi" [ngClass]="isAppearanceExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
-                  </div>
-                }
-              </div>
-              @if (!useHoverResize || isAppearanceExpanded) {
-              <div class="p-4 grid gap-4 md:grid-cols-2">
-
-                <!-- Background color -->
-                <div class="space-y-2">
-                  <label class="text-sm font-medium" i18n="@@kpiBgColor">Color de fondo</label>
-                  <div class="flex items-center gap-3">
-                    <input type="text" [(ngModel)]="kpiBackgroundColor" (ngModelChange)="updateKpiBackground()"
-                      placeholder="#ffffff"
-                      class="flex-1 px-3 py-2 border rounded-md font-mono bg-white text-sm" />
-                    <p-colorPicker [(ngModel)]="kpiBackgroundColor" (onChange)="updateKpiBackground()"
-                      format="hex" appendTo="body"
-                      class="rounded-md border shadow-sm transition-transform hover:scale-105 cursor-pointer" />
-                  </div>
-                  <div class="flex items-center gap-2">
-                    @for(c of ['#ffffff','#f1f5f9','#e2e8f0','#1e293b','#0f172a']; track c){
-                      <div (click)="kpiBackgroundColor=c; updateKpiBackground()"
-                        [style.background-color]="c"
-                        class="w-4 h-4 rounded-full border border-slate-200 cursor-pointer hover:scale-110 transition-transform"></div>
-                    }
-                  </div>
-                </div>
-
-                <!-- Text color -->
-                <div class="space-y-2">
-                  <label class="text-sm font-medium" i18n="@@kpiTextColor">Color del texto</label>
-                  <div class="flex items-center gap-3">
-                    <input type="text" [(ngModel)]="kpiTextColor" (ngModelChange)="updateKpiTextColor()"
-                      placeholder="#67757c"
-                      class="flex-1 px-3 py-2 border rounded-md font-mono bg-white text-sm" />
-                    <p-colorPicker [(ngModel)]="kpiTextColor" (onChange)="updateKpiTextColor()"
-                      format="hex" appendTo="body"
-                      class="rounded-md border shadow-sm transition-transform hover:scale-105 cursor-pointer" />
-                  </div>
-                  <div class="flex items-center gap-2">
-                    @for(c of ['#67757c','#1e293b','#ffffff','#00BFB3','#3b82f6','#ef4444']; track c){
-                      <div (click)="kpiTextColor=c; updateKpiTextColor()"
-                        [style.background-color]="c"
-                        class="w-4 h-4 rounded-full border border-slate-200 cursor-pointer hover:scale-110 transition-transform"></div>
-                    }
-                  </div>
-                </div>
-
-                <!-- Prefix image -->
-                <div class="space-y-2 md:col-span-2">
-                  <label class="text-sm font-medium" i18n="@@kpiPrefixImage">Imagen prefijo</label>
-                  <div class="flex items-center gap-3">
-                    <button type="button" class="kpi-upload-btn" (click)="openMediaPicker()">
-                      <i class="pi pi-images"></i>
-                      <span i18n="@@chooseImage">Elegir imagen</span>
-                    </button>
-                    @if(prefixImage){
-                      <img [src]="prefixImage | mediaSrc" alt="preview"
-                        (click)="openPrefixImageInNewTab()"
-                        class="w-[7rem] h-[3rem] object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity" />
-                      <span (click)="prefixImage=''; updatePrefixImage()"
-                        class="cursor-pointer text-slate-400 hover:text-slate-700 select-none text-sm">✕</span>
-                    }
-                  </div>
-                </div>
-
-              </div>
-              }
-            </div>
-
-            <!-- Colores de series (kpitrend solo - kpibar/kpiline/kpiarea los tienen en la pestaña Gráfico) -->
-            @if(!showGraphTab && edaChart !== 'kpi' && !isKpiDeviation){
+              <!-- Size -->
               <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
-                <div class="px-4 py-1.5 border-b bg-white">
+                <div class="px-4 py-1.5 border-b bg-white flex items-center justify-between"
+                  [class.cursor-pointer]="useHoverResize" (click)="toggleSection('size')">
                   <h3 class="font-medium text-slate-800 flex items-center gap-2">
-                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">3</span>
-                    <span i18n="@@colorsChartH6">Colores del gráfico</span>
+                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">1</span>
+                    <span i18n="@@kpiSize">Modificar el tamaño del KPI</span>
                   </h3>
+                  @if (useHoverResize) {
+                    <div class="flex items-center gap-3">
+                      <button type="button" class="kpi-section-reset"
+                      (click)="$event.stopPropagation(); resetSizeSection()" i18n="@@resetSectionButton">Restaurar</button>
+                      <i class="pi" [ngClass]="isSizeExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                    </div>
+                  }
                 </div>
-                <div class="p-4 space-y-4">
-                  <p-dropdown
-                    [(ngModel)]="selectedPalette"
-                    [options]="allPalettes"
-                    optionLabel="name"
-                    i18n-placeholder="@@selectPalette"
-                    placeholder="-- Seleccione una paleta --"
-                    (ngModelChange)="onPaletteSelected()"
-                    [style]="{'width':'180px'}"
-                    appendTo="body">
-                  </p-dropdown>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @for (item of series; track item.value; let idx = $index) {
-                      <div class="flex flex-col gap-3 border rounded-lg p-4 bg-white">
-                        <div class="flex items-center justify-between">
-                          <span class="font-medium">{{ item.value }}</span>
-                          <div class="flex items-center gap-2">
-                            <input [(ngModel)]="item.color" (input)="handleInputColor(item)" class="text-sm text-slate-600 font-mono w-20 px-3 py-2 focus:outline-none">
-                            <p-colorPicker [(ngModel)]="item.color" (onChange)="handleInputColor(item)" format="hex" appendTo="body"></p-colorPicker>
-                          </div>
+                @if (!useHoverResize || isSizeExpanded) {
+                  <div class="p-4 flex flex-col gap-3">
+                    @if (showLegacySizeControl) {
+                      <div class="inline-flex w-full gap-4 items-center justify-between">
+                        <span i18n="@@increaseKpiSize">Incrementar el tamaño del KPI</span>
+                        <input type="number" [ngModel]="modifiedFontPoints" min="-90" max="300"
+                          (ngModelChange)="modifyKpiSize($event)"
+                          class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
                         </div>
-                        @if (edaChart === 'kpiarea') {
-                          <div class="flex items-center justify-between">
-                            <label class="text-sm text-slate-500" i18n="@@opacityLabel">Opacidad</label>
-                            <div class="flex items-center border rounded-md overflow-hidden">
-                              <button type="button"
-                                class="w-9 h-9 text-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 leading-none"
-                                (click)="stepOpacity(idx, -5)">−</button>
-                              <input type="number" min="0" max="100" step="1"
-                                [(ngModel)]="item.opacity"
-                                (input)="handleInputColor(item)"
-                                class="text-sm text-slate-600 font-mono w-12 h-9 text-center border-x px-0 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
-                              <button type="button"
-                                class="w-9 h-9 text-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 leading-none"
-                                (click)="stepOpacity(idx, 5)">+</button>
-                              <span class="text-sm text-slate-500 pl-2 pr-3">%</span>
+                      }
+                      @if (showValueSizeControl) {
+                        <div class="inline-flex w-full gap-4 items-center justify-between">
+                          <span i18n="@@kpiValueScale">Tamaño del valor (%)</span>
+                          <input type="number" [ngModel]="valueFontScale * 100" [min]="fontScaleMin * 100" [max]="fontScaleMax * 100" [step]="scaleStep * 100"
+                            (ngModelChange)="setValueFontScale($event / 100)"
+                            class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
+                          </div>
+                        }
+                        @if (showImageSufixSizeControls && currentSufix) {
+                          <div class="inline-flex w-full gap-4 items-center justify-between">
+                            <span i18n="@@increaseKpiSufixSize">Tamaño del sufijo (%, relativo al KPI)</span>
+                            <input type="number" [ngModel]="sufixFontScale * 100" [min]="fontScaleMin * 100" [max]="fontScaleMax * 100" [step]="scaleStep * 100"
+                              (ngModelChange)="setSufixFontScale($event / 100)"
+                              class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
                             </div>
+                          }
+                          @if (showImageSufixSizeControls && prefixImage) {
+                            <div class="inline-flex w-full gap-4 items-center justify-between">
+                              <span i18n="@@increaseKpiImageSize">Tamaño de la imagen (% del ancho)</span>
+                              <input type="number" [ngModel]="imageScale * 100" [min]="imageScaleMin * 100" [max]="imageScaleMax * 100" [step]="scaleStep * 100"
+                                (ngModelChange)="setImageScale($event / 100)"
+                                class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
+                              </div>
+                            }
                           </div>
                         }
                       </div>
-                    }
-                  </div>
-                </div>
-              </div>
-            }
 
-          </div>
-        </div>
-      }
-
-      <!-- TAB: Chart options (kpibar/kpiline/kpiarea only) -->
-      @if (activeTab === 'grafico' && showGraphTab) {
-        <div class="space-y-6">
-          <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
-            <div class="px-4 py-1.5 border-b bg-white">
-              <h3 class="font-medium text-slate-800" i18n="@@chartDisplayOptionsTitle">Opciones de visualización</h3>
-            </div>
-            <div class="p-4 grid gap-4 md:grid-cols-2">
-
-              @if (showTrendComparative) {
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <label class="font-medium" i18n="@@addtrend">Tendencia</label>
-                    <div class="relative group">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="text-slate-400">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M12 16v-4"></path>
-                        <path d="M12 8h.01"></path>
-                      </svg>
-                      <div
-                        class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                        <span i18n="@@chartTrendOption">Mostrar línea de tendencia en el gráfico</span>
-                      </div>
-                    </div>
-                  </div>
-                  <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" [(ngModel)]="addTrend" (ngModelChange)="setAddTrend()" class="sr-only peer">
-                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                  </label>
-                </div>
-              }
-
-              @if (showComparative) {
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <label class="font-medium" i18n="@@addComparative">Comparativa</label>
-                    <div class="relative group">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="text-slate-400">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M12 16v-4"></path>
-                        <path d="M12 8h.01"></path>
-                      </svg>
-                      <div
-                        class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                        <span i18n="@@chartComparationOption">Habilita la comparación con períodos anteriores</span>
-                      </div>
-                    </div>
-                  </div>
-                  <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" [(ngModel)]="addComparative" (ngModelChange)="setAddComparative()" class="sr-only peer">
-                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                  </label>
-                </div>
-              }
-
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <label class="font-medium" i18n="@@chartAnimation">Animar Gráfico</label>
-                  <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="text-slate-400">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4"></path>
-                      <path d="M12 8h.01"></path>
-                    </svg>
-                    <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      <span i18n="@@chartAnimationOptionDescription">Anima la aparición de los datos al cargar el gráfico</span>
-                    </div>
-                  </div>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" [(ngModel)]="chartAnimation" (ngModelChange)="setChartAnimation()" class="sr-only peer">
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                </label>
-              </div>
-
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <label class="font-medium" i18n="@@showLegend">Mostrar Leyenda</label>
-                  <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="text-slate-400">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4"></path>
-                      <path d="M12 8h.01"></path>
-                    </svg>
-                    <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      <span i18n="@@chartLegendOptionDescription">Muestra la leyenda del gráfico</span>
-                    </div>
-                  </div>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" [(ngModel)]="chartLegend" (ngModelChange)="setChartLegend()" class="sr-only peer">
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                </label>
-              </div>
-
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <label class="font-medium" i18n="@@showGridLines">Mostrar Líneas Guía</label>
-                  <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="text-slate-400">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4"></path>
-                      <path d="M12 8h.01"></path>
-                    </svg>
-                    <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      <span i18n="@@chartGridLinesOptionDescription">Muestra u oculta las líneas guía del gráfico</span>
-                    </div>
-                  </div>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" [(ngModel)]="showGridLines" (ngModelChange)="setShowGridLines()" class="sr-only peer">
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                </label>
-              </div>
-
-              <div class="flex items-center justify-between">
-                <label class="font-medium" i18n="@@showXAxis">Mostrar eje X</label>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" [(ngModel)]="showXAxis" (ngModelChange)="setShowXAxis()" class="sr-only peer">
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                </label>
-              </div>
-
-              <div class="flex items-center justify-between">
-                <label class="font-medium" i18n="@@showXAxisLabels">Mostrar etiquetas del eje X</label>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" [(ngModel)]="showXAxisLabels" (ngModelChange)="setShowXAxisLabels()" class="sr-only peer">
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                </label>
-              </div>
-
-              @if (showXAxisLabels) {
-                <div class="flex items-center justify-between">
-                  <label class="font-medium" i18n="@@xAxisLabelCount">Número de etiquetas</label>
-                  <input type="number" min="0" [(ngModel)]="xAxisLabelCount" (ngModelChange)="setXAxisLabelCount()"
-                    placeholder="Auto" i18n-placeholder="@@xAxisLabelCountAuto"
-                    class="w-20 px-3 py-1.5 border rounded-md text-sm text-right" />
-                </div>
-              }
-
-              @if (showTrendComparative) {
-                <div class="flex items-center justify-between">
-                  <label class="font-medium" i18n="@@lineWidth">Ancho de línea</label>
-                  <input type="number" min="1" max="10" [(ngModel)]="lineWidth" (ngModelChange)="setLineWidth()"
-                    class="w-20 px-3 py-1.5 border rounded-md text-sm text-right" />
-                </div>
-
-                <div class="flex items-center justify-between">
-                  <label class="font-medium" i18n="@@lineStyle">Estilo de línea</label>
-                  <div class="flex border rounded-md overflow-hidden text-sm">
-                    <button type="button" class="px-3 py-1.5" [ngClass]="lineStyleButtonClass('solid')"
-                      (click)="setLineStyle('solid')" i18n="@@lineStyleSolid">Sólida</button>
-                    <button type="button" class="px-3 py-1.5 border-l" [ngClass]="lineStyleButtonClass('dashed')"
-                      (click)="setLineStyle('dashed')" i18n="@@lineStyleDashed">Discontinua</button>
-                    <button type="button" class="px-3 py-1.5 border-l" [ngClass]="lineStyleButtonClass('dotted')"
-                      (click)="setLineStyle('dotted')" i18n="@@lineStyleDotted">Punteada</button>
-                  </div>
-                </div>
-
-                <div class="flex items-center justify-between md:col-span-2">
-                  <label class="font-medium" i18n="@@chartLineColor">Color de línea</label>
-                  <div class="flex items-center gap-3">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" [ngModel]="!!chartLineColor"
-                        (ngModelChange)="chartLineColor = $event ? (chartLineColor || '#000000') : ''; setChartLineColor()"
-                        class="sr-only peer">
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                    </label>
-                    @if (chartLineColor) {
-                      <p-colorPicker [(ngModel)]="chartLineColor" (onChange)="setChartLineColor()" format="hex" appendTo="body" />
-                    }
-                  </div>
-                </div>
-              }
-
-              @if (edaChart === 'kpiarea') {
-                <div class="flex items-center justify-between md:col-span-2">
-                  <label class="font-medium" i18n="@@chartFillColor">Color de relleno</label>
-                  <div class="flex items-center gap-3">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" [ngModel]="!!chartFillColor"
-                        (ngModelChange)="chartFillColor = $event ? (chartFillColor || '#000000') : ''; setChartFillColor()"
-                        class="sr-only peer">
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                    </label>
-                    @if (chartFillColor) {
-                      <p-colorPicker [(ngModel)]="chartFillColor" (onChange)="setChartFillColor()" format="hex" appendTo="body" />
-                    }
-                  </div>
-                </div>
-              }
-
-              @if (showTrendComparative) {
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <label class="font-medium" i18n="@@showLines">Mostrar Líneas de Puntos</label>
-                    <div class="relative group">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="text-slate-400">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M12 16v-4"></path>
-                        <path d="M12 8h.01"></path>
-                      </svg>
-                      <div
-                        class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                        <span i18n="@@chartLabelLineOptionDescription">Muestra líneas conectando los puntos</span>
-                      </div>
-                    </div>
-                  </div>
-                  <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" [(ngModel)]="showPointLines" (ngModelChange)="setShowPointLines()" class="sr-only peer">
-                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                  </label>
-                </div>
-              }
-
-              @if (isKpiBar) {
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <label class="font-medium" i18n="@@useRoundedBars">Redondear barras</label>
-                    <div class="relative group">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="text-slate-400">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M12 16v-4"></path>
-                        <path d="M12 8h.01"></path>
-                      </svg>
-                      <div
-                        class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                        <span i18n="@@chartRoundedBarsOptionDescription">Redondea la punta de las barras</span>
-                      </div>
-                    </div>
-                  </div>
-                  <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" [(ngModel)]="useRoundedBars" (ngModelChange)="setUseRoundedBars()" class="sr-only peer">
-                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                  </label>
-                </div>
-              }
-
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <label class="font-medium" i18n="@@showLabels">Mostrar Etiquetas</label>
-                  <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="text-slate-400">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4"></path>
-                      <path d="M12 8h.01"></path>
-                    </svg>
-                    <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      <span i18n="@@chartLabelOption">Muestra etiquetas con valores en el gráfico</span>
-                    </div>
-                  </div>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" [(ngModel)]="showLabels" (ngModelChange)="setShowLabels()" class="sr-only peer">
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                </label>
-              </div>
-
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <label class="font-medium" i18n="@@showLabelsPercent">Etiquetas en Porcentaje</label>
-                  <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="text-slate-400">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4"></path>
-                      <path d="M12 8h.01"></path>
-                    </svg>
-                    <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      <span i18n="@@chartLabelPercentOption">Muestra etiquetas en formato porcentaje</span>
-                    </div>
-                  </div>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" [(ngModel)]="showLabelsPercent" (ngModelChange)="setShowLabelsPercent()" class="sr-only peer">
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                </label>
-              </div>
-
-              @if (showLabels || showLabelsPercent) {
-                <div class="flex items-center justify-between md:col-span-2">
-                  <label class="font-medium" i18n="@@labelColorOption">Color de las etiquetas</label>
-                  <div class="flex items-center gap-3">
-                    <div class="flex border rounded-md overflow-hidden text-sm">
-                      <button type="button" class="px-3 py-1.5" [ngClass]="labelColorButtonClass('series')"
-                        (click)="labelColorMode = 'series'; setLabelColor()" i18n="@@labelColorSeries">Propio</button>
-                      <button type="button" class="px-3 py-1.5 border-l" [ngClass]="labelColorButtonClass('custom')"
-                        (click)="labelColorMode = 'custom'; setLabelColor()" i18n="@@labelColorCustom">Personalizado</button>
-                    </div>
-                    @if (labelColorMode === 'custom') {
-                      <div class="flex items-center gap-2">
-                        <input [(ngModel)]="labelCustomColor" (input)="setLabelColor()" class="text-sm text-slate-600 font-mono w-20 px-3 py-1.5 focus:outline-none">
-                        <p-colorPicker [(ngModel)]="labelCustomColor" (onChange)="setLabelColor()" format="hex" appendTo="body" />
-                      </div>
-                    }
-                  </div>
-                </div>
-
-                <div class="flex items-center justify-between md:col-span-2">
-                  <label class="font-medium" i18n="@@labelBackgroundColorOption">Fondo de las etiquetas</label>
-                  <div class="flex items-center gap-3">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" [ngModel]="!!labelBackgroundColor"
-                        (ngModelChange)="labelBackgroundColor = $event ? (labelBackgroundColor || '#ffffff') : ''; setLabelBackgroundColor()"
-                        class="sr-only peer">
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                    </label>
-                    @if (labelBackgroundColor) {
-                      <p-colorPicker [(ngModel)]="labelBackgroundColor" (onChange)="setLabelBackgroundColor()" format="hex" appendTo="body" />
-                    }
-                  </div>
-                </div>
-              }
-
-            </div>
-          </div>
-
-          <!-- Colores de series -->
-          <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
-            <div class="px-4 py-1.5 border-b bg-white">
-              <h3 class="font-medium text-slate-800" i18n="@@colorsChartH6">Colores del gráfico</h3>
-            </div>
-            <div class="p-4 space-y-4">
-              <div class="flex items-center justify-between">
-                <label class="font-medium" i18n="@@useGradient">Usar degradado</label>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" [(ngModel)]="useGradient" (ngModelChange)="setUseGradient()" class="sr-only peer">
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
-                </label>
-              </div>
-              <p-dropdown
-                [(ngModel)]="selectedPalette"
-                [options]="allPalettes"
-                optionLabel="name"
-                i18n-placeholder="@@selectPalette"
-                placeholder="-- Seleccione una paleta --"
-                (ngModelChange)="onPaletteSelected()"
-                [style]="{'width':'180px'}"
-                appendTo="body">
-              </p-dropdown>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @for (item of series; track item.value; let idx = $index) {
-                  <div class="flex flex-col gap-3 border rounded-lg p-4 bg-white">
-                    <div class="flex items-center justify-between">
-                      <span class="font-medium">{{ item.value }}</span>
-                      <div class="flex items-center gap-2">
-                        <input [(ngModel)]="item.color" (input)="handleInputColor(item)" class="text-sm text-slate-600 font-mono w-20 px-3 py-2 focus:outline-none">
-                        <p-colorPicker [(ngModel)]="item.color" (onChange)="handleInputColor(item)" format="hex" appendTo="body"></p-colorPicker>
-                      </div>
-                    </div>
-                    @if (edaChart === 'kpiarea') {
-                      <div class="flex items-center justify-between">
-                        <label class="text-sm text-slate-500" i18n="@@opacityLabel">Opacidad</label>
-                        <div class="flex items-center border rounded-md overflow-hidden">
-                          <button type="button"
-                            class="w-9 h-9 text-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 leading-none"
-                            (click)="stepOpacity(idx, -5)">−</button>
-                          <input type="number" min="0" max="100" step="1"
-                            [(ngModel)]="item.opacity"
-                            (input)="handleInputColor(item)"
-                            class="text-sm text-slate-600 font-mono w-12 h-9 text-center border-x px-0 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
-                          <button type="button"
-                            class="w-9 h-9 text-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 leading-none"
-                            (click)="stepOpacity(idx, 5)">+</button>
-                          <span class="text-sm text-slate-500 pl-2 pr-3">%</span>
+                      <!-- KPI colors -->
+                      <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
+                        <div class="px-4 py-1.5 border-b bg-white flex items-center justify-between"
+                          [class.cursor-pointer]="useHoverResize" (click)="toggleSection('appearance')">
+                          <h3 class="font-medium text-slate-800 flex items-center gap-2">
+                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">2</span>
+                            <span i18n="@@kpiVisualStyle">Estilo visual del KPI</span>
+                          </h3>
+                          @if (useHoverResize) {
+                            <div class="flex items-center gap-3">
+                              <button type="button" class="kpi-section-reset"
+                              (click)="$event.stopPropagation(); resetAppearanceSection()" i18n="@@resetSectionButton">Restaurar</button>
+                              <i class="pi" [ngClass]="isAppearanceExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                            </div>
+                          }
                         </div>
-                      </div>
-                    }
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
+                        @if (!useHoverResize || isAppearanceExpanded) {
+                          <div class="p-4 grid gap-4 md:grid-cols-2">
 
-        </div>
-      }
+                            <!-- Background color -->
+                            <div class="space-y-2">
+                              <label class="text-sm font-medium" i18n="@@kpiBgColor">Color de fondo</label>
+                              <div class="flex items-center gap-3">
+                                <input type="text" [(ngModel)]="kpiBackgroundColor" (ngModelChange)="updateKpiBackground()"
+                                  placeholder="#ffffff"
+                                  class="flex-1 px-3 py-2 border rounded-md font-mono bg-white text-sm" />
+                                  <p-colorPicker [(ngModel)]="kpiBackgroundColor" (onChange)="updateKpiBackground()"
+                                    format="hex" appendTo="body"
+                                    class="rounded-md border shadow-sm transition-transform hover:scale-105 cursor-pointer" />
+                                  </div>
+                                  <div class="flex items-center gap-2">
+                                    @for(c of ['#ffffff','#f1f5f9','#e2e8f0','#1e293b','#0f172a']; track c){
+                                      <div (click)="kpiBackgroundColor=c; updateKpiBackground()"
+                                        [style.background-color]="c"
+                                      class="w-4 h-4 rounded-full border border-slate-200 cursor-pointer hover:scale-110 transition-transform"></div>
+                                    }
+                                  </div>
+                                </div>
 
-      <!-- TAB: Alerts -->
-      @if (activeTab === 'alerts' && !isKpiTrend) {
-        <div class="space-y-6">
-          <div class="grid gap-6">
+                                <!-- Text color -->
+                                <div class="space-y-2">
+                                  <label class="text-sm font-medium" i18n="@@kpiTextColor">Color del texto</label>
+                                  <div class="flex items-center gap-3">
+                                    <input type="text" [(ngModel)]="kpiTextColor" (ngModelChange)="updateKpiTextColor()"
+                                      placeholder="#67757c"
+                                      class="flex-1 px-3 py-2 border rounded-md font-mono bg-white text-sm" />
+                                      <p-colorPicker [(ngModel)]="kpiTextColor" (onChange)="updateKpiTextColor()"
+                                        format="hex" appendTo="body"
+                                        class="rounded-md border shadow-sm transition-transform hover:scale-105 cursor-pointer" />
+                                      </div>
+                                      <div class="flex items-center gap-2">
+                                        @for(c of ['#67757c','#1e293b','#ffffff','#00BFB3','#3b82f6','#ef4444']; track c){
+                                          <div (click)="kpiTextColor=c; updateKpiTextColor()"
+                                            [style.background-color]="c"
+                                          class="w-4 h-4 rounded-full border border-slate-200 cursor-pointer hover:scale-110 transition-transform"></div>
+                                        }
+                                      </div>
+                                    </div>
 
-            <!-- Configure new alert -->
-            <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
-              <div class="px-4 py-1.5 border-b bg-white">
-                <h3 class="font-medium text-slate-800 flex items-center gap-2">
-                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">1</span>
-                  <span i18n="@@setNewAlert">Configurar nueva alerta</span>
-                </h3>
-              </div>
-              <div class="p-4">
-                <div class="grid gap-6 md:grid-cols-3">
-                  <div class="space-y-3">
-                    <label class="text-sm font-medium" i18n="@@condition">Condición</label>
-                    <div class="bg-white border rounded-md p-2 space-y-2">
-                      <div class="flex items-center space-x-2 p-2 rounded hover:bg-slate-50">
-                        <input type="radio" id="op-less" name="operand" value="<" [(ngModel)]="operand" class="h-4 w-4" />
-                        <label for="op-less" class="cursor-pointer w-full">
-                          <span class="font-medium" i18n="@@lessThan">Menor que</span>
-                          <span class="ml-2 text-slate-500">(&lt;)</span>
-                        </label>
-                      </div>
-                      <div class="flex items-center space-x-2 p-2 rounded hover:bg-slate-50">
-                        <input type="radio" id="op-equal" name="operand" value="=" [(ngModel)]="operand" class="h-4 w-4" />
-                        <label for="op-equal" class="cursor-pointer w-full">
-                          <span class="font-medium" i18n="@@equalTo">Igual a</span>
-                          <span class="ml-2 text-slate-500">(=)</span>
-                        </label>
-                      </div>
-                      <div class="flex items-center space-x-2 p-2 rounded hover:bg-slate-50">
-                        <input type="radio" id="op-greater" name="operand" value=">" [(ngModel)]="operand" class="h-4 w-4" />
-                        <label for="op-greater" class="cursor-pointer w-full">
-                          <span class="font-medium" i18n="@@greaterThan">Mayor que</span>
-                          <span class="ml-2 text-slate-500">(&gt;)</span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
+                                    <!-- Prefix image -->
+                                    <div class="space-y-2 md:col-span-2">
+                                      <label class="text-sm font-medium" i18n="@@kpiPrefixImage">Imagen prefijo</label>
+                                      <div class="flex items-center gap-3">
+                                        <button type="button" class="kpi-upload-btn" (click)="openMediaPicker()">
+                                          <i class="pi pi-images"></i>
+                                          <span i18n="@@chooseImage">Elegir imagen</span>
+                                        </button>
+                                        @if(prefixImage){
+                                          <img [src]="prefixImage | mediaSrc" alt="preview"
+                                            (click)="openPrefixImageInNewTab()"
+                                            class="w-[7rem] h-[3rem] object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity" />
+                                            <span (click)="prefixImage=''; updatePrefixImage()"
+                                            class="cursor-pointer text-slate-400 hover:text-slate-700 select-none text-sm">✕</span>
+                                          }
+                                        </div>
+                                      </div>
 
-                  <div class="space-y-3">
-                    <label for="value" class="text-sm font-medium">
-                      @if (isKpiDeviation) {
-                        <span i18n="@@thresholdValuePercent">Valor umbral (%)</span>
-                      } @else {
-                        <span i18n="@@thresholdValue">Valor umbral</span>
-                      }
-                    </label>
-                    <input id="value" type="text"
-                      [placeholder]="isKpiDeviation ? 'Ej: -10' : 'Ej: 50.5'"
-                      [(ngModel)]="value" class="w-full px-3 py-2 border rounded-md bg-white" />
-                    <p class="text-xs text-slate-500 italic">
-                      @if (isKpiDeviation) {
-                        <span i18n="@@deviationPercTrigAlert">% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</span>
-                      } @else {
-                        <span i18n="@@numValTrigAlert">Valor numérico que activará la alerta</span>
-                      }
-                    </p>
-                  </div>
+                                    </div>
+                                  }
+                                </div>
 
-                  <div class="space-y-3">
-                    <label for="alertColor" class="text-sm font-medium" i18n="@@alertColor">Color de alerta</label>
-                    <div class="flex gap-3">
-                      <div class="flex-1">
-                        <input id="alertColor" type="text" [(ngModel)]="color"
-                          class="w-full px-3 py-2 border rounded-md font-mono bg-white" />
-                      </div>
-                      <p-colorPicker
-                        class="w-fit h-fit rounded-md border shadow-sm transition-transform hover:scale-105 cursor-pointer"
-                        [(ngModel)]="color" (onChange)="handleInputColor(color)" format="hex" appendTo="body" />
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <div (click)="setColor('#ef4444')" class="w-4 h-4 rounded-full bg-red-500 cursor-pointer"></div>
-                      <div (click)="setColor('#eab308')" class="w-4 h-4 rounded-full bg-yellow-500 cursor-pointer"></div>
-                      <div (click)="setColor('#22c55e')" class="w-4 h-4 rounded-full bg-green-500 cursor-pointer"></div>
-                      <div (click)="setColor('#3b82f6')" class="w-4 h-4 rounded-full bg-blue-500 cursor-pointer"></div>
-                      <div (click)="setColor('#a855f7')" class="w-4 h-4 rounded-full bg-purple-500 cursor-pointer"></div>
-                    </div>
-                  </div>
-                </div>
+                                <!-- Colores de series (kpitrend solo - kpibar/kpiline/kpiarea los tienen en la pestaña Gráfico) -->
+                                @if(!showGraphTab && edaChart !== 'kpi' && !isKpiDeviation){
+                                  <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
+                                    <div class="px-4 py-1.5 border-b bg-white">
+                                      <h3 class="font-medium text-slate-800 flex items-center gap-2">
+                                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">3</span>
+                                        <span i18n="@@colorsChartH6">Colores del gráfico</span>
+                                      </h3>
+                                    </div>
+                                    <div class="p-4 space-y-4">
+                                      <p-dropdown
+                                        [(ngModel)]="selectedPalette"
+                                        [options]="allPalettes"
+                                        optionLabel="name"
+                                        i18n-placeholder="@@selectPalette"
+                                        placeholder="-- Seleccione una paleta --"
+                                        (ngModelChange)="onPaletteSelected()"
+                                        [style]="{'width':'180px'}"
+                                        appendTo="body">
+                                      </p-dropdown>
+                                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        @for (item of series; track item.value; let idx = $index) {
+                                          <div class="flex flex-col gap-3 border rounded-lg p-4 bg-white">
+                                            <div class="flex items-center justify-between">
+                                              <span class="font-medium">{{ item.value }}</span>
+                                              <div class="flex items-center gap-2">
+                                                <input [(ngModel)]="item.color" (input)="handleInputColor(item)" class="text-sm text-slate-600 font-mono w-20 px-3 py-2 focus:outline-none">
+                                                <p-colorPicker [(ngModel)]="item.color" (onChange)="handleInputColor(item)" format="hex" appendTo="body"></p-colorPicker>
+                                              </div>
+                                            </div>
+                                            @if (edaChart === 'kpiarea') {
+                                              <div class="flex items-center justify-between">
+                                                <label class="text-sm text-slate-500" i18n="@@opacityLabel">Opacidad</label>
+                                                <div class="flex items-center border rounded-md overflow-hidden">
+                                                  <button type="button"
+                                                    class="w-9 h-9 text-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 leading-none"
+                                                  (click)="stepOpacity(idx, -5)">−</button>
+                                                  <input type="number" min="0" max="100" step="1"
+                                                    [(ngModel)]="item.opacity"
+                                                    (input)="handleInputColor(item)"
+                                                    class="text-sm text-slate-600 font-mono w-12 h-9 text-center border-x px-0 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                                                    <button type="button"
+                                                      class="w-9 h-9 text-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 leading-none"
+                                                    (click)="stepOpacity(idx, 5)">+</button>
+                                                    <span class="text-sm text-slate-500 pl-2 pr-3">%</span>
+                                                  </div>
+                                                </div>
+                                              }
+                                            </div>
+                                          }
+                                        </div>
+                                      </div>
+                                    </div>
+                                  }
 
-                <div class="mt-4 flex items-center justify-between">
-                  <div class="text-sm text-slate-600">
-                    <span class="font-medium" i18n="@@alertsPreview">Vista previa: </span>
-                    @if (isKpiDeviation) {
-                      <span i18n="@@whenKpiDeviationIs">Cuando el % es</span>
-                    } @else {
-                      <span i18n="@@valueKPI">Cuando el valor KPI es</span>
-                    }
-                    <span class="font-mono">{{operand}}</span> que
-                    <span class="font-mono">{{value || "X"}}{{ isKpiDeviation ? '%' : '' }}</span>,
-                    <span class="ml-1 font-medium" [style.color]="color" i18n="@@textChangeColor">el texto cambiará a este color</span>
-                  </div>
-                  <button (click)="addAlert()"
-                    class="kpi-add-alert-btn"
-                    [disabled]="!value" i18n="@@addAlert">
+                                </div>
+                              </div>
+                            }
+
+                            <!-- TAB: Chart options (kpibar/kpiline/kpiarea only) -->
+                            @if (activeTab === 'grafico' && showGraphTab) {
+                              <div class="space-y-6">
+                                <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
+                                  <div class="px-4 py-1.5 border-b bg-white">
+                                    <h3 class="font-medium text-slate-800" i18n="@@chartDisplayOptionsTitle">Opciones de visualización</h3>
+                                  </div>
+                                  <div class="p-4 grid gap-4 md:grid-cols-2">
+
+                                    @if (showTrendComparative) {
+                                      <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                          <label class="font-medium" i18n="@@addtrend">Tendencia</label>
+                                          <div class="relative group">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                              class="text-slate-400">
+                                              <circle cx="12" cy="12" r="10"></circle>
+                                              <path d="M12 16v-4"></path>
+                                              <path d="M12 8h.01"></path>
+                                            </svg>
+                                            <div
+                                              class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                                              <span i18n="@@chartTrendOption">Mostrar línea de tendencia en el gráfico</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                          <input type="checkbox" [(ngModel)]="addTrend" (ngModelChange)="setAddTrend()" class="sr-only peer">
+                                          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                        </label>
+                                      </div>
+                                    }
+
+                                    @if (showComparative) {
+                                      <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                          <label class="font-medium" i18n="@@addComparative">Comparativa</label>
+                                          <div class="relative group">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                              class="text-slate-400">
+                                              <circle cx="12" cy="12" r="10"></circle>
+                                              <path d="M12 16v-4"></path>
+                                              <path d="M12 8h.01"></path>
+                                            </svg>
+                                            <div
+                                              class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                                              <span i18n="@@chartComparationOption">Habilita la comparación con períodos anteriores</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                          <input type="checkbox" [(ngModel)]="addComparative" (ngModelChange)="setAddComparative()" class="sr-only peer">
+                                          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                        </label>
+                                      </div>
+                                    }
+
+                                    <div class="flex items-center justify-between">
+                                      <div class="flex items-center gap-2">
+                                        <label class="font-medium" i18n="@@chartAnimation">Animar Gráfico</label>
+                                        <div class="relative group">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                            class="text-slate-400">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <path d="M12 16v-4"></path>
+                                            <path d="M12 8h.01"></path>
+                                          </svg>
+                                          <div
+                                            class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                                            <span i18n="@@chartAnimationOptionDescription">Anima la aparición de los datos al cargar el gráfico</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" [(ngModel)]="chartAnimation" (ngModelChange)="setChartAnimation()" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                      </label>
+                                    </div>
+
+                                    <div class="flex items-center justify-between">
+                                      <div class="flex items-center gap-2">
+                                        <label class="font-medium" i18n="@@showLegend">Mostrar Leyenda</label>
+                                        <div class="relative group">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                            class="text-slate-400">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <path d="M12 16v-4"></path>
+                                            <path d="M12 8h.01"></path>
+                                          </svg>
+                                          <div
+                                            class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                                            <span i18n="@@chartLegendOptionDescription">Muestra la leyenda del gráfico</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" [(ngModel)]="chartLegend" (ngModelChange)="setChartLegend()" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                      </label>
+                                    </div>
+
+                                    <div class="flex items-center justify-between">
+                                      <div class="flex items-center gap-2">
+                                        <label class="font-medium" i18n="@@showGridLines">Mostrar Líneas Guía</label>
+                                        <div class="relative group">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                            class="text-slate-400">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <path d="M12 16v-4"></path>
+                                            <path d="M12 8h.01"></path>
+                                          </svg>
+                                          <div
+                                            class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                                            <span i18n="@@chartGridLinesOptionDescription">Muestra u oculta las líneas guía del gráfico</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" [(ngModel)]="showGridLines" (ngModelChange)="setShowGridLines()" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                      </label>
+                                    </div>
+
+                                    <div class="flex items-center justify-between">
+                                      <label class="font-medium" i18n="@@showXAxis">Mostrar eje X</label>
+                                      <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" [(ngModel)]="showXAxis" (ngModelChange)="setShowXAxis()" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                      </label>
+                                    </div>
+
+                                    <div class="flex items-center justify-between">
+                                      <label class="font-medium" i18n="@@showXAxisLabels">Mostrar etiquetas del eje X</label>
+                                      <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" [(ngModel)]="showXAxisLabels" (ngModelChange)="setShowXAxisLabels()" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                      </label>
+                                    </div>
+
+                                    @if (showXAxisLabels) {
+                                      <div class="flex items-center justify-between">
+                                        <label class="font-medium" i18n="@@xAxisLabelCount">Número de etiquetas</label>
+                                        <input type="number" min="0" [(ngModel)]="xAxisLabelCount" (ngModelChange)="setXAxisLabelCount()"
+                                          placeholder="Auto" i18n-placeholder="@@xAxisLabelCountAuto"
+                                          class="w-20 px-3 py-1.5 border rounded-md text-sm text-right" />
+                                        </div>
+                                      }
+
+                                      @if (showTrendComparative) {
+                                        <div class="flex items-center justify-between">
+                                          <label class="font-medium" i18n="@@lineWidth">Ancho de línea</label>
+                                          <input type="number" min="1" max="10" [(ngModel)]="lineWidth" (ngModelChange)="setLineWidth()"
+                                            class="w-20 px-3 py-1.5 border rounded-md text-sm text-right" />
+                                          </div>
+
+                                          <div class="flex items-center justify-between">
+                                            <label class="font-medium" i18n="@@lineStyle">Estilo de línea</label>
+                                            <div class="flex border rounded-md overflow-hidden text-sm">
+                                              <button type="button" class="px-3 py-1.5" [ngClass]="lineStyleButtonClass('solid')"
+                                              (click)="setLineStyle('solid')" i18n="@@lineStyleSolid">Sólida</button>
+                                              <button type="button" class="px-3 py-1.5 border-l" [ngClass]="lineStyleButtonClass('dashed')"
+                                              (click)="setLineStyle('dashed')" i18n="@@lineStyleDashed">Discontinua</button>
+                                              <button type="button" class="px-3 py-1.5 border-l" [ngClass]="lineStyleButtonClass('dotted')"
+                                              (click)="setLineStyle('dotted')" i18n="@@lineStyleDotted">Punteada</button>
+                                            </div>
+                                          </div>
+
+                                          <div class="flex items-center justify-between md:col-span-2">
+                                            <label class="font-medium" i18n="@@chartLineColor">Color de línea</label>
+                                            <div class="flex items-center gap-3">
+                                              <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" [ngModel]="!!chartLineColor"
+                                                  (ngModelChange)="chartLineColor = $event ? (chartLineColor || '#000000') : ''; setChartLineColor()"
+                                                  class="sr-only peer">
+                                                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                                </label>
+                                                @if (chartLineColor) {
+                                                  <p-colorPicker [(ngModel)]="chartLineColor" (onChange)="setChartLineColor()" format="hex" appendTo="body" />
+                                                }
+                                              </div>
+                                            </div>
+                                          }
+
+                                          @if (edaChart === 'kpiarea') {
+                                            <div class="flex items-center justify-between md:col-span-2">
+                                              <label class="font-medium" i18n="@@chartFillColor">Color de relleno</label>
+                                              <div class="flex items-center gap-3">
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                  <input type="checkbox" [ngModel]="!!chartFillColor"
+                                                    (ngModelChange)="chartFillColor = $event ? (chartFillColor || '#000000') : ''; setChartFillColor()"
+                                                    class="sr-only peer">
+                                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                                  </label>
+                                                  @if (chartFillColor) {
+                                                    <p-colorPicker [(ngModel)]="chartFillColor" (onChange)="setChartFillColor()" format="hex" appendTo="body" />
+                                                  }
+                                                </div>
+                                              </div>
+                                            }
+
+                                            @if (showTrendComparative) {
+                                              <div class="flex items-center justify-between">
+                                                <div class="flex items-center gap-2">
+                                                  <label class="font-medium" i18n="@@showLines">Mostrar Líneas de Puntos</label>
+                                                  <div class="relative group">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                      class="text-slate-400">
+                                                      <circle cx="12" cy="12" r="10"></circle>
+                                                      <path d="M12 16v-4"></path>
+                                                      <path d="M12 8h.01"></path>
+                                                    </svg>
+                                                    <div
+                                                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                                                      <span i18n="@@chartLabelLineOptionDescription">Muestra líneas conectando los puntos</span>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                  <input type="checkbox" [(ngModel)]="showPointLines" (ngModelChange)="setShowPointLines()" class="sr-only peer">
+                                                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                                </label>
+                                              </div>
+                                            }
+
+                                            @if (isKpiBar) {
+                                              <div class="flex items-center justify-between">
+                                                <div class="flex items-center gap-2">
+                                                  <label class="font-medium" i18n="@@useRoundedBars">Redondear barras</label>
+                                                  <div class="relative group">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                      class="text-slate-400">
+                                                      <circle cx="12" cy="12" r="10"></circle>
+                                                      <path d="M12 16v-4"></path>
+                                                      <path d="M12 8h.01"></path>
+                                                    </svg>
+                                                    <div
+                                                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                                                      <span i18n="@@chartRoundedBarsOptionDescription">Redondea la punta de las barras</span>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                  <input type="checkbox" [(ngModel)]="useRoundedBars" (ngModelChange)="setUseRoundedBars()" class="sr-only peer">
+                                                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                                </label>
+                                              </div>
+                                            }
+
+                                            <div class="flex items-center justify-between">
+                                              <div class="flex items-center gap-2">
+                                                <label class="font-medium" i18n="@@showLabels">Mostrar Etiquetas</label>
+                                                <div class="relative group">
+                                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                    class="text-slate-400">
+                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <path d="M12 16v-4"></path>
+                                                    <path d="M12 8h.01"></path>
+                                                  </svg>
+                                                  <div
+                                                    class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                                                    <span i18n="@@chartLabelOption">Muestra etiquetas con valores en el gráfico</span>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" [(ngModel)]="showLabels" (ngModelChange)="setShowLabels()" class="sr-only peer">
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                              </label>
+                                            </div>
+
+                                            <div class="flex items-center justify-between">
+                                              <div class="flex items-center gap-2">
+                                                <label class="font-medium" i18n="@@showLabelsPercent">Etiquetas en Porcentaje</label>
+                                                <div class="relative group">
+                                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                    class="text-slate-400">
+                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <path d="M12 16v-4"></path>
+                                                    <path d="M12 8h.01"></path>
+                                                  </svg>
+                                                  <div
+                                                    class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                                                    <span i18n="@@chartLabelPercentOption">Muestra etiquetas en formato porcentaje</span>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" [(ngModel)]="showLabelsPercent" (ngModelChange)="setShowLabelsPercent()" class="sr-only peer">
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                              </label>
+                                            </div>
+
+                                            @if (showLabels || showLabelsPercent) {
+                                              <div class="flex items-center justify-between md:col-span-2">
+                                                <label class="font-medium" i18n="@@labelColorOption">Color de las etiquetas</label>
+                                                <div class="flex items-center gap-3">
+                                                  <div class="flex border rounded-md overflow-hidden text-sm">
+                                                    <button type="button" class="px-3 py-1.5" [ngClass]="labelColorButtonClass('series')"
+                                                    (click)="labelColorMode = 'series'; setLabelColor()" i18n="@@labelColorSeries">Propio</button>
+                                                    <button type="button" class="px-3 py-1.5 border-l" [ngClass]="labelColorButtonClass('custom')"
+                                                    (click)="labelColorMode = 'custom'; setLabelColor()" i18n="@@labelColorCustom">Personalizado</button>
+                                                  </div>
+                                                  @if (labelColorMode === 'custom') {
+                                                    <div class="flex items-center gap-2">
+                                                      <input [(ngModel)]="labelCustomColor" (input)="setLabelColor()" class="text-sm text-slate-600 font-mono w-20 px-3 py-1.5 focus:outline-none">
+                                                      <p-colorPicker [(ngModel)]="labelCustomColor" (onChange)="setLabelColor()" format="hex" appendTo="body" />
+                                                    </div>
+                                                  }
+                                                </div>
+                                              </div>
+
+                                              <div class="flex items-center justify-between md:col-span-2">
+                                                <label class="font-medium" i18n="@@labelBackgroundColorOption">Fondo de las etiquetas</label>
+                                                <div class="flex items-center gap-3">
+                                                  <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" [ngModel]="!!labelBackgroundColor"
+                                                      (ngModelChange)="labelBackgroundColor = $event ? (labelBackgroundColor || '#ffffff') : ''; setLabelBackgroundColor()"
+                                                      class="sr-only peer">
+                                                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                                    </label>
+                                                    @if (labelBackgroundColor) {
+                                                      <p-colorPicker [(ngModel)]="labelBackgroundColor" (onChange)="setLabelBackgroundColor()" format="hex" appendTo="body" />
+                                                    }
+                                                  </div>
+                                                </div>
+                                              }
+
+                                            </div>
+                                          </div>
+
+                                          <!-- Colores de series -->
+                                          <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
+                                            <div class="px-4 py-1.5 border-b bg-white">
+                                              <h3 class="font-medium text-slate-800" i18n="@@colorsChartH6">Colores del gráfico</h3>
+                                            </div>
+                                            <div class="p-4 space-y-4">
+                                              <div class="flex items-center justify-between">
+                                                <label class="font-medium" i18n="@@useGradient">Usar degradado</label>
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                  <input type="checkbox" [(ngModel)]="useGradient" (ngModelChange)="setUseGradient()" class="sr-only peer">
+                                                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]"></div>
+                                                </label>
+                                              </div>
+                                              <p-dropdown
+                                                [(ngModel)]="selectedPalette"
+                                                [options]="allPalettes"
+                                                optionLabel="name"
+                                                i18n-placeholder="@@selectPalette"
+                                                placeholder="-- Seleccione una paleta --"
+                                                (ngModelChange)="onPaletteSelected()"
+                                                [style]="{'width':'180px'}"
+                                                appendTo="body">
+                                              </p-dropdown>
+                                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                @for (item of series; track item.value; let idx = $index) {
+                                                  <div class="flex flex-col gap-3 border rounded-lg p-4 bg-white">
+                                                    <div class="flex items-center justify-between">
+                                                      <span class="font-medium">{{ item.value }}</span>
+                                                      <div class="flex items-center gap-2">
+                                                        <input [(ngModel)]="item.color" (input)="handleInputColor(item)" class="text-sm text-slate-600 font-mono w-20 px-3 py-2 focus:outline-none">
+                                                        <p-colorPicker [(ngModel)]="item.color" (onChange)="handleInputColor(item)" format="hex" appendTo="body"></p-colorPicker>
+                                                      </div>
+                                                    </div>
+                                                    @if (edaChart === 'kpiarea') {
+                                                      <div class="flex items-center justify-between">
+                                                        <label class="text-sm text-slate-500" i18n="@@opacityLabel">Opacidad</label>
+                                                        <div class="flex items-center border rounded-md overflow-hidden">
+                                                          <button type="button"
+                                                            class="w-9 h-9 text-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 leading-none"
+                                                          (click)="stepOpacity(idx, -5)">−</button>
+                                                          <input type="number" min="0" max="100" step="1"
+                                                            [(ngModel)]="item.opacity"
+                                                            (input)="handleInputColor(item)"
+                                                            class="text-sm text-slate-600 font-mono w-12 h-9 text-center border-x px-0 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                                                            <button type="button"
+                                                              class="w-9 h-9 text-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 leading-none"
+                                                            (click)="stepOpacity(idx, 5)">+</button>
+                                                            <span class="text-sm text-slate-500 pl-2 pr-3">%</span>
+                                                          </div>
+                                                        </div>
+                                                      }
+                                                    </div>
+                                                  }
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                          </div>
+                                        }
+
+                                        <!-- TAB: Alerts -->
+                                        @if (activeTab === 'alerts' && !isKpiTrend) {
+                                          <div class="space-y-6">
+                                            <div class="grid gap-6">
+
+                                              <!-- Configure new alert -->
+                                              <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
+                                                <div class="px-4 py-1.5 border-b bg-white">
+                                                  <h3 class="font-medium text-slate-800 flex items-center gap-2">
+                                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">1</span>
+                                                    <span i18n="@@setNewAlert">Configurar nueva alerta</span>
+                                                  </h3>
+                                                </div>
+                                                <div class="p-4">
+                                                  <div class="grid gap-6 md:grid-cols-3">
+                                                    <div class="space-y-3">
+                                                      <label class="text-sm font-medium" i18n="@@condition">Condición</label>
+                                                      <div class="bg-white border rounded-md p-2 space-y-2">
+                                                        <div class="flex items-center space-x-2 p-2 rounded hover:bg-slate-50">
+                                                          <input type="radio" id="op-less" name="operand" value="<" [(ngModel)]="operand" class="h-4 w-4" />
+                                                          <label for="op-less" class="cursor-pointer w-full">
+                                                            <span class="font-medium" i18n="@@lessThan">Menor que</span>
+                                                            <span class="ml-2 text-slate-500">(&lt;)</span>
+                                                          </label>
+                                                        </div>
+                                                        <div class="flex items-center space-x-2 p-2 rounded hover:bg-slate-50">
+                                                          <input type="radio" id="op-equal" name="operand" value="=" [(ngModel)]="operand" class="h-4 w-4" />
+                                                          <label for="op-equal" class="cursor-pointer w-full">
+                                                            <span class="font-medium" i18n="@@equalTo">Igual a</span>
+                                                            <span class="ml-2 text-slate-500">(=)</span>
+                                                          </label>
+                                                        </div>
+                                                        <div class="flex items-center space-x-2 p-2 rounded hover:bg-slate-50">
+                                                          <input type="radio" id="op-greater" name="operand" value=">" [(ngModel)]="operand" class="h-4 w-4" />
+                                                          <label for="op-greater" class="cursor-pointer w-full">
+                                                            <span class="font-medium" i18n="@@greaterThan">Mayor que</span>
+                                                            <span class="ml-2 text-slate-500">(&gt;)</span>
+                                                          </label>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+
+                                                    <div class="space-y-3">
+                                                      <label for="value" class="text-sm font-medium">
+                                                        @if (isKpiDeviation) {
+                                                          <span i18n="@@thresholdValuePercent">Valor umbral (%)</span>
+                                                        } @else {
+                                                          <span i18n="@@thresholdValue">Valor umbral</span>
+                                                        }
+                                                      </label>
+                                                      <input id="value" type="text"
+                                                        [placeholder]="isKpiDeviation ? 'Ej: -10' : 'Ej: 50.5'"
+                                                        [(ngModel)]="value" class="w-full px-3 py-2 border rounded-md bg-white" />
+                                                        <p class="text-xs text-slate-500 italic">
+                                                          @if (isKpiDeviation) {
+                                                            <span i18n="@@deviationPercTrigAlert">% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</span>
+                                                          } @else {
+                                                            <span i18n="@@numValTrigAlert">Valor numérico que activará la alerta</span>
+                                                          }
+                                                        </p>
+                                                      </div>
+
+                                                      <div class="space-y-3">
+                                                        <label for="alertColor" class="text-sm font-medium" i18n="@@alertColor">Color de alerta</label>
+                                                        <div class="flex gap-3">
+                                                          <div class="flex-1">
+                                                            <input id="alertColor" type="text" [(ngModel)]="color"
+                                                              class="w-full px-3 py-2 border rounded-md font-mono bg-white" />
+                                                            </div>
+                                                            <p-colorPicker
+                                                              class="w-fit h-fit rounded-md border shadow-sm transition-transform hover:scale-105 cursor-pointer"
+                                                              [(ngModel)]="color" (onChange)="handleInputColor(color)" format="hex" appendTo="body" />
+                                                            </div>
+                                                            <div class="flex items-center gap-2">
+                                                              <div (click)="setColor('#ef4444')" class="w-4 h-4 rounded-full bg-red-500 cursor-pointer"></div>
+                                                              <div (click)="setColor('#eab308')" class="w-4 h-4 rounded-full bg-yellow-500 cursor-pointer"></div>
+                                                              <div (click)="setColor('#22c55e')" class="w-4 h-4 rounded-full bg-green-500 cursor-pointer"></div>
+                                                              <div (click)="setColor('#3b82f6')" class="w-4 h-4 rounded-full bg-blue-500 cursor-pointer"></div>
+                                                              <div (click)="setColor('#a855f7')" class="w-4 h-4 rounded-full bg-purple-500 cursor-pointer"></div>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+
+                                                        <div class="mt-4 flex items-center justify-between">
+                                                          <div class="text-sm text-slate-600">
+                                                            <span class="font-medium" i18n="@@alertsPreview">Vista previa: </span>
+                                                            @if (isKpiDeviation) {
+                                                              <span i18n="@@whenKpiDeviationIs">Cuando el % es</span>
+                                                            } @else {
+                                                              <span i18n="@@valueKPI">Cuando el valor KPI es</span>
+                                                            }
+                                                            <span class="font-mono">{{operand}}</span> que
+                                                            <span class="font-mono">{{value || "X"}}{{ isKpiDeviation ? '%' : '' }}</span>,
+                                                            <span class="ml-1 font-medium" [style.color]="color" i18n="@@textChangeColor">el texto cambiará a este color</span>
+                                                          </div>
+                                                          <button (click)="addAlert()"
+                                                            class="kpi-add-alert-btn"
+                                                            [disabled]="!value" i18n="@@addAlert">
                     <span>Añadir alerta</span>
                   </button>
-                </div>
-              </div>
-            </div>
+                                                        </div>
+                                                      </div>
+                                                    </div>
 
-            
-          @if(alerts.length > 0){
-            <div class="bg-white rounded-lg border overflow-hidden">
-            <div class="px-4 py-3 border-b bg-gradient-to-r from-slate-50 to-slate-100">
-              <h3 class="font-medium text-slate-800 flex items-center gap-2">
-                <span
-                  class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">
-                  3
-                </span>
-                <span i18n="@@alertsConfigured">Alertas configuradas</span> ({{alerts.length}})
-              </h3>
-            </div>
-            <div class="overflow-hidden">
-              <table class="w-full text-sm">
-                <thead>
-                  <tr class="bg-slate-50 text-slate-600">
-                    <th class="text-left p-3 font-medium" i18n="@@condition">Condición</th>
-                    <th class="text-left p-3 font-medium" i18n="@@value">Valor</th>
-                    <th class="text-left p-3 font-medium" i18n="@@colorKpiH6">Color</th>
-                    <th class="text-right p-3 font-medium" i18n="@@actions">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let alert of alerts; let i = index" class="border-t hover:bg-slate-50">
-                    <td class="p-3">
-                      <div class="flex items-center gap-2">
-                        <span class="font-mono bg-slate-100 px-2 py-1 rounded text-slate-700">
-                          {{alert.operand}}
-                        </span>
-                        <span [ngSwitch]="alert.operand">
-                          <span *ngSwitchCase="'<'" i18n="@@lessThan">Menor que</span>
-                          <span *ngSwitchCase="'='" i18n="@@equalTo">Igual a</span>
-                          <span *ngSwitchCase="'>'" i18n="@@greaterThan">Mayor que</span>
-                          <span *ngSwitchDefault>{{ alert.operand }}</span>
-                        </span>
-                      </div>
-                    </td>
-                    <td class="p-3 font-mono">{{alert.value}}</td>
-                    <td class="p-3">
-                      <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded-full" [style.backgroundColor]="alert.color"></div>
-                        <code class="bg-slate-100 px-2 py-1 rounded text-xs">{{alert.color}}</code>
-                      </div>
-                    </td>
-                    <td class="p-3 text-right">
-                      <div class="inline-flex items-center gap-1">
-                        @if (canIRunAlerts) {
-                        <button (click)="openConfigDialog(alert)"
-                          class="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors"
-                          [class.kpi-mail-icon--active]="alert.mailing?.enabled"
-                          [class.kpi-mail-icon--inactive]="!alert.mailing?.enabled"
-                          title="Configurar envío por email">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                            <polyline points="22,6 12,13 2,6"></polyline>
-                          </svg>
-                        </button>
-                        }
-                        <button (click)="deleteAlert(alert)"
-                          class="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md hover:bg-slate-100">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 6 6 18"></path>
-                            <path d="m6 6 12 12"></path>
-                          </svg>
-                          <span class="sr-only" i18n="@@deleteBtn">Eliminar</span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="bg-slate-50 px-4 py-3 text-xs text-slate-500 italic border-t" i18n="@@orderAlerts">
+
+                                                    @if(alerts.length > 0){
+                                                      <div class="bg-white rounded-lg border overflow-hidden">
+                                                        <div class="px-4 py-3 border-b bg-gradient-to-r from-slate-50 to-slate-100">
+                                                          <h3 class="font-medium text-slate-800 flex items-center gap-2">
+                                                            <span
+                                                              class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">
+                                                              3
+                                                            </span>
+                                                            <span i18n="@@alertsConfigured">Alertas configuradas</span> ({{alerts.length}})
+                                                          </h3>
+                                                        </div>
+                                                        <div class="overflow-hidden">
+                                                          <table class="w-full text-sm">
+                                                            <thead>
+                                                              <tr class="bg-slate-50 text-slate-600">
+                                                                <th class="text-left p-3 font-medium" i18n="@@condition">Condición</th>
+                                                                <th class="text-left p-3 font-medium" i18n="@@value">Valor</th>
+                                                                <th class="text-left p-3 font-medium" i18n="@@colorKpiH6">Color</th>
+                                                                <th class="text-right p-3 font-medium" i18n="@@actions">Acciones</th>
+                                                              </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                              @for (alert of alerts; track alert; let i = $index) {
+                                                                <tr class="border-t hover:bg-slate-50">
+                                                                  <td class="p-3">
+                                                                    <div class="flex items-center gap-2">
+                                                                      <span class="font-mono bg-slate-100 px-2 py-1 rounded text-slate-700">
+                                                                        {{alert.operand}}
+                                                                      </span>
+                                                                      <span>
+                                                                        @switch (alert.operand) {
+                                                                          @case ('<') {
+                                                                            <span i18n="@@lessThan">Menor que</span>
+                                                                          }
+                          @case ('=') {
+<span i18n="@@equalTo">Igual a</span>
+}
+                          @case ('>') {
+                                                                            <span i18n="@@greaterThan">Mayor que</span>
+                                                                          }
+                                                                          @default {
+                                                                            <span>{{ alert.operand }}</span>
+                                                                          }
+                                                                        }
+                                                                      </span>
+                                                                    </div>
+                                                                  </td>
+                                                                  <td class="p-3 font-mono">{{alert.value}}</td>
+                                                                  <td class="p-3">
+                                                                    <div class="flex items-center gap-2">
+                                                                      <div class="w-4 h-4 rounded-full" [style.backgroundColor]="alert.color"></div>
+                                                                      <code class="bg-slate-100 px-2 py-1 rounded text-xs">{{alert.color}}</code>
+                                                                    </div>
+                                                                  </td>
+                                                                  <td class="p-3 text-right">
+                                                                    <div class="inline-flex items-center gap-1">
+                                                                      @if (canIRunAlerts) {
+                                                                        <button (click)="openConfigDialog(alert)"
+                                                                          class="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors"
+                                                                          [class.kpi-mail-icon--active]="alert.mailing?.enabled"
+                                                                          [class.kpi-mail-icon--inactive]="!alert.mailing?.enabled"
+                                                                          title="Configurar envío por email">
+                                                                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                                                            <polyline points="22,6 12,13 2,6"></polyline>
+                                                                          </svg>
+                                                                        </button>
+                                                                      }
+                                                                      <button (click)="deleteAlert(alert)"
+                                                                        class="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md hover:bg-slate-100">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                          <path d="M18 6 6 18"></path>
+                                                                          <path d="m6 6 12 12"></path>
+                                                                        </svg>
+                                                                        <span class="sr-only" i18n="@@deleteBtn">Eliminar</span>
+                                                                      </button>
+                                                                    </div>
+                                                                  </td>
+                                                                </tr>
+                                                              }
+                                                            </tbody>
+                                                          </table>
+                                                        </div>
+                                                        <div class="bg-slate-50 px-4 py-3 text-xs text-slate-500 italic border-t" i18n="@@orderAlerts">
               Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.
             </div>
-          </div>
-          }
-          
+                                                      </div>
+                                                    }
 
-            @if(alerts.length === 0){
-              <div class="bg-white rounded-lg border p-8 text-center">
-                <div class="mx-auto w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3">
-                  <span class="text-slate-400 text-xl">!</span>
-                </div>
-                <h3 class="text-slate-800 font-medium mb-1" i18n="@@noAlertsConfigured">No hay alertas configuradas</h3>
-                <p class="text-slate-500 text-sm" i18n="@@useFormAlertConfigure">
+
+                                                    @if(alerts.length === 0){
+                                                      <div class="bg-white rounded-lg border p-8 text-center">
+                                                        <div class="mx-auto w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3">
+                                                          <span class="text-slate-400 text-xl">!</span>
+                                                        </div>
+                                                        <h3 class="text-slate-800 font-medium mb-1" i18n="@@noAlertsConfigured">No hay alertas configuradas</h3>
+                                                        <p class="text-slate-500 text-sm" i18n="@@useFormAlertConfigure">
                   Configure una alerta usando el formulario de arriba para visualizar cambios en el gráfico.
                 </p>
-              </div>
-            }
+                                                      </div>
+                                                    }
 
-          </div>
-        </div>
-      }
+                                                  </div>
+                                                </div>
+                                              }
 
-      </div><!-- end tab content -->
-    </div>
-  </div>
-</eda-dialog2>
+                                            </div><!-- end tab content -->
+                                          </div>
+                                        </div>
+                                      </eda-dialog2>
 
 
-@if (mailConfigOpen) {
-  <app-kpi-mail-config
-    [alert]="currentAlert"
-    [dashboardId]="dashboardId"
-    [panelId]="panelId"
-    [kpiPanels]="kpiPanels"
-    [kpiFieldName]="panelTitle"
-    (apply)="onMailConfigApply($event)"
-    (close)="closeMailingConfig()">
-  </app-kpi-mail-config>
-}
+                                      @if (mailConfigOpen) {
+                                        <app-kpi-mail-config
+                                          [alert]="currentAlert"
+                                          [dashboardId]="dashboardId"
+                                          [panelId]="panelId"
+                                          [kpiPanels]="kpiPanels"
+                                          [kpiFieldName]="panelTitle"
+                                          (apply)="onMailConfigApply($event)"
+                                          (close)="closeMailingConfig()">
+                                        </app-kpi-mail-config>
+                                      }
 
-@if (mediaPickerOpen) {
-  <eda-dialog2 [display]="mediaPickerOpen" header="Elegir imagen" i18n-header="@@chooseImage" width="70vw" height="70vh"
-    [showApply]="false" [overflow]="'auto'" (close)="mediaPickerOpen = false">
-    <div content class="p-4">
-      <app-media-library [pickMode]="true" (select)="onMediaSelected($event)"></app-media-library>
-    </div>
-  </eda-dialog2>
-}
+                                      @if (mediaPickerOpen) {
+                                        <eda-dialog2 [display]="mediaPickerOpen" header="Elegir imagen" i18n-header="@@chooseImage" width="70vw" height="70vh"
+                                          [showApply]="false" [overflow]="'auto'" (close)="mediaPickerOpen = false">
+                                          <div content class="p-4">
+                                            <app-media-library [pickMode]="true" (select)="onMediaSelected($event)"></app-media-library>
+                                          </div>
+                                        </eda-dialog2>
+                                      }

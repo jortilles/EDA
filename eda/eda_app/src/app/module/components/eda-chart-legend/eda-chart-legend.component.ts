@@ -2,7 +2,7 @@ import {
   AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostBinding, HostListener, Input,
   OnChanges, OnDestroy, OnInit, Output, QueryList, ViewChildren
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 export interface EdaLegendItem {
   label: string;
@@ -15,7 +15,7 @@ export interface EdaLegendItem {
   selector: 'eda-chart-legend',
   templateUrl: './eda-chart-legend.component.html',
   styleUrls: ['./eda-chart-legend.component.css'],
-  imports: [CommonModule]
+  imports: []
 })
 export class EdaChartLegendComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @Input() items: EdaLegendItem[] = [];

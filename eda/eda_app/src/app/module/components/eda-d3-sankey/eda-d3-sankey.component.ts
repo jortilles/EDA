@@ -6,7 +6,7 @@ import { EdaD3 } from './eda-d3-sankey';
 import { ChartUtilsService, StyleProviderService, D3TooltipService, lightenHex, sanitizeId, ensureLinearGradient, initD3ResizeObserver, teardownD3Chart, PanelStyleOverride } from '@eda/services/service.index';
 
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.component';
 
 @Component({
@@ -14,7 +14,7 @@ import { EdaChartLegendComponent } from '../eda-chart-legend/eda-chart-legend.co
   selector: 'eda-d3',
   templateUrl: './eda-d3-sankey.component.html',
   styleUrls: ['./eda-d3-sankey.component.css'],
-  imports: [FormsModule, CommonModule, EdaChartLegendComponent]
+  imports: [FormsModule, EdaChartLegendComponent]
 })
 
 export class EdaD3Component implements AfterViewInit, OnInit {

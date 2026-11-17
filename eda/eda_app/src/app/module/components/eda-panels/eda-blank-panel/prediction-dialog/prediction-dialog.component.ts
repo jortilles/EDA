@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { EdaDialog2Component } from '@eda/shared/components/eda-dialogs/eda-dialog2/eda-dialog2.component';
@@ -26,7 +26,7 @@ export interface PredictionConfig {
     standalone: true,
     selector: 'app-prediction-dialog',
     templateUrl: './prediction-dialog.component.html',
-    imports: [CommonModule, FormsModule, DropdownModule, EdaDialog2Component]
+    imports: [FormsModule, DropdownModule, EdaDialog2Component]
 })
 export class PredictionDialogComponent {
 

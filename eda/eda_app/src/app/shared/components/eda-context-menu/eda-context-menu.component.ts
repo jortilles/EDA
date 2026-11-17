@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewEncapsulation} from '@angular/core';
 import {EdaContextMenu} from '@eda/shared/components/eda-context-menu/eda-context-menu';
 import {Dialog} from 'primeng/dialog';
-import { CommonModule } from '@angular/common';
+
 import { DialogModule } from 'primeng/dialog'; 
 import { PanelMenuModule } from 'primeng/panelmenu';
 @Component({
@@ -9,7 +9,7 @@ import { PanelMenuModule } from 'primeng/panelmenu';
     selector: 'eda-context-menu',
     templateUrl: './eda-context-menu.component.html',
     encapsulation: ViewEncapsulation.None,
-    imports: [CommonModule, DialogModule, PanelMenuModule],
+    imports: [DialogModule, PanelMenuModule],
 })
 export class EdaContextMenuComponent implements AfterViewInit {
     @Input() inject: EdaContextMenu;

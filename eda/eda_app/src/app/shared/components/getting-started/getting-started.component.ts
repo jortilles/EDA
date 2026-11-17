@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
@@ -9,7 +9,7 @@ import { CreateDashboardService } from '@eda/services/utils/create-dashboard.ser
 @Component({
   selector: 'eda-getting-started',
   standalone: true,
-  imports: [CommonModule, RouterLink, IconComponent],
+  imports: [RouterLink, IconComponent],
   templateUrl: './getting-started.component.html',
   styleUrls: ['./getting-started.component.css']
 })

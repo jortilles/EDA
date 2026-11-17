@@ -11,7 +11,8 @@ import { FileUtiles } from '@eda/services/service.index';
  * - a relative media library path (e.g. /media/img/xxx.png) -> resolved via FileUtiles.connection()
  */
 @Pipe({
-    name: 'mediaSrc'
+    name: 'mediaSrc',
+    standalone: true
 })
 export class MediaSrcPipe implements PipeTransform {
     constructor(private fileUtiles: FileUtiles) { }

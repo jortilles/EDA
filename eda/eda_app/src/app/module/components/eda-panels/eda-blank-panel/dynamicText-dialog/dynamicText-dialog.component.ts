@@ -6,7 +6,7 @@ import { UserService } from '@eda/services/service.index';
 import { StyleProviderService } from '@eda/services/service.index';
 import { DynamicTextConfig } from '../panel-charts/chart-configuration-models/dynamicText-config';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
 
@@ -15,7 +15,7 @@ import { ColorPickerModule } from 'primeng/colorpicker';
   selector: 'app-dynamicText-dialog',
   templateUrl: './dynamicText-dialog.component.html',
   styleUrls: ['./dynamicText-dialog.component.css'],
-  imports: [FormsModule, CommonModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule],
+  imports: [FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule],
 })
 
 export class dynamicTextDialogComponent implements OnInit {
