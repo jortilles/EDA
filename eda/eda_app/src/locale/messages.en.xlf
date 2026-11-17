@@ -5353,6 +5353,10 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>Modificar el tamaño del KPI</source>
 <target>Modify KPI size</target>
 </trans-unit>
+<trans-unit id="resetSectionButton">
+<source>Restaurar</source>
+<target>Reset</target>
+</trans-unit>
 <trans-unit id="increaseKpiSize">
   <source>Incrementar el tamaño del KPI</source>
   <target>Increment KPI size</target>

@@ -4816,6 +4816,10 @@ Resum d'atributs
   <source>Modificar el tamaño del KPI</source>
   <target>Modificar la mida del KPI</target>
 </trans-unit>
+<trans-unit id="resetSectionButton">
+  <source>Restaurar</source>
+  <target>Restablir</target>
+</trans-unit>
 <trans-unit id="increaseKpiSize">
   <source>Incrementar el tamaño del KPI</source>
   <target>Incrementar la mida del KPI</target>

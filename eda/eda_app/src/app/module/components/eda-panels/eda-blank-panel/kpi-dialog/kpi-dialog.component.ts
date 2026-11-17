@@ -78,6 +78,9 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public chartContent: any;
     public display: boolean = false;
     public activeTab: "aspecto" | "grafico" | "alerts" = "aspecto";
+    /** Collapsible "Tamaño"/"Estilo visual" cards, forks mode only (useHoverResize) - Edalitics mode always renders them expanded. */
+    public isSizeExpanded: boolean = true;
+    public isAppearanceExpanded: boolean = true;
     public isKpiTrend: boolean = false;
     public isKpiDeviation: boolean = false;
     public selectedPalette: { name: string; paleta: any } | null = null;
@@ -599,5 +602,27 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         const instance = this.panelChartComponent.componentRef.instance;
         instance.inject.imageScale = this.imageScale;
         this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+    }
+
+    /** Collapse/expand toggle for the "Tamaño"/"Estilo visual" cards - forks mode (useHoverResize) only. */
+    toggleSection(section: 'size' | 'appearance'): void {
+        if (!this.useHoverResize) return;
+        if (section === 'size') this.isSizeExpanded = !this.isSizeExpanded;
+        else this.isAppearanceExpanded = !this.isAppearanceExpanded;
+    }
+
+    /** Resets suffix/image scale to default (value scale isn't shown in forks mode - see showValueSizeControl). */
+    resetSizeSection(): void {
+        this.setSufixFontScale(KPI_CONFIG.DEFAULT_FONT_SCALE);
+        this.setImageScale(KPI_CONFIG.IMAGE_DEFAULT_SCALE);
+    }
+
+    resetAppearanceSection(): void {
+        this.kpiBackgroundColor = '#ffffff';
+        this.updateKpiBackground();
+        this.kpiTextColor = '#000000';
+        this.updateKpiTextColor();
+        this.prefixImage = '';
+        this.updatePrefixImage();
     }
 }

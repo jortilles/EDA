@@ -50,12 +50,21 @@
 
             <!-- Size -->
             <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
-              <div class="px-4 py-1.5 border-b bg-white">
+              <div class="px-4 py-1.5 border-b bg-white flex items-center justify-between"
+                [class.cursor-pointer]="useHoverResize" (click)="toggleSection('size')">
                 <h3 class="font-medium text-slate-800 flex items-center gap-2">
                   <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">1</span>
                   <span i18n="@@kpiSize">Modificar el tamaño del KPI</span>
                 </h3>
+                @if (useHoverResize) {
+                  <div class="flex items-center gap-3">
+                    <button type="button" class="kpi-section-reset"
+                      (click)="$event.stopPropagation(); resetSizeSection()" i18n="@@resetSectionButton">Restaurar</button>
+                    <i class="pi" [ngClass]="isSizeExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                  </div>
+                }
               </div>
+              @if (!useHoverResize || isSizeExpanded) {
               <div class="p-4 flex flex-col gap-3">
                 @if (showLegacySizeControl) {
                   <div class="inline-flex w-full gap-4 items-center justify-between">
@@ -90,16 +99,26 @@
                   </div>
                 }
               </div>
+              }
             </div>
 
             <!-- KPI colors -->
             <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
-              <div class="px-4 py-1.5 border-b bg-white">
+              <div class="px-4 py-1.5 border-b bg-white flex items-center justify-between"
+                [class.cursor-pointer]="useHoverResize" (click)="toggleSection('appearance')">
                 <h3 class="font-medium text-slate-800 flex items-center gap-2">
                   <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">2</span>
                   <span i18n="@@kpiVisualStyle">Estilo visual del KPI</span>
                 </h3>
+                @if (useHoverResize) {
+                  <div class="flex items-center gap-3">
+                    <button type="button" class="kpi-section-reset"
+                      (click)="$event.stopPropagation(); resetAppearanceSection()" i18n="@@resetSectionButton">Restaurar</button>
+                    <i class="pi" [ngClass]="isAppearanceExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                  </div>
+                }
               </div>
+              @if (!useHoverResize || isAppearanceExpanded) {
               <div class="p-4 grid gap-4 md:grid-cols-2">
 
                 <!-- Background color -->
@@ -161,6 +180,7 @@
                 </div>
 
               </div>
+              }
             </div>
 
             <!-- Colores de series (kpitrend solo - kpibar/kpiline/kpiarea los tienen en la pestaña Gráfico) -->

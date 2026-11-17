@@ -5301,6 +5301,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <source>Modificar el tamaño del KPI</source>
   <target>Zmień rozmiar KPI</target>
 </trans-unit>
+<trans-unit id="resetSectionButton">
+  <source>Restaurar</source>
+  <target>Przywróć</target>
+</trans-unit>
 <trans-unit id="increaseKpiSize">
   <source>Incrementar el tamaño del KPI</source>
   <target>Incrementuj rozmiar KPI</target>

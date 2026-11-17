@@ -50,6 +50,16 @@
 .kpi-add-alert-btn:hover:not(:disabled) { filter: brightness(0.88); }
 .kpi-add-alert-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* ── Collapsible section "Restaurar" button (forks mode only) ── */
+.kpi-section-reset {
+  font-size: 0.8rem;
+  color: #64748b;
+  text-decoration: underline;
+}
+.kpi-section-reset:hover {
+  color: var(--corporate-primary);
+}
+
 /* ── Alert mail icon ── */
 .kpi-mail-icon--active { color: var(--corporate-primary); }
 .kpi-mail-icon--inactive { color: #cbd5e1; }

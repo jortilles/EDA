@@ -3166,6 +3166,10 @@
         <source>Modificar el tamaño del KPI</source>
         <target>Modifica la dimensione del KPI</target>
       </trans-unit>
+      <trans-unit id="resetSectionButton" datatype="html">
+        <source>Restaurar</source>
+        <target>Ripristina</target>
+      </trans-unit>
       <trans-unit id="increaseKpiSize" datatype="html">
         <source>Incrementar el tamaño del KPI</source>
         <target>Aumenta la dimensione del KPI</target>
