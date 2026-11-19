@@ -37,13 +37,20 @@ test.describe('Dashboards (/dashboard)', () => {
         track('datasource', dsId);
     });
 
-    test('listar dashboards devuelve la estructura esperada (dashboards/publics/group/shared)', async ({ api }) => {
+    test('listar dashboards devuelve la estructura esperada (private/group/open/common)', async ({ api }) => {
         const res = await api.get('/dashboard');
         expect(res.ok()).toBeTruthy();
         const body = await res.json();
         expect(body.ok).toBeTruthy();
-        expect(Array.isArray(body.dashboards)).toBeTruthy();
+        // La API no devuelve un unico "dashboards": los separa en 4 listas por
+        // visibilidad (dashboard.controller.ts:getDashboards), consumidas tal cual por
+        // el frontend (home.page.ts, main-left-sidebar.component.ts).
+        expect(Array.isArray(body.private)).toBeTruthy();
+        expect(Array.isArray(body.group)).toBeTruthy();
+        expect(Array.isArray(body.open)).toBeTruthy();
+        expect(Array.isArray(body.common)).toBeTruthy();
         expect(typeof body.isAdmin).toBe('boolean');
+        expect(typeof body.isDataSourceCreator).toBe('boolean');
     });
 
     test('ciclo completo: crear, leer, actualizar, clonar y borrar un dashboard', async ({ api, uniqueName, track }) => {

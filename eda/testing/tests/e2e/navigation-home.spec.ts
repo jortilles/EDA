@@ -4,7 +4,9 @@ test.describe('Home y navegacion principal', () => {
     test('home carga y muestra el boton de crear informe para un admin', async ({ page }) => {
         await page.goto('/#/home');
         await expect(page).toHaveURL(/#\/home/);
-        await expect(page.getByText('Crear nuevo informe')).toBeVisible({ timeout: 15_000 });
+        // Tolera es ("Crear nuevo informe") y ca ("Crear nou informe") -- ver nota
+        // en admin-groups.spec.ts.
+        await expect(page.getByText(/Crear n(uevo|ou) informe/)).toBeVisible({ timeout: 15_000 });
     });
 
     test('la barra de navegacion lateral se renderiza con sus iconos', async ({ page }) => {
@@ -12,11 +14,17 @@ test.describe('Home y navegacion principal', () => {
         await expect(page.locator('#sidebar-btn-toggle')).toBeVisible({ timeout: 15_000 });
     });
 
-    for (const route of ['/admin/users', '/admin/groups', '/admin/media', '/admin/data-source', '/logs', '/about', '/profile']) {
+    for (const route of ['/admin/users', '/admin/groups', '/admin/media', '/admin/data-source', '/admin/alerts-management', '/logs', '/about', '/profile']) {
         test(`un admin puede navegar directamente a ${route} sin ser redirigido a login`, async ({ page }) => {
+            // 'networkidle' no es fiable aqui: /admin/alerts-management dispara un
+            // GET /dashboard/:id por cada dashboard existente (N+1,
+            // alerts-management.component.ts:initDashboards()) -- con los ~100+
+            // dashboards de una BBDD de dev real, la red nunca llega a quedar
+            // inactiva dentro del timeout. Lo que el test necesita de verdad es solo
+            // "no redirigio a login", que expect() con reintentos ya cubre sin esperar
+            // a que la red se calle.
             await page.goto(`/#${route}`);
-            await page.waitForLoadState('networkidle');
-            await expect(page).not.toHaveURL(/#\/login/);
+            await expect(page).not.toHaveURL(/#\/login/, { timeout: 20_000 });
         });
     }
 

@@ -77,7 +77,7 @@
 
           <!-- Meta + copy -->
           <div class="flex items-center gap-2 mt-1">
-            <span class="msg-meta">{{ m.role }} · {{ m.timestamp | date:'shortTime' }}</span>
+            <span class="msg-meta">{{ m.role }} · {{ m.timestamp | date:'shortTime':undefined:appLocale }}</span>
             @if (m.role === 'user' || m.role === 'assistant') {
               <button class="copy-btn" (click)="copyMessage(m)">
                 @if (!m.copied) {

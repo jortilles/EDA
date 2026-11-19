@@ -39,9 +39,12 @@ test.describe('Asistente IA (/assistant) y MCP (/ia) — solo caminos seguros, s
         expect(typeof body.available).toBe('boolean');
     });
 
-    test('POST /ia/chat sin campo messages devuelve 400 (no llega a llamar al LLM)', async ({ api }) => {
+    test('POST /ia/chat sin campo messages devuelve 400, o 503 si la IA no esta configurada en este entorno', async ({ api }) => {
+        // mcp.router.ts comprueba primero si el proveedor de IA esta disponible (503 si
+        // no hay API key configurada) y solo despues valida el body (400 si falta
+        // messages[]) -- en un entorno de desarrollo sin IA configurada, 503 es correcto.
         const res = await api.post('/ia/chat', {});
-        expect(res.status()).toBe(400);
+        expect([400, 503]).toContain(res.status());
     });
 
     test('POST /ia/chat sin token devuelve 401', async ({ apiAnonymous }) => {
@@ -60,23 +63,13 @@ test.describe('Asistente IA (/assistant) y MCP (/ia) — solo caminos seguros, s
     });
 
     /**
-     * HALLAZGO DE SEGURIDAD: GET /assistant/config solo tiene authGuard (ai.router.ts:125),
-     * sin roleGuard. Cualquier usuario autenticado -- no solo un admin -- puede leer esta
-     * ruta, y ai.controller.ts:140-160 (aIgetConfig) devuelve la API key real del proveedor
-     * de IA y la contraseña de servicio del MCP (MCP_PASSWORD) en texto plano dentro de la
-     * respuesta. Esta prueba documenta el problema sin imprimir nunca el valor del secreto
-     * (usa .not.toHaveProperty, que no vuelca el valor en el mensaje de fallo).
+     * GET /assistant/config lleva [authGuard, roleGuard] (ai.router.ts:126): un usuario
+     * autenticado sin rol admin recibe 403, sin llegar a aIgetConfig (que devolveria la
+     * API key real del proveedor de IA y MCP_PASSWORD en texto plano). Esto documentaba
+     * antes una fuga de secretos a cualquier usuario autenticado; ya esta corregido.
      */
-    test('[seguridad] un usuario SIN rol admin no deberia poder leer la API key de IA via /assistant/config', async ({ apiAsLimitedUser }) => {
+    test('[seguridad] un usuario SIN rol admin no puede leer la API key de IA via /assistant/config', async ({ apiAsLimitedUser }) => {
         const res = await apiAsLimitedUser.get('/assistant/config');
-        if (res.status() === 403) return; // comportamiento deseado, si en el futuro se corrige
-        expect(res.ok()).toBeTruthy();
-        const body = await res.json();
-        // OJO: nunca comparar/imprimir el VALOR de estas claves (son secretos reales en vivo).
-        // Solo se comprueba si la clave existe en el objeto, con booleanos, para que un fallo
-        // de esta asercion no pueda volcar el secreto en la consola/informe HTML.
-        const keys = Object.keys(body.config ?? {});
-        expect(keys.includes('API_KEY'), 'La respuesta no deberia incluir la clave API_KEY').toBe(false);
-        expect(keys.includes('MCP_PASSWORD'), 'La respuesta no deberia incluir la clave MCP_PASSWORD').toBe(false);
+        expect(res.status()).toBe(403);
     });
 });

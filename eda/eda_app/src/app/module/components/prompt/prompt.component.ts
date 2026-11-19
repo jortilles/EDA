@@ -7,6 +7,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 // Components
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
+import { currentAppLocale } from '@eda/plugins/datasource-plugins/plugin-form.service';
 
 // Chart suggestion interface for the AI assistant
 interface ChartSuggestion {
@@ -56,6 +57,11 @@ export class PromptComponent implements OnInit, AfterViewInit {
     private shouldAutoScroll: boolean = true;
     loading: boolean = false;
     isCopied: boolean = false;
+
+    // Para el pipe "date" del template: LOCALE_ID no es fiable en un build localizado
+    // (ver el comentario de currentAppLocale() en plugin-form.service.ts), asi que sin
+    // pasarle esto explicitamente el pipe caeria siempre al formato en-US.
+    appLocale = currentAppLocale();
 
     // Filter resolution state: activated when the backend responds with awaiting_resolution or awaiting_selection
     private resolutionState: { options: string[], unresolvedFilter: any, pendingResult: any } | null = null;

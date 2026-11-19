@@ -24,7 +24,7 @@
     <div style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:700;margin-bottom:12px;"
          [style.color]="fillColor">
       <span>{{ isPositive ? '▲' : '▼' }}</span>
-      <span>{{ (isPositive ? '+' : '') }}{{ displayVsPercent | number:'1.1-1':'es' }}%</span>
+      <span>{{ (isPositive ? '+' : '') }}{{ displayVsPercent | number:'1.1-1':locale }}%</span>
     </div>
   }
 

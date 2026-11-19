@@ -1,9 +1,10 @@
 import { Component, OnInit, OnChanges, SimpleChanges, Input, HostBinding,
-         ChangeDetectorRef, AfterViewInit, Self, ElementRef, Inject, LOCALE_ID } from '@angular/core';
+         ChangeDetectorRef, AfterViewInit, Self, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EdaKpiDeviation } from './eda-kpi-deviation';
 import { StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
 import { MediaSrcPipe } from '@eda/pipes/media-src.pipe';
+import { currentAppLocale } from '@eda/plugins/datasource-plugins/plugin-form.service';
 
 
 @Component({
@@ -37,11 +38,16 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
     color: string = '#67757c';
     family: string = 'inherit';
 
+    // LOCALE_ID no es fiable en un build localizado (main.ts reimporta
+    // @angular/localize/init, que lo deja siempre en 'en-US'); ver el comentario de
+    // currentAppLocale() en plugin-form.service.ts. Publico porque el template
+    // tambien lo usa (pipe "number").
+    locale = currentAppLocale();
+
     constructor(
         private styleProviderService: StyleProviderService,
         private cdr: ChangeDetectorRef,
-        @Self() private hostRef: ElementRef,
-        @Inject(LOCALE_ID) private locale: string
+        @Self() private hostRef: ElementRef
     ) {
     }
 

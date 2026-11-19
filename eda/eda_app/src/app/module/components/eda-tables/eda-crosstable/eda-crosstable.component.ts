@@ -23,6 +23,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { EdaLineComponent } from '@eda/components/eda-line-d3/eda-line.component';
 import { EdaContextMenuComponent } from '@eda/shared/components/shared-components.index';
 import { DialogModule } from 'primeng/dialog';
+import { currentAppLocale } from '@eda/plugins/datasource-plugins/plugin-form.service';
 
 /**
  * Crosstable-only sibling of EdaTableComponent — same cell-rendering/color/sort/nav
@@ -59,6 +60,11 @@ export class EdaCrosstableComponent implements OnInit, AfterViewInit {
     public lodash: any = _;
     public colors = {};
     public styles = {};
+
+    // Para el pipe "number" del template (antes hardcodeado a 'es'): LOCALE_ID no es
+    // fiable en un build localizado, ver el comentario de currentAppLocale() en
+    // plugin-form.service.ts.
+    public appLocale = currentAppLocale();
 
     constructor(
         private elementRef: ElementRef,

@@ -1,4 +1,4 @@
-import { Component, inject, LOCALE_ID, ViewEncapsulation } from '@angular/core';
+import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgClass, NgComponentOutlet } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -11,6 +11,7 @@ import { CreateDashboardService } from '@eda/services/utils/create-dashboard.ser
 import { GroupService } from '@eda/services/api/group.service';
 import { DashboardService } from '@eda/services/api/dashboard.service';
 import { COMPONENT_PLUGINS } from '@eda/plugins/component-plugins/component-plugin-registry';
+import { currentAppLocale } from '@eda/plugins/datasource-plugins/plugin-form.service';
 
 interface NavItem {
   path?: string;
@@ -38,7 +39,13 @@ export class MainLeftSidebarComponent {
   private groupService = inject(GroupService);
   private dashboardService = inject(DashboardService);
   private iconService = inject(IconService);
-  private currentLocale = inject(LOCALE_ID);
+  // LOCALE_ID no es fiable en un build localizado (ver el comentario de
+  // currentAppLocale() en plugin-form.service.ts: main.ts reimporta
+  // @angular/localize/init, que resetea $localize y hace que LOCALE_ID caiga
+  // siempre a 'en-US'). Con eso, redirectLocale() nunca reconocia el idioma
+  // actual en una instancia real (solo "funcionaba" en local porque ng serve
+  // sirve el mismo bundle sin importar el path, enmascarando el fallo).
+  private currentLocale = currentAppLocale();
   public queryParams: any = {};
   public hideWheel: boolean = false;
   public panelMode: boolean = false;
@@ -282,7 +289,11 @@ menuCommand(item: any, event: MouseEvent) {
   }
 
   public redirectLocale(lan: string) {
-    let baseUrl = window.location.href.split('#')[0];
+    // document.baseURI es el href ya resuelto de <base>, que Angular reescribe en el
+    // build de cada idioma a su propia carpeta (".../ca/"): a diferencia de
+    // window.location.href, no arrastra la query string ni el hash de la ruta
+    // actual, asi que no hace falta recortarlos a mano antes de comparar.
+    let baseUrl = document.baseURI;
 
     // Drop the current locale folder (/es/, /ca/...) to get the app root
     if (baseUrl.endsWith(`/${this.currentLocale}/`)) {

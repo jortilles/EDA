@@ -7,7 +7,9 @@ test.describe('Administracion de usuarios (/admin/users)', () => {
         const email = `${uniqueName('ui-user')}@eda-tests.local`;
 
         await page.goto('/#/admin/users');
-        await page.getByText('Crear Usuario').click();
+        // Tolera es ("Crear Usuario") y ca ("Crear Usuari") -- ver nota en
+        // admin-groups.spec.ts sobre por que el idioma servido no esta fijado.
+        await page.getByText(/Crear Usuari(o)?/).click();
 
         // Los campos del dialogo no tienen id/formcontrolname (solo [(ngModel)]), asi que
         // se localizan por orden dentro del dialogo PrimeNG actualmente abierto.
@@ -24,7 +26,8 @@ test.describe('Administracion de usuarios (/admin/users)', () => {
         await expect(page.locator('.swal2-popup')).toBeVisible({ timeout: 10_000 });
         await page.locator('.swal2-confirm').click();
         await expect(page.locator('.swal2-popup')).toHaveCount(0, { timeout: 10_000 });
-        await page.locator('input[placeholder="Buscar usuarios..."]').fill(email);
+        // "Buscar usuarios..." (es) / "Cercar usuaris..." (ca)
+        await page.locator('input[placeholder="Buscar usuarios..."], input[placeholder="Cercar usuaris..."]').fill(email);
 
         const row = page.locator('table tr', { hasText: email });
         await expect(row).toBeVisible({ timeout: 15_000 });
@@ -39,7 +42,8 @@ test.describe('Administracion de usuarios (/admin/users)', () => {
 
     test('buscar usuarios filtra la lista', async ({ page, adminSession }) => {
         await page.goto('/#/admin/users');
-        await page.locator('input[placeholder="Buscar usuarios..."]').fill(adminSession.email);
+        // "Buscar usuarios..." (es) / "Cercar usuaris..." (ca)
+        await page.locator('input[placeholder="Buscar usuarios..."], input[placeholder="Cercar usuaris..."]').fill(adminSession.email);
         await expect(page.locator('table tr', { hasText: adminSession.email })).toBeVisible({ timeout: 10_000 });
     });
 });

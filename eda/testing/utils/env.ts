@@ -17,7 +17,8 @@ export const ENV = {
     bootstrapAdminEmail: required('BOOTSTRAP_ADMIN_EMAIL', 'pruebaAdmin'),
     bootstrapAdminPassword: required('BOOTSTRAP_ADMIN_PASSWORD', 'pruebaAdmin'),
     testRunPrefix: required('TEST_RUN_PREFIX', 'PWTEST'),
-    autoStartApi: (process.env.AUTO_START_API ?? 'true').toLowerCase() !== 'false',
+    autoStartApi: (process.env.AUTO_START_API ?? 'false').toLowerCase() === 'true',
+    autoStartApp: (process.env.AUTO_START_APP ?? 'false').toLowerCase() === 'true',
 };
 
 /** Id fijo del grupo EDA_ADMIN_ROLE (ver lib/module/admin/groups/group.controller.ts) */

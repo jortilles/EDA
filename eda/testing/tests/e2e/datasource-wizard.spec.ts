@@ -23,20 +23,25 @@ test.describe('Asistente de creacion de datasource (/admin/data-source/new)', ()
         await page.locator('#user').fill('no_existe');
         await page.locator('#password').fill('no_existe');
 
-        await page.getByText('Probar conexión').click();
+        // Tolera es ("Probar conexión") y ca ("Provar connexió") -- ver nota en
+        // admin-groups.spec.ts.
+        await page.getByText(/Probar conexión|Provar connexió/).click();
 
         await expect(page.locator('.p-toast-message-error, .swal2-popup')).toBeVisible({ timeout: 20_000 });
     });
 
     test('probar conexion con el formulario incompleto muestra un error de validacion', async ({ page }) => {
         await page.goto('/#/admin/data-source/new');
-        await page.getByText('Probar conexión').click();
+        await page.getByText(/Probar conexión|Provar connexió/).click();
         await expect(page.locator('.p-toast-message-error, .swal2-popup')).toBeVisible({ timeout: 10_000 });
     });
 
     test('la lista de datasources carga y el boton de crear navega al formulario', async ({ page }) => {
         await page.goto('/#/admin/data-source');
-        await page.getByText('Crear DataSource').click();
+        // Tolera es ("Crear DataSource") y ca ("Crear font de dades", mismo id de
+        // traduccion @@addDatasource que el del menu lateral) -- ver nota en
+        // admin-groups.spec.ts.
+        await page.getByText(/Crear (DataSource|font de dades)/).click();
         await page.waitForURL(/#\/admin\/data-source\/new/, { timeout: 10_000 });
         await expect(page.locator('#name')).toBeVisible();
     });

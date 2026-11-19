@@ -82,7 +82,7 @@
                [class.kpi-trend-positive]="displayVsPercent >= 0"
                [class.kpi-trend-negative]="displayVsPercent < 0">
             <span>{{ displayVsPercent >= 0 ? '▲' : '▼' }}</span>
-            <span>{{ absVal(displayVsPercent) | number:'1.1-1':'es' }}%</span>
+            <span>{{ absVal(displayVsPercent) | number:'1.1-1':locale }}%</span>
           </div>
         }
       </div>

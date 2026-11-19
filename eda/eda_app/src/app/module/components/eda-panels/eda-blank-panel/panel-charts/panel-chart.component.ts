@@ -9,7 +9,8 @@ import { TreeMap } from './../../../eda-treemap/eda-treeMap';
 import { EdaD3Component } from './../../../eda-d3-sankey/eda-d3-sankey.component';
 import { TableConfig } from './chart-configuration-models/table-config';
 import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
-    OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID, Type, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+    OnDestroy, Output, EventEmitter, Self, ElementRef, Type, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { currentAppLocale } from '@eda/plugins/datasource-plugins/plugin-form.service';
 import { EdadynamicTextComponent } from '@eda/components/eda-dynamicText/eda-dynamicText.component';
 import { EdaTableComponent } from '@eda/components/eda-tables/eda-table/eda-table.component';
 import { EdaCrosstableComponent } from '@eda/components/eda-tables/eda-crosstable/eda-crosstable.component';
@@ -125,14 +126,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public histoGramDescTxt: string = $localize`:@@histoGramDescTxt:Número de`;
     public histoGramDescTxt2: string = $localize`:@@histoGramDescTxt2:en este rango`;
 
+    // LOCALE_ID no es fiable en un build localizado (main.ts reimporta
+    // @angular/localize/init, que lo deja siempre en 'en-US'); ver el comentario de
+    // currentAppLocale() en plugin-form.service.ts.
+    private locale = currentAppLocale();
 
     constructor(
         private chartUtils: ChartUtilsService,
         @Self() private ownRef: ElementRef,
         public styleProviderService: StyleProviderService,
         private cdr: ChangeDetectorRef,
-        private dashboardService: DashboardService,
-        @Inject(LOCALE_ID) private locale: string) {
+        private dashboardService: DashboardService) {
 
         this.fontColor = this.styleProviderService.resolveContentFontColor(this.props?.panelStyleOverride);
         this.paletaActual = this.styleProviderService.ActualChartPalette !== undefined ?

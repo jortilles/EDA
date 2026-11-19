@@ -18,12 +18,18 @@ test.describe('Dashboards: crear, ver y borrar desde la UI', () => {
         const title = uniqueName('ui-dashboard');
 
         await page.goto('/#/home');
-        await page.getByText('Crear nuevo informe').click();
+        // Tolera es ("Crear nuevo informe") y ca ("Crear nou informe") -- ver nota
+        // en admin-groups.spec.ts.
+        await page.getByText(/Crear n(uevo|ou) informe/).click();
 
         await page.locator('input[formcontrolname="name"]').fill(title);
         // El id "float-ds" lo comparten el <p-dropdown> (wrapper de Angular) y el <div>
         // interno que PrimeNG genera para el trigger clicable; hay que apuntar a este ultimo.
         await page.locator('div.p-dropdown#float-ds').click();
+        // Espera a que el panel de opciones de PrimeNG este realmente abierto antes de
+        // clicar una opcion -- el trigger abre con una animacion/render asincrono, y
+        // clicar sin esto es una causa clasica de flakiness en dropdowns PrimeNG.
+        await page.locator('.p-dropdown-panel').waitFor({ state: 'visible' });
         await page.getByRole('option', { name: dsName }).click();
 
         await page.locator('.confirm-button').click();
@@ -42,7 +48,9 @@ test.describe('Dashboards: crear, ver y borrar desde la UI', () => {
 
     test('crear un dashboard sin rellenar el nombre mantiene el boton confirmar deshabilitado', async ({ page }) => {
         await page.goto('/#/home');
-        await page.getByText('Crear nuevo informe').click();
+        // Tolera es ("Crear nuevo informe") y ca ("Crear nou informe") -- ver nota
+        // en admin-groups.spec.ts.
+        await page.getByText(/Crear n(uevo|ou) informe/).click();
         await expect(page.locator('.confirm-button')).toBeDisabled();
     });
 });

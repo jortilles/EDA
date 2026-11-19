@@ -1,11 +1,12 @@
 import { Component, OnInit, OnChanges, OnDestroy, SimpleChanges, Input, HostBinding,
-         ChangeDetectorRef, AfterViewInit, ViewChild, ElementRef, Self, Inject, LOCALE_ID } from '@angular/core';
+         ChangeDetectorRef, AfterViewInit, ViewChild, ElementRef, Self } from '@angular/core';
 import { CommonModule, getLocaleMonthNames, FormStyle, TranslationWidth } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { EdaKpiTrend, TrendPeriodGroup } from './eda-kpi-trend';
 import { EdaBarlineComponent } from '../eda-barline-d3/eda-barline.component';
 import { StyleProviderService, PanelStyleOverride } from '@eda/services/service.index';
+import { currentAppLocale } from '@eda/plugins/datasource-plugins/plugin-form.service';
 
 @Component({
     standalone: true,
@@ -49,11 +50,16 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
     family: string = 'inherit';
     modifiedFontPoints: number = 0;
 
+    // LOCALE_ID no es fiable en un build localizado (main.ts reimporta
+    // @angular/localize/init, que lo deja siempre en 'en-US'); ver el comentario de
+    // currentAppLocale() en plugin-form.service.ts. Publico porque el template
+    // tambien lo usa (pipe "number").
+    locale = currentAppLocale();
+
     constructor(
         private styleProviderService: StyleProviderService,
         private cdr: ChangeDetectorRef,
-        @Self() private hostRef: ElementRef,
-        @Inject(LOCALE_ID) private locale: string
+        @Self() private hostRef: ElementRef
     ) {
     }
 
@@ -245,7 +251,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
         const sign = value < 0 ? '-' : '';
         if (abs >= 1_000_000) return sign + (abs / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
         if (abs >= 1_000) return sign + (abs / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
-        return sign + abs.toLocaleString('es');
+        return sign + abs.toLocaleString(this.locale);
     }
 
     absVal(v: number): number { return Math.abs(v); }

@@ -73,14 +73,18 @@ export default defineConfig({
             : []),
         // Frontend (eda_app): normalmente ya esta corriendo con `ng serve` en :4200.
         // Si no lo esta, se lanza aqui; si ya lo esta, Playwright lo detecta y no hace nada.
-        {
-            command: 'npm start',
-            cwd: path.resolve(__dirname, '..', 'eda_app'),
-            url: ENV.appBaseURL,
-            reuseExistingServer: true,
-            timeout: 120_000,
-            stdout: 'pipe',
-            stderr: 'pipe',
-        },
+        ...(ENV.autoStartApp
+            ? [
+                  {
+                      command: 'npm start',
+                      cwd: path.resolve(__dirname, '..', 'eda_app'),
+                      url: ENV.appBaseURL,
+                      reuseExistingServer: true,
+                      timeout: 120_000,
+                      stdout: 'pipe' as const,
+                      stderr: 'pipe' as const,
+                  },
+              ]
+            : []),
     ],
 });

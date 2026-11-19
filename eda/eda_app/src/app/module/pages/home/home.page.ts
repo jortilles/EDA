@@ -20,6 +20,7 @@ import { ChatbotComponent } from '@eda/components/chatbot/chatbot.component';
 import { GettingStartedComponent } from '@eda/shared/components/getting-started/getting-started.component';
 import { DragDropModule, CdkDragEnd, CdkDragMove, CdkDragStart } from '@angular/cdk/drag-drop';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { currentAppLocale } from '@eda/plugins/datasource-plugins/plugin-form.service';
 
 type DragPayload =
   | { type: 'report'; report: any; fromColKey: string; fromTag: string | null }
@@ -38,6 +39,11 @@ export class HomePage implements OnInit, OnDestroy {
   private alertService = inject(AlertService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+
+  // Para el pipe "date" del template: LOCALE_ID no es fiable en un build localizado
+  // (ver el comentario de currentAppLocale() en plugin-form.service.ts), asi que sin
+  // pasarle esto explicitamente el pipe caeria siempre al formato en-US.
+  public appLocale = currentAppLocale();
 
   allDashboards: any[] = [];
   reportsLoaded = signal(false);

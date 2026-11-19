@@ -11,6 +11,7 @@ import { KPI_CONFIG } from '@eda/configs/customizable/customizable_merged';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MediaSrcPipe } from '@eda/pipes/media-src.pipe';
+import { currentAppLocale } from '@eda/plugins/datasource-plugins/plugin-form.service';
 
 
 @Component({
@@ -41,6 +42,11 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
     sufixClick: boolean = false;
     color: string;
     family: string;
+
+    // Para el pipe "number" del template (antes hardcodeado a 'es'): LOCALE_ID no es
+    // fiable en un build localizado, ver el comentario de currentAppLocale() en
+    // plugin-form.service.ts.
+    appLocale = currentAppLocale();
     defaultColor = '#67757c';
     warningColor = '#ff8100';
     containerHeight: number = 20;
@@ -189,7 +195,7 @@ export class EdaKpiComponent implements OnInit, AfterViewInit, OnDestroy {
         if (raw === null || raw === undefined || raw === '') return '';
         const numeric = Array.isArray(raw) ? Number(raw[0]) : Number(raw);
         try {
-            return Number.isFinite(numeric) ? formatNumber(numeric, 'es', this.getNumberFormat()) : String(raw);
+            return Number.isFinite(numeric) ? formatNumber(numeric, this.appLocale, this.getNumberFormat()) : String(raw);
         } catch {
             return String(raw);
         }

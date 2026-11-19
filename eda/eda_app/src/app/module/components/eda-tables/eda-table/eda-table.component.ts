@@ -25,6 +25,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { EdaLineComponent } from '@eda/components/eda-line-d3/eda-line.component';
 import { EdaContextMenuComponent } from '@eda/shared/components/shared-components.index';
 import { DialogModule } from 'primeng/dialog';  // <--- import PrimeNG module
+import { currentAppLocale } from '@eda/plugins/datasource-plugins/plugin-form.service';
 
 
 @Component({
@@ -57,6 +58,11 @@ export class EdaTableComponent implements OnInit, AfterViewInit, OnDestroy {
     public lodash: any = _;
     public colors = {};
     public styles = {};
+
+    // Para el pipe "number" del template (antes hardcodeado a 'es'): LOCALE_ID no es
+    // fiable en un build localizado, ver el comentario de currentAppLocale() en
+    // plugin-form.service.ts.
+    public appLocale = currentAppLocale();
 
     /** Must match GROUPED_SUBTOTAL_LEVEL_KEY in eda-blank-panel/panel-utils/grouped-subtotals-utils.ts
      *  — duplicated as a literal (not imported) so this shared/generic table component doesn't

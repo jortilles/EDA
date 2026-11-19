@@ -60,7 +60,7 @@
             </div>
           }
           <div [ngStyle]="edaTextWrapStyle()">
-            <div [ngStyle]="edaValueStyle()" (click)="setSufix(); $event.stopPropagation()">{{ inject.value | number:getNumberFormat():'es' }}</div>
+            <div [ngStyle]="edaValueStyle()" (click)="setSufix(); $event.stopPropagation()">{{ inject.value | number:getNumberFormat():appLocale }}</div>
             @if (edaSufixText()) {
               <div [ngStyle]="edaSufixStyle()" (click)="setSufix(); $event.stopPropagation()">{{ inject.sufix }}</div>
             }

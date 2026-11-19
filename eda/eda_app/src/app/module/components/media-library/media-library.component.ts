@@ -8,6 +8,7 @@ import { AlertService, MediaService, IMedia, IMediaFolder } from '@eda/services/
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { MediaSrcPipe } from '@eda/pipes/media-src.pipe';
+import { currentAppLocale } from '@eda/plugins/datasource-plugins/plugin-form.service';
 
 import Swal from 'sweetalert2';
 
@@ -44,6 +45,11 @@ export class MediaLibraryComponent implements OnInit, OnDestroy {
   @Input() pickFolderMode = false;
   @Output() folderSelect = new EventEmitter<{ id: string | null; name: string }>();
   readonly mediaHomeLabel = ROOT_FOLDER_LABEL;
+
+  // Para el pipe "date" del template: LOCALE_ID no es fiable en un build localizado
+  // (ver el comentario de currentAppLocale() en plugin-form.service.ts), asi que sin
+  // pasarle esto explicitamente el pipe caeria siempre al formato en-US.
+  readonly appLocale = currentAppLocale();
 
   // Reusable, always-in-the-DOM (off-screen) drag previews - see setDragGhost(). Reusing the same
   // elements instead of creating a throwaway node per drag avoids the browser occasionally using

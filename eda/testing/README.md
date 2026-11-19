@@ -7,6 +7,10 @@ una instancia real corriendo en local.
 ## Arranque rápido
 
 ```bash
+# en otras dos terminales, deja corriendo:
+cd eda/eda_api && npm run dev     # puerto 8666
+cd eda/eda_app && npm start       # puerto 4200
+
 cd eda/testing
 npm install
 npm run install:browsers   # una sola vez
@@ -14,10 +18,11 @@ cp .env.example .env       # y ajusta si hace falta (ver mas abajo)
 npm test                   # corre TODO: API + navegador
 ```
 
-- La API (`eda_api`, puerto fijo **8666**) se arranca sola si no está ya corriendo
-  (`npm run dev` dentro de `eda_api`, vía Playwright `webServer`).
-- El frontend (`eda_app`, puerto **4200**) se reutiliza si ya tienes `ng serve` abierto;
-  si no, también se arranca solo.
+- La API (`eda_api`, puerto fijo **8666**) y el frontend (`eda_app`, puerto **4200**)
+  **debes arrancarlos tú** antes de `npm test` (`AUTO_START_API`/`AUTO_START_APP` estan
+  a `false` por defecto -- ver hallazgo #5 más abajo sobre por qué el auto-arranque es
+  arriesgado con `eda_api` en modo cluster). Si de verdad los quieres auto-arrancados,
+  ponlos a `true` en `.env`, sabiendo que puede colisionar con una instancia ya corriendo.
 - Al terminar, `npm run report` abre el informe HTML detallado.
 
 Los que más se usan en el día a día:
@@ -101,7 +106,9 @@ datasources, grupos, media) se etiqueta con un prefijo único por ejecución
 Ver `.env.example`. Las importantes:
 - `BOOTSTRAP_ADMIN_EMAIL` / `PASSWORD`: admin ya existente usado solo para el arranque.
 - `TEST_RUN_PREFIX`: prefijo de los datos de test (para poder distinguirlos y limpiarlos).
-- `AUTO_START_API`: si `false`, asume que tú ya tienes `eda_api` corriendo.
+- `AUTO_START_API` / `AUTO_START_APP`: `false` por defecto, asumen que tú ya tienes
+  `eda_api`/`eda_app` corriendo (ver hallazgo #5 de por qué el auto-arranque es
+  arriesgado).
 
 ## Hallazgos reales encontrados por esta suite
 
@@ -110,21 +117,15 @@ tests). Cada uno tiene un test dedicado que lo documenta explícitamente
 (marcado `[hallazgo]` en el nombre) para que si algún día se corrige, el test empiece a
 fallar y avise de que hay que actualizarlo:
 
-1. **[Seguridad, severidad alta] Fuga de la API key de IA a cualquier usuario autenticado.**
-   `GET /assistant/config` (`ai.controller.ts:140`, `ai.router.ts:125`) solo lleva
-   `authGuard`, sin `roleGuard`. Devuelve la API key real del proveedor de IA y la
-   contraseña del servicio MCP en texto plano. Cualquier usuario logueado, sin ningún
-   rol, puede leerlas. Test: `tests/api/assistant-and-mcp.spec.ts` (falla a propósito).
+**Ya corregidos** (se dejan documentados por el historial; los tests ya aseveran el
+comportamiento correcto, no el bug):
+- Fuga de la API key de IA a cualquier usuario autenticado via `GET /assistant/config`
+  (le faltaba `roleGuard`). Test: `tests/api/assistant-and-mcp.spec.ts`.
+- `/logs` sin control de acceso por rol, tanto en frontend (`pages.routes.ts`) como en
+  API (`/admin/log/log-file`, `/admin/log/log-error-file`). Tests:
+  `tests/e2e/permissions-ui.spec.ts`, `tests/api/logs.spec.ts`.
 
-2. **[Seguridad, severidad media] `/logs` sin control de acceso por rol.** La ruta de
-   frontend `logs` (`pages-v3.routes.ts` ~L86) y las rutas de API
-   `/admin/log/log-file` y `/admin/log/log-error-file` (`log.router.ts`) solo requieren
-   estar autenticado, no ser admin — a diferencia de TODAS las demás rutas de
-   `/admin/*`. El enlace del menú se oculta para no-admins, pero la ruta y la API están
-   abiertas igualmente. Tests: `tests/e2e/permissions-ui.spec.ts`,
-   `tests/api/logs.spec.ts` (fallan a propósito).
-
-3. **[Fiabilidad, severidad alta] Un dashboard sin datasource real asociada rompe
+1. **[Fiabilidad, severidad alta] Un dashboard sin datasource real asociada rompe
    `DELETE /datasource/:id` para CUALQUIER datasource.** `DeleteDataSource`
    (`datasource.controller.ts` ~L355) hace `dashboards.filter(d => d.config.ds._id === ...)`
    sobre TODOS los dashboards de la base de datos sin comprobar que `config.ds` exista;
@@ -134,21 +135,28 @@ fallar y avise de que hay que actualizarlo:
    verificado manualmente durante la construcción de esta suite (y limpiado de la BBDD
    de dev en el proceso). Test: `tests/api/dashboards.spec.ts` (test `[hallazgo]`).
 
-4. **[Fiabilidad, severidad baja] `GET /datasource` es lento/inestable en la BBDD de
-   dev actual.** El listado de datasources (`GetDataSources`) itera TODAS las
-   datasources y desencripta su password; con los datos reales actuales del entorno de
-   dev, a veces tarda >15s o devuelve error. Probablemente por algún registro legacy con
-   password corrupta o no válida en base64 (`EnCrypterService.decode` puede lanzar).
-   Esta suite lo tolera (es la vía "best-effort" del teardown) pero merece revisión.
+2. **[Fiabilidad, severidad media — peor de lo que parecía] `GET /datasource` no es
+   solo lento: en la BBDD de dev actual tarda 20-30s y ACABA LANZANDO UN ERROR**
+   (`{"status":404,"message":"Error loading DataSources"}`, el propio catch de
+   `GetDataSources` en `datasource.controller.ts`), reproducido de forma consistente
+   (curl y `fetch` directos, varias veces seguidas, con el backend limpio y sin otra
+   carga). La causa es casi seguro que esta ruta hace `DataSource.find({})` **sin
+   proyección** (trae el documento ENTERO de cada datasource, password incluido, para
+   desencriptarla), mientras que `/datasource/names` (`_id` + `model_name` únicamente)
+   responde en ~150ms contra la MISMA colección. Probablemente algún documento tiene un
+   campo pesado/corrupto que hace que traer el documento completo sea muy costoso o
+   falle. Esta suite ya no depende de esta ruta para nada que no sea tolerante a fallos
+   (el teardown la usa en su barrido "best-effort", que no hace fallar la suite si
+   falla) — el resto del código la evita a favor de `/datasource/names`.
 
-5. **[Menor] El nombre/email del propio perfil no se sincroniza en el navegador tras
+3. **[Menor] El nombre/email del propio perfil no se sincroniza en el navegador tras
    guardar.** `user-profile.page.ts` (`saveUser()`) actualiza el usuario en el servidor
    vía `manageUpdateUsers()` pero nunca reescribe `localStorage["user"]` (a diferencia
    del login, que sí lo hace en `savingStorage()`). El cambio se guarda correctamente en
    la base de datos, pero la sesión del propio navegador sigue mostrando el nombre
    antiguo hasta el próximo login. Test: `tests/e2e/profile.spec.ts` (test `[hallazgo]`).
 
-6. **[Menor, UI] Primer click "perdido" en botones de fila justo tras filtrar una
+4. **[Menor, UI] Primer click "perdido" en botones de fila justo tras filtrar una
    tabla.** En `/admin/users` y `/admin/groups`, justo después de que el filtro de
    búsqueda re-renderice una fila (`@for` de Angular), el primer click sobre un botón de
    esa fila (borrar, editar) a veces no llega a disparar su `(click)` — sin excepciones,
@@ -156,7 +164,59 @@ fallar y avise de que hay que actualizarlo:
    correspondientes lo compensan (`tests/fixtures/ui-helpers.ts:clickUntilSwalConfirm`),
    pero un usuario real podría experimentar el mismo click "que no hace nada".
 
-7. **[Menor, fiabilidad] "Tabla DataQuality" cierra el editor de consulta antes de
+5. **[Fiabilidad, severidad alta] `AUTO_START_API=true` puede tumbar el backend.**
+   `eda_api` corre en modo cluster (master + 4 workers sobre el puerto fijo 8666,
+   `lib/server.ts`). Cuando ya hay una instancia corriendo y la suite intenta
+   reutilizarla (`reuseExistingServer: true`), una condicion de carrera en el
+   healthcheck puede hacer que Playwright arranque una SEGUNDA instancia de todos
+   modos; sus workers chocan por el puerto, entran en un bucle de crash/reinicio
+   (`[Cluster] Worker N terminó (code: 7)... Reiniciando...`), y bajo la carga de
+   la suite completa (navegador + API en paralelo) ese bucle llegó a tumbar
+   tambien la instancia original -- reproducido durante la construccion de esta
+   mejora. Por eso `AUTO_START_API`/`AUTO_START_APP` estan a `false` por defecto:
+   arranca `eda_api` y `eda_app` tu mismo antes de `npm test`. Test: ninguno
+   dedicado (es un problema de arranque, no de un endpoint), documentado aqui y
+   en `.env.example`.
+
+6. **[Fiabilidad, severidad media] `/admin/alerts-management` hace una llamada por
+   cada dashboard existente (N+1).** `alerts-management.component.ts:initDashboards()`
+   llama a `getDashboards()` y luego a `getDashboard(id)` individualmente por CADA
+   dashboard devuelto, en vez de pedir de una vez los datos que necesita. En la BBDD
+   de dev real (100+ dashboards) la pagina tarda varios segundos en asentarse y la red
+   nunca llega a quedar inactiva dentro de un timeout razonable. El test de navegacion
+   lo tolera (ver `tests/e2e/navigation-home.spec.ts`, ya no usa `networkidle`) pero la
+   pagina en si merece revision si se usa con datos reales grandes.
+
+7. **[Entorno de desarrollo, no es bug] "Crear nuevo informe"/navegar a un dashboard
+   falla intermitentemente por caché de Vite desactualizada.** Diagnosticado con
+   logging temporal de red/consola del navegador: `POST /dashboard` responde 201 (el
+   dashboard SÍ se crea), pero al navegar a `/dashboard/:id` el `ng serve` (Vite) del
+   dev server devuelve `504 Outdated Optimize Dep` para el chunk lazy
+   (`dashboard.page-*.js`), y el `import()` dinámico de Angular falla
+   (`TypeError: Failed to fetch dynamically imported module`), dejando la app en
+   `/home`. Vite invalida su caché de dependencias pre-empaquetadas ("Re-optimizing
+   dependencies...") cada vez que cambia su config o hay suficientes cambios de
+   fichero; en una sesión larga con muchas ediciones (como la que originó esta mejora),
+   un `ng serve` que lleva horas abierto puede quedar en este estado para chunks
+   nuevos/poco visitados. **No es un bug de la app ni de los tests** — un `ng serve`
+   recién arrancado no lo reproduce. Mismo síntoma explica el fallo intermitente de
+   `tests/e2e/dashboard-charts.spec.ts` (también navega a `/dashboard/:id`). Si este
+   test falla así, reinicia `ng serve` antes de sospechar de la app.
+
+8. **[Menor, higiene de i18n] El catálogo de traducción catalán tiene `<source>`
+   desactualizados respecto al código fuente actual.** Angular liga las traducciones
+   por ID (`@@chartTypes6`), así que la app en sí traduce bien en runtime, pero el
+   `<source>` grabado en `messages.ca.xlf` no se actualiza solo cuando alguien
+   corrige un texto en el `.ts`/`.html` sin volver a extraer/mergear el catálogo.
+   Casos reales encontrados construyendo `dashboard-charts.spec.ts`:
+   `chart-utils.service.ts:81` tiene `"Gráfico de Barras Apiladas"` pero el xlf aún
+   graba el typo histórico `"Gráfico de Barras Apliadas"`; `chartTypes13` es
+   `"Treemap"` en el código pero el test (y a primera vista, cualquiera) esperaría
+   `"TreeMap"`. `utils/locale-catalog.ts` ya lo tolera (lookup insensible a
+   mayúsculas + una excepción documentada para el typo), pero sería buena higiene
+   correr `npm run i18n:merge` en `eda_app` para resincronizar el catálogo.
+
+9. **[Menor, fiabilidad] "Tabla DataQuality" cierra el editor de consulta antes de
    confirmar.** A diferencia de TODOS los demás tipos de gráfico, elegir "Tabla
    DataQuality" en el desplegable cierra el editor de consulta al instante —
    `eda-blank-panel.component.ts` (`changeChartTypeCheck`, ~L911-940) llama a
@@ -166,6 +226,56 @@ fallar y avise de que hay que actualizarlo:
    perdiendo la consulta que estuviera configurando sin ningún motivo (para el resto de
    tipos, cancelar no cierra nada). Test:
    `tests/e2e/dashboard-charts.spec.ts` (`[hallazgo]`, al final del archivo).
+
+10. **[Fiabilidad, severidad media] Elegir un tipo de gráfico justo tras abrir la
+    pestaña "Vista previa" puede no aplicarse — sin error, sin aviso.** Reproducido de
+    forma aislada y repetible: el mismo click, sobre la misma opción del desplegable
+    `#chartSelector`, falla en el primer intento y funciona en un segundo intento
+    inmediatamente después (misma consulta, mismos campos). El desplegable se queda
+    mostrando el tipo anterior (típicamente "Tabla de Datos", el primero de la lista)
+    sin ningún toast ni Swal que lo indique. Es una carrera real de la app, no un
+    problema de qué campos se eligen: `changeChartTypeCheck`/`changeChartType`
+    (`eda-blank-panel.component.ts` ~L1076-1131) comprueban de forma síncrona, dentro
+    del handler `(onChange)` del `p-dropdown`, si el tipo elegido sigue siendo válido
+    contra `this.chartTypes` — justo tras cambiar de pestaña esa lista no siempre
+    parece estar ya asentada. Construir el recorrido masivo de tipos de gráfico de
+    `dashboard-charts.spec.ts` lo disparaba sistemáticamente (hasta 14 de 30 tipos mal
+    aplicados en una sola ejecución); el test ahora reintenta la selección verificando
+    el valor realmente mostrado (`selectChartType()`, con margen y varios intentos)
+    antes de continuar, y lanza un error explícito si nunca llega a aplicarse — no deja
+    pasar un tipo incorrecto en silencio. Mismo mecanismo probablemente explica por qué
+    el `#chartSelector` aparece duplicado en el DOM (`id="chartSelector"` x2,
+    posiblemente una variante responsive oculta) — no se ha investigado más a fondo.
+
+11. **[Menor, UI] "Editar opciones del gráfico" puede abrir el diálogo equivocado en un
+    panel recién creado en la misma sesión.** El mismo ítem de menú decide a qué
+    diálogo abrir (gráfico/tabla/KPI/...) según `panelComponent.graficos.chartType`
+    (`panel-menu-options.ts:editChart`); en un panel creado hace muy poco sin recargar
+    página, ese campo a veces no está sincronizado todavía y abre "Propiedades de la
+    tabla" en vez de "Propiedades del gráfico" aunque el panel sí sea un gráfico real.
+    Se detecta por el título del diálogo abierto y se reintenta (cerrando con el botón
+    de cancelar, más fiable que Escape) en `tweakChartOptions()`.
+
+12. **[Menor, UI] El diálogo del menú "..." de un panel ("OPCIONS DEL PANELL") puede
+    renderizarse parcial o totalmente fuera del viewport para paneles cerca del borde
+    izquierdo del dashboard.** Comprobado directamente (`boundingBox()` con `x`
+    negativo) en el primer panel de un dashboard recién creado: un click normal de
+    Playwright sobre cualquier ítem del menú falla con "Element is outside of the
+    viewport" incluso con `force: true` (que sí evita otras comprobaciones de
+    visibilidad, pero no esta). Por eso todos los clicks sobre este menú en toda la
+    suite usan `.evaluate(el => el.click())` en vez de un click normal. No se ha
+    investigado la causa de fondo (¿el `p-dialog` calcula su posición a partir del
+    punto de click sin hacer *clamping* a los bordes de la ventana?), pero es
+    reproducible y afectaría igual a un usuario real con un panel en esa posición.
+
+13. **[Menor, UI] El texto del menú "..." no se refresca tras "Bloquear panel".**
+    Ni en el mismo menú (que queda abierto — el comando no llama a
+    `hideContextMenu()`) ni reabriéndolo desde cero muestra "Desbloquear panel"
+    después de bloquear. El bloqueo en sí **sí se aplica correctamente**
+    (`panel.dragEnabled`/`resizeEnabled` pasan a `false`, verificado vía el JSON
+    guardado) — es solo que `p-panelMenu` no parece reaccionar bien a que
+    `panelComponent.contextMenu.contextMenuItems` se reasigne a un array nuevo
+    mientras el diálogo ya está abierto (`toggleLock()` en `panel-menu-options.ts`).
 
 Ningún otro comportamiento inesperado detectado se ha "arreglado" en el código de la
 app — esta suite solo prueba y documenta; los cambios reales quedan a tu criterio.
@@ -197,6 +307,28 @@ de 30 de los 31 tipos de gráfico que ofrece la aplicación** (tablas, KPIs, cir
 barras, líneas, dispersión, embudo, radar, mapas de árbol, etc. — la lista completa vive
 en `services/utils/chart-utils.service.ts:chartTypes`), comprueba que ninguno da error,
 guarda el dashboard entero, recarga la página y confirma que los 30 paneles persisten.
+Cada panel se titula con el nombre de su tipo de gráfico (p.ej. "Gráfico de Barras
+Apiladas"), para poder identificarlos a simple vista sin tener que abrir cada uno.
+"Texto Dinámico" limita la consulta a "Mostrar Top: 1" (si no, al agrupar por una sola
+columna categórica sin agregación numérica, la consulta devuelve una fila por cada valor
+distinto y el widget, que solo puede mostrar uno, queda ambiguo).
+
+Tras crear los 30 y guardar, recorre los 20 tipos que tienen diálogo propio "Editar
+opciones del gráfico" (`exerciseDisplayOptions()`) y activa/rellena cada opción presente
+para ESE tipo (cada tipo solo muestra un subconjunto — leyenda, animación, líneas guía,
+segundo eje, etiquetas ajustables, radio interno, Top N, límites del velocímetro, color
+semafórico, etc. — vía `@if (features.xxx)` en `chart-dialog.component.html`; la función
+no necesita saber cuál, solo comprueba si el control existe antes de tocarlo). No toca a
+propósito: el grupo mutuamente excluyente Tendencia/Comparativa/Predicción (activar una
+deshabilita las otras dos, así que "tocarlas todas" no tiene un estado final coherente),
+"Añadir imágenes" (abre el selector de la librería de medios), ni toda la sección
+"Colores" (paleta, swatches por categoría, pestañas de intervalo/colores únicos,
+opacidad) — es cosmética/subjetiva, sin un valor "correcto" que verificar, y su UI es
+bastante más frágil que los interruptores simples del resto. Verificado panel a panel en
+el JSON guardado: cada ajuste aparece exactamente donde corresponde según el feature-set
+real de ese tipo (p.ej. segundo eje solo en "Mixto: Barras y lineas", radio interno solo
+en "Gráfico de Pastel", Top N/transición/línea de tiempo solo en "Barras en carrera",
+límites/semáforo solo en "Velocímetro").
 Después también edita el tipo de gráfico de un panel ya existente (menú del panel ->
 "Cambiar tipo de gráfico") y borra otro panel, guardando y verificando cada cambio.
 

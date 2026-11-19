@@ -303,7 +303,7 @@
         </div>
         <h3 class="side-panel-filename" [title]="item.originalName">{{ item.originalName }}</h3>
         <dl class="side-panel-info">
-          <dt i18n="@@mediaUploadDate">Subida</dt><dd>{{ item.createdAt | date:'short' }}</dd>
+          <dt i18n="@@mediaUploadDate">Subida</dt><dd>{{ item.createdAt | date:'short':undefined:appLocale }}</dd>
           <dt i18n="@@mediaSize">Tamaño</dt><dd>{{ formatSize(item.size) }}</dd>
           <dt i18n="@@mediaType">Tipo</dt><dd>{{ item.mimeType }}</dd>
           @if (imageDimensions(); as dim) {

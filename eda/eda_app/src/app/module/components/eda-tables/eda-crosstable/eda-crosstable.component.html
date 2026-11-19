@@ -161,7 +161,7 @@
                 @case ('EdaColumnNumber') {
                   @if(isNumericValue(lodash.get(rowData, col.field))) {
                     <span [ngStyle]="{'color': getColor(lodash.get(rowData, col.field))}">
-                      {{ lodash.get(rowData, col.field) | number:'1.0-10':'es' }}
+                      {{ lodash.get(rowData, col.field) | number:'1.0-10':appLocale }}
                     </span>
                   } @else {
                     <div [innerHTML]="getSafeHtml(lodash.get(rowData, col.field))" (click)="handleHtmlClick($event)"></div>
