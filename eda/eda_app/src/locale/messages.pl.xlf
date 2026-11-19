@@ -4595,6 +4595,11 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Zablokowane, ponieważ trend lub prognoza jest aktywna</target>
 </trans-unit>
 
+<trans-unit id="comparativeRequirementsTooltip" datatype="html">
+  <source>No cumple los requisitos para la comparativa. Requiere exactamente dos campos: una fecha agrupada por mes, semana o día y un único campo numérico agregado (suma, media, recuento...).</source>
+  <target>Nie spełniono wymagań dla porównania. Wymaga dokładnie dwóch pól: daty pogrupowanej według miesiąca, tygodnia lub dnia oraz jednego zagregowanego pola liczbowego (suma, średnia, liczba...).</target>
+</trans-unit>
+
 <trans-unit id="showLegend">
   <source>Mostrar Leyenda</source>
   <target>Pokaż legendę</target>

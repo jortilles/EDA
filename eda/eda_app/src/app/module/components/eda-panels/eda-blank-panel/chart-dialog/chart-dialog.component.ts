@@ -107,6 +107,28 @@ export class ChartDialogComponent implements AfterViewChecked {
     public categoryLabelCharsTooltip = $localize`:@@categoryLabelCharsTooltip:Actívalo para fijar manualmente el número de caracteres de las etiquetas del eje de categorías (empieza en 10; 0 = sin texto). Desactivado, se usa el ajuste automático por defecto`
     public tooltipBlockedByComparative = $localize`:@@tooltipBlockedByComparative:Bloqueado porque comparativa está activa`
     public tooltipBlockedByTrendOrPrediction = $localize`:@@tooltipBlockedByTrendOrPrediction:Bloqueado porque tendencia o predicción está activa`
+    public comparativeRequirementsTooltip = $localize`:@@comparativeRequirementsTooltip:No cumple los requisitos para la comparativa. Requiere exactamente dos campos: una fecha agrupada por mes, semana o día y un único campo numérico agregado (suma, media, recuento...).`
+
+    /** Line charts always show the Comparativa option, even when the query cannot support it. */
+    get isLineChart(): boolean {
+        return this.chart?.edaChart === 'line';
+    }
+
+    /** True when the query does not meet the requirements of the comparative (see allowCoparative). */
+    get comparativeRequirementsUnmet(): boolean {
+        // An already active comparative stays unlockable so the user can switch it off
+        return !this.showComparative && !this.addComparative;
+    }
+
+    get comparativeBlocked(): boolean {
+        return this.comparativeRequirementsUnmet || this.addTrend || this.showPredictionLines;
+    }
+
+    get comparativeBlockedTooltip(): string | null {
+        if (this.comparativeRequirementsUnmet) return this.comparativeRequirementsTooltip;
+        if (this.addTrend || this.showPredictionLines) return this.tooltipBlockedByTrendOrPrediction;
+        return null;
+    }
 
     // Save the original label values
     private originalLabelValues: {

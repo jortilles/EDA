@@ -723,6 +723,10 @@
         <source>Bloqueado porque tendencia o predicción está activa</source>
         <target>Gesperrt, weil Trend oder Prognose aktiv ist</target>
       </trans-unit>
+      <trans-unit id="comparativeRequirementsTooltip" datatype="html">
+        <source>No cumple los requisitos para la comparativa. Requiere exactamente dos campos: una fecha agrupada por mes, semana o día y un único campo numérico agregado (suma, media, recuento...).</source>
+        <target>Die Voraussetzungen für den Vergleich sind nicht erfüllt. Er erfordert genau zwei Felder: ein nach Monat, Woche oder Tag gruppiertes Datum und ein einziges aggregiertes numerisches Feld (Summe, Durchschnitt, Anzahl...).</target>
+      </trans-unit>
       <trans-unit id="ChartProps" datatype="html">
         <source>PROPIEDADES DEL GRAFICO</source>
         <target>DIAGRAMMEIGENSCHAFTEN</target>

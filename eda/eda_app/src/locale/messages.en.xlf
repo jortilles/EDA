@@ -4728,6 +4728,11 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Blocked because trend or prediction is active</target>
 </trans-unit>
 
+<trans-unit id="comparativeRequirementsTooltip" datatype="html">
+  <source>No cumple los requisitos para la comparativa. Requiere exactamente dos campos: una fecha agrupada por mes, semana o día y un único campo numérico agregado (suma, media, recuento...).</source>
+  <target>Requirements for the comparison are not met. It requires exactly two fields: a date grouped by month, week or day and a single aggregated numeric field (sum, average, count...).</target>
+</trans-unit>
+
 <trans-unit id="showLegend">
 <source>Mostrar Leyenda</source>
 <target>Show Legend</target>

@@ -5094,6 +5094,11 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Bloqué car la tendance ou la prédiction est active</target>
 </trans-unit>
 
+<trans-unit id="comparativeRequirementsTooltip" datatype="html">
+  <source>No cumple los requisitos para la comparativa. Requiere exactamente dos campos: una fecha agrupada por mes, semana o día y un único campo numérico agregado (suma, media, recuento...).</source>
+  <target>Les conditions requises pour la comparaison ne sont pas remplies. Elle nécessite exactement deux champs : une date regroupée par mois, semaine ou jour et un seul champ numérique agrégé (somme, moyenne, nombre...).</target>
+</trans-unit>
+
 <trans-unit id="showLegend">
   <source>Mostrar Leyenda</source>
   <target>Afficher la légende</target>
