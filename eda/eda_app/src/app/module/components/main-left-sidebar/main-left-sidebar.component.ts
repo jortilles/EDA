@@ -289,17 +289,17 @@ menuCommand(item: any, event: MouseEvent) {
   }
 
   public redirectLocale(lan: string) {
-    // document.baseURI es el href ya resuelto de <base>, que Angular reescribe en el
-    // build de cada idioma a su propia carpeta (".../ca/"): a diferencia de
-    // window.location.href, no arrastra la query string ni el hash de la ruta
-    // actual, asi que no hace falta recortarlos a mano antes de comparar.
-    let baseUrl = document.baseURI;
+    // document.baseURI puede caer a la URL completa (con hash) si la pagina no
+    // sirve un <base> valido -- se usa la API URL para descartar ese hash siempre,
+    // y evitar enlaces rotos como ".../es/#/homefr#/home".
+    const base = new URL(document.baseURI);
+    let path = base.pathname;
 
     // Drop the current locale folder (/es/, /ca/...) to get the app root
-    if (baseUrl.endsWith(`/${this.currentLocale}/`)) {
-        baseUrl = baseUrl.slice(0, baseUrl.length - this.currentLocale.length - 1);
+    if (path.endsWith(`/${this.currentLocale}/`)) {
+        path = path.slice(0, path.length - this.currentLocale.length - 1);
     }
-    window.location.href = baseUrl + lan + '/#/home';
+    window.location.href = base.origin + path + lan + '/#/home';
   }
   private getUrlParams(): void {
         this.route.queryParams.subscribe(params => {
