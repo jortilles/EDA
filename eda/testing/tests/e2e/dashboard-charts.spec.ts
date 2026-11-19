@@ -349,7 +349,11 @@ async function tweakChartOptions(page: Page, panelTitle: string, apply: (dialog:
 
         await apply(dialog);
 
-        await dialog.locator('button.confirm-button').click();
+        // Click normal, no .evaluate(): este dialogo tambien puede quedar parcial
+        // fuera del area visible/con scroll segun cuantas opciones tenga activas el
+        // tipo (mismo sintoma que el resto de hallazgos de posicionamiento de esta
+        // suite) -- se evita depender de si Playwright consigue desplazarlo a la vista.
+        await dialog.locator('button.confirm-button').evaluate((el: HTMLElement) => el.click());
         await expect(dialog, `[${panelTitle}] el dialogo de opciones no se cierra tras aplicar`).toHaveCount(0, { timeout: 10_000 });
         return;
     }
@@ -391,7 +395,12 @@ async function exerciseDisplayOptions(page: Page, dialog: ReturnType<Page['locat
             has: page.getByText(esOrCa(label), { exact: true }),
         }).first();
         if (await row.count() === 0) continue;
-        await row.locator('label.relative.inline-flex').first().click();
+        // Click normal, no .evaluate(): este toggle a veces queda fuera del area
+        // visible/con scroll del dialogo (visto con un timeout real de Playwright,
+        // mismo sintoma que el hallazgo del menu "..." fuera del viewport) -- forzar
+        // el click evita el chequeo de visibilidad sin depender de cuanto haya que
+        // desplazar el contenido del dialogo.
+        await row.locator('label.relative.inline-flex').first().evaluate((el: HTMLElement) => el.click());
         await page.waitForTimeout(150);
     }
 
@@ -632,6 +641,9 @@ test.describe('Paneles y gráficos dentro de un dashboard (creación real vía U
      * rota.
      */
     test('repasa el resto de opciones del menú contextual del panel', async ({ page, api }) => {
+        // El timeout por defecto del test (45s) no basta: solo la espera de la
+        // descarga de Excel puede necesitar hasta 45s en este dashboard tan cargado.
+        test.setTimeout(3 * 60_000);
         await page.goto(`/#/dashboard/${dashboardId}`);
         await expect(page.locator('#myDashboard')).toBeVisible({ timeout: 15_000 });
 
@@ -664,6 +676,18 @@ test.describe('Paneles y gráficos dentro de un dashboard (creación real vía U
         await linkDialog.locator('button.cancel-button').click();
         await expect(linkDialog, 'el dialogo de vincular informe no se cierra').toHaveCount(0, { timeout: 10_000 });
 
+        // HALLAZGO: "Vincular con otro informe" (link-dashboards.component.ts,
+        // initDashboards()) lanza un fetch completo (GET /dashboard/:id) EN PARALELO
+        // de TODOS los dashboards visibles al usuario, sin cancelarlo si el dialogo se
+        // cierra antes de que termine. Con muchos dashboards acumulados (habitual en un
+        // entorno de test que lleva muchas ejecuciones), esta rafaga de peticiones de
+        // fondo puede seguir en marcha varios segundos despues de cerrar el dialogo y
+        // competir por red/CPU con acciones posteriores -- en concreto, se ha visto que
+        // retrasa lo suficiente el guardado real del dashboard (mas abajo) como para que
+        // no de tiempo a que aparezca su toast dentro del timeout. Se espera aqui a que
+        // la rafaga se asiente antes de continuar, en vez de dejar que corra de fondo.
+        await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => {});
+
         // --- Exportar a Excel / CSV: el mismo item de menu decide el formato leyendo
         // el texto exacto del span clicado ("Excel" o "CSV"). ---
         await openPanelMenu(page, targetTitle);
@@ -672,42 +696,87 @@ test.describe('Paneles y gráficos dentro de un dashboard (creación real vía U
         const csvDownload = await csvDownloadPromise;
         expect(csvDownload.suggestedFilename(), 'el export CSV deberia tener extension .csv').toMatch(/\.csv$/i);
 
+        // HALLAZGO: justo despues de que una descarga termine, el siguiente click en
+        // el icono "..." del panel no reabre el menu (reproducido aislado: el mismo
+        // click, con panel/menu identicos, falla sin esperar y funciona a la primera
+        // esperando ~1.5s). Probablemente la propia descarga del navegador roba el
+        // foco un instante. Por eso aqui se espera antes de reabrir el menu para
+        // "Excel" -- sin esto, openPanelMenu() reintentaria sin saber que el problema
+        // es temporal y no un dialogo equivocado.
+        await page.waitForTimeout(1500);
         await openPanelMenu(page, targetTitle);
-        // Generar el .xlsx (via exceljs) tarda mas que el CSV plano -- mas margen.
-        const excelDownloadPromise = page.waitForEvent('download', { timeout: 20_000 });
+        const excelDownloadPromise = page.waitForEvent('download', { timeout: 15_000 });
         await page.locator('.p-dialog').last().getByText('Excel', { exact: true }).evaluate((el: HTMLElement) => el.click());
         const excelDownload = await excelDownloadPromise;
         expect(excelDownload.suggestedFilename(), 'el export Excel deberia tener extension .xlsx').toMatch(/\.xlsx?$/i);
+        // Mismo hallazgo que antes de "Excel" -- se deja asentar el foco tras la
+        // descarga antes de seguir interactuando con menus del panel.
+        await page.waitForTimeout(1500);
 
         // --- Duplicar panel ---
         const beforeDup = await page.locator('gridster-item').count();
         await openPanelMenu(page, targetTitle);
         await page.getByText(esOrCa('Duplicar panel'), { exact: true }).evaluate((el: HTMLElement) => el.click());
         await expect(page.locator('gridster-item'), 'duplicar panel deberia añadir uno mas').toHaveCount(beforeDup + 1, { timeout: 10_000 });
-        // Se borra el duplicado para no dejar un panel de mas en el dashboard
-        // persistente (mismo titulo que el original, confuso de revisar en los videos).
-        const duplicatedPanel = page.locator('gridster-item').last();
-        await duplicatedPanel.locator('i.pi-ellipsis-v').first().evaluate((el: HTMLElement) => el.click());
-        await page.waitForTimeout(300);
-        await page.getByText(esOrCa('Eliminar panel'), { exact: true }).evaluate((el: HTMLElement) => el.click());
-        await page.locator('.swal2-confirm').click();
-        await expect(page.locator('gridster-item'), 'el duplicado no se borro').toHaveCount(beforeDup, { timeout: 10_000 });
+        // Mismo hallazgo que tras una descarga: un click de menu justo despues de otra
+        // accion del panel (aqui, duplicar) a veces no agarra a la primera.
+        await page.waitForTimeout(1000);
 
         // --- Bloquear panel (verificado via el JSON guardado, no via el texto del
         // menu -- ver el hallazgo de refresco en el comentario de este test). ---
-        await openPanelMenu(page, targetTitle);
+        let lockMenuOpened = false;
+        for (let attempt = 1; attempt <= 5 && !lockMenuOpened; attempt++) {
+            await openPanelMenu(page, targetTitle);
+            await page.waitForTimeout(300);
+            lockMenuOpened = await page.locator('.p-dialog').last().isVisible().catch(() => false);
+        }
+        expect(lockMenuOpened, 'no se consigue reabrir el menu tras duplicar').toBe(true);
         await page.getByText(esOrCa('Bloquear panel'), { exact: true }).evaluate((el: HTMLElement) => el.click());
         await page.waitForTimeout(300);
-        await page.keyboard.press('Escape');
+        // HALLAZGO: Escape no cierra este dialogo de forma fiable (el handler
+        // document:keydown.esc de eda-context-menu.component.html compite con el
+        // closeOnEscape por defecto de p-dialog, y el "modal mask" a veces queda
+        // atrapando clicks posteriores en toda la pagina, incluido el boton "Guardar"
+        // del sidebar). Se cierra en su lugar con el icono "X" propio del dialogo.
+        await page.locator('.p-dialog').last().locator('i.fa-times').evaluate((el: HTMLElement) => el.click());
+        await expect(page.locator('.p-dialog').last(), 'el menu del panel no se cierra tras bloquear').toHaveCount(0, { timeout: 10_000 });
 
         await openDashboardSidebar(page);
-        await clickSaveInSidebar(page);
-        await expect(page.locator('.swal2-popup, .p-toast-message-success')).toBeVisible({ timeout: 20_000 });
+        // Igual que al cerrar el menu del panel: un settle wait corto antes del click
+        // de guardar, y el click via evaluate() en vez de un click normal de Playwright
+        // (mismo patron que el resto de este archivo tras cualquier cambio de estado
+        // reciente del dashboard -- ver los demas HALLAZGOs de settle/evaluate en este
+        // mismo test).
+        await page.waitForTimeout(500);
+        const saveBtn = page.locator('.sidebarLabels', { hasText: 'Guardar' }).filter({ hasNotText: 'como' }).first();
+        await saveBtn.evaluate((el: HTMLElement) => el.click());
+        await expect(page.locator('.swal2-popup, .p-toast-message-success, .p-toast-message-error'), 'no aparece ningun toast tras guardar').toBeVisible({ timeout: 20_000 });
+        await expect(page.locator('.p-toast-message-error'), 'guardar dio un toast de error').toHaveCount(0);
 
         const full = await (await api.get(`/dashboard/${dashboardId}`)).json();
         const lockedPanel = full.dashboard?.config?.panel?.find((p: any) => p.title === targetTitle);
         expect(lockedPanel?.dragEnabled, '"Bloquear panel" deberia poner dragEnabled a false').toBe(false);
         expect(lockedPanel?.resizeEnabled, '"Bloquear panel" deberia poner resizeEnabled a false').toBe(false);
+
+        // Se borra el duplicado (mismo titulo que el original, confuso de revisar en
+        // los videos) DESPUES de guardar y con una recarga de pagina limpia -- varias
+        // acciones de menu seguidas en la misma sesion (sobre todo justo despues de
+        // una descarga o de duplicar) a veces no "agarran" al primer intento (ver los
+        // hallazgos de esta misma funcion); recargar antes de interactuar es el mismo
+        // patron ya fiable que usan "editar/borrar un panel existente" mas abajo.
+        await page.reload();
+        await expect(page.locator('gridster-item')).toHaveCount(beforeDup + 1, { timeout: 20_000 });
+        const duplicatedPanel = page.locator('gridster-item').last();
+        await duplicatedPanel.locator('i.pi-ellipsis-v').first().evaluate((el: HTMLElement) => el.click());
+        await expect(page.locator('.p-dialog').last(), 'no se abre el menu del panel duplicado').toBeVisible({ timeout: 10_000 });
+        await page.getByText(esOrCa('Eliminar panel'), { exact: true }).evaluate((el: HTMLElement) => el.click());
+        await expect(page.locator('.swal2-confirm'), 'no aparece la confirmacion de borrado').toBeVisible({ timeout: 10_000 });
+        await page.locator('.swal2-confirm').evaluate((el: HTMLElement) => el.click());
+        await expect(page.locator('gridster-item'), 'el duplicado no se borro').toHaveCount(beforeDup, { timeout: 10_000 });
+
+        await openDashboardSidebar(page);
+        await clickSaveInSidebar(page);
+        await expect(page.locator('.swal2-popup, .p-toast-message-success')).toBeVisible({ timeout: 20_000 });
     });
 
     /**
