@@ -322,6 +322,31 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._databaseModel.next(tmp_model);
     }
 
+    /**
+     * Hides a relation in both tables of the data model (it is stored as source and as its mirror)
+     * and marks the model as unsaved. Unlike deleteRelation it does not depend on the table panel
+     * being edited, so it can be used from the model map.
+     */
+    hideRelation(rel: Relation) {
+        const tmp_model = this._databaseModel.getValue();
+        const mirror = {
+            source_table: rel.target_table,
+            source_column: rel.target_column,
+            target_table: rel.source_table,
+            target_column: rel.source_column
+        } as Relation;
+        [rel, mirror].forEach(r => {
+            const tableIndex = tmp_model.findIndex((table: { table_name: string; }) => table.table_name === r.source_table);
+            if (tableIndex < 0 || !tmp_model[tableIndex].relations) return;
+            const relIndex = this.getRelationIndex(r, tableIndex);
+            if (relIndex >= 0) tmp_model[tableIndex].relations[relIndex].visible = false;
+        });
+        // The table panel shares the relations array with the model: notify it so the relations list refreshes
+        this._tablePanel.next(this._tablePanel.getValue());
+        this._databaseModel.next(tmp_model);
+        this._unsaved.next(true);
+    }
+
     addRelation(rel: Relation) {
         // Update tablePanel
         const tmp_panel = this._tablePanel.getValue();

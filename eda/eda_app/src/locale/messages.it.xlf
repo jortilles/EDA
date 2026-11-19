@@ -4441,6 +4441,14 @@ Cordiali saluti.</target>
         <source>Reorganizar tablas</source>
         <target>Riorganizza tabelle</target>
       </trans-unit>
+      <trans-unit id="dsMapDeleteRelationHint" datatype="html">
+        <source>Selecciona la relación y pulsa Supr para eliminarla</source>
+        <target>Seleziona la relazione e premi Canc per eliminarla</target>
+      </trans-unit>
+      <trans-unit id="dsMapDeleteRelation" datatype="html">
+        <source>Se eliminará la relación</source>
+        <target>La relazione verrà eliminata</target>
+      </trans-unit>
       <trans-unit id="dsMapModelProps" datatype="html">
         <source>Propiedades del modelo</source>
         <target>Proprietà del modello</target>

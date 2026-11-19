@@ -8286,6 +8286,14 @@ Salutacions.</target>
   <source>Reorganizar tablas</source>
   <target>Reorganitzar taules</target>
 </trans-unit>
+<trans-unit id="dsMapDeleteRelationHint" datatype="html">
+  <source>Selecciona la relación y pulsa Supr para eliminarla</source>
+  <target>Selecciona la relació i prem Supr per eliminar-la</target>
+</trans-unit>
+<trans-unit id="dsMapDeleteRelation" datatype="html">
+  <source>Se eliminará la relación</source>
+  <target>S'eliminarà la relació</target>
+</trans-unit>
 <trans-unit id="dsMapModelProps" datatype="html">
   <source>Propiedades del modelo</source>
   <target>Propietats del model</target>

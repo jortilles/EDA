@@ -5889,6 +5889,14 @@ Cumprimentos.</target>
   <source>Reorganizar tablas</source>
   <target>Reorganizar tabelas</target>
 </trans-unit>
+<trans-unit id="dsMapDeleteRelationHint" datatype="html">
+  <source>Selecciona la relación y pulsa Supr para eliminarla</source>
+  <target>Selecione a relação e prima Delete para a eliminar</target>
+</trans-unit>
+<trans-unit id="dsMapDeleteRelation" datatype="html">
+  <source>Se eliminará la relación</source>
+  <target>A relação será eliminada</target>
+</trans-unit>
 <trans-unit id="dsMapModelProps" datatype="html">
   <source>Propiedades del modelo</source>
   <target>Propriedades do modelo</target>

@@ -6019,6 +6019,14 @@ Un saludo.</source>
   <source>Reorganizar tablas</source>
   <target>Tabellen neu anordnen</target>
 </trans-unit>
+<trans-unit id="dsMapDeleteRelationHint" datatype="html">
+  <source>Selecciona la relación y pulsa Supr para eliminarla</source>
+  <target>Beziehung auswählen und Entf drücken, um sie zu löschen</target>
+</trans-unit>
+<trans-unit id="dsMapDeleteRelation" datatype="html">
+  <source>Se eliminará la relación</source>
+  <target>Die Beziehung wird gelöscht</target>
+</trans-unit>
 <trans-unit id="dsMapModelProps" datatype="html">
   <source>Propiedades del modelo</source>
   <target>Modelleigenschaften</target>

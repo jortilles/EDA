@@ -24,9 +24,7 @@ RUN echo "  "
 RUN echo "export LD_LIBRARY_PATH=/eda/oracle/instantclient" >/root/.bashrc
 
 RUN echo n | npm install -g --silent @angular/cli
-RUN npm install -g pm2 nodemon http-server  
-RUN npx playwright install chromium
-RUN npx playwright install-deps chromium
+RUN npm install -g pm2 nodemon http-server
 
 
 

@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { TreeNode } from 'primeng/api';
 import { PrimengModule } from 'app/core/primeng.module';
 import { DataSourceService } from '@eda/services/service.index';
 import * as d3 from 'd3';
 import { Subscription } from 'rxjs';
+import Swal from 'sweetalert2';
 
 interface MapColumn {
     label: string;
@@ -32,6 +33,8 @@ interface MapLink {
     target: MapTable;
     sourceColumns: string[];
     targetColumns: string[];
+    // One of the model relations the link represents (used to delete it)
+    relation: any;
 }
 
 /**
@@ -65,6 +68,8 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
     public modelPropsSTR = $localize`:@@dsMapModelProps:Propiedades del modelo`;
     public expandSTR = $localize`:@@dsMapExpand:Mostrar columnas`;
     public collapseSTR = $localize`:@@dsMapCollapse:Ocultar columnas`;
+    public deleteRelationHintSTR = $localize`:@@dsMapDeleteRelationHint:Selecciona la relación y pulsa Supr para eliminarla`;
+    public deleteRelationSTR = $localize`:@@dsMapDeleteRelation:Se eliminará la relación`;
 
     // Model tables as drawn on the map (position, columns, tree node)
     public tables: MapTable[] = [];
@@ -323,13 +328,53 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
                 sourceColumns.forEach(c => source.relationColumns.add(c));
                 targetColumns.forEach(c => target.relationColumns.add(c));
                 if (!links.has(key)) {
-                    links.set(key, { key, source, target, sourceColumns, targetColumns });
+                    links.set(key, { key, source, target, sourceColumns, targetColumns, relation: r });
                 }
             });
         });
 
         this.tables = tables;
         this.links = Array.from(links.values());
+        // The selected relation may have been deleted or changed
+        if (this.selectedLinkKey && !links.has(this.selectedLinkKey)) this.selectedLinkKey = null;
+        if (this.hoveredLinkKey && !links.has(this.hoveredLinkKey)) this.hoveredLinkKey = null;
+    }
+
+    /** Delete / Backspace removes the selected relation from the data model */
+    @HostListener('document:keydown', ['$event'])
+    onKeyDown(event: KeyboardEvent) {
+        if (event.key !== 'Delete' && event.key !== 'Backspace') return;
+        if (!this.selectedLinkKey || !this.svgMap?.nativeElement?.isConnected) return;
+        // Do not interfere with typing in inputs, editors or open dialogs
+        const target = event.target as HTMLElement;
+        if (target?.closest?.('input, textarea, select, [contenteditable], .swal2-container, .p-dialog')) return;
+        if (Swal.isVisible()) return;
+        const link = this.links.find(l => l.key === this.selectedLinkKey);
+        if (!link) return;
+        event.preventDefault();
+        this.deleteLink(link);
+    }
+
+    /** Asks for confirmation and hides the relation in both tables of the model */
+    private deleteLink(link: MapLink) {
+        Swal.fire({
+            title: $localize`:@@Sure:¿Estás seguro?`,
+            text: `${this.deleteRelationSTR}: ${this.linkDescription(link)}`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
+            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+        }).then(result => {
+            if (!result.value) return;
+            this.selectedLinkKey = null;
+            this.hoveredLinkKey = null;
+            // The model subscription redraws the map without the relation
+            this.dataModelService.hideRelation(link.relation);
+        });
+    }
+
+    private linkDescription(l: MapLink): string {
+        return `${l.source.label}.${l.sourceColumns.join(', ')} = ${l.target.label}.${l.targetColumns.join(', ')}`;
     }
 
     /** Places tables without a position yet using a force simulation */
@@ -506,7 +551,8 @@ export class DataSourceMapComponent implements AfterViewInit, OnChanges, OnDestr
                 this.updateRelatedColumns();
             })
             .select('title')
-            .text(d => `${d.source.label}.${d.sourceColumns.join(', ')} = ${d.target.label}.${d.targetColumns.join(', ')}`);
+            .text(d => `${this.linkDescription(d)}
+${this.deleteRelationHintSTR}`);
     }
 
     private drawTables() {
