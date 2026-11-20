@@ -25,6 +25,10 @@ test.describe('Home y navegacion principal', () => {
             // a que la red se calle.
             await page.goto(`/#${route}`);
             await expect(page).not.toHaveURL(/#\/login/, { timeout: 20_000 });
+            // El video nunca muestra la barra de direcciones del navegador (solo graba
+            // el contenido de la pagina) -- se deja la URL real en el log del test
+            // (informe HTML / consola) para poder verificarla sin depender del video.
+            console.log(`[redireccion] URL final tras navegar a ${route}: ${page.url()}`);
         });
     }
 

@@ -9,17 +9,25 @@ const test = base.extend({});
 test.use({ storageState: USER_STORAGE });
 
 test.describe('Permisos en la UI para un usuario sin rol admin', () => {
+    // El video de Playwright nunca muestra la barra de direcciones del navegador (solo
+    // graba el contenido de la pagina) -- para poder verificar la URL real de cada paso
+    // sin depender del video, se deja constancia explicita en el log del test (visible
+    // en el informe HTML y en la consola) de la URL de salida y de la URL final.
     for (const route of ['/admin/users', '/admin/groups', '/admin/media', '/admin/data-source', '/admin/alerts-management']) {
         test(`navegar a ${route} redirige a /home (RoleGuard)`, async ({ page }) => {
+            console.log(`[redireccion] navegando a: ${route}`);
             await page.goto(`/#${route}`);
             await page.waitForURL(/#\/home/, { timeout: 15_000 });
+            console.log(`[redireccion] URL final: ${page.url()}`);
             await expect(page).toHaveURL(/#\/home/);
         });
     }
 
     test('/logs redirige a /home para un usuario sin rol admin (RoleGuard)', async ({ page }) => {
+        console.log('[redireccion] navegando a: /logs');
         await page.goto('/#/logs');
         await page.waitForURL(/#\/home/, { timeout: 15_000 });
+        console.log(`[redireccion] URL final: ${page.url()}`);
         await expect(page).toHaveURL(/#\/home/);
     });
 

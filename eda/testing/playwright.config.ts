@@ -20,11 +20,18 @@ export default defineConfig({
     ],
     use: {
         trace: 'retain-on-failure',
-        screenshot: 'only-on-failure',
+        // 'on' (no 'only-on-failure'): tambien se guarda una captura del estado final
+        // de cada test que PASA, para que un humano pueda verificar visualmente el
+        // resultado sin tener que abrir el video entero.
+        screenshot: 'on',
         // Se guarda el video de TODOS los tests, pasen o fallen (no solo los que fallan).
         // No se acumula: test-results/ se limpia entera en cada "npm test", asi que en
         // disco solo queda el video de la ultima ejecucion.
-        video: 'on',
+        // HALLAZGO: sin `size`, Playwright graba el video a un tamaño propio (800x450
+        // aqui) INDEPENDIENTE del viewport -- por mucho que se suba el viewport (ver
+        // mas abajo, 1920x1080), el video seguia grabandose pequeño y con texto
+        // borroso/ilegible. Se fija explicitamente al mismo tamaño del viewport.
+        video: { mode: 'on', size: { width: 1920, height: 1080 } },
         actionTimeout: 15_000,
     },
     projects: [
@@ -51,6 +58,15 @@ export default defineConfig({
             dependencies: ['setup'],
             use: {
                 ...devices['Desktop Chrome'],
+                // El viewport por defecto de "Desktop Chrome" (1280x720) se queda corto
+                // para dashboards con muchos paneles -- en video/capturas se pierde
+                // demasiado detalle. Nota aparte: ningun tamaño de viewport hace que la
+                // barra de direcciones del navegador aparezca en el video -- Playwright
+                // solo graba el contenido de la pagina, nunca el chrome del navegador;
+                // para ver la URL real en cada paso hay que mirar el Trace Viewer
+                // (`npx playwright show-trace`, pestaña de acciones) o el log de consola
+                // del test, no el video.
+                viewport: { width: 1920, height: 1080 },
                 baseURL: ENV.appBaseURL,
                 storageState: path.resolve(__dirname, '.auth', 'admin-storage.json'),
             },

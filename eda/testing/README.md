@@ -45,6 +45,10 @@ npm run test:ui          # modo interactivo de Playwright (elegir/relanzar/inspe
 npm run test:debug       # modo debug con inspector paso a paso
 npm run install:browsers # instala/reinstala el Chromium que usa Playwright
 npm run codegen          # grabar interacciones contra localhost:4200 para generar tests nuevos
+npm run setup:ffmpeg     # OPCIONAL: descarga ffmpeg portable (~100MB, en .tools/, no sube a git)
+                         # para recortar el arranque de Angular al inicio de cada video. Sin
+                         # esto instalado, los tests funcionan igual, solo que el video no se
+                         # recorta. Borra eda/testing/.tools/ para quitarlo.
 ```
 
 ## Cómo está organizado
@@ -277,6 +281,41 @@ comportamiento correcto, no el bug):
     `panelComponent.contextMenu.contextMenuItems` se reasigne a un array nuevo
     mientras el diálogo ya está abierto (`toggleLock()` en `panel-menu-options.ts`).
 
+14. **[Menor, UI] Justo después de que termine una descarga (Exportar a Excel/CSV),
+    el siguiente click en el icono "..." del panel no reabre el menú.** Reproducido
+    de forma aislada: el mismo click, sobre el mismo panel, falla sin esperar tras la
+    descarga y funciona a la primera esperando ~1.5s. Probablemente la propia
+    descarga del navegador roba el foco un instante. `dashboard-charts.spec.ts`
+    espera antes de encadenar un segundo export justo después del primero.
+
+15. **[Fiabilidad, severidad media] "Vincular con otro informe" dispara un `GET
+    /dashboard/:id` en paralelo de TODOS los dashboards visibles del usuario, sin
+    cancelarlo si el diálogo se cierra antes de que termine.** `initDashboards()`
+    en `link-dashboards.component.ts` hace `Promise.allSettled(dashboards.map(d =>
+    getDashboard(d._id)))` sobre `private + group + open + common` — en este
+    entorno de desarrollo, confirmado vía API, eso son **~350 peticiones en
+    paralelo** (la mayoría dashboards reales, no basura de tests). Esa ráfaga sigue
+    corriendo de fondo mucho después de cerrar el diálogo y compite por el mismo
+    servidor Node con cualquier otra acción posterior: se ha visto (confirmado con
+    traza de Playwright: el `PUT /dashboard/:id` de un guardado real quedaba sin
+    respuesta más de 20s) que retrasa lo suficiente un guardado de dashboard
+    inmediatamente posterior como para que su toast de éxito no dé tiempo a
+    aparecer dentro de un timeout normal. `dashboard-charts.spec.ts` espera a que
+    la ráfaga se asiente (`networkidle`, hasta 60s) antes de guardar justo después
+    de usar esta opción.
+
+16. **[Entorno de desarrollo, no es bug de la app] Esta BBDD de desarrollo compartida
+    acumula un volumen real de datos considerable.** Confirmado vía API: ~350
+    dashboards (270 privados + 7 de grupo + 20 abiertos + 55 comunes) y
+    `GET /datasource` tarda >30s y devuelve 404 (mismo síntoma que el hallazgo #2,
+    ahora cuantificado). De esos ~350 dashboards, solo ~49 tenían prefijo
+    `PWTEST_` (basura de ejecuciones de test interrumpidas cuyo teardown no llegó a
+    correr — el barrido de `global.teardown.ts` solo limpia el prefijo de la
+    propia ejecución, no el de ejecuciones anteriores); el resto (~300) es
+    contenido real de desarrollo/demo, no se debe tocar sin confirmar antes. Si el
+    entorno se nota lento en general, merece la pena revisar y limpiar
+    manualmente los dashboards/datasources con prefijo `PWTEST_` antiguos.
+
 Ningún otro comportamiento inesperado detectado se ha "arreglado" en el código de la
 app — esta suite solo prueba y documenta; los cambios reales quedan a tu criterio.
 
@@ -303,10 +342,12 @@ lateral, hallazgo de `/logs`).
 la prueba más larga de toda la suite. Dentro de un mismo dashboard, usando el editor de
 paneles real (botón "Nuevo panel" -> elegir tabla y campos -> Ejecutar -> elegir tipo de
 gráfico -> Confirmar, exactamente como lo haría una persona), crea **un panel de cada uno
-de 30 de los 31 tipos de gráfico que ofrece la aplicación** (tablas, KPIs, circulares,
-barras, líneas, dispersión, embudo, radar, mapas de árbol, etc. — la lista completa vive
-en `services/utils/chart-utils.service.ts:chartTypes`), comprueba que ninguno da error,
-guarda el dashboard entero, recarga la página y confirma que los 30 paneles persisten.
+de 30 de los 31 tipos de gráfico que ofrece la aplicación**, más 2 paneles extra de
+"Gráfico de Barras" (uno por cada pestaña de colores, ver más abajo) — **32 paneles en
+total** (tablas, KPIs, circulares, barras, líneas, dispersión, embudo, radar, mapas de
+árbol, etc. — la lista completa vive en `services/utils/chart-utils.service.ts:chartTypes`),
+comprueba que ninguno da error, guarda el dashboard entero, recarga la página y confirma
+que los 32 paneles persisten.
 Cada panel se titula con el nombre de su tipo de gráfico (p.ej. "Gráfico de Barras
 Apiladas"), para poder identificarlos a simple vista sin tener que abrir cada uno.
 "Texto Dinámico" limita la consulta a "Mostrar Top: 1" (si no, al agrupar por una sola
@@ -320,17 +361,28 @@ segundo eje, etiquetas ajustables, radio interno, Top N, límites del velocímet
 semafórico, etc. — vía `@if (features.xxx)` en `chart-dialog.component.html`; la función
 no necesita saber cuál, solo comprueba si el control existe antes de tocarlo). No toca a
 propósito: el grupo mutuamente excluyente Tendencia/Comparativa/Predicción (activar una
-deshabilita las otras dos, así que "tocarlas todas" no tiene un estado final coherente),
-"Añadir imágenes" (abre el selector de la librería de medios), ni toda la sección
-"Colores" (paleta, swatches por categoría, pestañas de intervalo/colores únicos,
-opacidad) — es cosmética/subjetiva, sin un valor "correcto" que verificar, y su UI es
-bastante más frágil que los interruptores simples del resto. Verificado panel a panel en
+deshabilita las otras dos, así que "tocarlas todas" no tiene un estado final coherente) ni
+"Añadir imágenes" (abre el selector de la librería de medios). Verificado panel a panel en
 el JSON guardado: cada ajuste aparece exactamente donde corresponde según el feature-set
 real de ese tipo (p.ej. segundo eje solo en "Mixto: Barras y lineas", radio interno solo
 en "Gráfico de Pastel", Top N/transición/línea de tiempo solo en "Barras en carrera",
 límites/semáforo solo en "Velocímetro").
+
+Para cada uno de esos 20 tipos, `exerciseColorOptions()` también ejerce la sección
+"Colores" de forma genérica (no exhaustiva: es la parte más subjetiva/cosmética del
+diálogo y su UI es bastante más frágil que los interruptores simples del resto): escoge
+la primera paleta del desplegable si existe, cambia el primer color individual a amarillo
+y, si el tipo tiene opacidad, la sube al 50%. Los 2 paneles extra de "Gráfico de Barras"
+(el único tipo con pestañas de intervalo) cubren además, uno cada uno, sus 3 pestañas de
+color ("Colores" / "Colores Únicos" / "Colores por intervalo").
+
 Después también edita el tipo de gráfico de un panel ya existente (menú del panel ->
-"Cambiar tipo de gráfico") y borra otro panel, guardando y verificando cada cambio.
+"Cambiar tipo de gráfico") y borra otro panel, guardando y verificando cada cambio. Un
+test aparte (`repasa el resto de opciones del menú contextual del panel`) cubre el resto
+de opciones del menú "..." de un panel que no tocan los anteriores: Editar estilo del
+panel, Mostrar campos de origen, Vincular con otro informe (smoke test: abre y cierra sin
+confirmar), Exportar a Excel/CSV, Duplicar panel y Bloquear panel (verificado vía el JSON
+guardado, no vía el texto del menú — ver hallazgo #13).
 
 Cada tipo usa la combinación de campos que **de verdad** necesita, no una genérica de
 "1 categórico + 1 numérico" para todos — eso no reflejaría lo que cada tipo espera (p.ej.

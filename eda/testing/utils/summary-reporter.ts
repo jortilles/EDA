@@ -1,6 +1,27 @@
 import type { Reporter, TestCase, TestResult, FullResult } from '@playwright/test/reporter';
 import * as fs from 'fs';
 import * as path from 'path';
+import { execFileSync } from 'child_process';
+
+/**
+ * ffmpeg es completamente OPCIONAL (ver scripts/setup-ffmpeg.js, `npm run
+ * setup:ffmpeg`): si no esta instalado en .tools/ffmpeg/, simplemente no se
+ * recortan los videos y la suite funciona exactamente igual que sin el.
+ */
+function findCachedFfmpeg(): string | null {
+    const dir = path.resolve(__dirname, '..', '.tools', 'ffmpeg');
+    if (!fs.existsSync(dir)) return null;
+    const stack = [dir];
+    while (stack.length) {
+        const current = stack.pop()!;
+        for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+            const full = path.join(current, entry.name);
+            if (entry.isDirectory()) stack.push(full);
+            else if (entry.name.toLowerCase() === 'ffmpeg.exe') return full;
+        }
+    }
+    return null;
+}
 
 /**
  * Al terminar toda la ejecucion, imprime un resumen agrupado por area funcional
@@ -19,20 +40,32 @@ export default class SummaryReporter implements Reporter {
     private passed = 0;
     private skipped = 0;
     private flaky = 0;
+    // Recuento por area (cada archivo .spec.ts), para el desglose "que grupos de
+    // test pasan y cuales no" al final -- a diferencia de `failures`, esto se
+    // rellena SIEMPRE, tambien cuando todo pasa, para poder mostrar la tabla
+    // completa en vez de solo los fallos.
+    private readonly byArea = new Map<string, { passed: number; failed: number; skipped: number }>();
     private readonly outputRoot = path.resolve(__dirname, '..', 'test-results');
+    private readonly ffmpegPath = findCachedFfmpeg();
 
     onTestEnd(test: TestCase, result: TestResult) {
         this.relocateAttachments(test, result);
         const area = this.areaOf(test);
+        if (!this.byArea.has(area)) this.byArea.set(area, { passed: 0, failed: 0, skipped: 0 });
+        const counts = this.byArea.get(area)!;
+
         if (result.status === 'passed') {
             this.passed++;
+            counts.passed++;
             if (result.retry > 0) this.flaky++;
             return;
         }
         if (result.status === 'skipped') {
             this.skipped++;
+            counts.skipped++;
             return;
         }
+        counts.failed++;
         const message = result.errors[0]?.message ?? result.error?.message ?? 'Fallo sin mensaje de error';
         this.failures.push({
             area,
@@ -50,6 +83,30 @@ export default class SummaryReporter implements Reporter {
         const afterTests = file.split('/tests/')[1];
         if (!afterTests) return 'other';
         return afterTests.replace(/\.spec\.ts$/, '').replace(/\.ts$/, '');
+    }
+
+    /**
+     * Recorta los primeros ~3s de un video (el arranque real de Angular en modo
+     * dev, ~5s, queda en ~2s de "pantalla en blanco" visible) usando el ffmpeg
+     * cacheado por `npm run setup:ffmpeg` (ver findCachedFfmpeg()). Si no esta
+     * instalado, no hace nada -- es una mejora opcional de revision, no un
+     * requisito para que la suite funcione. Falla en silencio ante cualquier
+     * error de ffmpeg (p.ej. un video demasiado corto para recortar 3s): se
+     * conserva el video original sin tocar antes que perderlo.
+     */
+    private trimVideoStart(videoPath: string, seconds = 3) {
+        if (!this.ffmpegPath) return;
+        const trimmedPath = videoPath + '.trimmed.webm';
+        try {
+            execFileSync(this.ffmpegPath, [
+                '-y', '-ss', String(seconds), '-i', videoPath,
+                '-c:v', 'libvpx', '-c:a', 'libvorbis',
+                trimmedPath,
+            ], { stdio: 'ignore' });
+            fs.renameSync(trimmedPath, videoPath);
+        } catch {
+            try { fs.rmSync(trimmedPath, { force: true }); } catch { /* no habia nada que limpiar */ }
+        }
     }
 
     private sanitize(name: string): string {
@@ -86,6 +143,14 @@ export default class SummaryReporter implements Reporter {
         const countByType = new Map<string, number>();
         for (const attachment of result.attachments) {
             if (!attachment.path || !fs.existsSync(attachment.path)) continue;
+            // Las capturas NO se quieren como archivo suelto en test-results/ (solo
+            // los videos) -- el informe HTML (`npx playwright show-report`) ya hace
+            // su PROPIA copia independiente de cada captura en playwright-report/data/
+            // antes de que este reporter se ejecute (el reporter "html" va declarado
+            // antes que este en playwright.config.ts), asi que sigue viendose ahi sin
+            // tocar nada; aqui simplemente no se relocaliza y se deja que la limpieza
+            // de mas abajo se lleve el original con el resto de la carpeta hash.
+            if (attachment.name === 'screenshot') continue;
             const ext = path.extname(attachment.path);
             const n = (countByType.get(attachment.name) ?? 0) + 1;
             countByType.set(attachment.name, n);
@@ -94,6 +159,7 @@ export default class SummaryReporter implements Reporter {
             try {
                 fs.renameSync(attachment.path, destPath);
                 attachment.path = destPath;
+                if (attachment.name === 'video') this.trimVideoStart(destPath);
             } catch {
                 // Distinto volumen u otro problema puntual de FS: se deja en su ruta original.
             }
@@ -120,20 +186,33 @@ export default class SummaryReporter implements Reporter {
         console.log(` Total: ${total}   OK: ${this.passed}   Fallidos: ${this.failures.length}   Omitidos: ${this.skipped}   Inestables (retry): ${this.flaky}`);
         console.log(` Resultado global: ${result.status.toUpperCase()}`);
 
+        // Tabla por area SIEMPRE (tambien si todo pasa): que "grupos" de test
+        // (un area = un archivo .spec.ts, p.ej. "e2e/context-menu/panel-lock") pasan
+        // y cuales no, de un vistazo, sin tener que leer el listado completo de
+        // arriba linea por linea.
+        console.log('\n POR GRUPO (cada area = un archivo .spec.ts):\n');
+        const areaNameWidth = Math.min(60, Math.max(...[...this.byArea.keys()].map(a => a.length), 10));
+        for (const [area, counts] of [...this.byArea.entries()].sort()) {
+            const totalArea = counts.passed + counts.failed + counts.skipped;
+            const mark = counts.failed > 0 ? '✖' : '✓';
+            const skippedNote = counts.skipped > 0 ? `, ${counts.skipped} omitidos` : '';
+            console.log(` ${mark} ${area.padEnd(areaNameWidth)}  ${counts.passed}/${totalArea} OK${skippedNote}`);
+        }
+
         if (this.failures.length === 0) {
             console.log('\n Todo correcto: no se ha encontrado ningun fallo. ✅');
             console.log('='.repeat(78) + '\n');
             return;
         }
 
-        const byArea = new Map<string, typeof this.failures>();
+        const byAreaFailures = new Map<string, typeof this.failures>();
         for (const f of this.failures) {
-            if (!byArea.has(f.area)) byArea.set(f.area, []);
-            byArea.get(f.area)!.push(f);
+            if (!byAreaFailures.has(f.area)) byAreaFailures.set(f.area, []);
+            byAreaFailures.get(f.area)!.push(f);
         }
 
-        console.log('\n FALLOS POR AREA:\n');
-        for (const [area, items] of [...byArea.entries()].sort()) {
+        console.log('\n DETALLE DE LOS FALLOS:\n');
+        for (const [area, items] of [...byAreaFailures.entries()].sort()) {
             console.log(` ✖ ${area} (${items.length})`);
             for (const item of items) {
                 console.log(`    - ${item.title}`);

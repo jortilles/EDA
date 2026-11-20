@@ -13,6 +13,7 @@
     "test:debug": "playwright test --debug",
     "report": "playwright show-report",
     "install:browsers": "playwright install chromium",
+    "setup:ffmpeg": "node scripts/setup-ffmpeg.js",
     "codegen": "playwright codegen http://localhost:4200"
   },
   "devDependencies": {
