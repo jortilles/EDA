@@ -16,6 +16,7 @@ interface AocAmbito {
     standalone: true,
     selector: 'eda-aoc-form',
     templateUrl: './aoc-form.component.html',
+    styleUrls: ['./aoc-form.component.css'],
     imports: [CommonModule, ReactiveFormsModule, FormsModule, DropdownModule],
 })
 export class AocFormComponent implements OnInit, OnDestroy {
@@ -45,6 +46,12 @@ export class AocFormComponent implements OnInit, OnDestroy {
         this.saveSub?.unsubscribe();
         // No dejar el formulario de otro tipo de datasource bloqueado por este estado
         this.pluginFormService.setReady(true);
+    }
+
+    /** Detection is only allowed when both credentials are filled and no detection is running */
+    get canDetect(): boolean {
+        const { user, password } = this.connectionForm?.value || {};
+        return !this.detecting && !!String(user ?? '').trim() && !!String(password ?? '').trim();
     }
 
     togglePasswordVisibility(): void {

@@ -1,0 +1,4 @@
+/* Same corporate gradient button as the "Create new report" button on the home page */
+.btn-corporate-gradient                { background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient)); }
+.btn-corporate-gradient:hover:enabled  { opacity: 0.9; }
+.btn-corporate-gradient:disabled       { opacity: 0.5; cursor: not-allowed; }

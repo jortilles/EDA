@@ -45,8 +45,8 @@
     <!-- AOC: detect ambitos -->
     <div>
       <button type="button"
-        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-        [disabled]="detecting"
+        class="btn-corporate-gradient text-white font-bold px-4 py-2 rounded"
+        [disabled]="!canDetect"
         (click)="detectAmbitos()">
         @if (detecting) {
           <span i18n="@@aocDetecting">Detectando ámbitos...</span>

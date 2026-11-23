@@ -5,7 +5,32 @@ import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 import DataSource, { IDataSource } from '../../module/datasource/model/datasource.model';
 
 const cache_config = require('../../../config/cache.config');
-import { loadAOCConfig } from './aoc-config.loader';
+import { AOCConfig, loadAOCConfig } from './aoc-config.loader';
+import { AOC_ODBC_DRIVER, isAOCDriverInstalled } from './aoc-driver.check';
+
+/**
+ * Pre-flight checks before opening an AOC connection: config file and ODBC driver.
+ * Returns the config, or an HttpException (already logged) when the environment is not ready.
+ */
+async function checkAOCEnvironment(): Promise<{ config?: AOCConfig, error?: HttpException }> {
+    const { config, error: configError } = loadAOCConfig();
+    if (!config) {
+        console.warn(`[AOC] The file aoc.config.js is not properly configured: ${configError}`);
+        return { error: new HttpException(503, `El archivo aoc.config.js no está correctamente configurado. ${configError}`) };
+    }
+
+    const driverInstalled = await isAOCDriverInstalled();
+    if (driverInstalled === false) {
+        console.warn(`[AOC] ODBC driver "${AOC_ODBC_DRIVER}" is not available on this server (${process.platform}/${process.arch}). Install it to use the AOC connector.`);
+        return { error: new HttpException(503, `El driver ODBC "${AOC_ODBC_DRIVER}" no está disponible en el servidor.`) };
+    }
+    if (driverInstalled === null) {
+        // Could not determine it: try to connect anyway, the ODBC error will tell
+        console.warn(`[AOC] Could not verify whether ODBC driver "${AOC_ODBC_DRIVER}" is installed. Trying to connect anyway.`);
+    }
+
+    return { config };
+}
 
 export class AOCController {
 
@@ -17,9 +42,9 @@ export class AOCController {
                 return next(new HttpException(400, 'Se requieren: user (clientId), password (clientSecret)'));
             }
 
-            const { config: aoc_config, error: configError } = loadAOCConfig();
-            if (!aoc_config) {
-                return next(new HttpException(503, configError));
+            const { config: aoc_config, error: envError } = await checkAOCEnvironment();
+            if (envError) {
+                return next(envError);
             }
 
             const conn = new AOCConnection({ type: 'aoc', host: aoc_config.host, port: aoc_config.port, database: aoc_config.database, user, password });
@@ -42,12 +67,12 @@ export class AOCController {
                 return next(new HttpException(400, 'Se requieren: name, user (clientId), password (clientSecret), schema'));
             }
 
-            const { config: aoc_config, error: configError } = loadAOCConfig();
-            if (!aoc_config) {
-                return next(new HttpException(503, configError));
+            const { config: aoc_config, error: envError } = await checkAOCEnvironment();
+            if (envError) {
+                return next(envError);
             }
 
-            const config = { type: 'aoc', host: aoc_config.host, port: aoc_config.port, database: aoc_config.database, schema, user, password };
+            const config ={ type: 'aoc', host: aoc_config.host, port: aoc_config.port, database: aoc_config.database, schema, user, password };
             const conn = new AOCConnection(config);
             const tables = await conn.generateDataModel(optimize ? 1 : 0, filter || '');
 

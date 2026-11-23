@@ -1,6 +1,7 @@
 import { SQLserverConnection } from '../../services/connection/db-systems/slqserver-connection';
 import { AOC_AMBITOS_MAP } from './aoc-ambitos.map';
 import { AOC_TABLES_MAP } from './aoc-tables.map';
+import { AOC_ODBC_DRIVER } from './aoc-driver.check';
 
 const odbc = require('odbc');
 
@@ -28,7 +29,7 @@ export class AOCConnection extends SQLserverConnection {
 
     async getclient(): Promise<any> {
         const connectionString =
-            `Driver={ODBC Driver 18 for SQL Server};` +
+            `Driver={${AOC_ODBC_DRIVER}};` +
             `Server=${this.config.host},${this.config.port};` +
             `Database=${this.config.database};` +
             `Authentication=ActiveDirectoryServicePrincipal;` +
@@ -90,7 +91,7 @@ export class AOCConnection extends SQLserverConnection {
         try {
             const schemas = await this.execQuery('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA');
             const names = schemas.map((s: any) => s['SCHEMA_NAME']);
-            console.log('[AOC] Esquemas detectados en el datalake:', names);
+            // console.log('[AOC] Esquemas detectados en el datalake:', names);
             return names
                 .filter((name: string) => !!AOC_AMBITOS_MAP[name])
                 .map((name: string) => ({ technicalName: name, label: AOC_AMBITOS_MAP[name] }));

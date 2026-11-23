@@ -30,7 +30,10 @@ export function loadAOCConfig(): AOCConfigResult {
 
     let raw: any;
     try {
-        raw = require('../../../config/aoc.config');
+        // Drop any previously cached (invalid) copy so a fixed file is picked up without restarting the API
+        const configPath = require.resolve('../../../config/aoc.config');
+        delete require.cache[configPath];
+        raw = require(configPath);
     } catch (err: any) {
         // Do not cache load errors so the file can be fixed without restarting the API
         return { config: null, error: `AOC config file could not be loaded (config/aoc.config.js): ${err.message}` };
