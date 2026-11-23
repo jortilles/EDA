@@ -1008,8 +1008,8 @@ export abstract class QueryBuilderService {
 
 
     /**
-     * false (EDA default) -> value-list filters compare against the description column (target_description_column).
-     * true (SinergiaDA) -> value-list filters compare against the internal code column (target_id_column) instead.
+     * false (Edalitics default) -> value-list filters compare against the description column (target_description_column).
+     * true (alternative) -> value-list filters compare against the internal code column (target_id_column) instead.
      */
     public useValueListCodeForFilters(): boolean {
         return !!eda_api_config.custom_behaviour?.USE_VALUE_LIST_CODE_FOR_FILTERS;

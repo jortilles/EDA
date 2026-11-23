@@ -19,7 +19,7 @@ interface IDashboardConfig {
     panel: any[];
     onlyIcanEdit: boolean;
     styles:any;
-    tag: string[]; //  EDA's tags (array of strings)
+    tag: string[]; //  Edalitics's tags (array of strings)
     external?: any; // external tags  to filter the dashboard
     urls:any; // urls to call from the dashboard.  url actions
     active?: boolean; // false hides the dashboard from non-admin users; undefined/true means active

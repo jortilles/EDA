@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Request } from 'express';
 import formatDate from '../date-format/date-format.service';
 
-// SDA CUSTOM - Daily file logger without external runtime dependencies (10-day retention)
+// alternative - Daily file logger without external runtime dependencies (10-day retention)
 const LOG_RETENTION_DAYS = 10;
 const LOG_DIR_PATH = path.resolve(process.cwd(), 'logs');
 const APP_LOG_PATTERN = /^app-(\d{4}-\d{2}-\d{2})\.log$/;
@@ -64,7 +64,7 @@ const ServerLogSdaService = {
     fs.appendFileSync(getDailyLogPath(), `${row}\n`, { encoding: 'utf8' });
   }
 };
-// END SDA CUSTOM
+// END alternative
 
 export function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
   const ip = req.headers['x-forwarded-for'] || req.get('origin');

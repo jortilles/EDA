@@ -27,7 +27,7 @@ export interface CellAggregationStrategy {
   percentageOfGrandTotal(grandTotalRow: any, percentageCol: EdaColumn): string;
   /**
    * colSubTotals()'s percentage-column value: this page's share of the full dataset.
-   * `pageRows` (only the rows on the current page) is used by the SDA alternative, which sums
+   * `pageRows` (only the rows on the current page) is used by the alternative implementation, which sums
    * each row's own percentage instead of recomputing the ratio against `allRows`.
    */
   percentageOfPageTotal(pageTotalRow: any, percentageCol: EdaColumn, allRows: any[], pageRows?: any[]): string;
@@ -271,7 +271,7 @@ export function coltotals(ctx: TotalsContext): TotalRowCell[] {
           const decimalplaces = (currentCol as EdaColumnNumber).decimals ?? 0;
           row[keys[j]] = parseFloat((parseFloat(row[keys[j]]) + addend).toFixed(decimalplaces));
         } else {
-          // SDA logic: accumulate raw sums first, round once at the end (avoids compounding rounding errors)
+          // alternative logic: accumulate raw sums first, round once at the end (avoids compounding rounding errors)
           row[keys[j]] = parseFloat(row[keys[j]]) + addend;
         }
       } else {
@@ -487,14 +487,14 @@ export function noRepeatedRows(
 
 export class FlatCellAggregation implements CellAggregationStrategy {
   percentageOfGrandTotal(_grandTotalRow: any, _percentageCol: EdaColumn): string {
-    // EDA (current) logic: "100.00%" | SDA logic: "100%" (grand total over grand total by definition, avoids rounding errors)
+    // EDA (current) logic: "100.00%" | alternative logic: "100%" (grand total over grand total by definition, avoids rounding errors)
     return USE_EDA_TABLE_TOTALS_LOGIC ? '100.00%' : '100%';
   }
 
   percentageOfPageTotal(pageTotalRow: any, percentageCol: EdaColumn, allRows: any[], pageRows?: any[]): string {
     const numericField = percentageCol.field.slice(0, -1);
     if (!USE_EDA_TABLE_TOTALS_LOGIC) {
-      // SDA logic: sum each row's own % value for this page instead of recomputing the ratio, capped at 100%
+      // alternative logic: sum each row's own % value for this page instead of recomputing the ratio, capped at 100%
       const percentageSum = (pageRows ?? allRows).reduce((sum, row) => {
         const val = parseFloat(String(row[percentageCol.field]).replace('%', ''));
         return sum + (isNaN(val) ? 0 : val);

@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { HttpException } from "../global/model/index";
 
 
-// EDA API Configuración
+// Edalitics API Configuración
 const EDA_API_CONFIG = require('../../../config/eda_api_config');
 
 

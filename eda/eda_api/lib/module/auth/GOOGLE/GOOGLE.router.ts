@@ -7,7 +7,7 @@ const router = express.Router();
  * @openapi
  * /auth/google/login:
  *   post:
- *     description: Authenticates a user via Google Single Sign-On (SSO). Validates the Google ID token and returns an EDA JWT session token.
+ *     description: Authenticates a user via Google Single Sign-On (SSO). Validates the Google ID token and returns an Edalitics JWT session token.
  *     parameters:
  *       - name: body
  *         in: body
@@ -20,9 +20,9 @@ const router = express.Router();
  *               description: Google OAuth2 ID token obtained from the Google Sign-In flow
  *     responses:
  *       200:
- *         description: Google SSO authentication successful, EDA JWT token returned.
+ *         description: Google SSO authentication successful, Edalitics JWT token returned.
  *       400:
- *         description: Invalid Google token or user not authorized in EDA.
+ *         description: Invalid Google token or user not authorized in Edalitics.
  *       500:
  *         description: Server error during Google SSO authentication.
  *     tags:

@@ -46,7 +46,7 @@ if (isFirstWorker()) {
  *       - name: x-user-token
  *         in: header
  *         type: string
- *         description: Optional JWT user token to associate the MCP request with an authenticated EDA user
+ *         description: Optional JWT user token to associate the MCP request with an authenticated Edalitics user
  *       - name: body
  *         in: body
  *         schema:
@@ -118,7 +118,7 @@ McpRouter.get('/', (_req: Request, res: Response) => {
  * @openapi
  * /ia/chat:
  *   post:
- *     description: AI chat assistant endpoint. Accepts a conversation history and uses an LLM with MCP tools to answer questions about EDA dashboards and data. Requires authentication.
+ *     description: AI chat assistant endpoint. Accepts a conversation history and uses an LLM with MCP tools to answer questions about Edalitics dashboards and data. Requires authentication.
  *     parameters:
  *       - name: body
  *         in: body

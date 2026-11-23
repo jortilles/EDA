@@ -1,5 +1,5 @@
 // ============================================================
-// SYSTEM PROMPTS — EDA ASSISTANT
+// SYSTEM PROMPTS — EDALITICS ASSISTANT
 // ============================================================
 
 export function buildEnhancedSystemPrompt(user: any): string {

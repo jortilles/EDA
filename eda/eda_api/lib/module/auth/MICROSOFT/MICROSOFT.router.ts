@@ -7,7 +7,7 @@ const router = express.Router();
  * @openapi
  * /auth/microsoft/login:
  *   post:
- *     description: Authenticates a user via Microsoft Azure AD Single Sign-On (SSO). Validates the Microsoft access token and returns an EDA JWT session token.
+ *     description: Authenticates a user via Microsoft Azure AD Single Sign-On (SSO). Validates the Microsoft access token and returns an Edalitics JWT session token.
  *     parameters:
  *       - name: body
  *         in: body
@@ -20,9 +20,9 @@ const router = express.Router();
  *               description: Microsoft Azure AD access token obtained from the MSAL authentication flow
  *     responses:
  *       200:
- *         description: Microsoft SSO authentication successful, EDA JWT token returned.
+ *         description: Microsoft SSO authentication successful, Edalitics JWT token returned.
  *       400:
- *         description: Invalid Microsoft token or user not authorized in EDA.
+ *         description: Invalid Microsoft token or user not authorized in Edalitics.
  *       500:
  *         description: Server error during Microsoft SSO authentication.
  *     tags:

@@ -10,7 +10,7 @@ import SAML_ORCL_Router from './SAML_ORCL/SAML_ORCL.router';
 // LoginType
 import {loginType} from './loginType'
 
-// EDA API Configuración
+// Edalitics API Configuración
 const EDA_API_CONFIG = require('../../../config/eda_api_config');
 
 const router = express.Router();

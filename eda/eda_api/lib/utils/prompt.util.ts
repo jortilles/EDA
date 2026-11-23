@@ -9,7 +9,7 @@ export class PromptUtil {
         return forbiddenKeywords.some(keyword => msgLower.includes(keyword.toLowerCase()));
     }
 
-    // Initial system message for the AI assistant (contains rules and EDA schema).
+    // Initial system message for the AI assistant (contains rules and Edalitics schema).
     public static buildSystemMessage(schema: any) {
         const tableList = schema.map((t: any) => `"${t.table}"`).join(', ');
         const schemaLines = schema.map((t: any) => {

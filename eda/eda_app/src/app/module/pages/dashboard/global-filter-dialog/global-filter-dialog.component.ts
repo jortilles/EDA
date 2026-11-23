@@ -98,7 +98,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public selectedColumn: any;
 
     public columnValues: any[] = [];
-    /** SDA CUSTOM - raw [label, id] rows behind columnValues, used to resolve selectedIdValues in onSelectedItemsChange */
+    /** alternative - raw [label, id] rows behind columnValues, used to resolve selectedIdValues in onSelectedItemsChange */
     public totalValues: any[] = [];
     public tableNodes: any[] = [];
     public autoCompleteValues: string[];

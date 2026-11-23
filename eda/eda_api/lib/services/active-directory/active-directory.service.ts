@@ -209,7 +209,7 @@ export class ActiveDirectoryService {
         if (groups) {
           for (let i = 0, n = groups.length; i < n; i += 1) {
             const group = groups[i]
-            // Si he definido uno o varios patronespara los grupos del EDA....
+            // Si he definido uno o varios patronespara los grupos del Edalitics....
             if (adconfig.groupPatterns) {
               adconfig.groupPatterns.forEach(p => {
                 if (group.cn.toString().indexOf(p) >= 0) {

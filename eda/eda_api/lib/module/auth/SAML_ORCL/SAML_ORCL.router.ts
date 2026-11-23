@@ -32,7 +32,7 @@ router.get('/login', SAML_ORCL_Controller.login);
  *         description: Base64-encoded SAML response from the Identity Provider
  *     responses:
  *       302:
- *         description: Redirect to the EDA application with session token upon successful authentication and Oracle authorization.
+ *         description: Redirect to the Edalitics application with session token upon successful authentication and Oracle authorization.
  *       400:
  *         description: Invalid SAML assertion or user not authorized in Oracle DB.
  *       500:
@@ -81,7 +81,7 @@ router.get('/request-logout', authGuard ,SAML_ORCL_Controller.requestLogout);
  *     description: Receives the SAML logout response from the Identity Provider (GET binding) for the Oracle authorization variant.
  *     responses:
  *       302:
- *         description: Redirect to the EDA login page after successful logout.
+ *         description: Redirect to the Edalitics login page after successful logout.
  *       500:
  *         description: Server error processing SAML logout.
  *     tags:
@@ -95,7 +95,7 @@ router.get('/request-logout', authGuard ,SAML_ORCL_Controller.requestLogout);
  *         description: Base64-encoded SAML logout response
  *     responses:
  *       302:
- *         description: Redirect to the EDA login page after successful logout.
+ *         description: Redirect to the Edalitics login page after successful logout.
  *       500:
  *         description: Server error processing SAML logout.
  *     tags:

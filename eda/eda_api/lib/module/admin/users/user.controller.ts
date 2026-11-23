@@ -61,7 +61,7 @@ export class UserController {
                     //Si es admin.... el fico al meu admin
                     
                     if (userAD.adminRole) {
-                        // EL GRUPO ADMIN DE EDA ES FIJO.
+                        // EL GRUPO ADMIN DE EDALITICS ES FIJO.
                         adGroupsInMongo.push("135792467811111111111110");
                     }
                     // Busquem si l'usuari ja el tenim registrat al mongo

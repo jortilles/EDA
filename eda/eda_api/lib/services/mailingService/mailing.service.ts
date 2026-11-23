@@ -658,7 +658,7 @@ export class MailingService {
   static datamodelAllowed(dataModel: any, user: any): boolean {
     try {
       const roles: string[] = (user?.role || []).map((r: any) => String(r));
-      if (roles.includes('135792467811111111111110')) return true; // EDA admin group
+      if (roles.includes('135792467811111111111110')) return true; // Edalitics admin group
       const granted: any[] = dataModel?.ds?.metadata?.model_granted_roles || [];
       if (!granted.length) return true;
 

@@ -22,8 +22,8 @@ module.exports = applyConfigOverwrite('eda_api_config', {
     custom_behaviour:{
       ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: false, // true -> Non-admin users can manage "open" dashboards.
       USE_VALUE_LIST_CODE_FOR_FILTERS: false, // true -> For using the filters with code values.
-      USE_RECURSIVE_PERMISSIONS: true, // true -> QueryBuilderService.builder() getRecursivePermissions (EDA, existing behaviour, keep as default). false -> getFlatPermissions (SDA).
-      RESTRICT_TABLE_TO_GRANTED_COLUMN: true, // true -> closed model: granting permission on one column hides the rest of the table's columns (EDA, existing behaviour, keep as default). false -> row-level permissions never hide sibling columns (SDA).
+      USE_RECURSIVE_PERMISSIONS: true, // true -> QueryBuilderService.builder() getRecursivePermissions (Edalitics, existing behaviour, keep as default). false -> getFlatPermissions (alternative).
+      RESTRICT_TABLE_TO_GRANTED_COLUMN: true, // true -> closed model: granting permission on one column hides the rest of the table's columns (Edalitics, existing behaviour, keep as default). false -> row-level permissions never hide sibling columns (alternative).
       SHOW_EMPTY_VALUE_IN_FILTERS: true, // true -> selector queries for global filters always include an empty/null row (UNION SELECT ''). The frontend flag of the same name (customizable_default.ts) separately controls whether that row is actually shown in the dropdown.
       // AVG_DECIMALS: 2 // Optional. When defined, forces the decimals of the AVG aggregations in the generated SQL (cast as decimal(32,N)), overwriting the column's own minimumFractionDigits. When not defined, the decimals defined on the numeric field are respected (as in sum, max, min, ...)
     }

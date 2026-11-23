@@ -1,8 +1,8 @@
 /**
  * Customization CSS: place here the styles specific to each client installation.
  *
- * Loaded last in angular.json "styles", so rules here override EDA's global styles
- * (including the Tailwind/PrimeNG @layer blocks). Keep this file empty in EDA core.
+ * Loaded last in angular.json "styles", so rules here override Edalitics's global styles
+ * (including the Tailwind/PrimeNG @layer blocks). Keep this file empty in Edalitics core.
  *
  * Notes:
  * - Component styles are scoped by Angular ([_ngcontent-*]); to override them use a more

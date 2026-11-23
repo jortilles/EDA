@@ -965,7 +965,7 @@ export class GlobalFilterComponent implements OnInit {
                         const urlValues = _.split(urlParams[param], '|');
                         const columnType = filter.column?.value?.column_type || filter.selectedColumn?.column_type;
                         if (CONCAT_URL_FILTER_VALUES && columnType !== 'date') {
-                            // SDA: concatenate URL values with saved ones (union, deduped) instead of replacing them
+                            // alternative: concatenate URL values with saved ones (union, deduped) instead of replacing them
                             filter.selectedItems = _.union(filter.selectedItems || [], urlValues);
                             // URL carries labels, not internal codes -> drop stale codes so the backend filters by labels
                             filter.selectedIdValues = undefined;

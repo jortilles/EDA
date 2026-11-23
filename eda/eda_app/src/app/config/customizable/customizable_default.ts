@@ -234,7 +234,7 @@ export const CHART_RENDER_LIMITS = {
     maxCrosstableColumns:  50,    // cross tables generating more columns than this are rendered as a plain table
 };
 
-/** KPI sizing (eda-kpi/kpi-dialog). Same shape/names as SinergiaDA's KPI_CONFIG, so future
+/** KPI sizing (eda-kpi/kpi-dialog). Same shape/names as alternative's KPI_CONFIG, so future
  * merges from their migration/kpiFitContainer_v2 line don't conflict on this block. */
 export const KPI_CONFIG = {
     USE_EDALITICS_SIZE_LOGIC: true, // moves where the value's +/- control lives — true → Edalitics (dialog) false -> forks (hover buttons on the KPI, not implemented here)
@@ -266,13 +266,13 @@ export const SHOW_HIDDEN_FIELDS_BUTTON_ADMIN_ONLY: boolean = false; // true → 
 export const ALLOW_NON_ADMIN_MANAGE_PUBLIC_REPORTS: boolean = false; // true → public visibility option shown in dashboard creation/edit UIs | false → hidden
 export const USE_VALUE_LIST_CODE_FOR_FILTERS: boolean = false; // true -> compare filters against the value-list's internal codes instead of the raw selected values.
 export const ALLOWED_QUERY_MODES: string[] = ['EDA', 'SQL', 'TREE']; // ALLOWED_QUERY_MODES Order matters; the first value "ALLOWED_QUERY_MODES[0]" is considered the default query mode. Keep all 3 (EDA, existing behaviour) unless you want to restrict them.
-export const SHOW_WHAT_IF: boolean = true; // true → "What If?" scenarios button visible (EDA, existing behaviour) | false → hidden
-export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner', 'right']; // subset of 'left' | 'inner' | 'right' shown as join type options. Keep all 3 (EDA, existing behaviour) unless you want to restrict them.
-export const SHOW_CUSTOM_ACTION: boolean = true; // true → "Acción personalizada" visible en el menú del informe (EDA, existing behaviour) | false → oculta
+export const SHOW_WHAT_IF: boolean = true; // true → "What If?" scenarios button visible (Edalitics, existing behaviour) | false → hidden
+export const ALLOWED_JOIN_TYPES: string[] = ['left', 'inner', 'right']; // subset of 'left' | 'inner' | 'right' shown as join type options. Keep all 3 (Edalitics, existing behaviour) unless you want to restrict them.
+export const SHOW_CUSTOM_ACTION: boolean = true; // true → "Acción personalizada" visible en el menú del informe (Edalitics, existing behaviour) | false → oculta
 export const SHOW_ZOOM_IN_SIDEBAR: boolean = true   ; // true → zoom control lives inside the dashboard sidebar | false → zoom control lives in the filters bar
 export const PRIVATE_EDITION_ACTIVATED: boolean = false;
-export const USE_EDA_TABLE_TOTALS_LOGIC: boolean = true; // true → current EDA logic (existing behaviour, keep as default) | false → SDA logic (sum of row percentages + single final rounding)
-export const AI_ASSISTANT_MANAGEMENT_AVAILABLE: boolean = true; // true → "Gestión del asistente" visible in the admin menu (EDA, existing behaviour) | false → hidden
+export const USE_EDA_TABLE_TOTALS_LOGIC: boolean = true; // true → current EDA logic (existing behaviour, keep as default) | false → alternative logic (sum of row percentages + single final rounding)
+export const AI_ASSISTANT_MANAGEMENT_AVAILABLE: boolean = true; // true → "Gestión del asistente" visible in the admin menu (Edalitics, existing behaviour) | false → hidden
 export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService registry) per side-menu entry | 'none' or '' → entry hidden
     home: 'home',
     create: 'plus',
@@ -281,7 +281,7 @@ export const CUSTOMIZE_SIDE_MENU_ICONS: any = { // Icon name (IconService regist
     information: 'global',
     logout: 'logout',
 };
-export const ENABLED_LANGUAGES: string[] = ['es', 'ca', 'de', 'en', 'fr', 'it', 'pl', 'pt']; // Locale codes shown in the language selector (EDA's 8 locales, all enabled by default). Each one must have a matching build in angular.json's i18n.locales (or be the sourceLocale) — this flag only controls what's offered in the UI, it doesn't build/remove locales.
+export const ENABLED_LANGUAGES: string[] = ['es', 'ca', 'de', 'en', 'fr', 'it', 'pl', 'pt']; // Locale codes shown in the language selector (Edalitics's 8 locales, all enabled by default). Each one must have a matching build in angular.json's i18n.locales (or be the sourceLocale) — this flag only controls what's offered in the UI, it doesn't build/remove locales.
 export const MAP_BASEMAP_PROVIDER: 'esri' | 'osm' = 'esri'; // Basemap used by the map charts 'esri' → Esri World_Light_Gray_Base | 'osm' → OpenStreetMap standard tiles
 
 /** Feature flags - data-source page */

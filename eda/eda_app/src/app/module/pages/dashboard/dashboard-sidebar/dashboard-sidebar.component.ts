@@ -765,7 +765,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
         try {
           await lastValueFrom(this.dashboardService.deleteDashboard(dashboardId));
 
-          // Navigate the app to EDA home
+          // Navigate the app to Edalitics home
           this.router.navigate(['/home']).then(() => {
             window.location.reload();
           });

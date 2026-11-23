@@ -32,7 +32,7 @@ router.get('/login', SAMLController.login);
  *         description: Base64-encoded SAML response from the Identity Provider
  *     responses:
  *       302:
- *         description: Redirect to the EDA application with the session token upon successful SAML assertion.
+ *         description: Redirect to the Edalitics application with the session token upon successful SAML assertion.
  *       400:
  *         description: Invalid or expired SAML assertion.
  *       500:
@@ -81,7 +81,7 @@ router.get('/request-logout', authGuard ,SAMLController.requestLogout);
  *     description: Receives and processes the SAML logout response or request from the Identity Provider (GET binding).
  *     responses:
  *       302:
- *         description: Redirect to the EDA application login page after successful logout.
+ *         description: Redirect to the Edalitics application login page after successful logout.
  *       500:
  *         description: Server error processing SAML logout.
  *     tags:
@@ -95,7 +95,7 @@ router.get('/request-logout', authGuard ,SAMLController.requestLogout);
  *         description: Base64-encoded SAML logout response from the Identity Provider
  *     responses:
  *       302:
- *         description: Redirect to the EDA application login page after successful logout.
+ *         description: Redirect to the Edalitics application login page after successful logout.
  *       500:
  *         description: Server error processing SAML logout.
  *     tags:

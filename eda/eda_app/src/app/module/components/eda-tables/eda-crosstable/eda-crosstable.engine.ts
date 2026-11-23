@@ -84,7 +84,7 @@ export interface CrossTableBuildOptions {
 // here would let two DIFFERENT tuples join into the SAME key (e.g. ['AB','C'] and
 // ['A','BC'] both become "ABC"), corrupting both the aggregation lookup and the header
 // grouping. String.fromCharCode(1) is the non-printable SOH control character (U+0001) —
-// no real EDA data will ever contain it. Built via fromCharCode (not a literal in the
+// no real Edalitics data will ever contain it. Built via fromCharCode (not a literal in the
 // source) so it can never accidentally get typed/pasted back into an empty string.
 const TUPLE_SEP = String.fromCharCode(1);
 

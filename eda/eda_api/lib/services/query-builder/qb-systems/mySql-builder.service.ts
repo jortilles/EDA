@@ -730,7 +730,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       // variable to find filters with valueListSource
       let validador = (valueListSource !== undefined && valueListSource !== null);
-      // SDA CUSTOM - Keep value-list filters on the internal code column when we have codes to compare against (nested AND/OR conditions)
+      // alternative - Keep value-list filters on the internal code column when we have codes to compare against (nested AND/OR conditions)
       const valueListFilterColumn = validador
         ? ((useCodeForFilters && filter_codes?.length !== undefined && valueListSource.target_id_column) ? valueListSource.target_id_column : valueListSource.target_description_column)
         : filter_column;
@@ -1224,7 +1224,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       if (column.autorelation && !column.valueListSource) {
         colname = `\`${column.joins[column.joins.length-1][0]}\`.\`${column.column_name}\``;
       } else if (this.useValueListCodeForFilters() && column.valueListSource?.target_id_column && column.filter_codes?.length > 0) {
-        // SDA CUSTOM - Keep value-list filters on the internal code column when we have codes to compare against
+        // alternative - Keep value-list filters on the internal code column when we have codes to compare against
         colname = `\`${column.valueListSource.target_table}\`.\`${column.valueListSource.target_id_column}\``;
       } else {
         colname = `\`${column.table_id}\`.\`${column.column_name}\`` ;
