@@ -1,4 +1,25 @@
-<eda-dialog2 width="80vw" height="80vh" [header]="title" (apply)="saveChartConfig()" (close)="closeChartConfig()" [disableApply]="!thresholdsValid">
+<eda-dialog2 width="80vw" height="80vh" (apply)="saveChartConfig()" (close)="closeChartConfig()" [disableApply]="!thresholdsValid">
+  <div header class="flex items-center gap-2">
+    <span class="font-semibold text-base">{{ title }}</span>
+    <span class="text-gray-400">-</span>
+    @if (!editingPanelTitle) {
+      <span class="font-semibold text-base">{{ panelTitle?.trim()?.length > 0 ? panelTitle : '—' }}</span>
+      <button type="button" class="rounded-md p-1 cursor-pointer hover:bg-gray-100"
+        (click)="startEditPanelTitle()" i18n-title="@@editPanelTitleButton" title="Editar nombre">
+        <i class="pi pi-pencil"></i>
+      </button>
+    } @else {
+      <input
+        type="text"
+        autofocusOnShow
+        [(ngModel)]="panelTitle"
+        (focusout)="stopEditPanelTitle()"
+        (keydown.enter)="stopEditPanelTitle()"
+        (keydown.escape)="stopEditPanelTitle()"
+        i18n-placeholder="@@panelTitlePlaceholder" placeholder="Título del panel"
+        class="px-2 py-1 bg-gray-100 rounded-md focus:outline-none text-base font-semibold min-w-[200px]">
+    }
+  </div>
   <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[70vh]">
     <!-- Chart Preview -->
     <div class="flex-1 flex justify-center border-b md:border-b-0 md:border-r bg-slate-50" >

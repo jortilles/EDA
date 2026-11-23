@@ -1717,6 +1717,9 @@ public tableNodeExpand(event: any): void {
             this.onCloseLiveChartProperties(event, response);
             return;
         }
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE) && response?.panelTitle !== undefined) {
+            this.panel.title = response.panelTitle;
+        }
         this.applyDialogChartConfig(event, readCustomFields(response, CUSTOM_CHART_CONFIG_FIELDS), 'chartController');
 }
 
@@ -1833,7 +1836,8 @@ public tableNodeExpand(event: any): void {
     public onCloseLiveChartProperties(event, response): void {
         if (_.isEqual(event, EdaDialogCloseEvent.NONE)) { this.chartController = undefined; this.cdr.markForCheck(); return; }
 
-        const { family, chartType, ...patch } = response ?? {};
+        const { family, chartType, panelTitle, ...patch } = response ?? {};
+        if (panelTitle !== undefined) this.panel.title = panelTitle;
         if (EdaBlankPanelComponent.RECOLOR_CHART_TYPES.includes(chartType)) {
             const chartValues = getChartCategoryValues(chartType, this.panelChart.componentRef.instance);
             patch.assignedColors = this.recolorLegacyAssignedColors(chartValues, response);

@@ -53,7 +53,8 @@ export const PanelOptions = {
                 panelId: _.get(panelComponent.panel, 'id'),
                 chart: panelComponent.graficos,
                 config: panelComponent.panelChartConfig,
-                chartType: panelComponent.graficos.chartType
+                chartType: panelComponent.graficos.chartType,
+                panelTitle: panelComponent.panel.title || ''
             },
               close: (event, response) => panelComponent.onCloseChartProperties(event, response)
             });

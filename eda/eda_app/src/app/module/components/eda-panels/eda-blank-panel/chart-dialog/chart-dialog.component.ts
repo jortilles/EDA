@@ -16,6 +16,7 @@ import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../pre
 import { CategoryChartType, getChartCategoryValues, getSankeyRowLabels } from '../panel-charts/chart-category-values.util';
 import { ChartDialogFeatures, CHART_DIALOG_FEATURES, CATEGORY_TRANSITION_MS_DEFAULT, resolveChartDialogFeatures } from './chart-dialog-features';
 import { MediaLibraryComponent } from '@eda/components/media-library/media-library.component';
+import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -23,7 +24,7 @@ import Swal from 'sweetalert2';
     selector: 'app-chart-dialog',
     templateUrl: './chart-dialog.component.html',
     styleUrls: ['./chart-dialog.component.css'],
-    imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, PredictionDialogComponent, InputNumberModule, DropdownModule, MediaLibraryComponent]
+    imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, PredictionDialogComponent, InputNumberModule, DropdownModule, MediaLibraryComponent, FocusOnShowDirective]
 })
 
 export class ChartDialogComponent implements AfterViewChecked {
@@ -169,6 +170,8 @@ export class ChartDialogComponent implements AfterViewChecked {
     public stacked: any;
     public id: any;
     public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
+    public panelTitle: string = '';
+    public editingPanelTitle: boolean = false;
 
     constructor(private chartUtils: ChartUtilsService, private stylesProviderService: StyleProviderService,
         private alertService: AlertService,
@@ -205,6 +208,7 @@ export class ChartDialogComponent implements AfterViewChecked {
     ngOnInit(): void {
         this.panelChartConfig = this.controller.params.config;
         this.chart = this.controller.params.chart;
+        this.panelTitle = this.controller.params.panelTitle || '';
 
         const resolved = resolveChartDialogFeatures(this.chart?.edaChart, this.chart?.chartType ?? this.controller.params.chartType);
         if (!resolved) console.error('[chart-dialog] no features for', this.chart?.edaChart, this.chart?.chartType);
@@ -525,6 +529,14 @@ export class ChartDialogComponent implements AfterViewChecked {
     private normalizeForMatch(value: string): string {
         const combiningDiacritics = new RegExp(`[\\u0300-\\u036f]`, 'g');
         return value.trim().toLowerCase().normalize('NFD').replace(combiningDiacritics, '');
+    }
+
+    startEditPanelTitle(): void {
+        this.editingPanelTitle = true;
+    }
+
+    stopEditPanelTitle(): void {
+        this.editingPanelTitle = false;
     }
 
     load() {
@@ -1201,7 +1213,7 @@ export class ChartDialogComponent implements AfterViewChecked {
 
     saveChartConfig() {
         if (this.features.family === 'live') {
-            this.onClose(EdaDialogCloseEvent.UPDATE, { family: 'live', chartType: this.liveChartType, ...this.buildLiveSaveResponse() });
+            this.onClose(EdaDialogCloseEvent.UPDATE, { family: 'live', chartType: this.liveChartType, panelTitle: this.panelTitle, ...this.buildLiveSaveResponse() });
             return;
         }
         // Apply final colors to the live preview
@@ -1209,7 +1221,7 @@ export class ChartDialogComponent implements AfterViewChecked {
         this.syncCustomFields();
 
         // Small typed response - assignedColors + this family's own fields, no Chart.js shape.
-        this.onClose(EdaDialogCloseEvent.UPDATE, { family: 'axis', ...this.buildCustomFieldsPatch() });
+        this.onClose(EdaDialogCloseEvent.UPDATE, { family: 'axis', panelTitle: this.panelTitle, ...this.buildCustomFieldsPatch() });
     }
 
     resetChartConfig() {
