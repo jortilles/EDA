@@ -8759,6 +8759,44 @@ Cordialement.</target>
   <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
   <target>Un modèle de données existe déjà pour la base de données Odoo « <x id="PH" equiv-text="value.database"/> ».</target>
 </trans-unit>
+
+  <trans-unit id="aocClientIdLabel">
+        <source>Client ID del Service Principal <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client ID du Service Principal <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocClientSecretLabel">
+        <source>Client secret <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client secret <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocDetecting">
+        <source>Detectando ámbitos...</source>
+        <target>Détection des périmètres...</target>
+      </trans-unit>
+      <trans-unit id="aocDetectAmbitos">
+        <source>Detectar ámbitos</source>
+        <target>Détecter les périmètres</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAmbito">
+        <source>Ámbito a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Périmètre à importer <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+
+            <trans-unit id="aocSelectAmbitoPlaceholder">
+        <source>Selecciona un ámbito</source>
+        <target>Sélectionnez un périmètre</target>
+      </trans-unit>
+<trans-unit id="aocNoAmbitosFound">
+        <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
+        <target>Aucun périmètre reconnu n'a été détecté dans ce datalake.</target>
+      </trans-unit>
+      <trans-unit id="aocNoAmbitoSelected">
+        <source>Debe detectar y seleccionar un ámbito antes de guardar.</source>
+        <target>Vous devez détecter et sélectionner un périmètre avant d'enregistrer.</target>
+      </trans-unit>
+      <trans-unit id="aocCreated">
+        <source>Fuente de datos AOC creada correctamente</source>
+        <target>Source de données AOC créée avec succès</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>

@@ -4728,11 +4728,6 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Blocked because trend or prediction is active</target>
 </trans-unit>
 
-<trans-unit id="comparativeRequirementsTooltip" datatype="html">
-  <source>No cumple los requisitos para la comparativa. Requiere exactamente dos campos: una fecha agrupada por mes, semana o día y un único campo numérico agregado (suma, media, recuento...).</source>
-  <target>Requirements for the comparison are not met. It requires exactly two fields: a date grouped by month, week or day and a single aggregated numeric field (sum, average, count...).</target>
-</trans-unit>
-
 <trans-unit id="showLegend">
 <source>Mostrar Leyenda</source>
 <target>Show Legend</target>
@@ -6972,7 +6967,43 @@ OR<ph id="5"/>
 <trans-unit id="odooCreated">
   <source>Fuente de datos Odoo creada correctamente</source>
   <target>Odoo data source created successfully</target>
-</trans-unit>
+</trans-unit>
+      <trans-unit id="aocClientIdLabel">
+        <source>Client ID del Service Principal <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Service Principal Client ID <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocClientSecretLabel">
+        <source>Client secret <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client secret <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocDetecting">
+        <source>Detectando ámbitos...</source>
+        <target>Detecting scopes...</target>
+      </trans-unit>
+      <trans-unit id="aocDetectAmbitos">
+        <source>Detectar ámbitos</source>
+        <target>Detect scopes</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAmbito">
+        <source>Ámbito a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Scope to import <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+            <trans-unit id="aocSelectAmbitoPlaceholder">
+        <source>Selecciona un ámbito</source>
+        <target>Select a scope</target>
+      </trans-unit>
+<trans-unit id="aocNoAmbitosFound">
+        <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
+        <target>No recognized scope was detected in this datalake.</target>
+      </trans-unit>
+      <trans-unit id="aocNoAmbitoSelected">
+        <source>Debe detectar y seleccionar un ámbito antes de guardar.</source>
+        <target>You must detect and select a scope before saving.</target>
+      </trans-unit>
+      <trans-unit id="aocCreated">
+        <source>Fuente de datos AOC creada correctamente</source>
+        <target>AOC data source created successfully</target>
+      </trans-unit>
 <trans-unit id="ga4PropertyIdLabel">
   <source>ID de Propiedad GA4</source>
   <target>GA4 Property ID</target>
@@ -7984,14 +8015,6 @@ Best regards.</target>
 <trans-unit id="dsMapRelayout" datatype="html">
   <source>Reorganizar tablas</source>
   <target>Rearrange tables</target>
-</trans-unit>
-<trans-unit id="dsMapDeleteRelationHint" datatype="html">
-  <source>Selecciona la relación y pulsa Supr para eliminarla</source>
-  <target>Select the relationship and press Delete to remove it</target>
-</trans-unit>
-<trans-unit id="dsMapDeleteRelation" datatype="html">
-  <source>Se eliminará la relación</source>
-  <target>The relationship will be deleted</target>
 </trans-unit>
 <trans-unit id="dsMapModelProps" datatype="html">
   <source>Propiedades del modelo</source>

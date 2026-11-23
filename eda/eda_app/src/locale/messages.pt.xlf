@@ -5929,6 +5929,45 @@ Cumprimentos.</target>
   <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
   <target>Já existe um modelo de dados para a base de dados do Odoo "<x id="PH" equiv-text="value.database"/>".</target>
 </trans-unit>
+
+      <trans-unit id="aocClientIdLabel" datatype="html">
+        <source>Client ID del Service Principal <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client ID do Service Principal <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocClientSecretLabel" datatype="html">
+        <source>Client secret <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client secret <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocDetecting" datatype="html">
+        <source>Detectando ámbitos...</source>
+        <target>Deteção de âmbitos...</target>
+      </trans-unit>
+      <trans-unit id="aocDetectAmbitos" datatype="html">
+        <source>Detectar ámbitos</source>
+        <target>Detetar âmbitos</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAmbito" datatype="html">
+        <source>Ámbito a importar <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Âmbito a importar <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+
+            <trans-unit id="aocSelectAmbitoPlaceholder" datatype="html">
+        <source>Selecciona un ámbito</source>
+        <target>Selecione um âmbito</target>
+      </trans-unit>
+<trans-unit id="aocNoAmbitosFound" datatype="html">
+        <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
+        <target>Não foi detetado nenhum âmbito reconhecido neste datalake.</target>
+      </trans-unit>
+      <trans-unit id="aocNoAmbitoSelected" datatype="html">
+        <source>Debe detectar y seleccionar un ámbito antes de guardar.</source>
+        <target>Deve detetar e selecionar um âmbito antes de guardar.</target>
+      </trans-unit>
+      <trans-unit id="aocCreated" datatype="html">
+        <source>Fuente de datos AOC creada correctamente</source>
+        <target>Fonte de dados AOC criada com sucesso</target>
+      </trans-unit>
+      
     </body>
   </file>
 </xliff>
