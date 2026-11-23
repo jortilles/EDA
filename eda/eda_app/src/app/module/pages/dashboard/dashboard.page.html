@@ -1,5 +1,14 @@
 <div class="min-h-screen" id="myDashboard">
   <div class="w-full p-3 h-max" [ngStyle]="backgroundColor">
+    <!-- Dashboard options button: fixed to the viewport corner, so it stays visible and clickable -->
+    @if (!hideWheel && !dashboardMenuPlugin) {
+      <button
+        class="fixed top-4 right-4 z-30 w-9 h-9 rounded-full flex items-center justify-center bg-white shadow-md border border-gray-200 hover:shadow-lg hover:bg-gray-50 transition-shadow"
+        [ngStyle]="{color: reportTitle?.color}" (click)="showSidebar($event)"
+        i18n-title="@@dashboardOptionsButtonTitle" title="Opciones del dashboard">
+        <i class="pi pi-ellipsis-v"></i>
+      </button>
+    }
     <div class="dashboard-export-header">
 
 
@@ -16,15 +25,9 @@
             class="w-full max-w-md px-3 py-2 bg-gray-100 rounded-md cursor-auto focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
           }
         </div>
-        @if(!hideWheel){
-          @if (dashboardMenuPlugin) {
-            <!-- Component plugin: replaces the default three-dot menu with a fork's own dashboard toolbar -->
-            <ng-container *ngComponentOutlet="dashboardMenuPlugin.component; inputs: {dashboard: this}"></ng-container>
-          } @else {
-            <button class="w-6 h-6 rounded-full flex items-center justify-center ml-2 " [ngStyle]="reportTitle" (click)="showSidebar($event)">
-              <i class="pi pi-ellipsis-v"></i>
-            </button>
-          }
+        @if(!hideWheel && dashboardMenuPlugin){
+          <!-- Component plugin: replaces the default three-dot menu with a fork's own dashboard toolbar -->
+          <ng-container *ngComponentOutlet="dashboardMenuPlugin.component; inputs: {dashboard: this}"></ng-container>
         }
       </div>
 
