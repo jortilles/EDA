@@ -1,0 +1,202 @@
+<form [formGroup]="form" (ngSubmit)="import()">
+  <div class="grid gap-8 md:grid-cols-2">
+
+    <!-- Schema file and model options -->
+    <div class="space-y-4">
+      <div>
+        <h3 class="mb-4 text-sm font-medium" i18n="@@mondrianUploadSchema">Sube el esquema de Mondrian (XML)</h3>
+        <div (dragenter)="handleDragIn($event)" (dragleave)="handleDragOut($event)"
+          (dragover)="handleDrag($event)" (drop)="handleDrop($event)"
+          class="relative mt-2 flex h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
+          [class.dropzone-active]="isDragging()"
+          [class.border-gray-300]="!isDragging()" [class.dropzone-hover]="!isDragging()">
+          <input type="file" accept=".xml,text/xml,application/xml" (change)="handleFileSelect($event)"
+            class="absolute inset-0 z-50 h-full w-full cursor-pointer opacity-0" />
+          <div class="flex flex-col items-center justify-center text-sm">
+            @if (fileName()) {
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="mb-2 h-6 w-6 text-corporate-primary">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <p class="text-sm font-medium">{{ fileName() }}</p>
+            } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="mb-2 h-6 w-6 text-gray-400">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <p class="mb-1 font-medium text-gray-600">
+              <span class="text-corporate-primary" i18n="@@clickToUpload">Click para subir</span>
+              <span i18n="@@dragDrop">o arrastra y suelta</span>
+            </p>
+            <p class="text-xs text-gray-500">XML (Mondrian 3.x)</p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label for="mondrianName" class="mb-2 block text-sm font-medium" i18n="@@mondrianModelName">Nombre de la nueva fuente de datos</label>
+        <input id="mondrianName" type="text" formControlName="name"
+          i18n-placeholder="@@mondrianModelNamePlaceholder" placeholder="Por defecto, el nombre del esquema"
+          class="mondrian-input" />
+      </div>
+
+      <label class="flex items-center gap-2 text-sm">
+        <input type="checkbox" formControlName="hideUnmapped" class="h-4 w-4 rounded border-gray-300 checkbox-corporate" />
+        <span i18n="@@mondrianHideUnmapped">Ocultar las columnas que no están definidas en el esquema</span>
+      </label>
+      <label class="flex items-center gap-2 text-sm">
+        <input type="checkbox" formControlName="allowCache" class="h-4 w-4 rounded border-gray-300 checkbox-corporate" />
+        <span i18n="@@mondrianAllowCache">Permitir caché</span>
+      </label>
+    </div>
+
+    <!-- Database connection -->
+    <div class="space-y-4">
+      <div>
+        <h3 class="text-sm font-medium" i18n="@@mondrianConnection">Conexión a la base de datos</h3>
+        <p class="mt-1 text-xs text-gray-500" i18n="@@mondrianConnectionHelp">
+          El esquema de Mondrian no incluye la conexión: indica la base de datos donde están sus tablas.
+        </p>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="sm:col-span-2">
+          <label for="mondrianType" class="mondrian-label" i18n="@@mondrianDbType">Tipo de base de datos</label>
+          <select id="mondrianType" formControlName="type" class="mondrian-input bg-white dark:bg-gray-700">
+            @for (db of dbTypes; track db.value) {
+            <option [value]="db.value">{{ db.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div [class.sm:col-span-2]="type === 'snowflake'">
+          @if (type === 'snowflake') {
+          <label for="mondrianHost" class="mondrian-label"><span i18n="@@mondrianAccount">Cuenta</span> <span class="text-red-500">*</span></label>
+          } @else {
+          <label for="mondrianHost" class="mondrian-label"><span i18n="@@mondrianHost">Servidor</span> <span class="text-red-500">*</span></label>
+          }
+          <input id="mondrianHost" type="text" formControlName="host" placeholder="database.example.com"
+            class="mondrian-input" [class.border-red-500]="isInvalid('host')" />
+        </div>
+
+        @if (type !== 'snowflake') {
+        <div>
+          <label for="mondrianPort" class="mondrian-label"><span i18n="@@mondrianPort">Puerto</span> <span class="text-red-500">*</span></label>
+          <input id="mondrianPort" type="text" formControlName="port" class="mondrian-input" [class.border-red-500]="isInvalid('port')" />
+        </div>
+        }
+
+        <div>
+          <label for="mondrianDatabase" class="mondrian-label"><span i18n="@@mondrianDatabase">Base de datos</span> <span class="text-red-500">*</span></label>
+          <input id="mondrianDatabase" type="text" formControlName="database" placeholder="my_database"
+            class="mondrian-input" [class.border-red-500]="isInvalid('database')" />
+        </div>
+
+        <div>
+          <label for="mondrianSchema" class="mondrian-label" i18n="@@schema">Esquema</label>
+          <input id="mondrianSchema" type="text" formControlName="schema" placeholder="public" class="mondrian-input" />
+        </div>
+
+        <div>
+          <label for="mondrianUser" class="mondrian-label"><span i18n="@@mondrianUser">Usuario</span> <span class="text-red-500">*</span></label>
+          <input id="mondrianUser" type="text" formControlName="user" autocomplete="off"
+            class="mondrian-input" [class.border-red-500]="isInvalid('user')" />
+        </div>
+
+        <div>
+          <label for="mondrianPassword" class="mondrian-label"><span i18n="@@mondrianPassword">Contraseña</span> <span class="text-red-500">*</span></label>
+          <div class="relative">
+            <input id="mondrianPassword" [type]="showPassword ? 'text' : 'password'" formControlName="password"
+              autocomplete="new-password" placeholder="••••••••"
+              class="mondrian-input pr-10" [class.border-red-500]="isInvalid('password')" />
+            <button type="button" class="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+              (click)="showPassword = !showPassword">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        @if (type === 'oracle') {
+        <div>
+          <label for="mondrianSid" class="mondrian-label">SID</label>
+          <select id="mondrianSid" formControlName="sid" class="mondrian-input bg-white dark:bg-gray-700">
+            @for (sid of sidOptions; track sid.value) {
+            <option [ngValue]="sid.value">{{ sid.label }}</option>
+            }
+          </select>
+        </div>
+        }
+
+        @if (type === 'snowflake') {
+        <div>
+          <label for="mondrianWarehouse" class="mondrian-label">Warehouse</label>
+          <input id="mondrianWarehouse" type="text" formControlName="warehouse" class="mondrian-input" />
+        </div>
+        }
+
+        @if (type === 'mysql') {
+        <div>
+          <label for="mondrianPoolLimit" class="mondrian-label">Pool Limit</label>
+          <input id="mondrianPoolLimit" type="number" formControlName="poolLimit" class="mondrian-input" />
+        </div>
+        }
+
+        @if (['postgres', 'mysql', 'sqlserver', 'clickhouse'].includes(type)) {
+        <label class="flex items-center gap-2 text-sm sm:col-span-2">
+          <input type="checkbox" formControlName="ssl" class="h-4 w-4 rounded border-gray-300 checkbox-corporate" />
+          <span i18n="@@sslConnection">Conexión SSL</span>
+        </label>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+    <button type="button" (click)="testConnection()"
+      class="inline-flex h-10 items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-100 sm:w-auto">
+      <span i18n="@@testConnection">Probar conexión</span>
+    </button>
+    <button type="submit" [disabled]="!file()"
+      class="btn-corporate-primary inline-flex h-10 flex-1 items-center justify-center rounded-md px-4 py-2 font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50">
+      <eda-icon name="import" class="mr-2"></eda-icon>
+      <span i18n="@@mondrianImport">Importar esquema de Mondrian</span>
+    </button>
+  </div>
+</form>
+
+<!-- Import result -->
+@if (result(); as res) {
+<div class="mt-6 space-y-3 rounded-md border border-gray-200 p-4 text-sm dark:border-gray-700">
+  <div class="flex flex-wrap items-center justify-between gap-2">
+    <p class="font-medium">
+      <span i18n="@@mondrianSummaryCubes">Cubos</span>: {{ res.summary?.cubes }} ·
+      <span i18n="@@mondrianSummaryTables">Tablas</span>: {{ res.summary?.tables }} ·
+      <span i18n="@@mondrianSummaryColumns">Columnas</span>: {{ res.summary?.columns }} ·
+      <span i18n="@@mondrianSummaryRelations">Relaciones</span>: {{ res.summary?.relations }}
+    </p>
+    <button type="button" (click)="openDataSource()"
+      class="btn-corporate-primary inline-flex h-9 items-center justify-center rounded-md px-4 font-medium">
+      <span i18n="@@mondrianOpenDataSource">Abrir la fuente de datos</span>
+    </button>
+  </div>
+  @if (res.warnings.length) {
+  <div>
+    <p class="mb-1 font-medium" i18n="@@mondrianWarnings">Elementos que requieren revisión</p>
+    <ul class="max-h-48 list-disc overflow-auto pl-5 text-gray-600 dark:text-gray-300">
+      @for (warning of res.warnings; track $index) {
+      <li>{{ warning }}</li>
+      }
+    </ul>
+  </div>
+  }
+</div>
+}

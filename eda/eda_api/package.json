@@ -13,6 +13,7 @@
         "build": "tsc && npm run movejpgs",
         "dev": "ts-node ./lib/server.ts",
         "test": "echo \"Error: no test specified\" && exit 1",
+        "install:browsers": "playwright install chromium --with-deps",
         "movejpgs": "copyfiles -u 4 -a -E lib/module/uploads/users/* dist/module/uploads/users && copyfiles -u 2 -a lib/assets/* dist/assets"
     },
     "author": "",

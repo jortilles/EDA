@@ -8436,6 +8436,110 @@ Pozdrawiam.</target>
   <source>Ya existe un modelo de datos para la base de datos de Odoo "<x id="PH" equiv-text="value.database"/>".</source>
   <target>Model danych dla bazy danych Odoo „<x id="PH" equiv-text="value.database"/>” już istnieje.</target>
 </trans-unit>
+<trans-unit id="mondrianTitle">
+  <source>Importar modelo de datos de Mondrian</source>
+  <target>Importuj model danych Mondrian</target>
+</trans-unit>
+<trans-unit id="mondrianSubtitle">
+  <source>Traduce un esquema OLAP de Mondrian (Pentaho) a una nueva fuente de datos de Edalitics</source>
+  <target>Przekształca schemat OLAP Mondrian (Pentaho) w nowe źródło danych Edalitics</target>
+</trans-unit>
+<trans-unit id="mondrianUploadSchema">
+  <source>Sube el esquema de Mondrian (XML)</source>
+  <target>Prześlij schemat Mondrian (XML)</target>
+</trans-unit>
+<trans-unit id="mondrianModelName">
+  <source>Nombre de la nueva fuente de datos</source>
+  <target>Nazwa nowego źródła danych</target>
+</trans-unit>
+<trans-unit id="mondrianModelNamePlaceholder">
+  <source>Por defecto, el nombre del esquema</source>
+  <target>Domyślnie nazwa schematu</target>
+</trans-unit>
+<trans-unit id="mondrianHideUnmapped">
+  <source>Ocultar las columnas que no están definidas en el esquema</source>
+  <target>Ukryj kolumny, które nie są zdefiniowane w schemacie</target>
+</trans-unit>
+<trans-unit id="mondrianAllowCache">
+  <source>Permitir caché</source>
+  <target>Zezwalaj na pamięć podręczną</target>
+</trans-unit>
+<trans-unit id="mondrianConnection">
+  <source>Conexión a la base de datos</source>
+  <target>Połączenie z bazą danych</target>
+</trans-unit>
+<trans-unit id="mondrianConnectionHelp">
+  <source>El esquema de Mondrian no incluye la conexión: indica la base de datos donde están sus tablas.</source>
+  <target>Schemat Mondrian nie zawiera połączenia: wskaż bazę danych, w której znajdują się jego tabele.</target>
+</trans-unit>
+<trans-unit id="mondrianDbType">
+  <source>Tipo de base de datos</source>
+  <target>Typ bazy danych</target>
+</trans-unit>
+<trans-unit id="mondrianAccount">
+  <source>Cuenta</source>
+  <target>Konto</target>
+</trans-unit>
+<trans-unit id="mondrianHost">
+  <source>Servidor</source>
+  <target>Serwer</target>
+</trans-unit>
+<trans-unit id="mondrianPort">
+  <source>Puerto</source>
+  <target>Port</target>
+</trans-unit>
+<trans-unit id="mondrianDatabase">
+  <source>Base de datos</source>
+  <target>Baza danych</target>
+</trans-unit>
+<trans-unit id="mondrianUser">
+  <source>Usuario</source>
+  <target>Użytkownik</target>
+</trans-unit>
+<trans-unit id="mondrianPassword">
+  <source>Contraseña</source>
+  <target>Hasło</target>
+</trans-unit>
+<trans-unit id="mondrianImport">
+  <source>Importar esquema de Mondrian</source>
+  <target>Importuj schemat Mondrian</target>
+</trans-unit>
+<trans-unit id="mondrianSummaryCubes">
+  <source>Cubos</source>
+  <target>Kostki</target>
+</trans-unit>
+<trans-unit id="mondrianSummaryTables">
+  <source>Tablas</source>
+  <target>Tabele</target>
+</trans-unit>
+<trans-unit id="mondrianSummaryColumns">
+  <source>Columnas</source>
+  <target>Kolumny</target>
+</trans-unit>
+<trans-unit id="mondrianSummaryRelations">
+  <source>Relaciones</source>
+  <target>Relacje</target>
+</trans-unit>
+<trans-unit id="mondrianOpenDataSource">
+  <source>Abrir la fuente de datos</source>
+  <target>Otwórz źródło danych</target>
+</trans-unit>
+<trans-unit id="mondrianWarnings">
+  <source>Elementos que requieren revisión</source>
+  <target>Elementy do sprawdzenia</target>
+</trans-unit>
+<trans-unit id="mondrianInvalidFile">
+  <source>El archivo no es un esquema de Mondrian válido</source>
+  <target>Plik nie jest prawidłowym schematem Mondrian</target>
+</trans-unit>
+<trans-unit id="mondrianImportedSuccessfully">
+  <source>Esquema de Mondrian importado correctamente</source>
+  <target>Schemat Mondrian został zaimportowany</target>
+</trans-unit>
+<trans-unit id="mondrianImportError">
+  <source>Ha ocurrido un error al importar el esquema de Mondrian</source>
+  <target>Wystąpił błąd podczas importowania schematu Mondrian</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

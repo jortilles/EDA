@@ -323,6 +323,46 @@ router.post('/add-data-source/', authGuard, roleGuard, DataSourceController.Gene
 
 router.post('/add-duckdb-data-source', authGuard, roleGuard, DataSourceController.AddDuckDBDataSource);
 
+/**
+ * @openapi
+ * /datasource/import-mondrian:
+ *   post:
+ *     description: Creates a new datasource translating a Pentaho Mondrian 3.x schema (XML) with the given database connection
+ *     parameters:
+ *       - name: token
+ *         description: Authentication token
+ *         type: string
+ *       - name: body
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             xml:
+ *               type: string
+ *             connection:
+ *               type: object
+ *               description: type (postgres, mysql, sqlserver, oracle, snowflake, vertica, clickhouse), host, port, database, schema, user, password, sid, warehouse, poolLimit, ssl
+ *             allowCache:
+ *               type: boolean
+ *             name:
+ *               type: string
+ *             description:
+ *               type: string
+ *             hideUnmapped:
+ *               type: boolean
+ *     responses:
+ *       201:
+ *         description: Datasource created. Returns its id, a summary and the translation warnings
+ *       400:
+ *         description: Invalid Mondrian schema, missing connection data or unsupported connection type
+ *       500:
+ *         description: Can't connect to the database
+ *     tags:
+ *       - DataSource Routes
+ */
+router.post('/import-mondrian', authGuard, roleGuard, DataSourceController.ImportMondrianSchema);
+
 
 
 /**

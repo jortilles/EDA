@@ -6025,6 +6025,110 @@ Cordiali saluti.</target>
         <source>elementos disponibles</source>
         <target>elementi disponibili</target>
       </trans-unit>
+<trans-unit id="mondrianTitle">
+  <source>Importar modelo de datos de Mondrian</source>
+  <target>Importa modello di dati Mondrian</target>
+</trans-unit>
+<trans-unit id="mondrianSubtitle">
+  <source>Traduce un esquema OLAP de Mondrian (Pentaho) a una nueva fuente de datos de Edalitics</source>
+  <target>Traduce uno schema OLAP di Mondrian (Pentaho) in una nuova sorgente dati di Edalitics</target>
+</trans-unit>
+<trans-unit id="mondrianUploadSchema">
+  <source>Sube el esquema de Mondrian (XML)</source>
+  <target>Carica lo schema Mondrian (XML)</target>
+</trans-unit>
+<trans-unit id="mondrianModelName">
+  <source>Nombre de la nueva fuente de datos</source>
+  <target>Nome della nuova sorgente dati</target>
+</trans-unit>
+<trans-unit id="mondrianModelNamePlaceholder">
+  <source>Por defecto, el nombre del esquema</source>
+  <target>Per impostazione predefinita, il nome dello schema</target>
+</trans-unit>
+<trans-unit id="mondrianHideUnmapped">
+  <source>Ocultar las columnas que no están definidas en el esquema</source>
+  <target>Nascondi le colonne non definite nello schema</target>
+</trans-unit>
+<trans-unit id="mondrianAllowCache">
+  <source>Permitir caché</source>
+  <target>Consenti cache</target>
+</trans-unit>
+<trans-unit id="mondrianConnection">
+  <source>Conexión a la base de datos</source>
+  <target>Connessione al database</target>
+</trans-unit>
+<trans-unit id="mondrianConnectionHelp">
+  <source>El esquema de Mondrian no incluye la conexión: indica la base de datos donde están sus tablas.</source>
+  <target>Lo schema Mondrian non include la connessione: indica il database in cui si trovano le sue tabelle.</target>
+</trans-unit>
+<trans-unit id="mondrianDbType">
+  <source>Tipo de base de datos</source>
+  <target>Tipo di database</target>
+</trans-unit>
+<trans-unit id="mondrianAccount">
+  <source>Cuenta</source>
+  <target>Account</target>
+</trans-unit>
+<trans-unit id="mondrianHost">
+  <source>Servidor</source>
+  <target>Server</target>
+</trans-unit>
+<trans-unit id="mondrianPort">
+  <source>Puerto</source>
+  <target>Porta</target>
+</trans-unit>
+<trans-unit id="mondrianDatabase">
+  <source>Base de datos</source>
+  <target>Database</target>
+</trans-unit>
+<trans-unit id="mondrianUser">
+  <source>Usuario</source>
+  <target>Utente</target>
+</trans-unit>
+<trans-unit id="mondrianPassword">
+  <source>Contraseña</source>
+  <target>Password</target>
+</trans-unit>
+<trans-unit id="mondrianImport">
+  <source>Importar esquema de Mondrian</source>
+  <target>Importa schema Mondrian</target>
+</trans-unit>
+<trans-unit id="mondrianSummaryCubes">
+  <source>Cubos</source>
+  <target>Cubi</target>
+</trans-unit>
+<trans-unit id="mondrianSummaryTables">
+  <source>Tablas</source>
+  <target>Tabelle</target>
+</trans-unit>
+<trans-unit id="mondrianSummaryColumns">
+  <source>Columnas</source>
+  <target>Colonne</target>
+</trans-unit>
+<trans-unit id="mondrianSummaryRelations">
+  <source>Relaciones</source>
+  <target>Relazioni</target>
+</trans-unit>
+<trans-unit id="mondrianOpenDataSource">
+  <source>Abrir la fuente de datos</source>
+  <target>Apri la sorgente dati</target>
+</trans-unit>
+<trans-unit id="mondrianWarnings">
+  <source>Elementos que requieren revisión</source>
+  <target>Elementi da verificare</target>
+</trans-unit>
+<trans-unit id="mondrianInvalidFile">
+  <source>El archivo no es un esquema de Mondrian válido</source>
+  <target>Il file non è uno schema Mondrian valido</target>
+</trans-unit>
+<trans-unit id="mondrianImportedSuccessfully">
+  <source>Esquema de Mondrian importado correctamente</source>
+  <target>Schema Mondrian importato correttamente</target>
+</trans-unit>
+<trans-unit id="mondrianImportError">
+  <source>Ha ocurrido un error al importar el esquema de Mondrian</source>
+  <target>Si è verificato un errore durante l'importazione dello schema Mondrian</target>
+</trans-unit>
   </body>
   </file>
 </xliff>

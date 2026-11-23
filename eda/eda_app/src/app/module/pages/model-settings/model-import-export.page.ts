@@ -8,13 +8,14 @@ import { DropdownModule } from 'primeng/dropdown';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { AlertService } from '@eda/services/service.index';
+import { MondrianImportComponent } from './mondrian-import/mondrian-import.component';
 
 
 @Component({
   selector: 'app-model-import-export',
   templateUrl: './model-import-export.page.html',
   standalone: true,
-  imports: [CommonModule, FormsModule, DropdownModule, IconComponent],
+  imports: [CommonModule, FormsModule, DropdownModule, IconComponent, MondrianImportComponent],
   styleUrls: ['./model-import-export.page.css'],
   encapsulation: ViewEncapsulation.None
 })

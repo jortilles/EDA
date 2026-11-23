@@ -19,6 +19,7 @@ import { checkNewDuckdbFolder, duckdbBaseFolder, sanitizeDuckdbFolderName } from
 import { PluginRegistry } from '../../plugins/plugin-registry';
 import { resolvePluginModelLocale } from '../../plugins/plugin-locale';
 import { dropSyncControlTables, mergePluginRelations } from '../../plugins/plugin-relations';
+import { MondrianSchemaError, MondrianTranslatorService } from '../../services/mondrian/mondrian-translator.service';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -699,6 +700,122 @@ export class DataSourceController {
             });
             const saved = await copy.save();
             return res.status(201).json({ ok: true, data_source_id: saved._id });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    /**
+     * Creates a new datasource from a Pentaho Mondrian 3.x schema (XML).
+     * Mondrian schemas do not carry connection data, so the connection parameters are sent in the request.
+     * The connection is tested first; then the database is introspected to get the real column types.
+     * If the introspection fails, the model is built from the schema only and a warning is returned.
+     *
+     * body: {
+     *   xml: string, name?: string, description?: string, hideUnmapped?: boolean, allowCache?: boolean,
+     *   connection: { type, host, port, database, schema, user, password, sid, warehouse, poolLimit, ssl }
+     * }
+     */
+    static async ImportMondrianSchema(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { xml, name, description } = req.body;
+            const conn = req.body.connection || {};
+            const hideUnmapped = req.body.hideUnmapped !== false;
+
+            if (!xml || typeof xml !== 'string') {
+                return next(new HttpException(400, 'The Mondrian schema is required'));
+            }
+            if (!MondrianTranslatorService.isSupportedConnection(conn.type)) {
+                return next(new HttpException(400, `Connection type "${conn.type}" is not supported to import Mondrian schemas`));
+            }
+            if (!conn.host || !conn.database || !conn.user) {
+                return next(new HttpException(400, 'Host, database and user are required'));
+            }
+
+            let model;
+            try {
+                model = await MondrianTranslatorService.parseMondrianSchema(xml, {
+                    connectionType: conn.type,
+                    connectionSchema: conn.schema
+                });
+            } catch (err) {
+                if (err instanceof MondrianSchemaError) return next(new HttpException(400, err.message));
+                throw err;
+            }
+
+            // A datasource whose connection does not work is useless: fail like GenerateDataModelSql does
+            const cn = new ConnectionModel(conn.user, conn.host, conn.database, conn.password, conn.port, conn.type,
+                conn.schema, conn.poolLimit, conn.sid, conn.warehouse, conn.ssl);
+            let manager;
+            try {
+                manager = await ManagerConnectionService.testConnection(cn);
+                await manager.tryConnection();
+            } catch (err) {
+                console.log(err);
+                return next(new HttpException(500, `Can't connect to database, ${err?.message || err}`));
+            }
+
+            // Introspect only the tables referenced by the schema
+            let introspected: any[] = [];
+            const tableNames = MondrianTranslatorService.physicalTableNames(model);
+            if (tableNames.length) {
+                try {
+                    // Fresh connector: tryConnection() closes the client of the previous one on some systems
+                    const introspection = await ManagerConnectionService.testConnection(cn);
+                    introspected = await introspection.generateDataModel(0, tableNames.join(','));
+                } catch (err) {
+                    console.log(err);
+                    model.warnings.push(`The database structure could not be read (${err?.message || err}). Column types were taken from the Mondrian schema`);
+                }
+            }
+
+            const tables = MondrianTranslatorService.buildEdaTables(model, introspected, { hideUnmapped });
+            const CC = req.body.allowCache === false ? cache_config.DEFAULT_NO_CACHE_CONFIG : cache_config.DEFAULT_CACHE_CONFIG;
+
+            const datasource: IDataSource = new DataSource({
+                ds: {
+                    connection: {
+                        type: conn.type,
+                        host: conn.host,
+                        port: conn.port,
+                        database: conn.database,
+                        schema: conn.schema || manager.GetDefaultSchema(),
+                        searchPath: conn.schema || manager.GetDefaultSchema(),
+                        user: conn.user,
+                        password: EnCrypterService.encrypt(conn.password || 'no'),
+                        poolLimit: conn.poolLimit,
+                        sid: conn.sid,
+                        warehouse: conn.warehouse,
+                        ssl: conn.ssl
+                    },
+                    metadata: {
+                        model_name: name || model.schemaName,
+                        model_description: description || `Mondrian schema "${model.schemaName}" (${model.cubes.join(', ')})`,
+                        model_id: '',
+                        model_granted_roles: [],
+                        optimized: false,
+                        cache_config: CC,
+                        filter: null,
+                        model_owner: req.user._id,
+                        properties: null,
+                        ia_visibility: 'FULL'
+                    },
+                    model: { tables }
+                }
+            });
+
+            const saved = await datasource.save();
+            return res.status(201).json({
+                ok: true,
+                data_source_id: saved._id,
+                warnings: model.warnings,
+                summary: {
+                    cubes: model.cubes.length,
+                    tables: tables.length,
+                    columns: tables.reduce((acc, t) => acc + t.columns.length, 0),
+                    relations: tables.reduce((acc, t) => acc + t.relations.length, 0) / 2
+                }
+            });
         } catch (err) {
             next(err);
         }

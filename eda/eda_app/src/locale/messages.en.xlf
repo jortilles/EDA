@@ -8025,6 +8025,110 @@ Best regards.</target>
   <source>Este nombre ya existe. Escribe un nombre diferente.</source>
   <target>This name already exists. Enter a different name.</target>
 </trans-unit>
+<trans-unit id="mondrianTitle">
+  <source>Importar modelo de datos de Mondrian</source>
+  <target>Import Mondrian data model</target>
+</trans-unit>
+<trans-unit id="mondrianSubtitle">
+  <source>Traduce un esquema OLAP de Mondrian (Pentaho) a una nueva fuente de datos de Edalitics</source>
+  <target>Translate a Mondrian (Pentaho) OLAP schema into a new Edalitics data source</target>
+</trans-unit>
+<trans-unit id="mondrianUploadSchema">
+  <source>Sube el esquema de Mondrian (XML)</source>
+  <target>Upload the Mondrian schema (XML)</target>
+</trans-unit>
+<trans-unit id="mondrianModelName">
+  <source>Nombre de la nueva fuente de datos</source>
+  <target>Name of the new data source</target>
+</trans-unit>
+<trans-unit id="mondrianModelNamePlaceholder">
+  <source>Por defecto, el nombre del esquema</source>
+  <target>By default, the schema name</target>
+</trans-unit>
+<trans-unit id="mondrianHideUnmapped">
+  <source>Ocultar las columnas que no están definidas en el esquema</source>
+  <target>Hide the columns that are not defined in the schema</target>
+</trans-unit>
+<trans-unit id="mondrianAllowCache">
+  <source>Permitir caché</source>
+  <target>Allow cache</target>
+</trans-unit>
+<trans-unit id="mondrianConnection">
+  <source>Conexión a la base de datos</source>
+  <target>Database connection</target>
+</trans-unit>
+<trans-unit id="mondrianConnectionHelp">
+  <source>El esquema de Mondrian no incluye la conexión: indica la base de datos donde están sus tablas.</source>
+  <target>The Mondrian schema does not include the connection: enter the database where its tables are.</target>
+</trans-unit>
+<trans-unit id="mondrianDbType">
+  <source>Tipo de base de datos</source>
+  <target>Database type</target>
+</trans-unit>
+<trans-unit id="mondrianAccount">
+  <source>Cuenta</source>
+  <target>Account</target>
+</trans-unit>
+<trans-unit id="mondrianHost">
+  <source>Servidor</source>
+  <target>Server</target>
+</trans-unit>
+<trans-unit id="mondrianPort">
+  <source>Puerto</source>
+  <target>Port</target>
+</trans-unit>
+<trans-unit id="mondrianDatabase">
+  <source>Base de datos</source>
+  <target>Database</target>
+</trans-unit>
+<trans-unit id="mondrianUser">
+  <source>Usuario</source>
+  <target>User</target>
+</trans-unit>
+<trans-unit id="mondrianPassword">
+  <source>Contraseña</source>
+  <target>Password</target>
+</trans-unit>
+<trans-unit id="mondrianImport">
+  <source>Importar esquema de Mondrian</source>
+  <target>Import Mondrian schema</target>
+</trans-unit>
+<trans-unit id="mondrianSummaryCubes">
+  <source>Cubos</source>
+  <target>Cubes</target>
+</trans-unit>
+<trans-unit id="mondrianSummaryTables">
+  <source>Tablas</source>
+  <target>Tables</target>
+</trans-unit>
+<trans-unit id="mondrianSummaryColumns">
+  <source>Columnas</source>
+  <target>Columns</target>
+</trans-unit>
+<trans-unit id="mondrianSummaryRelations">
+  <source>Relaciones</source>
+  <target>Relations</target>
+</trans-unit>
+<trans-unit id="mondrianOpenDataSource">
+  <source>Abrir la fuente de datos</source>
+  <target>Open the data source</target>
+</trans-unit>
+<trans-unit id="mondrianWarnings">
+  <source>Elementos que requieren revisión</source>
+  <target>Items to review</target>
+</trans-unit>
+<trans-unit id="mondrianInvalidFile">
+  <source>El archivo no es un esquema de Mondrian válido</source>
+  <target>The file is not a valid Mondrian schema</target>
+</trans-unit>
+<trans-unit id="mondrianImportedSuccessfully">
+  <source>Esquema de Mondrian importado correctamente</source>
+  <target>Mondrian schema imported successfully</target>
+</trans-unit>
+<trans-unit id="mondrianImportError">
+  <source>Ha ocurrido un error al importar el esquema de Mondrian</source>
+  <target>An error occurred while importing the Mondrian schema</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

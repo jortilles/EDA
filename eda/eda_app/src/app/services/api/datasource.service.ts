@@ -835,6 +835,14 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this.post(`${this.globalDSRoute}/add-data-source`, connection);
     }
 
+    /**
+     * Creates a new datasource translating a Pentaho Mondrian 3.x schema with the given database connection.
+     * @param body { xml, connection, name?, description?, hideUnmapped?, allowCache? }
+     */
+    importMondrianSchema(body: { xml: string, connection: any, name?: string, description?: string, hideUnmapped?: boolean, allowCache?: boolean }): Observable<any> {
+        return this.post(`${this.globalDSRoute}/import-mondrian`, body);
+    }
+
     getDuckDbFolders(): Observable<any> {
         return this.get(`${this.globalDSRoute}/duckdb-folders`);
     }
