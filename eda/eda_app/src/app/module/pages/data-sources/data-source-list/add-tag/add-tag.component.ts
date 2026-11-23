@@ -9,7 +9,7 @@ import { EdaDialog2Component } from '@eda/shared/components/shared-components.in
 
 interface TagOption {
   label: string;
-  value: number;
+  value: string;
 }
 
 @Component({
@@ -57,17 +57,21 @@ export class AddTagComponent implements OnInit {
     this.dataSourceService.currentTags.subscribe((response) => {
 
       const distinctTags: any = [...new Set(response)];
+      const remoteTags = this.tagsArrayToOptions(distinctTags);
 
-      this.tags = this.tagsArrayToOptions(distinctTags);
-      let selectedFilteredTags = [];
+      // currentTags is a BehaviorSubject: this fires once immediately with the stale/empty
+      // value and again once getTags()'s HTTP call resolves. Merge instead of overwriting so a
+      // tag added locally (via addItem) between those two emissions isn't lost.
+      this.tags = Array.from(new Map([...remoteTags, ...this.tags].map(tag => [tag.label, tag])).values());
 
       if (this.tagArray) {
-        selectedFilteredTags = this.tagsArrayToOptions(this.tagArray).map(parameterTag => {
-          return this.tags.find(tag => tag.label === parameterTag.label)
-        }).filter(tag => tag !== undefined);
-      }
+        const preselectedTags = this.tagsArrayToOptions(this.tagArray)
+          .map(parameterTag => this.tags.find(tag => tag.label === parameterTag.label))
+          .filter(tag => tag !== undefined)
+          .map(option => option.value);
 
-      this.selectedTags = [...selectedFilteredTags.map(option => option.value)];
+        this.selectedTags = Array.from(new Set([...this.selectedTags, ...preselectedTags]));
+      }
     });
   }
 
@@ -86,7 +90,7 @@ export class AddTagComponent implements OnInit {
     if (this.tagExists(newTagLabel)) { this.alertService.addWarning(this.existentString); return; }
 
     // Create the object and push it into the options
-    const newTagOption: TagOption = { label: newTagLabel, value: this.tags.length };
+    const newTagOption: TagOption = { label: newTagLabel, value: newTagLabel };
     this.tags.push(newTagOption);
 
     // Also add it to the selected tags variable
@@ -107,15 +111,15 @@ export class AddTagComponent implements OnInit {
 
   // Transform from string array to options
   private tagsArrayToOptions(tagArray: string[]): TagOption[] {
-    return tagArray.map((tag, index) => {
-      return { label: tag, value: index };
+    return tagArray.map((tag) => {
+      return { label: tag, value: tag };
     });
   }
 
-  // Transform from number array to string array
-  private tagsToStringArray(tagIndexes: number[]): string[] {
+  // Transform from selected values back to a string array
+  private tagsToStringArray(tagValues: string[]): string[] {
     return this.tags
-      .filter(tag => tagIndexes.includes(tag.value) && tag.label)
+      .filter(tag => tagValues.includes(tag.value) && tag.label)
       .map(tag => tag.label);
   }
 

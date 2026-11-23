@@ -969,12 +969,14 @@ export class HomePage implements OnInit, OnDestroy {
           () => {
             this.allDashboards = this.allDashboards.filter(d => d._id !== report._id);
 
-            const targetArray = this.reportMap[report.config.visible];
-            if (targetArray) {
-              const originalIndex = targetArray.findIndex(d => d._id === report._id);
-
+            // Remove the report from every reportMap column. The column keys do not match
+            // config.visible ('public' column holds 'shared' reports and vice versa), so looking
+            // it up by config.visible left common/public reports in reportMap and they came back
+            // when loadReportTags() rebuilt the lists from it.
+            for (const key of Object.keys(this.reportMap)) {
+              const originalIndex = this.reportMap[key].findIndex(d => d._id === report._id);
               if (originalIndex !== -1) {
-                targetArray.splice(originalIndex, 1);
+                this.reportMap[key].splice(originalIndex, 1);
               }
             }
 

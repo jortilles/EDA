@@ -165,7 +165,7 @@ export class ImportPanelDialog implements OnInit {
         this._filterMapper[panelId] = {
           connections: [],
           panelFilters: panelFilters.filter((f: any) => (f.isGlobal || (f.filter_type === 'in'))).map((f: any) => ({ id: f.filter_id, label: f.filter_column, type: f.filter_column_type || 'text' })),
-          dashboardFilters: dashFilters.map((f: any) => ({ id: f.id, label: `${f.selectedColumn?.display_name?.default} (${f.selectedTable?.display_name?.default})`, type: f.filter_column_type || 'text' }))
+          dashboardFilters: dashFilters.map((f: any) => ({ id: f.id, label: `${f.selectedColumn?.display_name?.default ?? ''} (${f.selectedTable?.display_name?.default ?? ''})`, type: f.filter_column_type || 'text' }))
         };
       }
     }

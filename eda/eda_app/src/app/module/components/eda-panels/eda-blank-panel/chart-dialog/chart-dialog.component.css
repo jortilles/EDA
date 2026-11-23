@@ -42,3 +42,9 @@
     display: block;
   }
 }
+
+/* Long blocked-reason texts (e.g. comparative requirements) wrap instead of overflowing */
+.toggle-blocked.toggle-blocked-wrap::after {
+  white-space: normal;
+  width: 18rem;
+}

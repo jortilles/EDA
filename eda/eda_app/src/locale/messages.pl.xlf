@@ -2140,6 +2140,15 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 
 
 
+<trans-unit id="comparativeRequirementsTooltip" datatype="html">
+  <source>No cumple los requisitos para la comparativa. Requiere exactamente dos campos: una fecha agrupada por mes, semana o día y un único campo numérico agregado (suma, media, recuento...).</source>
+  <target>Nie spełniono wymagań dla porównania. Wymaga dokładnie dwóch pól: daty pogrupowanej według miesiąca, tygodnia lub dnia oraz jednego zagregowanego pola liczbowego (suma, średnia, liczba...).</target>
+</trans-unit>
+
+<trans-unit id="showLegend">
+  <source>Mostrar Leyenda</source>
+  <target>Pokaż legendę</target>
+</trans-unit>
 
 
 
@@ -5165,10 +5174,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Muestra la predicción de la serie</source>
         <target>Pokaż prognozę serii</target>
       </trans-unit>
-<trans-unit id="showLegend">
-  <source>Mostrar Leyenda</source>
-  <target>Pokaż legendę</target>
-</trans-unit>
 <trans-unit id="chartLegendOptionDescription">
   <source>Muestra la leyenda del gráfico</source>
   <target>Pokaż legendę wykresu</target>
@@ -9346,6 +9351,15 @@ Pozdrawiam.</target>
         <source>Visor de logs</source>
         <target>Przeglądarka logów</target>
       </trans-unit>
+<trans-unit id="dsMapDeleteRelationHint" datatype="html">
+  <source>Selecciona la relación y pulsa Supr para eliminarla</source>
+  <target>Zaznacz relację i naciśnij Delete, aby ją usunąć</target>
+</trans-unit>
+<trans-unit id="dsMapDeleteRelation" datatype="html">
+  <source>Se eliminará la relación</source>
+  <target>Relacja zostanie usunięta</target>
+</trans-unit>
+
       <trans-unit id="LogsAuditSubtitle" datatype="html">
         <source>Registro de auditoría de la aplicación</source>
         <target>Dziennik audytu aplikacji</target>

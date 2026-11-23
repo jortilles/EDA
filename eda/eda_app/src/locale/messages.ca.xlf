@@ -4256,6 +4256,15 @@ Resum d'atributs
 
 
 
+<trans-unit id="comparativeRequirementsTooltip" datatype="html">
+  <source>No cumple los requisitos para la comparativa. Requiere exactamente dos campos: una fecha agrupada por mes, semana o día y un único campo numérico agregado (suma, media, recuento...).</source>
+  <target>No compleix els requisits per a la comparativa. Requereix exactament dos camps: una data agrupada per mes, setmana o dia i un únic camp numèric agregat (suma, mitjana, recompte...).</target>
+</trans-unit>
+
+<trans-unit id="chartLabelOption">
+  <source>Muestra las etiquetas de cada segmento</source>
+  <target>Mostra les etiquetes de cada segment</target>
+</trans-unit>
 
 
 
@@ -8858,6 +8867,19 @@ Salutacions.</target>
         <source>Opciones del panel</source>
         <target>Opcions del panell</target>
       </trans-unit>
+<trans-unit id="foldersMergedText">
+  <source>se ha fusionado con</source>
+  <target>s'ha fusionat amb</target>
+</trans-unit>
+<trans-unit id="dsMapDeleteRelationHint" datatype="html">
+  <source>Selecciona la relación y pulsa Supr para eliminarla</source>
+  <target>Selecciona la relació i prem Supr per eliminar-la</target>
+</trans-unit>
+<trans-unit id="dsMapDeleteRelation" datatype="html">
+  <source>Se eliminará la relación</source>
+  <target>S'eliminarà la relació</target>
+</trans-unit>
+
       <trans-unit id="LogsViewer" datatype="html">
         <source>Visor de logs</source>
         <target>Visualitzador de logs</target>

@@ -374,6 +374,327 @@
         <source>Elige cuantas columnas quieres mostrar</source>
         <target>Wählen Sie, wie viele Spalten angezeigt werden sollen</target>
       </trans-unit>
+      <trans-unit id="categoryLabelCharsTooltip" datatype="html">
+        <source>Actívalo para fijar manualmente el número de caracteres de las etiquetas del eje de categorías (empieza en 10; 0 = sin texto). Desactivado, se usa el ajuste automático por defecto</source>
+        <target>Aktivieren, um die Anzahl der Zeichen der Kategorieachsen-Beschriftungen manuell festzulegen (beginnt bei 10; 0 = kein Text). Deaktiviert wird die automatische Standardanpassung verwendet</target>
+      </trans-unit>
+      <trans-unit id="categoryLabelCharsEnabled" datatype="html">
+        <source>Etiquetas ajustables</source>
+        <target>Anpassbare Beschriftungen</target>
+      </trans-unit>
+      <trans-unit id="tooltipBlockedByComparative" datatype="html">
+        <source>Bloqueado porque comparativa está activa</source>
+        <target>Gesperrt, weil der Vergleich aktiv ist</target>
+      </trans-unit>
+      <trans-unit id="tooltipBlockedByTrendOrPrediction" datatype="html">
+        <source>Bloqueado porque tendencia o predicción está activa</source>
+        <target>Gesperrt, weil Trend oder Prognose aktiv ist</target>
+      </trans-unit>
+      <trans-unit id="comparativeRequirementsTooltip" datatype="html">
+        <source>No cumple los requisitos para la comparativa. Requiere exactamente dos campos: una fecha agrupada por mes, semana o día y un único campo numérico agregado (suma, media, recuento...).</source>
+        <target>Die Voraussetzungen für den Vergleich sind nicht erfüllt. Er erfordert genau zwei Felder: ein nach Monat, Woche oder Tag gruppiertes Datum und ein einziges aggregiertes numerisches Feld (Summe, Durchschnitt, Anzahl...).</target>
+      </trans-unit>
+      <trans-unit id="ChartProps" datatype="html">
+        <source>PROPIEDADES DEL GRAFICO</source>
+        <target>DIAGRAMMEIGENSCHAFTEN</target>
+      </trans-unit>
+      <trans-unit id="raceBarMatchingIconsDone" datatype="html">
+        <source>Iconos asignados por coincidencia de nombre</source>
+        <target>Symbole anhand übereinstimmender Namen zugewiesen</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionTitle" datatype="html">
+        <source>¿Quieres quitar la predicción?</source>
+        <target>Möchten Sie die Prognose entfernen?</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionText" datatype="html">
+        <source>Se quitará la predicción y se ejecutará la consulta del gráfico.</source>
+        <target>Die Prognose wird entfernt und die Abfrage des Diagramms ausgeführt.</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionYes" datatype="html">
+        <source>Sí, quitar</source>
+        <target>Ja, entfernen</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionNo" datatype="html">
+        <source>No, mantener</source>
+        <target>Nein, beibehalten</target>
+      </trans-unit>
+      <trans-unit id="agregacionesH4" datatype="html">
+        <source>Agregaciones</source>
+        <target>Aggregationen</target>
+      </trans-unit>
+      <trans-unit id="rangeTitle" datatype="html">
+        <source>Rangos</source>
+        <target>Bereiche</target>
+      </trans-unit>
+      <trans-unit id="addRange" datatype="html">
+        <source>Añadir Rango</source>
+        <target>Bereich hinzufügen</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionB" datatype="html">
+        <source>• Rango:</source>
+        <target>• Bereich:</target>
+      </trans-unit>
+      <trans-unit id="dateNavLabel" datatype="html">
+        <source>Navegación por fecha</source>
+        <target>Datumsnavigation</target>
+      </trans-unit>
+      <trans-unit id="navegableFrom" datatype="html">
+        <source>Navegable desde</source>
+        <target>Navigierbar von</target>
+      </trans-unit>
+      <trans-unit id="noParentText" datatype="html">
+        <source>Sin padre</source>
+        <target>Ohne übergeordnetes Element</target>
+      </trans-unit>
+      <trans-unit id="noParentAttributes" datatype="html">
+        <source>Añade más atributos para activar la navegación</source>
+        <target>Fügen Sie weitere Attribute hinzu, um die Navigation zu aktivieren</target>
+      </trans-unit>
+      <trans-unit id="ordenacionH4" datatype="html">
+        <source>Ordenación</source>
+        <target>Sortierung</target>
+      </trans-unit>
+      <trans-unit id="dateFormatH4" datatype="html">
+        <source>Formato</source>
+        <target>Format</target>
+      </trans-unit>
+      <trans-unit id="noFormatsAvailable" datatype="html">
+        <source>Esta es una columna calculada y no tiene opciones de formato disponibles</source>
+        <target>Dies ist eine berechnete Spalte und hat keine Formatoptionen</target>
+      </trans-unit>
+      <trans-unit id="cumulativeSum" datatype="html">
+        <source>Suma acumulativa</source>
+        <target>Kumulierte Summe</target>
+      </trans-unit>
+      <trans-unit id="tiposFiltrosLabel" datatype="html">
+        <source>Tipos de filtro</source>
+        <target>Filtertypen</target>
+      </trans-unit>
+      <trans-unit id="whereHavingLabel" datatype="html">
+        <source>Ámbito del filtro</source>
+        <target>Geltungsbereich des Filters</target>
+      </trans-unit>
+      <trans-unit id="optionsLabel" datatype="html">
+        <source>Opciones</source>
+        <target>Optionen</target>
+      </trans-unit>
+      <trans-unit id="valor1Label" datatype="html">
+        <source>Valor 1</source>
+        <target>Wert 1</target>
+      </trans-unit>
+      <trans-unit id="groupSelect" datatype="html">
+        <source>Selecciona...</source>
+        <target>Auswählen...</target>
+      </trans-unit>
+      <trans-unit id="valor2Label" datatype="html">
+        <source>Valor 2</source>
+        <target>Wert 2</target>
+      </trans-unit>
+      <trans-unit id="addFilterBtn" datatype="html">
+        <source>Añadir filtro</source>
+        <target>Filter hinzufügen</target>
+      </trans-unit>
+      <trans-unit id="duplicatedColumnNameLabel" datatype="html">
+        <source> Nombre columna duplicada </source>
+        <target> Name der doppelten Spalte </target>
+      </trans-unit>
+      <trans-unit id="cumulativeSumTooltip" datatype="html">
+        <source>Si activas ésta función se calculará la suma acumulativa 
+                                            para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.</source>
+        <target>Wenn Sie diese Funktion aktivieren, wird für die gewählten numerischen Felder die kumulierte Summe berechnet. Sie kann nur aktiviert werden, wenn das Datum nach Monat, Woche oder Tag aggregiert ist.</target>
+      </trans-unit>
+      <trans-unit id="ptooltipViewTextRanges" datatype="html">
+        <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 </source>
+        <target>Beim Konfigurieren eines Bereichs werden die Aggregationen gesperrt. Beispiel für einen gültigen Bereich: 12:18:50:100 </target>
+      </trans-unit>
+      <trans-unit id="ptooltipNotAvailableRanges" datatype="html">
+        <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
+        <target>Es kann kein neuer Bereich erstellt werden, da bereits einer konfiguriert ist</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionNumberError" datatype="html">
+        <source>El correcto orden de los límites del rango van de menor a mayor</source>
+        <target>Die Grenzen des Bereichs müssen aufsteigend geordnet sein</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionCharacterError" datatype="html">
+        <source>El último caracter del rango debe ser un número</source>
+        <target>Das letzte Zeichen des Bereichs muss eine Zahl sein</target>
+      </trans-unit>
+      <trans-unit id="whereMessageLabel" datatype="html">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Filter auf alle Datensätze anwenden</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel" datatype="html">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Filter auf die Ergebnisse anwenden</target>
+      </trans-unit>
+      <trans-unit id="whereMessage" datatype="html">
+        <source> Filtro sobre todos los registros</source>
+        <target> Filter auf alle Datensätze</target>
+      </trans-unit>
+      <trans-unit id="havingMessage" datatype="html">
+        <source> Filtro sobre los resultados</source>
+        <target> Filter auf die Ergebnisse</target>
+      </trans-unit>
+      <trans-unit id="atributoLabel" datatype="html">
+        <source>Atributo</source>
+        <target>Attribut</target>
+      </trans-unit>
+      <trans-unit id="table" datatype="html">
+        <source>de la entidad</source>
+        <target>der Entität</target>
+      </trans-unit>
+      <trans-unit id="kpiSize" datatype="html">
+        <source>Modificar el tamaño del KPI</source>
+        <target>KPI-Größe ändern</target>
+      </trans-unit>
+      <trans-unit id="increaseKpiSize" datatype="html">
+        <source>Incrementar el tamaño del KPI</source>
+        <target>KPI-Größe erhöhen</target>
+      </trans-unit>
+      <trans-unit id="DynamicTextColor" datatype="html">
+        <source>Cambiar color</source>
+        <target>Farbe ändern</target>
+      </trans-unit>
+      <trans-unit id="colorKpiH6" datatype="html">
+        <source>Color del texto</source>
+        <target>Textfarbe</target>
+      </trans-unit>
+      <trans-unit id="resumenAtrH6Hover" datatype="html">
+        <source>¿Qué estoy viendo?</source>
+        <target>Was sehe ich hier?</target>
+      </trans-unit>
+      <trans-unit id="noAttributes" datatype="html">
+        <source>Sin atributos</source>
+        <target>Ohne Attribute</target>
+      </trans-unit>
+      <trans-unit id="resumenFiltrosPanelH6" datatype="html">
+        <source>Filtros del panel</source>
+        <target>Panelfilter</target>
+      </trans-unit>
+      <trans-unit id="noFilters" datatype="html">
+        <source>Sin filtros</source>
+        <target>Ohne Filter</target>
+      </trans-unit>
+      <trans-unit id="resumenFiltrosInformeH6" datatype="html">
+        <source>Filtros del informe</source>
+        <target>Berichtsfilter</target>
+      </trans-unit>
+      <trans-unit id="panelTitlePlaceholder" datatype="html">
+        <source>Título del panel</source>
+        <target>Paneltitel</target>
+      </trans-unit>
+      <trans-unit id="panelDescriptionPlaceholder" datatype="html">
+        <source>Descripción (opcional)</source>
+        <target>Beschreibung (optional)</target>
+      </trans-unit>
+      <trans-unit id="vistaSeleccionador" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ selectedQueryMode !== &apos;SQL&apos; ? editQuery : editSQLQuery }}"/> </source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ selectedQueryMode !== &apos;SQL&apos; ? editQuery : editSQLQuery }}"/> </target>
+      </trans-unit>
+      <trans-unit id="vistaPrevia" datatype="html">
+        <source> Vista previa </source>
+        <target> Vorschau </target>
+      </trans-unit>
+      <trans-unit id="entidadesTitle" datatype="html">
+        <source>Clique sobre un entidad para ver sus atributos.</source>
+        <target>Klicken Sie auf eine Entität, um ihre Attribute anzuzeigen.</target>
+      </trans-unit>
+      <trans-unit id="entidadesH4" datatype="html">
+        <source> Entidades </source>
+        <target> Entitäten </target>
+      </trans-unit>
+      <trans-unit id="searchEntities" datatype="html">
+        <source>Buscar entidades...</source>
+        <target>Entitäten suchen...</target>
+      </trans-unit>
+      <trans-unit id="atributsTitle" datatype="html">
+        <source>Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes</source>
+        <target>Attribute einer Entität. Ziehen Sie die Attribute in die Auswahl oder die Filter, um sie abzufragen. Mit einem Klick auf das Attribut gelangen Sie zu seinen Eigenschaften</target>
+      </trans-unit>
+      <trans-unit id="atributosH4" datatype="html">
+        <source> Atributos </source>
+        <target> Attribute </target>
+      </trans-unit>
+      <trans-unit id="hiddenAttributes" datatype="html">
+        <source>Mostrar/ocultar campos ocultos</source>
+        <target>Ausgeblendete Felder anzeigen/ausblenden</target>
+      </trans-unit>
+      <trans-unit id="searchAttributes" datatype="html">
+        <source>Buscar atributos...</source>
+        <target>Attribute suchen...</target>
+      </trans-unit>
+      <trans-unit id="seleccionTitle" datatype="html">
+        <source>Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.</source>
+        <target>Um eine Abfrage zu starten: Wählen Sie die gewünschten Attribute aus, klicken Sie darauf, um sie zu konfigurieren, und führen Sie die Abfrage aus. Sie können jederzeit zu dieser Ansicht zurückkehren.</target>
+      </trans-unit>
+      <trans-unit id="seleccionH4" datatype="html">
+        <source> Mostrar los siguientes atributos: </source>
+        <target> Folgende Attribute anzeigen: </target>
+      </trans-unit>
+      <trans-unit id="filtrosH4" datatype="html">
+        <source>Filtrar los resultados por:</source>
+        <target>Ergebnisse filtern nach:</target>
+      </trans-unit>
+      <trans-unit id="topQueryH4" datatype="html">
+        <source>Mostrar Top:</source>
+        <target>Top anzeigen:</target>
+      </trans-unit>
+      <trans-unit id="yourQuerySQL" datatype="html">
+        <source> Mi consulta SQL </source>
+        <target> Meine SQL-Abfrage </target>
+      </trans-unit>
+      <trans-unit id="cancelarBtn" datatype="html">
+        <source> Cancelar </source>
+        <target> Abbrechen </target>
+      </trans-unit>
+      <trans-unit id="openSqlMode" datatype="html">
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Abrir en modo SQL </source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Im SQL-Modus öffnen </target>
+      </trans-unit>
+      <trans-unit id="AdvanceOptions" datatype="html">
+        <source> Opciones avanzadas </source>
+        <target> Erweiterte Optionen </target>
+      </trans-unit>
+      <trans-unit id="askTheAIText" datatype="html">
+        <source> Consulta con la IA </source>
+        <target> Mit der KI abfragen </target>
+      </trans-unit>
+      <trans-unit id="resumenAtrH6" datatype="html">
+        <source>Resumen de atributos</source>
+        <target>Attributübersicht</target>
+      </trans-unit>
+      <trans-unit id="resultSortingText" datatype="html">
+        <source>Ordenar los resultados por:</source>
+        <target>Ergebnisse sortieren nach:</target>
+      </trans-unit>
+      <trans-unit id="tooltipJoinType" datatype="html">
+        <source>Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN</source>
+        <target>Legt fest, wie die Tabellen verknüpft werden: LEFT, INNER oder RIGHT JOIN</target>
+      </trans-unit>
+      <trans-unit id="joinTypeH4" datatype="html">
+        <source>Tipo de intersección</source>
+        <target>Join-Typ</target>
+      </trans-unit>
+      <trans-unit id="tooltipScenarios" datatype="html">
+        <source>Crea atributos derivados aplicando operaciones matemáticas</source>
+        <target>Erstellt abgeleitete Attribute durch Anwenden mathematischer Operationen</target>
+      </trans-unit>
+      <trans-unit id="scenarios" datatype="html">
+        <source>Escenarios</source>
+        <target>Szenarien</target>
+      </trans-unit>
+      <trans-unit id="tooltipAdvancedFilters" datatype="html">
+        <source>Combina los filtros del panel con operadores AND u OR</source>
+        <target>Kombiniert die Panelfilter mit den Operatoren AND oder OR</target>
+      </trans-unit>
+      <trans-unit id="filtrosAvanzados" datatype="html">
+        <source>Filtros avanzados (AND/OR)</source>
+        <target>Erweiterte Filter (AND/OR)</target>
+      </trans-unit>
+      <trans-unit id="configurarFiltrosAvanzados" datatype="html">
+        <source>Configurar</source>
+        <target>Konfigurieren</target>
+      </trans-unit>
       <trans-unit id="tooltipUniqueRecords" datatype="html">
         <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
         <target>Wendet GROUP BY auf alle Felder an, um Duplikate zu entfernen</target>
@@ -6565,6 +6886,15 @@ Un saludo.</source>
         <source>Registro de auditoría de la aplicación</source>
         <target>Audit-Protokoll der Anwendung</target>
       </trans-unit>
+<trans-unit id="dsMapDeleteRelationHint" datatype="html">
+  <source>Selecciona la relación y pulsa Supr para eliminarla</source>
+  <target>Beziehung auswählen und Entf drücken, um sie zu löschen</target>
+</trans-unit>
+<trans-unit id="dsMapDeleteRelation" datatype="html">
+  <source>Se eliminará la relación</source>
+  <target>Die Beziehung wird gelöscht</target>
+</trans-unit>
+
       <trans-unit id="HideDashboardAccessed" datatype="html">
         <source>Mostrar accesos a informes</source>
         <target>Berichtszugriffe anzeigen</target>

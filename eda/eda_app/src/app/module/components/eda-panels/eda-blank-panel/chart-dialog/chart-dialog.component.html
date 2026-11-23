@@ -52,7 +52,8 @@
             }
 
             <!-- Comparison -->
-            @if (features.hasComparative && showComparative) {
+            <!-- Line charts always show the option; it is blocked when the query does not meet the requirements -->
+            @if (features.hasComparative && (showComparative || isLineChart)) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -70,13 +71,19 @@
                     <div
                       class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                       <span i18n="@@chartComparationOption">Habilita la comparación con períodos anteriores</span>
+                      @if (comparativeRequirementsUnmet) {
+                        <span class="block mt-2">{{ comparativeRequirementsTooltip }}</span>
+                      }
                     </div>
                   </div>
                 </div>
               </div>
-              <label class="relative inline-flex items-center" [class.toggle-blocked]="addTrend || showPredictionLines" [attr.data-tooltip]="(addTrend || showPredictionLines) ? tooltipBlockedByTrendOrPrediction : null">
+              <label class="relative inline-flex items-center"
+                [class.toggle-blocked]="comparativeBlocked"
+                [class.toggle-blocked-wrap]="comparativeRequirementsUnmet"
+                [attr.data-tooltip]="comparativeBlockedTooltip">
                 <input type="checkbox" [(ngModel)]="addComparative" class="sr-only peer"
-                  (ngModelChange)="setComparative()" [disabled]="addTrend || showPredictionLines">
+                  (ngModelChange)="setComparative()" [disabled]="comparativeBlocked">
                 <div
                   class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                 </div>

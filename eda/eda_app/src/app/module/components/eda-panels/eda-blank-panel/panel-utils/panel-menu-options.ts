@@ -344,6 +344,7 @@ export const PanelOptions = {
         // replace the DOM, otherwise onOutsideClick sees a detached target and closes the menu
         setTimeout(() => {
           panelComponent.contextMenu.contextMenuItems = PanelOptions.generateMenu(panelComponent);
+          panelComponent.markDirty();
         }, 0);
 
       }

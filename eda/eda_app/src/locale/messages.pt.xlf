@@ -426,6 +426,323 @@
         <source>Elige cuantas columnas quieres mostrar</source>
         <target>Escolha quantas colunas pretende mostrar</target>
       </trans-unit>
+      <trans-unit id="categoryLabelCharsTooltip" datatype="html">
+        <source>Actívalo para fijar manualmente el número de caracteres de las etiquetas del eje de categorías (empieza en 10; 0 = sin texto). Desactivado, se usa el ajuste automático por defecto</source>
+        <target>Ative para definir manualmente o número de caracteres das etiquetas do eixo de categorias (começa em 10; 0 = sem texto). Desativado, utiliza-se o ajuste automático predefinido</target>
+      </trans-unit>
+      <trans-unit id="tooltipBlockedByComparative" datatype="html">
+        <source>Bloqueado porque comparativa está activa</source>
+        <target>Bloqueado porque a comparação está ativa</target>
+      </trans-unit>
+      <trans-unit id="tooltipBlockedByTrendOrPrediction" datatype="html">
+        <source>Bloqueado porque tendencia o predicción está activa</source>
+        <target>Bloqueado porque a tendência ou a previsão está ativa</target>
+      </trans-unit>
+      <trans-unit id="comparativeRequirementsTooltip" datatype="html">
+        <source>No cumple los requisitos para la comparativa. Requiere exactamente dos campos: una fecha agrupada por mes, semana o día y un único campo numérico agregado (suma, media, recuento...).</source>
+        <target>Não cumpre os requisitos para a comparação. Requer exatamente dois campos: uma data agrupada por mês, semana ou dia e um único campo numérico agregado (soma, média, contagem...).</target>
+      </trans-unit>
+      <trans-unit id="ChartProps" datatype="html">
+        <source>PROPIEDADES DEL GRAFICO</source>
+        <target>PROPRIEDADES DO GRÁFICO</target>
+      </trans-unit>
+      <trans-unit id="raceBarMatchingIconsDone" datatype="html">
+        <source>Iconos asignados por coincidencia de nombre</source>
+        <target>Ícones atribuídos por correspondência de nome</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionTitle" datatype="html">
+        <source>¿Quieres quitar la predicción?</source>
+        <target>Pretende remover a previsão?</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionText" datatype="html">
+        <source>Se quitará la predicción y se ejecutará la consulta del gráfico.</source>
+        <target>A previsão será removida e a consulta do gráfico será executada.</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionYes" datatype="html">
+        <source>Sí, quitar</source>
+        <target>Sim, remover</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionNo" datatype="html">
+        <source>No, mantener</source>
+        <target>Não, manter</target>
+      </trans-unit>
+      <trans-unit id="agregacionesH4" datatype="html">
+        <source>Agregaciones</source>
+        <target>Agregações</target>
+      </trans-unit>
+      <trans-unit id="rangeTitle" datatype="html">
+        <source>Rangos</source>
+        <target>Intervalos</target>
+      </trans-unit>
+      <trans-unit id="addRange" datatype="html">
+        <source>Añadir Rango</source>
+        <target>Adicionar intervalo</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionB" datatype="html">
+        <source>• Rango:</source>
+        <target>• Intervalo:</target>
+      </trans-unit>
+      <trans-unit id="dateNavLabel" datatype="html">
+        <source>Navegación por fecha</source>
+        <target>Navegação por data</target>
+      </trans-unit>
+      <trans-unit id="navegableFrom" datatype="html">
+        <source>Navegable desde</source>
+        <target>Navegável a partir de</target>
+      </trans-unit>
+      <trans-unit id="noParentText" datatype="html">
+        <source>Sin padre</source>
+        <target>Sem pai</target>
+      </trans-unit>
+      <trans-unit id="noParentAttributes" datatype="html">
+        <source>Añade más atributos para activar la navegación</source>
+        <target>Adicione mais atributos para ativar a navegação</target>
+      </trans-unit>
+      <trans-unit id="ordenacionH4" datatype="html">
+        <source>Ordenación</source>
+        <target>Ordenação</target>
+      </trans-unit>
+      <trans-unit id="dateFormatH4" datatype="html">
+        <source>Formato</source>
+        <target>Formato</target>
+      </trans-unit>
+      <trans-unit id="noFormatsAvailable" datatype="html">
+        <source>Esta es una columna calculada y no tiene opciones de formato disponibles</source>
+        <target>Esta é uma coluna calculada e não tem opções de formato disponíveis</target>
+      </trans-unit>
+      <trans-unit id="cumulativeSum" datatype="html">
+        <source>Suma acumulativa</source>
+        <target>Soma acumulada</target>
+      </trans-unit>
+      <trans-unit id="tiposFiltrosLabel" datatype="html">
+        <source>Tipos de filtro</source>
+        <target>Tipos de filtro</target>
+      </trans-unit>
+      <trans-unit id="whereHavingLabel" datatype="html">
+        <source>Ámbito del filtro</source>
+        <target>Âmbito do filtro</target>
+      </trans-unit>
+      <trans-unit id="optionsLabel" datatype="html">
+        <source>Opciones</source>
+        <target>Opções</target>
+      </trans-unit>
+      <trans-unit id="valor1Label" datatype="html">
+        <source>Valor 1</source>
+        <target>Valor 1</target>
+      </trans-unit>
+      <trans-unit id="groupSelect" datatype="html">
+        <source>Selecciona...</source>
+        <target>Selecione...</target>
+      </trans-unit>
+      <trans-unit id="valor2Label" datatype="html">
+        <source>Valor 2</source>
+        <target>Valor 2</target>
+      </trans-unit>
+      <trans-unit id="addFilterBtn" datatype="html">
+        <source>Añadir filtro</source>
+        <target>Adicionar filtro</target>
+      </trans-unit>
+      <trans-unit id="duplicatedColumnNameLabel" datatype="html">
+        <source> Nombre columna duplicada </source>
+        <target> Nome de coluna duplicado </target>
+      </trans-unit>
+      <trans-unit id="cumulativeSumTooltip" datatype="html">
+        <source>Si activas ésta función se calculará la suma acumulativa 
+                                            para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.</source>
+        <target>Se ativar esta função, será calculada a soma acumulada dos campos numéricos que escolher. Só pode ser ativada se a data estiver agregada por mês, semana ou dia.</target>
+      </trans-unit>
+      <trans-unit id="ptooltipViewTextRanges" datatype="html">
+        <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 </source>
+        <target>Ao configurar um intervalo, as agregações ficarão bloqueadas. Exemplo de um intervalo válido - 12:18:50:100 </target>
+      </trans-unit>
+      <trans-unit id="ptooltipNotAvailableRanges" datatype="html">
+        <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
+        <target>Não é possível criar um novo intervalo porque já existe um configurado</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionNumberError" datatype="html">
+        <source>El correcto orden de los límites del rango van de menor a mayor</source>
+        <target>A ordem correta dos limites do intervalo é do menor para o maior</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionCharacterError" datatype="html">
+        <source>El último caracter del rango debe ser un número</source>
+        <target>O último caráter do intervalo deve ser um número</target>
+      </trans-unit>
+      <trans-unit id="whereMessageLabel" datatype="html">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Aplicar o filtro sobre todos os registos</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel" datatype="html">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Aplicar o filtro sobre os resultados</target>
+      </trans-unit>
+      <trans-unit id="whereMessage" datatype="html">
+        <source> Filtro sobre todos los registros</source>
+        <target> Filtro sobre todos os registos</target>
+      </trans-unit>
+      <trans-unit id="havingMessage" datatype="html">
+        <source> Filtro sobre los resultados</source>
+        <target> Filtro sobre os resultados</target>
+      </trans-unit>
+      <trans-unit id="atributoLabel" datatype="html">
+        <source>Atributo</source>
+        <target>Atributo</target>
+      </trans-unit>
+      <trans-unit id="table" datatype="html">
+        <source>de la entidad</source>
+        <target>da entidade</target>
+      </trans-unit>
+      <trans-unit id="kpiSize" datatype="html">
+        <source>Modificar el tamaño del KPI</source>
+        <target>Modificar o tamanho do KPI</target>
+      </trans-unit>
+      <trans-unit id="increaseKpiSize" datatype="html">
+        <source>Incrementar el tamaño del KPI</source>
+        <target>Aumentar o tamanho do KPI</target>
+      </trans-unit>
+      <trans-unit id="DynamicTextColor" datatype="html">
+        <source>Cambiar color</source>
+        <target>Alterar cor</target>
+      </trans-unit>
+      <trans-unit id="colorKpiH6" datatype="html">
+        <source>Color del texto</source>
+        <target>Cor do texto</target>
+      </trans-unit>
+      <trans-unit id="resumenAtrH6Hover" datatype="html">
+        <source>¿Qué estoy viendo?</source>
+        <target>O que estou a ver?</target>
+      </trans-unit>
+      <trans-unit id="noAttributes" datatype="html">
+        <source>Sin atributos</source>
+        <target>Sem atributos</target>
+      </trans-unit>
+      <trans-unit id="resumenFiltrosPanelH6" datatype="html">
+        <source>Filtros del panel</source>
+        <target>Filtros do painel</target>
+      </trans-unit>
+      <trans-unit id="noFilters" datatype="html">
+        <source>Sin filtros</source>
+        <target>Sem filtros</target>
+      </trans-unit>
+      <trans-unit id="resumenFiltrosInformeH6" datatype="html">
+        <source>Filtros del informe</source>
+        <target>Filtros do relatório</target>
+      </trans-unit>
+      <trans-unit id="panelTitlePlaceholder" datatype="html">
+        <source>Título del panel</source>
+        <target>Título do painel</target>
+      </trans-unit>
+      <trans-unit id="panelDescriptionPlaceholder" datatype="html">
+        <source>Descripción (opcional)</source>
+        <target>Descrição (opcional)</target>
+      </trans-unit>
+      <trans-unit id="vistaSeleccionador" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ selectedQueryMode !== &apos;SQL&apos; ? editQuery : editSQLQuery }}"/> </source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ selectedQueryMode !== &apos;SQL&apos; ? editQuery : editSQLQuery }}"/> </target>
+      </trans-unit>
+      <trans-unit id="vistaPrevia" datatype="html">
+        <source> Vista previa </source>
+        <target> Pré-visualização </target>
+      </trans-unit>
+      <trans-unit id="entidadesTitle" datatype="html">
+        <source>Clique sobre un entidad para ver sus atributos.</source>
+        <target>Clique numa entidade para ver os seus atributos.</target>
+      </trans-unit>
+      <trans-unit id="entidadesH4" datatype="html">
+        <source> Entidades </source>
+        <target> Entidades </target>
+      </trans-unit>
+      <trans-unit id="searchEntities" datatype="html">
+        <source>Buscar entidades...</source>
+        <target>Pesquisar entidades...</target>
+      </trans-unit>
+      <trans-unit id="atributsTitle" datatype="html">
+        <source>Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes</source>
+        <target>Atributos de uma entidade. Arraste os atributos para a seleção ou para os filtros para os consultar. Clicando no atributo acede às suas propriedades</target>
+      </trans-unit>
+      <trans-unit id="atributosH4" datatype="html">
+        <source> Atributos </source>
+        <target> Atributos </target>
+      </trans-unit>
+      <trans-unit id="hiddenAttributes" datatype="html">
+        <source>Mostrar/ocultar campos ocultos</source>
+        <target>Mostrar/ocultar campos ocultos</target>
+      </trans-unit>
+      <trans-unit id="searchAttributes" datatype="html">
+        <source>Buscar atributos...</source>
+        <target>Pesquisar atributos...</target>
+      </trans-unit>
+      <trans-unit id="seleccionTitle" datatype="html">
+        <source>Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.</source>
+        <target>Para executar uma consulta: selecione os atributos que pretende ver, clique neles para os configurar e execute a consulta. Poderá sempre voltar a esta vista.</target>
+      </trans-unit>
+      <trans-unit id="seleccionH4" datatype="html">
+        <source> Mostrar los siguientes atributos: </source>
+        <target> Mostrar os seguintes atributos: </target>
+      </trans-unit>
+      <trans-unit id="filtrosH4" datatype="html">
+        <source>Filtrar los resultados por:</source>
+        <target>Filtrar os resultados por:</target>
+      </trans-unit>
+      <trans-unit id="topQueryH4" datatype="html">
+        <source>Mostrar Top:</source>
+        <target>Mostrar Top:</target>
+      </trans-unit>
+      <trans-unit id="yourQuerySQL" datatype="html">
+        <source> Mi consulta SQL </source>
+        <target> A minha consulta SQL </target>
+      </trans-unit>
+      <trans-unit id="cancelarBtn" datatype="html">
+        <source> Cancelar </source>
+        <target> Cancelar </target>
+      </trans-unit>
+      <trans-unit id="openSqlMode" datatype="html">
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Abrir en modo SQL </source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Abrir em modo SQL </target>
+      </trans-unit>
+      <trans-unit id="AdvanceOptions" datatype="html">
+        <source> Opciones avanzadas </source>
+        <target> Opções avançadas </target>
+      </trans-unit>
+      <trans-unit id="askTheAIText" datatype="html">
+        <source> Consulta con la IA </source>
+        <target> Consultar com a IA </target>
+      </trans-unit>
+      <trans-unit id="resumenAtrH6" datatype="html">
+        <source>Resumen de atributos</source>
+        <target>Resumo de atributos</target>
+      </trans-unit>
+      <trans-unit id="resultSortingText" datatype="html">
+        <source>Ordenar los resultados por:</source>
+        <target>Ordenar os resultados por:</target>
+      </trans-unit>
+      <trans-unit id="tooltipJoinType" datatype="html">
+        <source>Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN</source>
+        <target>Define como as tabelas são unidas: LEFT, INNER ou RIGHT JOIN</target>
+      </trans-unit>
+      <trans-unit id="joinTypeH4" datatype="html">
+        <source>Tipo de intersección</source>
+        <target>Tipo de interseção</target>
+      </trans-unit>
+      <trans-unit id="tooltipScenarios" datatype="html">
+        <source>Crea atributos derivados aplicando operaciones matemáticas</source>
+        <target>Cria atributos derivados aplicando operações matemáticas</target>
+      </trans-unit>
+      <trans-unit id="scenarios" datatype="html">
+        <source>Escenarios</source>
+        <target>Cenários</target>
+      </trans-unit>
+      <trans-unit id="tooltipAdvancedFilters" datatype="html">
+        <source>Combina los filtros del panel con operadores AND u OR</source>
+        <target>Combina os filtros do painel com operadores AND ou OR</target>
+      </trans-unit>
+      <trans-unit id="filtrosAvanzados" datatype="html">
+        <source>Filtros avanzados (AND/OR)</source>
+        <target>Filtros avançados (AND/OR)</target>
+      </trans-unit>
+      <trans-unit id="configurarFiltrosAvanzados" datatype="html">
+        <source>Configurar</source>
+        <target>Configurar</target>
+      </trans-unit>
       <trans-unit id="tooltipUniqueRecords" datatype="html">
         <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
         <target>Aplica GROUP BY a todos os campos para eliminar duplicados</target>
@@ -6504,6 +6821,15 @@ Cumprimentos.</target>
         <source>Solo es posible usar filtros definidos dentro del dashboard actual.</source>
         <target>Só é possível utilizar filtros definidos no dashboard atual.</target>
       </trans-unit>
+<trans-unit id="dsMapDeleteRelationHint" datatype="html">
+  <source>Selecciona la relación y pulsa Supr para eliminarla</source>
+  <target>Selecione a relação e prima Delete para a eliminar</target>
+</trans-unit>
+<trans-unit id="dsMapDeleteRelation" datatype="html">
+  <source>Se eliminará la relación</source>
+  <target>A relação será eliminada</target>
+</trans-unit>
+
       <trans-unit id="uniqueRecords1" datatype="html">
         <source>La opción <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>Registros únicos<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> aplica un <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>GROUP BY<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> sobre todos los atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por la combinación de todos los campos seleccionados.</source>
         <target>A opção <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>Registos únicos<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> aplica um <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>GROUP BY<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> sobre todos os atributos da consulta. Utilize-a quando quiser eliminar duplicados e agrupar os resultados pela combinação de todos os campos selecionados.</target>

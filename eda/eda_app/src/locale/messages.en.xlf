@@ -2140,6 +2140,15 @@ Once configured you can invoke it whenever you want from the button.</target>
 
 
 
+<trans-unit id="comparativeRequirementsTooltip" datatype="html">
+  <source>No cumple los requisitos para la comparativa. Requiere exactamente dos campos: una fecha agrupada por mes, semana o día y un único campo numérico agregado (suma, media, recuento...).</source>
+  <target>Requirements for the comparison are not met. It requires exactly two fields: a date grouped by month, week or day and a single aggregated numeric field (sum, average, count...).</target>
+</trans-unit>
+
+<trans-unit id="showLegend">
+<source>Mostrar Leyenda</source>
+<target>Show Legend</target>
+</trans-unit>
 
 
 
@@ -5216,10 +5225,6 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="chartLabelLinePredictionOptionDescription">
   <source>Muestra la predicción de la serie</source>
   <target>Show the series prediction</target>
-</trans-unit>
-<trans-unit id="showLegend">
-<source>Mostrar Leyenda</source>
-<target>Show Legend</target>
 </trans-unit>
 <trans-unit id="chartLegendOptionDescription">
 <source>Muestra la leyenda del gráfico</source>
@@ -9424,6 +9429,15 @@ OR<ph id="5"/>
         <source>Visor de logs</source>
         <target>Log viewer</target>
       </trans-unit>
+<trans-unit id="dsMapDeleteRelationHint" datatype="html">
+  <source>Selecciona la relación y pulsa Supr para eliminarla</source>
+  <target>Select the relationship and press Delete to remove it</target>
+</trans-unit>
+<trans-unit id="dsMapDeleteRelation" datatype="html">
+  <source>Se eliminará la relación</source>
+  <target>The relationship will be deleted</target>
+</trans-unit>
+
       <trans-unit id="LogsAuditSubtitle" datatype="html">
         <source>Registro de auditoría de la aplicación</source>
         <target>Application audit log</target>

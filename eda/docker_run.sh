@@ -70,6 +70,8 @@ if ! $eda_installed
 then
         cd /eda/eda_api
  #       npm install
+        # Chromium + system deps for Playwright (dashboard PDF/mail), using the API's own playwright version
+        npm run install:browsers
 fi
 
 if [ $(pm2 pid server)  -gt 0 ]

@@ -374,6 +374,371 @@
         <source>Elige cuantas columnas quieres mostrar</source>
         <target>Scegli quante colonne vuoi mostrare</target>
       </trans-unit>
+      <trans-unit id="categoryLabelCharsTooltip" datatype="html">
+        <source>Actívalo para fijar manualmente el número de caracteres de las etiquetas del eje de categorías (empieza en 10; 0 = sin texto). Desactivado, se usa el ajuste automático por defecto</source>
+        <target>Attivalo per fissare manualmente il numero di caratteri delle etichette dell'asse delle categorie (parte da 10; 0 = nessun testo). Se disattivato, si usa la regolazione automatica predefinita</target>
+      </trans-unit>
+      <trans-unit id="tooltipBlockedByComparative" datatype="html">
+        <source>Bloqueado porque comparativa está activa</source>
+        <target>Bloccato perché il confronto è attivo</target>
+      </trans-unit>
+      <trans-unit id="tooltipBlockedByTrendOrPrediction" datatype="html">
+        <source>Bloqueado porque tendencia o predicción está activa</source>
+        <target>Bloccato perché la tendenza o la previsione è attiva</target>
+      </trans-unit>
+      <trans-unit id="comparativeRequirementsTooltip" datatype="html">
+        <source>No cumple los requisitos para la comparativa. Requiere exactamente dos campos: una fecha agrupada por mes, semana o día y un único campo numérico agregado (suma, media, recuento...).</source>
+        <target>I requisiti per il confronto non sono soddisfatti. Richiede esattamente due campi: una data raggruppata per mese, settimana o giorno e un unico campo numerico aggregato (somma, media, conteggio...).</target>
+      </trans-unit>
+      <trans-unit id="ChartProps" datatype="html">
+        <source>PROPIEDADES DEL GRAFICO</source>
+        <target>PROPRIETÀ DEL GRAFICO</target>
+      </trans-unit>
+      <trans-unit id="raceBarMatchingIconsDone" datatype="html">
+        <source>Iconos asignados por coincidencia de nombre</source>
+        <target>Icone assegnate per corrispondenza del nome</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionTitle" datatype="html">
+        <source>¿Quieres quitar la predicción?</source>
+        <target>Vuoi rimuovere la previsione?</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionText" datatype="html">
+        <source>Se quitará la predicción y se ejecutará la consulta del gráfico.</source>
+        <target>La previsione verrà rimossa e verrà eseguita la query del grafico.</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionYes" datatype="html">
+        <source>Sí, quitar</source>
+        <target>Sì, rimuovi</target>
+      </trans-unit>
+      <trans-unit id="RemovePredictionNo" datatype="html">
+        <source>No, mantener</source>
+        <target>No, mantieni</target>
+      </trans-unit>
+      <trans-unit id="clickFilterDialogHeader" datatype="html">
+        <source>Filtros en click</source>
+        <target>Filtri al clic</target>
+      </trans-unit>
+      <trans-unit id="clickFilterDialogCloseBtn" datatype="html">
+        <source>Cerrar</source>
+        <target>Chiudi</target>
+      </trans-unit>
+      <trans-unit id="clickFilterEnabledLabel" datatype="html">
+        <source>¿Este panel es clicable?</source>
+        <target>Questo pannello è cliccabile?</target>
+      </trans-unit>
+      <trans-unit id="clickFilterAffectsH5" datatype="html">
+        <source>A qué paneles afecta</source>
+        <target>Su quali pannelli agisce</target>
+      </trans-unit>
+      <trans-unit id="applyToAllPanelsLabel" datatype="html">
+        <source>Aplicar a todos</source>
+        <target>Applica a tutti</target>
+      </trans-unit>
+      <trans-unit id="noOtherPanels" datatype="html">
+        <source>No hay otros paneles en este dashboard</source>
+        <target>Non ci sono altri pannelli in questa dashboard</target>
+      </trans-unit>
+      <trans-unit id="clickFilterAffectedByH5" datatype="html">
+        <source>Qué paneles me afectan</source>
+        <target>Quali pannelli agiscono su di me</target>
+      </trans-unit>
+      <trans-unit id="searchPanelPlaceholder" datatype="html">
+        <source>Buscar panel...</source>
+        <target>Cerca pannello...</target>
+      </trans-unit>
+      <trans-unit id="selectPanelsPlaceholder" datatype="html">
+        <source>Añadir panel...</source>
+        <target>Aggiungi pannello...</target>
+      </trans-unit>
+      <trans-unit id="panelsSelectedLabel" datatype="html">
+        <source>{0} paneles seleccionados</source>
+        <target>undefined pannelli selezionati</target>
+      </trans-unit>
+      <trans-unit id="agregacionesH4" datatype="html">
+        <source>Agregaciones</source>
+        <target>Aggregazioni</target>
+      </trans-unit>
+      <trans-unit id="rangeTitle" datatype="html">
+        <source>Rangos</source>
+        <target>Intervalli</target>
+      </trans-unit>
+      <trans-unit id="addRange" datatype="html">
+        <source>Añadir Rango</source>
+        <target>Aggiungi intervallo</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionB" datatype="html">
+        <source>• Rango:</source>
+        <target>• Intervallo:</target>
+      </trans-unit>
+      <trans-unit id="dateNavLabel" datatype="html">
+        <source>Navegación por fecha</source>
+        <target>Navigazione per data</target>
+      </trans-unit>
+      <trans-unit id="navegableFrom" datatype="html">
+        <source>Navegable desde</source>
+        <target>Navigabile da</target>
+      </trans-unit>
+      <trans-unit id="noParentText" datatype="html">
+        <source>Sin padre</source>
+        <target>Senza padre</target>
+      </trans-unit>
+      <trans-unit id="noParentAttributes" datatype="html">
+        <source>Añade más atributos para activar la navegación</source>
+        <target>Aggiungi altri attributi per attivare la navigazione</target>
+      </trans-unit>
+      <trans-unit id="ordenacionH4" datatype="html">
+        <source>Ordenación</source>
+        <target>Ordinamento</target>
+      </trans-unit>
+      <trans-unit id="dateFormatH4" datatype="html">
+        <source>Formato</source>
+        <target>Formato</target>
+      </trans-unit>
+      <trans-unit id="noFormatsAvailable" datatype="html">
+        <source>Esta es una columna calculada y no tiene opciones de formato disponibles</source>
+        <target>Questa è una colonna calcolata e non ha opzioni di formato disponibili</target>
+      </trans-unit>
+      <trans-unit id="cumulativeSum" datatype="html">
+        <source>Suma acumulativa</source>
+        <target>Somma cumulativa</target>
+      </trans-unit>
+      <trans-unit id="tiposFiltrosLabel" datatype="html">
+        <source>Tipos de filtro</source>
+        <target>Tipi di filtro</target>
+      </trans-unit>
+      <trans-unit id="whereHavingLabel" datatype="html">
+        <source>Ámbito del filtro</source>
+        <target>Ambito del filtro</target>
+      </trans-unit>
+      <trans-unit id="optionsLabel" datatype="html">
+        <source>Opciones</source>
+        <target>Opzioni</target>
+      </trans-unit>
+      <trans-unit id="valor1Label" datatype="html">
+        <source>Valor 1</source>
+        <target>Valore 1</target>
+      </trans-unit>
+      <trans-unit id="groupSelect" datatype="html">
+        <source>Selecciona...</source>
+        <target>Seleziona...</target>
+      </trans-unit>
+      <trans-unit id="valor2Label" datatype="html">
+        <source>Valor 2</source>
+        <target>Valore 2</target>
+      </trans-unit>
+      <trans-unit id="addFilterBtn" datatype="html">
+        <source>Añadir filtro</source>
+        <target>Aggiungi filtro</target>
+      </trans-unit>
+      <trans-unit id="duplicatedColumnNameLabel" datatype="html">
+        <source> Nombre columna duplicada </source>
+        <target> Nome colonna duplicato </target>
+      </trans-unit>
+      <trans-unit id="cumulativeSumTooltip" datatype="html">
+        <source>Si activas ésta función se calculará la suma acumulativa 
+                                            para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.</source>
+        <target>Se attivi questa funzione verrà calcolata la somma cumulativa per i campi numerici che scegli. Si può attivare solo se la data è aggregata per mese, settimana o giorno.</target>
+      </trans-unit>
+      <trans-unit id="ptooltipViewTextRanges" datatype="html">
+        <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 </source>
+        <target>Configurando un intervallo le aggregazioni resteranno bloccate. Esempio di intervallo valido - 12:18:50:100 </target>
+      </trans-unit>
+      <trans-unit id="ptooltipNotAvailableRanges" datatype="html">
+        <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
+        <target>Non è possibile creare un nuovo intervallo perché ne esiste già uno configurato</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionNumberError" datatype="html">
+        <source>El correcto orden de los límites del rango van de menor a mayor</source>
+        <target>L'ordine corretto dei limiti dell'intervallo va dal minore al maggiore</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionCharacterError" datatype="html">
+        <source>El último caracter del rango debe ser un número</source>
+        <target>L'ultimo carattere dell'intervallo deve essere un numero</target>
+      </trans-unit>
+      <trans-unit id="whereMessageLabel" datatype="html">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Applica il filtro su tutti i record</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel" datatype="html">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Applica il filtro sui risultati</target>
+      </trans-unit>
+      <trans-unit id="whereMessage" datatype="html">
+        <source> Filtro sobre todos los registros</source>
+        <target> Filtro su tutti i record</target>
+      </trans-unit>
+      <trans-unit id="havingMessage" datatype="html">
+        <source> Filtro sobre los resultados</source>
+        <target> Filtro sui risultati</target>
+      </trans-unit>
+      <trans-unit id="atributoLabel" datatype="html">
+        <source>Atributo</source>
+        <target>Attributo</target>
+      </trans-unit>
+      <trans-unit id="table" datatype="html">
+        <source>de la entidad</source>
+        <target>dell'entità</target>
+      </trans-unit>
+      <trans-unit id="kpiSize" datatype="html">
+        <source>Modificar el tamaño del KPI</source>
+        <target>Modifica la dimensione del KPI</target>
+      </trans-unit>
+      <trans-unit id="increaseKpiSize" datatype="html">
+        <source>Incrementar el tamaño del KPI</source>
+        <target>Aumenta la dimensione del KPI</target>
+      </trans-unit>
+      <trans-unit id="DynamicTextColor" datatype="html">
+        <source>Cambiar color</source>
+        <target>Cambia colore</target>
+      </trans-unit>
+      <trans-unit id="colorKpiH6" datatype="html">
+        <source>Color del texto</source>
+        <target>Colore del testo</target>
+      </trans-unit>
+      <trans-unit id="resumenAtrH6Hover" datatype="html">
+        <source>¿Qué estoy viendo?</source>
+        <target>Cosa sto vedendo?</target>
+      </trans-unit>
+      <trans-unit id="noAttributes" datatype="html">
+        <source>Sin atributos</source>
+        <target>Nessun attributo</target>
+      </trans-unit>
+      <trans-unit id="resumenFiltrosPanelH6" datatype="html">
+        <source>Filtros del panel</source>
+        <target>Filtri del pannello</target>
+      </trans-unit>
+      <trans-unit id="noFilters" datatype="html">
+        <source>Sin filtros</source>
+        <target>Nessun filtro</target>
+      </trans-unit>
+      <trans-unit id="resumenFiltrosInformeH6" datatype="html">
+        <source>Filtros del informe</source>
+        <target>Filtri del report</target>
+      </trans-unit>
+      <trans-unit id="resumenPanelesAfectanH6" datatype="html">
+        <source>Paneles que me afectan</source>
+        <target>Pannelli che agiscono su di me</target>
+      </trans-unit>
+      <trans-unit id="noAffectingPanels" datatype="html">
+        <source>Sin paneles</source>
+        <target>Nessun pannello</target>
+      </trans-unit>
+      <trans-unit id="panelTitlePlaceholder" datatype="html">
+        <source>Título del panel</source>
+        <target>Titolo del pannello</target>
+      </trans-unit>
+      <trans-unit id="panelDescriptionPlaceholder" datatype="html">
+        <source>Descripción (opcional)</source>
+        <target>Descrizione (facoltativa)</target>
+      </trans-unit>
+      <trans-unit id="vistaSeleccionador" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ selectedQueryMode !== &apos;SQL&apos; ? editQuery : editSQLQuery }}"/> </source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ selectedQueryMode !== &apos;SQL&apos; ? editQuery : editSQLQuery }}"/> </target>
+      </trans-unit>
+      <trans-unit id="vistaPrevia" datatype="html">
+        <source> Vista previa </source>
+        <target> Anteprima </target>
+      </trans-unit>
+      <trans-unit id="entidadesTitle" datatype="html">
+        <source>Clique sobre un entidad para ver sus atributos.</source>
+        <target>Clicca su un'entità per vederne gli attributi.</target>
+      </trans-unit>
+      <trans-unit id="entidadesH4" datatype="html">
+        <source> Entidades </source>
+        <target> Entità </target>
+      </trans-unit>
+      <trans-unit id="searchEntities" datatype="html">
+        <source>Buscar entidades...</source>
+        <target>Cerca entità...</target>
+      </trans-unit>
+      <trans-unit id="atributsTitle" datatype="html">
+        <source>Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes</source>
+        <target>Attributi di un'entità. Trascina gli attributi nella selezione o nei filtri per consultarli. Cliccando sull'attributo si accede alle sue proprietà</target>
+      </trans-unit>
+      <trans-unit id="atributosH4" datatype="html">
+        <source> Atributos </source>
+        <target> Attributi </target>
+      </trans-unit>
+      <trans-unit id="hiddenAttributes" datatype="html">
+        <source>Mostrar/ocultar campos ocultos</source>
+        <target>Mostra/nascondi campi nascosti</target>
+      </trans-unit>
+      <trans-unit id="searchAttributes" datatype="html">
+        <source>Buscar atributos...</source>
+        <target>Cerca attributi...</target>
+      </trans-unit>
+      <trans-unit id="seleccionTitle" datatype="html">
+        <source>Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.</source>
+        <target>Per lanciare una query: seleziona gli attributi che vuoi vedere, clicca su di essi per configurarli ed esegui la query. Potrai sempre tornare a questa vista.</target>
+      </trans-unit>
+      <trans-unit id="seleccionH4" datatype="html">
+        <source> Mostrar los siguientes atributos: </source>
+        <target> Mostra i seguenti attributi: </target>
+      </trans-unit>
+      <trans-unit id="filtrosH4" datatype="html">
+        <source>Filtrar los resultados por:</source>
+        <target>Filtra i risultati per:</target>
+      </trans-unit>
+      <trans-unit id="topQueryH4" datatype="html">
+        <source>Mostrar Top:</source>
+        <target>Mostra Top:</target>
+      </trans-unit>
+      <trans-unit id="yourQuerySQL" datatype="html">
+        <source> Mi consulta SQL </source>
+        <target> La mia query SQL </target>
+      </trans-unit>
+      <trans-unit id="cancelarBtn" datatype="html">
+        <source> Cancelar </source>
+        <target> Annulla </target>
+      </trans-unit>
+      <trans-unit id="openSqlMode" datatype="html">
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Abrir en modo SQL </source>
+        <target><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i class=&quot;fa fa-database mr-1.5 text-sm&quot;&gt;"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/> Apri in modalità SQL </target>
+      </trans-unit>
+      <trans-unit id="AdvanceOptions" datatype="html">
+        <source> Opciones avanzadas </source>
+        <target> Opzioni avanzate </target>
+      </trans-unit>
+      <trans-unit id="askTheAIText" datatype="html">
+        <source> Consulta con la IA </source>
+        <target> Query con l'IA </target>
+      </trans-unit>
+      <trans-unit id="resumenAtrH6" datatype="html">
+        <source>Resumen de atributos</source>
+        <target>Riepilogo degli attributi</target>
+      </trans-unit>
+      <trans-unit id="resultSortingText" datatype="html">
+        <source>Ordenar los resultados por:</source>
+        <target>Ordina i risultati per:</target>
+      </trans-unit>
+      <trans-unit id="tooltipJoinType" datatype="html">
+        <source>Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN</source>
+        <target>Definisce come si uniscono le tabelle: LEFT, INNER o RIGHT JOIN</target>
+      </trans-unit>
+      <trans-unit id="joinTypeH4" datatype="html">
+        <source>Tipo de intersección</source>
+        <target>Tipo di intersezione</target>
+      </trans-unit>
+      <trans-unit id="tooltipScenarios" datatype="html">
+        <source>Crea atributos derivados aplicando operaciones matemáticas</source>
+        <target>Crea attributi derivati applicando operazioni matematiche</target>
+      </trans-unit>
+      <trans-unit id="scenarios" datatype="html">
+        <source>Escenarios</source>
+        <target>Scenari</target>
+      </trans-unit>
+      <trans-unit id="tooltipAdvancedFilters" datatype="html">
+        <source>Combina los filtros del panel con operadores AND u OR</source>
+        <target>Combina i filtri del pannello con operatori AND o OR</target>
+      </trans-unit>
+      <trans-unit id="filtrosAvanzados" datatype="html">
+        <source>Filtros avanzados (AND/OR)</source>
+        <target>Filtri avanzati (AND/OR)</target>
+      </trans-unit>
+      <trans-unit id="configurarFiltrosAvanzados" datatype="html">
+        <source>Configurar</source>
+        <target>Configura</target>
+      </trans-unit>
       <trans-unit id="tooltipUniqueRecords" datatype="html">
         <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
         <target>Applica GROUP BY a tutti i campi per eliminare i duplicati</target>
@@ -834,6 +1199,1558 @@
       <trans-unit id="addTag" datatype="html">
         <source> Añadir etiqueta</source>
         <target> Aggiungi etichetta</target>
+      </trans-unit>
+      <trans-unit id="enableFilters" datatype="html">
+        <source> Click en filtros habilitado</source>
+        <target> Clic sui filtri abilitato</target>
+      </trans-unit>
+      <trans-unit id="disableFilters" datatype="html">
+        <source>Click en filtros deshabilitado</source>
+        <target>Clic sui filtri disabilitato</target>
+      </trans-unit>
+      <trans-unit id="enablePanelLockButton" datatype="html">
+        <source> Bloquear los paneles</source>
+        <target> Blocca i pannelli</target>
+      </trans-unit>
+      <trans-unit id="disablePanelLockButton" datatype="html">
+        <source>Desbloquear los paneles</source>
+        <target>Sblocca i pannelli</target>
+      </trans-unit>
+      <trans-unit id="disablePanelAnimationsButton" datatype="html">
+        <source>Desactivar animaciones</source>
+        <target>Disattiva animazioni</target>
+      </trans-unit>
+      <trans-unit id="enablePanelAnimationsButton" datatype="html">
+        <source>Activar animaciones</source>
+        <target>Attiva animazioni</target>
+      </trans-unit>
+      <trans-unit id="onlyIcanEditTagEnable" datatype="html">
+        <source>Edición privada habilitada</source>
+        <target>Modifica privata abilitata</target>
+      </trans-unit>
+      <trans-unit id="onlyIcanEditTagDisable" datatype="html">
+        <source>Edición privada deshabilitada</source>
+        <target>Modifica privata disabilitata</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownload" datatype="html">
+        <source>Descargar...</source>
+        <target>Scarica...</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadPDF" datatype="html">
+        <source> Descargar PDF</source>
+        <target> Scarica PDF</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadImage" datatype="html">
+        <source>Descargar Imagen</source>
+        <target>Scarica immagine</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadExcel" datatype="html">
+        <source>Descargar Excel</source>
+        <target>Scarica Excel</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarDownloadWord" datatype="html">
+        <source>Descargar Word</source>
+        <target>Scarica Word</target>
+      </trans-unit>
+      <trans-unit id="opcionMail" datatype="html">
+        <source> Enviar por email</source>
+        <target> Invia via email</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarCustomAction" datatype="html">
+        <source> Acción personalizada</source>
+        <target> Azione personalizzata</target>
+      </trans-unit>
+      <trans-unit id="globalFiltersToDF" datatype="html">
+        <source>Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.</source>
+        <target>Devi disporre di filtri globali per procedere con la configurazione dei filtri dipendenti.</target>
+      </trans-unit>
+      <trans-unit id="deleteDashboardWarning" datatype="html">
+        <source> Estás a punto de borrar el informe</source>
+        <target> Stai per eliminare il report</target>
+      </trans-unit>
+      <trans-unit id="Sure" datatype="html">
+        <source>¿Estás seguro?</source>
+        <target>Sei sicuro?</target>
+      </trans-unit>
+      <trans-unit id="ConfirmDeleteModel" datatype="html">
+        <source>Si, ¡Eliminalo!</source>
+        <target>Sì, eliminalo!</target>
+      </trans-unit>
+      <trans-unit id="dashboardExportPdfError" datatype="html">
+        <source>No se ha podido generar el PDF del informe. Inténtalo de nuevo.</source>
+        <target>Non è stato possibile generare il PDF del report. Riprova.</target>
+      </trans-unit>
+      <trans-unit id="dashboardExportImageError" datatype="html">
+        <source>No se ha podido generar la imagen del informe. Inténtalo de nuevo.</source>
+        <target>Non è stato possibile generare l'immagine del report. Riprova.</target>
+      </trans-unit>
+      <trans-unit id="dashboardExportExcelError" datatype="html">
+        <source>No se ha podido generar el Excel del informe. Inténtalo de nuevo.</source>
+        <target>Non è stato possibile generare l'Excel del report. Riprova.</target>
+      </trans-unit>
+      <trans-unit id="dashboardExportWordError" datatype="html">
+        <source>No se ha podido generar el Word del informe. Inténtalo de nuevo.</source>
+        <target>Non è stato possibile generare il Word del report. Riprova.</target>
+      </trans-unit>
+      <trans-unit id="newTag" datatype="html">
+        <source>Nueva etiqueta</source>
+        <target>Nuova etichetta</target>
+      </trans-unit>
+      <trans-unit id="emptyTag" datatype="html">
+        <source>Este tag esta vacío</source>
+        <target>Questo tag è vuoto</target>
+      </trans-unit>
+      <trans-unit id="existentTag" datatype="html">
+        <source>Este tag ya existe</source>
+        <target>Questo tag esiste già</target>
+      </trans-unit>
+      <trans-unit id="tagCreated" datatype="html">
+        <source>Etiqueta creada correctamente</source>
+        <target>Etichetta creata correttamente</target>
+      </trans-unit>
+      <trans-unit id="tagAssigned" datatype="html">
+        <source>Etiqueta asignada correctamente</source>
+        <target>Etichetta assegnata correttamente</target>
+      </trans-unit>
+      <trans-unit id="notSavedChanges" datatype="html">
+        <source>Hay cambios sin guardar...</source>
+        <target>Ci sono modifiche non salvate...</target>
+      </trans-unit>
+      <trans-unit id="loading" datatype="html">
+        <source>Cargando informe...</source>
+        <target>Caricamento del report...</target>
+      </trans-unit>
+      <trans-unit id="filteredReportMessage" datatype="html">
+        <source>Por favor, espera un momento mientras procesamos la selección.</source>
+        <target>Attendi un momento mentre elaboriamo la selezione.</target>
+      </trans-unit>
+      <trans-unit id="SaveWarningTittle" datatype="html">
+        <source>Solo puedes guardar cuando todos los paneles están configurados</source>
+        <target>Puoi salvare solo quando tutti i pannelli sono configurati</target>
+      </trans-unit>
+      <trans-unit id="AddFiltersWarningTittle" datatype="html">
+        <source>Solo puedes añadir filtros cuando todos los paneles están configurados</source>
+        <target>Puoi aggiungere filtri solo quando tutti i pannelli sono configurati</target>
+      </trans-unit>
+      <trans-unit id="filterOptions" datatype="html">
+        <source> Opciones del filtro: </source>
+        <target> Opzioni del filtro: </target>
+      </trans-unit>
+      <trans-unit id="aplyToAllPanelsH5" datatype="html">
+        <source>¿Aplica a todos los paneles?</source>
+        <target>Si applica a tutti i pannelli?</target>
+      </trans-unit>
+      <trans-unit id="autocompleteFilter" datatype="html">
+        <source>¿Filtro autocomplete?</source>
+        <target>Filtro con autocompletamento?</target>
+      </trans-unit>
+      <trans-unit id="mandatoryFilter" datatype="html">
+        <source>¿Filtro obligatorio?</source>
+        <target>Filtro obbligatorio?</target>
+      </trans-unit>
+      <trans-unit id="multipleSelectionText" datatype="html">
+        <source>Selección múltiple</source>
+        <target>Selezione multipla</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionText" datatype="html">
+        <source>Selección única</source>
+        <target>Selezione singola</target>
+      </trans-unit>
+      <trans-unit id="filterVisibleScope" datatype="html">
+        <source>...</source>
+        <target>...</target>
+      </trans-unit>
+      <trans-unit id="placeholderTables" datatype="html">
+        <source>Entidades</source>
+        <target>Entità</target>
+      </trans-unit>
+      <trans-unit id="aliasValuePh" datatype="html">
+        <source>Alias del filtro (opcional)</source>
+        <target>Alias del filtro (facoltativo)</target>
+      </trans-unit>
+      <trans-unit id="defaultValueLabel" datatype="html">
+        <source>Valor por defecto</source>
+        <target>Valore predefinito</target>
+      </trans-unit>
+      <trans-unit id="panelColHeader" datatype="html">
+        <source>Panel</source>
+        <target>Pannello</target>
+      </trans-unit>
+      <trans-unit id="filterPathColHeader" datatype="html">
+        <source>Ruta del filtro</source>
+        <target>Percorso del filtro</target>
+      </trans-unit>
+      <trans-unit id="DashboardFilters" datatype="html">
+        <source>FILTROS DEL INFORME</source>
+        <target>FILTRI DEL REPORT</target>
+      </trans-unit>
+      <trans-unit id="panelsToAplyH5" datatype="html">
+        <source>Paneles para los que aplica el filtro</source>
+        <target>Pannelli a cui si applica il filtro</target>
+      </trans-unit>
+      <trans-unit id="filterForH5" datatype="html">
+        <source> Filtrar por</source>
+        <target> Filtra per</target>
+      </trans-unit>
+      <trans-unit id="canIfilter" datatype="html">
+        <source> Visiblidad del filtro</source>
+        <target> Visibilità del filtro</target>
+      </trans-unit>
+      <trans-unit id="positionFilterInReport" datatype="html">
+        <source> Posición del filtro en el informe</source>
+        <target> Posizione del filtro nel report</target>
+      </trans-unit>
+      <trans-unit id="greendot" datatype="html">
+        <source>Paneles filtrados</source>
+        <target>Pannelli filtrati</target>
+      </trans-unit>
+      <trans-unit id="reddot" datatype="html">
+        <source>Paneles no relacionados</source>
+        <target>Pannelli non correlati</target>
+      </trans-unit>
+      <trans-unit id="unselecteddot" datatype="html">
+        <source>Paneles no filtrados</source>
+        <target>Pannelli non filtrati</target>
+      </trans-unit>
+      <trans-unit id="tooltipApplyToAll" datatype="html">
+        <source>Si está activado, el filtro se aplica a todos los paneles del informe.</source>
+        <target>Se attivato, il filtro si applica a tutti i pannelli del report.</target>
+      </trans-unit>
+      <trans-unit id="tooltipAutocomplete" datatype="html">
+        <source>Si está activado, los valores se buscan dinámicamente mediante autocompletado.</source>
+        <target>Se attivato, i valori vengono cercati dinamicamente tramite autocompletamento.</target>
+      </trans-unit>
+      <trans-unit id="tooltipMandatory" datatype="html">
+        <source>Si está activado, el filtro debe tener un valor seleccionado para poder visualizar el informe.</source>
+        <target>Se attivato, il filtro deve avere un valore selezionato per poter visualizzare il report.</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionDescription" datatype="html">
+        <source>Active esta opción para permitir la selección múltiple.</source>
+        <target>Attiva questa opzione per consentire la selezione multipla.</target>
+      </trans-unit>
+      <trans-unit id="multipleSelectionDescription" datatype="html">
+        <source>Desactive esta opción para permitir la selección única.</source>
+        <target>Disattiva questa opzione per consentire la selezione singola.</target>
+      </trans-unit>
+      <trans-unit id="tooltipVisibility" datatype="html">
+        <source>Público: todos pueden usarlo. Deshabilitado: otros usuarios pueden ver el filtro pero no modificarlo. Oculto: no visible para otros pero se aplica igualmente.</source>
+        <target>Pubblico: tutti possono usarlo. Disabilitato: gli altri utenti possono vedere il filtro ma non modificarlo. Nascosto: non visibile agli altri ma viene comunque applicato.</target>
+      </trans-unit>
+      <trans-unit id="public" datatype="html">
+        <source>público</source>
+        <target>pubblico</target>
+      </trans-unit>
+      <trans-unit id="readOnly" datatype="html">
+        <source>deshabilitado</source>
+        <target>disabilitato</target>
+      </trans-unit>
+      <trans-unit id="hidden" datatype="html">
+        <source>oculto</source>
+        <target>nascosto</target>
+      </trans-unit>
+      <trans-unit id="invalidPathForm" datatype="html">
+        <source> Ruta incorrecta para el filtro seleccionado</source>
+        <target> Percorso non corretto per il filtro selezionato</target>
+      </trans-unit>
+      <trans-unit id="IncorrectForm" datatype="html">
+        <source>Formulario incorrecto. Revise los campos obligatorios.</source>
+        <target>Modulo non corretto. Controlla i campi obbligatori.</target>
+      </trans-unit>
+      <trans-unit id="SaveAs" datatype="html">
+        <source>GUARDAR COMO...</source>
+        <target>SALVA COME...</target>
+      </trans-unit>
+      <trans-unit id="addDuckdbTableTitle" datatype="html">
+        <source>Añadir tabla CSV a DuckDB</source>
+        <target>Aggiungi tabella CSV a DuckDB</target>
+      </trans-unit>
+      <trans-unit id="placeholderInputSeparator" datatype="html">
+        <source>Separador</source>
+        <target>Separatore</target>
+      </trans-unit>
+      <trans-unit id="clickToUpload" datatype="html">
+        <source>Click para subir</source>
+        <target>Clicca per caricare</target>
+      </trans-unit>
+      <trans-unit id="dragDrop" datatype="html">
+        <source> o arrastra y suelta</source>
+        <target> o trascina e rilascia</target>
+      </trans-unit>
+      <trans-unit id="type" datatype="html">
+        <source>Tipo</source>
+        <target>Tipo</target>
+      </trans-unit>
+      <trans-unit id="csvSep" datatype="html">
+        <source>Sep. Decimal</source>
+        <target>Sep. decimale</target>
+      </trans-unit>
+      <trans-unit id="decSeparatorComma" datatype="html">
+        <source>, (coma)</source>
+        <target>, (virgola)</target>
+      </trans-unit>
+      <trans-unit id="decSeparatorDot" datatype="html">
+        <source>. (punto)</source>
+        <target>. (punto)</target>
+      </trans-unit>
+      <trans-unit id="errorParseDuckDb" datatype="html">
+        <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+        <target>Errore nell'analisi del file CSV. Verifica il separatore.</target>
+      </trans-unit>
+      <trans-unit id="duckdbTableAdded" datatype="html">
+        <source>Tabla añadida correctamente</source>
+        <target>Tabella aggiunta correttamente</target>
+      </trans-unit>
+      <trans-unit id="RefreshCacheTitle" datatype="html">
+        <source> Actualizar los datos del modelo cada: </source>
+        <target> Aggiorna i dati del modello ogni: </target>
+      </trans-unit>
+      <trans-unit id="atTime" datatype="html">
+        <source>A las:</source>
+        <target>Alle:</target>
+      </trans-unit>
+      <trans-unit id="noCache" datatype="html">
+        <source>Sin caché</source>
+        <target>Senza cache</target>
+      </trans-unit>
+      <trans-unit id="noCacheDescription" datatype="html">
+        <source> Desactiva el sistema de caché para obtener datos en tiempo real </source>
+        <target> Disattiva il sistema di cache per ottenere dati in tempo reale </target>
+      </trans-unit>
+      <trans-unit id="deleteCache" datatype="html">
+        <source>Borrar cache del modelo</source>
+        <target>Cancella cache del modello</target>
+      </trans-unit>
+      <trans-unit id="adChacheConfig" datatype="html">
+        <source>Configurar caché del modelo</source>
+        <target>Configura cache del modello</target>
+      </trans-unit>
+      <trans-unit id="CacheDeletedOK" datatype="html">
+        <source>Caché eliminada correctamente</source>
+        <target>Cache eliminata correttamente</target>
+      </trans-unit>
+      <trans-unit id="IncorrectCacheDelete" datatype="html">
+        <source>No ha sido posible eliminar la caché</source>
+        <target>Non è stato possibile eliminare la cache</target>
+      </trans-unit>
+      <trans-unit id="inputNombre" datatype="html">
+        <source> Nombre <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Nome <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="inputDescripcion" datatype="html">
+        <source> Descripción <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Descrizione *</target>
+      </trans-unit>
+      <trans-unit id="inputTipoColumna" datatype="html">
+        <source> Tipo de columna <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Tipo di colonna *</target>
+      </trans-unit>
+      <trans-unit id="inputFormat" datatype="html">
+        <source> Número de decimales </source>
+        <target> Numero di decimali </target>
+      </trans-unit>
+      <trans-unit id="formDialogCalculatedColumn" datatype="html">
+        <source>Recuerde rellenar todos los campos</source>
+        <target>Ricorda di compilare tutti i campi</target>
+      </trans-unit>
+      <trans-unit id="mandatoryDiferentName" datatype="html">
+        <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
+        <target>Questo nome di campo calcolato esiste già. Prova con un altro.</target>
+      </trans-unit>
+      <trans-unit id="IncorrectQueryAgg" datatype="html">
+        <source>No se puede incluir las siguientes agregaciones: (avg, bit_and, bit_or, bit_xor, count, group_concat, json_arrayagg, json_objectagg, max, min, std, stddev, sum, var_pop, var_samp, variance, cume_dist, dense_rank, first_value, lag, last_value, lead, nth_value, ntile, percent_rank, rank, row_number)</source>
+        <target>Non è possibile includere le seguenti aggregazioni: (avg, bit_and, bit_or, bit_xor, count, group_concat, json_arrayagg, json_objectagg, max, min, std, stddev, sum, var_pop, var_samp, variance, cume_dist, dense_rank, first_value, lag, last_value, lead, nth_value, ntile, percent_rank, rank, row_number)</target>
+      </trans-unit>
+      <trans-unit id="CorrectQuery" datatype="html">
+        <source>Consulta correcta</source>
+        <target>Query corretta</target>
+      </trans-unit>
+      <trans-unit id="titleCalculatedColumnEditMessage" datatype="html">
+        <source>Campo calculado actualizado correctamente</source>
+        <target>Campo calcolato aggiornato correttamente</target>
+      </trans-unit>
+      <trans-unit id="textCalculatedColumnEditMessage" datatype="html">
+        <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entrar en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
+        <target>IMPORTANTE: modificando un campo calcolato esistente, i pannelli che lo usano non si aggiornano automaticamente; è necessario entrare nella configurazione di ciascuno, premere Esegui e salvare il report</target>
+      </trans-unit>
+      <trans-unit id="IncorrectQuery" datatype="html">
+        <source>Consulta incorrecta</source>
+        <target>Query non corretta</target>
+      </trans-unit>
+      <trans-unit id="agregacionh5" datatype="html">
+        <source> Agregación <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Aggregazione *</target>
+      </trans-unit>
+      <trans-unit id="decimalNumberText" datatype="html">
+        <source> Número de decimales <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Numero di decimali <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="addCalculatedColTitle" datatype="html">
+        <source>Añadir columna calculada a la tabla </source>
+        <target>Aggiungi colonna calcolata alla tabella </target>
+      </trans-unit>
+      <trans-unit id="mandatoryFields" datatype="html">
+        <source>Recuerde llenar los campos obligatorios</source>
+        <target>Ricorda di compilare i campi obbligatori</target>
+      </trans-unit>
+      <trans-unit id="permissionType" datatype="html">
+        <source>Tipo de Permisos</source>
+        <target>Tipo di permessi</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeDescription" datatype="html">
+        <source>Selecciona cómo quieres gestionar los permisos</source>
+        <target>Seleziona come vuoi gestire i permessi</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeUser" datatype="html">
+        <source>Permisos por Usuario</source>
+        <target>Permessi per utente</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeUserDescription" datatype="html">
+        <source>Asignar permisos individualmente a usuarios específicos</source>
+        <target>Assegna permessi individualmente a utenti specifici</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeGroup" datatype="html">
+        <source>Permisos por Grupo</source>
+        <target>Permessi per gruppo</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeGroupDescription" datatype="html">
+        <source>Asignar permisos a grupos de usuarios </source>
+        <target>Assegna permessi a gruppi di utenti </target>
+      </trans-unit>
+      <trans-unit id="AllTags" datatype="html">
+        <source>Todos</source>
+        <target>Tutti</target>
+      </trans-unit>
+      <trans-unit id="AllTagsDescription" datatype="html">
+        <source> Acceso a todos los elementos sin restricciones </source>
+        <target> Accesso a tutti gli elementi senza restrizioni </target>
+      </trans-unit>
+      <trans-unit id="NoneTags" datatype="html">
+        <source>Ninguno</source>
+        <target>Nessuno</target>
+      </trans-unit>
+      <trans-unit id="NoneTagsDescription" datatype="html">
+        <source> No se muestra ningún elemento para este usuario/grupo </source>
+        <target> Nessun elemento viene mostrato per questo utente/gruppo </target>
+      </trans-unit>
+      <trans-unit id="DynamicTags" datatype="html">
+        <source>Dinámico</source>
+        <target>Dinamico</target>
+      </trans-unit>
+      <trans-unit id="DynamicTagsDescription" datatype="html">
+        <source> Filtrado avanzado mediante una consulta personalizada </source>
+        <target> Filtro avanzato tramite una query personalizzata </target>
+      </trans-unit>
+      <trans-unit id="inputConsultaDinamica" datatype="html">
+        <source> Consulta dinámica </source>
+        <target> Query dinamica </target>
+      </trans-unit>
+      <trans-unit id="placeholderConsultaDinamica" datatype="html">
+        <source>Introduzca la expresión dinámica…</source>
+        <target>Inserisci l'espressione dinamica…</target>
+      </trans-unit>
+      <trans-unit id="addPermission" datatype="html">
+        <source>Añadir permiso</source>
+        <target>Aggiungi permesso</target>
+      </trans-unit>
+      <trans-unit id="usersPermissions" datatype="html">
+        <source>Permisos de usuario</source>
+        <target>Permessi utente</target>
+      </trans-unit>
+      <trans-unit id="groupsPersmissions" datatype="html">
+        <source>Permisos de grupo</source>
+        <target>Permessi di gruppo</target>
+      </trans-unit>
+      <trans-unit id="users" datatype="html">
+        <source>Usuarios</source>
+        <target>Utenti</target>
+      </trans-unit>
+      <trans-unit id="groups" datatype="html">
+        <source>Grupos</source>
+        <target>Gruppi</target>
+      </trans-unit>
+      <trans-unit id="placeholderTargetColumnId" datatype="html">
+        <source>Columna con el id</source>
+        <target>Colonna con l'id</target>
+      </trans-unit>
+      <trans-unit id="placeholderTargetColumnDesc" datatype="html">
+        <source>Columna con la descripción</source>
+        <target>Colonna con la descrizione</target>
+      </trans-unit>
+      <trans-unit id="AddValueListOptions" datatype="html">
+        <source>Definir un listado de valores posibles</source>
+        <target>Definisci un elenco di valori possibili</target>
+      </trans-unit>
+      <trans-unit id="editModelHeaders" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}"/></target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityLabel" datatype="html">
+        <source>Visibilidad MCP</source>
+        <target>Visibilità MCP</target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityTooltipTableModel" datatype="html">
+        <source> Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente. </source>
+        <target> Controlla se l'agente IA ha accesso a queste informazioni: Full consente l'accesso completo, None lo esclude totalmente. </target>
+      </trans-unit>
+      <trans-unit id="inputNombreTecnico" datatype="html">
+        <source> Nombre técnico </source>
+        <target> Nome tecnico </target>
+      </trans-unit>
+      <trans-unit id="inputEsconderTabla" datatype="html">
+        <source> Ocultar tabla </source>
+        <target> Nascondi tabella </target>
+      </trans-unit>
+      <trans-unit id="viewLabel" datatype="html">
+        <source> Vista </source>
+        <target> Vista </target>
+      </trans-unit>
+      <trans-unit id="viewEdition" datatype="html">
+        <source>Edición de la vista</source>
+        <target>Modifica della vista</target>
+      </trans-unit>
+      <trans-unit id="listRelations" datatype="html">
+        <source>Relaciones</source>
+        <target>Relazioni</target>
+      </trans-unit>
+      <trans-unit id="rolesPermisosTabla" datatype="html">
+        <source>Visibilidad de tabla</source>
+        <target>Visibilità della tabella</target>
+      </trans-unit>
+      <trans-unit id="deleteDuckdbTable" datatype="html">
+        <source>Eliminar tabla CSV</source>
+        <target>Elimina tabella CSV</target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityTooltipCol" datatype="html">
+        <source> Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente. </source>
+        <target> Controlla se l'agente IA ha accesso a queste informazioni: Full consente l'accesso completo, Declaration espone solo nome e tipo, None lo esclude totalmente. </target>
+      </trans-unit>
+      <trans-unit id="rolesPermisos" datatype="html">
+        <source>Valores para filtro</source>
+        <target>Valori per il filtro</target>
+      </trans-unit>
+      <trans-unit id="esconderColumna" datatype="html">
+        <source>Esconder columna</source>
+        <target>Nascondi colonna</target>
+      </trans-unit>
+      <trans-unit id="borrar" datatype="html">
+        <source> Borrar </source>
+        <target> Cancella </target>
+      </trans-unit>
+      <trans-unit id="editCalculatedField" datatype="html">
+        <source> Edición de campo calculado </source>
+        <target> Modifica del campo calcolato </target>
+      </trans-unit>
+      <trans-unit id="metadata" datatype="html">
+        <source>Metadata</source>
+        <target>Metadati</target>
+      </trans-unit>
+      <trans-unit id="inputDescripcionModelo" datatype="html">
+        <source>Descripción</source>
+        <target>Descrizione</target>
+      </trans-unit>
+      <trans-unit id="placeholderDescripcionModelo" datatype="html">
+        <source>Describe el propósito y contenido de este modelo de datos...</source>
+        <target>Descrivi lo scopo e il contenuto di questo modello dati...</target>
+      </trans-unit>
+      <trans-unit id="conexionh4" datatype="html">
+        <source>Conexión</source>
+        <target>Connessione</target>
+      </trans-unit>
+      <trans-unit id="account" datatype="html">
+        <source>Cuenta</source>
+        <target>Account</target>
+      </trans-unit>
+      <trans-unit id="inputHost" datatype="html">
+        <source>Host</source>
+        <target>Host</target>
+      </trans-unit>
+      <trans-unit id="inputNombreDB" datatype="html">
+        <source>Base de datos</source>
+        <target>Database</target>
+      </trans-unit>
+      <trans-unit id="port" datatype="html">
+        <source>Puerto</source>
+        <target>Porta</target>
+      </trans-unit>
+      <trans-unit id="schema" datatype="html">
+        <source>Esquema</source>
+        <target>Schema</target>
+      </trans-unit>
+      <trans-unit id="placeholderInputUsuario" datatype="html">
+        <source>Usuario</source>
+        <target>Utente</target>
+      </trans-unit>
+      <trans-unit id="inputPassword" datatype="html">
+        <source> Password <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Password *</target>
+      </trans-unit>
+      <trans-unit id="checkConnection" datatype="html">
+        <source> Comprobar conexión </source>
+        <target> Verifica connessione </target>
+      </trans-unit>
+      <trans-unit id="addDuckdbTable" datatype="html">
+        <source>Añadir tabla CSV</source>
+        <target>Aggiungi tabella CSV</target>
+      </trans-unit>
+      <trans-unit id="rolesPermisosModelo" datatype="html">
+        <source>Visibilidad a nivel de modelo</source>
+        <target>Visibilità a livello di modello</target>
+      </trans-unit>
+      <trans-unit id="functionalities" datatype="html">
+        <source>Extender el modelo</source>
+        <target>Estendi il modello</target>
+      </trans-unit>
+      <trans-unit id="utilities" datatype="html">
+        <source>Utilidades</source>
+        <target>Utilità</target>
+      </trans-unit>
+      <trans-unit id="hideTables" datatype="html">
+        <source>Ocultar todas las tablas</source>
+        <target>Nascondi tutte le tabelle</target>
+      </trans-unit>
+      <trans-unit id="hideColumns" datatype="html">
+        <source>Ocultar todas las columnas</source>
+        <target>Nascondi tutte le colonne</target>
+      </trans-unit>
+      <trans-unit id="inputBorrarVista" datatype="html">
+        <source>Borrar vista</source>
+        <target>Elimina vista</target>
+      </trans-unit>
+      <trans-unit id="hideAllRelations" datatype="html">
+        <source> Ocultar todas las relaciones</source>
+        <target> Nascondi tutte le relazioni</target>
+      </trans-unit>
+      <trans-unit id="addCacheConfig" datatype="html">
+        <source>Configurar Caché</source>
+        <target>Configura cache</target>
+      </trans-unit>
+      <trans-unit id="viewsecurity" datatype="html">
+        <source>Ver configuración de seguridad</source>
+        <target>Vedi configurazione di sicurezza</target>
+      </trans-unit>
+      <trans-unit id="addMap" datatype="html">
+        <source>Mapas</source>
+        <target>Mappe</target>
+      </trans-unit>
+      <trans-unit id="addView" datatype="html">
+        <source>Añadir vista</source>
+        <target>Aggiungi vista</target>
+      </trans-unit>
+      <trans-unit id="addTagDataSource" datatype="html">
+        <source> Añadir Tag</source>
+        <target> Aggiungi tag</target>
+      </trans-unit>
+      <trans-unit id="addCSV" datatype="html">
+        <source>Añadir tabla desde csv</source>
+        <target>Aggiungi tabella da csv</target>
+      </trans-unit>
+      <trans-unit id="addRelation" datatype="html">
+        <source>Añadir relación</source>
+        <target>Aggiungi relazione</target>
+      </trans-unit>
+      <trans-unit id="addCalculatedCol" datatype="html">
+        <source>Añadir columna  calculada</source>
+        <target>Aggiungi colonna calcolata</target>
+      </trans-unit>
+      <trans-unit id="addValueList" datatype="html">
+        <source>Añadir lista de valores posibles</source>
+        <target>Aggiungi elenco di valori possibili</target>
+      </trans-unit>
+      <trans-unit id="si" datatype="html">
+        <source>Si</source>
+        <target>Sì</target>
+      </trans-unit>
+      <trans-unit id="no" datatype="html">
+        <source>No</source>
+        <target>No</target>
+      </trans-unit>
+      <trans-unit id="valueListSourceHeader" datatype="html">
+        <source>Tabla que contiene los valores posibles para el filtro asociado a esta columna</source>
+        <target>Tabella che contiene i valori possibili per il filtro associato a questa colonna</target>
+      </trans-unit>
+      <trans-unit id="valueListSourceTabla" datatype="html">
+        <source>Tabla relacionada</source>
+        <target>Tabella correlata</target>
+      </trans-unit>
+      <trans-unit id="valueListSourceID" datatype="html">
+        <source>Id de la columna relacionada</source>
+        <target>Id della colonna correlata</target>
+      </trans-unit>
+      <trans-unit id="valueListSourceDescripcion" datatype="html">
+        <source>Descripción dfe la columna relacionada</source>
+        <target>Descrizione della colonna correlata</target>
+      </trans-unit>
+      <trans-unit id="possibleValuesList" datatype="html">
+        <source> Tabla y columna asociadas </source>
+        <target> Tabella e colonna associate </target>
+      </trans-unit>
+      <trans-unit id="possibleValuesListTable" datatype="html">
+        <source> Tabla </source>
+        <target> Tabella </target>
+      </trans-unit>
+      <trans-unit id="possibleValuesListID" datatype="html">
+        <source> Id de la columna</source>
+        <target> Id della colonna</target>
+      </trans-unit>
+      <trans-unit id="possibleValuesListDescription" datatype="html">
+        <source> Descripción de la columna</source>
+        <target> Descrizione della colonna</target>
+      </trans-unit>
+      <trans-unit id="dimensionLabel" datatype="html">
+        <source>Dimension</source>
+        <target>Dimensione</target>
+      </trans-unit>
+      <trans-unit id="factLabel" datatype="html">
+        <source>Fact</source>
+        <target>Fatto</target>
+      </trans-unit>
+      <trans-unit id="userTable" datatype="html">
+        <source>USUARIO</source>
+        <target>UTENTE</target>
+      </trans-unit>
+      <trans-unit id="groupTable" datatype="html">
+        <source>GRUPO</source>
+        <target>GRUPPO</target>
+      </trans-unit>
+      <trans-unit id="valueTable" datatype="html">
+        <source>VALOR</source>
+        <target>VALORE</target>
+      </trans-unit>
+      <trans-unit id="originRel" datatype="html">
+        <source>Origen</source>
+        <target>Origine</target>
+      </trans-unit>
+      <trans-unit id="targetRel" datatype="html">
+        <source>Destino</source>
+        <target>Destinazione</target>
+      </trans-unit>
+      <trans-unit id="deleteCalculatedColumn" datatype="html">
+        <source>Si, Eliminar el campo calculado!</source>
+        <target>Sì, elimina il campo calcolato!</target>
+      </trans-unit>
+      <trans-unit id="DeleteGroupCancel" datatype="html">
+        <source>Cancelar</source>
+        <target>Annulla</target>
+      </trans-unit>
+      <trans-unit id="Deleted" datatype="html">
+        <source>¡Eliminado!</source>
+        <target>Eliminato!</target>
+      </trans-unit>
+      <trans-unit id="deleteCalculatedColumnConfirmation" datatype="html">
+        <source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
+        <target>Campo calcolato eliminato correttamente. Dovrai salvare le modifiche al modello dati perché l'eliminazione sia permanente</target>
+      </trans-unit>
+      <trans-unit id="EstablishedConnections" datatype="html">
+        <source>Conexión establecida</source>
+        <target>Connessione stabilita</target>
+      </trans-unit>
+      <trans-unit id="IncorrectConnectionData" datatype="html">
+        <source>Datos de conexión incorrectos</source>
+        <target>Dati di connessione non corretti</target>
+      </trans-unit>
+      <trans-unit id="viewEditionTitle" datatype="html">
+        <source>Edición de la Vista</source>
+        <target>Modifica della vista</target>
+      </trans-unit>
+      <trans-unit id="viewEditionDescription" datatype="html">
+        <source>La edición de la vista permite modificar únicamente la consulta (query), pero no debe cambiar los nombres de las columnas.</source>
+        <target>La modifica della vista permette di cambiare solo la query, ma non deve cambiare i nomi delle colonne.</target>
+      </trans-unit>
+      <trans-unit id="inputMapTables" datatype="html">
+        <source>Propiedades del mapa</source>
+        <target>Proprietà della mappa</target>
+      </trans-unit>
+      <trans-unit id="availableMaps" datatype="html">
+        <source>Mapas disponibles</source>
+        <target>Mappe disponibili</target>
+      </trans-unit>
+      <trans-unit id="mapDescription" datatype="html">
+        <source>Configurar las propiedades básicas de la visualización de su mapa</source>
+        <target>Configura le proprietà di base della visualizzazione della tua mappa</target>
+      </trans-unit>
+      <trans-unit id="inputMapURL" datatype="html">
+        <source>Subir archivo GeoJson (JSON)</source>
+        <target>Carica file GeoJson (JSON)</target>
+      </trans-unit>
+      <trans-unit id="inputMapField" datatype="html">
+        <source>Campo a usar para vincular el modelo con el mapa</source>
+        <target>Campo da usare per collegare il modello alla mappa</target>
+      </trans-unit>
+      <trans-unit id="selectField" datatype="html">
+        <source>Selecciona un campo</source>
+        <target>Seleziona un campo</target>
+      </trans-unit>
+      <trans-unit id="inputMapName" datatype="html">
+        <source>Nombre del mapa</source>
+        <target>Nome della mappa</target>
+      </trans-unit>
+      <trans-unit id="inputx" datatype="html">
+        <source>Centro del mapa (Latitud, Longitud)</source>
+        <target>Centro della mappa (latitudine, longitudine)</target>
+      </trans-unit>
+      <trans-unit id="inputxDescription" datatype="html">
+        <source>Si desconoces las coordenadas del centro las calcularemos automáticamente</source>
+        <target>Se non conosci le coordinate del centro le calcoleremo automaticamente</target>
+      </trans-unit>
+      <trans-unit id="inputMapColumnsText" datatype="html">
+        <source>Vincular columnas al mapa</source>
+        <target>Collega le colonne alla mappa</target>
+      </trans-unit>
+      <trans-unit id="linkMapColumnsDescription" datatype="html">
+        <source>Conecte sus columnas de datos a la visualización geográfica</source>
+        <target>Collega le tue colonne di dati alla visualizzazione geografica</target>
+      </trans-unit>
+      <trans-unit id="selectTable" datatype="html">
+        <source>Selecciona una tabla</source>
+        <target>Seleziona una tabella</target>
+      </trans-unit>
+      <trans-unit id="inputMapColumns" datatype="html">
+        <source>Columnas</source>
+        <target>Colonne</target>
+      </trans-unit>
+      <trans-unit id="linkColumn" datatype="html">
+        <source>Vincular columna</source>
+        <target>Collega colonna</target>
+      </trans-unit>
+      <trans-unit id="mapsAvailableDescription" datatype="html">
+        <source>Mapas que están actualmente configurados y disponibles para su uso</source>
+        <target>Mappe attualmente configurate e disponibili per l'uso</target>
+      </trans-unit>
+      <trans-unit id="noMapsAvailable" datatype="html">
+        <source>No hay mapas disponibles</source>
+        <target>Non ci sono mappe disponibili</target>
+      </trans-unit>
+      <trans-unit id="noMapsAvailableDescription" datatype="html">
+        <source>Configurar un mapa en la pestaña Propiedades del mapa</source>
+        <target>Configura una mappa nella scheda Proprietà della mappa</target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeNO" datatype="html">
+        <source> Define quién puede acceder y ver este modelo. Solo los usuarios y grupos explícitamente autorizados tendrán acceso. </source>
+        <target> Definisci chi può accedere e vedere questo modello. Solo gli utenti e i gruppi esplicitamente autorizzati avranno accesso. </target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeYES" datatype="html">
+        <source> Cualquier usuario puede ver el modelo. Los filtros de seguridad se definen a nivel de tabla y columna concreta. </source>
+        <target> Qualsiasi utente può vedere il modello. I filtri di sicurezza si definiscono a livello di tabella e colonna specifica. </target>
+      </trans-unit>
+      <trans-unit id="ModelRestrictionAccess" datatype="html">
+        <source>Modelo con acceso restringido</source>
+        <target>Modello con accesso limitato</target>
+      </trans-unit>
+      <trans-unit id="ModelRestrictionAccessMessageOption" datatype="html">
+        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+        <target>Disattiva per abilitare l'accesso a tutti gli utenti</target>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccess" datatype="html">
+        <source>Modelo con acceso para todos los usuarios</source>
+        <target>Modello con accesso per tutti gli utenti</target>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccessMessageOption" datatype="html">
+        <source>Activar para limitar el acceso solo a usuarios o grupos autorizados</source>
+        <target>Attiva per limitare l'accesso solo a utenti o gruppi autorizzati</target>
+      </trans-unit>
+      <trans-unit id="selectUsers" datatype="html">
+        <source>Seleccionar Usuarios</source>
+        <target>Seleziona utenti</target>
+      </trans-unit>
+      <trans-unit id="selectGroups" datatype="html">
+        <source>Seleccionar Grupos</source>
+        <target>Seleziona gruppi</target>
+      </trans-unit>
+      <trans-unit id="addModelPermissions" datatype="html">
+        <source>Añadir permiso a nivel de modelo</source>
+        <target>Aggiungi permesso a livello di modello</target>
+      </trans-unit>
+      <trans-unit id="securityConfig" datatype="html">
+        <source>Configuración de seguridad</source>
+        <target>Configurazione di sicurezza</target>
+      </trans-unit>
+      <trans-unit id="tablesd" datatype="html">
+        <source>TABLA</source>
+        <target>TABELLA</target>
+      </trans-unit>
+      <trans-unit id="column" datatype="html">
+        <source>COLUMNA</source>
+        <target>COLONNA</target>
+      </trans-unit>
+      <trans-unit id="permisos" datatype="html">
+        <source>PERMISOS</source>
+        <target>PERMESSI</target>
+      </trans-unit>
+      <trans-unit id="visible" datatype="html">
+        <source>VISIBLE</source>
+        <target>VISIBILE</target>
+      </trans-unit>
+      <trans-unit id="placeholderTargetTables" datatype="html">
+        <source>Tabla destino</source>
+        <target>Tabella di destinazione</target>
+      </trans-unit>
+      <trans-unit id="placeholderSourceColumns" datatype="html">
+        <source>Columna origen</source>
+        <target>Colonna di origine</target>
+      </trans-unit>
+      <trans-unit id="placeholderTargetColumns" datatype="html">
+        <source>Columna destino </source>
+        <target>Colonna di destinazione </target>
+      </trans-unit>
+      <trans-unit id="placeholderRelationName" datatype="html">
+        <source>Nombre relación</source>
+        <target>Nome della relazione</target>
+      </trans-unit>
+      <trans-unit id="Refresh" datatype="html">
+        <source>Refrescar modelo de datos</source>
+        <target>Aggiorna modello dati</target>
+      </trans-unit>
+      <trans-unit id="modifyRelationTo" datatype="html">
+        <source>Modificar relación de la tabla</source>
+        <target>Modifica relazione della tabella</target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeNoTable" datatype="html">
+        <source> Define quién puede acceder y ver esta tabla. Solo los usuarios y grupos explícitamente autorizados tendrán acceso. </source>
+        <target> Definisci chi può accedere e vedere questa tabella. Solo gli utenti e i gruppi esplicitamente autorizzati avranno accesso. </target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeYesTable" datatype="html">
+        <source> Cualquier usuario puede ver la tabla. Los filtros de seguridad se definen a nivel de tabla y columna concreta. </source>
+        <target> Qualsiasi utente può vedere la tabella. I filtri di sicurezza si definiscono a livello di tabella e colonna specifica. </target>
+      </trans-unit>
+      <trans-unit id="tableRestrictionAccess" datatype="html">
+        <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Gli utenti e i gruppi configurati avranno accesso autorizzato alla tabella: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="tableActivationAccess" datatype="html">
+        <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Gli utenti e i gruppi configurati NON avranno accesso alla tabella: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;font-bold&quot;&gt;"/><x id="INTERPOLATION" equiv-text="{{table.description}}"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="tableActivationAccessMessageOption" datatype="html">
+        <source>Activar para habilitar un acceso restringido</source>
+        <target>Attiva per abilitare un accesso limitato</target>
+      </trans-unit>
+      <trans-unit id="addRelationTo" datatype="html">
+        <source>Añadir relación a la tabla </source>
+        <target>Aggiungi relazione alla tabella </target>
+      </trans-unit>
+      <trans-unit id="emptyMessageTags" datatype="html">
+        <source>No se encontraron resultados</source>
+        <target>Nessun risultato trovato</target>
+      </trans-unit>
+      <trans-unit id="fillRequiredFields" datatype="html">
+        <source>Recuerde llenar los campos obligatorios</source>
+        <target>Ricorda di compilare i campi obbligatori</target>
+      </trans-unit>
+      <trans-unit id="IncorrectFile" datatype="html">
+        <source>Archivo incorrecto, verifique que el formato del archivo sea json o geojson.</source>
+        <target>File non corretto, verifica che il formato del file sia json o geojson.</target>
+      </trans-unit>
+      <trans-unit id="selectFileImport" datatype="html">
+        <source>Por favor selecciona un archivo para importar</source>
+        <target>Seleziona un file da importare</target>
+      </trans-unit>
+      <trans-unit id="correctGeoJsonFormat" datatype="html">
+        <source>El archivo tiene un formato GeoJson válido.</source>
+        <target>Il file ha un formato GeoJson valido.</target>
+      </trans-unit>
+      <trans-unit id="unsupportedGeoJsonType" datatype="html">
+        <source>El tipo de geometría &quot;<x id="PH" equiv-text="unsupportedType"/>&quot; no está admitido. Solo se admiten &quot;Polygon&quot; y &quot;MultiPolygon&quot;.</source>
+        <target>Il tipo di geometria "<x id="PH" equiv-text="unsupportedType"/>" non è supportato. Sono supportati solo "Polygon" e "MultiPolygon".</target>
+      </trans-unit>
+      <trans-unit id="wrongGeoJsonFormat" datatype="html">
+        <source>El archivo no tiene un formato GeoJson válido.</source>
+        <target>Il file non ha un formato GeoJson valido.</target>
+      </trans-unit>
+      <trans-unit id="generateView" datatype="html">
+        <source>Generar vista</source>
+        <target>Genera vista</target>
+      </trans-unit>
+      <trans-unit id="generating" datatype="html">
+        <source>Generando...</source>
+        <target>Generazione...</target>
+      </trans-unit>
+      <trans-unit id="viewOk" datatype="html">
+        <source> Vista generada correctamente</source>
+        <target> Vista generata correttamente</target>
+      </trans-unit>
+      <trans-unit id="ViewDatamodel" datatype="html">
+        <source>Añadir vista</source>
+        <target>Aggiungi vista</target>
+      </trans-unit>
+      <trans-unit id="viewName" datatype="html">
+        <source>Introduzca el nombre de la vista</source>
+        <target>Inserisci il nome della vista</target>
+      </trans-unit>
+      <trans-unit id="viewDescription" datatype="html">
+        <source>Enter a brief description</source>
+        <target>Inserisci una breve descrizione</target>
+      </trans-unit>
+      <trans-unit id="viewTNameP" datatype="html">
+        <source>Enter technical identifier</source>
+        <target>Inserisci l'identificativo tecnico</target>
+      </trans-unit>
+      <trans-unit id="enterSQLExpression" datatype="html">
+        <source>&apos;Enter your SQL query here&apos;</source>
+        <target>'Inserisci qui la tua query SQL'</target>
+      </trans-unit>
+      <trans-unit id="newTagPlaceholder" datatype="html">
+        <source>Agregar nuevo tag</source>
+        <target>Aggiungi nuovo tag</target>
+      </trans-unit>
+      <trans-unit id="selectedTags" datatype="html">
+        <source> Tags seleccionados <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Tag selezionati <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="placeholderTableName" datatype="html">
+        <source>Nombre de la tabla</source>
+        <target>Nome della tabella</target>
+      </trans-unit>
+      <trans-unit id="addTableTitle" datatype="html">
+        <source>Añadir Tabla</source>
+        <target>Aggiungi tabella</target>
+      </trans-unit>
+      <trans-unit id="succesAddTable" datatype="html">
+        <source>Tabla creada correctamente</source>
+        <target>Tabella creata correttamente</target>
+      </trans-unit>
+      <trans-unit id="dsViewTree" datatype="html">
+        <source>Árbol</source>
+        <target>Albero</target>
+      </trans-unit>
+      <trans-unit id="dsViewMap" datatype="html">
+        <source>Mapa</source>
+        <target>Mappa</target>
+      </trans-unit>
+      <trans-unit id="buscarTabla" datatype="html">
+        <source>Buscar...</source>
+        <target>Cerca...</target>
+      </trans-unit>
+      <trans-unit id="saveModel" datatype="html">
+        <source>Guardar modelo de datos</source>
+        <target>Salva modello dati</target>
+      </trans-unit>
+      <trans-unit id="saveAsModel" datatype="html">
+        <source>Guardar como, para el modelo de datos</source>
+        <target>Salva come, per il modello dati</target>
+      </trans-unit>
+      <trans-unit id="updateModel" datatype="html">
+        <source>Actualizar modelo de datos desde la base de datos origen para buscar nuevas tablas y columnas</source>
+        <target>Aggiorna il modello dati dal database di origine per cercare nuove tabelle e colonne</target>
+      </trans-unit>
+      <trans-unit id="updateModelXLCSV" datatype="html">
+        <source>Actualizar el fichero origen para buscar nuevas tablas y columnas</source>
+        <target>Aggiorna il file di origine per cercare nuove tabelle e colonne</target>
+      </trans-unit>
+      <trans-unit id="deleteModel" datatype="html">
+        <source>Borrar modelo de datos</source>
+        <target>Elimina modello dati</target>
+      </trans-unit>
+      <trans-unit id="DeleteSuccess" datatype="html">
+        <source>Modelo eliminado correctamente.</source>
+        <target>Modello eliminato correttamente.</target>
+      </trans-unit>
+      <trans-unit id="UpdateModelSucess" datatype="html">
+        <source>Modelo actualizado correctamente</source>
+        <target>Modello aggiornato correttamente</target>
+      </trans-unit>
+      <trans-unit id="ModelSaved" datatype="html">
+        <source>Modelo guardado correctamente</source>
+        <target>Modello salvato correttamente</target>
+      </trans-unit>
+      <trans-unit id="dsMapEmpty" datatype="html">
+        <source>El modelo de datos no tiene tablas</source>
+        <target>Il modello dati non ha tabelle</target>
+      </trans-unit>
+      <trans-unit id="dsMapFit" datatype="html">
+        <source>Ajustar a la pantalla</source>
+        <target>Adatta allo schermo</target>
+      </trans-unit>
+      <trans-unit id="dsMapRelayout" datatype="html">
+        <source>Reorganizar tablas</source>
+        <target>Riorganizza tabelle</target>
+      </trans-unit>
+      <trans-unit id="dsMapDeleteRelationHint" datatype="html">
+        <source>Selecciona la relación y pulsa Supr para eliminarla</source>
+        <target>Seleziona la relazione e premi Canc per eliminarla</target>
+      </trans-unit>
+      <trans-unit id="dsMapDeleteRelation" datatype="html">
+        <source>Se eliminará la relación</source>
+        <target>La relazione verrà eliminata</target>
+      </trans-unit>
+      <trans-unit id="dsMapModelProps" datatype="html">
+        <source>Propiedades del modelo</source>
+        <target>Proprietà del modello</target>
+      </trans-unit>
+      <trans-unit id="dsMapExpand" datatype="html">
+        <source>Mostrar columnas</source>
+        <target>Mostra colonne</target>
+      </trans-unit>
+      <trans-unit id="dsMapCollapse" datatype="html">
+        <source>Ocultar columnas</source>
+        <target>Nascondi colonne</target>
+      </trans-unit>
+      <trans-unit id="DataModelDB" datatype="html">
+        <source> Configurar nuevo orígen de datos </source>
+        <target> Configura nuova origine dati </target>
+      </trans-unit>
+      <trans-unit id="newDataSourceDescription" datatype="html">
+        <source>Conéctese a su base de datos para comenzar a consultar y visualizar sus datos</source>
+        <target>Connettiti al tuo database per iniziare a interrogare e visualizzare i tuoi dati</target>
+      </trans-unit>
+      <trans-unit id="basicInformation" datatype="html">
+        <source> Información básica </source>
+        <target> Informazioni di base </target>
+      </trans-unit>
+      <trans-unit id="nameRequired" datatype="html">
+        <source> El nombre es obligatorio </source>
+        <target> Il nome è obbligatorio </target>
+      </trans-unit>
+      <trans-unit id="server" datatype="html">
+        <source> Servidor <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Server <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="serverRequired" datatype="html">
+        <source> Url del servidor es obligatorio </source>
+        <target> L'URL del server è obbligatorio </target>
+      </trans-unit>
+      <trans-unit id="accountRequired" datatype="html">
+        <source> El nombre de cuenta es obligatorio </source>
+        <target> Il nome dell'account è obbligatorio </target>
+      </trans-unit>
+      <trans-unit id="portRequired" datatype="html">
+        <source> El puerto es obligatorio </source>
+        <target> La porta è obbligatoria </target>
+      </trans-unit>
+      <trans-unit id="databaseRequired" datatype="html">
+        <source> Base de datos es obligatorio </source>
+        <target> Il database è obbligatorio </target>
+      </trans-unit>
+      <trans-unit id="usernameRequired" datatype="html">
+        <source> El usuario es obligatorio </source>
+        <target> L'utente è obbligatorio </target>
+      </trans-unit>
+      <trans-unit id="passwordRequired" datatype="html">
+        <source> La contraseña es obligatorio </source>
+        <target> La password è obbligatoria </target>
+      </trans-unit>
+      <trans-unit id="bigqueryKeyDragDrop" datatype="html">
+        <source>Sube un archivo de claves</source>
+        <target>Carica un file di chiavi</target>
+      </trans-unit>
+      <trans-unit id="separatorRequired" datatype="html">
+        <source> El separador es obligatorio </source>
+        <target> Il separatore è obbligatorio </target>
+      </trans-unit>
+      <trans-unit id="duckdbFolderLabel" datatype="html">
+        <source> Fuente de datos <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Origine dati <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="duckdbFolderPlaceholder" datatype="html">
+        <source>nombre_fuente_datos</source>
+        <target>nome_origine_dati</target>
+      </trans-unit>
+      <trans-unit id="duckdbFolderExistsError" datatype="html">
+        <source>Este nombre ya existe. Escribe un nombre diferente.</source>
+        <target>Questo nome esiste già. Scrivi un nome diverso.</target>
+      </trans-unit>
+      <trans-unit id="duckdbAddAnotherCsv" datatype="html">
+        <source>Añadir otro CSV</source>
+        <target>Aggiungi un altro CSV</target>
+      </trans-unit>
+      <trans-unit id="duckdbCsvListTitle" datatype="html">
+        <source>CSVs en la carpeta (<x id="INTERPOLATION" equiv-text="{{ duckdbCsvList.length }}"/>):</source>
+        <target>CSV nella cartella (<x id="INTERPOLATION" equiv-text="{{ duckdbCsvList.length }}"/>):</target>
+      </trans-unit>
+      <trans-unit id="duckdbCsvColumns" datatype="html">
+        <source>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> columnas)</source>
+        <target>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> colonne)</target>
+      </trans-unit>
+      <trans-unit id="optionalFilterDescription" datatype="html">
+        <source>Optional filters to limit the scope of your connection</source>
+        <target>Filtri facoltativi per limitare l'ambito della connessione</target>
+      </trans-unit>
+      <trans-unit id="connectionOptions" datatype="html">
+        <source>Opciones de conexión</source>
+        <target>Opzioni di connessione</target>
+      </trans-unit>
+      <trans-unit id="optimizedQueries" datatype="html">
+        <source> Optimizar consultas </source>
+        <target> Ottimizza query </target>
+      </trans-unit>
+      <trans-unit id="optimizedQueriesTooltipDescription" datatype="html">
+        <source> Optimice automáticamente las consultas para un mejor rendimiento </source>
+        <target> Ottimizza automaticamente le query per prestazioni migliori </target>
+      </trans-unit>
+      <trans-unit id="optimizedQueriesDescription" datatype="html">
+        <source> Mejore el rendimiento de las consultas con la optimización automática </source>
+        <target> Migliora le prestazioni delle query con l'ottimizzazione automatica </target>
+      </trans-unit>
+      <trans-unit id="allowCache" datatype="html">
+        <source> Permitir caché </source>
+        <target> Consenti cache </target>
+      </trans-unit>
+      <trans-unit id="allowCacheTooltipDescription" datatype="html">
+        <source> Almacenar en caché los resultados de las consultas para mejorar el rendimiento de los datos a los que se accede con frecuencia </source>
+        <target> Memorizza in cache i risultati delle query per migliorare le prestazioni dei dati a cui si accede di frequente </target>
+      </trans-unit>
+      <trans-unit id="allowCacheDescription" datatype="html">
+        <source> Almacenar en caché los resultados de las consultas para una recuperación de datos más rápida </source>
+        <target> Memorizza in cache i risultati delle query per un recupero dei dati più rapido </target>
+      </trans-unit>
+      <trans-unit id="sslConnection" datatype="html">
+        <source> Conexión SSL </source>
+        <target> Connessione SSL </target>
+      </trans-unit>
+      <trans-unit id="sslConnectionTooltipDescription" datatype="html">
+        <source> Utilice SSL para cifrar la conexión a su base de datos para una mayor seguridad </source>
+        <target> Usa SSL per cifrare la connessione al tuo database per una maggiore sicurezza </target>
+      </trans-unit>
+      <trans-unit id="sslConnectionDescription" datatype="html">
+        <source> Proteja su conexión con encriptación SSL </source>
+        <target> Proteggi la tua connessione con la crittografia SSL </target>
+      </trans-unit>
+      <trans-unit id="testConnection" datatype="html">
+        <source> Probar conexión </source>
+        <target> Prova connessione </target>
+      </trans-unit>
+      <trans-unit id="DataModelHeader" datatype="html">
+        <source>Configurar nueva fuente de datos</source>
+        <target>Configura nuova origine dati</target>
+      </trans-unit>
+      <trans-unit id="enableCache" datatype="html">
+        <source> Habilitar caché</source>
+        <target> Abilita cache</target>
+      </trans-unit>
+      <trans-unit id="filterTooltip" datatype="html">
+        <source>Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos</source>
+        <target>Puoi aggiungere parole separate da virgole, che verranno applicate come filtri di tipo LIKE durante il recupero delle tabelle del tuo database</target>
+      </trans-unit>
+      <trans-unit id="allowSSL" datatype="html">
+        <source>Conexión mediante SSL</source>
+        <target>Connessione tramite SSL</target>
+      </trans-unit>
+      <trans-unit id="connectedWithServer" datatype="html">
+        <source>Conectado con el servidor</source>
+        <target>Connesso al server</target>
+      </trans-unit>
+      <trans-unit id="dsConnectionRefused" datatype="html">
+        <source>No se ha podido conectar a la base de datos.</source>
+        <target>Non è stato possibile connettersi al database.</target>
+      </trans-unit>
+      <trans-unit id="confirmationExcel" datatype="html">
+        <source>Confirmación</source>
+        <target>Conferma</target>
+      </trans-unit>
+      <trans-unit id="confirmationExcelMessage" datatype="html">
+        <source>¿Estás seguro de que quieres sobreescribir este modelo de datos?</source>
+        <target>Sei sicuro di voler sovrascrivere questo modello dati?</target>
+      </trans-unit>
+      <trans-unit id="DatadourceTitle" datatype="html">
+        <source>Fuente de datos: </source>
+        <target>Origine dati: </target>
+      </trans-unit>
+      <trans-unit id="DatasourceText" datatype="html">
+        <source>Creada correctamente</source>
+        <target>Creata correttamente</target>
+      </trans-unit>
+      <trans-unit id="CollectionText" datatype="html">
+        <source>Colección creada correctamente</source>
+        <target>Collezione creata correttamente</target>
+      </trans-unit>
+      <trans-unit id="noNameProvided" datatype="html">
+        <source>Debe proporcionar un nombre para el datasource</source>
+        <target>Devi fornire un nome per l'origine dati</target>
+      </trans-unit>
+      <trans-unit id="noCsvData" datatype="html">
+        <source>Debe cargar un archivo CSV primero</source>
+        <target>Devi prima caricare un file CSV</target>
+      </trans-unit>
+      <trans-unit id="noCsvColumns" datatype="html">
+        <source>No se detectaron columnas en el archivo CSV. Verifique el separador.</source>
+        <target>Non sono state rilevate colonne nel file CSV. Verifica il separatore.</target>
+      </trans-unit>
+      <trans-unit id="ErrorExcel" datatype="html">
+        <source>Cargue un archivo .xls o .xlsx</source>
+        <target>Carica un file .xls o .xlsx</target>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile" datatype="html">
+        <source>El archivo CSV está vacío o no se pudo leer con este separador</source>
+        <target>Il file CSV è vuoto o non è stato possibile leggerlo con questo separatore</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv" datatype="html">
+        <source>Error al parsear el archivo CSV con el separador especificado</source>
+        <target>Errore nell'analisi del file CSV con il separatore specificato</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv2" datatype="html">
+        <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+        <target>Errore nell'analisi del file CSV. Verifica il separatore.</target>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile2" datatype="html">
+        <source>El archivo CSV está vacío o no se pudo leer</source>
+        <target>Il file CSV è vuoto o non è stato possibile leggerlo</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv3" datatype="html">
+        <source>Error al parsear el archivo CSV. Verifique el separador y formato del archivo.</source>
+        <target>Errore nell'analisi del file CSV. Verifica il separatore e il formato del file.</target>
+      </trans-unit>
+      <trans-unit id="noDuckDbFile" datatype="html">
+        <source>Debe cargar un archivo CSV primero</source>
+        <target>Devi prima caricare un file CSV</target>
+      </trans-unit>
+      <trans-unit id="noFolderName" datatype="html">
+        <source>Debe proporcionar el nombre de la carpeta</source>
+        <target>Devi fornire il nome della cartella</target>
+      </trans-unit>
+      <trans-unit id="duckdbCreated" datatype="html">
+        <source>Fuente de datos DuckDB creada correctamente</source>
+        <target>Origine dati DuckDB creata correttamente</target>
+      </trans-unit>
+      <trans-unit id="updateFileTitle" datatype="html">
+        <source>Actualizar fichero de datos</source>
+        <target>Aggiorna file di dati</target>
+      </trans-unit>
+      <trans-unit id="updateFileDescription" datatype="html">
+        <source> Sube un nuevo fichero para reemplazar los datos de esta fuente </source>
+        <target> Carica un nuovo file per sostituire i dati di questa origine </target>
+      </trans-unit>
+      <trans-unit id="goBack" datatype="html">
+        <source>Volver</source>
+        <target>Indietro</target>
+      </trans-unit>
+      <trans-unit id="lockedType" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ connectionType }}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ connectionType }}"/></target>
+      </trans-unit>
+      <trans-unit id="excelFile" datatype="html">
+        <source>Archivo Excel</source>
+        <target>File Excel</target>
+      </trans-unit>
+      <trans-unit id="noExcelFile" datatype="html">
+        <source>Debe cargar un archivo Excel primero</source>
+        <target>Devi prima caricare un file Excel</target>
+      </trans-unit>
+      <trans-unit id="searchDatasource" datatype="html">
+        <source>Buscar fuente de datos</source>
+        <target>Cerca origine dati</target>
+      </trans-unit>
+      <trans-unit id="downloadModelJson" datatype="html">
+        <source>Descargar modelo como JSON</source>
+        <target>Scarica modello come JSON</target>
+      </trans-unit>
+      <trans-unit id="foundDatasource" datatype="html">
+        <source>datasources encontrados</source>
+        <target>origini dati trovate</target>
+      </trans-unit>
+      <trans-unit id="modelExportedSucessfully" datatype="html">
+        <source>Modelo exportado correctamente</source>
+        <target>Modello esportato correttamente</target>
+      </trans-unit>
+      <trans-unit id="problemExportingModel" datatype="html">
+        <source>Ocurrió un problema al exportar el modelo</source>
+        <target>Si è verificato un problema durante l'esportazione del modello</target>
+      </trans-unit>
+      <trans-unit id="addGroup" datatype="html">
+        <source>Crear Grupo</source>
+        <target>Crea gruppo</target>
+      </trans-unit>
+      <trans-unit id="searchGroups" datatype="html">
+        <source>Buscar grupos...</source>
+        <target>Cerca gruppi...</target>
+      </trans-unit>
+      <trans-unit id="role" datatype="html">
+        <source>Rol</source>
+        <target>Ruolo</target>
+      </trans-unit>
+      <trans-unit id="foundGroups" datatype="html">
+        <source>grupos encontrados</source>
+        <target>gruppi trovati</target>
+      </trans-unit>
+      <trans-unit id="availableUsers" datatype="html">
+        <source>Usuarios disponibles</source>
+        <target>Utenti disponibili</target>
+      </trans-unit>
+      <trans-unit id="selectedUsers" datatype="html">
+        <source>Usuarios seleccionados</source>
+        <target>Utenti selezionati</target>
+      </trans-unit>
+      <trans-unit id="newGroup" datatype="html">
+        <source>Crear Nuevo Grupo</source>
+        <target>Crea nuovo gruppo</target>
+      </trans-unit>
+      <trans-unit id="editGroup" datatype="html">
+        <source>Editar Grupo</source>
+        <target>Modifica gruppo</target>
+      </trans-unit>
+      <trans-unit id="DeleteGroupText" datatype="html">
+        <source>Eliminarás todos los elementos relacionados con este grupo. </source>
+        <target>Eliminerai tutti gli elementi relativi a questo gruppo. </target>
+      </trans-unit>
+      <trans-unit id="GroupDeletedOk" datatype="html">
+        <source>El grupo a sido eliminado correctamente</source>
+        <target>Il gruppo è stato eliminato correttamente</target>
+      </trans-unit>
+      <trans-unit id="ErrorMessage" datatype="html">
+        <source>Ha ocurrido un error</source>
+        <target>Si è verificato un errore</target>
+      </trans-unit>
+      <trans-unit id="GroupCreated" datatype="html">
+        <source>Grupo creado</source>
+        <target>Gruppo creato</target>
+      </trans-unit>
+      <trans-unit id="GroupUpdated" datatype="html">
+        <source>Grupo actualizado</source>
+        <target>Gruppo aggiornato</target>
+      </trans-unit>
+      <trans-unit id="UpdatedGroupError" datatype="html">
+        <source>El grupo no se ha podido actualizar</source>
+        <target>Non è stato possibile aggiornare il gruppo</target>
+      </trans-unit>
+      <trans-unit id="sidebarMyDashboards" datatype="html">
+        <source>Mis informes</source>
+        <target>I miei report</target>
+      </trans-unit>
+      <trans-unit id="filterReports" datatype="html">
+        <source>FILTRAR INFORMES:</source>
+        <target>FILTRA REPORT:</target>
+      </trans-unit>
+      <trans-unit id="sortReports" datatype="html">
+        <source>ORDENAR INFORMES:</source>
+        <target>ORDINA REPORT:</target>
+      </trans-unit>
+      <trans-unit id="visibilityReports" datatype="html">
+        <source>VISIBILIDAD:</source>
+        <target>VISIBILITÀ:</target>
+      </trans-unit>
+      <trans-unit id="selectGroupDragTitle" datatype="html">
+        <source>Selecciona el grupo</source>
+        <target>Seleziona il gruppo</target>
+      </trans-unit>
+      <trans-unit id="searcherInput" datatype="html">
+        <source>Buscador</source>
+        <target>Ricerca</target>
+      </trans-unit>
+      <trans-unit id="advancedFilterTitle" datatype="html">
+        <source>Filtro avanzado</source>
+        <target>Filtro avanzato</target>
+      </trans-unit>
+      <trans-unit id="clearFiltersBtn" datatype="html">
+        <source>Limpiar</source>
+        <target>Pulisci</target>
+      </trans-unit>
+      <trans-unit id="authorFilterLabel" datatype="html">
+        <source>Propietario</source>
+        <target>Proprietario</target>
+      </trans-unit>
+      <trans-unit id="authorFilterPlaceholder" datatype="html">
+        <source>Autor...</source>
+        <target>Autore...</target>
+      </trans-unit>
+      <trans-unit id="datasourceFilterLabel" datatype="html">
+        <source>Datasource</source>
+        <target>Origine dati</target>
+      </trans-unit>
+      <trans-unit id="datasourceFilterPlaceholder" datatype="html">
+        <source>Nombre del datasource...</source>
+        <target>Nome dell'origine dati...</target>
+      </trans-unit>
+      <trans-unit id="createdFilterLabel" datatype="html">
+        <source>Creado en</source>
+        <target>Creato il</target>
+      </trans-unit>
+      <trans-unit id="modifiedFilterLabel" datatype="html">
+        <source>Modificado en</source>
+        <target>Modificato il</target>
+      </trans-unit>
+      <trans-unit id="tagsFilterLabel" datatype="html">
+        <source>Tags</source>
+        <target>Tag</target>
+      </trans-unit>
+      <trans-unit id="tagsFilterPlaceholder" datatype="html">
+        <source>Selecciona tags...</source>
+        <target>Seleziona tag...</target>
+      </trans-unit>
+      <trans-unit id="groupFilterLabel" datatype="html">
+        <source>Grupo</source>
+        <target>Gruppo</target>
+      </trans-unit>
+      <trans-unit id="groupFilterPlaceholder" datatype="html">
+        <source>Selecciona grupos...</source>
+        <target>Seleziona gruppi...</target>
+      </trans-unit>
+      <trans-unit id="dragHandleTooltip" datatype="html">
+        <source>Arrastrar</source>
+        <target>Trascina</target>
+      </trans-unit>
+      <trans-unit id="authorTooltipLabel" datatype="html">
+        <source>Autor:</source>
+        <target>Autore:</target>
+      </trans-unit>
+      <trans-unit id="createdAtTooltipLabel" datatype="html">
+        <source>Creado:</source>
+        <target>Creato:</target>
+      </trans-unit>
+      <trans-unit id="modifiedAtTooltipLabel" datatype="html">
+        <source>Modificado:</source>
+        <target>Modificato:</target>
+      </trans-unit>
+      <trans-unit id="tagsTooltipLabel" datatype="html">
+        <source>Tags:</source>
+        <target>Tag:</target>
+      </trans-unit>
+      <trans-unit id="copyPublicLinkTooltip" datatype="html">
+        <source>Copiar enlace público</source>
+        <target>Copia link pubblico</target>
+      </trans-unit>
+      <trans-unit id="renameReportTooltip" datatype="html">
+        <source>Editar nombre</source>
+        <target>Modifica nome</target>
+      </trans-unit>
+      <trans-unit id="confirmRenameTooltip" datatype="html">
+        <source>Confirmar nombre</source>
+        <target>Conferma nome</target>
+      </trans-unit>
+      <trans-unit id="duplicateReportTooltip" datatype="html">
+        <source>Duplicar informe</source>
+        <target>Duplica report</target>
+      </trans-unit>
+      <trans-unit id="deleteReportTooltip" datatype="html">
+        <source>Eliminar informe</source>
+        <target>Elimina report</target>
+      </trans-unit>
+      <trans-unit id="withoutContentYet" datatype="html">
+        <source>Sin contenido</source>
+        <target>Senza contenuto</target>
+      </trans-unit>
+      <trans-unit id="folderReportCount" datatype="html">
+        <source>informes</source>
+        <target>report</target>
+      </trans-unit>
+      <trans-unit id="AllTagsFlat" datatype="html">
+        <source>Todo</source>
+        <target>Tutto</target>
+      </trans-unit>
+      <trans-unit id="AllTagsGrouped" datatype="html">
+        <source>Todo agrupado</source>
+        <target>Tutto raggruppato</target>
+      </trans-unit>
+      <trans-unit id="createdAt" datatype="html">
+        <source>Fecha (asc.)</source>
+        <target>Data (cresc.)</target>
+      </trans-unit>
+      <trans-unit id="createdAtDesc" datatype="html">
+        <source>Fecha (desc.)</source>
+        <target>Data (decresc.)</target>
+      </trans-unit>
+      <trans-unit id="tituloGrupoPublicos" datatype="html">
+        <source>PUBLICOS</source>
+        <target>PUBBLICI</target>
+      </trans-unit>
+      <trans-unit id="tituloGrupoComunes" datatype="html">
+        <source>COMUNES</source>
+        <target>COMUNI</target>
+      </trans-unit>
+      <trans-unit id="tituloGrupoMisGrupos" datatype="html">
+        <source>MIS GRUPOS</source>
+        <target>I MIEI GRUPPI</target>
+      </trans-unit>
+      <trans-unit id="tituloGrupoPersonales" datatype="html">
+        <source>PRIVADOS</source>
+        <target>PRIVATI</target>
       </trans-unit>
       <trans-unit id="NoTag" datatype="html">
         <source>Sin Etiqueta</source>
@@ -6219,38 +8136,6 @@ Cordiali saluti.</target>
       <trans-unit id="decSeparatorDot" datatype="html">
         <source>. (punto)</source>
         <target>. (punto)</target>
-      </trans-unit>
-      <trans-unit id="dsViewTree" datatype="html">
-        <source>Árbol</source>
-        <target>Albero</target>
-      </trans-unit>
-      <trans-unit id="dsViewMap" datatype="html">
-        <source>Mapa</source>
-        <target>Mappa</target>
-      </trans-unit>
-      <trans-unit id="dsMapEmpty" datatype="html">
-        <source>El modelo de datos no tiene tablas</source>
-        <target>Il modello dati non ha tabelle</target>
-      </trans-unit>
-      <trans-unit id="dsMapFit" datatype="html">
-        <source>Ajustar a la pantalla</source>
-        <target>Adatta allo schermo</target>
-      </trans-unit>
-      <trans-unit id="dsMapRelayout" datatype="html">
-        <source>Reorganizar tablas</source>
-        <target>Riorganizza tabelle</target>
-      </trans-unit>
-      <trans-unit id="dsMapModelProps" datatype="html">
-        <source>Propiedades del modelo</source>
-        <target>Proprietà del modello</target>
-      </trans-unit>
-      <trans-unit id="dsMapExpand" datatype="html">
-        <source>Mostrar columnas</source>
-        <target>Mostra colonne</target>
-      </trans-unit>
-      <trans-unit id="dsMapCollapse" datatype="html">
-        <source>Ocultar columnas</source>
-        <target>Nascondi colonne</target>
       </trans-unit>
       <trans-unit id="downloadModelJson" datatype="html">
         <source>Descargar modelo como JSON</source>

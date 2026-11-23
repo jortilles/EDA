@@ -4218,6 +4218,15 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 
 
 
+<trans-unit id="comparativeRequirementsTooltip" datatype="html">
+  <source>No cumple los requisitos para la comparativa. Requiere exactamente dos campos: una fecha agrupada por mes, semana o día y un único campo numérico agregado (suma, media, recuento...).</source>
+  <target>Les conditions requises pour la comparaison ne sont pas remplies. Elle nécessite exactement deux champs : une date regroupée par mois, semaine ou jour et un seul champ numérique agrégé (somme, moyenne, nombre...).</target>
+</trans-unit>
+
+<trans-unit id="showLegend">
+  <source>Mostrar Leyenda</source>
+  <target>Afficher la légende</target>
+</trans-unit>
 
 
 
@@ -4652,10 +4661,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Muestra la predicción de la serie</source>
         <target>Afficher la prédiction de la série</target>
       </trans-unit>
-<trans-unit id="showLegend">
-  <source>Mostrar Leyenda</source>
-  <target>Afficher la légende</target>
-</trans-unit>
 <trans-unit id="chartLegendOptionDescription">
   <source>Muestra la leyenda del gráfico</source>
   <target>Afficher la légende du graphique</target>
@@ -8859,6 +8864,19 @@ Cordialement.</target>
         <source>Opciones del panel</source>
         <target>Options du panneau</target>
       </trans-unit>
+<trans-unit id="foldersMergedText">
+  <source>se ha fusionado con</source>
+  <target>a été fusionné avec</target>
+</trans-unit>
+<trans-unit id="dsMapDeleteRelationHint" datatype="html">
+  <source>Selecciona la relación y pulsa Supr para eliminarla</source>
+  <target>Sélectionnez la relation et appuyez sur Suppr pour la supprimer</target>
+</trans-unit>
+<trans-unit id="dsMapDeleteRelation" datatype="html">
+  <source>Se eliminará la relación</source>
+  <target>La relation sera supprimée</target>
+</trans-unit>
+
       <trans-unit id="LogsViewer" datatype="html">
         <source>Visor de logs</source>
         <target>Visualiseur de journaux</target>
