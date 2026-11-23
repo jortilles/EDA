@@ -1072,7 +1072,9 @@ export abstract class QueryBuilderService {
                 whatif_column: false,
                 whatif: {},
                 joins: [],
-                autorelation: false
+                autorelation: false,
+                computed_column: havingFilter.computed_column ?? 'no',
+                SQLexpression: havingFilter.SQLexpression ?? '',
             }
         }
     }
