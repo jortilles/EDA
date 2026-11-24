@@ -6989,12 +6989,12 @@ OR<ph id="5"/>
         <target>Detect scopes</target>
       </trans-unit>
       <trans-unit id="aocSelectAmbito">
-        <source>Ámbito a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
-        <target>Scope to import <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+        <source>Ámbitos a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Scopes to import <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
             <trans-unit id="aocSelectAmbitoPlaceholder">
-        <source>Selecciona un ámbito</source>
-        <target>Select a scope</target>
+        <source>Selecciona uno o varios ámbitos</source>
+        <target>Select one or more scopes</target>
       </trans-unit>
 <trans-unit id="aocNoAmbitosFound">
         <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
@@ -7007,6 +7007,34 @@ OR<ph id="5"/>
       <trans-unit id="aocCreated">
         <source>Fuente de datos AOC creada correctamente</source>
         <target>AOC data source created successfully</target>
+      </trans-unit>
+      <trans-unit id="aocSelectedAmbitos" datatype="html">
+        <source>{0} ámbitos seleccionados</source>
+        <target>{0} scopes selected</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAllAmbitos" datatype="html">
+        <source>Todos</source>
+        <target>All</target>
+      </trans-unit>
+      <trans-unit id="aocClearAllAmbitos" datatype="html">
+        <source>Quitar todos</source>
+        <target>Clear all</target>
+      </trans-unit>
+      <trans-unit id="aocMultipleAmbitosHint" datatype="html">
+        <source>Se creará una fuente de datos por cada ámbito seleccionado.</source>
+        <target>One data source will be created for each selected scope.</target>
+      </trans-unit>
+      <trans-unit id="aocCreatedMultiple" datatype="html">
+        <source>Se han creado <x id="COUNT" equiv-text="count"/> fuentes de datos AOC</source>
+        <target><x id="COUNT" equiv-text="count"/> AOC data sources created</target>
+      </trans-unit>
+      <trans-unit id="aocCreateFailedAmbitos" datatype="html">
+        <source>No se han podido importar los ámbitos: <x id="SCOPES" equiv-text="scopes"/></source>
+        <target>The following scopes could not be imported: <x id="SCOPES" equiv-text="scopes"/></target>
+      </trans-unit>
+      <trans-unit id="aocImportProgress" datatype="html">
+        <source>Importando <x id="CURRENT" equiv-text="current"/> de <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</source>
+        <target>Importing <x id="CURRENT" equiv-text="current"/> of <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</target>
       </trans-unit>
 <trans-unit id="ga4PropertyIdLabel">
   <source>ID de Propiedad GA4</source>

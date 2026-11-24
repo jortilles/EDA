@@ -2,7 +2,7 @@ import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { DropdownModule } from 'primeng/dropdown';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { DataSourceService, SpinnerService, AlertService } from '@eda/services/service.index';
 import { PluginFormService } from '../plugin-form.service';
@@ -17,7 +17,7 @@ interface AocAmbito {
     selector: 'eda-aoc-form',
     templateUrl: './aoc-form.component.html',
     styleUrls: ['./aoc-form.component.css'],
-    imports: [CommonModule, ReactiveFormsModule, FormsModule, DropdownModule],
+    imports: [CommonModule, ReactiveFormsModule, FormsModule, MultiSelectModule],
 })
 export class AocFormComponent implements OnInit, OnDestroy {
     @Input() connectionForm!: FormGroup;
@@ -32,7 +32,11 @@ export class AocFormComponent implements OnInit, OnDestroy {
     public showPassword = false;
     public detecting = false;
     public ambitos: AocAmbito[] = [];
-    public selectedAmbito: AocAmbito | null = null;
+    public selectedAmbitos: AocAmbito[] = [];
+    /** Label shown in the multiselect when more than one scope is selected ({0} = count) */
+    public selectedItemsLabel = $localize`:@@aocSelectedAmbitos:{0} ámbitos seleccionados`;
+    /** Up to this many scopes are shown as chips; above it the "{0} selected" label is shown */
+    public readonly maxChips = 4;
     private saveSub!: Subscription;
 
     ngOnInit(): void {
@@ -67,14 +71,15 @@ export class AocFormComponent implements OnInit, OnDestroy {
 
         this.detecting = true;
         this.ambitos = [];
-        this.selectedAmbito = null;
-        this.pluginFormService.setReady(false);
+        this.selectAmbitos([]);
         try {
             const res = await lastValueFrom(this.dataSourceService.callPluginPost(this.apiBasePath, '/ambitos', {
                 user: value.user,
                 password: value.password,
             }));
-            this.ambitos = res.ambitos || [];
+            // Alphabetical order (Catalan collation, accent-aware) so scopes are easier to find
+            this.ambitos = [...(res.ambitos || [])]
+                .sort((a: AocAmbito, b: AocAmbito) => a.label.localeCompare(b.label, 'ca', { sensitivity: 'base' }));
             if (this.ambitos.length === 0) {
                 this.alertService.addError($localize`:@@aocNoAmbitosFound:No se ha detectado ningún ámbito reconocido en este datalake.`);
             }
@@ -85,47 +90,93 @@ export class AocFormComponent implements OnInit, OnDestroy {
         }
     }
 
-    selectAmbito(ambito: AocAmbito): void {
-        // El ámbito solo determina el esquema a consultar; el nombre del datasource es siempre
-        // el que escriba el usuario en el campo "Nombre" de arriba, nunca se sobreescribe aquí.
-        this.selectedAmbito = ambito;
-        this.pluginFormService.setReady(!!ambito);
+    get allSelected(): boolean {
+        return this.ambitos.length > 0 && this.selectedAmbitos.length === this.ambitos.length;
+    }
+
+    selectAmbitos(ambitos: AocAmbito[]): void {
+        // The scope only determines the schema to query; the datasource name comes from the
+        // "Name" field above (see buildName), it is never overwritten here.
+        this.selectedAmbitos = ambitos || [];
+        this.pluginFormService.setReady(this.selectedAmbitos.length > 0);
+    }
+
+    /** "Tots": selects every detected scope, or clears the selection if all were already selected */
+    toggleAll(): void {
+        this.selectAmbitos(this.allSelected ? [] : [...this.ambitos]);
+    }
+
+    /**
+     * Datasource name for a scope. With a single scope the typed name is used as is; with several,
+     * each datasource gets "<name> - <scope>" so they can be told apart. Without a typed name the
+     * scope label is used.
+     */
+    private buildName(typedName: string, ambito: AocAmbito, multiple: boolean): string {
+        const name = String(typedName ?? '').trim();
+        if (!name) return ambito.label;
+        return multiple ? `${name} - ${ambito.label}` : name;
     }
 
     async save(): Promise<void> {
         const value = this.connectionForm.value;
+        const ambitos = this.selectedAmbitos;
 
-        if (!this.selectedAmbito) {
+        if (ambitos.length === 0) {
             this.alertService.addError($localize`:@@aocNoAmbitoSelected:Debe detectar y seleccionar un ámbito antes de guardar.`);
             return;
         }
-        // Si no se ha escrito un nombre, se usa el del ámbito como nombre del datasource
-        const name = value.name || this.selectedAmbito.label;
-        if (!name) {
-            this.alertService.addError($localize`:@@noNameProvided:Debe proporcionar un nombre para el datasource`);
-            return;
-        }
+
+        const multiple = ambitos.length > 1;
+        const created: string[] = [];
+        const failed: string[] = [];
 
         this.spinnerService.on();
-        try {
+        // Sequential on purpose: each import reads the whole schema metadata from the datalake
+        for (const [index, ambito] of ambitos.entries()) {
+            if (multiple) {
+                const current = index + 1;
+                const total = ambitos.length;
+                this.spinnerService.setMessage($localize`:@@aocImportProgress:Importando ${current}:CURRENT: de ${total}:TOTAL: (${ambito.label}:SCOPE:)`);
+            }
             const payload = {
-                name,
+                name: this.buildName(value.name, ambito, multiple),
                 description: value.description || '',
                 user: value.user,
                 password: value.password,
-                schema: this.selectedAmbito.technicalName,
+                schema: ambito.technicalName,
                 optimize: value.optimize ? 1 : 0,
                 allowCache: value.allowCache ? 1 : 0,
                 filter: value.filter || '',
             };
+            try {
+                const res = await lastValueFrom(this.dataSourceService.callPluginPost(this.apiBasePath, '/add-data-source', payload));
+                created.push(res.data_source_id);
+            } catch (err) {
+                failed.push(ambito.label);
+                // A single import keeps the original behaviour: show the API error as is
+                if (!multiple) this.alertService.addError(err);
+            }
+        }
+        this.spinnerService.off();
 
-            const res = await lastValueFrom(this.dataSourceService.callPluginPost(this.apiBasePath, '/add-data-source', payload));
-            this.spinnerService.off();
-            this.alertService.addSuccess($localize`:@@aocCreated:Fuente de datos AOC creada correctamente`);
-            this.router.navigate(['/data-source/', res.data_source_id]);
-        } catch (err) {
-            this.spinnerService.off();
-            this.alertService.addError(err);
+        if (!multiple) {
+            if (created.length) {
+                this.alertService.addSuccess($localize`:@@aocCreated:Fuente de datos AOC creada correctamente`);
+                this.router.navigate(['/data-source/', created[0]]);
+            }
+            return;
+        }
+
+        if (created.length) {
+            const count = created.length;
+            this.alertService.addSuccess($localize`:@@aocCreatedMultiple:Se han creado ${count}:COUNT: fuentes de datos AOC`);
+        }
+        if (failed.length) {
+            const scopes = failed.join(', ');
+            this.alertService.addError($localize`:@@aocCreateFailedAmbitos:No se han podido importar los ámbitos: ${scopes}:SCOPES:`);
+        }
+        if (created.length) {
+            this.router.navigate(['/admin/data-source']);
         }
     }
 }

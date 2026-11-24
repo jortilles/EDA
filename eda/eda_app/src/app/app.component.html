@@ -17,6 +17,9 @@
 <div [ngClass]="{'lock-on': displaySpinner, 'lock-off': !displaySpinner}"></div>
 @if(displaySpinner){
     <p-progressSpinner strokeWidth="5" class="spinner-load"></p-progressSpinner>
+    @if(spinnerService.message){
+        <div class="spinner-message">{{ spinnerService.message }}</div>
+    }
 }
 
 <router-outlet></router-outlet>

@@ -8777,13 +8777,13 @@ Cordialement.</target>
         <target>Détecter les périmètres</target>
       </trans-unit>
       <trans-unit id="aocSelectAmbito">
-        <source>Ámbito a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
-        <target>Périmètre à importer <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+        <source>Ámbitos a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Périmètres à importer <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
 
             <trans-unit id="aocSelectAmbitoPlaceholder">
-        <source>Selecciona un ámbito</source>
-        <target>Sélectionnez un périmètre</target>
+        <source>Selecciona uno o varios ámbitos</source>
+        <target>Sélectionnez un ou plusieurs périmètres</target>
       </trans-unit>
 <trans-unit id="aocNoAmbitosFound">
         <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
@@ -8796,6 +8796,34 @@ Cordialement.</target>
       <trans-unit id="aocCreated">
         <source>Fuente de datos AOC creada correctamente</source>
         <target>Source de données AOC créée avec succès</target>
+      </trans-unit>
+      <trans-unit id="aocSelectedAmbitos" datatype="html">
+        <source>{0} ámbitos seleccionados</source>
+        <target>{0} périmètres sélectionnés</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAllAmbitos" datatype="html">
+        <source>Todos</source>
+        <target>Tous</target>
+      </trans-unit>
+      <trans-unit id="aocClearAllAmbitos" datatype="html">
+        <source>Quitar todos</source>
+        <target>Tout retirer</target>
+      </trans-unit>
+      <trans-unit id="aocMultipleAmbitosHint" datatype="html">
+        <source>Se creará una fuente de datos por cada ámbito seleccionado.</source>
+        <target>Une source de données sera créée pour chaque périmètre sélectionné.</target>
+      </trans-unit>
+      <trans-unit id="aocCreatedMultiple" datatype="html">
+        <source>Se han creado <x id="COUNT" equiv-text="count"/> fuentes de datos AOC</source>
+        <target><x id="COUNT" equiv-text="count"/> sources de données AOC créées</target>
+      </trans-unit>
+      <trans-unit id="aocCreateFailedAmbitos" datatype="html">
+        <source>No se han podido importar los ámbitos: <x id="SCOPES" equiv-text="scopes"/></source>
+        <target>Les périmètres suivants n'ont pas pu être importés : <x id="SCOPES" equiv-text="scopes"/></target>
+      </trans-unit>
+      <trans-unit id="aocImportProgress" datatype="html">
+        <source>Importando <x id="CURRENT" equiv-text="current"/> de <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</source>
+        <target>Importation <x id="CURRENT" equiv-text="current"/> sur <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</target>
       </trans-unit>
 </body>
   </file>

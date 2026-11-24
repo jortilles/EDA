@@ -6077,13 +6077,13 @@ Un saludo.</source>
         <target>Bereiche erkennen</target>
       </trans-unit>
       <trans-unit id="aocSelectAmbito" datatype="html">
-        <source>Ámbito a importar <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-        <target>Zu importierender Bereich <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+        <source>Ámbitos a importar <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Zu importierende Bereiche <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
 
             <trans-unit id="aocSelectAmbitoPlaceholder" datatype="html">
-        <source>Selecciona un ámbito</source>
-        <target>Bereich auswählen</target>
+        <source>Selecciona uno o varios ámbitos</source>
+        <target>Einen oder mehrere Bereiche auswählen</target>
       </trans-unit>
 <trans-unit id="aocNoAmbitosFound" datatype="html">
         <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
@@ -6096,6 +6096,34 @@ Un saludo.</source>
       <trans-unit id="aocCreated" datatype="html">
         <source>Fuente de datos AOC creada correctamente</source>
         <target>AOC-Datenquelle erfolgreich erstellt</target>
+      </trans-unit>
+      <trans-unit id="aocSelectedAmbitos" datatype="html">
+        <source>{0} ámbitos seleccionados</source>
+        <target>{0} Bereiche ausgewählt</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAllAmbitos" datatype="html">
+        <source>Todos</source>
+        <target>Alle</target>
+      </trans-unit>
+      <trans-unit id="aocClearAllAmbitos" datatype="html">
+        <source>Quitar todos</source>
+        <target>Alle entfernen</target>
+      </trans-unit>
+      <trans-unit id="aocMultipleAmbitosHint" datatype="html">
+        <source>Se creará una fuente de datos por cada ámbito seleccionado.</source>
+        <target>Für jeden ausgewählten Bereich wird eine Datenquelle erstellt.</target>
+      </trans-unit>
+      <trans-unit id="aocCreatedMultiple" datatype="html">
+        <source>Se han creado <x id="COUNT" equiv-text="count"/> fuentes de datos AOC</source>
+        <target><x id="COUNT" equiv-text="count"/> AOC-Datenquellen erstellt</target>
+      </trans-unit>
+      <trans-unit id="aocCreateFailedAmbitos" datatype="html">
+        <source>No se han podido importar los ámbitos: <x id="SCOPES" equiv-text="scopes"/></source>
+        <target>Folgende Bereiche konnten nicht importiert werden: <x id="SCOPES" equiv-text="scopes"/></target>
+      </trans-unit>
+      <trans-unit id="aocImportProgress" datatype="html">
+        <source>Importando <x id="CURRENT" equiv-text="current"/> de <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</source>
+        <target>Importiere <x id="CURRENT" equiv-text="current"/> von <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</target>
       </trans-unit>
       
   </body>
