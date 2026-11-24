@@ -1,4 +1,5 @@
 import { createClient } from '@clickhouse/client';
+import https from 'node:https'; //TEST CH
 import { ClickHouseBuilderService } from '../../query-builder/qb-systems/clickhouse-builder.service';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
@@ -25,6 +26,7 @@ export class ClickHouseConnection extends AbstractConnection {
                 username: this.config.user,
                 password: this.config.password,
                 ...(database ? { database } : {}),
+                ...(protocol === 'https' ? { http_agent: new https.Agent({ rejectUnauthorized: false }) } : {}), //TEST CH
             });
             return client;
         } catch (err) {
