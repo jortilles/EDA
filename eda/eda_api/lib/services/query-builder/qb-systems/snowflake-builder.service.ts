@@ -704,7 +704,8 @@ public filterToString(filterObject: any ) {
   public getFilterColname(column: any){
 
     let colname:String ;
-    if( column.computed_column == 'no' ){
+    // Columns without the flag are physical columns
+    if( column.computed_column == 'no' || !column.hasOwnProperty('computed_column') ){
       colname =  `"${column.table_id}"."${column.column_name}"` ;
     }else{
       if(column.column_type == 'numeric'){

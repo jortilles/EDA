@@ -35,7 +35,12 @@ export class AOCConnection extends SQLserverConnection {
             `Authentication=ActiveDirectoryServicePrincipal;` +
             `UID=${odbcQuote(this.config.user)};` +
             `PWD=${odbcQuote(this.config.password)};` +
-            `Encrypt=yes;TrustServerCertificate=no;`;
+            `Encrypt=yes;TrustServerCertificate=no;` +
+            // The datalake stores varchar as UTF-8 (Latin1_General_100_BIN2_UTF8). On Windows the driver
+            // translates it to the ANSI code page, which the 'odbc' package then decodes as UTF-8, so
+            // accents become U+FFFD ("VALLÈS" -> "VALL�S"). Disabling the translation returns the raw
+            // UTF-8 bytes. On Linux/macOS the driver already converts using the (UTF-8) system locale.
+            (process.platform === 'win32' ? 'AutoTranslate=no;' : '');
 
         return getOdbc().connect(connectionString);
     }
