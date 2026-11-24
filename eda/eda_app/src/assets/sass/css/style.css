@@ -412,6 +412,21 @@ body .ui-tree {
     z-index: 99999;
 }
 
+/* Progress text shown under the global spinner */
+.spinner-message {
+    position: fixed;
+    top: calc(52.5vh + 1rem);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 99999;
+    padding: 0.4rem 1rem;
+    border-radius: 0.375rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
 /* DataSource Detal*/
 .fa-long-arrow-right{
     margin-left: 0px;

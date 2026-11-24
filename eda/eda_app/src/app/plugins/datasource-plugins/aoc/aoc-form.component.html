@@ -59,20 +59,41 @@
     <!-- AOC: ambitos detected -->
     @if (ambitos.length > 0) {
     <div class="space-y-2">
-      <label class="block font-medium" i18n="@@aocSelectAmbito">
-        Ámbito a importar <span class="text-red-500">*</span>
-      </label>
-      <p-dropdown
+      <div class="flex items-center justify-between gap-4">
+        <label class="block font-medium" i18n="@@aocSelectAmbito">
+          Ámbitos a importar <span class="text-red-500">*</span>
+        </label>
+        <!-- "Tots": select / clear every detected scope -->
+        <button type="button" class="text-sm font-medium text-blue-600 hover:underline" (click)="toggleAll()">
+          @if (allSelected) {
+            <span i18n="@@aocClearAllAmbitos">Quitar todos</span>
+          } @else {
+            <span i18n="@@aocSelectAllAmbitos">Todos</span>
+          }
+        </button>
+      </div>
+      <p-multiSelect
         [options]="ambitos"
         optionLabel="label"
-        [ngModel]="selectedAmbito"
+        [ngModel]="selectedAmbitos"
         [ngModelOptions]="{standalone: true}"
-        (onChange)="selectAmbito($event.value)"
-        placeholder="Selecciona un ámbito"
+        (onChange)="selectAmbitos($event.value)"
+        [filter]="true"
+        filterBy="label"
+        [showToggleAll]="true"
+        [display]="selectedAmbitos.length > maxChips ? 'comma' : 'chip'"
+        [maxSelectedLabels]="maxChips"
+        [selectedItemsLabel]="selectedItemsLabel"
+        placeholder="Selecciona uno o varios ámbitos"
         i18n-placeholder="@@aocSelectAmbitoPlaceholder"
         styleClass="w-full"
         appendTo="body">
-      </p-dropdown>
+      </p-multiSelect>
+      @if (selectedAmbitos.length > 1) {
+        <p class="text-sm text-gray-500" i18n="@@aocMultipleAmbitosHint">
+          Se creará una fuente de datos por cada ámbito seleccionado.
+        </p>
+      }
     </div>
     }
 

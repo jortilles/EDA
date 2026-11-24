@@ -6925,12 +6925,12 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Wykryj zakresy</target>
       </trans-unit>
       <trans-unit id="aocSelectAmbito">
-        <source>Ámbito a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
-        <target>Zakres do zaimportowania <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+        <source>Ámbitos a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Zakresy do zaimportowania <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
       </trans-unit>
             <trans-unit id="aocSelectAmbitoPlaceholder">
-        <source>Selecciona un ámbito</source>
-        <target>Wybierz zakres</target>
+        <source>Selecciona uno o varios ámbitos</source>
+        <target>Wybierz jeden lub więcej zakresów</target>
       </trans-unit>
 <trans-unit id="aocNoAmbitosFound">
         <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
@@ -6943,6 +6943,34 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="aocCreated">
         <source>Fuente de datos AOC creada correctamente</source>
         <target>Źródło danych AOC zostało utworzone poprawnie</target>
+      </trans-unit>
+      <trans-unit id="aocSelectedAmbitos" datatype="html">
+        <source>{0} ámbitos seleccionados</source>
+        <target>Wybrane zakresy: {0}</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAllAmbitos" datatype="html">
+        <source>Todos</source>
+        <target>Wszystkie</target>
+      </trans-unit>
+      <trans-unit id="aocClearAllAmbitos" datatype="html">
+        <source>Quitar todos</source>
+        <target>Usuń wszystkie</target>
+      </trans-unit>
+      <trans-unit id="aocMultipleAmbitosHint" datatype="html">
+        <source>Se creará una fuente de datos por cada ámbito seleccionado.</source>
+        <target>Dla każdego wybranego zakresu zostanie utworzone osobne źródło danych.</target>
+      </trans-unit>
+      <trans-unit id="aocCreatedMultiple" datatype="html">
+        <source>Se han creado <x id="COUNT" equiv-text="count"/> fuentes de datos AOC</source>
+        <target>Utworzono źródła danych AOC: <x id="COUNT" equiv-text="count"/></target>
+      </trans-unit>
+      <trans-unit id="aocCreateFailedAmbitos" datatype="html">
+        <source>No se han podido importar los ámbitos: <x id="SCOPES" equiv-text="scopes"/></source>
+        <target>Nie udało się zaimportować zakresów: <x id="SCOPES" equiv-text="scopes"/></target>
+      </trans-unit>
+      <trans-unit id="aocImportProgress" datatype="html">
+        <source>Importando <x id="CURRENT" equiv-text="current"/> de <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</source>
+        <target>Importowanie <x id="CURRENT" equiv-text="current"/> z <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</target>
       </trans-unit>
 <trans-unit id="ga4PropertyIdLabel">
         <source>ID de Propiedad GA4</source>

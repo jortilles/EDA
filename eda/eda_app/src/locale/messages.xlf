@@ -11956,14 +11956,14 @@ Un saludo.</source>
         </context-group>
       </trans-unit>
       <trans-unit id="aocSelectAmbito" datatype="html">
-        <source> Ámbito a importar <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <source> Ámbitos a importar <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.html</context>
           <context context-type="linenumber">62,64</context>
         </context-group>
       </trans-unit>
       <trans-unit id="aocSelectAmbitoPlaceholder" datatype="html">
-        <source>Selecciona un ámbito</source>
+        <source>Selecciona uno o varios ámbitos</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.html</context>
           <context context-type="linenumber">70,71</context>
@@ -11989,6 +11989,27 @@ Un saludo.</source>
           <context context-type="sourcefile">src/app/plugins/datasource-plugins/aoc/aoc-form.component.ts</context>
           <context context-type="linenumber">113</context>
         </context-group>
+      </trans-unit>
+      <trans-unit id="aocSelectedAmbitos" datatype="html">
+        <source>{0} ámbitos seleccionados</source>
+      </trans-unit>
+      <trans-unit id="aocSelectAllAmbitos" datatype="html">
+        <source>Todos</source>
+      </trans-unit>
+      <trans-unit id="aocClearAllAmbitos" datatype="html">
+        <source>Quitar todos</source>
+      </trans-unit>
+      <trans-unit id="aocMultipleAmbitosHint" datatype="html">
+        <source>Se creará una fuente de datos por cada ámbito seleccionado.</source>
+      </trans-unit>
+      <trans-unit id="aocCreatedMultiple" datatype="html">
+        <source>Se han creado <x id="COUNT" equiv-text="count"/> fuentes de datos AOC</source>
+      </trans-unit>
+      <trans-unit id="aocCreateFailedAmbitos" datatype="html">
+        <source>No se han podido importar los ámbitos: <x id="SCOPES" equiv-text="scopes"/></source>
+      </trans-unit>
+      <trans-unit id="aocImportProgress" datatype="html">
+        <source>Importando <x id="CURRENT" equiv-text="current"/> de <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</source>
       </trans-unit>
       <trans-unit id="ga4PropertyIdLabel" datatype="html">
         <source> ID de Propiedad GA4 <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
