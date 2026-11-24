@@ -9185,6 +9185,74 @@ Salutacions.</target>
     <target>També disponibles dins d'un bloc ""CODE, per a la data/hora de l'enviament:</target>
   </trans-unit>
 
+
+	<trans-unit id="aocClientIdLabel">
+        <source>Client ID del Service Principal <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client ID del Service Principal <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocClientSecretLabel">
+        <source>Client secret <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client secret <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+  <trans-unit id="aocDetecting">
+        <source>Detectando ámbitos...</source>
+    <target>Detectant àmbits...</target>
+      </trans-unit>
+      <trans-unit id="aocDetectAmbitos">
+        <source>Detectar ámbitos</source>
+        <target>Detectar àmbits</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAmbito">
+        <source>Ámbitos a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Àmbits a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+
+            <trans-unit id="aocSelectAmbitoPlaceholder">
+        <source>Selecciona uno o varios ámbitos</source>
+        <target>Selecciona un o diversos àmbits</target>
+      </trans-unit>
+<trans-unit id="aocNoAmbitosFound">
+        <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
+        <target>No s'ha detectat cap àmbit reconegut en aquest datalake.</target>
+      </trans-unit>
+      <trans-unit id="aocNoAmbitoSelected">
+        <source>Debe detectar y seleccionar un ámbito antes de guardar.</source>
+    <target>Cal detectar i seleccionar un àmbit abans de desar.</target>
+      </trans-unit>
+      <trans-unit id="aocCreated">
+        <source>Fuente de datos AOC creada correctamente</source>
+        <target>Font de dades AOC creada correctament</target>
+      </trans-unit>
+      <trans-unit id="aocSelectedAmbitos" datatype="html">
+        <source>{0} ámbitos seleccionados</source>
+        <target>{0} àmbits seleccionats</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAllAmbitos" datatype="html">
+        <source>Todos</source>
+        <target>Tots</target>
+      </trans-unit>
+      <trans-unit id="aocClearAllAmbitos" datatype="html">
+        <source>Quitar todos</source>
+        <target>Treure'ls tots</target>
+      </trans-unit>
+      <trans-unit id="aocMultipleAmbitosHint" datatype="html">
+        <source>Se creará una fuente de datos por cada ámbito seleccionado.</source>
+        <target>Es crearà una font de dades per cada àmbit seleccionat.</target>
+      </trans-unit>
+      <trans-unit id="aocCreatedMultiple" datatype="html">
+        <source>Se han creado <x id="COUNT" equiv-text="count"/> fuentes de datos AOC</source>
+        <target>S'han creat <x id="COUNT" equiv-text="count"/> fonts de dades AOC</target>
+      </trans-unit>
+      <trans-unit id="aocCreateFailedAmbitos" datatype="html">
+        <source>No se han podido importar los ámbitos: <x id="SCOPES" equiv-text="scopes"/></source>
+        <target>No s'han pogut importar els àmbits: <x id="SCOPES" equiv-text="scopes"/></target>
+      </trans-unit>
+      <trans-unit id="aocImportProgress" datatype="html">
+        <source>Importando <x id="CURRENT" equiv-text="current"/> de <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</source>
+        <target>Important <x id="CURRENT" equiv-text="current"/> de <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</target>
+      </trans-unit>
+
+
 </body>
   </file>
 </xliff>

@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
 
     constructor(
         private userService: UserService,
-        private spinnerService: SpinnerService,
+        public spinnerService: SpinnerService,
         private router: Router,
         public alertService: AlertService,
         public messageService: MessageService,

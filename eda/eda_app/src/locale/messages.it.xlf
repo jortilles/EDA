@@ -8818,6 +8818,71 @@ Cordiali saluti.</target>
     <target>Disponibili anche all'interno di un blocco ""CODE, per la data/ora dell'invio:</target>
   </trans-unit>
 
-</body>
+      <trans-unit id="aocClientIdLabel" datatype="html">
+        <source>Client ID del Service Principal <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client ID del Service Principal <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocClientSecretLabel" datatype="html">
+        <source>Client secret <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client secret <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocDetecting" datatype="html">
+        <source>Detectando ámbitos...</source>
+        <target>Rilevamento ambiti...</target>
+      </trans-unit>
+      <trans-unit id="aocDetectAmbitos" datatype="html">
+        <source>Detectar ámbitos</source>
+        <target>Rileva ambiti</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAmbito" datatype="html">
+        <source>Ámbitos a importar <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target>Ambiti da importare <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+
+            <trans-unit id="aocSelectAmbitoPlaceholder" datatype="html">
+        <source>Selecciona uno o varios ámbitos</source>
+        <target>Seleziona uno o più ambiti</target>
+      </trans-unit>
+<trans-unit id="aocNoAmbitosFound" datatype="html">
+        <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
+        <target>Non è stato rilevato nessun ambito riconosciuto in questo datalake.</target>
+      </trans-unit>
+      <trans-unit id="aocNoAmbitoSelected" datatype="html">
+        <source>Debe detectar y seleccionar un ámbito antes de guardar.</source>
+        <target>Devi rilevare e selezionare un ambito prima di salvare.</target>
+      </trans-unit>
+      <trans-unit id="aocCreated" datatype="html">
+        <source>Fuente de datos AOC creada correctamente</source>
+        <target>Fonte dati AOC creata correttamente</target>
+      </trans-unit>
+      <trans-unit id="aocSelectedAmbitos" datatype="html">
+        <source>{0} ámbitos seleccionados</source>
+        <target>{0} ambiti selezionati</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAllAmbitos" datatype="html">
+        <source>Todos</source>
+        <target>Tutti</target>
+      </trans-unit>
+      <trans-unit id="aocClearAllAmbitos" datatype="html">
+        <source>Quitar todos</source>
+        <target>Rimuovi tutti</target>
+      </trans-unit>
+      <trans-unit id="aocMultipleAmbitosHint" datatype="html">
+        <source>Se creará una fuente de datos por cada ámbito seleccionado.</source>
+        <target>Verrà creata una fonte dati per ogni ambito selezionato.</target>
+      </trans-unit>
+      <trans-unit id="aocCreatedMultiple" datatype="html">
+        <source>Se han creado <x id="COUNT" equiv-text="count"/> fuentes de datos AOC</source>
+        <target>Create <x id="COUNT" equiv-text="count"/> fonti dati AOC</target>
+      </trans-unit>
+      <trans-unit id="aocCreateFailedAmbitos" datatype="html">
+        <source>No se han podido importar los ámbitos: <x id="SCOPES" equiv-text="scopes"/></source>
+        <target>Non è stato possibile importare gli ambiti: <x id="SCOPES" equiv-text="scopes"/></target>
+      </trans-unit>
+      <trans-unit id="aocImportProgress" datatype="html">
+        <source>Importando <x id="CURRENT" equiv-text="current"/> de <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</source>
+        <target>Importazione <x id="CURRENT" equiv-text="current"/> di <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</target>
+      </trans-unit>
+  </body>
   </file>
 </xliff>

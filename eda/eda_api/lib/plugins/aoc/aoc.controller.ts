@@ -1,0 +1,106 @@
+import { NextFunction, Request, Response } from 'express';
+import { HttpException } from '../../module/global/model/index';
+import { AOCConnection } from './aoc-connection';
+import { EnCrypterService } from '../../services/encrypter/encrypter.service';
+import DataSource, { IDataSource } from '../../module/datasource/model/datasource.model';
+
+const cache_config = require('../../../config/cache.config');
+import { AOCConfig, loadAOCConfig } from './aoc-config.loader';
+import { AOC_ODBC_DRIVER, isAOCDriverInstalled } from './aoc-driver.check';
+
+/**
+ * Pre-flight checks before opening an AOC connection: config file and ODBC driver.
+ * Returns the config, or an HttpException (already logged) when the environment is not ready.
+ */
+async function checkAOCEnvironment(): Promise<{ config?: AOCConfig, error?: HttpException }> {
+    const { config, error: configError } = loadAOCConfig();
+    if (!config) {
+        console.warn(`[AOC] The file aoc.config.js is not properly configured: ${configError}`);
+        return { error: new HttpException(503, `El archivo aoc.config.js no está correctamente configurado. ${configError}`) };
+    }
+
+    const driverInstalled = await isAOCDriverInstalled();
+    if (driverInstalled === false) {
+        console.warn(`[AOC] ODBC driver "${AOC_ODBC_DRIVER}" is not available on this server (${process.platform}/${process.arch}). Install it to use the AOC connector.`);
+        return { error: new HttpException(503, `El driver ODBC "${AOC_ODBC_DRIVER}" no está disponible en el servidor.`) };
+    }
+    if (driverInstalled === null) {
+        // Could not determine it: try to connect anyway, the ODBC error will tell
+        console.warn(`[AOC] Could not verify whether ODBC driver "${AOC_ODBC_DRIVER}" is installed. Trying to connect anyway.`);
+    }
+
+    return { config };
+}
+
+export class AOCController {
+
+    static async listAmbitos(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { user, password } = req.body;
+
+            if (!user || !password) {
+                return next(new HttpException(400, 'Se requieren: user (clientId), password (clientSecret)'));
+            }
+
+            const { config: aoc_config, error: envError } = await checkAOCEnvironment();
+            if (envError) {
+                return next(envError);
+            }
+
+            const conn = new AOCConnection({ type: 'aoc', host: aoc_config.host, port: aoc_config.port, database: aoc_config.database, user, password });
+            const ambitos = await conn.listAmbitos();
+            return res.status(200).json({ ok: true, ambitos });
+
+        } catch (err: any) {
+            console.error('[AOC] listAmbitos error:', err.message);
+            console.error('[AOC] listAmbitos odbcErrors:', JSON.stringify(err.odbcErrors, null, 2));
+            console.error('[AOC] listAmbitos error detail:', { code: err.code, name: err.name, originalError: err.originalError, stack: err.stack });
+            return next(new HttpException(500, `Error al conectar con AOC: ${err.message}`));
+        }
+    }
+
+    static async addDataSource(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { name, description, user, password, schema, optimize, allowCache, filter } = req.body;
+
+            if (!name || !user || !password || !schema) {
+                return next(new HttpException(400, 'Se requieren: name, user (clientId), password (clientSecret), schema'));
+            }
+
+            const { config: aoc_config, error: envError } = await checkAOCEnvironment();
+            if (envError) {
+                return next(envError);
+            }
+
+            const config ={ type: 'aoc', host: aoc_config.host, port: aoc_config.port, database: aoc_config.database, schema, user, password };
+            const conn = new AOCConnection(config);
+            const tables = await conn.generateDataModel(optimize ? 1 : 0, filter || '');
+
+            const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
+
+            const datasource: IDataSource = new DataSource({
+                ds: {
+                    connection: { ...config, password: EnCrypterService.encrypt(password) },
+                    metadata: {
+                        model_name: name,
+                        model_description: description || '',
+                        model_id: '',
+                        model_granted_roles: [],
+                        optimized: !!optimize,
+                        cache_config: CC,
+                        model_owner: req.user._id,
+                        ia_visibility: 'FULL'
+                    },
+                    model: { tables }
+                }
+            });
+
+            const saved = await datasource.save();
+            return res.status(201).json({ ok: true, data_source_id: saved._id });
+
+        } catch (err: any) {
+            console.error('[AOC] addDataSource error:', err.message);
+            return next(new HttpException(500, `Error creando datasource AOC: ${err.message}`));
+        }
+    }
+}

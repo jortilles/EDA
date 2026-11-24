@@ -565,7 +565,7 @@
               </p-dropdown>
             </div>
             
-            @if (!['bigquery', 'excel', 'csv', 'duckdb'].includes(selectedTipoBD?.value)) {
+            @if (!['bigquery', 'excel', 'csv', 'duckdb', 'aoc'].includes(selectedTipoBD?.value)) {
               <div class="grid gap-2">
                 @if (selectedTipoBD?.value === 'snowflake') {
                   <label for="host" class="font-medium" i18n="@@account">Cuenta</label>
@@ -581,9 +581,10 @@
                 />
               </div>
             }
+            @if (selectedTipoBD?.value !== 'aoc') {
             <div class="grid gap-2">
               <label for="database" class="font-medium" i18n="@@inputNombreDB">Base de datos</label>
-              <input 
+              <input
                 id="database"
                 [(ngModel)]="modelPanel.connection.database"
                 (keyup)="update()"
@@ -591,7 +592,8 @@
                 class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
-            @if (!['bigquery', 'excel', 'csv', 'duckdb'].includes(selectedTipoBD?.value)) {
+            }
+            @if (!['bigquery', 'excel', 'csv', 'duckdb', 'aoc'].includes(selectedTipoBD?.value)) {
               <div class="grid gap-2">
                 <label for="port" class="font-medium" i18n="@@port">Puerto</label>
                 <input 
@@ -668,9 +670,10 @@
               </div>
             }
             
+            @if (selectedTipoBD?.value !== 'aoc') {
             <div class="grid gap-2">
               <label for="filters" class="font-medium" i18n="@@filters">Filtros</label>
-              <input 
+              <input
                 id="filters"
                 class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 [(ngModel)]="modelPanel.metadata.filter"
@@ -678,6 +681,7 @@
                 [disabled]="isProtectedDataSource()"
               />
             </div>
+            }
 
             @if(['oracle'].includes(selectedTipoBD?.value)) {
               <div class="grid gap-2">

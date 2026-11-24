@@ -627,15 +627,17 @@
           }
 
           }
+
+          @if (activePlugin) {
+          <div class="md:col-span-2">
+            <ng-container
+              [ngComponentOutlet]="activePlugin.formComponent"
+              [ngComponentOutletInputs]="pluginFormInputs">
+            </ng-container>
+          </div>
+          }
         </div>
       </div>
-      }
-
-      @if (activePlugin) {
-      <ng-container
-        [ngComponentOutlet]="activePlugin.formComponent"
-        [ngComponentOutletInputs]="pluginFormInputs">
-      </ng-container>
       }
 
       <!-- Advanced Tab Content -->
@@ -797,7 +799,7 @@
         }
         <button type="submit"
           class="px-4 py-2 rounded-md shadow-sm text-sm font-medium flex items-center btn-corporate-primary disabled:opacity-50 disabled:cursor-not-allowed"
-          [disabled]="connectionForm.get('type')?.value === 'duckdb' && duckdbFolderExists()"
+          [disabled]="(connectionForm.get('type')?.value === 'duckdb' && duckdbFolderExists()) || (activePlugin?.type === 'aoc' && !(pluginReadyToSave$ | async))"
           i18n="@@guardarBtn">
           <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24"
             stroke="currentColor" stroke-width="2">

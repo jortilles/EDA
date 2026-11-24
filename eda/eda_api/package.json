@@ -59,6 +59,7 @@
         "nodemailer": "^8.0.9",
         "nodemon": "^3.1.11",
         "object-hash": "^3.0.0",
+        "odbc": "^2.6.0",
         "openai": "^4.104.0",
         "oracledb": "^5.0.0",
         "password_hash": "^1.1.0",

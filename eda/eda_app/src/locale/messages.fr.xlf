@@ -9182,6 +9182,71 @@ Cordialement.</target>
     <target>Également disponibles dans un bloc ""CODE, pour la date/l'heure d'envoi :</target>
   </trans-unit>
 
+  <trans-unit id="aocClientIdLabel">
+        <source>Client ID del Service Principal <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client ID du Service Principal <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocClientSecretLabel">
+        <source>Client secret <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Client secret <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="aocDetecting">
+        <source>Detectando ámbitos...</source>
+        <target>Détection des périmètres...</target>
+      </trans-unit>
+      <trans-unit id="aocDetectAmbitos">
+        <source>Detectar ámbitos</source>
+        <target>Détecter les périmètres</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAmbito">
+        <source>Ámbitos a importar <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Périmètres à importer <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+
+            <trans-unit id="aocSelectAmbitoPlaceholder">
+        <source>Selecciona uno o varios ámbitos</source>
+        <target>Sélectionnez un ou plusieurs périmètres</target>
+      </trans-unit>
+<trans-unit id="aocNoAmbitosFound">
+        <source>No se ha detectado ningún ámbito reconocido en este datalake.</source>
+        <target>Aucun périmètre reconnu n'a été détecté dans ce datalake.</target>
+      </trans-unit>
+      <trans-unit id="aocNoAmbitoSelected">
+        <source>Debe detectar y seleccionar un ámbito antes de guardar.</source>
+        <target>Vous devez détecter et sélectionner un périmètre avant d'enregistrer.</target>
+      </trans-unit>
+      <trans-unit id="aocCreated">
+        <source>Fuente de datos AOC creada correctamente</source>
+        <target>Source de données AOC créée avec succès</target>
+      </trans-unit>
+      <trans-unit id="aocSelectedAmbitos" datatype="html">
+        <source>{0} ámbitos seleccionados</source>
+        <target>{0} périmètres sélectionnés</target>
+      </trans-unit>
+      <trans-unit id="aocSelectAllAmbitos" datatype="html">
+        <source>Todos</source>
+        <target>Tous</target>
+      </trans-unit>
+      <trans-unit id="aocClearAllAmbitos" datatype="html">
+        <source>Quitar todos</source>
+        <target>Tout retirer</target>
+      </trans-unit>
+      <trans-unit id="aocMultipleAmbitosHint" datatype="html">
+        <source>Se creará una fuente de datos por cada ámbito seleccionado.</source>
+        <target>Une source de données sera créée pour chaque périmètre sélectionné.</target>
+      </trans-unit>
+      <trans-unit id="aocCreatedMultiple" datatype="html">
+        <source>Se han creado <x id="COUNT" equiv-text="count"/> fuentes de datos AOC</source>
+        <target><x id="COUNT" equiv-text="count"/> sources de données AOC créées</target>
+      </trans-unit>
+      <trans-unit id="aocCreateFailedAmbitos" datatype="html">
+        <source>No se han podido importar los ámbitos: <x id="SCOPES" equiv-text="scopes"/></source>
+        <target>Les périmètres suivants n'ont pas pu être importés : <x id="SCOPES" equiv-text="scopes"/></target>
+      </trans-unit>
+      <trans-unit id="aocImportProgress" datatype="html">
+        <source>Importando <x id="CURRENT" equiv-text="current"/> de <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</source>
+        <target>Importation <x id="CURRENT" equiv-text="current"/> sur <x id="TOTAL" equiv-text="total"/> (<x id="SCOPE" equiv-text="ambito.label"/>)</target>
+      </trans-unit>
 </body>
   </file>
 </xliff>
