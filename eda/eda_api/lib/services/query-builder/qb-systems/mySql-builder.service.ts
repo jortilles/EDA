@@ -640,7 +640,12 @@ export class MySqlBuilderService extends QueryBuilderService {
       const filterTableName = filter_table?.split('.')[0];
 
       // false (default) -> compare against the raw selected values | true (alternative) -> compare against the internal codes
-      const codesOrElements = useCodeForFilters ? filter_codes : filter_elements;
+      // Use internal codes only for value-list filters with a configured ID column and valid codes.
+      // Otherwise use the selected values to avoid comparisons against stale or null codes.
+      const codesHaveNull = Array.isArray(filter_codes) && filter_codes.some((fc: any) => Array.isArray(fc?.value1) && fc.value1.some((v: any) => v == null || v === 'null'));
+      const codesOrElements = (useCodeForFilters && valueListSource?.target_id_column && Array.isArray(filter_codes) && filter_codes.length > 0 && !codesHaveNull)
+        ? filter_codes
+        : filter_elements;
 
       ////////////////////////////////////////////////// filter_type //////////////////////////////////////////////////
       let filter_type_value = '';
@@ -1175,7 +1180,9 @@ export class MySqlBuilderService extends QueryBuilderService {
       // Some queries (e.g. autocomplete suggestions) only send display values in filter_elements, so fall back to them
       // when filter_codes is missing/empty instead of crashing on filterValues[0].
       const hasFilterCodes = Array.isArray(filterObject.filter_codes) && filterObject.filter_codes.length > 0;
-      const filterValues = (this.useValueListCodeForFilters() && hasFilterCodes)
+      const hasValueListCodeColumn = !!filterObject.valueListSource?.target_id_column;
+      const codesHaveNull = hasFilterCodes && filterObject.filter_codes.some((fc: any) => Array.isArray(fc?.value1) && fc.value1.some((v: any) => v == null || v === 'null'));
+      const filterValues = (this.useValueListCodeForFilters() && hasFilterCodes && hasValueListCodeColumn && !codesHaveNull)
         ? filterObject.filter_codes
         : filterObject.filter_elements;
 

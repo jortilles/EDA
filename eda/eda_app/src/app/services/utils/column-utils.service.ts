@@ -32,7 +32,9 @@ export class ColumnUtilsService {
     
         let valuesIds
         // Adding the values Codes
-        if(data.length !== 0) {
+        // Only map selected values to internal IDs for value-list columns.
+        // Regular columns keep their selected values because they have no internal IDs.
+        if (valueListSource && data.length !== 0) {
             valuesIds = [{value1: _.cloneDeep(values)[0].value1.map((e: any) => data.find((d: any) => d.value === e)?.id ?? e)}];
         } else {
             valuesIds = _.cloneDeep(values);
