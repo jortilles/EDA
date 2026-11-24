@@ -181,6 +181,7 @@ export class ChartUtilsService {
         numberOfColumns is the number of columns used in the histogram.
     */
     public transformDataQuery(type: string, subType: string,  values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean, numberOfColumns: number) {
+        values = this.sortByRangeOrder(values, dataDescription?.query);
 
         // If there is more than 1 column and all are numeric, convert the first one to text
         const allNumeric = dataTypes.length > 1 && !dataTypes.find(t => t !== 'numeric');
@@ -634,7 +635,28 @@ export class ChartUtilsService {
         return uniqueLabels;
     }
 
-    public transformDataQueryForTable(labels: any[], values: any[]) {
+    public sortByRangeOrder(values: any[], currentQuery: any[]): any[] {
+      if (!values || !values.length || !currentQuery) return values;
+      const rangeColIdx = currentQuery.findIndex((c: any) => Array.isArray(c?.ranges) && c.ranges.length > 0);
+      if (rangeColIdx < 0) return values;
+      const ranges = currentQuery[rangeColIdx].ranges;
+      const normalize = (s: any) => String(s ?? '').trim().replace(/\s+/g, ' ');
+      const orderMap = new Map<string, number>();
+      let idx = 0;
+      orderMap.set(normalize(`< ${ranges[0]}`), idx++);
+      for (let i = 0; i < ranges.length - 1; i++) {
+          orderMap.set(normalize(` ${ranges[i]} - ${ranges[i + 1] - 1}`), idx++);
+      }
+      orderMap.set(normalize(`>= ${ranges[ranges.length - 1]}`), idx++);
+      return values.slice().map((v, i) => ({ v, i })).sort((a, b) => {
+          const ka = orderMap.has(normalize(a.v?.[rangeColIdx])) ? orderMap.get(normalize(a.v?.[rangeColIdx])) as number : Number.MAX_SAFE_INTEGER;
+          const kb = orderMap.has(normalize(b.v?.[rangeColIdx])) ? orderMap.get(normalize(b.v?.[rangeColIdx])) as number : Number.MAX_SAFE_INTEGER;
+          if (ka !== kb) return ka - kb;
+          return a.i - b.i;
+      }).map(x => x.v);
+  }
+
+  public transformDataQueryForTable(labels: any[], values: any[]) {
             const output = [];
             values = values.filter(row => !row.every(element => element === null));
             // Load the Table for a preview

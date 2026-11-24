@@ -806,7 +806,7 @@ public tableNodeExpand(event: any): void {
             const [labels, values] = response;
             
             this.chartLabels = this.chartUtils.uniqueLabels(labels);
-                this.chartData = response[1].map(item => item.map(a => {
+                this.chartData = this.chartUtils.sortByRangeOrder(response[1].map(item => item.map(a => {
                 
                         if(a === null  && NULL_VALUE != 'LEAVE_THE_NULL'){
                           return NULL_VALUE;
@@ -817,7 +817,7 @@ public tableNodeExpand(event: any): void {
                 
                         return a;
                 
-                })); // We replace nulls and empty strings with a customizable value.
+                })), this.currentQuery); // We replace nulls and empty strings with a customizable value.
             
             await this.buildGlobalconfiguration(panelContent);
             this.cdr.markForCheck();
