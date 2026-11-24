@@ -2,8 +2,8 @@ import { SQLserverConnection } from '../../services/connection/db-systems/slqser
 import { AOC_AMBITOS_MAP } from './aoc-ambitos.map';
 import { AOC_TABLES_MAP } from './aoc-tables.map';
 import { AOC_ODBC_DRIVER } from './aoc-driver.check';
-
-const odbc = require('odbc');
+// 'odbc' is loaded lazily: requiring it at module load crashes the API when unixODBC is missing
+import { getOdbc } from './aoc-odbc.loader';
 
 export interface AocAmbito {
     technicalName: string;
@@ -37,7 +37,7 @@ export class AOCConnection extends SQLserverConnection {
             `PWD=${odbcQuote(this.config.password)};` +
             `Encrypt=yes;TrustServerCertificate=no;`;
 
-        return odbc.connect(connectionString);
+        return getOdbc().connect(connectionString);
     }
 
     async execQuery(query: string): Promise<any> {
