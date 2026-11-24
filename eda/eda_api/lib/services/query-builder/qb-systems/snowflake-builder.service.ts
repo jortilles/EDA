@@ -381,7 +381,8 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
       filters.forEach(f => {
         const column = this.findColumn(f.filter_table, f.filter_column);
         const colname = this.getFilterColname(column);
-        if (f.filter_type === 'not_null') {
+        // These filter types carry no values (filter_elements may be empty)
+        if (['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)) {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
 
@@ -693,6 +694,15 @@ public filterToString(filterObject: any ) {
                       ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
     case 3:
       return `${colname} is not null`;
+    case 5:
+      // Empty string only makes sense for text columns
+      return colType === 'text'
+        ? `(${colname} is not null and ${colname} <> '')`
+        : `${colname} is not null`;
+    case 6:
+      return colType === 'text'
+        ? `(${colname} is null or ${colname} = '')`
+        : `${colname} is null`;
   }
 }
 
