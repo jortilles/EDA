@@ -16,6 +16,55 @@ function odbcQuote(value: string): string {
 }
 
 /**
+ * Returns the query with every non-ASCII character inside a string literal rewritten as an
+ * NCHAR(<code>) concatenation, e.g. 'BAIX PENEDÈS' -> N'BAIX PENED' + NCHAR(200) + N'S'.
+ *
+ * Needed off Windows: there the 'odbc' package is built without UNICODE, so the SQL text reaches the
+ * driver as narrow (8-bit) text, which ODBC Driver 18 decodes with the process C locale. Node never
+ * calls setlocale(), so that locale is "C" (ASCII) whatever LANG says, the UTF-8 bytes of an accented
+ * literal are mangled and filters such as IN ('BAIX PENEDÈS, EL') silently match nothing.
+ * Pure-ASCII SQL is immune to that. Identifiers ("double quoted") are left untouched: results are
+ * mapped by column position, so a mangled alias does not affect them.
+ */
+export function asciiSafeSql(query: string): string {
+    if (!/[^\x00-\x7F]/.test(query)) return query;
+    let out = '';
+    let i = 0;
+    while (i < query.length) {
+        const ch = query[i];
+        if (ch !== "'") { out += ch; i++; continue; }
+        // Read the whole literal, honouring '' as an escaped quote
+        let j = i + 1;
+        let body = '';
+        while (j < query.length) {
+            if (query[j] === "'" && query[j + 1] === "'") { body += "''"; j += 2; continue; }
+            if (query[j] === "'") break;
+            body += query[j++];
+        }
+        const closed = j < query.length;
+        if (!closed || !/[^\x00-\x7F]/.test(body)) {
+            out += query.slice(i, closed ? j + 1 : j);
+        } else {
+            // Prefixing N keeps the literal as nvarchar; drop a previous N prefix to avoid NN'...'
+            if (/[Nn]$/.test(out) && !/[A-Za-z0-9_]$/.test(out.slice(0, -1))) out = out.slice(0, -1);
+            const parts: string[] = [];
+            let chunk = '';
+            // UTF-16 code units: characters outside the BMP become a surrogate pair of NCHARs
+            for (let k = 0; k < body.length; k++) {
+                const code = body.charCodeAt(k);
+                if (code < 0x80) { chunk += body[k]; continue; }
+                if (chunk) { parts.push(`N'${chunk}'`); chunk = ''; }
+                parts.push(`NCHAR(${code})`);
+            }
+            if (chunk) parts.push(`N'${chunk}'`);
+            out += `(${parts.join(' + ')})`;
+        }
+        i = closed ? j + 1 : j;
+    }
+    return out;
+}
+
+/**
  * Conector AOC: mismo generateDataModel/query builder que SQLserverConnection, pero el datalake
  * de AOC es un endpoint de Microsoft Fabric. El driver de Node 'mssql'/tedious no es compatible
  * con Fabric (falla con "socket hang up" incluso bien configurado: es un problema conocido y sin
@@ -39,14 +88,15 @@ export class AOCConnection extends SQLserverConnection {
             // The datalake stores varchar as UTF-8 (Latin1_General_100_BIN2_UTF8). On Windows the driver
             // translates it to the ANSI code page, which the 'odbc' package then decodes as UTF-8, so
             // accents become U+FFFD ("VALLÈS" -> "VALL�S"). Disabling the translation returns the raw
-            // UTF-8 bytes. On Linux/macOS the driver already converts using the (UTF-8) system locale.
+            // UTF-8 bytes. Off Windows, accented literals in the SQL text are handled by asciiSafeSql().
             (process.platform === 'win32' ? 'AutoTranslate=no;' : '');
 
         return getOdbc().connect(connectionString);
     }
 
     async execQuery(query: string): Promise<any> {
-        return this.client.query(query);
+        // On Windows the SQL text is sent as UTF-16 (the 'odbc' package is built with UNICODE)
+        return this.client.query(process.platform === 'win32' ? query : asciiSafeSql(query));
     }
 
     async execSqlQuery(query: string): Promise<any> {
