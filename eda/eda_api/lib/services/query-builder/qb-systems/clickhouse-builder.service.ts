@@ -503,7 +503,8 @@ export class ClickHouseBuilderService extends QueryBuilderService {
       filters.forEach(f => {
         const column = this.findColumn(f.filter_table, f.filter_column);
         const colname = this.getFilterColname(column);
-        if (f.filter_type === 'not_null') {
+        // These filter types carry no values (filter_elements may be empty)
+        if (['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)) {
           filtersString += '\nAND ' + this.filterToString(f);
         } else {
           const nullValueIndex = f.filter_elements[0].value1.indexOf(null);
@@ -777,6 +778,15 @@ export class ClickHouseBuilderService extends QueryBuilderService {
                 ${this.processFilter(filterObject.filter_elements[0].value1, colType)} AND ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
         return `isNotNull(${colname})`;
+      case 5:
+        // Empty string only makes sense for text columns
+        return colType === 'text'
+          ? `(isNotNull(${colname}) AND ${colname} != '')`
+          : `isNotNull(${colname})`;
+      case 6:
+        return colType === 'text'
+          ? `(isNull(${colname}) OR ${colname} = '')`
+          : `isNull(${colname})`;
     }
   }
 

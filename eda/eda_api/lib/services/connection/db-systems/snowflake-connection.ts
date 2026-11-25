@@ -176,7 +176,7 @@ export class SnowflakeConnection extends AbstractConnection {
         column.aggregation_type = AggregationTypes.getValuesForOthers();
     }
 
-    column.computed_column == 'no'   // las posibilidades son no, computed, 
+    column.computed_column = 'no';   // physical column (the other value is 'computed')
 
     column.column_granted_roles = [];
     column.row_granted_roles = [];

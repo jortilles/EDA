@@ -1,4 +1,5 @@
 import { createClient } from '@clickhouse/client';
+import https from 'node:https'; //TEST CH
 import { ClickHouseBuilderService } from '../../query-builder/qb-systems/clickhouse-builder.service';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
@@ -20,12 +21,16 @@ export class ClickHouseConnection extends AbstractConnection {
             const protocol = this.config.ssl ? 'https' : 'http';
             const port = this.config.port || 8123;
             const database = this.getDatabase();
+            console.log('\x1b[36m%s\x1b[0m', `[TEST CH] config.ssl=${this.config.ssl} protocol=${protocol}`); //TEST CH
+            console.log('\x1b[36m%s\x1b[0m', `[TEST CH] url=${protocol}://${this.config.host}:${port} database=${database}`); //TEST CH
             const client = createClient({
                 url: `${protocol}://${this.config.host}:${port}`,
                 username: this.config.user,
                 password: this.config.password,
                 ...(database ? { database } : {}),
+                ...(protocol === 'https' ? { http_agent: new https.Agent({ rejectUnauthorized: false }) } : {}), //TEST CH
             });
+            console.log('\x1b[36m%s\x1b[0m', `[TEST CH] client created, https_agent_applied=${protocol === 'https'}`); //TEST CH
             return client;
         } catch (err) {
             throw err;

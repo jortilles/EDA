@@ -254,6 +254,7 @@ export class SQLserverConnection extends AbstractConnection {
             column.aggregation_type = AggregationTypes.getValuesForOthers();
         }
 
+        column.computed_column = 'no';   // physical column (the other value is 'computed')
         column.column_granted_roles = [];
         column.row_granted_roles = [];
         column.visible = true;
