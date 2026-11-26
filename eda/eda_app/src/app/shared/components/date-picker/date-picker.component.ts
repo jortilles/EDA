@@ -5,6 +5,7 @@ import { DatePickerConfig } from './datePickerConfig';
 import { locales } from './date-locales';
 import { rangeDateFormats } from './date-picker.index';
 import { ChartUtilsService, FilterType } from '@eda/services/service.index';
+import { USE_ALTERNATIVE_FILTERS_FORMAT } from '@eda/configs/customizable/customizable_merged';
 
 import { FormsModule } from '@angular/forms';
 import { Calendar, CalendarModule } from 'primeng/calendar';
@@ -88,10 +89,22 @@ export class DatePickerComponent implements OnChanges {
 	}
 
 	private restoreFromInject(): void {
-		if (!this.inject || this.filterTypeSelected) return;
+		if (this.filterTypeSelected) return;
 
-		const operator = this.filterTypesOptions.find(f => f.value === this.inject.dateFilterType);
-		if (!operator) return;
+		const operator = this.inject ? this.filterTypesOptions.find(f => f.value === this.inject.dateFilterType) : undefined;
+
+		if (!operator) {
+			// No saved filter yet: under the alternative filters format, open straight into "between"
+			// (the calendar range mode) instead of an empty operator and a hidden calendar.
+			if (USE_ALTERNATIVE_FILTERS_FORMAT && !this.inline) {
+				const defaultOperator = this.filterTypesOptions.find(f => f.value === 'between');
+				if (defaultOperator) {
+					this.filterTypeSelected = defaultOperator;
+					this.handleFilterChange(defaultOperator);
+				}
+			}
+			return;
+		}
 
 		this.filterTypeSelected = operator;
 		this.handleFilterChange(operator);
@@ -113,40 +126,40 @@ export class DatePickerComponent implements OnChanges {
 	/** Public: bound directly in this component's own template ((onChange) on the popup-mode
 	 * operator dropdown) — Angular's strict template checker requires template-bound members to be public. */
 	public handleFilterChange(filterTypeSelected: FilterType): void {
+		// Alternative filters format (popup/report-filter usage, not the inline dialogs)
+		const alwaysShow = !this.inline && USE_ALTERNATIVE_FILTERS_FORMAT;
+
 		this.showDateFormatSelecter = true;
-		this.hideCalendarGrid = true;
+		this.hideCalendarGrid = !alwaysShow;
 		this.selectedRange = null;
 		this.rangeDates = null;
 		this.ranges = [...this._allRanges];
 
 		if (!filterTypeSelected) {
 			this.ranges = [];
-			return;
-		}
-
-		if (['=', '!=', '>', '<', '>=', '<='].includes(filterTypeSelected.value)) {
+		} else if (['=', '!=', '>', '<', '>=', '<='].includes(filterTypeSelected.value)) {
 			this.ranges = this._allRanges.filter(r => ['beforeYesterday', 'yesterday', 'today', 'tomorrow', 'pastTomorrow', 'customDate'].includes(r.value));
 			this.selectionMode = 'single';
-			return;
-		}
-
-		if (['in', 'not_in'].includes(filterTypeSelected.value)) {
+		} else if (['in', 'not_in'].includes(filterTypeSelected.value)) {
 			this.ranges = this._allRanges.filter(r => !['beforeYesterday', 'yesterday', 'today', 'tomorrow', 'pastTomorrow'].includes(r.value));
 			this.selectionMode = 'multiple';
-			return;
-		}
-
-		if (['between', 'not_between'].includes(filterTypeSelected.value)) {
-			this.showDateFormatSelecter = false;
-			this.selectedRange = <any>'customDate';
+		} else if (['between', 'not_between'].includes(filterTypeSelected.value)) {
 			this.selectionMode = 'range';
-			this.hideCalendarGrid = false;
-			return;
+			if (!alwaysShow) {
+				this.showDateFormatSelecter = false;
+				this.selectedRange = <any>'customDate';
+				this.hideCalendarGrid = false;
+			}
+		} else if (['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filterTypeSelected.value)) {
+			if (!alwaysShow) {
+				this.showDateFormatSelecter = false;
+			}
 		}
 
-		if (['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filterTypeSelected.value)) {
-			this.showDateFormatSelecter = false;
-			return;
+		// The calendar is already always visible in this format, so picking dates straight from it
+		// makes the dropdown's own "pick a date manually" entry redundant — drop it from the list.
+		if (alwaysShow) {
+			this.ranges = this.ranges.filter(r => r.value !== 'customDate');
 		}
 	}
 
@@ -273,7 +286,10 @@ export class DatePickerComponent implements OnChanges {
 			this.hideCalendarGrid = false;
 			return;
 		}
-		this.hideCalendarGrid = true;
+		// Alternative filters format: the calendar stays visible even for a dynamic range shortcut.
+		if (this.inline || !USE_ALTERNATIVE_FILTERS_FORMAT) {
+			this.hideCalendarGrid = true;
+		}
 		// Don't assign rangeDates here — it's bound to the calendar's own value and would show
 		// the computed date immediately. The actual value is only supposed to apply on confirm;
 		// emitChanges() computes it lazily from selectedRange at that point.

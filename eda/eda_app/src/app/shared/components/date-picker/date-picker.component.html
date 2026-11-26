@@ -18,11 +18,23 @@
 				</div>
 
 				@if(showDateFormatSelecter){
-					<div>
+					<div class="w-full">
 						<label class="block text-sm mb-1" i18n="@@dateSelectionText">Selección de fecha:</label>
-						<p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder"
-							[style]="{'width':'100%'}" [disabled]="!filterTypeSelected" scrollHeight="230px" (onChange)="updateRangeSelection()">
-						</p-dropdown>
+						<div class="flex items-center w-full" style="gap: 10px;">
+							<div class="min-w-0" style="flex: 1 1 0%;">
+								<p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder"
+									[style]="{'width':'100%'}" [disabled]="!filterTypeSelected" scrollHeight="230px" (onChange)="updateRangeSelection()">
+								</p-dropdown>
+							</div>
+							@if(autoClear){
+								<button
+									pButton pRipple type="button"
+									i18n-label="@@datePickerCleanBtn" label="Limpiar" icon="pi pi-undo"
+									(click)="clean()"
+									class="p-button-rounded p-button-outlined shrink-0 ml-auto">
+								</button>
+							}
+						</div>
 					</div>
 				}
 			</div>
@@ -32,26 +44,15 @@
 
 			<div class="flex items-center justify-between w-full pt-3 pb-3 pr-2 pl-2" style="gap: 10px;" (mousedown)="$event.stopPropagation()">
 				<div class="flex items-center" style="gap: 10px;">
-					@if(autoRemove || autoClear){
+					@if(autoRemove){
 						<ng-content select="[footer]"></ng-content>
 
-						@if(autoRemove){
-							<button
-								pButton pRipple type="button"
-								icon="fa fa-trash"
-								(click)="remove()"
-								class="p-button-danger p-button-rounded p-button-outlined">
-							</button>
-						}
-
-						@if(autoClear){
-							<button
-								pButton pRipple type="button"
-								i18n-label="@@datePickerCleanBtn" label="Limpiar" icon="pi pi-undo"
-								(click)="clean()"
-								class="p-button-rounded p-button-outlined">
-							</button>
-						}
+						<button
+							pButton pRipple type="button"
+							icon="fa fa-trash"
+							(click)="remove()"
+							class="p-button-danger p-button-rounded p-button-outlined">
+						</button>
 					}
 				</div>
 			</div>
